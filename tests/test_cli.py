@@ -5,6 +5,10 @@ They run the real console script.
 import subprocess
 
 
+def _no_nflverse(season, week, player_ids, players):
+    raise AssertionError("no test downloads an nflverse file")
+
+
 def test_help_lists_commands():
     out = subprocess.run(["uv", "run", "cornerstone", "--help"], capture_output=True, text=True)
     assert out.returncode == 0
@@ -43,6 +47,8 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
         raise AssertionError("the gate must stop the build before any Claude call")
 
     monkeypatch.setattr(pipeline, "fetch_week", no_fetch)
+    # The gate stops this build first. The patch keeps any later build off the network.
+    monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
     monkeypatch.setattr(cli, "claude_call", no_claude)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")

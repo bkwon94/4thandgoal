@@ -104,8 +104,9 @@ def test_context_missing_award_is_flagged(fixture_raw_dir):
     ctx = build_context(b, _blurbs(b), {})
     assert [t["title"] for t in ctx["awards"]] == [
         "Top Scorer", "MVB · Most Valuable Benchwarmer", "Underperformer", "Overachiever",
+        "Butterfingers",
     ]
-    assert [t["missing"] for t in ctx["awards"]] == [False, False, True, False]
+    assert [t["missing"] for t in ctx["awards"]] == [False, False, True, False, False]
 
 
 def test_summary_meta_names_the_pick(fixture_raw_dir, tmp_path):
@@ -186,3 +187,26 @@ def test_trades_opinion_note(tbundle, tmp_path):
 def test_no_trades_no_section(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     assert 'id="trades"' not in render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+
+
+def test_butterfingers_tile_and_drop_note(dbundle, tmp_path):
+    html = render_week(dbundle, _blurbs(dbundle), tmp_path, _fake_png).read_text()
+    assert "Butterfingers" in html and "14.2" in html
+    assert "Drop value is an estimate" in html
+
+
+def test_drop_note_for_a_sleeper_count(dbundle, tmp_path):
+    bundle = dbundle.model_copy(deep=True)
+    bundle.data.drop_source = "sleeper"
+    html = render_week(bundle, _blurbs(bundle), tmp_path, _fake_png).read_text()
+    assert "Drops are a count only this week" in html
+    assert "Drop value is an estimate" not in html
+
+
+def test_no_drop_note_and_no_tile_without_drops(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    b.data.drop_source = "none"
+    b.data.awards = [a for a in b.data.awards if a.key != "butterfingers"]
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert "Drop value" not in html and "Drops are a count" not in html
+    assert "Butterfingers" not in html

@@ -6,13 +6,17 @@ import json
 import re
 import shutil
 import subprocess
+import tempfile
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytest
 
 from cornerstone.history import HISTORY_FILES, history_dir, history_root
-from cornerstone.models import BuildRecord, Sentence, Verdict, VerifyFile, VerifyOut
+from pathlib import Path
+
+from cornerstone.models import BuildRecord, NflverseWeek, Sentence, Verdict, VerifyFile, VerifyOut
+from cornerstone.nflverse import nflverse_week
 from cornerstone.pipeline import BuildStopped, make_bundle, read_verify, run_build, run_rewrite, week_dir
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.sheet import read_bundle
@@ -35,7 +39,31 @@ def _no_bytes(url):
     return None
 
 
-OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes}
+NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
+NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse")
+
+
+def _no_network(url):
+    raise AssertionError(f"network call to {url}")
+
+
+def _fixture_nflverse(season, week, player_ids, players):
+    """The recorded nflverse files, read through the real parser from a fresh cache."""
+    cache = Path(tempfile.mkdtemp())
+    for f in NFLVERSE_FIXTURES.iterdir():
+        shutil.copy(f, cache / f.name)
+    return nflverse_week(season, week, player_ids, players, cache, fetch=_no_network)
+
+
+def _down_nflverse(season, week, player_ids, players):
+    return NflverseWeek(sources={k: False for k in NFLVERSE_KEYS}, gsis={}, drops=None, injuries=None)
+
+
+def _forbidden_nflverse(season, week, player_ids, players):
+    raise AssertionError("the saved extract must not be fetched again")
+
+
+OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes, "nflverse": _fixture_nflverse}
 
 
 def _repo(tmp_path, fixture_raw_dir):
@@ -274,3 +302,60 @@ def test_window_without_a_fetch_time_ends_at_the_build_start(tmp_path, fixture_r
     bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 6 and record.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
     assert "no fetch time for week 6" in caplog.text
+
+
+def _nflverse_path(repo):
+    return week_dir(repo, 2026, 6) / "raw" / "nflverse.json"
+
+
+def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert _nflverse_path(repo).exists()
+    sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
+    assert sources == {"history": True, "nflverse_pbp": True, "nflverse_ftn": True,
+                       "nflverse_injuries": True, "ffverse": True}
+
+
+def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _forbidden_nflverse})
+
+
+def test_nflverse_down_still_builds(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _down_nflverse})
+    assert "count only this week" in page.read_text()
+
+
+def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _down_nflverse})
+    assert not _nflverse_path(repo).exists()
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    saved = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
+    assert all(saved.sources.values())
+
+
+def test_a_crashing_fetcher_never_stops_the_build(tmp_path, fixture_raw_dir, caplog):
+    def crash(season, week, player_ids, players):
+        raise OSError("disk gone")
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": crash})
+    assert page.exists()
+    assert not _nflverse_path(repo).exists()
+    assert "nflverse unavailable" in caplog.text
+
+
+def test_no_fetcher_and_no_file_builds_without_nflverse(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    _, record = make_bundle(repo, 2026, 6, news=_no_news)
+    assert not any(record.sources.get(k) for k in NFLVERSE_KEYS)
+
+
+def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "median", _fake, **{**OFFLINE, "nflverse": _forbidden_nflverse})
