@@ -112,7 +112,7 @@ def test_pregame_fact(dbundle):
 
 
 def test_history_listed_this_week(dbundle):
-    assert dbundle.sheet.facts["I.2449.history"].text == "Stefon Diggs has been on the report 2 weeks."
+    assert dbundle.sheet.facts["I.2449.history"].text == "Stefon Diggs has been on the NFL injury report 2 weeks."
 
 
 def test_history_returned_this_week(dbundle):

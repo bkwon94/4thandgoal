@@ -774,7 +774,7 @@ def injury_facts_nfl(c: Context) -> list[Fact]:
             out.append(_fact(f"I.{pid}.pregame", pregame, Nums(), team, [line.name]))
         n = Nums()
         if week in weeks:
-            text = f"{line.name} has been on the report {_weeks(sum(w <= week for w in weeks), n)}."
+            text = f"{line.name} has been on the NFL injury report {_weeks(sum(w <= week for w in weeks), n)}."
         # A return claim needs proof of play: nflverse only lists the injured, so a gap alone is not a return.
         elif week - 1 in weeks and c.week.stats.get(pid, {}).get("gp", 0) > 0:
             earlier = _weeks(sum(w < week for w in weeks), n, "earlier ")
