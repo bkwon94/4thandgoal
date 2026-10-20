@@ -130,3 +130,19 @@ def test_nflverse_week_from_fixtures(nfl_week6):
 def test_live_download_of_the_play_by_play(tmp_path):
     path = download(PBP_URL.format(season=2026), tmp_path / "pbp.csv.gz", fetch=http_get)
     assert path is not None and path.stat().st_size > 0
+
+
+def test_read_drops_keeps_a_missing_yardline_as_none(fixture_nflverse_dir, tmp_path):
+    # A drop row with NA for yardline_100 has no field position, so it is never in the end zone.
+    src = fixture_nflverse_dir / "play_by_play_2026.csv.gz"
+    with gzip.open(src, "rt", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        rows = [{**r, "yardline_100": "NA"} if r["play_id"] == "2120" else r for r in reader]
+        fields = reader.fieldnames
+    pbp = tmp_path / "pbp.csv.gz"
+    with gzip.open(pbp, "wt", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    d = read_drops(pbp, fixture_nflverse_dir / "ftn_charting_2026.csv", 6)
+    assert [p.yardline_100 for p in d["00-0040667"]] == [43.0, None, 51.0]

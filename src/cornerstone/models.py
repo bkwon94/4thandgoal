@@ -332,7 +332,8 @@ class DropPlay(BaseModel):
     game_id: str
     play_id: str
     air_yards: float
-    yardline_100: float
+    # None when nflverse has no field position for the play. Such a drop is never in the end zone.
+    yardline_100: float | None
 
 
 class NflverseWeek(BaseModel):

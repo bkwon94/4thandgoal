@@ -161,3 +161,11 @@ def test_one_drop_is_one_pass(fixture_raw_dir):
     award = next(a for a in awards(week, build_bundle(week, news=lambda pid: []).data.matchups, one)
                  if a.key == "butterfingers")
     assert award.reason.startswith(f"{line.name} dropped 1 pass, ")
+
+
+def test_missing_yardline_is_not_the_end_zone(fixture_raw_dir):
+    from cornerstone.models import DropPlay
+    wk = parse_week(load_raw(fixture_raw_dir))
+    play = DropPlay(game_id="g", play_id="p", air_yards=23.0, yardline_100=None)
+    # One reception and 23 air yards, with no touchdown.
+    assert drop_value(play, wk.scoring) == drop_value(play.model_copy(update={"yardline_100": 99.0}), wk.scoring)

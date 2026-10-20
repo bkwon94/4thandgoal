@@ -11,9 +11,14 @@ def _drop_value(play: DropPlay, scoring: dict[str, float]) -> Decimal:
     # Decimal keeps the sum exact: float sums drift, and the page shows two decimals.
     value = Decimal(str(scoring["rec"])) + Decimal(str(max(play.air_yards, 0))) * Decimal(str(scoring["rec_yd"]))
     # Negative air yards count as 0, but the end zone test uses the raw number.
-    if play.air_yards >= play.yardline_100:
+    if _in_end_zone(play):
         value += Decimal(str(scoring["rec_td"]))
     return value
+
+
+def _in_end_zone(play: DropPlay) -> bool:
+    # A play with no yard line has no proof that the throw reached the end zone.
+    return play.yardline_100 is not None and play.air_yards >= play.yardline_100
 
 
 def drop_value(play: DropPlay, scoring: dict[str, float]) -> float:
@@ -36,7 +41,7 @@ def drop_lines(week: Week, nfl: NflverseWeek | None = None) -> list[DropLine]:
                     plays = nfl.drops.get(line.player_id, [])
                     count = len(plays)
                     value = float(sum((_drop_value(p, week.scoring) for p in plays), Decimal(0)))
-                    end_zone = sum(p.air_yards >= p.yardline_100 for p in plays)
+                    end_zone = sum(_in_end_zone(p) for p in plays)
                 else:
                     count = int(stats.get("rec_drop", 0))
                     value = end_zone = None

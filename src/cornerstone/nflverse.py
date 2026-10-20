@@ -77,6 +77,11 @@ def _number(text: str) -> float:
 NFLVERSE_TEAM = {"LAR": "LA"}
 
 
+def _yardline(text: str) -> float | None:
+    # A missing yard line is unknown, not the goal line: 0 would put every such drop in the end zone.
+    return None if text in ("", "NA") else float(text)
+
+
 def read_drops(pbp: Path, ftn: Path, week: int, teams: Collection[str] = ()) -> dict[str, list[DropPlay]] | None:
     """Drops of the week by receiver gsis_id. None when the files hold a partial week.
 
@@ -105,7 +110,7 @@ def read_drops(pbp: Path, ftn: Path, week: int, teams: Collection[str] = ()) -> 
         if (row["game_id"], row["play_id"]) in drop_keys and row["receiver_player_id"]:
             drops.setdefault(row["receiver_player_id"], []).append(DropPlay(
                 game_id=row["game_id"], play_id=row["play_id"],
-                air_yards=_number(row["air_yards"]), yardline_100=_number(row["yardline_100"])))
+                air_yards=_number(row["air_yards"]), yardline_100=_yardline(row["yardline_100"])))
     if not ftn_games or ftn_games != pbp_games:
         if ftn_games or pbp_games:
             logger.warning("nflverse week %d is partial: FTN has %d games, play-by-play has %d",
