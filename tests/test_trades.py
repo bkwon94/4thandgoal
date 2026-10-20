@@ -2,7 +2,9 @@
 Tests for the trade window and the late-trade test.
 They read the recorded week 6 data and the saved history.
 """
+import re
 from datetime import date, datetime
+from importlib import resources
 from zoneinfo import ZoneInfo
 
 from conftest import _decisive_trade
@@ -51,22 +53,6 @@ def test_sides_fact(tbundle):
     assert tbundle.sheet.facts["T5.sides"].text == (
         "Unsolicited Dak Picks traded Bhayshul Tuten and Garrett Wilson to "
         "Amon-Ra Dawg Your Team for Devaughn Vele and Josh Jacobs.")
-
-
-def test_got_facts(tbundle):
-    f = tbundle.sheet.facts
-    assert f["T5.12.got.12490"].text.startswith(
-        "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31.")
-    assert f["T5.11.got.5850"].text.startswith(
-        "Unsolicited Dak Picks got Josh Jacobs: 0 this week, 0 this season.")
-    assert f["T5.12.gave.11834"].text.startswith(
-        "Amon-Ra Dawg Your Team gave Devaughn Vele: 5.7 this week, 55.4 this season")
-    assert "T5.11.gave.12490" in f
-
-
-def test_need_fact(tbundle):
-    assert tbundle.sheet.facts["T5.12.need"].text == (
-        "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB and 5 WR after the trade and 1 open roster spot.")
 
 
 def test_swing_facts(tbundle):
@@ -131,13 +117,6 @@ def test_three_team_trade(fixture_raw_dir, fixture_history_root):
     assert all(name in f["T1.sides"].text for name in ("To Infinity and Bijan", "Return of T Mac", "Amon-Ra Dawg Your Team"))
 
 
-def test_got_fact_without_history(fixture_raw_dir, fixture_history_root, tbundle):
-    raw = load_raw(fixture_raw_dir)
-    f = build_bundle(parse_week(raw), news=lambda pid: [], trades=tbundle.data.trades).sheet.facts
-    assert f["T5.12.got.12490"].text == (
-        "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, position rank 4 of 31.")
-
-
 def test_need_clamps_open_spots_at_zero(tbundle):
     # Pukancun on 3 lists 15 players against 15 slots.
     need = tbundle.sheet.facts["T1.4.need"]
@@ -190,16 +169,6 @@ def _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points):
     return f["T5.12.got.12490"].text
 
 
-def test_got_fact_drops_the_season_total_when_a_week_has_no_stats(fixture_raw_dir, fixture_history_root, tbundle):
-    text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=False)
-    assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, position rank 4 of 31.")
-
-
-def test_got_fact_keeps_the_season_total_when_roster_points_cover_the_week(fixture_raw_dir, fixture_history_root, tbundle):
-    text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=True)
-    assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season,")
-
-
 def test_trades_chapter_takes_trade_facts_only(tbundle):
     from cornerstone.sheet import _trade_ids
     facts = {**tbundle.sheet.facts, "TOTAL.x": tbundle.sheet.facts["T5.sides"]}
@@ -219,3 +188,66 @@ def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
     f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
     assert "M1.result" in f and "tied" in f["M1.result"].text
     assert f"T1.{m.a.roster_id}.swing" not in f and f"T1.{m.b.roster_id}.swing" not in f
+
+
+def test_got_and_gave_facts_end_before_the_trade(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12.got.12490"].text == (
+        "Amon-Ra Dawg Your Team got Bhayshul Tuten: 11.8 points per game over 5 games before the trade, "
+        "position rank 16 of 77 by season points. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.")
+    assert f["T5.12.gave.11834"].text == (
+        "Amon-Ra Dawg Your Team gave Devaughn Vele: 9.9 points per game over 5 games before the trade, "
+        "position rank 23 of 90 by season points. Devaughn Vele has missed projection in 2 of the last 3 weeks.")
+    assert f["T3.4.got.7569"].text == (
+        "Pukancun on 3 got Nico Collins: 17.7 points per game over 3 games before the trade, "
+        "position rank 21 of 90 by season points.")
+    assert f["T5.11.got.5850"].text == "Unsolicited Dak Picks got Josh Jacobs: no scored game before the trade."
+    assert f["T5.11.got.5850"].numbers == []
+
+
+def test_no_profile_fact_says_this_week(dbundle):
+    profile = re.compile(r"T\d+\.\d+\.(got|gave)\.\d+")
+    texts = [f.text for fid, f in dbundle.sheet.facts.items() if profile.fullmatch(fid)]
+    assert texts and not any("this week" in t or "final NFL injury report" in t for t in texts)
+
+
+def test_got_fact_without_history(fixture_raw_dir, tbundle):
+    f = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], trades=tbundle.data.trades).sheet.facts
+    assert f["T5.12.got.12490"].text == "Amon-Ra Dawg Your Team got Bhayshul Tuten."
+    assert "T5.12.team" not in f
+
+
+def test_got_fact_drops_the_profile_on_a_stats_outage(fixture_raw_dir, fixture_history_root, tbundle):
+    text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=True)
+    assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten.") and "points per game" not in text
+
+
+def test_team_facts(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12.team"].text == "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade."
+    assert f["T5.11.team"].text == "Unsolicited Dak Picks was 4-6, 7th of 12, before the trade."
+    assert f["T6.8.team"].text == "Return of T Mac was 4-6, 9th of 12, before the trade."
+
+
+def test_need_fact_has_no_record(tbundle):
+    assert tbundle.sheet.facts["T5.12.need"].text == (
+        "Amon-Ra Dawg Your Team has 5 RB and 5 WR after the trade and 1 open roster spot.")
+
+
+def test_impact_facts(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12.impact.12490"].text == "Bhayshul Tuten scored 22.7 this week for Amon-Ra Dawg Your Team."
+    assert f["T5.11.impact.11834"].text == "Devaughn Vele scored 5.7 this week on the bench for Unsolicited Dak Picks."
+
+
+def test_late_trade_keeps_profile_team_and_impact(tbundle):
+    # Braelon Allen went to roster 7 after his game, so roster 8 started him.
+    f = tbundle.sheet.facts
+    assert f["T6.7.impact.11576"].text == "Braelon Allen scored 11.4 this week for Return of T Mac."
+    assert "T6.7.got.11576" in f and "T6.7.team" in f
+
+
+def test_vocabulary_has_the_profile_terms():
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    for term in ("points per game", "position rank by season points", "trade impact"):
+        assert f"**{term}**" in text

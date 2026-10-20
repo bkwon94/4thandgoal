@@ -58,7 +58,7 @@
       <div class="side">
         <div class="top">{{ tm(side.team) }}{% if side.grade %}<span class="grade">{{ side.grade }}</span>{% else %}<span class="grade none">No grade</span>{% endif %}</div>
         <ul class="got">
-          {% for p in side.players %}<li><span>{{ p.name }}</span>{% if p.points is not none %}<b>{{ p.points }}</b>{% endif %}</li>{% endfor %}
+          {% for p in side.players %}<li><span>{{ p.name }}</span>{% if p.ppg is not none %}<b>{{ p.ppg }}</b>{% endif %}</li>{% endfor %}
           {% for pick in side.picks %}<li><span>{{ pick }}</span></li>{% endfor %}
         </ul>
       </div>

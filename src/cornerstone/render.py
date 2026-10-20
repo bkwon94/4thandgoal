@@ -102,11 +102,14 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
             for pid, owner in trade.adds.items():
                 if owner != rid:
                     continue
-                # The player fact holds the name and the points as written. A player with no
-                # lineup line has no fact, so he shows under a plain label and no points.
+                # The player fact holds the name and the points a game as written. A player with no
+                # lineup line has no fact, so he shows under a plain label. No scored game gives no ppg.
                 fact = facts.get(f"T{i}.{rid}.got.{pid}")
-                players.append({"name": fact.players[0], "points": fact.numbers[0]} if fact
-                               else {"name": "An unlisted player", "points": None})
+                if fact is None:
+                    players.append({"name": "An unlisted player", "ppg": None})
+                else:
+                    ppg = fact.numbers[0] if " points per game" in fact.text else None
+                    players.append({"name": fact.players[0], "ppg": ppg})
             picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
             sides.append({"team": teams[rid], "grade": grades.get(f"T{i}.{rid}"),
                           "players": players, "picks": picks})

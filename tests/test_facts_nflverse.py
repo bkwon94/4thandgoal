@@ -138,13 +138,6 @@ def test_injury_facts_are_in_their_chapters(dbundle):
     assert any("I.2449.pregame" in c.fact_ids for c in chapters.values())
 
 
-def test_got_fact_carries_the_pregame_status(fixture_raw_dir, fixture_history_root, nfl_week6):
-    from conftest import _trade_bundle
-    nfl = nfl_week6.model_copy(update={"injuries": {**nfl_week6.injuries, "12490": {6: "Questionable"}}})
-    f = _trade_bundle(fixture_raw_dir, fixture_history_root, nfl=nfl).sheet.facts
-    assert "Bhayshul Tuten was listed Questionable on the final NFL injury report" in f["T5.12.got.12490"].text
-
-
 def test_one_drop_is_one_pass(fixture_raw_dir):
     # Sleeper counts one drop and no targets for one starter, and no drop for any other.
     wk = parse_week(load_raw(fixture_raw_dir))

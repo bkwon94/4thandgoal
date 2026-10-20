@@ -18,11 +18,12 @@ from cornerstone.facts_league import (
     position_ranks,
     ranks_before,
     season_history,
+    season_records,
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
-from cornerstone.history import player_points, player_trend
+from cornerstone.history import player_trend, points_per_game, season_rank
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -601,28 +602,42 @@ def _pregame_text(c: Context, pid: str) -> str | None:
 
 
 def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fact:
+    """The points a game of a traded player and his position rank, from weeks 1 to N-1 only."""
     n = Nums()
     line = c.lines[pid]
     team = c.team(rid)
-    clauses = [f"{n(line.points)} this week"]
-    # A season total from a partial history would be wrong, so a gap drops the clause.
-    complete = c.history is not None and c.history.complete()
-    weeks = [c.history.weeks[w] for w in range(1, c.week.week + 1)] if complete else []
-    # A week with no roster points and empty stats is an outage of the stats endpoint, not a 0.
-    if complete and not any(player_points(w, pid) is None and not w.stats for w in weeks):
-        total = sum(Decimal(str(player_points(w, pid) or 0)) for w in weeks)
-        clauses.append(f"{n(float(total))} this season")
-    rank = next((r for r in c.ranks if r.player_id == pid), None)
-    if rank is not None:
-        clauses.append(f"position rank {n(rank.rank)} of {n(rank.of)}")
-    text = f"{team} {verb} {line.name}: {', '.join(clauses)}."
-    pregame = _pregame_text(c, pid)
-    if pregame is not None:
-        text += " " + pregame
-    beaten = player_trend(c.history, pid) if complete else None
+    through = c.week.week - 1
+    # Without a history there is nothing before the trade to cite, so the fact only names the move.
+    profile = points_per_game(c.history, pid, through) if c.history is not None else None
+    if profile is None:
+        text = f"{team} {verb} {line.name}."
+    elif profile[1] == 0:
+        text = f"{team} {verb} {line.name}: no scored game before the trade."
+    else:
+        text = (
+            f"{team} {verb} {line.name}: {n(profile[0])} points per game over {n(profile[1])} games "
+            "before the trade"
+        )
+        rank = season_rank(c.history, pid, through)
+        if rank is not None:
+            text += f", position rank {n(rank[0])} of {n(rank[1])} by season points"
+        text += "."
+    beaten = player_trend(c.history, pid, through=through) if c.history is not None else None
     if beaten is not None:
         text += " " + _trend_text(line.name, beaten, n)
     return _fact(f"T{i}.{rid}.{verb}.{pid}", text, n, [team], [line.name])
+
+
+def _team_fact(c: Context, i: int, rid: int) -> Fact | None:
+    """The record and rank of the roster before the trade. A missing or partial history gives none."""
+    through = c.week.week - 1
+    if c.history is None or not c.history.complete() or through < 1:
+        return None
+    n = Nums()
+    team = c.team(rid)
+    wins, losses, _ = season_records(c.history, through)[rid]
+    text = f"{team} was {n.record(wins, losses)}, {n.ord(c.before[rid])} of {n(12)}, before the trade."
+    return _fact(f"T{i}.{rid}.team", text, n, [team], [])
 
 
 def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
@@ -632,12 +647,25 @@ def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
     positions = sorted({c.lines[pid].position for pid in (*trade.adds, *trade.drops) if pid in c.lines})
     depth = [f"{n(sum(l.position == pos for l in side.lines))} {pos}" for pos in positions]
     spots = max(0, c.week.roster_slots - len(side.lines))
-    standing = c.by_rank[rid]
     text = (
-        f"{team} is {n.record(standing.wins, standing.losses)}, {n.ord(standing.rank)} of {n(12)}, "
-        f"with {_join(depth)} after the trade and {n(spots)} open roster {'spot' if spots == 1 else 'spots'}."
+        f"{team} has {_join(depth)} after the trade and "
+        f"{n(spots)} open roster {'spot' if spots == 1 else 'spots'}."
     )
     return _fact(f"T{i}.{rid}.need", text, n, [team], [])
+
+
+def _impact_fact(c: Context, i: int, trade: Trade, rid: int, pid: str) -> Fact | None:
+    """What a player that the roster got scored this week, for the team that held him in the lineup."""
+    # A later trade can move him on. Only a roster of this trade is in the scope of the chapter.
+    owner = c.line_owner.get(pid)
+    if owner not in trade.roster_ids:
+        return None
+    n = Nums()
+    line = c.lines[pid]
+    team = c.team(owner)
+    where = "for" if line.started else "on the bench for"
+    text = f"{line.name} scored {n(line.points)} this week {where} {team}."
+    return _fact(f"T{i}.{rid}.impact.{pid}", text, n, [team], [line.name])
 
 
 def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
@@ -688,8 +716,13 @@ def trade_facts(c: Context) -> list[Fact]:
     for i, trade in enumerate(c.trades, start=1):
         out.append(_sides_fact(c, i, trade))
         for rid in trade.roster_ids:
-            out += [_player_trade_fact(c, i, rid, pid, "got") for pid in _moved(trade, rid, True) if pid in c.lines]
+            got = [pid for pid in _moved(trade, rid, True) if pid in c.lines]
+            out += [_player_trade_fact(c, i, rid, pid, "got") for pid in got]
             out += [_player_trade_fact(c, i, rid, pid, "gave") for pid in _moved(trade, rid, False) if pid in c.lines]
+            team = _team_fact(c, i, rid)
+            if team is not None:
+                out.append(team)
+            out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
         # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
             continue

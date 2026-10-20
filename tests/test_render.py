@@ -153,7 +153,7 @@ def test_trades_section_order_and_cards(tbundle, tmp_path):
     assert html.index('id="trades"') > html.index(">Awards<")
     assert html.index('id="trades"') < html.index(">All Matchups<")
     assert html.count('class="trade"') == 6
-    assert "Bhayshul Tuten" in html and "22.7" in html
+    assert "Bhayshul Tuten" in html and "11.8" in html
 
 
 def test_grade_letter_and_no_grade(tbundle, tmp_path):
