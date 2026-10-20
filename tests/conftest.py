@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from cornerstone.history import load_history
-from cornerstone.models import NflverseWeek
+from cornerstone.models import NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
@@ -44,6 +44,23 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
     trades = trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
                              default_cutoff(date(2026, 9, 9), 6), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=trades, nfl=nfl)
+
+
+def _decisive_trade(week):
+    """A one-way trade in which a loser gives the winner a starter who scored more than the margin.
+
+    It returns the trade, the winner, and the loser. The week 6 data has no decisive swing of its own.
+    """
+    for m in week.matchups:
+        winner, loser = (m.a, m.b) if m.a.points > m.b.points else (m.b, m.a)
+        big = max((l for l in winner.lines if l.started), key=lambda l: l.points)
+        if big.points > winner.points - loser.points:
+            trade = Trade(transaction_id="decisive", created=datetime(2026, 10, 14, tzinfo=ET),
+                          roster_ids=[loser.roster_id, winner.roster_id],
+                          adds={big.player_id: winner.roster_id}, drops={big.player_id: loser.roster_id},
+                          draft_picks=[])
+            return trade, winner.roster_id, loser.roster_id
+    raise AssertionError("no matchup has a starter who scored more than the margin")
 
 
 @pytest.fixture

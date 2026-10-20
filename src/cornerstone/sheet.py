@@ -653,15 +653,27 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
     n = Nums()
     x = sum((Decimal(str(l.points)) for l in got_started), Decimal(0))
     y = sum((Decimal(str(l.points)) for l in gave_started), Decimal(0))
-    gap = abs(float(x - y))
-    margin = next(f.margin for f, m in zip(c.mfacts, c.week.matchups) if rid in (m.a.roster_id, m.b.roster_id))
-    side = "above" if r2(gap) > r2(margin) else "equal to" if r2(gap) == r2(margin) else "below"
+    f = next(f for f, m in zip(c.mfacts, c.week.matchups) if rid in (m.a.roster_id, m.b.roster_id))
+    # The trade decided the game only when it points the same way as the result: the winner gained
+    # at least the margin, or the loser lost at least the margin. A tie has no direction.
+    toward = float(x - y) if rid == f.winner else float(y - x) if rid == f.loser else None
     team = c.team(rid)
+    others = [r for r in trade.roster_ids if r != rid]
+    partners = c.team(others[0]) if len(others) == 1 else "its trade partners"
     text = (
-        f"The players {team} got scored {n(float(x))} this week; the players it gave scored {n(float(y))}. "
-        f"The gap is {n(gap)}, {side} the margin of {n(margin)} in its matchup."
+        f"The players {team} got and started scored {n(float(x))} this week; "
+        f"the players it gave that {partners} started scored {n(float(y))}. "
     )
-    return _fact(f"T{i}.{rid}.swing", text, n, [team], [l.name for l in (*got_started, *gave_started)])
+    if toward is not None and r2(toward) >= r2(f.margin):
+        side = "above" if r2(toward) > r2(f.margin) else "equal to"
+        text += f"The gap is {n(toward)}, {side} the margin of {n(f.margin)} in its matchup."
+    else:
+        text += (
+            f"In its matchup, that is a gap of {n(abs(float(x - y)))} against a margin of {n(f.margin)}, "
+            "not enough to change the result."
+        )
+    teams = [team, *(c.team(r) for r in others)] if len(others) == 1 else [team]
+    return _fact(f"T{i}.{rid}.swing", text, n, teams, [l.name for l in (*got_started, *gave_started)])
 
 
 def trade_facts(c: Context) -> list[Fact]:

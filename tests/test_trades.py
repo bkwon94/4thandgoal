@@ -5,6 +5,7 @@ They read the recorded week 6 data and the saved history.
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
+from conftest import _decisive_trade
 from cornerstone.history import load_history
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
@@ -69,10 +70,38 @@ def test_need_fact(tbundle):
 
 def test_swing_facts(tbundle):
     f = tbundle.sheet.facts
+    # Amon-Ra Dawg Your Team lost M3 104.04 to 113.55. The trade added points, so it did not decide the loss.
     assert f["T5.12.swing"].text == (
-        "The players Amon-Ra Dawg Your Team got scored 29.1 this week; the players it gave scored 0. "
-        "The gap is 29.1, above the margin of 9.51 in its matchup.")
-    assert f["T5.11.swing"].text.endswith("The gap is 29.1, below the margin of 38.82 in its matchup.")
+        "The players Amon-Ra Dawg Your Team got and started scored 29.1 this week; "
+        "the players it gave that Unsolicited Dak Picks started scored 0. "
+        "In its matchup, that is a gap of 29.1 against a margin of 9.51, not enough to change the result.")
+    # Devaughn Vele sat, so the got side of Unsolicited Dak Picks counts 0, not his 5.7.
+    assert f["T5.11.swing"].text == (
+        "The players Unsolicited Dak Picks got and started scored 0 this week; "
+        "the players it gave that Amon-Ra Dawg Your Team started scored 29.1. "
+        "In its matchup, that is a gap of 29.1 against a margin of 38.82, not enough to change the result.")
+
+
+def test_swing_is_decisive_only_in_the_direction_of_the_result(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    trade, winner, loser = _decisive_trade(week)
+    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
+    # The winner got the points and the loser gave them, so both sides point the same way as the result.
+    assert "above the margin of" in f[f"T1.{winner}.swing"].text
+    assert "above the margin of" in f[f"T1.{loser}.swing"].text
+    assert "not enough" not in f[f"T1.{loser}.swing"].text
+
+
+def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
+    from cornerstone.models import Trade
+    week = parse_week(load_raw(fixture_raw_dir))
+    a, b, c = week.matchups[0].a, week.matchups[0].b, week.matchups[1].a
+    pa, pb = (next(l for l in s.lines if l.started) for s in (a, b))
+    trade = Trade(transaction_id="x", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[a.roster_id, b.roster_id, c.roster_id],
+                  adds={pa.player_id: a.roster_id, pb.player_id: b.roster_id},
+                  drops={pa.player_id: c.roster_id, pb.player_id: a.roster_id}, draft_picks=[])
+    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
+    assert "the players it gave that its trade partners started scored" in f[f"T1.{a.roster_id}.swing"].text
 
 
 def test_late_trade_has_no_swing_and_no_need(tbundle):
@@ -143,6 +172,6 @@ def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     f = build_bundle(week, news=lambda pid: [], trades=trades).sheet.facts
     assert f"T1.{first}.swing" not in f and f"T1.{second}.swing" not in f
     # The roster that gave him on to the owner sees his points as the gave side.
-    assert f"it gave scored {star.points:g}." in f[f"T2.{second}.swing"].text
+    assert f"{week.teams[owner.roster_id].name} started scored {star.points:g}." in f[f"T2.{second}.swing"].text
     assert f"T2.{owner.roster_id}.swing" in f
     assert f"scored {star.points:g} this week" in f[f"T2.{owner.roster_id}.swing"].text
