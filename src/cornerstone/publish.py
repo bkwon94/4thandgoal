@@ -6,6 +6,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from cornerstone.render import render_index
+
+
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://bkwon94.github.io/cpcfantasyfootball/"
 
@@ -41,7 +44,12 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     _git(repo, "add", "site", "data")
     _commit_if_staged(repo, f"Week {week} report", "site", "data")
 
-    shutil.copytree(repo / "site", site_repo, dirs_exist_ok=True)
+    # Copy only this week and the static files. A built but unpublished week must stay off
+    # the public site, so the home page is rendered again from the weeks in the site repo.
+    week_path = Path(str(season)) / f"week-{week:02d}"
+    shutil.copytree(repo / "site" / week_path, site_repo / week_path, dirs_exist_ok=True)
+    shutil.copytree(repo / "site" / "static", site_repo / "static", dirs_exist_ok=True)
+    render_index(site_repo)
     _git(site_repo, "add", "-A")
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:

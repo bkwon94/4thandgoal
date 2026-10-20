@@ -106,6 +106,26 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
     assert _git(repo, "log", "-1", "--format=%s").strip() == "Week 6 report"
 
 
+def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeypatch):
+    repo, site_repo = tmp_path / "source", tmp_path / "site"
+    _init(repo)
+    _init(site_repo)
+    # The fixture is scored through week 6, so week 7 builds only with the gate open.
+    monkeypatch.setattr("cornerstone.pipeline.check_week_is_buildable", lambda *args: None)
+    for week in (6, 7):
+        shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, week) / "raw")
+        run_build(repo, 2026, week, _fake, fetch=False, **OFFLINE)
+    assert "week-07/" in (repo / "site" / "index.html").read_text()
+
+    run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
+
+    files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+    assert "2026/week-06/index.html" in files
+    assert not any(f.startswith("2026/week-07/") for f in files)
+    home = (site_repo / "index.html").read_text()
+    assert "week-06/" in home and "week-07/" not in home
+
+
 def test_publish_requires_built_page(tmp_path):
     with pytest.raises(PublishError, match="index.html"):
         run_publish(tmp_path, 2026, 6, site_repo=tmp_path / "site", push=False)
