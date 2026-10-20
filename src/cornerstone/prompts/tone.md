@@ -1,6 +1,6 @@
 # Tone
 
-Dry, specific, a little mean. Roast losers by team name. No profanity. No jokes about an injury itself. The humor comes from the facts and the team names, like a team named To Infinity and Bijan whose Bijan scored 6.3.
+Dry, specific, no chill. Roast losers by team name. No profanity. No jokes about an injury itself. The humor comes from the facts and the team names, like a team named To Infinity and Bijan whose Bijan scored 6.3.
 
 ## Numbers
 
