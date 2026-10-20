@@ -5,6 +5,7 @@ Templates get one plain context dict, so they hold layout and no logic.
 import html
 import re
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -36,13 +37,15 @@ _env.filters["short_name"] = _short_name
 
 
 def _sides(f: MatchupFacts, teams: dict) -> list[dict]:
-    """The two sides of a matchup, winner first. A tie keeps the roster order."""
+    """The two sides of a matchup, winner first. A tie has neither flag set and keeps the roster order.
+    The facts hold the top scorer of both rosters, so a tie still finds both teams."""
     if f.winner is not None:
         order = [(f.winner, f.score_w), (f.loser, f.score_l)]
     else:
         order = [(rid, f.score_w) for rid in sorted(f.top_scorer)]
     return [
-        {"team": teams[rid], "score": score, "top": f.top_scorer.get(rid), "winner": rid == f.winner}
+        {"team": teams[rid], "score": score, "top": f.top_scorer.get(rid),
+         "winner": rid == f.winner, "loser": rid == f.loser}
         for rid, score in order
     ]
 
@@ -123,22 +126,28 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
     }
 
 
-def _download_avatars(bundle: Bundle, avatar_dir: Path) -> dict[int, str]:
-    """Download each avatar. Any failure falls back to the default image, so a build never stops on one."""
+def _download_bytes(url: str) -> bytes | None:
+    """Fetch one image. Return None on any failure, so a build never stops on one avatar."""
+    try:
+        resp = httpx.get(url, timeout=AVATAR_TIMEOUT, follow_redirects=True)
+    except Exception:
+        return None
+    return resp.content if resp.status_code == 200 else None
+
+
+def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[int, str]:
+    """Save each avatar. A missing or failed download falls back to the default image."""
     paths = {}
     for rid, team in bundle.data.teams.items():
         paths[rid] = f"../../{DEFAULT_AVATAR}"
         if team.avatar_url is None:
             continue
-        try:
-            resp = httpx.get(team.avatar_url, timeout=AVATAR_TIMEOUT, follow_redirects=True)
-        except Exception:
-            continue
-        if resp.status_code != 200:
+        content = fetch_bytes(team.avatar_url)
+        if content is None:
             continue
         ext = Path(urlparse(team.avatar_url).path).suffix.lstrip(".") or "jpg"
         avatar_dir.mkdir(parents=True, exist_ok=True)
-        (avatar_dir / f"{rid}.{ext}").write_bytes(resp.content)
+        (avatar_dir / f"{rid}.{ext}").write_bytes(content)
         paths[rid] = f"avatars/{rid}.{ext}"
     return paths
 
@@ -147,11 +156,16 @@ def _copy_static(site_dir: Path) -> None:
     shutil.copytree(STATIC_DIR, site_dir / "static", dirs_exist_ok=True)
 
 
-def render_week(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -> Path:
+def render_week(
+    bundle: Bundle,
+    blurbs: dict[str, Blurb],
+    site_dir: Path,
+    fetch_bytes: Callable[[str], bytes | None] = _download_bytes,
+) -> Path:
     """Write the week page and copy the static files. Return the page path."""
     week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
     week_dir.mkdir(parents=True, exist_ok=True)
-    avatars = _download_avatars(bundle, week_dir / "avatars")
+    avatars = _download_avatars(bundle, week_dir / "avatars", fetch_bytes)
     page = week_dir / "index.html"
     page.write_text(_env.get_template("week.html").render(build_context(bundle, blurbs, avatars)))
     _copy_static(site_dir)

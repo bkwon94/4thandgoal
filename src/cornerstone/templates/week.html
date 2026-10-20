@@ -14,7 +14,7 @@
     {% set w, l = pick.sides %}
     <div class="score">
       <div class="tm">{{ av(w.team) }}<span>{{ w.team.name }}</span></div>
-      <div class="mid"><span class="pt">{{ w.score|num }}</span> <span class="vs">–</span> <span class="pt miss">{{ l.score|num }}</span></div>
+      <div class="mid"><span class="pt">{{ w.score|num }}</span> <span class="vs">–</span> <span class="pt{{ ' miss' if l.loser }}">{{ l.score|num }}</span></div>
       <div class="tm r">{{ av(l.team) }}<span>{{ l.team.name }}</span></div>
     </div>
     <p class="blurb">{{ blurbs.motw }}</p>
@@ -55,7 +55,7 @@
     {% set w, l = m.sides %}
     <div class="mu">
       <div class="hd">
-        <div class="a">{{ av(w.team) }}<span><span class="w">{{ w.team.name }}</span> <span class="w">{{ w.score|num }}</span></span></div>
+        <div class="a">{{ av(w.team) }}<span><span{{ ' class="w"'|safe if w.winner }}>{{ w.team.name }}</span> <span{{ ' class="w"'|safe if w.winner }}>{{ w.score|num }}</span></span></div>
         <div class="b"><span>{{ l.score|num }} {{ l.team.name }}</span>{{ av(l.team) }}</div>
       </div>
       <button class="cta recap-btn" type="button"><span class="open-label">Read recap</span><span class="close-label">Hide recap</span><span class="chev"></span></button>
