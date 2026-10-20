@@ -2,6 +2,8 @@
 Tests for standings, awards, Matchup of the Week, next week, and position ranks.
 They run on the real week 6 fixture.
 """
+import re
+
 from cornerstone.facts_league import (
     awards,
     matchup_of_the_week,
@@ -57,6 +59,14 @@ def test_next_week_two_must_watch(fixture_raw_dir):
     nx = next_week(wk, standings(wk))
     assert len(nx) == 6 and sum(n.must_watch for n in nx) == 2
     assert all(n.reason for n in nx if n.must_watch)
+    # The text names ranks and makes no claim about who falls.
+    assert all("falls" not in n.reason for n in nx if n.must_watch)
+    assert all(n.reason is None for n in nx if not n.must_watch)
+    assert all(
+        re.fullmatch(r"\d+(st|nd|rd|th) vs \d+(st|nd|rd|th)(, near the playoff cut)?", n.reason)
+        for n in nx
+        if n.must_watch
+    )
 
 
 def test_position_ranks(fixture_raw_dir):

@@ -173,7 +173,7 @@ def next_week(week: Week, table: list[Standing]) -> list[NextMatchup]:
             hi, lo = sorted((a.rank, b.rank))
             reason = f"{_ordinal(hi)} vs {_ordinal(lo)}"
             if stakes:
-                reason += ", loser falls to the cut"
+                reason += ", near the playoff cut"
         out.append(
             NextMatchup(a=a.roster_id, b=b.roster_id, must_watch=must_watch, reason=reason)
         )
