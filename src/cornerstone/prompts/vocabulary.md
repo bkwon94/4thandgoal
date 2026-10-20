@@ -13,7 +13,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **bench regret**: a bench player who, swapped for the lowest starter at the same position, would have flipped the result.
 - **median game**: the extra game every team plays against the league median score. A week is two games: the head-to-head and the median game.
 - **Must Watch**: a top one or two matchup next week, chosen from records and standings only.
-- **schedule strength**: the mean opponent win rate over the weeks left before the playoffs, with the league rank of that number.
+- **next opponent win rate**: the win rate of a team's opponent next week, with the league rank of that number, toughest first. It covers next week only, not the rest of the season.
 - **season high**: a team's highest weekly total this season.
 - **season low**: a team's lowest weekly total this season.
 - **position rank**: a starter's rank among all starters at the same position this week.

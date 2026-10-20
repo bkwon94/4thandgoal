@@ -124,3 +124,10 @@ def test_no_season_history_facts(bundle):
     for f in bundle.sheet.facts.values():
         assert not f.id.startswith("HIST."), f.id
         assert "season high" not in f.text, f.id
+
+
+def test_strength_facts_name_next_week_only(bundle):
+    sos = [f for f in bundle.sheet.facts.values() if f.id.startswith("SOS.")]
+    assert sos
+    for f in sos:
+        assert "next week" in f.text and "remaining" not in f.text, f.id
