@@ -3,6 +3,7 @@ Tests for the build, rewrite, and publish pipeline.
 They use recorded fixtures, a fake writer, and a fake avatar downloader, so no network call runs.
 """
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -297,11 +298,15 @@ def test_window_starts_at_the_fetch_before(tmp_path, fixture_raw_dir, fixture_hi
     assert [x.roster_ids for x in bundle.data.trades] == [[11, 12], [7, 8]]
 
 
-def test_window_without_a_fetch_time_ends_at_the_build_start(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+def test_window_without_a_fetch_time_ends_at_the_raw_fetch(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    # The week 6 raw files were fetched before 11:55 on Tuesday, when the late trade of rosters 7 and 8 was made.
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    fetched = datetime(2026, 10, 20, 8, 0, tzinfo=ET)
+    os.utime(week_dir(repo, 2026, 6) / "raw" / "transactions.json", (fetched.timestamp(), fetched.timestamp()))
     bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    assert len(bundle.data.trades) == 6 and record.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
-    assert "no fetch time for week 6" in caplog.text
+    assert len(bundle.data.trades) == 5 and record.fetched == fetched
+    assert record.fetched.tzinfo == ET
+    assert "transactions.json" in caplog.text
 
 
 def _nflverse_path(repo):

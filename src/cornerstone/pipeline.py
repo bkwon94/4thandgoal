@@ -134,6 +134,19 @@ def _nflverse_for_week(
         return None
 
 
+def _raw_fetch_time(repo: Path, season: int, week: int) -> datetime | None:
+    """The write time of raw/transactions.json, the closest stand-in for a fetch time that was not saved."""
+    # Version 1 saved no fetch time, so this happens for week 6 only. The build start would end the
+    # window too late, so a trade made between the fetch and the rebuild would land on this page.
+    path = week_dir(repo, season, week) / "raw" / "transactions.json"
+    try:
+        written = datetime.fromtimestamp(path.stat().st_mtime, ZoneInfo("America/New_York"))
+    except OSError:
+        return None
+    log.warning("no fetch time for week %d: window ends at the write time of %s, %s", week, path, written.isoformat())
+    return written
+
+
 def make_bundle(
     repo: Path,
     season: int,
@@ -153,9 +166,8 @@ def make_bundle(
 
     history = _load_history_or_none(history_root(repo, season), raw, week)
     started = started or datetime.now(ZoneInfo("America/New_York"))
-    until = fetched or read_fetch_time(week_dir(repo, season, week) / "raw")
+    until = fetched or read_fetch_time(week_dir(repo, season, week) / "raw") or _raw_fetch_time(repo, season, week)
     if until is None:
-        # Version 1 saved no fetch time, so this happens for week 6 only.
         log.warning("no fetch time for week %d: window ends at the build start", week)
         until = started
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history, until)
