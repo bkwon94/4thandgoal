@@ -2,6 +2,7 @@
 The build and rewrite pipeline for one week of the report.
 It fetches, parses, writes, verifies, and renders, and it saves each step under data/.
 """
+import contextlib
 import json
 import logging
 import subprocess
@@ -117,6 +118,17 @@ def load_nflverse(raw_dir: Path) -> NflverseWeek | None:
     return NflverseWeek.model_validate_json(path.read_text(encoding="utf-8"))
 
 
+def _save_nflverse(path: Path, nfl: NflverseWeek) -> None:
+    # The fetch is good, so a failed write must not cost this build its drops. The next build fetches again.
+    try:
+        path.write_text(nfl.model_dump_json(indent=2), encoding="utf-8")
+    except OSError as err:
+        log.warning("nflverse extract not saved to %s, build goes on with it: %s", path, err)
+        # A half-written file would load as a broken extract and block the next fetch.
+        with contextlib.suppress(OSError):
+            path.unlink(missing_ok=True)
+
+
 def _played_teams(week: Week) -> set[str]:
     """The NFL teams of the started players with a Sleeper gp above 0. Each one must have a game in nflverse."""
     return {
@@ -139,7 +151,7 @@ def _nflverse_for_week(
         nfl = nflverse(season, week, rostered, raw["players"], teams)
         # A degraded extract is not saved, so the next build tries the sources again.
         if all(nfl.sources.get(key) for key in NFLVERSE_SOURCES):
-            (raw_dir / "nflverse.json").write_text(nfl.model_dump_json(indent=2), encoding="utf-8")
+            _save_nflverse(raw_dir / "nflverse.json", nfl)
         return nfl
     except Exception as err:  # noqa: BLE001 - the outer guard: the module catches only HTTP errors
         log.warning("nflverse unavailable, build goes on without it: %s", err)

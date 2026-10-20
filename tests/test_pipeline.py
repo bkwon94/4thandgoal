@@ -434,3 +434,17 @@ def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir,
     assert page.exists()
     for name in ("fetched.json", "week-06/verify.json", "week-05/verify.json"):
         assert name in caplog.text
+
+
+def test_a_failed_save_keeps_the_fetched_extract(tmp_path, fixture_raw_dir, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    raw = week_dir(repo, 2026, 6) / "raw"
+    # A read-only raw directory makes the write of nflverse.json fail after a good fetch.
+    raw.chmod(0o555)
+    try:
+        bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+    finally:
+        raw.chmod(0o755)
+    assert record.sources["nflverse_pbp"] is True and bundle.data.drop_source == "nflverse"
+    assert not _nflverse_path(repo).exists()
+    assert "nflverse.json" in caplog.text
