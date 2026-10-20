@@ -9,11 +9,12 @@ from zoneinfo import ZoneInfo
 
 from conftest import _decisive_trade, _trade_bundle
 from cornerstone.history import load_history
-from cornerstone.models import NflverseWeek, Trade
+from cornerstone.models import Blurb, NflverseWeek, Sentence, Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import _trade_ids, build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
+from cornerstone.verifier import code_check
 
 ET = ZoneInfo("America/New_York")
 
@@ -329,3 +330,36 @@ def test_vocabulary_has_the_usage_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("snap share", "target share", "red-zone use", "injury before the trade"):
         assert f"**{term}**" in text
+
+
+def test_trade_of_a_player_with_no_points_stat_still_gets_a_got_fact(fixture_raw_dir, fixture_history_root):
+    # Higbee has a game in the history with no pts_half_ppr key, which used to stop the build.
+    raw = load_raw(fixture_raw_dir)
+    week = parse_week(raw)
+    first, second = list(week.teams)[:2]
+    trade = Trade(transaction_id="higbee", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[first, second],
+                  adds={"3271": second}, drops={"3271": first}, draft_picks=[])
+    h = load_history(fixture_history_root, raw, week=6)
+    f = build_bundle(week, news=lambda pid: [], history=h, trades=[trade]).sheet.facts
+    assert f"T1.{second}.got.3271" in f
+
+
+def test_chain_trade_keeps_the_moved_player_in_scope(fixture_raw_dir, fixture_history_root):
+    # Bucky Irving goes 2 to 3 in trade 1 and 3 to 1 in trade 2, so his line sits on roster 1.
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    made = datetime(2026, 10, 14, tzinfo=ET)
+    pid = next(l.player_id for m in parse_week(raw).matchups for s in (m.a, m.b) if s.roster_id == 1
+               for l in s.lines if l.name == "Bucky Irving")
+    trades = [
+        Trade(transaction_id="a", created=made, roster_ids=[2, 3],
+              adds={pid: 3}, drops={pid: 2}, draft_picks=[]),
+        Trade(transaction_id="b", created=made, roster_ids=[3, 1],
+              adds={pid: 1}, drops={pid: 3}, draft_picks=[]),
+    ]
+    sheet = build_bundle(parse_week(raw), news=lambda p: [], history=h, trades=trades).sheet
+    chapter = next(c for c in sheet.chapters if c.key == "trade_1")
+    for fid in ("T1.sides", f"T1.3.got.{pid}"):
+        blurb = Blurb(chapter="trade_1", attempt=1, fallback=False,
+                      sentences=[Sentence(text=sheet.facts[fid].text, fact_ids=[fid])])
+        assert not [m for m in code_check(blurb, chapter, sheet) if "not on a team" in m]

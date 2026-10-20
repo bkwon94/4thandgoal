@@ -1,6 +1,7 @@
 """
 Cache of past weeks of Sleeper data under data/{season}/history.
 It fetches only the weeks that are not on disk.
+It also builds the profile of a player from the weeks before a trade.
 """
 import json
 import shutil
@@ -130,7 +131,7 @@ def scored_weeks(history: History, player_id: str, through: int) -> list[int]:
 
 
 def points_per_game(history: History, player_id: str, through: int) -> tuple[float, int] | None:
-    """The points a game and the count of games from week 1 to `through`.
+    """The points per game and the count of games from week 1 to `through`.
 
     The sum is exact decimals, so 21.395 rounds to 21.4.
     """
@@ -139,8 +140,10 @@ def points_per_game(history: History, player_id: str, through: int) -> tuple[flo
     weeks = scored_weeks(history, player_id, through)
     if not weeks:
         return (0.0, 0)
-    total = sum(Decimal(str(player_points(history.weeks[w], player_id))) for w in weeks)
-    return (_round_half_up(float(total / len(weeks)), 1), len(weeks))
+    # Sleeper leaves out a stat whose value is 0, so a game with no pts_half_ppr scored 0.
+    total = sum(Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks)
+    mean = (total / len(weeks)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    return (float(mean), len(weeks))
 
 
 def season_rank(history: History, player_id: str, through: int) -> tuple[int, int] | None:

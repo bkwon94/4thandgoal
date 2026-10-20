@@ -1,5 +1,6 @@
 """
 Tests for the fetch and cache of past weeks.
+They also test the pre-trade player profile helpers.
 One test calls the real Sleeper API and is marked live.
 """
 import shutil
@@ -121,6 +122,13 @@ def test_golden_profile_through_week_5(fixture_history_root, fixture_raw_dir):
     assert target_share(h, "12501", 5) == UsageShare(percent=32, weeks=2, direction="flat")
     assert red_zone(h, "12501", 5) == (7, 0)
     assert player_trend(h, "12501", through=5) == 3
+
+
+def test_points_per_game_counts_a_game_with_no_points_stat_as_zero(fixture_history_root, fixture_raw_dir):
+    # Higbee played in a week with no pts_half_ppr key, because Sleeper leaves out a zero stat.
+    h = _h(fixture_history_root, fixture_raw_dir)
+    result = points_per_game(h, "3271", 5)
+    assert isinstance(result, tuple) and result[1] > 0
 
 
 def test_tuten_profile_ignores_week_6(fixture_history_root, fixture_raw_dir):

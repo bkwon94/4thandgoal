@@ -936,13 +936,13 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             for l in s.lines if l.started
         ]
 
-    def make(key, title, ids, rosters, rng, grade_keys=()) -> Chapter:
+    def make(key, title, ids, rosters, rng, grade_keys=(), extra_players=()) -> Chapter:
         return Chapter(
             key=key,
             title=title,
             fact_ids=_dedupe([i for i in ids if i in facts]),
             scope_teams=[c.team(r) for r in rosters],
-            scope_players=players_of(rosters),
+            scope_players=_dedupe([*players_of(rosters), *extra_players]),
             min_sentences=SENTENCE_RANGES[rng][0],
             max_sentences=SENTENCE_RANGES[rng][1],
             grade_keys=list(grade_keys),
@@ -1000,6 +1000,9 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             f"trade_{n}", _join([c.team(r) for r in trade.roster_ids]),
             _trade_ids(facts, n), trade.roster_ids, "trade",
             grade_keys=[f"T{n}.{r}" for r in trade.roster_ids],
+            # A player who moves on in a later trade has his line on another roster.
+            # The facts of this trade still name him, so he stays in scope.
+            extra_players=[c.lines[p].name for p in (*trade.adds, *trade.drops) if p in c.lines],
         ))
     out.append(make(
         "median", "The Median Game",
