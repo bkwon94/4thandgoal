@@ -205,6 +205,7 @@ git commit -m "Parse the cached weeks into a season history"
   - `ranks_before(week: Week, table: list[Standing], history: History | None = None) -> dict[int, int]`. With a complete history, it ranks `season_records(history, week.week - 1)`. Else it keeps the version 1 subtraction.
   - `matchup_of_the_week(week, mfacts, table, before: dict[int, int] | None = None) -> Pick`. It uses `before` when given.
   - `Context.__init__(self, week, news, history: History | None = None)` and `build_bundle(week, news=fetch_news, history: History | None = None) -> Bundle`. Context passes the history to `standings` and `ranks_before`, and passes `self.before` to `matchup_of_the_week`.
+  - `Context.history` holds the `History` object, or `None`. The version 1 `list[SeasonHistory]` moves to `Context.season_history`. `build_bundle` sets `WeekData.history` from `c.season_history`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -274,7 +275,7 @@ git commit -m "Compute the standings and the ranks before the week from the hist
 - Consumes: `History`, `season_records`, `build_bundle(..., history=)` from Task 3.
 - Produces:
   - `SeasonHistory` gains `average: float = 0.0`, `trend: float | None = None`, `streak: int = 0`. A positive streak counts wins, a negative streak counts losses. A head-to-head tie ends a streak.
-  - `season_history(week: Week, history: History | None = None) -> list[SeasonHistory]`. With no history it keeps the version 1 result.
+  - `season_history(week: Week, history: History | None = None) -> list[SeasonHistory]`. With no history it keeps the version 1 result. `Context.season_history` holds the result.
   - `history_facts(c: Context) -> list[Fact]` in `sheet.py`. It returns nothing unless `c.history` is complete.
   - `HISTORY_FACTS_MAX = 6` in `sheet.py`. `chapters()` adds the `H.` facts of both teams to `motw` and to each `recap_{mid}`, and adds `H.` facts to `median` and `next_week`. The selection under the cap is the builder's call.
 
@@ -357,7 +358,7 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cornerstone/ tests/test_sheet.py tests/test_verifier.py
+git add src/cornerstone/ tests/conftest.py tests/test_sheet.py tests/test_verifier.py
 git commit -m "Add streak, trend, season high, and season average facts"
 ```
 
@@ -545,7 +546,7 @@ Expected: all pass. If the smoke run needed a fix, commit it with a subject that
 
 **Files:**
 - Create: `src/cornerstone/trades.py`, `tests/test_trades.py`
-- Modify: `src/cornerstone/models.py`, `src/cornerstone/parse.py`, `src/cornerstone/sleeper.py`, `src/cornerstone/pipeline.py`, `tests/test_pipeline.py`, `tests/test_sleeper.py`
+- Modify: `src/cornerstone/models.py`, `src/cornerstone/parse.py`, `src/cornerstone/sleeper.py`, `src/cornerstone/pipeline.py`, `tests/test_pipeline.py`, `tests/test_sleeper.py`, `tests/fixtures/2026/week-06/raw/transactions.json`
 
 **Interfaces:**
 - Consumes: `PastWeek`, `BuildRecord`, `read_verify`, `make_bundle` from Part 1.
@@ -559,12 +560,16 @@ Expected: all pass. If the smoke run needed a fix, commit it with a subject that
   - `read_fetch_time(raw_dir: Path) -> datetime | None` in `sleeper.py` reads that file. `None` when it is absent.
   - `previous_fetch_time(repo: Path, season: int, week: int) -> datetime | None` in `trades.py`: `build.fetched` from the `verify.json` of week N-1.
   - `trades_for_week(this_week: list[Trade], last_week: list[Trade], after: datetime, until: datetime) -> list[Trade]`: trades with `after < created <= until`, no duplicate `transaction_id`, oldest first. The list index plus 1 is the `n` in `T{n}`.
-  - `is_late(trade: Trade, week: Week) -> bool`: true when a player the trade moved is in this week's matchup lines of the roster that gave him. Such a trade happened after his game, so his points went to the old roster.
-  - `WeekData` gains `trades: list[Trade] = []`. `build_bundle` gains `trades: list[Trade] = ()`.
-  - `make_bundle` gains `fetched: datetime | None = None` and computes the window. `after` is `previous_fetch_time(...)`, else `default_cutoff(...)`. `until` is `fetched`, else `read_fetch_time(raw_dir)`, else `started` with the warning `no fetch time for week {N}: window ends at the build start`. Only raw data from version 1, week 6, has no fetch time. `this_week` comes from `raw["transactions"]`, `last_week` from the history week N-1, with a warning when that week is absent. The `BuildRecord` holds the `until` it used in `fetched`.
+  - `is_late(trade: Trade, week: Week) -> bool`: true when a player the trade moved is in this week's matchup lines of the roster that gave him. Such a trade happened after his game, so his points went to the old roster. This is the spec rule. A late trade gets a card and a grade, no `swing` and no `need`.
+  - `WeekData` gains `trades: list[Trade] = []`, a Pydantic field default. `build_bundle` gains `trades: list[Trade] | None = None`, read as no trades.
+  - `make_bundle` gains `fetched: datetime | None = None` and computes the window. `after` is `previous_fetch_time(...)`, else `default_cutoff(...)`. `until` is `fetched`, else `read_fetch_time(raw_dir)`, else `started` with the warning `no fetch time for week {N}: window ends at the build start`. The build-start fallback is for week 6 only, because version 1 saved no fetch time. The spec says so. `this_week` comes from `raw["transactions"]`, `last_week` from the history week N-1, with a warning when that week is absent. The `BuildRecord` holds the `until` it used in `fetched`.
   - `run_build` passes the `fetched` of an existing `verify.json` build record for the same week to `make_bundle`. A rebuild therefore never moves the window, also after a `--refetch`.
 
-- [ ] **Step 1: Write the failing tests**
+- [ ] **Step 1: Add the Tuesday trade to the fixture**
+
+The fixture `tests/fixtures/2026/week-06/raw/transactions.json` holds 5 trades. The trade between rosters 7 and 8, created 2026-10-20 11:55 ET, is only in `data/2026/week-06/raw/transactions.json`. Copy that one row into the fixture, as it is. Keep the other rows. Commit the fixture with this task. Every later count of 6 trades depends on it.
+
+- [ ] **Step 2: Write the failing tests**
 
 ```python
 ET = ZoneInfo("America/New_York")
@@ -630,24 +635,24 @@ def test_fetch_week_records_the_fetch_time(tmp_path):
     assert read_fetch_time(tmp_path / "raw").tzinfo is not None
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [ ] **Step 3: Run the tests to confirm they fail**
 
 Run: `uv run pytest tests/test_trades.py tests/test_pipeline.py -v`
 Expected: FAIL with an import error.
 
-- [ ] **Step 3: Write the models, `parse_trades`, `trades.py`, the fetch time in `fetch_week`, and the window in `make_bundle` and `run_build`**
+- [ ] **Step 4: Write the models, `parse_trades`, `trades.py`, the fetch time in `fetch_week`, and the window in `make_bundle` and `run_build`**
 
 Record the fetch time in `fetch_week` or right after it. The place is the builder's call. The value must be on disk in `raw/`, so a `--no-fetch` rebuild gets the same `until`.
 
-- [ ] **Step 4: Run all tests**
+- [ ] **Step 5: Run all tests**
 
 Run: `uv run pytest -v`
 Expected: all pass.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/cornerstone/ tests/test_trades.py tests/test_pipeline.py
+git add src/cornerstone/ tests/test_trades.py tests/test_pipeline.py tests/test_sleeper.py tests/fixtures/2026/week-06/raw/transactions.json
 git commit -m "Pick the trades of the week by the time of the build before"
 ```
 
@@ -656,7 +661,7 @@ git commit -m "Pick the trades of the week by the time of the build before"
 ### Task 9: Trade facts and the trades chapter
 
 **Files:**
-- Modify: `src/cornerstone/models.py`, `src/cornerstone/parse.py`, `src/cornerstone/sheet.py`, `src/cornerstone/verifier.py`, `src/cornerstone/prompts/vocabulary.md`, `tests/conftest.py`, `tests/test_trades.py`, `tests/test_verifier.py`
+- Modify: `src/cornerstone/models.py`, `src/cornerstone/parse.py`, `src/cornerstone/sheet.py`, `src/cornerstone/verifier.py`, `src/cornerstone/prompts/vocabulary.md`, `src/cornerstone/prompts/writer.md`, `tests/conftest.py`, `tests/test_sheet.py`, `tests/test_trades.py`, `tests/test_verifier.py`, `tests/test_writer.py`
 
 **Interfaces:**
 - Consumes: `Trade`, `is_late`, `trades_for_week` from Task 8. `player_points`, `player_trend`, `_trend_text` from Task 5.
@@ -667,6 +672,7 @@ git commit -m "Pick the trades of the week by the time of the build before"
   - `SENTENCE_RANGES["trades"] = (4, 6)`.
   - The chapter `trades`, title `Trades`, exists only when `c.trades` is not empty. Its facts are every `T` fact plus the `S.` facts of the trade rosters. Its scope is the trade rosters.
   - `verifier.py`: the `decided` gate also passes a cited ID that matches `re.fullmatch(r"T\d+\.\d+\.swing", fid)`. The `cost` gate already passes it, because the ID holds `.swing`.
+  - `writer.md` rule 6, full new text: `6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`, or the sentence cites a trade swing fact `T{n}.{rid}.swing` whose gap is at least the margin.`
 
 Fact rules. Items join as `A`, `A and B`, `A, B and C`. A player list keeps the order of the trade's `adds` map. A pick reads `{season} round {round} pick`.
 
@@ -680,7 +686,7 @@ Fact rules. Items join as `A`, `A and B`, `A, B and C`. A player list keeps the 
 | `T{n}.{rid}.swing` | trade not late, and a started player on either side | `The players {team} got scored {x} this week; the players it gave scored {y}. The gap is {z}, {above/equal to/below} the margin of {m} in its matchup.` |
 
 - The `got` and `gave` facts drop the season clause and the trend sentence without a complete history. They drop the rank clause for a player who did not start. The rank is the `RANK.{pid}` rank.
-- The `need` positions are the positions of every player in the trade, in alphabetical order. The count is of the roster's lines in this week's matchup. Open spots are `roster_slots` minus that line count. Use `spot` for 1.
+- The `need` positions are the positions of every player in the trade, in alphabetical order. The count is of the roster's lines in this week's matchup. Open spots are `max(0, roster_slots - line count)`. Use `spot` for 1.
 - A late trade gets no `need` fact, because the lineup-lock roster is from before the trade.
 - In `swing`, `x` sums the players the roster got that it started this week. `y` sums the players it gave that their new roster started this week. `z = abs(x - y)`. `m` is the margin of the roster's matchup.
 
@@ -716,7 +722,9 @@ def test_got_facts(tbundle):
         "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31.")
     assert f["T5.11.got.5850"].text.startswith(
         "Unsolicited Dak Picks got Josh Jacobs: 0 this week, 0 this season.")
-    assert "T5.12.gave.11834" not in f and "T5.11.gave.12490" in f
+    assert f["T5.12.gave.11834"].text.startswith(
+        "Amon-Ra Dawg Your Team gave Devaughn Vele: 5.7 this week, 55.4 this season")
+    assert "T5.11.gave.12490" in f
 
 def test_need_fact(tbundle):
     assert tbundle.sheet.facts["T5.12.need"].text == (
@@ -756,22 +764,29 @@ def test_got_fact_without_history(fixture_raw_dir):
     assert f["T5.12.got.12490"].text == (
         "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, position rank 4 of 31.")
 
-def test_need_never_counts_below_zero(tbundle):
-    assert "-1 open" not in " ".join(f.text for f in tbundle.sheet.facts.values())
+def test_need_clamps_open_spots_at_zero(tbundle):
+    # Pukancun on 3 lists 15 players against 15 slots.
+    need = tbundle.sheet.facts["T1.4.need"]
+    assert need.text.endswith("and 0 open roster spots.")
+    assert "0" in need.numbers
 
 # tests/test_verifier.py
 def test_trade_swing_passes_the_cost_and_decided_gates(...):
     # In the trades chapter, "The trade decided it and cost them." citing T5.12.swing gives no gate failure.
+
+# tests/test_writer.py
+def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
+    # The system prompt holds "or the sentence cites a trade swing fact `T{n}.{rid}.swing`".
 ```
 
 Run the two number tests from `test_sheet.py` on `tbundle` too.
 
 - [ ] **Step 2: Run the tests to confirm they fail**
 
-Run: `uv run pytest tests/test_trades.py tests/test_verifier.py -v`
+Run: `uv run pytest tests/test_trades.py tests/test_verifier.py tests/test_writer.py -v`
 Expected: FAIL, no `T5.sides` fact.
 
-- [ ] **Step 3: Write `roster_slots`, `trade_facts`, the `trades` chapter, the gate change, and the vocabulary lines**
+- [ ] **Step 3: Write `roster_slots`, `trade_facts`, the `trades` chapter, the gate change, writer rule 6, and the vocabulary lines**
 
 - [ ] **Step 4: Run all tests**
 
@@ -781,7 +796,7 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/cornerstone/ tests/test_trades.py tests/test_verifier.py
+git add src/cornerstone/ tests/conftest.py tests/test_sheet.py tests/test_trades.py tests/test_verifier.py tests/test_writer.py
 git commit -m "Add the trade facts and the Trades chapter"
 ```
 
@@ -877,6 +892,8 @@ git commit -m "Let the writer grade each side of a trade and check the grades"
 - Produces:
   - `build_context` gains `"trades"`: one item per trade with its sides. A side has the team, the grade or `None`, the players it got with this week's points, and the pick texts.
   - The section `<section class="chap" id="trades">` sits after Awards and before All Matchups. Its label reads `Trades`. Each card has `class="trade"`. A grade renders as `<span class="grade">{letter}</span>` in red. A missing grade renders as `<span class="grade none">No grade</span>` in gray. The blurb sits under the cards. The rest of the markup is the builder's call.
+  - The section renders when `blurbs` has no `trades` key, and when the `trades` blurb is a template fallback. In both cases every grade renders as "No grade" in gray, and a missing blurb gives an empty blurb paragraph.
+  - Under the cards, a `<p class="blurb note">` in the style of the median note reads: `Grades are Tina's opinion from the fact sheet, not a computed score.`
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -895,6 +912,23 @@ def test_grade_letter_and_no_grade(tbundle, tmp_path):
     assert '<span class="grade">A</span>' in html
     assert html.count("No grade") == 11
 
+def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    del blurbs["trades"]
+    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
+    assert html.count('class="trade"') == 6 and html.count("No grade") == 12
+
+def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    ch = next(c for c in tbundle.sheet.chapters if c.key == "trades")
+    blurbs["trades"] = template_blurb(ch, tbundle.sheet)
+    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
+    assert html.count("No grade") == 12
+
+def test_trades_opinion_note(tbundle, tmp_path):
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    assert "Grades are Tina's opinion from the fact sheet, not a computed score." in html
+
 def test_no_trades_no_section(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     assert 'id="trades"' not in render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
@@ -905,7 +939,7 @@ def test_no_trades_no_section(fixture_raw_dir, tmp_path):
 Run: `uv run pytest tests/test_render.py -v`
 Expected: FAIL, no `id="trades"`.
 
-- [ ] **Step 3: Write the context, the section, and the CSS**
+- [ ] **Step 3: Write the context, the section, the opinion note, and the CSS**
 
 - [ ] **Step 4: Run all tests**
 
@@ -961,7 +995,7 @@ Expected: all pass. Commit a fix if the run needed one. Else no commit is due.
 - Produces, in `models.py`:
   - `DropPlay(game_id: str, play_id: str, air_yards: float, yardline_100: float)`.
   - `NflverseWeek(sources: dict[str, bool], gsis: dict[str, str], drops: dict[str, list[DropPlay]] | None, injuries: dict[str, dict[int, str]] | None)`. `drops` and `injuries` are keyed by Sleeper player id and cut to `player_ids`. The source keys are `nflverse_pbp`, `nflverse_ftn`, `nflverse_injuries`, `ffverse`.
-- Produces, in `conftest.py`: `fixture_nflverse_dir() -> Path` and `nfl_week6(fixture_nflverse_dir, tmp_path) -> NflverseWeek`. The fixture copies the four files into a fresh cache directory and calls `nflverse_week` with a `fetch` that raises.
+- Produces, in `conftest.py`: `fixture_nflverse_dir() -> Path` and `nfl_week6(fixture_nflverse_dir, fixture_raw_dir, tmp_path) -> NflverseWeek`. It reads the starters and the players blob from `fixture_raw_dir`. The fixture copies the four files into a fresh cache directory and calls `nflverse_week` with a `fetch` that raises.
 
 Fixture rows, cut by a scratchpad script that keeps the header and every column:
 
@@ -1049,9 +1083,10 @@ git commit -m "Fetch and parse the nflverse drops and injury reports"
   - `drop_value(play: DropPlay, scoring: dict[str, float]) -> float`: `rec` plus `max(air_yards, 0) * rec_yd`, plus `rec_td` when `air_yards >= yardline_100`. Sum on `Decimal`.
   - `drop_lines(week: Week, nfl: NflverseWeek | None) -> list[DropLine]`: started lines with 1 or more drops. The count comes from `nfl.drops` when it is not `None`, else from Sleeper `rec_drop` with `value` and `end_zone` `None`. `targets` is Sleeper `rec_tgt`. Order: drops, then value, both high first, then name.
   - `WeekData` gains `drops: list[DropLine] = []` and `drop_source: Literal["nflverse", "sleeper", "none"] = "none"`.
-  - `Award.key` gains `"butterfingers"`. `AWARD_TITLES["butterfingers"] = "Butterfingers"`. `awards(week, mfacts, drops: list[DropLine] = [])` ranks it last, after Overachiever, with the version 1 skip rule.
+  - `Award.key` gains `"butterfingers"`. `AWARD_TITLES["butterfingers"] = "Butterfingers"`. `awards(week, mfacts, drops: list[DropLine] | None = None)` ranks it last, with `None` read as no drops,, after Overachiever, with the version 1 skip rule.
   - `build_bundle` gains `nfl: NflverseWeek | None = None`.
   - `verifier.py`: the `cost` gate markers become `(".driver", ".swing", ".dropswing")`.
+  - `writer.md` rule 9, full new text: `9. State no cause or consequence, such as because, thanks to, cost, sank, or carried, unless the sentence cites a `.driver`, `.swing`, or `.dropswing` fact that supports it.`
 
 Fact rules:
 
@@ -1059,7 +1094,7 @@ Fact rules:
 | --- | --- | --- |
 | `D.{pid}` | each drop line | `{name} dropped {n} of {t} targets this week.`, or `{name} dropped {n} passes this week.` with no targets |
 | `D.{pid}.value` | value known | `{name}'s drops were worth about {v} points by the drop value method, with {k} in the end zone.` |
-| `M{mid}.dropswing` | nflverse up, losing side's started drop value above the margin | `{team}'s starters dropped {n} passes worth about {v}, more than the margin of {m}.` |
+| `M{mid}.dropswing` | nflverse up, losing side's started drop value at least the margin | `{team}'s starters dropped {n} passes worth about {v}, at least the margin of {m}.` |
 | `W.drops` | 1 or more drop lines | `Most drops this week: {name} ({team}), {n}; {name} ({team}), {n}; {name} ({team}), {n}.` top three |
 | `AW.butterfingers` | via `award_facts` | reason `{name} dropped {n} passes, the most of any started player this week, worth about {v} points by the drop value method.` The clause after "week" goes with no value. |
 
@@ -1074,7 +1109,7 @@ Vocabulary lines:
 - **Butterfingers**: the started player with the most drops, across all teams.
 ```
 
-Writer rule 21:
+Writer rule 21, and the new rule 9 text above:
 
 ```
 21. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.
@@ -1082,7 +1117,7 @@ Writer rule 21:
 
 - [ ] **Step 1: Write the failing tests**
 
-Put two fixtures in `tests/conftest.py`. `dbundle` is the `tbundle` build with `nfl=nfl_week6`. `bundle_no_nfl` is the same build with `nfl=None`.
+In `tests/conftest.py`, move the body of `tbundle` into a helper `_trade_bundle(raw_dir, history_root, nfl=None) -> Bundle`. `tbundle` returns `_trade_bundle(fixture_raw_dir, fixture_history_root)`. `dbundle` returns `_trade_bundle(fixture_raw_dir, fixture_history_root, nfl=nfl_week6)`. The tests that need no nflverse use `tbundle`. No second copy of the build.
 
 ```python
 def test_drop_value_golden(nfl_week6, fixture_raw_dir):
@@ -1099,7 +1134,7 @@ def test_drop_facts(dbundle):
     assert f["D.12501.value"].text == (
         "Matthew Golden's drops were worth about 14.2 points by the drop value method, with 1 in the end zone.")
     assert f["M4.dropswing"].text == (
-        "Bo Girds's starters dropped 7 passes worth about 17.8, more than the margin of 5.34.")
+        "Bo Girds's starters dropped 7 passes worth about 17.8, at least the margin of 5.34.")
     assert f["W.drops"].text == ("Most drops this week: Matthew Golden (Bo Girds), 3; "
         "Chris Olave (All You Need Is Love), 3; CeeDee Lamb (behold the lamb), 2.")
 
@@ -1107,11 +1142,11 @@ def test_butterfingers(dbundle):
     a = next(x for x in dbundle.data.awards if x.key == "butterfingers")
     assert a.line.name == "Matthew Golden" and "14.2" in dbundle.sheet.facts["AW.butterfingers"].text
 
-def test_drops_degrade_to_sleeper_count(bundle_no_nfl):   # nfl=None
-    f = bundle_no_nfl.sheet.facts
+def test_drops_degrade_to_sleeper_count(tbundle):   # nfl=None
+    f = tbundle.sheet.facts
     assert f["D.9487"].text.startswith("Parker Washington dropped 3 ")
     assert "D.12501.value" not in f and "M4.dropswing" not in f
-    assert bundle_no_nfl.data.drop_source == "sleeper"
+    assert tbundle.data.drop_source == "sleeper"
 
 def test_stale_nflverse_week_degrades(...):
     # nflverse_week(2026, 7, ...) from the week 6 fixtures gives drops None, so drop_lines uses Sleeper.
@@ -1128,7 +1163,7 @@ Run the two number tests from `test_sheet.py` on `dbundle` too.
 Run: `uv run pytest tests/test_facts_nflverse.py tests/test_verifier.py -v`
 Expected: FAIL with an import error.
 
-- [ ] **Step 3: Write the parse fields, `facts_nflverse.py`, the facts, the award, the gate, and the prompt lines**
+- [ ] **Step 3: Write the parse fields, `facts_nflverse.py`, the facts, the award, the gate, rule 9, and the prompt lines**
 
 - [ ] **Step 4: Run all tests**
 
@@ -1156,7 +1191,7 @@ git commit -m "Add drop facts, the drop swing, and the Butterfingers award"
   - `I.{pid}.pregame` when the player has a status in week N: `{name} was listed {status} on the final NFL injury report before his game this week.`
   - `I.{pid}.history`, one of two forms:
     - Listed in week N: `{name} has been on the report {n} weeks.` with `n` the count of listed weeks 1 to N. Use `week` for 1.
-    - Not listed in week N, listed in week N-1, and Sleeper `gp` above 0 in week N: `{name} was listed {status} in weeks {a}, {b} and returned this week.` The weeks are the run of listed weeks that ends at N-1. The status is that of week N-1.
+    - Not listed in week N, listed in week N-1, and Sleeper `gp` above 0 in week N: `{name} was on the NFL injury report in {n} earlier weeks this season and plays this week.` with `n` the count of listed weeks 1 to N-1. Use `week` for 1. The fact holds one number. With no week N-1 listing or no `gp`, there is no return claim and no `history` fact.
   - Each `T{n}.{rid}.got.{pid}` and `.gave.{pid}` fact gains the `pregame` sentence when the player has one.
   - Attach the `I.` facts like the `D.` facts.
 
@@ -1185,11 +1220,11 @@ def test_history_listed_this_week(dbundle):
 
 def test_history_returned_this_week(dbundle):
     assert dbundle.sheet.facts["I.5927.history"].text == (
-        "Terry McLaurin was listed Questionable in weeks 4, 5 and returned this week.")
+        "Terry McLaurin was on the NFL injury report in 2 earlier weeks this season and plays this week.")
     assert "I.5927.pregame" not in dbundle.sheet.facts
 
-def test_no_injury_facts_without_the_file(bundle_no_nfl):
-    assert not any(fid.startswith("I.") for fid in bundle_no_nfl.sheet.facts)
+def test_no_injury_facts_without_the_file(tbundle):
+    assert not any(fid.startswith("I.") for fid in tbundle.sheet.facts)
 
 def test_got_fact_carries_the_pregame_status(...):
     # nfl_week6 with injuries["12490"] = {6: "Questionable"}, built with the week 6 trades:
@@ -1229,9 +1264,10 @@ git commit -m "Add the injury history and the pre-game status from nflverse"
 - Consumes: `nflverse_week`, `NflverseWeek`, `build_bundle(..., nfl=)` from Tasks 13 to 15.
 - Produces:
   - `NflverseFetcher = Callable[[int, int, list[str], dict], NflverseWeek]` in `pipeline.py`.
-  - `fetch_nflverse(repo: Path) -> NflverseFetcher`, a module-level name, so tests can patch it. It binds the cache to `repo/data/cache/nflverse`, and to `repo/data/cache/db_playerids.csv` for ffverse.
+  - `fetch_nflverse(repo: Path) -> NflverseFetcher`, a module-level name, so tests can patch it. It binds one cache directory, `repo/data/cache/nflverse/`, to `nflverse_week`. The three nflverse files and `db_playerids.csv` all live there.
   - `load_nflverse(raw_dir: Path) -> NflverseWeek | None` reads `raw/nflverse.json`.
-  - `make_bundle(..., nflverse: NflverseFetcher | None = None)`. When `raw/nflverse.json` is absent, it calls the fetcher with the week's rostered player ids and writes the file. A saved file is never fetched again, so a rebuild sees the same data. The `BuildRecord` sources gain the four nflverse keys. `run_build` passes `nflverse` through.
+  - `make_bundle(..., nflverse: NflverseFetcher | None = None)`. When `raw/nflverse.json` is present, it reads the file and calls no fetcher. When the file is absent and `nflverse` is `None`, it builds with `nfl=None`. When the file is absent, it calls the fetcher with the week's rostered player ids. It writes the file only when every one of the four sources is `True`. It never saves a degraded extract, so the next build with no file fetches again. A saved file is never fetched again, so a rebuild sees the same data. The `BuildRecord` sources gain the four nflverse keys. `run_build` passes `nflverse` through.
+  - `run_rewrite` gains `nflverse: NflverseFetcher | None = None`, the same as `run_build`. It reads `raw/nflverse.json` when present. It never calls the fetcher, because a rewrite uses the saved facts. `run_rewrite(**OFFLINE)` therefore works.
   - `TILE_KEYS` gains `"butterfingers"`. The tile shows the player, the drop count, and the drop value when known. The five-tile layout at 390px is the builder's call.
   - The drop note, a `<p class="blurb note">` at the end of All Matchups:
     - `drop_source == "nflverse"`: `Drop value is an estimate: one reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone.`
@@ -1254,8 +1290,16 @@ def test_saved_extract_is_not_fetched_again(...):
     # Second run_build with nflverse=<callable that raises AssertionError> passes.
 
 def test_nflverse_down_still_builds(...):
-    # nflverse=lambda *a: NflverseWeek(sources={k: False for k in KEYS}, gsis={}, drops=None, injuries=None)
+    # nflverse=lambda *a: NflverseWeek(sources={k: False for k in NFLVERSE_KEYS}, gsis={}, drops=None, injuries=None)
     assert "count only this week" in page.read_text()
+
+def test_degraded_extract_is_not_saved_and_the_next_build_fetches(...):
+    # First run_build with the down fetcher above: raw/nflverse.json does not exist.
+    # Second run_build with the fixture-backed fetcher: the file exists and every source is True.
+
+def test_rewrite_takes_the_nflverse_argument(...):
+    # run_build, then run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE) with nflverse=<callable that raises AssertionError>.
+    # The rewrite passes and makes no fetch.
 
 # tests/test_render.py
 def test_butterfingers_tile_and_drop_note(dbundle, tmp_path):
@@ -1269,7 +1313,7 @@ def test_butterfingers_tile_and_drop_note(dbundle, tmp_path):
 Run: `uv run pytest tests/test_pipeline.py tests/test_render.py -v`
 Expected: FAIL, `make_bundle()` takes no `nflverse`.
 
-- [ ] **Step 3: Write the fetch in `make_bundle`, the tile, the note, and the test fetchers**
+- [ ] **Step 3: Write the fetch in `make_bundle`, the `nflverse` argument of `run_rewrite`, the tile, the note, and the test fetchers**
 
 - [ ] **Step 4: Run all tests**
 
@@ -1288,6 +1332,8 @@ git commit -m "Fetch the nflverse extract in the build and show the drops on the
 ### Task 17: Smoke test week 6 after parts 3 and 4
 
 - [ ] **Step 1: Run the smoke script**
+
+`make_bundle` keeps its `nflverse=None` default, so the Task 7 script does not fetch nflverse. First change the script. If `data/2026/week-06/raw/nflverse.json` is absent, call `fetch_nflverse(repo)` with the week's rostered player ids and the players blob, and write the extract there. Then load the file with `load_nflverse(raw_dir)`, which validates it as the Task 13 `NflverseWeek` model. Pass the extract to `make_bundle` by name: `nflverse=lambda *args: extract`.
 
 Run: `uv run python $SCRATCH/smoke_week6.py . $SCRATCH/smoke`
 Expected: the sources print five `True` values. The run downloads the nflverse files once and writes `data/2026/week-06/raw/nflverse.json`. `grep -c '"M4.dropswing"' $SCRATCH/smoke/facts.json` prints 1 or more.

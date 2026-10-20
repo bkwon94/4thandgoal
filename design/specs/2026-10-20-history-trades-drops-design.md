@@ -179,12 +179,14 @@ because a trade made on Tuesday after the 8:00 job carries `leg` N but never sho
 and keeps each trade's `created` time. The build records the fetch time of its transactions
 in `verify.json`, and the next build uses that time as the cutoff. The fetch time, not the
 build start, is the bound, so a trade made between the fetch and the build lands on the next
-page and no trade misses both pages. The history copy of a week's transactions
-is taken at build time and is not refetched.
+page and no trade misses both pages. For week 6 only, with no saved fetch time, the window
+ends at the build start, because version 1 saved no fetch time. The history copy of a week's
+transactions is taken at build time and is not refetched.
 
-A trade made after the week's first kickoff gets a card and a grade but no `swing` fact. The
-players it moved scored for their old teams that week. The week 6 file holds one such trade,
-rosters 7 and 8 on Tuesday 2026-10-20.
+A trade is late when a player it moved is on the roster that gave him in `matchups.json`.
+The players it moved scored for their old teams that week. A late trade gets a card and a
+grade, but no `swing` fact and no `need` fact. The week 6 file holds one such trade, rosters
+7 and 8 on Tuesday 2026-10-20.
 
 ### Which players count in the swing
 
@@ -212,8 +214,9 @@ decides whether `Trade` derives from `Move` or reads the raw row.
 | `T{n}.{rid}.grade` | none. The grade is not a fact. See below | **trade grade**: an opinion from the fact sheet, A to F, with the reason |
 
 The `need` fact reads the week's roster from `matchups.json` `players`, which is the roster at
-lineup lock, after the trade. Open spots are the slot count in `league.json` `roster_positions`
-minus the players on that list. The fact never claims a "before the trade" roster, because
+lineup lock, after the trade. Open spots are the slot count minus the players on that list.
+The slot count is the length of `league.json` `roster_positions` plus `settings.reserve_slots`,
+because the `players` list holds the injured reserve player. The fact never claims a "before the trade" roster, because
 `rosters.json` is current-only and an undo of later moves is not worth the risk. My call.
 
 Each `got` and `gave` fact also carries the player's 3-week trend and injury status when the
@@ -223,11 +226,12 @@ a pick. The writer may not put a number on a pick.
 ### The grade
 
 The writer returns the grade per side as a structured field next to the blurb, not inside the
-prose. The `Blurb` model gains an optional `grades: dict[str, str]` keyed by roster id for the
-`trades` chapter only. The renderer puts the letter on the card. The prose gives the reason.
+prose. The `Blurb` model gains an optional `grades: dict[str, str]` keyed by `T{n}.{rid}` for
+the `trades` chapter only. The key names the trade too, because one roster can make several
+trades in a week. The renderer puts the letter on the card. The prose gives the reason.
 
-The code check for this chapter requires `grades` to hold one key per roster id in every
-trade of the week, each a single letter A to F. A miss fails the attempt like any code check
+The code check for this chapter requires `grades` to hold one `T{n}.{rid}` key per roster in
+every trade of the week, each a single letter A to F. A miss fails the attempt like any code check
 failure. On the template fallback, the cards render with "No grade" in gray where the letter
 goes, and the template blurb lists the sides of each trade. The chapter never drops over a
 failed blurb. My call.
@@ -246,9 +250,9 @@ still cites a fact.
 | --- | --- | --- |
 | `D.{pid}` | "{name} dropped {n} of {t} targets this week" | **drop**: a pass the FTN charting flags as a drop. With nflverse down, the count is Sleeper's `rec_drop` |
 | `D.{pid}.value` | "{name}'s drops were worth about {pts} points by the drop value method, with {n} in the end zone" | **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone |
-| `M{mid}.dropswing` | "{team}'s starters dropped {n} passes worth about {pts}, more than the margin of {m}" only when true, for the losing side | **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game |
+| `M{mid}.dropswing` | "{team}'s starters dropped {n} passes worth about {pts}, at least the margin of {m}" only when true, for the losing side | **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game |
 | `W.drops` | "Most drops this week: {name} ({team}), {n}; ..." top three league-wide | |
-| `I.{pid}.history` | "{name} was listed {status} in weeks {a}, {b} and returned this week" or "has been on the report {n} weeks" one number | **injury history**: the weekly NFL report status from nflverse, per week |
+| `I.{pid}.history` | "{name} was on the NFL injury report in {n} earlier weeks this season and plays this week", one number | **injury history**: the weekly NFL report status from nflverse, per week |
 | `I.{pid}.pregame` | "{name} was listed {status} on the final NFL injury report before his game this week" | **pre-game status**: the final NFL report before the game, from nflverse. A roast of a manager who started a player listed Out or Doubtful before the game cites this fact |
 
 "Reached the end zone" means `air_yards >= yardline_100` on the play. A throw that landed
