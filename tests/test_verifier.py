@@ -222,3 +222,25 @@ def test_feedback_reaches_second_attempt(fixture_raw_dir):
     blurb, results = write_and_verify(ch, sheet, fake)
     assert not blurb.fallback and len(results) == 2
     assert "Sentence 0: bad claim" in users[1]
+
+
+def test_verifier_error_falls_back(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            raise RefusalError("refused")
+        return _good_writer_out()
+
+    blurb, results = write_and_verify(ch, sheet, fake)
+    assert blurb.fallback and len(results) == 2
+    assert results[0].code_failures[0].startswith("verifier error")
+
+
+def test_gated_word_inside_team_name_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4").model_copy(deep=True)
+    ch.scope_teams.append("Lucky Lambs")
+    b = _blurb("recap_4", _s("Lucky Lambs played.", ch.fact_ids[0]), _s("Again.", ch.fact_ids[0]))
+    assert not any("lucky" in m.lower() for m in code_check(b, ch, sheet))

@@ -7,6 +7,7 @@ import re
 from importlib import resources
 
 import anthropic
+from pydantic import ValidationError
 
 from cornerstone.models import (
     Blurb,
@@ -106,13 +107,14 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
             if player in bare or (last and last not in in_scope_last and _whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")
 
+        # Names are stripped first: a team called "Lucky Lambs" is not the word "lucky".
         for word in banned:
-            if _whole_word(word, sentence.text):
+            if _whole_word(word, bare):
                 failures.append(f"[{i}] banned word '{word}'")
 
         for words, markers in GATED_WORDS:
             for word in words:
-                if _whole_word(word, sentence.text) and not any(
+                if _whole_word(word, bare) and not any(
                     m in fid for fid in sentence.fact_ids for m in markers
                 ):
                     needs = " or ".join(markers)
@@ -199,7 +201,17 @@ def write_and_verify(
                 passed=False,
             )
         else:
-            result = verify_blurb(blurb, chapter, sheet, call)
+            try:
+                result = verify_blurb(blurb, chapter, sheet, call)
+            except (RefusalError, anthropic.APIError, ValidationError) as err:
+                # One bad verifier response must degrade to the template, not crash the build.
+                log.warning("verifier failed for %s: %s", chapter.key, err)
+                result = VerifyResult(
+                    chapter=chapter.key,
+                    code_failures=[f"verifier error: {err}"],
+                    verdicts=[],
+                    passed=False,
+                )
             if result.passed:
                 results.append(result)
                 return blurb, results
