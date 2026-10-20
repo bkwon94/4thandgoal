@@ -18,7 +18,7 @@ from cornerstone.models import (
     VerifyResult,
 )
 from cornerstone.sheet import NUMBER_TOKEN
-from cornerstone.writer import ClaudeCall, RefusalError, template_blurb, write_blurb
+from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
 
@@ -192,7 +192,7 @@ def write_and_verify(
     for _ in range(2):
         try:
             blurb = write_blurb(chapter, sheet, call, feedback)
-        except (RefusalError, anthropic.APIError) as err:
+        except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
             # A writer error is a failed attempt, not a crash of the whole report.
             log.warning("writer failed for %s: %s", chapter.key, err)
             result = VerifyResult(
@@ -204,7 +204,7 @@ def write_and_verify(
         else:
             try:
                 result = verify_blurb(blurb, chapter, sheet, call)
-            except (RefusalError, anthropic.APIError, ValidationError) as err:
+            except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)
                 result = VerifyResult(

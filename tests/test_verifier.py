@@ -257,3 +257,30 @@ def test_gated_word_inside_team_name_passes(fixture_raw_dir):
     ch.scope_teams.append("Lucky Lambs")
     b = _blurb("recap_4", _s("Lucky Lambs played.", ch.fact_ids[0]), _s("Again.", ch.fact_ids[0]))
     assert not any("lucky" in m.lower() for m in code_check(b, ch, sheet))
+
+
+def test_writer_with_no_output_twice_falls_back(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            raise AssertionError("no verifier call expected")
+        return None
+
+    blurb, results = write_and_verify(ch, sheet, fake)
+    assert blurb.fallback and len(results) == 2
+    assert all(r.code_failures[0].startswith("writer error") for r in results)
+
+
+def test_writer_validation_error_is_a_failed_attempt(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            raise AssertionError("no verifier call expected")
+        return model.model_validate({"sentences": "not a list"})
+
+    blurb, results = write_and_verify(ch, sheet, fake)
+    assert blurb.fallback and len(results) == 2

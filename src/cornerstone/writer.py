@@ -23,6 +23,10 @@ class RefusalError(Exception):
     """Claude refused the request, so there is no parsed output."""
 
 
+class WriterError(Exception):
+    """Claude gave no parsed output, for example when the output does not fit the model."""
+
+
 def _get_client() -> anthropic.Anthropic:
     # One client per process: it holds the connection pool.
     global _client
@@ -42,6 +46,8 @@ def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseMo
     )
     if response.stop_reason == "refusal":
         raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
+    if response.parsed_output is None:
+        raise WriterError(f"Claude gave no parsed output for {output_model.__name__}.")
     return response.parsed_output
 
 
@@ -70,6 +76,9 @@ def write_blurb(
 ) -> Blurb:
     system, user = build_writer_prompt(chapter, sheet, feedback)
     out = call(system, user, WriterOut)
+    # Any call, real or injected, can come back empty. That is a failed attempt, not a blurb.
+    if out is None:
+        raise WriterError(f"no parsed output for {chapter.key}")
     return Blurb(
         chapter=chapter.key,
         sentences=out.sentences,
