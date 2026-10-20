@@ -52,3 +52,37 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
+
+
+def test_rewrite_without_facts_exits_plainly(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    def no_claude(*args, **kwargs):
+        raise AssertionError("no Claude call expected")
+
+    monkeypatch.setattr(cli, "claude_call", no_claude)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    monkeypatch.chdir(tmp_path)
+
+    code = cli.main(["rewrite", "--week", "6", "--season", "2026", "--chapter", "median"])
+
+    out = capsys.readouterr().out
+    assert code == 2
+    assert out.startswith("Missing file ") and "facts.json" in out
+    assert len(out.strip().splitlines()) == 1 and "Traceback" not in out
+
+
+def test_sleeper_failure_exits_plainly(tmp_path, monkeypatch, capsys):
+    import httpx
+
+    from cornerstone import cli
+
+    def down(*args, **kwargs):
+        raise httpx.ConnectError("no route")
+
+    monkeypatch.setattr(cli, "resolve_week", down)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    monkeypatch.chdir(tmp_path)
+
+    assert cli.main(["build"]) == 2
+    assert "Sleeper request failed: no route" in capsys.readouterr().out

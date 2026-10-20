@@ -6,6 +6,9 @@ import argparse
 import logging
 from pathlib import Path
 
+import httpx
+
+
 from cornerstone.pipeline import BuildStopped, has_raw, preview, resolve_week, run_build, run_rewrite
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.writer import claude_call
@@ -40,9 +43,9 @@ def main(argv: list[str] | None = None) -> int:
     if not (repo / "pyproject.toml").exists():
         print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
         return 2
-    season, week = resolve_week(args.season, args.week)
-
     try:
+        # resolve_week can call Sleeper, so a network failure gets the same plain exit.
+        season, week = resolve_week(args.season, args.week)
         if args.command == "build":
             # A named week with saved raw data rebuilds from disk, so a rebuild sees the same data.
             fetch = not args.no_fetch and (
@@ -63,5 +66,11 @@ def main(argv: list[str] | None = None) -> int:
             print(run_publish(repo, season, week))
     except (BuildStopped, PublishError, ValueError) as err:
         print(err)
+        return 2
+    except httpx.HTTPError as err:
+        print(f"Sleeper request failed: {err}")
+        return 2
+    except FileNotFoundError as err:
+        print(f"Missing file {err.filename}. Build the week first.")
         return 2
     return 0
