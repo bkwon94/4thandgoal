@@ -54,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             # History has no --week, so it skips resolve_week.
             season = args.season if args.season is not None else int(fetch_state()["season"])
             weeks = run_history(repo, season, args.through, force=args.force)
-            print("Fetched weeks: " + ", ".join(str(w) for w in weeks) if weeks else "Nothing to fetch")
+            print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)

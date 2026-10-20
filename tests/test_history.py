@@ -12,7 +12,7 @@ def _fill_week_one(root):
     done = history_dir(root, 1)
     done.mkdir(parents=True)
     for name in HISTORY_FILES:
-        (done / f"{name}.json").write_text("[]")
+        (done / f"{name}.json").write_text('[{"player_id": "1"}]')
 
 
 def test_fetch_history_skips_weeks_on_disk(tmp_path):
@@ -35,6 +35,14 @@ def test_fetch_history_refetches_a_week_with_a_missing_file(tmp_path):
     root = tmp_path / "history"
     _fill_week_one(root)
     (history_dir(root, 1) / "stats.json").unlink()
+    fetched = fetch_history("L", 2026, 1, root, fetch=lambda lid, s, w, d: None)
+    assert fetched == [1]
+
+
+def test_fetch_history_refetches_a_week_with_empty_stats(tmp_path):
+    root = tmp_path / "history"
+    _fill_week_one(root)
+    (history_dir(root, 1) / "stats.json").write_text("[]")
     fetched = fetch_history("L", 2026, 1, root, fetch=lambda lid, s, w, d: None)
     assert fetched == [1]
 
