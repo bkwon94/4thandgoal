@@ -162,6 +162,11 @@ class SeasonHistory(BaseModel):
     weeks_over: dict[int, int]
     new_high: bool
     new_low: bool
+    # Points for per week over weeks 1 to N, and the mean of the last 3 weeks.
+    average: float = 0.0
+    trend: float | None = None
+    # Head-to-head results: positive counts wins, negative counts losses, a tie ends it.
+    streak: int = 0
 
 
 class PositionRank(BaseModel):

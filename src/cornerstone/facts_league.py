@@ -26,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 PLAYOFF_SPOTS = 6
 TEAM_COUNT = 12
+# The team trend is the mean of this many latest weeks.
+TREND_WEEKS = 3
 # A recent move adds this many points to the Game Changer score.
 MOVE_BONUS = 5
 UNDERPERFORMER_MIN_PROJECTION = 10
@@ -374,8 +376,10 @@ def position_ranks(week: Week) -> list[PositionRank]:
     return out
 
 
-def season_history(week: Week) -> list[SeasonHistory]:
-    """Version 1 covers this week only. A backfill of past weeks extends it."""
+def season_history(week: Week, history: History | None = None) -> list[SeasonHistory]:
+    """The season so far of each roster. With no complete history it covers this week only."""
+    if history is not None and history.complete():
+        return _full_season_history(history, week.week)
     scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
     return [
         SeasonHistory(
@@ -388,3 +392,50 @@ def season_history(week: Week) -> list[SeasonHistory]:
         )
         for rid, pts in sorted(scores.items())
     ]
+
+
+def _full_season_history(history: History, through: int) -> list[SeasonHistory]:
+    """Highs, lows, average, trend, and streak over weeks 1 to `through`."""
+    out = []
+    for rid in sorted(history.weeks[through].scores):
+        # A roster with no score in a week, such as a bye, adds no entry for that week.
+        weekly = [
+            (number, Decimal(str(history.weeks[number].scores[rid])))
+            for number in range(1, through + 1)
+            if rid in history.weeks[number].scores
+        ]
+        points = [p for _, p in weekly]
+        earlier, now = points[:-1], points[-1]
+        recent = points[-TREND_WEEKS:]
+        out.append(
+            SeasonHistory(
+                roster_id=rid,
+                high=float(max(points)),
+                low=float(min(points)),
+                weeks_over={t: sum(p > t for p in points) for t in (100, 110, 120)},
+                new_high=all(now > p for p in earlier),
+                new_low=all(now < p for p in earlier),
+                average=r2(float(sum(points) / len(points))),
+                trend=r2(float(sum(recent) / len(recent))),
+                streak=_streak(history, rid, through),
+            )
+        )
+    return out
+
+
+def _streak(history: History, roster_id: int, through: int) -> int:
+    """Wins (positive) or losses (negative) in a row, newest week back. Head-to-head only."""
+    run = 0
+    for number in range(through, 0, -1):
+        week = history.weeks[number]
+        opponent = next(
+            (b if a == roster_id else a for a, b in week.pairs if roster_id in (a, b)), None
+        )
+        if opponent is None:
+            continue
+        mine, theirs = week.scores[roster_id], week.scores[opponent]
+        result = (mine > theirs) - (mine < theirs)
+        if result == 0 or (run and result != (1 if run > 0 else -1)):
+            break
+        run += result
+    return run

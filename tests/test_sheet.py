@@ -51,8 +51,13 @@ def test_bundle_roundtrip_and_ids(bundle, tmp_path):
     assert read_bundle(tmp_path / "facts.json").data.week == 6
 
 
-def test_every_number_appears_in_its_text(bundle):
-    for f in bundle.sheet.facts.values():
+@pytest.fixture(params=["bundle", "hbundle"])
+def any_bundle(request):
+    return request.getfixturevalue(request.param)
+
+
+def test_every_number_appears_in_its_text(any_bundle):
+    for f in any_bundle.sheet.facts.values():
         assert all(n in f.text for n in f.numbers), f.id
 
 
@@ -82,9 +87,9 @@ def test_recap_scope_players_cover_both_rosters(bundle):
 TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 
 
-def test_every_number_token_in_text_is_in_numbers(bundle):
+def test_every_number_token_in_text_is_in_numbers(any_bundle):
     # Digits inside a team or player name are not number tokens.
-    for f in bundle.sheet.facts.values():
+    for f in any_bundle.sheet.facts.values():
         text = f.text
         for name in sorted([*f.teams, *f.players], key=len, reverse=True):
             text = text.replace(name, "")
@@ -203,3 +208,35 @@ def test_injured_aggregate_lists_every_injured_starter(bundle):
     assert f.numbers == [] and "Ladd McConkey" in f.players
     awards = next(c for c in bundle.sheet.chapters if c.key == "awards")
     assert "W.injured" in awards.fact_ids
+
+
+def test_streak_facts(hbundle):
+    f = hbundle.sheet.facts
+    assert f["H.8.streak"].text == "Return of T Mac has won 3 straight."
+    assert f["H.6.streak"].text == "Bo Girds has lost 2 straight."
+    assert "H.2.streak" not in f  # All You Need Is Love won 1
+
+
+def test_trend_facts(hbundle):
+    f = hbundle.sheet.facts
+    assert f["H.8.trend"].text == ("Return of T Mac has scored 128.82 per week over the last 3 weeks, "
+                                   "up from a season average of 103.16.")
+    assert f["H.6.trend"].text == ("Bo Girds has scored 117.71 per week over the last 3 weeks, "
+                                   "down from a season average of 120.53.")
+
+
+def test_high_low_and_average(hbundle):
+    f = hbundle.sheet.facts
+    assert f["H.7.high"].text == "To Infinity and Bijan's 46.08 this week is a season low."
+    assert f["H.11.high"].text == "Unsolicited Dak Picks's 81.47 this week is a season low."
+    assert not any("season high" in x.text for x in f.values())
+    assert f["H.6.avg"].text == "Bo Girds averages 120.53 per week this season."
+
+
+def test_history_facts_capped_per_chapter(hbundle):
+    for c in hbundle.sheet.chapters:
+        assert sum(fid.startswith(("H.", "P.")) for fid in c.fact_ids) <= 6, c.key
+
+
+def test_no_history_facts_without_history(bundle):
+    assert not any(fid.startswith("H.") for fid in bundle.sheet.facts)

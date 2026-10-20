@@ -10,6 +10,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from cornerstone.facts_league import (
+    TREND_WEEKS,
     _ordinal,
     awards,
     matchup_of_the_week,
@@ -38,6 +39,8 @@ logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
 LAST_WEEK = 14
+# A chapter cites at most this many history and position-rank facts, so the writer stays focused.
+HISTORY_FACTS_MAX = 6
 NEWS_MAX_CHARS = 300
 MOVE_WORDS = {"waiver": "waiver add", "free_agent": "free agent add", "trade": "trade"}
 AWARD_TITLES = {
@@ -59,6 +62,8 @@ SENTENCE_RANGES = {
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
+# Most telling first: a chapter over the cap keeps the front of this order.
+HISTORY_KINDS = ("streak", "high", "trend", "avg")
 
 
 def fmt(x: float) -> str:
@@ -135,7 +140,7 @@ class Context:
         self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
         self.awards = awards(week, self.mfacts)
         self.next = next_week(week, self.table)
-        self.season_history = season_history(week)
+        self.season_history = season_history(week, history)
         self.ranks = position_ranks(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
         self.line_owner = {
@@ -467,6 +472,46 @@ def strength_facts(c: Context) -> list[Fact]:
     return out
 
 
+def history_facts(c: Context) -> list[Fact]:
+    """Streak, trend, season high or low, and season average of each team.
+
+    A missing or incomplete history gives no facts, so a fact is never wrong.
+    """
+    if c.history is None or not c.history.complete():
+        return []
+    out = []
+    for h in c.season_history:
+        team = c.team(h.roster_id)
+        rid = h.roster_id
+        if abs(h.streak) >= 2:
+            n = Nums()
+            verb = "won" if h.streak > 0 else "lost"
+            out.append(_fact(f"H.{rid}.streak", f"{team} has {verb} {n(abs(h.streak))} straight.", n, [team], []))
+        if h.trend is not None and r2(h.trend) != r2(h.average):
+            n = Nums()
+            side = "up" if h.trend > h.average else "down"
+            text = (
+                f"{team} has scored {n(h.trend)} per week over the last {n(TREND_WEEKS)} weeks, "
+                f"{side} from a season average of {n(h.average)}."
+            )
+            out.append(_fact(f"H.{rid}.trend", text, n, [team], []))
+        # Week 1 has no earlier week, so no score there is a high or a low.
+        if c.week.week > 1 and (h.new_high or h.new_low):
+            n = Nums()
+            kind = "high" if h.new_high else "low"
+            text = f"{team}'s {n(c.scores[rid])} this week is a season {kind}."
+            out.append(_fact(f"H.{rid}.high", text, n, [team], []))
+        n = Nums()
+        out.append(_fact(f"H.{rid}.avg", f"{team} averages {n(h.average)} per week this season.", n, [team], []))
+    return out
+
+
+def _history_ids(facts: dict[str, Fact], rosters, kinds) -> list[str]:
+    """History fact IDs for the rosters, most telling kind first, cut to the cap."""
+    ids = [f"H.{r}.{k}" for k in kinds for r in rosters]
+    return [i for i in ids if i in facts][:HISTORY_FACTS_MAX]
+
+
 def _with_prefix(facts: dict[str, Fact], *prefixes: str) -> list[str]:
     return [fid for fid in facts if any(fid == p or fid.startswith(p) for p in prefixes)]
 
@@ -512,7 +557,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     out.append(make(
         "motw", "Matchup of the Week",
         _with_prefix(facts, f"M{c.pick.matchup_id}.") + ["PICK"] + standings_ids(pair)
-        + [f"RANK.{p}" for p in started_ids(pair)],
+        + [f"RANK.{p}" for p in started_ids(pair)]
+        + _history_ids(facts, pair, HISTORY_KINDS),
         pair, "motw",
     ))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
@@ -532,14 +578,22 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     ))
     for mid, pair in roster_ids.items():
         title = " vs ".join(c.team(r) for r in pair)
-        out.append(make(f"recap_{mid}", title, _with_prefix(facts, f"M{mid}.") + standings_ids(pair), pair, "recap"))
+        out.append(make(
+            f"recap_{mid}", title,
+            _with_prefix(facts, f"M{mid}.") + standings_ids(pair) + _history_ids(facts, pair, HISTORY_KINDS),
+            pair, "recap",
+        ))
     out.append(make(
         "median", "The Median Game",
-        _with_prefix(facts, "MED.") + _with_prefix(facts, "S."), all_rosters, "median",
+        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
+        + _history_ids(facts, all_rosters, ("high",)),
+        all_rosters, "median",
     ))
     out.append(make(
         "next_week", "Next Week",
-        _with_prefix(facts, "NX.", "S.", "SOS."), all_rosters, "next_week",
+        _with_prefix(facts, "NX.", "S.", "SOS.")
+        + _history_ids(facts, [r for nx in c.next for r in (nx.a, nx.b)], ("streak", "trend")),
+        all_rosters, "next_week",
     ))
     return out
 
@@ -553,7 +607,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        rank_facts(c), strength_facts(c),
+        rank_facts(c), strength_facts(c), history_facts(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(
