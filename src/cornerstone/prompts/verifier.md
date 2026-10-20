@@ -7,6 +7,7 @@ The user message gives a chapter title, a list of every fact in the chapter, and
 Judge each sentence on its own, against the chapter facts listed. A sentence may use any listed fact, cited or not. Do not use outside knowledge.
 
 A fact's text defines its terms. If a fact calls a player a recent add, or calls a game an upset, accept it. Do not re-derive "recent add" or "upset" from other numbers.
+The vocabulary above defines the stat terms; judge a term by that definition and by the cited fact, not by your own rule.
 
 Mark a sentence `supported: true` only when every claim in it follows from the chapter facts.
 

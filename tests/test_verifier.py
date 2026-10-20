@@ -132,6 +132,19 @@ def test_prompt_lists_chapter_facts_and_numbered_sentences(fixture_raw_dir):
     assert "- MED.value: " in user and "0. The median was 106.83. [ids: MED.value]" in user
 
 
+def test_prompt_system_has_vocabulary_then_verifier_rules(fixture_raw_dir):
+    from importlib import resources
+
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"))
+    system, _ = build_verifier_prompt(b, ch, sheet)
+    rules = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8").strip()
+    assert "margin driver" in system
+    assert rules.splitlines()[0] in system
+    assert system.index("margin driver") < system.index(rules.splitlines()[0])
+
+
 def test_prompt_holds_uncited_chapter_facts_and_no_other_matchup(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "recap_4")

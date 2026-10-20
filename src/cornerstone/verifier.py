@@ -146,7 +146,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
 
 
 def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> tuple[str, str]:
-    system = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8").strip()
+    # The vocabulary comes first so the verifier judges stat terms by the writer's definitions.
+    prompts = resources.files("cornerstone.prompts")
+    system = "\n\n".join(
+        prompts.joinpath(name).read_text(encoding="utf-8").strip()
+        for name in ("vocabulary.md", "verifier.md")
+    )
     # The verifier sees every chapter fact, cited or not, so a true claim with a missed
     # citation is not judged false. Facts outside the chapter never reach it.
     lines = [
