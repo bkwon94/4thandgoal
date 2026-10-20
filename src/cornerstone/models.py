@@ -2,7 +2,7 @@
 Domain models for one week of the league.
 They are plain data, so the rest of the code does not read raw Sleeper JSON.
 """
-from datetime import date
+from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Literal
 
@@ -256,3 +256,17 @@ class VerifyResult(BaseModel):
     code_failures: list[str]
     verdicts: list[Verdict]
     passed: bool
+
+
+class BuildRecord(BaseModel):
+    """When a build started and which data sources it had. A false source was missing or incomplete."""
+
+    started: datetime
+    sources: dict[str, bool]
+
+
+class VerifyFile(BaseModel):
+    """The content of verify.json. A version 1 file has no build record."""
+
+    build: BuildRecord | None = None
+    chapters: dict[str, list[VerifyResult]]

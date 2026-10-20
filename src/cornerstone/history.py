@@ -3,6 +3,7 @@ Cache of past weeks of Sleeper data under data/{season}/history.
 It fetches only the weeks that are not on disk.
 """
 import json
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 
@@ -93,3 +94,22 @@ def player_trend(history: History, player_id: str) -> int | None:
             return None
         beaten += points > projection
     return beaten
+
+
+def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:
+    """Put a built week into the history, so the next week reads it from disk.
+
+    The files are copies, not symlinks. A refetch or a move of the raw directory must not change the history.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name in HISTORY_FILES:
+        shutil.copyfile(raw_dir / f"{name}.json", out_dir / f"{name}.json")
+    matchups = json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))
+    players = json.loads((raw_dir / "players.json").read_text(encoding="utf-8"))
+    injuries = {}
+    for roster in matchups:
+        for player_id in roster["players"]:
+            status = (players.get(player_id) or {}).get("injury_status")
+            if status:
+                injuries[player_id] = status
+    (out_dir / "injuries.json").write_text(json.dumps(injuries, indent=2), encoding="utf-8")

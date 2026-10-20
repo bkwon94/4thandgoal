@@ -9,8 +9,9 @@ import subprocess
 
 import pytest
 
+from cornerstone.history import HISTORY_FILES, history_dir, history_root
 from cornerstone.models import Sentence, Verdict, VerifyOut
-from cornerstone.pipeline import BuildStopped, run_build, run_rewrite, week_dir
+from cornerstone.pipeline import BuildStopped, read_verify, run_build, run_rewrite, week_dir
 from cornerstone.publish import PublishError, run_publish
 
 
@@ -45,6 +46,59 @@ def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir):
     for f in ("facts.json", "blurbs.json", "verify.json"):
         assert (week_dir(repo, 2026, 6) / f).exists()
     assert (repo / "site" / "index.html").exists()
+
+
+def _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    shutil.copytree(fixture_history_root, history_root(repo, 2026))
+    return repo
+
+
+def test_build_records_the_history_source(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    record = read_verify(week_dir(repo, 2026, 6) / "verify.json").build
+    assert record.sources["history"] is True
+
+
+def test_build_without_history_degrades(tmp_path, fixture_raw_dir, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources["history"] is False
+    assert "history incomplete" in caplog.text
+
+
+def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    out = history_dir(history_root(repo, 2026), 6)
+    assert {p.stem for p in out.glob("*.json")} == {*HISTORY_FILES, "injuries"}
+    injuries = json.loads((out / "injuries.json").read_text())
+    assert injuries["2216"] == "Out"  # Mike Evans
+    assert injuries["5859"] == "Questionable"  # A.J. Brown
+
+
+def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    path = week_dir(repo, 2026, 6) / "verify.json"
+    chapters = json.loads(path.read_text())["chapters"]
+    path.write_text(json.dumps(chapters))
+    assert read_verify(path).build is None
+
+    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+
+    assert read_verify(path).build is None
+    assert set(read_verify(path).chapters) == set(chapters)
+
+
+def test_rewrite_keeps_the_build_record(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    path = week_dir(repo, 2026, 6) / "verify.json"
+    before = read_verify(path).build
+    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+    assert read_verify(path).build == before
 
 
 def test_build_stops_on_unscored_week(tmp_path, fixture_raw_dir):
