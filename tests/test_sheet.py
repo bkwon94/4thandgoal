@@ -117,3 +117,10 @@ def test_news_failure_skips_the_fact(fixture_raw_dir):
 
     b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=broken)
     assert "AW.game_changer.news" not in b.sheet.facts
+
+
+def test_no_season_history_facts(bundle):
+    # Version 1 holds one week only, so a "season high" claim would be false.
+    for f in bundle.sheet.facts.values():
+        assert not f.id.startswith("HIST."), f.id
+        assert "season high" not in f.text, f.id

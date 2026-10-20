@@ -383,19 +383,6 @@ def next_facts(c: Context) -> list[Fact]:
     return out
 
 
-def history_facts(c: Context) -> list[Fact]:
-    out = []
-    for h in c.history:
-        n = Nums()
-        team = c.team(h.roster_id)
-        text = (
-            f"{team} scored {n(h.high)} this week, a season high so far, with "
-            f"{n(h.weeks_over[100])} weeks over {n(100)}, {n(h.weeks_over[110])} over {n(110)}, "
-            f"{n(h.weeks_over[120])} over {n(120)}."
-        )
-        out.append(_fact(f"HIST.{h.roster_id}", text, n, [team], []))
-    return out
-
 
 def rank_facts(c: Context) -> list[Fact]:
     out = []
@@ -468,7 +455,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     out.append(make(
         "motw", "Matchup of the Week",
         _with_prefix(facts, f"M{c.pick.matchup_id}.") + ["PICK"] + standings_ids(pair)
-        + [f"HIST.{r}" for r in pair] + [f"RANK.{p}" for p in started_ids(pair)],
+        + [f"RANK.{p}" for p in started_ids(pair)],
         pair, "motw",
     ))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
@@ -505,7 +492,7 @@ def build_bundle(week: Week, news: Callable[[str], list[dict]] = fetch_news) -> 
     families = (
         week_facts(c), recent_add_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        history_facts(c), rank_facts(c), strength_facts(c),
+        rank_facts(c), strength_facts(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(
