@@ -30,10 +30,19 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
     gap = lambda line: abs(sub(line.points, line.projection))  # noqa: E731
 
     # A line with no projection has no gap, so it can never drive the result.
-    drivers = sorted(
-        (l for l in all_lines if l.projection is not None and gap(l) >= margin),
-        key=gap,
-        reverse=True,
+    # A bench line decides nothing, and a tie has no result to drive.
+    drivers = (
+        sorted(
+            (
+                l
+                for l in all_lines
+                if l.started and l.projection is not None and gap(l) >= margin
+            ),
+            key=gap,
+            reverse=True,
+        )
+        if winner_side
+        else []
     )
     swing = (
         sorted(
@@ -58,31 +67,31 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
         },
         drivers=drivers,
         swing=swing,
-        bench_regret=_bench_regret(m),
+        bench_regret=_bench_regret(winner_side, loser_side),
         recent_moves=_recent_moves(sides, moves, week),
     )
 
 
-def _bench_regret(m: Matchup) -> list[tuple[PlayerLine, PlayerLine]]:
-    """Pair each bench line with the weakest started line at its position when the swap flips the winner."""
-    diff = Decimal(str(m.a.points)) - Decimal(str(m.b.points))
-    if diff == 0:
-        # No winner exists, so no swap can flip one.
+def _bench_regret(
+    winner: Side | None, loser: Side | None
+) -> list[tuple[PlayerLine, PlayerLine]]:
+    """Pair each losing-side bench line with the weakest started line at its position when the swap flips the result."""
+    if winner is None or loser is None:
+        # A tie has no result to flip. A winner cannot regret a win.
         return []
+    lead = Decimal(str(winner.points)) - Decimal(str(loser.points))
     pairs = []
-    for side, sign in ((m.a, 1), (m.b, -1)):
-        for bench in (l for l in side.lines if not l.started):
-            same_position = [
-                l for l in side.lines if l.started and l.position == bench.position
-            ]
-            if not same_position:
-                continue
-            starter = min(same_position, key=lambda l: l.points)
-            swing = Decimal(str(bench.points)) - Decimal(str(starter.points))
-            new_diff = diff + sign * swing
-            # The result flips only when the other side now wins outright.
-            if (diff > 0 and new_diff < 0) or (diff < 0 and new_diff > 0):
-                pairs.append((bench, starter))
+    for bench in (l for l in loser.lines if not l.started):
+        same_position = [
+            l for l in loser.lines if l.started and l.position == bench.position
+        ]
+        if not same_position:
+            continue
+        starter = min(same_position, key=lambda l: l.points)
+        gain = Decimal(str(bench.points)) - Decimal(str(starter.points))
+        # A gain equal to the lead gives a tie, not a flip.
+        if gain > lead:
+            pairs.append((bench, starter))
     return pairs
 
 
