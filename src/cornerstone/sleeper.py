@@ -110,6 +110,22 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
         _write_json(raw_dir / f"{name}.json", data[name])
 
 
+def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> None:
+    league = f"{OFFICIAL_URL}/league/{league_id}"
+    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+        data = {
+            "matchups": _get(client, f"{league}/matchups/{week}"),
+            "transactions": _get(client, f"{league}/transactions/{week}"),
+            "stats": _get_or_empty(
+                client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params()),
+            "projections": _get_or_empty(
+                client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
+        }
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name, obj in data.items():
+        _write_json(out_dir / f"{name}.json", obj)
+
+
 def load_raw(raw_dir: Path) -> dict[str, object]:
     raw = {}
     for name in RAW_FILES:

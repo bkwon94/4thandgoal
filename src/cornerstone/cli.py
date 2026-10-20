@@ -1,6 +1,6 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, and rewrite subcommands.
+It defines the build, publish, rewrite, and history subcommands.
 """
 import argparse
 import logging
@@ -9,7 +9,8 @@ from pathlib import Path
 import httpx
 
 
-from cornerstone.pipeline import BuildStopped, has_raw, preview, resolve_week, run_build, run_rewrite
+from cornerstone.pipeline import BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_rewrite
+from cornerstone.sleeper import fetch_state
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.writer import claude_call
 
@@ -33,6 +34,11 @@ def build_parser() -> argparse.ArgumentParser:
     rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
 
+    history = sub.add_parser("history", help="fetch and cache past weeks")
+    history.add_argument("--season", type=int)
+    history.add_argument("--through", type=int, required=True)
+    history.add_argument("--force", action="store_true", help="fetch even when a week is saved")
+
     return parser
 
 
@@ -44,6 +50,12 @@ def main(argv: list[str] | None = None) -> int:
         print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
         return 2
     try:
+        if args.command == "history":
+            # History has no --week, so it skips resolve_week.
+            season = args.season if args.season is not None else int(fetch_state()["season"])
+            weeks = run_history(repo, season, args.through, force=args.force)
+            print("Fetched weeks: " + ", ".join(str(w) for w in weeks) if weeks else "Nothing to fetch")
+            return 0
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)
         if args.command == "build":

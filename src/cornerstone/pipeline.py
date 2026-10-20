@@ -10,6 +10,7 @@ from pathlib import Path
 
 from pydantic import TypeAdapter
 
+from cornerstone.history import fetch_history, history_root
 from cornerstone.models import Blurb, VerifyResult
 from cornerstone.parse import parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
@@ -125,6 +126,10 @@ def run_rewrite(
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     render_index(site_dir)
     return page
+
+
+def run_history(repo: Path, season: int, through: int, force: bool = False) -> list[int]:
+    return fetch_history(LEAGUE_ID, season, through, history_root(repo, season), force=force)
 
 
 def preview(page: Path) -> None:
