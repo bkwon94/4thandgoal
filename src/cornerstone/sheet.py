@@ -73,6 +73,7 @@ SENTENCE_RANGES = {
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
+TRADE_FACT_ID = re.compile(r"T\d+\.")
 # Most telling first: a chapter over the cap keeps the front of this order.
 HISTORY_KINDS = ("streak", "high", "trend", "avg")
 
@@ -799,6 +800,11 @@ def _with_prefix(facts: dict[str, Fact], *prefixes: str) -> list[str]:
     return [fid for fid in facts if any(fid == p or fid.startswith(p) for p in prefixes)]
 
 
+def _trade_ids(facts: dict[str, Fact]) -> list[str]:
+    # A bare "T" prefix would also take any later fact family whose ID starts with T.
+    return [fid for fid in facts if TRADE_FACT_ID.match(fid)]
+
+
 def _dedupe(ids: list[str]) -> list[str]:
     return list(dict.fromkeys(ids))
 
@@ -884,7 +890,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         trade_rosters = _dedupe([r for t in c.trades for r in t.roster_ids])
         out.append(make(
             "trades", "Trades",
-            _with_prefix(facts, "T") + standings_ids(trade_rosters),
+            _trade_ids(facts) + standings_ids(trade_rosters),
             trade_rosters, "trades",
             grade_keys=[f"T{i}.{r}" for i, t in enumerate(c.trades, start=1) for r in t.roster_ids],
         ))

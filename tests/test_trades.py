@@ -197,3 +197,10 @@ def test_got_fact_drops_the_season_total_when_a_week_has_no_stats(fixture_raw_di
 def test_got_fact_keeps_the_season_total_when_roster_points_cover_the_week(fixture_raw_dir, fixture_history_root, tbundle):
     text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=True)
     assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season,")
+
+
+def test_trades_chapter_takes_trade_facts_only(tbundle):
+    from cornerstone.sheet import _trade_ids
+    facts = {**tbundle.sheet.facts, "TOTAL.x": tbundle.sheet.facts["T5.sides"]}
+    ids = _trade_ids(facts)
+    assert "TOTAL.x" not in ids and "T5.sides" in ids and "T5.12.swing" in ids
