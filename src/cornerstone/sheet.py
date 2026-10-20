@@ -21,6 +21,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
+from cornerstone.history import player_trend
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -39,8 +40,11 @@ logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
 LAST_WEEK = 14
-# A chapter cites at most this many history and position-rank facts, so the writer stays focused.
+# A chapter cites at most this many facts with an ID that starts with "H." or "P.", so the writer
+# stays focused. The cap does not cover the position-rank facts.
 HISTORY_FACTS_MAX = 6
+# Slots kept for player trends, so the team facts cannot crowd them out of a chapter.
+PLAYER_TREND_MAX = 2
 NEWS_MAX_CHARS = 300
 MOVE_WORDS = {"waiver": "waiver add", "free_agent": "free agent add", "trade": "trade"}
 AWARD_TITLES = {
@@ -132,7 +136,11 @@ class Context:
         self.week = week
         self.history = history
         self.news = news
-        self.mfacts = [matchup_facts(m, week.moves, week.week) for m in week.matchups]
+        # The week before is in the history, so a recent add of that week shows in this week.
+        self.moves = list(week.moves)
+        if history is not None and week.week - 1 in history.weeks:
+            self.moves += history.weeks[week.week - 1].moves
+        self.mfacts = [matchup_facts(m, self.moves, week.week) for m in week.matchups]
         self.table = standings(week, history)
         self.by_rank = {s.roster_id: s for s in self.table}
         self.before = ranks_before(week, self.table, history)
@@ -506,10 +514,35 @@ def history_facts(c: Context) -> list[Fact]:
     return out
 
 
-def _history_ids(facts: dict[str, Fact], rosters, kinds) -> list[str]:
-    """History fact IDs for the rosters, most telling kind first, cut to the cap."""
+def _trend_text(name: str, beaten: int, n: Nums) -> str:
+    if beaten >= 2:
+        return f"{name} has beaten projection in {n(beaten)} of the last {n(TREND_WEEKS)} weeks."
+    return f"{name} has missed projection in {n(TREND_WEEKS - beaten)} of the last {n(TREND_WEEKS)} weeks."
+
+
+def player_trend_facts(c: Context) -> list[Fact]:
+    """One trend fact for each started line. A missing or incomplete history gives none."""
+    if c.history is None or not c.history.complete():
+        return []
+    out = []
+    for pid, line in c.lines.items():
+        beaten = player_trend(c.history, pid)
+        if not line.started or beaten is None:
+            continue
+        n = Nums()
+        out.append(_fact(f"P.{pid}.trend", _trend_text(line.name, beaten, n), n, [], [line.name]))
+    return out
+
+
+def _history_ids(facts: dict[str, Fact], rosters, kinds, players=()) -> list[str]:
+    """History and player trend fact IDs, most telling first, cut to the cap.
+
+    The team facts keep the slots the player trends leave.
+    """
+    trends = [f"P.{p}.trend" for p in players if f"P.{p}.trend" in facts][:PLAYER_TREND_MAX]
     ids = [f"H.{r}.{k}" for k in kinds for r in rosters]
-    return [i for i in ids if i in facts][:HISTORY_FACTS_MAX]
+    teams = [i for i in ids if i in facts][: HISTORY_FACTS_MAX - len(trends)]
+    return teams + trends
 
 
 def _with_prefix(facts: dict[str, Fact], *prefixes: str) -> list[str]:
@@ -558,7 +591,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         "motw", "Matchup of the Week",
         _with_prefix(facts, f"M{c.pick.matchup_id}.") + ["PICK"] + standings_ids(pair)
         + [f"RANK.{p}" for p in started_ids(pair)]
-        + _history_ids(facts, pair, HISTORY_KINDS),
+        + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair)),
         pair, "motw",
     ))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
@@ -567,20 +600,22 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         out.append(make(
             "game_changer", "Game Changer",
             ["AW.game_changer", "AW.game_changer.news"] + _with_prefix(facts, f"M{gc.matchup_id}.")
-            + [f"RANK.{gc.line.player_id}"],
+            + [f"RANK.{gc.line.player_id}"] + _history_ids(facts, [], (), [gc.line.player_id]),
             pair, "game_changer",
         ))
     out.append(make(
         "awards", "Awards",
         _with_prefix(facts, "AW.") + ["W.adds", "W.injured"] + [f"RANK.{a.line.player_id}" for a in c.awards]
-        + [f"M{mid}.result" for mid in roster_ids],
+        + [f"M{mid}.result" for mid in roster_ids]
+        + _history_ids(facts, [], (), [a.line.player_id for a in c.awards]),
         all_rosters, "awards",
     ))
     for mid, pair in roster_ids.items():
         title = " vs ".join(c.team(r) for r in pair)
         out.append(make(
             f"recap_{mid}", title,
-            _with_prefix(facts, f"M{mid}.") + standings_ids(pair) + _history_ids(facts, pair, HISTORY_KINDS),
+            _with_prefix(facts, f"M{mid}.") + standings_ids(pair)
+            + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair)),
             pair, "recap",
         ))
     out.append(make(
@@ -607,7 +642,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        rank_facts(c), strength_facts(c), history_facts(c),
+        rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(

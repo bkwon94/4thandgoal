@@ -6,7 +6,7 @@ import shutil
 
 import pytest
 
-from cornerstone.history import HISTORY_FILES, fetch_history, history_dir, load_history
+from cornerstone.history import HISTORY_FILES, fetch_history, history_dir, load_history, player_trend
 from cornerstone.parse import parse_moves, parse_week
 from cornerstone.sleeper import fetch_past_week, load_raw
 
@@ -75,3 +75,16 @@ def test_parse_moves_matches_parse_week(fixture_raw_dir):
 def test_fetch_past_week_writes_four_files(tmp_path):
     fetch_past_week("1386167364424318976", 2026, 5, tmp_path)
     assert {p.stem for p in tmp_path.glob("*.json")} == set(HISTORY_FILES)
+
+
+def test_player_trend(fixture_history_root, fixture_raw_dir):
+    h = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
+    assert player_trend(h, "12501") == 3   # Matthew Golden
+    assert player_trend(h, "9509") == 1    # Bijan Robinson
+
+
+def test_player_trend_needs_points_and_projection_in_all_three_weeks(fixture_history_root, fixture_raw_dir):
+    h = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
+    assert player_trend(h, "no-such-player") is None
+    del h.weeks[5].projections["12501"]
+    assert player_trend(h, "12501") is None

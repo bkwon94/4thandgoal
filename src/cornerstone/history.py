@@ -6,7 +6,8 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
-from cornerstone.models import History
+from cornerstone.facts_league import TREND_WEEKS
+from cornerstone.models import History, PastWeek
 from cornerstone.parse import parse_past_week
 from cornerstone.sleeper import fetch_past_week
 
@@ -66,3 +67,29 @@ def load_history(root: Path, raw: dict[str, object], week: int) -> History:
     # The current week comes from the raw data of this run, not from the cache.
     weeks[week] = parse_past_week(raw, week)
     return History(week=week, weeks=weeks)
+
+
+
+def player_points(past: PastWeek, player_id: str) -> float | None:
+    """Points of a player in a past week. The roster points come first, then the stat line."""
+    if player_id in past.points:
+        return past.points[player_id]
+    return (past.stats.get(player_id) or {}).get("pts_half_ppr")
+
+
+def player_trend(history: History, player_id: str) -> int | None:
+    """The count of the last 3 weeks in which the player beat the projection.
+
+    It is None when any of the 3 weeks lacks points or a projection, so a gap never gives a wrong count.
+    """
+    beaten = 0
+    for week in range(history.week - TREND_WEEKS + 1, history.week + 1):
+        past = history.weeks.get(week)
+        if past is None:
+            return None
+        points = player_points(past, player_id)
+        projection = past.projections.get(player_id)
+        if points is None or projection is None:
+            return None
+        beaten += points > projection
+    return beaten

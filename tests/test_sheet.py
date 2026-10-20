@@ -240,3 +240,18 @@ def test_history_facts_capped_per_chapter(hbundle):
 
 def test_no_history_facts_without_history(bundle):
     assert not any(fid.startswith("H.") for fid in bundle.sheet.facts)
+
+
+def test_player_trend_facts(hbundle):
+    f = hbundle.sheet.facts
+    assert f["P.12501.trend"].text == "Matthew Golden has beaten projection in 3 of the last 3 weeks."
+    assert f["P.9509.trend"].text == "Bijan Robinson has missed projection in 2 of the last 3 weeks."
+
+
+def test_no_player_trend_facts_without_history(bundle):
+    assert not any(fid.startswith("P.") for fid in bundle.sheet.facts)
+
+
+def test_week_five_add_is_a_recent_add(hbundle, bundle):
+    assert "week 5" in hbundle.sheet.facts["M4.move.13274"].text  # Germie Bernard, waiver
+    assert "M4.move.13274" not in bundle.sheet.facts

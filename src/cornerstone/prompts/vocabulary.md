@@ -17,6 +17,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **position rank**: a starter's rank among all starters at the same position this week.
 - **streak**: head-to-head results only, the median game excluded.
 - **team trend**: the last 3 weeks against the season average.
+- **player trend**: against projection over the last 3 weeks.
 - **season high**: a team's highest weekly total this season.
 - **season low**: a team's lowest weekly total this season.
 - **season average**: a team's points for divided by the weeks played this season.
