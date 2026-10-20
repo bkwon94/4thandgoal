@@ -112,7 +112,8 @@ def _next_matchups(raw: dict) -> list[tuple[int, int]]:
     for entry in raw["matchups_next"]:
         if entry["matchup_id"] is not None:
             groups[entry["matchup_id"]].append(entry["roster_id"])
-    return [tuple(sorted(groups[mid])) for mid in sorted(groups)]
+    # A pair is a matchup. A lone entry, such as a bye, has no opponent to name.
+    return [tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2]
 
 
 def _moves(raw: dict) -> list[Move]:

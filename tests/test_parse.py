@@ -80,3 +80,14 @@ def test_empty_starter_slot_makes_no_line(fixture_raw_dir):
     assert not any(l.player_id == "0" or l.name == "0" for l in lines)
     third = next(l for l in lines if l.player_id == entry["starters"][2])
     assert third.slot == raw["league"]["roster_positions"][2]
+
+
+def test_next_matchups_keep_pairs_only(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw["matchups_next"] = [
+        {"matchup_id": 1, "roster_id": 1},
+        {"matchup_id": 1, "roster_id": 2},
+        {"matchup_id": 2, "roster_id": 3},
+        {"matchup_id": None, "roster_id": 4},
+    ]
+    assert parse_week(raw).next_matchups == [(1, 2)]
