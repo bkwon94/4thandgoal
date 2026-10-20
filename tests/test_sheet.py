@@ -160,3 +160,9 @@ def test_standings_fact_says_one_game(bundle):
     one = [f for f in bundle.sheet.facts.values() if f.id.startswith("S.") and "1 game " in f.text]
     assert one, "the fixture has teams one game from the cut"
     assert not any("1 games" in f.text for f in bundle.sheet.facts.values())
+
+
+def test_move_facts_say_recent_add(bundle):
+    moves = [f for f in bundle.sheet.facts.values() if ".move." in f.id]
+    assert moves, "the fixture has a recent move"
+    assert all("recent add" in f.text for f in moves)

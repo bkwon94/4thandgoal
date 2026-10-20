@@ -303,7 +303,8 @@ def _story_facts(c, f) -> list[Fact]:
         line = c.lines[mv.player_id]
         team = c.team(mv.roster_id)
         text = (
-            f"{line.name} started for {team} after a {MOVE_WORDS[mv.kind]} in week {n(mv.week)} "
+            f"{line.name} is a recent add: {line.name} started for {team} after a "
+            f"{MOVE_WORDS[mv.kind]} in week {n(mv.week)} "
             f"and {c.against_projection(line, n)}."
         )
         out.append(_fact(f"{mid}.move.{mv.player_id}", text, n, [team], [line.name]))
