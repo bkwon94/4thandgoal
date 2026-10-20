@@ -190,3 +190,21 @@ class FactSheet(BaseModel):
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
+
+
+class Sentence(BaseModel):
+    text: str
+    fact_ids: list[str]
+
+
+class Blurb(BaseModel):
+    chapter: str
+    sentences: list[Sentence]
+    attempt: int
+    fallback: bool
+
+
+class WriterOut(BaseModel):
+    """The structured output of one writer call."""
+
+    sentences: list[Sentence]
