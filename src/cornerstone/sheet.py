@@ -157,6 +157,7 @@ class Context:
         self.median = median_facts(week)
         self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
         self.drops = drop_lines(week, nfl)
+        self.nfl = nfl
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts, self.drops)
         self.next = next_week(week, self.table)
@@ -588,6 +589,16 @@ def _sides_fact(c: Context, i: int, trade: Trade) -> Fact:
     return _fact(f"T{i}.sides", text, n, [c.team(r) for r in ids], players)
 
 
+def _pregame_text(c: Context, pid: str) -> str | None:
+    """The final NFL injury report status of this week, or None when the player has none."""
+    if c.nfl is None or c.nfl.injuries is None:
+        return None
+    status = c.nfl.injuries.get(pid, {}).get(c.week.week)
+    if status is None:
+        return None
+    return f"{c.lines[pid].name} was listed {status} on the final NFL injury report before his game this week."
+
+
 def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fact:
     n = Nums()
     line = c.lines[pid]
@@ -602,6 +613,9 @@ def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fac
     if rank is not None:
         clauses.append(f"position rank {n(rank.rank)} of {n(rank.of)}")
     text = f"{team} {verb} {line.name}: {', '.join(clauses)}."
+    pregame = _pregame_text(c, pid)
+    if pregame is not None:
+        text += " " + pregame
     beaten = player_trend(c.history, pid) if complete else None
     if beaten is not None:
         text += " " + _trend_text(line.name, beaten, n)
@@ -718,6 +732,37 @@ def drop_facts(c: Context) -> list[Fact]:
     return out
 
 
+def _weeks(count: int, n: Nums, adjective: str = "") -> str:
+    return f"{n(count)} {adjective}week" + ("" if count == 1 else "s")
+
+
+def injury_facts_nfl(c: Context) -> list[Fact]:
+    """The pre-game status and the report history of each started player. None without nflverse."""
+    if c.nfl is None or c.nfl.injuries is None:
+        return []
+    week = c.week.week
+    out = []
+    for pid, line in c.lines.items():
+        weeks = c.nfl.injuries.get(pid)
+        if not line.started or not weeks:
+            continue
+        team = [c.team(c.line_owner[pid])]
+        pregame = _pregame_text(c, pid)
+        if pregame is not None:
+            out.append(_fact(f"I.{pid}.pregame", pregame, Nums(), team, [line.name]))
+        n = Nums()
+        if week in weeks:
+            text = f"{line.name} has been on the report {_weeks(sum(w <= week for w in weeks), n)}."
+        # A return claim needs proof of play: nflverse only lists the injured, so a gap alone is not a return.
+        elif week - 1 in weeks and c.week.stats.get(pid, {}).get("gp", 0) > 0:
+            earlier = _weeks(sum(w < week for w in weeks), n, "earlier ")
+            text = f"{line.name} was on the NFL injury report in {earlier} this season and plays this week."
+        else:
+            continue
+        out.append(_fact(f"I.{pid}.history", text, n, team, [line.name]))
+    return out
+
+
 def _history_ids(facts: dict[str, Fact], rosters, kinds, players=()) -> list[str]:
     """History and player trend fact IDs, most telling first, cut to the cap.
 
@@ -770,6 +815,9 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     def drop_ids(keep) -> list[str]:
         return [fid for d in c.drops if keep(d) for fid in (f"D.{d.player_id}", f"D.{d.player_id}.value")]
 
+    def injury_ids(pids) -> list[str]:
+        return [fid for p in pids for fid in (f"I.{p}.pregame", f"I.{p}.history")]
+
     def standings_ids(rosters) -> list[str]:
         return [f"S.{c.by_rank[r].rank}" for r in rosters]
 
@@ -780,7 +828,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         _with_prefix(facts, f"M{c.pick.matchup_id}.") + ["PICK"] + standings_ids(pair)
         + [f"RANK.{p}" for p in started_ids(pair)]
         + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair))
-        + drop_ids(lambda d: d.matchup_id == c.pick.matchup_id),
+        + drop_ids(lambda d: d.matchup_id == c.pick.matchup_id) + injury_ids(started_ids(pair)),
         pair, "motw",
     ))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
@@ -790,7 +838,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             "game_changer", "Game Changer",
             ["AW.game_changer", "AW.game_changer.news"] + _with_prefix(facts, f"M{gc.matchup_id}.")
             + [f"RANK.{gc.line.player_id}"] + _history_ids(facts, [], (), [gc.line.player_id])
-            + drop_ids(lambda d: d.player_id == gc.line.player_id),
+            + drop_ids(lambda d: d.player_id == gc.line.player_id) + injury_ids([gc.line.player_id]),
             pair, "game_changer",
         ))
     out.append(make(
@@ -798,7 +846,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         _with_prefix(facts, "AW.") + ["W.adds", "W.injured"] + [f"RANK.{a.line.player_id}" for a in c.awards]
         + [f"M{mid}.result" for mid in roster_ids]
         + _history_ids(facts, [], (), [a.line.player_id for a in c.awards])
-        + ["W.drops"] + drop_ids(lambda d: d.player_id in {a.line.player_id for a in c.awards}),
+        + ["W.drops"] + drop_ids(lambda d: d.player_id in {a.line.player_id for a in c.awards})
+        + injury_ids([a.line.player_id for a in c.awards]),
         all_rosters, "awards",
     ))
     for mid, pair in roster_ids.items():
@@ -807,7 +856,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             f"recap_{mid}", title,
             _with_prefix(facts, f"M{mid}.") + standings_ids(pair)
             + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair))
-            + drop_ids(lambda d, mid=mid: d.matchup_id == mid),
+            + drop_ids(lambda d, mid=mid: d.matchup_id == mid) + injury_ids(started_ids(pair)),
             pair, "recap",
         ))
     if c.trades:
@@ -845,7 +894,7 @@ def build_bundle(
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
-        drop_facts(c),
+        drop_facts(c), injury_facts_nfl(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(

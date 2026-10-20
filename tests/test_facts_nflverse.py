@@ -104,3 +104,42 @@ def test_butterfingers_reason_after_a_skip(hbundle, fixture_raw_dir):
     assert award.line.player_id == other.player_id and award.skipped == [top.line.name]
     assert award.reason == (f"{other.name} dropped 2 passes, "
                             "the most among started players with no other award this week.")
+
+
+def test_pregame_fact(dbundle):
+    assert dbundle.sheet.facts["I.2449.pregame"].text == (
+        "Stefon Diggs was listed Questionable on the final NFL injury report before his game this week.")
+
+
+def test_history_listed_this_week(dbundle):
+    assert dbundle.sheet.facts["I.2449.history"].text == "Stefon Diggs has been on the report 2 weeks."
+
+
+def test_history_returned_this_week(dbundle):
+    assert dbundle.sheet.facts["I.5927.history"].text == (
+        "Terry McLaurin was on the NFL injury report in 2 earlier weeks this season and plays this week.")
+    assert "I.5927.pregame" not in dbundle.sheet.facts
+
+
+def test_no_return_claim_without_games_played(fixture_raw_dir, fixture_history_root, nfl_week6):
+    raw = load_raw(fixture_raw_dir)
+    wk = parse_week(raw)
+    stats = {**wk.stats, "5927": {**wk.stats.get("5927", {}), "gp": 0}}
+    bundle = build_bundle(wk.model_copy(update={"stats": stats}), news=lambda pid: [], nfl=nfl_week6)
+    assert "I.5927.history" not in bundle.sheet.facts
+
+
+def test_no_injury_facts_without_the_file(tbundle):
+    assert not any(fid.startswith("I.") for fid in tbundle.sheet.facts)
+
+
+def test_injury_facts_are_in_their_chapters(dbundle):
+    chapters = {c.key: c for c in dbundle.sheet.chapters}
+    assert any("I.2449.pregame" in c.fact_ids for c in chapters.values())
+
+
+def test_got_fact_carries_the_pregame_status(fixture_raw_dir, fixture_history_root, nfl_week6):
+    from conftest import _trade_bundle
+    nfl = nfl_week6.model_copy(update={"injuries": {**nfl_week6.injuries, "12490": {6: "Questionable"}}})
+    f = _trade_bundle(fixture_raw_dir, fixture_history_root, nfl=nfl).sheet.facts
+    assert "Bhayshul Tuten was listed Questionable on the final NFL injury report" in f["T5.12.got.12490"].text

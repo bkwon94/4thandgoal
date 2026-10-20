@@ -119,6 +119,7 @@ def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
     assert "is now listed" in system
     assert "started while" not in system
     assert "**injury status**" in system
+    assert "I.{pid}.pregame" in system and "Friday" in system and "**pre-game status**" in system
 
 
 def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
