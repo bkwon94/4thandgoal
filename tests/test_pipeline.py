@@ -422,3 +422,15 @@ def test_partial_week_is_not_saved(tmp_path, fixture_raw_dir):
     _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=partial)
     assert record.sources["nflverse_pbp"] is False
     assert not _nflverse_path(repo).exists()
+
+
+def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text('{"transactions": "not a ti')
+    (week_dir(repo, 2026, 6) / "verify.json").write_text('{"chapters": {')
+    week_dir(repo, 2026, 5).mkdir(parents=True)
+    (week_dir(repo, 2026, 5) / "verify.json").write_text("{")
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert page.exists()
+    for name in ("fetched.json", "week-06/verify.json", "week-05/verify.json"):
+        assert name in caplog.text

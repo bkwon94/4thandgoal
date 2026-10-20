@@ -100,7 +100,12 @@ def read_fetch_time(raw_dir: Path) -> datetime | None:
     path = raw_dir / FETCHED_FILE
     if not path.exists():
         return None
-    return datetime.fromisoformat(json.loads(path.read_text(encoding="utf-8"))["transactions"])
+    # A cut-off or hand-edited file must not stop the build. The caller has a fallback for None.
+    try:
+        return datetime.fromisoformat(json.loads(path.read_text(encoding="utf-8"))["transactions"])
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        logger.warning("Fetch time file %s is unreadable, so it is ignored (%s)", path, error)
+        return None
 
 
 def read_prev_transactions(raw_dir: Path) -> list | None:

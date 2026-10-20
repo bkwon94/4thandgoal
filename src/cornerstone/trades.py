@@ -2,11 +2,14 @@
 The trades of one week: the time window that picks them and the late-trade test.
 A trade belongs to the page of the week whose build first saw it, not to Sleeper's leg.
 """
+import logging
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from cornerstone.models import Trade, Week
+
+logger = logging.getLogger(__name__)
 
 EASTERN = ZoneInfo("America/New_York")
 
@@ -25,7 +28,12 @@ def previous_fetch_time(repo: Path, season: int, week: int) -> datetime | None:
     path = week_dir(repo, season, week - 1) / "verify.json"
     if not path.exists():
         return None
-    record = read_verify(path).build
+    # A corrupt file must not stop the build. The Tuesday cut-off stands in for None.
+    try:
+        record = read_verify(path).build
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        logger.warning("%s is unreadable, so the window starts at the Tuesday cut-off (%s)", path, error)
+        return None
     return record.fetched if record else None
 
 

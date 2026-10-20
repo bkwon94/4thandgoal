@@ -194,6 +194,18 @@ def make_bundle(
     return bundle, record
 
 
+def _first_build(saved: Path) -> BuildRecord | None:
+    """The build record of an earlier build of this week. None when there is none or it is unreadable."""
+    if not saved.exists():
+        return None
+    # A corrupt file must not stop a rebuild. The fetch time then comes from the raw directory.
+    try:
+        return read_verify(saved).build
+    except (OSError, ValueError, KeyError, TypeError) as err:
+        log.warning("%s is unreadable, so the rebuild takes a new window end: %s", saved, err)
+        return None
+
+
 def _log_chapter(key: str, blurb: Blurb) -> None:
     log.info("chapter %s: attempt %d, fallback %s", key, blurb.attempt, blurb.fallback)
 
@@ -212,7 +224,7 @@ def run_build(
     raw_dir = directory / "raw"
     # A rebuild keeps the first window, also after a refetch, so a trade never moves to another page.
     saved = directory / "verify.json"
-    first_fetch = read_verify(saved).build if saved.exists() else None
+    first_fetch = _first_build(saved)
     if fetch:
         players_cache = repo / "data" / "cache" / "players.json"
         fetch_week(LEAGUE_ID, season, week, raw_dir, players_cache)
