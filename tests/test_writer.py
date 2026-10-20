@@ -108,3 +108,12 @@ def test_live_write_median(fixture_raw_dir):
     for s in b.sentences:
         print(f"{s.text}  {s.fact_ids}")
     assert 2 <= len(b.sentences) <= 4 and all(s.fact_ids for s in b.sentences)
+
+
+def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None)
+    assert "Make no jokes about injuries." not in system
+    assert "Make no joke about an injury itself or about a player's health." in system
+    assert "Roast the manager, not the player." in system
+    assert "**injury status**" in system
