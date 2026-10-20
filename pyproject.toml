@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Builds the weekly Cornerstone fantasy football report from Sleeper data."
 readme = "README.md"
 authors = [
-    { name = "brianbuoy", email = "brian.kwon@buoyhealth.com" }
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [
