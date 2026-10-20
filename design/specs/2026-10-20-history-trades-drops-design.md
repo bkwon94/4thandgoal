@@ -290,7 +290,8 @@ for award winners, and to the Game Changer chapter for that player.
 - A drop fact names the receiver only. The writer may not blame the quarterback for a drop.
 - The verifier gate that lets the writer say "cost the game" today keys on `.driver` and
   `.swing` fact IDs. The `dropswing` and the trade `swing` facts must pass that gate too. The
-  builder extends the gate to those IDs rather than rename the facts.
+  builder extends the gate to those IDs rather than rename the facts. A trade `swing` fact opens
+  the gate only when its text says the gap is above or equal to the margin.
 
 ## Week 6 rebuild and republish
 
