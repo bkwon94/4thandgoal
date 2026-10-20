@@ -24,7 +24,7 @@
   --press:transform 140ms var(--ease-out);
 }
 * { box-sizing:border-box; }
-body { margin:0; background:var(--wht); color:var(--ink); font-family:"Helvetica Neue",Arial,sans-serif; font-size:var(--fs-body); line-height:var(--lh-body); -webkit-font-smoothing:antialiased; }
+body { margin:0; background:var(--wht); color:var(--ink); font-family:"Helvetica Neue",Arial,sans-serif; font-size:var(--fs-body); line-height:var(--lh-body); -webkit-font-smoothing:antialiased; overflow-wrap:break-word; }
 .page { max-width:480px; margin:0 auto; background:var(--wht); }
 a { color:var(--red); }
 /* Scores and stats line up in columns only when every digit has the same width. */
@@ -57,7 +57,10 @@ a { color:var(--red); }
 .hint { font-size:var(--fs-meta); color:var(--muted); margin:var(--sp-2) 0 0; }
 
 .score { display:flex; align-items:center; justify-content:space-between; margin:0 0 var(--sp-3); gap:var(--sp-2); }
-.score .tm { font-weight:800; font-size:var(--fs-lead); line-height:var(--lh-tight); width:36%; display:flex; align-items:center; gap:var(--sp-2); }
+/* A flex item cannot shrink below its longest word by default. With long team names, the row got wider than a phone.
+   min-width:0 lets the name shrink, and hyphens break a long word inside its box. */
+.score .tm { font-weight:800; font-size:var(--fs-lead); line-height:var(--lh-tight); width:36%; min-width:0; display:flex; align-items:center; gap:var(--sp-2); hyphens:auto; }
+.score .tm > span { min-width:0; }
 .score .tm.r { flex-direction:row-reverse; text-align:right; }
 /* Flex centers the small dash on the big numbers. Inline text would sit it on the baseline. */
 .score .mid { display:flex; align-items:center; gap:var(--sp-1); white-space:nowrap; }
@@ -79,10 +82,11 @@ a { color:var(--red); }
 
 .mu { border-bottom:1px solid var(--rule); }
 .mu:last-of-type { border-bottom:none; }
-.mu .hd { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:var(--sp-2); padding:var(--sp-3) 0 var(--sp-2); }
+/* minmax(0,1fr) keeps both columns equal, even when one name has a long word. */
+.mu .hd { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:var(--sp-2); padding:var(--sp-3) 0 var(--sp-2); }
 /* The chapter label already gives the first row its top space. */
 .lbl + .mu .hd { padding-top:0; }
-.mu .hd .a, .mu .hd .b { display:flex; align-items:center; gap:var(--sp-2); font-weight:600; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.mu .hd .a, .mu .hd .b { display:flex; align-items:center; min-width:0; hyphens:auto; gap:var(--sp-2); font-weight:600; font-size:var(--fs-row); line-height:var(--lh-tight); }
 .mu .hd .b { justify-content:flex-end; text-align:right; }
 .mu .hd .w { color:var(--red); font-weight:800; }
 /* 44px is the smallest comfortable touch target. The color change on open is instant, so only the press animates. */
