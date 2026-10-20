@@ -85,6 +85,30 @@ def _median(bundle: Bundle, teams: dict) -> dict:
     }
 
 
+def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]:
+    """One card per trade, with a side per team. The grade is None until the writer gives one."""
+    facts = bundle.sheet.facts
+    grades = blurbs["trades"].grades if "trades" in blurbs else {}
+    cards = []
+    for i, trade in enumerate(bundle.data.trades, start=1):
+        sides = []
+        for rid in trade.roster_ids:
+            players = []
+            for pid, owner in trade.adds.items():
+                if owner != rid:
+                    continue
+                # The player fact holds the name and the points as written. A player with no
+                # lineup line has no fact, so he shows under a plain label and no points.
+                fact = facts.get(f"T{i}.{rid}.got.{pid}")
+                players.append({"name": fact.players[0], "points": fact.numbers[0]} if fact
+                               else {"name": "An unlisted player", "points": None})
+            picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
+            sides.append({"team": teams[rid], "grade": grades.get(f"T{i}.{rid}"),
+                          "players": players, "picks": picks})
+        cards.append({"sides": sides})
+    return cards
+
+
 def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str]) -> dict:
     """Turn the bundle into the values the templates read."""
     data = bundle.data
@@ -113,6 +137,7 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
         "motw": pick_facts,
         "game_changer": {"award": game_changer, "team": teams[game_changer.roster_id].name} if game_changer else None,
         "awards": [_tile(bundle, key, teams) for key in TILE_KEYS],
+        "trades": _trades(bundle, blurbs, teams),
         "matchups": matchups,
         "median": _median(bundle, teams),
         "table": [{"standing": s, "team": teams[s.roster_id]} for s in data.table],

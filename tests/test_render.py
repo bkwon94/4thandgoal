@@ -11,6 +11,7 @@ from cornerstone.parse import parse_week
 from cornerstone.render import build_context, render_index, render_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
+from cornerstone.writer import template_blurb
 
 
 def _bundle(d):
@@ -144,3 +145,44 @@ def test_mvb_tile_spells_out_the_title(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     html = render_week(b, _blurbs(b), tmp_path, _no_bytes).read_text()
     assert "MVB · Most Valuable Benchwarmer" in html
+
+
+def test_trades_section_order_and_cards(tbundle, tmp_path):
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    assert html.index('id="trades"') > html.index(">Awards<")
+    assert html.index('id="trades"') < html.index(">All Matchups<")
+    assert html.count('class="trade"') == 6
+    assert "Bhayshul Tuten" in html and "22.7" in html
+
+
+def test_grade_letter_and_no_grade(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    blurbs["trades"].grades = {"T5.12": "A"}
+    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
+    assert '<span class="grade">A</span>' in html
+    assert html.count("No grade") == 11
+
+
+def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    del blurbs["trades"]
+    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
+    assert html.count('class="trade"') == 6 and html.count("No grade") == 12
+
+
+def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    ch = next(c for c in tbundle.sheet.chapters if c.key == "trades")
+    blurbs["trades"] = template_blurb(ch, tbundle.sheet)
+    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
+    assert html.count("No grade") == 12
+
+
+def test_trades_opinion_note(tbundle, tmp_path):
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    assert "Grades are Tina's opinion from the fact sheet, not a computed score." in html
+
+
+def test_no_trades_no_section(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    assert 'id="trades"' not in render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()

@@ -49,6 +49,27 @@
     <p class="blurb gap">{{ blurbs.awards }}</p>
   </section>
 
+  {% if trades %}
+  <section class="chap" id="trades">
+    <div class="lbl">Trades</div>
+    {% for t in trades %}
+    <div class="trade">
+      {% for side in t.sides %}
+      <div class="side">
+        <div class="top">{{ tm(side.team) }}{% if side.grade %}<span class="grade">{{ side.grade }}</span>{% else %}<span class="grade none">No grade</span>{% endif %}</div>
+        <ul class="got">
+          {% for p in side.players %}<li><span>{{ p.name }}</span>{% if p.points is not none %}<b>{{ p.points }}</b>{% endif %}</li>{% endfor %}
+          {% for pick in side.picks %}<li><span>{{ pick }}</span></li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <p class="blurb gap">{{ blurbs.trades }}</p>
+    <p class="blurb note">Grades are Tina's opinion from the fact sheet, not a computed score.</p>
+  </section>
+  {% endif %}
+
   <section class="chap">
     <div class="lbl">All Matchups</div>
     {% for m in matchups %}
