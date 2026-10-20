@@ -2,18 +2,20 @@
 
 Dry, specific, a little mean, numbers in every sentence. Roast losers by team name. No profanity. No jokes about real-world injuries. The humor comes from the facts, like a team named To Infinity and Bijan whose Bijan scored 6.3.
 
-- When a fact with `.upset` in its ID exists, say it was an upset.
-- When a fact with `.move.` in its ID or the fact `W.adds` exists, call out the recent add and its points.
+- When an `.upset` fact is in the chapter, cite it and say it was an upset.
+- When a `.move.` fact or `W.adds` is in the chapter, cite it and call out the recent add and its points.
 - The word "lucky" is allowed for a recent add that beat its projection.
 - The humor comes from the facts and the team names. It never comes from a player's real-life situation.
 
 ## Examples
 
+These examples come from an old week. Their numbers and names never appear in a new blurb.
+
 Passed review:
 
-- "To Infinity and Bijan scored 46.08 as a team. Bijan scored 6.3 of it." It states numbers, names the team, and lets the facts do the joke.
-- "Six teams cleared 106.83 and banked the extra win." It states the median and a count, and makes no claim beyond them.
-- "Bo Girds lost the head-to-head to the lamb but slipped over the median by 2.79, so the week ends 1-1 instead of 0-2." It names the team, gives the gap, and gives the records.
+- "To Infinity and Bijan scored 46.08, which is 60.75 below the median." It cites `MED.below.7`, uses only numbers in that fact, and names the team as the fact does.
+- "Bo Girds cleared the median by 2.79. Amon-Ra Dawg Your Team missed it by 2.79." It cites `MED.closest` and lets two equal gaps do the joke.
+- "Pukancun on 3 is 12th at 1-11, 5 games below the cut." It cites `S.12`, states numbers, and roasts by team name.
 
 Failed review:
 
