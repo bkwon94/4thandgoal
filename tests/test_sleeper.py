@@ -3,7 +3,7 @@ Tests for the Sleeper client.
 Offline tests read recorded data. Live tests call the real Sleeper API.
 """
 import pytest
-from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state
+from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, read_fetch_time
 
 def test_load_raw_returns_every_file(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
@@ -14,7 +14,14 @@ def test_load_raw_returns_every_file(fixture_raw_dir):
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
     fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
-    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == set(RAW_FILES)
+    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {*RAW_FILES, "fetched"}
+
+
+@pytest.mark.live
+def test_fetch_week_records_the_fetch_time(tmp_path):
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    assert read_fetch_time(tmp_path / "raw").tzinfo is not None
+
 
 @pytest.mark.live
 def test_fetch_state_has_week():

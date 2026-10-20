@@ -65,6 +65,25 @@ class Move(BaseModel):
     bid: int | None
 
 
+class DraftPick(BaseModel):
+    season: str
+    round: int
+    roster_id: int
+    previous_owner_id: int
+    owner_id: int
+
+
+class Trade(BaseModel):
+    transaction_id: str
+    # The aware time of Sleeper's epoch milliseconds.
+    created: datetime
+    roster_ids: list[int]
+    # Player id to the roster that got him, and player id to the roster that gave him.
+    adds: dict[str, int]
+    drops: dict[str, int]
+    draft_picks: list[DraftPick]
+
+
 class PastWeek(BaseModel):
     week: int
     scores: dict[int, float]
@@ -75,6 +94,7 @@ class PastWeek(BaseModel):
     projections: dict[str, float]
     stats: dict[str, dict[str, float]]
     moves: list[Move]
+    trades: list[Trade] = []
 
 
 class History(BaseModel):
@@ -209,6 +229,7 @@ class WeekData(BaseModel):
     next: list[NextMatchup]
     history: list[SeasonHistory]
     ranks: list[PositionRank]
+    trades: list[Trade] = []
 
 
 class FactSheet(BaseModel):
@@ -263,6 +284,8 @@ class BuildRecord(BaseModel):
 
     started: datetime
     sources: dict[str, bool]
+    # The fetch time of this week's transactions.json. It is the end of the trade window.
+    fetched: datetime | None = None
 
 
 class VerifyFile(BaseModel):

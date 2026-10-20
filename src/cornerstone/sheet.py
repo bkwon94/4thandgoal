@@ -29,6 +29,7 @@ from cornerstone.models import (
     FactSheet,
     History,
     PlayerLine,
+    Trade,
     Week,
     WeekData,
     r2,
@@ -637,6 +638,7 @@ def build_bundle(
     week: Week,
     news: Callable[[str], list[dict]] = fetch_news,
     history: History | None = None,
+    trades: list[Trade] | None = None,
 ) -> Bundle:
     c = Context(week, news, history)
     families = (
@@ -659,6 +661,7 @@ def build_bundle(
         next=c.next,
         history=c.season_history,
         ranks=c.ranks,
+        trades=trades if trades is not None else [],
     )
     return Bundle(data=data, sheet=FactSheet(facts=facts, chapters=chapters(c, facts)))
 

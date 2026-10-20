@@ -7,7 +7,9 @@ import logging
 import os
 import tempfile
 import time
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 
@@ -24,6 +26,9 @@ TIMEOUT_SECONDS = 30
 # The players file is about 5 MB. The cache keeps it one day, because the injury status in it
 # changes daily and must be fresh on build day.
 PLAYERS_CACHE_MAX_AGE_SECONDS = 24 * 60 * 60
+
+# The fetch time is saved beside the raw files but is not one of them, so load_raw ignores it.
+FETCHED_FILE = "fetched.json"
 
 POSITIONS = ("QB", "RB", "WR", "TE", "DEF", "K")
 
@@ -87,9 +92,20 @@ def fetch_news(player_id: str) -> list[dict]:
         return _get_or_empty(client, f"{UNOFFICIAL_URL}/players/nfl/{player_id}/news")
 
 
+def read_fetch_time(raw_dir: Path) -> datetime | None:
+    """The aware time at which fetch_week got the transactions. None when no time is saved."""
+    path = raw_dir / FETCHED_FILE
+    if not path.exists():
+        return None
+    return datetime.fromisoformat(json.loads(path.read_text(encoding="utf-8"))["transactions"])
+
+
 def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path) -> None:
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+        transactions = _get(client, f"{league}/transactions/{week}")
+        # The time is taken right after the call returns. It is the end of the trade window.
+        fetched = datetime.now(ZoneInfo("America/New_York"))
         data = {
             "state": _get(client, f"{OFFICIAL_URL}/state/nfl"),
             "league": _get(client, league),
@@ -97,7 +113,7 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
             "rosters": _get(client, f"{league}/rosters"),
             "matchups": _get(client, f"{league}/matchups/{week}"),
             "matchups_next": _get(client, f"{league}/matchups/{week + 1}"),
-            "transactions": _get(client, f"{league}/transactions/{week}"),
+            "transactions": transactions,
             "projections": _get_or_empty(
                 client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
             "stats": _get_or_empty(
@@ -108,6 +124,7 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
+    _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
 
 
 def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> None:

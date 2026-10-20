@@ -6,13 +6,18 @@ import json
 import re
 import shutil
 import subprocess
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 
 from cornerstone.history import HISTORY_FILES, history_dir, history_root
-from cornerstone.models import Sentence, Verdict, VerifyOut
-from cornerstone.pipeline import BuildStopped, read_verify, run_build, run_rewrite, week_dir
+from cornerstone.models import BuildRecord, Sentence, Verdict, VerifyFile, VerifyOut
+from cornerstone.pipeline import BuildStopped, make_bundle, read_verify, run_build, run_rewrite, week_dir
 from cornerstone.publish import PublishError, run_publish
+from cornerstone.sheet import read_bundle
+
+ET = ZoneInfo("America/New_York")
 
 
 def _fake(system, user, model):
@@ -229,3 +234,43 @@ def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir):
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
 
     assert not (_git(repo, "ls-tree", "-r", "--name-only", "HEAD").count("notes.txt"))
+
+
+def _fetched(repo, when):
+    (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text(json.dumps({"transactions": when.isoformat()}))
+
+
+def test_window_ends_at_the_saved_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    _fetched(repo, datetime(2026, 10, 20, 8, 0, tzinfo=ET))
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
+    assert len(bundle.data.trades) == 5
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 8, 0, tzinfo=ET)
+
+
+def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    _fetched(repo, datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    _fetched(repo, datetime(2026, 10, 21, 9, 0, tzinfo=ET))
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
+
+
+def test_window_starts_at_the_fetch_before(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    previous = week_dir(repo, 2026, 5)
+    previous.mkdir(parents=True)
+    record = BuildRecord(started=datetime(2026, 10, 16, 18, 0, tzinfo=ET), sources={},
+                         fetched=datetime(2026, 10, 16, 18, 0, tzinfo=ET))
+    (previous / "verify.json").write_text(VerifyFile(build=record, chapters={}).model_dump_json())
+    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    assert [x.roster_ids for x in bundle.data.trades] == [[11, 12], [7, 8]]
+
+
+def test_window_without_a_fetch_time_ends_at_the_build_start(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    assert len(bundle.data.trades) == 6 and record.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
+    assert "no fetch time for week 6" in caplog.text

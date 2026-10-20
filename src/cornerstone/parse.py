@@ -3,9 +3,9 @@ Parse the raw Sleeper JSON into the domain models.
 This is the only module that knows the shape of the raw data.
 """
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timezone
 
-from cornerstone.models import Matchup, Move, PastWeek, PlayerLine, Side, Team, Week
+from cornerstone.models import DraftPick, Matchup, Move, PastWeek, PlayerLine, Side, Team, Trade, Week
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")
@@ -135,6 +135,21 @@ def parse_moves(transactions: list[dict]) -> list[Move]:
     return moves
 
 
+def parse_trades(transactions: list[dict]) -> list[Trade]:
+    return [
+        Trade(
+            transaction_id=t["transaction_id"],
+            created=datetime.fromtimestamp(t["created"] / 1000, tz=timezone.utc),
+            roster_ids=t["roster_ids"],
+            adds=t["adds"] or {},
+            drops=t["drops"] or {},
+            draft_picks=[DraftPick(**pick) for pick in t["draft_picks"]],
+        )
+        for t in transactions
+        if t["type"] == "trade" and t["status"] == "complete"
+    ]
+
+
 def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | None = None) -> Week:
     state = raw["state"]
     return Week(
@@ -174,4 +189,5 @@ def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
         },
         stats={item["player_id"]: item["stats"] for item in raw["stats"]},
         moves=parse_moves(raw["transactions"]),
+        trades=parse_trades(raw["transactions"]),
     )

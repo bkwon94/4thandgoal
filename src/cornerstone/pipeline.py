@@ -6,18 +6,19 @@ import json
 import logging
 import subprocess
 from collections.abc import Callable
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
 from cornerstone.history import fetch_history, history_dir, history_root, load_history, save_week_to_history
-from cornerstone.models import Blurb, BuildRecord, Bundle, History, VerifyFile, VerifyResult
-from cornerstone.parse import parse_week
+from cornerstone.models import Blurb, BuildRecord, Bundle, History, Trade, VerifyFile, VerifyResult
+from cornerstone.parse import parse_trades, parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
-from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw
+from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time
+from cornerstone.trades import default_cutoff, previous_fetch_time, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.writer import ClaudeCall
 
@@ -75,12 +76,25 @@ def _load_history_or_none(root: Path, raw: dict[str, object], week: int) -> Hist
         return None
 
 
+def _window_trades(
+    repo: Path, season: int, week: int, raw: dict[str, object], season_start: date, history: History | None,
+    until: datetime,
+) -> list[Trade]:
+    # The window starts at the fetch of the build before. Without it, the Tuesday cut-off stands in.
+    after = previous_fetch_time(repo, season, week) or default_cutoff(season_start, week)
+    last = history.weeks.get(week - 1) if history else None
+    if last is None and week > 1:
+        log.warning("week %d is not in the history: trades of its last hours may be missing", week - 1)
+    return trades_for_week(parse_trades(raw["transactions"]), last.trades if last else [], after, until)
+
+
 def make_bundle(
     repo: Path,
     season: int,
     week: int,
     news: NewsFetcher = fetch_news,
     started: datetime | None = None,
+    fetched: datetime | None = None,
 ) -> tuple[Bundle, BuildRecord]:
     """Load the raw data, run the week gate, load the history, and build the bundle."""
     raw = load_raw(week_dir(repo, season, week) / "raw")
@@ -91,10 +105,18 @@ def make_bundle(
         raise BuildStopped(message)
 
     history = _load_history_or_none(history_root(repo, season), raw, week)
-    bundle = build_bundle(parsed, news=news, history=history)
+    started = started or datetime.now(ZoneInfo("America/New_York"))
+    until = fetched or read_fetch_time(week_dir(repo, season, week) / "raw")
+    if until is None:
+        # Version 1 saved no fetch time, so this happens for week 6 only.
+        log.warning("no fetch time for week %d: window ends at the build start", week)
+        until = started
+    trades = _window_trades(repo, season, week, raw, parsed.season_start, history, until)
+    bundle = build_bundle(parsed, news=news, history=history, trades=trades)
     record = BuildRecord(
-        started=started or datetime.now(ZoneInfo("America/New_York")),
+        started=started,
         sources={"history": history is not None and history.complete()},
+        fetched=until,
     )
     return bundle, record
 
@@ -114,13 +136,17 @@ def run_build(
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_dir = directory / "raw"
+    # A rebuild keeps the first window, also after a refetch, so a trade never moves to another page.
+    saved = directory / "verify.json"
+    first_fetch = read_verify(saved).build if saved.exists() else None
     if fetch:
         players_cache = repo / "data" / "cache" / "players.json"
         fetch_week(LEAGUE_ID, season, week, raw_dir, players_cache)
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
 
-    bundle, record = make_bundle(repo, season, week, news)
+    bundle, record = make_bundle(
+        repo, season, week, news, fetched=first_fetch.fetched if first_fetch else None)
     write_bundle(bundle, directory / "facts.json")
 
     blurbs: dict[str, Blurb] = {}
