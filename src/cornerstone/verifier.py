@@ -130,12 +130,13 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
 
 def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> tuple[str, str]:
     system = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8").strip()
-    cited = {fid for s in blurb.sentences for fid in s.fact_ids}
+    # The verifier sees every chapter fact, cited or not, so a true claim with a missed
+    # citation is not judged false. Facts outside the chapter never reach it.
     lines = [
         f"Chapter: {chapter.title}",
         "",
-        "Cited facts:",
-        *(f"- {fid}: {sheet.facts[fid].text}" for fid in sheet.facts if fid in cited),
+        "Chapter facts:",
+        *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids if fid in sheet.facts),
         "",
         "Sentences. Give one verdict per sentence, in order:",
         *(

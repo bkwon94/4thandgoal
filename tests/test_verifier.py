@@ -123,13 +123,26 @@ def test_unknown_fact_id_fails(fixture_raw_dir):
     assert any("NOPE.1" in m for m in code_check(b, ch, sheet))
 
 
-def test_prompt_lists_cited_facts_and_numbered_sentences(fixture_raw_dir):
+def test_prompt_lists_chapter_facts_and_numbered_sentences(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("The median was 106.83.", "MED.value"))
     system, user = build_verifier_prompt(b, ch, sheet)
     assert "fact checker" in system
     assert "- MED.value: " in user and "0. The median was 106.83. [ids: MED.value]" in user
+
+
+def test_prompt_holds_uncited_chapter_facts_and_no_other_matchup(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    uncited = next(f for f in ch.fact_ids if f not in ("M4.result", "M4.records"))
+    b = _blurb("recap_4", _s("A result.", "M4.result"), _s("Records.", "M4.records", "M4.result"))
+    _, user = build_verifier_prompt(b, ch, sheet)
+    assert f"- {uncited}: {sheet.facts[uncited].text}" in user
+    assert "- M1.result: " not in user
+    assert not any(line.startswith("- M1.") for line in user.splitlines())
+    assert "0. A result. [ids: M4.result]" in user
+    assert "1. Records. [ids: M4.records, M4.result]" in user
 
 
 def test_verdict_count_mismatch_marks_all_unsupported(fixture_raw_dir):
