@@ -93,3 +93,55 @@ class MedianFacts(BaseModel):
     below: list[int]
     closest_above: tuple[int, float]
     closest_below: tuple[int, float]
+
+
+class Standing(BaseModel):
+    rank: int
+    roster_id: int
+    wins: int
+    losses: int
+    points_for: float
+    in_playoffs: bool
+    # Wins minus the wins of sixth place. A positive number is above the cut.
+    games_from_cut: int
+    schedule_strength: float | None
+    strength_rank: int | None
+
+
+class Award(BaseModel):
+    key: Literal["game_changer", "top_scorer", "mvb", "underperformer", "overachiever"]
+    line: PlayerLine
+    roster_id: int
+    matchup_id: int
+    reason: str
+    skipped: list[str]
+
+
+class Pick(BaseModel):
+    matchup_id: int
+    reason: Literal["Closest Finish", "Upset", "Top of the Table", "Playoff Stakes"]
+    scores: dict[str, float]
+
+
+class NextMatchup(BaseModel):
+    a: int
+    b: int
+    must_watch: bool
+    reason: str | None
+
+
+class SeasonHistory(BaseModel):
+    roster_id: int
+    high: float
+    low: float
+    # Keyed by 100, 110, and 120.
+    weeks_over: dict[int, int]
+    new_high: bool
+    new_low: bool
+
+
+class PositionRank(BaseModel):
+    player_id: str
+    position: str
+    rank: int
+    of: int
