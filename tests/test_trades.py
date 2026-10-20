@@ -124,3 +124,25 @@ def test_player_with_no_line_stays_in_sides_and_gets_no_got_fact(tbundle, fixtur
     f = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], trades=[trade]).sheet.facts
     assert "an unlisted player" in f["T1.sides"].text
     assert not any(fid.endswith(".99999999") for fid in f)
+
+
+def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
+    # Two non-late trades move one starter on. Only the final roster started him.
+    from cornerstone.models import Trade
+    week = parse_week(load_raw(fixture_raw_dir))
+    owner = week.matchups[0].a
+    star = next(l for l in owner.lines if l.started)
+    first, second = [r for r in week.teams if r != owner.roster_id][:2]
+    made = datetime(2026, 10, 16, tzinfo=ET)
+    trades = [
+        Trade(transaction_id="a", created=made, roster_ids=[first, second],
+              adds={star.player_id: second}, drops={star.player_id: first}, draft_picks=[]),
+        Trade(transaction_id="b", created=made, roster_ids=[second, owner.roster_id],
+              adds={star.player_id: owner.roster_id}, drops={star.player_id: second}, draft_picks=[]),
+    ]
+    f = build_bundle(week, news=lambda pid: [], trades=trades).sheet.facts
+    assert f"T1.{first}.swing" not in f and f"T1.{second}.swing" not in f
+    # The roster that gave him on to the owner sees his points as the gave side.
+    assert f"it gave scored {star.points:g}." in f[f"T2.{second}.swing"].text
+    assert f"T2.{owner.roster_id}.swing" in f
+    assert f"scored {star.points:g} this week" in f[f"T2.{owner.roster_id}.swing"].text

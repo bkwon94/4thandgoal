@@ -22,8 +22,9 @@ from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_b
 
 log = logging.getLogger(__name__)
 
-# A trade swing fact also lets the writer say "decided", because it states a gap against the margin.
+# A trade swing fact lets the writer say "decided" only when its gap is at least the margin.
 TRADE_SWING_ID = re.compile(r"T\d+\.\d+\.swing")
+SWING_AT_LEAST_MARGIN = ("above the margin", "equal to the margin")
 DECIDED_WORDS = ["decided", "decider", "decide"]
 # Gated words need a cited fact ID that contains one of the markers.
 GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
@@ -78,6 +79,12 @@ def _week_numbers(sheet: FactSheet) -> set[str]:
         return set()
     number = int(week.numbers[0])
     return {str(number), str(number + 1)}
+
+
+def _decisive_swing(fid: str, sheet: FactSheet) -> bool:
+    """True for a trade swing fact whose gap is at least the margin."""
+    fact = sheet.facts.get(fid)
+    return bool(TRADE_SWING_ID.fullmatch(fid) and fact and any(w in fact.text for w in SWING_AT_LEAST_MARGIN))
 
 
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
@@ -135,7 +142,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for words, markers in GATED_WORDS:
             for word in words:
                 if _whole_word(word, bare) and not any(
-                    m in fid or (word in DECIDED_WORDS and TRADE_SWING_ID.fullmatch(fid))
+                    m in fid or (word in DECIDED_WORDS and _decisive_swing(fid, sheet))
                     for fid in sentence.fact_ids for m in markers
                 ):
                     needs = " or ".join(markers)

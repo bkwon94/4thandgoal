@@ -546,12 +546,18 @@ def _join(items: list[str]) -> str:
     return f"{', '.join(items[:-1])} and {items[-1]}"
 
 
+def _moved(trade: Trade, rid: int, got: bool) -> list[str]:
+    """The player IDs a roster got or gave, in the order of `adds`."""
+    if got:
+        return [pid for pid, owner in trade.adds.items() if owner == rid]
+    return [pid for pid in trade.adds if trade.drops.get(pid) == rid]
+
+
 def _items(c: Context, trade: Trade, rid: int, got: bool, n: Nums) -> list[str]:
     """The players, then the picks, that a roster got or gave. Players keep the order of `adds`."""
-    moved = trade.adds if got else trade.drops
     # A player with no line was on no roster at lineup lock, so the week has no points to cite for him.
     # He stays in the sides text under a plain label, and gets no got or gave fact.
-    names = [c.lines[pid].name if pid in c.lines else "an unlisted player" for pid, owner in moved.items() if owner == rid]
+    names = [c.lines[pid].name if pid in c.lines else "an unlisted player" for pid in _moved(trade, rid, got)]
     picks = [
         f"{n(int(p.season))} round {n(p.round)} pick" for p in trade.draft_picks
         if (p.owner_id if got else p.previous_owner_id) == rid
@@ -613,11 +619,14 @@ def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
 def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
     """The points of the traded starters against the margin of the roster's matchup."""
     # A player with no line counts 0, so he is left out of both sums.
-    got = [c.lines[pid] for pid, owner in trade.adds.items() if owner == rid and pid in c.lines]
-    gave = [c.lines[pid] for pid, owner in trade.drops.items() if owner == rid and pid in c.lines]
-    # The trade is not late, so each moved player sits in the lines of his new roster.
-    got_started = [l for l in got if l.started]
-    gave_started = [l for l in gave if l.started]
+    got = [c.lines[pid] for pid in _moved(trade, rid, True) if pid in c.lines]
+    gave = [c.lines[pid] for pid in _moved(trade, rid, False) if pid in c.lines]
+    # A later trade can move a player on, so a line counts only for the roster that holds it in the lineup.
+    # The roster that got him must own the line. The roster that got him from the giver must own it for "gave".
+    got_started = [l for l in got if l.started and c.line_owner[l.player_id] == rid]
+    gave_started = [
+        l for l in gave if l.started and c.line_owner[l.player_id] == trade.adds[l.player_id]
+    ]
     if not got_started and not gave_started:
         return None
     n = Nums()
@@ -639,8 +648,8 @@ def trade_facts(c: Context) -> list[Fact]:
     for i, trade in enumerate(c.trades, start=1):
         out.append(_sides_fact(c, i, trade))
         for rid in trade.roster_ids:
-            out += [_player_trade_fact(c, i, rid, pid, "got") for pid, owner in trade.adds.items() if owner == rid and pid in c.lines]
-            out += [_player_trade_fact(c, i, rid, pid, "gave") for pid, owner in trade.drops.items() if owner == rid and pid in c.lines]
+            out += [_player_trade_fact(c, i, rid, pid, "got") for pid in _moved(trade, rid, True) if pid in c.lines]
+            out += [_player_trade_fact(c, i, rid, pid, "gave") for pid in _moved(trade, rid, False) if pid in c.lines]
         # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
             continue

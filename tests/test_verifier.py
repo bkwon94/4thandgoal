@@ -346,3 +346,10 @@ def test_trade_swing_passes_the_cost_and_decided_gates(tbundle):
     assert not [m for m in code_check(b, ch, sheet) if "needs a cited" in m]
     other = _blurb("trades", _s("The trade decided it.", "T5.12.sides"))
     assert any("decided" in m for m in code_check(other, ch, sheet))
+
+
+def test_decided_needs_a_swing_gap_at_least_the_margin(tbundle):
+    sheet = tbundle.sheet
+    ch = _ch(sheet, "trades")
+    below = _blurb("trades", _s("The trade decided it.", "T5.11.swing"))
+    assert any("decided" in m for m in code_check(below, ch, sheet))
