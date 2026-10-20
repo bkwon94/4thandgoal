@@ -4,6 +4,16 @@
 
 set -euo pipefail
 
+# Notify on any non-zero exit, so a failure before the build, such as a bad
+# ~/.secrets or a missing repo, also reaches Brian.
+notify_on_failure() {
+  local status=$?
+  if [[ "$status" -ne 0 ]]; then
+    osascript -e 'display notification "Cornerstone build failed - check build.log" with title "Cornerstone Weekly"' || true
+  fi
+}
+trap notify_on_failure EXIT
+
 # launchd runs jobs with a minimal PATH that does not include user-installed
 # binaries, so uv (installed under ~/.local/bin or Homebrew) would not resolve.
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
@@ -31,9 +41,11 @@ log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S %Z')] $*" >>"$LOG_FILE"
 }
 
-cd "$HOME/repos/cornerstone-fantasy-sleeper-weekly-report"
-
 log "start"
+
+# The cd comes after the log setup, so a missing repo leaves a line in build.log.
+REPO_DIR="$HOME/repos/cornerstone-fantasy-sleeper-weekly-report"
+cd "$REPO_DIR" || { log "cannot cd to $REPO_DIR"; exit 1; }
 
 # set +e so a failed build reaches the exit-code handling below instead of
 # aborting the script. The job does not retry: Brian decides what to do.
@@ -44,8 +56,5 @@ set -e
 
 log "end (exit ${build_exit})"
 
-if [[ "$build_exit" -ne 0 ]]; then
-  osascript -e 'display notification "Cornerstone build failed - check build.log" with title "Cornerstone Weekly"' || true
-fi
-
+# The EXIT trap sends the failure notification.
 exit "$build_exit"
