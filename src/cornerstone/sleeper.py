@@ -4,6 +4,8 @@ It writes one raw JSON file per endpoint and reads them back.
 """
 import json
 import logging
+import os
+import tempfile
 import time
 from pathlib import Path
 
@@ -40,7 +42,8 @@ def _get_or_empty(client: httpx.Client, url: str, params=None) -> list:
     # Unofficial endpoints change without notice, so a failure must not stop the report.
     try:
         return _get(client, url, params)
-    except httpx.HTTPError as error:
+    except (httpx.HTTPError, ValueError) as error:
+        # ValueError covers a 200 response with a body that is not JSON.
         logger.warning("Unofficial Sleeper endpoint failed: %s (%s)", url, error)
         return []
 
@@ -52,11 +55,24 @@ def _write_json(path: Path, obj) -> None:
 
 def _players(client: httpx.Client, players_cache: Path):
     if players_cache.exists() and time.time() - players_cache.stat().st_mtime < PLAYERS_CACHE_MAX_AGE_SECONDS:
-        with players_cache.open(encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with players_cache.open(encoding="utf-8") as f:
+                return json.load(f)
+        except ValueError:
+            # A cut-off cache file is not data. Fetch the players again.
+            logger.warning("Players cache %s does not parse, so it is fetched again", players_cache)
     players = _get(client, f"{OFFICIAL_URL}/players/nfl")
     players_cache.parent.mkdir(parents=True, exist_ok=True)
-    _write_json(players_cache, players)
+    # Write to a temp file in the same directory, then replace, so a stopped write never
+    # leaves a half file in the cache.
+    fd, tmp = tempfile.mkstemp(dir=players_cache.parent, suffix=".tmp")
+    os.close(fd)
+    try:
+        _write_json(Path(tmp), players)
+        os.replace(tmp, players_cache)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
     return players
 
 

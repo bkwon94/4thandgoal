@@ -348,17 +348,26 @@ def _news_facts(c: Context, gc) -> list[Fact]:
     # News is an unofficial endpoint. A failure must never stop a build.
     try:
         items = c.news(gc.line.player_id)
+        # Items arrive in no promised order, and "published" is epoch milliseconds as a string.
+        newest = max(items, key=lambda i: int(i.get("published") or 0), default={})
     except Exception:
         logger.exception("News fetch failed for %s", gc.line.name)
         return []
-    # Items arrive in no promised order, and "published" is epoch milliseconds as a string.
-    newest = max(items, key=lambda i: int(i.get("published") or 0), default={})
     description = (newest.get("metadata") or {}).get("description") or ""
     if not description:
         return []
     n = Nums()
-    text = f"Latest news on {gc.line.name}: {n.text(description[:NEWS_MAX_CHARS])}"
+    text = f"Latest news on {gc.line.name}: {n.text(_cut_at_word(description, NEWS_MAX_CHARS))}"
     return [_fact("AW.game_changer.news", text, n, [], [gc.line.name])]
+
+
+def _cut_at_word(text: str, limit: int) -> str:
+    """Cut at the last whitespace before the limit, so no word or number is cut in half."""
+    if len(text) <= limit:
+        return text
+    head = text[:limit]
+    space = max(head.rfind(" "), head.rfind("\n"), head.rfind("\t"))
+    return (head[:space] if space > 0 else head).rstrip()
 
 
 def pick_facts(c: Context) -> list[Fact]:

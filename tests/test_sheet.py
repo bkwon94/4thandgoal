@@ -131,3 +131,25 @@ def test_strength_facts_name_next_week_only(bundle):
     assert sos
     for f in sos:
         assert "next week" in f.text and "remaining" not in f.text, f.id
+
+
+def test_news_with_bad_published_skips_the_fact(fixture_raw_dir):
+    def news(_player_id):
+        return [{"metadata": {"description": "A note."}, "published": "yesterday"}]
+
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news)
+    assert "AW.game_changer.news" not in b.sheet.facts
+
+
+def test_long_news_ends_on_a_whole_word(fixture_raw_dir):
+    # The 300-character limit falls inside a word: the first 300 characters end in "wo".
+    description = ("xx " + "word " * 61)[:305]
+    assert len(description) == 305 and description[:300].endswith(" wo")
+
+    def news(_player_id):
+        return [{"metadata": {"description": description}, "published": "1792500000000"}]
+
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news)
+    text = b.sheet.facts["AW.game_changer.news"].text
+    assert text.endswith(" word")
+    assert len(text.split(": ", 1)[1]) <= 300
