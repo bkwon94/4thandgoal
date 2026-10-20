@@ -284,3 +284,11 @@ def test_writer_validation_error_is_a_failed_attempt(fixture_raw_dir):
 
     blurb, results = write_and_verify(ch, sheet, fake)
     assert blurb.fallback and len(results) == 2
+
+
+def test_name_removal_matches_whole_words(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median").model_copy(deep=True)
+    ch.scope_players.append("0")
+    b = _blurb("median", _s("A team scored 100.", "MED.value"), _s("Again.", "MED.value"))
+    assert any("number 100" in m for m in code_check(b, ch, sheet))

@@ -48,9 +48,10 @@ def _banned_words() -> list[str]:
 
 
 def _remove_names(text: str, names: list[str]) -> str:
-    # Longest first, so "Tre Tucker" goes before any shorter name inside it.
+    # Longest first, so "Tre Tucker" goes before any shorter name inside it. Whole words only,
+    # so an odd name such as "0" does not remove the digit from "100".
     for name in sorted(names, key=len, reverse=True):
-        text = text.replace(name, " ")
+        text = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", " ", text)
     return text
 
 

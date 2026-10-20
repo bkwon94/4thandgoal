@@ -74,11 +74,17 @@ def _line(player_id, entry, roster_positions, projections, players, starters) ->
     )
 
 
+EMPTY_SLOT = "0"
+
+
 def _side(entry: dict, roster_positions, projections, players) -> Side:
+    # Sleeper marks an empty starter slot with "0". The starters list keeps it, so the slot
+    # index of every other starter stays right, but "0" is never a player line.
     starters = entry["starters"]
     lines = [
         _line(pid, entry, roster_positions, projections, players, starters)
         for pid in entry["players"]
+        if pid != EMPTY_SLOT
     ]
     return Side(roster_id=entry["roster_id"], points=entry["points"], lines=lines)
 

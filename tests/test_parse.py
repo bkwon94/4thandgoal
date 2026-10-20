@@ -68,3 +68,15 @@ def test_next_matchups_and_season_start(fixture_raw_dir):
     assert len(wk.next_matchups) == 6
     assert all(a < b for a, b in wk.next_matchups)
     assert wk.season_start == date(2026, 9, 9)
+
+
+def test_empty_starter_slot_makes_no_line(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    entry = raw["matchups"][0]
+    entry["starters"][1] = "0"
+    entry["players"].append("0")
+    wk = parse_week(raw)
+    lines = [l for m in wk.matchups for s in (m.a, m.b) for l in s.lines]
+    assert not any(l.player_id == "0" or l.name == "0" for l in lines)
+    third = next(l for l in lines if l.player_id == entry["starters"][2])
+    assert third.slot == raw["league"]["roster_positions"][2]
