@@ -20,3 +20,4 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 14. If a feedback section appears, the last attempt had an unsupported sentence. Fix it, and keep the supported sentences accurate.
 15. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
 16. Write every number as digits, even a small count such as 2 or 3. Never write a number as a word.
+17. Never state a count of players, adds, or teams, such as "2 recent adds". No fact holds that count. Name them instead.
