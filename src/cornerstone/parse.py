@@ -143,7 +143,7 @@ def parse_trades(transactions: list[dict]) -> list[Trade]:
             roster_ids=t["roster_ids"],
             adds=t["adds"] or {},
             drops=t["drops"] or {},
-            draft_picks=[DraftPick(**pick) for pick in t["draft_picks"]],
+            draft_picks=[DraftPick(**pick) for pick in t.get("draft_picks") or []],
         )
         for t in transactions
         if t["type"] == "trade" and t["status"] == "complete"

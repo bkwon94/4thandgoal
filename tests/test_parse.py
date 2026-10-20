@@ -91,3 +91,10 @@ def test_next_matchups_keep_pairs_only(fixture_raw_dir):
         {"matchup_id": None, "roster_id": 4},
     ]
     assert parse_week(raw).next_matchups == [(1, 2)]
+
+
+def test_trade_with_null_draft_picks_parses():
+    from cornerstone.parse import parse_trades
+    trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405,
+             "roster_ids": [2, 6], "adds": {"11610": 6}, "drops": {"11610": 2}, "draft_picks": None}
+    assert parse_trades([trade])[0].draft_picks == []
