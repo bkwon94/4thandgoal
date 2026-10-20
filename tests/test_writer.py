@@ -115,5 +115,7 @@ def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
     system, _ = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None)
     assert "Make no jokes about injuries." not in system
     assert "Make no joke about an injury itself or about a player's health." in system
-    assert "Roast the manager, not the player." in system
+    assert "Roast the manager, not the player's body." in system
+    assert "is now listed" in system
+    assert "started while" not in system
     assert "**injury status**" in system
