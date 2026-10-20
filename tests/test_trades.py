@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.history import load_history
 from cornerstone.parse import parse_trades, parse_week
+from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
 
@@ -38,3 +39,77 @@ def test_late_trade(fixture_raw_dir, fixture_history_root):
     t = _six(fixture_raw_dir, fixture_history_root, datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     wk = parse_week(load_raw(fixture_raw_dir))
     assert [is_late(x, wk) for x in t] == [False, False, False, False, False, True]
+
+
+def test_roster_slots_count_the_reserve_slot(fixture_raw_dir):
+    assert parse_week(load_raw(fixture_raw_dir)).roster_slots == 15
+
+
+def test_sides_fact(tbundle):
+    assert tbundle.sheet.facts["T5.sides"].text == (
+        "Unsolicited Dak Picks traded Bhayshul Tuten and Garrett Wilson to "
+        "Amon-Ra Dawg Your Team for Devaughn Vele and Josh Jacobs.")
+
+
+def test_got_facts(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12.got.12490"].text.startswith(
+        "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31.")
+    assert f["T5.11.got.5850"].text.startswith(
+        "Unsolicited Dak Picks got Josh Jacobs: 0 this week, 0 this season.")
+    assert f["T5.12.gave.11834"].text.startswith(
+        "Amon-Ra Dawg Your Team gave Devaughn Vele: 5.7 this week, 55.4 this season")
+    assert "T5.11.gave.12490" in f
+
+
+def test_need_fact(tbundle):
+    assert tbundle.sheet.facts["T5.12.need"].text == (
+        "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB and 5 WR after the trade and 1 open roster spot.")
+
+
+def test_swing_facts(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12.swing"].text == (
+        "The players Amon-Ra Dawg Your Team got scored 29.1 this week; the players it gave scored 0. "
+        "The gap is 29.1, above the margin of 9.51 in its matchup.")
+    assert f["T5.11.swing"].text.endswith("The gap is 29.1, below the margin of 38.82 in its matchup.")
+
+
+def test_late_trade_has_no_swing_and_no_need(tbundle):
+    f = tbundle.sheet.facts
+    assert not any(fid.startswith("T6.") and fid.endswith((".swing", ".need")) for fid in f)
+    assert "T6.sides" in f
+
+
+def test_trades_chapter(tbundle):
+    ch = next(c for c in tbundle.sheet.chapters if c.key == "trades")
+    assert ch.grade_keys == ["T1.4", "T1.12", "T2.7", "T2.12", "T3.4", "T3.7",
+                             "T4.6", "T4.7", "T5.11", "T5.12", "T6.7", "T6.8"]
+    assert (ch.min_sentences, ch.max_sentences) == (4, 6)
+
+
+def test_no_trades_no_chapter(hbundle):
+    assert "trades" not in {c.key for c in hbundle.sheet.chapters}
+
+
+def test_three_team_trade(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    three = next(t for t in h.weeks[5].trades if len(t.roster_ids) == 3)
+    f = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=[three]).sheet.facts
+    assert f["T1.sides"].text.startswith("In a 3-team trade,")
+    assert all(name in f["T1.sides"].text for name in ("To Infinity and Bijan", "Return of T Mac", "Amon-Ra Dawg Your Team"))
+
+
+def test_got_fact_without_history(fixture_raw_dir, fixture_history_root, tbundle):
+    raw = load_raw(fixture_raw_dir)
+    f = build_bundle(parse_week(raw), news=lambda pid: [], trades=tbundle.data.trades).sheet.facts
+    assert f["T5.12.got.12490"].text == (
+        "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, position rank 4 of 31.")
+
+
+def test_need_clamps_open_spots_at_zero(tbundle):
+    # Pukancun on 3 lists 15 players against 15 slots.
+    need = tbundle.sheet.facts["T1.4.need"]
+    assert need.text.endswith("and 0 open roster spots.")
+    assert "0" in need.numbers

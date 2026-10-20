@@ -115,6 +115,8 @@ class Week(BaseModel):
     moves: list[Move]
     last_scored_week: int
     season_start: date
+    # Lineup lines a full roster holds: the roster positions plus the reserve slots.
+    roster_slots: int = 0
 
 
 class MatchupFacts(BaseModel):
@@ -213,6 +215,8 @@ class Chapter(BaseModel):
     scope_players: list[str]
     min_sentences: int
     max_sentences: int
+    # Keys such as "T1.4" that the writer grades. Only the trades chapter sets them.
+    grade_keys: list[str] = []
 
 
 class WeekData(BaseModel):

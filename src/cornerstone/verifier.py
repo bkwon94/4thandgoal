@@ -22,9 +22,12 @@ from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_b
 
 log = logging.getLogger(__name__)
 
+# A trade swing fact also lets the writer say "decided", because it states a gap against the margin.
+TRADE_SWING_ID = re.compile(r"T\d+\.\d+\.swing")
+DECIDED_WORDS = ["decided", "decider", "decide"]
 # Gated words need a cited fact ID that contains one of the markers.
 GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
-    (["decided", "decider", "decide"], (".driver",)),
+    (DECIDED_WORDS, (".driver",)),
     (["upset"], (".upset",)),
     (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing")),
@@ -132,7 +135,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for words, markers in GATED_WORDS:
             for word in words:
                 if _whole_word(word, bare) and not any(
-                    m in fid for fid in sentence.fact_ids for m in markers
+                    m in fid or (word in DECIDED_WORDS and TRADE_SWING_ID.fullmatch(fid))
+                    for fid in sentence.fact_ids for m in markers
                 ):
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")

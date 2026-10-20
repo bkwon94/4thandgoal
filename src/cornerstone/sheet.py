@@ -21,7 +21,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.history import player_trend
+from cornerstone.history import player_points, player_trend
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -36,6 +36,7 @@ from cornerstone.models import (
     sub,
 )
 from cornerstone.sleeper import fetch_news
+from cornerstone.trades import is_late
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,7 @@ SENTENCE_RANGES = {
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
+    "trades": (4, 6),
 }
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
@@ -133,9 +135,11 @@ class Context:
         week: Week,
         news: Callable[[str], list[dict]],
         history: History | None = None,
+        trades: list[Trade] | None = None,
     ) -> None:
         self.week = week
         self.history = history
+        self.trades = trades if trades is not None else []
         self.news = news
         # The week before is in the history, so a recent add of that week shows in this week.
         self.moves = list(week.moves)
@@ -535,6 +539,116 @@ def player_trend_facts(c: Context) -> list[Fact]:
     return out
 
 
+def _join(items: list[str]) -> str:
+    """A, A and B, or A, B and C."""
+    if len(items) < 2:
+        return "".join(items)
+    return f"{', '.join(items[:-1])} and {items[-1]}"
+
+
+def _items(c: Context, trade: Trade, rid: int, got: bool, n: Nums) -> list[str]:
+    """The players, then the picks, that a roster got or gave. Players keep the order of `adds`."""
+    moved = trade.adds if got else trade.drops
+    names = [c.lines[pid].name for pid, owner in moved.items() if owner == rid]
+    picks = [
+        f"{n(int(p.season))} round {n(p.round)} pick" for p in trade.draft_picks
+        if (p.owner_id if got else p.previous_owner_id) == rid
+    ]
+    return names + picks
+
+
+def _sides_fact(c: Context, i: int, trade: Trade) -> Fact:
+    n = Nums()
+    ids = trade.roster_ids
+    if len(ids) == 2:
+        a, b = ids
+        text = (
+            f"{c.team(a)} traded {_join(_items(c, trade, a, False, n))} to {c.team(b)} "
+            f"for {_join(_items(c, trade, a, True, n))}."
+        )
+    else:
+        clauses = [f"{c.team(r)} got {_join(_items(c, trade, r, True, n))}" for r in ids]
+        text = f"In a {n(len(ids))}-team trade, {'; '.join(clauses)}."
+    players = [c.lines[pid].name for pid in trade.adds]
+    return _fact(f"T{i}.sides", text, n, [c.team(r) for r in ids], players)
+
+
+def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fact:
+    n = Nums()
+    line = c.lines[pid]
+    team = c.team(rid)
+    clauses = [f"{n(line.points)} this week"]
+    # A season total from a partial history would be wrong, so a gap drops the clause.
+    complete = c.history is not None and c.history.complete()
+    if complete:
+        total = sum(Decimal(str(player_points(c.history.weeks[w], pid) or 0)) for w in range(1, c.week.week + 1))
+        clauses.append(f"{n(float(total))} this season")
+    rank = next((r for r in c.ranks if r.player_id == pid), None)
+    if rank is not None:
+        clauses.append(f"position rank {n(rank.rank)} of {n(rank.of)}")
+    text = f"{team} {verb} {line.name}: {', '.join(clauses)}."
+    beaten = player_trend(c.history, pid) if complete else None
+    if beaten is not None:
+        text += " " + _trend_text(line.name, beaten, n)
+    return _fact(f"T{i}.{rid}.{verb}.{pid}", text, n, [team], [line.name])
+
+
+def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
+    n = Nums()
+    team = c.team(rid)
+    side = next(s for m in c.week.matchups for s in (m.a, m.b) if s.roster_id == rid)
+    positions = sorted({c.lines[pid].position for pid in (*trade.adds, *trade.drops)})
+    depth = [f"{n(sum(l.position == pos for l in side.lines))} {pos}" for pos in positions]
+    spots = max(0, c.week.roster_slots - len(side.lines))
+    standing = c.by_rank[rid]
+    text = (
+        f"{team} is {n.record(standing.wins, standing.losses)}, {n.ord(standing.rank)} of {n(12)}, "
+        f"with {_join(depth)} after the trade and {n(spots)} open roster {'spot' if spots == 1 else 'spots'}."
+    )
+    return _fact(f"T{i}.{rid}.need", text, n, [team], [])
+
+
+def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
+    """The points of the traded starters against the margin of the roster's matchup."""
+    got = [c.lines[pid] for pid, owner in trade.adds.items() if owner == rid]
+    gave = [c.lines[pid] for pid, owner in trade.drops.items() if owner == rid]
+    # The trade is not late, so each moved player sits in the lines of his new roster.
+    got_started = [l for l in got if l.started]
+    gave_started = [l for l in gave if l.started]
+    if not got_started and not gave_started:
+        return None
+    n = Nums()
+    x = sum((Decimal(str(l.points)) for l in got_started), Decimal(0))
+    y = sum((Decimal(str(l.points)) for l in gave_started), Decimal(0))
+    gap = abs(float(x - y))
+    margin = next(f.margin for f, m in zip(c.mfacts, c.week.matchups) if rid in (m.a.roster_id, m.b.roster_id))
+    side = "above" if r2(gap) > r2(margin) else "equal to" if r2(gap) == r2(margin) else "below"
+    team = c.team(rid)
+    text = (
+        f"The players {team} got scored {n(float(x))} this week; the players it gave scored {n(float(y))}. "
+        f"The gap is {n(gap)}, {side} the margin of {n(margin)} in its matchup."
+    )
+    return _fact(f"T{i}.{rid}.swing", text, n, [team], [l.name for l in (*got_started, *gave_started)])
+
+
+def trade_facts(c: Context) -> list[Fact]:
+    out = []
+    for i, trade in enumerate(c.trades, start=1):
+        out.append(_sides_fact(c, i, trade))
+        for rid in trade.roster_ids:
+            out += [_player_trade_fact(c, i, rid, pid, "got") for pid, owner in trade.adds.items() if owner == rid]
+            out += [_player_trade_fact(c, i, rid, pid, "gave") for pid, owner in trade.drops.items() if owner == rid]
+        # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
+        if is_late(trade, c.week):
+            continue
+        for rid in trade.roster_ids:
+            out.append(_need_fact(c, i, trade, rid))
+            swing = _swing_fact(c, i, trade, rid)
+            if swing is not None:
+                out.append(swing)
+    return out
+
+
 def _history_ids(facts: dict[str, Fact], rosters, kinds, players=()) -> list[str]:
     """History and player trend fact IDs, most telling first, cut to the cap.
 
@@ -572,7 +686,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             for l in s.lines if l.started
         ]
 
-    def make(key, title, ids, rosters, rng) -> Chapter:
+    def make(key, title, ids, rosters, rng, grade_keys=()) -> Chapter:
         return Chapter(
             key=key,
             title=title,
@@ -581,6 +695,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             scope_players=players_of(rosters),
             min_sentences=SENTENCE_RANGES[rng][0],
             max_sentences=SENTENCE_RANGES[rng][1],
+            grade_keys=list(grade_keys),
         )
 
     def standings_ids(rosters) -> list[str]:
@@ -619,6 +734,14 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair)),
             pair, "recap",
         ))
+    if c.trades:
+        trade_rosters = _dedupe([r for t in c.trades for r in t.roster_ids])
+        out.append(make(
+            "trades", "Trades",
+            _with_prefix(facts, "T") + standings_ids(trade_rosters),
+            trade_rosters, "trades",
+            grade_keys=[f"T{i}.{r}" for i, t in enumerate(c.trades, start=1) for r in t.roster_ids],
+        ))
     out.append(make(
         "median", "The Median Game",
         _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
@@ -640,11 +763,11 @@ def build_bundle(
     history: History | None = None,
     trades: list[Trade] | None = None,
 ) -> Bundle:
-    c = Context(week, news, history)
+    c = Context(week, news, history, trades)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
+        rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(

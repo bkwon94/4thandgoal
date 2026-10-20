@@ -337,3 +337,12 @@ def test_vocabulary_has_the_history_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("streak", "team trend", "season high", "season low", "season average"):
         assert f"**{term}**" in text
+
+
+def test_trade_swing_passes_the_cost_and_decided_gates(tbundle):
+    sheet = tbundle.sheet
+    ch = _ch(sheet, "trades")
+    b = _blurb("trades", _s("The trade decided it and cost them.", "T5.12.swing"))
+    assert not [m for m in code_check(b, ch, sheet) if "needs a cited" in m]
+    other = _blurb("trades", _s("The trade decided it.", "T5.12.sides"))
+    assert any("decided" in m for m in code_check(other, ch, sheet))

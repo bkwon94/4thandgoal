@@ -21,6 +21,9 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **season high**: a team's highest weekly total this season.
 - **season low**: a team's lowest weekly total this season.
 - **season average**: a team's points for divided by the weeks played this season.
+- **roster need**: depth at the traded positions and open spots, as of this week's lineup.
+- **trade swing**: the gap against the margin. Only when the gap is at least the margin may the writer say the trade decided the game.
+- **trade grade**: an opinion from the fact sheet, A to F, with the reason.
 - **upset**: the winner ranked below the loser in the standings before this week. Use it only in a sentence that cites a fact with `.upset` in its ID.
 - **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`.
 - **injury status**: the Sleeper designation for a player as of the Tuesday after the games. It says nothing about the player's status at kickoff. Use it only in a sentence that cites a fact with `.inj.` in its ID or the fact `W.injured`.

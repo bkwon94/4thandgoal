@@ -119,3 +119,9 @@ def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
     assert "is now listed" in system
     assert "started while" not in system
     assert "**injury status**" in system
+
+
+def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "or the sentence cites a trade swing fact `T{n}.{rid}.swing`" in system

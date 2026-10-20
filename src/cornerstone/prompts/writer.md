@@ -9,7 +9,7 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 3. Use only numbers that appear in the facts you cite. Never invent a number. Never compute a new one.
 4. Use only the vocabulary terms. Do not use a loose word for a defined stat.
 5. Name teams by team name. Write the team names exactly as the facts spell them.
-6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.
+6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`, or the sentence cites a trade swing fact `T{n}.{rid}.swing` whose gap is at least the margin.
 7. Say "without X, that is a loss" only when a cited fact ID contains `.swing`.
 8. Say "upset" only when the `fact_ids` of that sentence include an ID with `.upset`. Call a player a "recent add", or say "lucky", only when the `fact_ids` include an ID with `.move.` or `W.adds`.
 9. State no cause or consequence, such as because, thanks to, cost, sank, or carried, unless the sentence cites a `.driver` or `.swing` fact that supports it.
