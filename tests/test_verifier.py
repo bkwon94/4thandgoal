@@ -195,7 +195,7 @@ def test_two_failures_fall_back(fixture_raw_dir):
         calls.append(model.__name__)
         if model.__name__ == "VerifyOut":
             return VerifyOut(verdicts=[Verdict(index=0, supported=False, reason="not in facts")])
-        return model(sentences=[Sentence(text="Six teams cleared 106.83.", fact_ids=["MED.value"])] * 2)
+        return model(sentences=[Sentence(text="The median was 106.83.", fact_ids=["MED.value"])] * 2)
 
     blurb, results = write_and_verify(ch, sheet, fake)
     assert blurb.fallback and len(results) == 2 and calls.count("VerifyOut") == 2
@@ -292,3 +292,27 @@ def test_name_removal_matches_whole_words(fixture_raw_dir):
     ch.scope_players.append("0")
     b = _blurb("median", _s("A team scored 100.", "MED.value"), _s("Again.", "MED.value"))
     assert any("number 100" in m for m in code_check(b, ch, sheet))
+
+
+def test_number_word_not_in_fact_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("They won by five.", "M4.result"), _s("Again.", "M4.result"))
+    assert any("'five'" in m for m in code_check(b, ch, sheet))
+
+
+def test_number_word_in_cited_fact_passes(fixture_raw_dir):
+    def news(_player_id):
+        return [{"metadata": {"description": "He scored two touchdowns."}, "published": "1792500000000"}]
+
+    sheet = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news).sheet
+    ch = _ch(sheet, "game_changer")
+    b = _blurb("game_changer", _s("He scored two touchdowns.", "AW.game_changer.news"))
+    assert not any("number word" in m for m in code_check(b, ch, sheet))
+
+
+def test_fact_id_in_text_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("See [M4.result].", "M4.result"), _s("Again.", "M4.result"))
+    assert any("'['" in m for m in code_check(b, ch, sheet))

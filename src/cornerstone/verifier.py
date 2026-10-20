@@ -30,6 +30,13 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing")),
 ]
 NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}
+# A number written as a word escapes the digit check, so it must come from a cited fact's text.
+# "one" is left out: it is too common as a pronoun.
+NUMBER_WORDS = [
+    "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven",
+    "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+    "nineteen", "twenty", "dozen",
+]
 
 
 def _normalize(number: str) -> str:
@@ -97,6 +104,15 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 failures.append(
                     f"[{i}] number {token} is not in the cited facts {', '.join(sentence.fact_ids)}"
                 )
+
+        cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
+        for word in NUMBER_WORDS:
+            if _whole_word(word, bare) and not _whole_word(word, cited_text):
+                failures.append(f"[{i}] number word '{word}' is not in the cited facts")
+
+        # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
+        if "[" in sentence.text:
+            failures.append(f"[{i}] the text has a '[': put fact IDs in fact_ids only")
 
         for team in sorted(league_teams - set(chapter.scope_teams)):
             if team in bare:
