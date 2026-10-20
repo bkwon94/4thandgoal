@@ -15,6 +15,8 @@ from cornerstone.facts_league import (
     upset_signal,
 )
 from cornerstone.facts_matchup import matchup_facts
+from cornerstone.history import load_history
+from cornerstone.models import History
 from cornerstone.parse import parse_week
 from cornerstone.sleeper import load_raw
 
@@ -110,3 +112,42 @@ def test_ranks_before_take_off_this_week(fixture_raw_dir):
     assert by_name["Bo Girds"] == 2
     assert by_name["Return of T Mac"] == 9
     assert by_name["Unsolicited Dak Picks"] == 7
+
+
+def _history(raw_dir, root):
+    return load_history(root, load_raw(raw_dir), week=6)
+
+
+def test_standings_come_from_history(fixture_raw_dir, fixture_history_root):
+    wk, _ = _setup(fixture_raw_dir)
+    for t in wk.teams.values():
+        t.wins, t.losses, t.points_for = 0, 0, 0.0
+    t = standings(wk, _history(fixture_raw_dir, fixture_history_root))
+    rows = {wk.teams[s.roster_id].name: (s.rank, s.wins, s.losses, s.points_for) for s in t}
+    assert rows["Lil Fridge"] == (1, 10, 2, 739.67)
+    assert rows["Bo Girds"] == (3, 8, 4, 723.15)
+    assert rows["Pukancun on 3"] == (12, 1, 11, 493.39)
+
+
+def test_schedule_strength_comes_from_history(fixture_raw_dir, fixture_history_root):
+    wk, _ = _setup(fixture_raw_dir)
+    real = [s.schedule_strength for s in standings(wk)]
+    for t in wk.teams.values():
+        t.wins, t.losses = 0, 1
+    assert [s.schedule_strength for s in standings(wk, _history(fixture_raw_dir, fixture_history_root))] == real
+
+
+def test_ranks_before_from_history(fixture_raw_dir, fixture_history_root):
+    wk, _ = _setup(fixture_raw_dir)
+    h = _history(fixture_raw_dir, fixture_history_root)
+    before = ranks_before(wk, standings(wk, h), h)
+    by_name = {wk.teams[rid].name: rank for rid, rank in before.items()}
+    assert (by_name["behold the lamb"], by_name["Bo Girds"]) == (11, 2)
+    assert (by_name["Return of T Mac"], by_name["Unsolicited Dak Picks"]) == (9, 7)
+
+
+def test_incomplete_history_falls_back_with_a_warning(fixture_raw_dir, caplog):
+    wk, _ = _setup(fixture_raw_dir)
+    h = History(week=6, weeks={})
+    assert standings(wk, h) == standings(wk)
+    assert "history incomplete" in caplog.text

@@ -2,11 +2,14 @@
 League-wide facts: standings, awards, Matchup of the Week, next week, and position ranks.
 Every number comes from code, and every derived number is exact to two decimals.
 """
+import logging
 from collections import defaultdict
+from decimal import Decimal
 
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
+    History,
     MatchupFacts,
     NextMatchup,
     Pick,
@@ -18,6 +21,8 @@ from cornerstone.models import (
     r2,
     sub,
 )
+
+logger = logging.getLogger(__name__)
 
 PLAYOFF_SPOTS = 6
 TEAM_COUNT = 12
@@ -34,10 +39,48 @@ REASONS = {
 }
 
 
-def standings(week: Week) -> list[Standing]:
-    ordered = sorted(week.teams.values(), key=lambda t: (-t.wins, -t.points_for))
-    cut_wins = ordered[PLAYOFF_SPOTS - 1].wins
-    strength = {t.roster_id: _schedule_strength(week, t.roster_id) for t in ordered}
+def season_records(history: History, through: int) -> dict[int, tuple[int, int, float]]:
+    """Wins, losses, and points for of each roster over weeks 1 to `through`.
+
+    Each week is two games: the head-to-head game and the game against the median.
+    A tie in a game counts as neither a win nor a loss.
+    """
+    wins: dict[int, int] = defaultdict(int)
+    losses: dict[int, int] = defaultdict(int)
+    points: dict[int, Decimal] = defaultdict(Decimal)
+
+    def settle(roster_id: int, mine: Decimal, theirs: Decimal) -> None:
+        if mine > theirs:
+            wins[roster_id] += 1
+        elif mine < theirs:
+            losses[roster_id] += 1
+
+    for number in range(1, through + 1):
+        scores = {rid: Decimal(str(p)) for rid, p in history.weeks[number].scores.items()}
+        ordered = sorted(scores.values(), reverse=True)
+        # The same median as median_facts: the mean of the 6th and 7th scores.
+        median = (ordered[5] + ordered[6]) / 2
+        for a, b in history.weeks[number].pairs:
+            settle(a, scores[a], scores[b])
+            settle(b, scores[b], scores[a])
+        for rid, score in scores.items():
+            settle(rid, score, median)
+            points[rid] += score
+    return {rid: (wins[rid], losses[rid], r2(float(points[rid]))) for rid in points}
+
+
+def standings(week: Week, history: History | None = None) -> list[Standing]:
+    if history is not None and history.complete():
+        records = season_records(history, week.week)
+    else:
+        if history is not None:
+            logger.warning("history incomplete: standings from rosters.json")
+        records = {
+            t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
+        }
+    ordered = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+    cut_wins = records[ordered[PLAYOFF_SPOTS - 1]][0]
+    strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
     # Rank the highest strength first. A team with no next matchup has no rank.
     by_strength = sorted(
         (rid for rid, s in strength.items() if s is not None),
@@ -47,20 +90,22 @@ def standings(week: Week) -> list[Standing]:
     return [
         Standing(
             rank=i + 1,
-            roster_id=t.roster_id,
-            wins=t.wins,
-            losses=t.losses,
-            points_for=t.points_for,
+            roster_id=rid,
+            wins=records[rid][0],
+            losses=records[rid][1],
+            points_for=records[rid][2],
             in_playoffs=i + 1 <= PLAYOFF_SPOTS,
-            games_from_cut=t.wins - cut_wins,
-            schedule_strength=strength[t.roster_id],
-            strength_rank=strength_rank.get(t.roster_id),
+            games_from_cut=records[rid][0] - cut_wins,
+            schedule_strength=strength[rid],
+            strength_rank=strength_rank.get(rid),
         )
-        for i, t in enumerate(ordered)
+        for i, rid in enumerate(ordered)
     ]
 
 
-def _schedule_strength(week: Week, roster_id: int) -> float | None:
+def _schedule_strength(
+    week: Week, roster_id: int, records: dict[int, tuple[int, int, float]]
+) -> float | None:
     """Mean win rate of the remaining opponents. Version 1 has only the next one."""
     opponents = [
         b if a == roster_id else a
@@ -69,18 +114,23 @@ def _schedule_strength(week: Week, roster_id: int) -> float | None:
     ]
     if not opponents:
         return None
-    rates = [
-        week.teams[o].wins / (week.teams[o].wins + week.teams[o].losses)
-        for o in opponents
-    ]
+    rates = [records[o][0] / (records[o][0] + records[o][1]) for o in opponents]
     return r2(sum(rates) / len(rates))
 
 
-def ranks_before(week: Week, table: list[Standing]) -> dict[int, int]:
-    """Rank of each roster before this week, from the table minus this week's results.
+def ranks_before(
+    week: Week, table: list[Standing], history: History | None = None
+) -> dict[int, int]:
+    """Rank of each roster before this week.
 
-    Past weeks are not on disk in version 1, so this removes the week from the totals.
+    A complete history ranks the records of the weeks before this one. Without it, this
+    removes the week from the totals. Week 1 has no earlier record, so it also subtracts.
     """
+    if history is not None and history.complete() and week.week > 1:
+        records = season_records(history, week.week - 1)
+        ordered = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+        return {rid: i + 1 for i, rid in enumerate(ordered)}
+
     wins = {s.roster_id: s.wins for s in table}
     losses = {s.roster_id: s.losses for s in table}
     points = {s.roster_id: s.points_for for s in table}
@@ -121,10 +171,14 @@ def _stakes_signal(a: Standing, b: Standing) -> float:
 
 
 def matchup_of_the_week(
-    week: Week, mfacts: list[MatchupFacts], table: list[Standing]
+    week: Week,
+    mfacts: list[MatchupFacts],
+    table: list[Standing],
+    before: dict[int, int] | None = None,
 ) -> Pick:
     by_roster = {s.roster_id: s for s in table}
-    before = ranks_before(week, table)
+    if before is None:
+        before = ranks_before(week, table)
     max_margin = max(f.margin for f in mfacts)
     best: tuple[float, float, Pick] | None = None
     for f, m in zip(mfacts, week.matchups):

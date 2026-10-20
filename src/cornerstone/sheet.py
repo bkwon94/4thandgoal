@@ -25,6 +25,7 @@ from cornerstone.models import (
     Chapter,
     Fact,
     FactSheet,
+    History,
     PlayerLine,
     Week,
     WeekData,
@@ -117,18 +118,24 @@ def _fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) ->
 class Context:
     """Lookups shared by every fact family."""
 
-    def __init__(self, week: Week, news: Callable[[str], list[dict]]) -> None:
+    def __init__(
+        self,
+        week: Week,
+        news: Callable[[str], list[dict]],
+        history: History | None = None,
+    ) -> None:
         self.week = week
+        self.history = history
         self.news = news
         self.mfacts = [matchup_facts(m, week.moves, week.week) for m in week.matchups]
-        self.table = standings(week)
+        self.table = standings(week, history)
         self.by_rank = {s.roster_id: s for s in self.table}
-        self.before = ranks_before(week, self.table)
+        self.before = ranks_before(week, self.table, history)
         self.median = median_facts(week)
-        self.pick = matchup_of_the_week(week, self.mfacts, self.table)
+        self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
         self.awards = awards(week, self.mfacts)
         self.next = next_week(week, self.table)
-        self.history = season_history(week)
+        self.season_history = season_history(week)
         self.ranks = position_ranks(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
         self.line_owner = {
@@ -537,8 +544,12 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     return out
 
 
-def build_bundle(week: Week, news: Callable[[str], list[dict]] = fetch_news) -> Bundle:
-    c = Context(week, news)
+def build_bundle(
+    week: Week,
+    news: Callable[[str], list[dict]] = fetch_news,
+    history: History | None = None,
+) -> Bundle:
+    c = Context(week, news, history)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
@@ -557,7 +568,7 @@ def build_bundle(week: Week, news: Callable[[str], list[dict]] = fetch_news) -> 
         awards=c.awards,
         pick=c.pick,
         next=c.next,
-        history=c.history,
+        history=c.season_history,
         ranks=c.ranks,
     )
     return Bundle(data=data, sheet=FactSheet(facts=facts, chapters=chapters(c, facts)))
