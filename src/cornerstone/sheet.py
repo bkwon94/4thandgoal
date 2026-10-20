@@ -606,8 +606,10 @@ def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fac
     clauses = [f"{n(line.points)} this week"]
     # A season total from a partial history would be wrong, so a gap drops the clause.
     complete = c.history is not None and c.history.complete()
-    if complete:
-        total = sum(Decimal(str(player_points(c.history.weeks[w], pid) or 0)) for w in range(1, c.week.week + 1))
+    weeks = [c.history.weeks[w] for w in range(1, c.week.week + 1)] if complete else []
+    # A week with no roster points and empty stats is an outage of the stats endpoint, not a 0.
+    if complete and not any(player_points(w, pid) is None and not w.stats for w in weeks):
+        total = sum(Decimal(str(player_points(w, pid) or 0)) for w in weeks)
         clauses.append(f"{n(float(total))} this season")
     rank = next((r for r in c.ranks if r.player_id == pid), None)
     if rank is not None:

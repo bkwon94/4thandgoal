@@ -175,3 +175,25 @@ def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     assert f"{week.teams[owner.roster_id].name} started scored {star.points:g}." in f[f"T2.{second}.swing"].text
     assert f"T2.{owner.roster_id}.swing" in f
     assert f"scored {star.points:g} this week" in f[f"T2.{owner.roster_id}.swing"].text
+
+
+def _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points):
+    """The got fact of Bhayshul Tuten with the week 2 stats empty, as after an outage of the stats endpoint."""
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    h.weeks[2].stats = {}
+    if not keep_points:
+        # He was on no roster in week 2, so only the empty stats could give his points.
+        h.weeks[2].points.pop("12490", None)
+    f = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=tbundle.data.trades).sheet.facts
+    return f["T5.12.got.12490"].text
+
+
+def test_got_fact_drops_the_season_total_when_a_week_has_no_stats(fixture_raw_dir, fixture_history_root, tbundle):
+    text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=False)
+    assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, position rank 4 of 31.")
+
+
+def test_got_fact_keeps_the_season_total_when_roster_points_cover_the_week(fixture_raw_dir, fixture_history_root, tbundle):
+    text = _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points=True)
+    assert text.startswith("Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season,")
