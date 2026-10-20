@@ -113,3 +113,14 @@ def test_need_clamps_open_spots_at_zero(tbundle):
     need = tbundle.sheet.facts["T1.4.need"]
     assert need.text.endswith("and 0 open roster spots.")
     assert "0" in need.numbers
+
+
+def test_player_with_no_line_stays_in_sides_and_gets_no_got_fact(tbundle, fixture_raw_dir):
+    # Player id 99999999 is in no lineup line, so the week has no points to cite for him.
+    trade = tbundle.data.trades[4].model_copy(update={
+        "adds": {**tbundle.data.trades[4].adds, "99999999": 12},
+        "drops": {**tbundle.data.trades[4].drops, "99999999": 11},
+    })
+    f = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], trades=[trade]).sheet.facts
+    assert "an unlisted player" in f["T1.sides"].text
+    assert not any(fid.endswith(".99999999") for fid in f)
