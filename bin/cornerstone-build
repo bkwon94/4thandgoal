@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Headless launchd wrapper that runs `cornerstone build` once and logs the result.
+# It notifies Brian when the build fails. It does not retry.
+
+set -euo pipefail
+
+# launchd runs jobs with a minimal PATH that does not include user-installed
+# binaries, so uv (installed under ~/.local/bin or Homebrew) would not resolve.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+# ~/.secrets exports ANTHROPIC_API_KEY, which launchd does not provide.
+if [[ -f "$HOME/.secrets" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.secrets"
+fi
+
+LOG_DIR="$HOME/Library/Logs/cornerstone-weekly"
+LOG_FILE="$LOG_DIR/build.log"
+mkdir -p "$LOG_DIR"
+
+# Rotate the log once it crosses 5 MB so it doesn't grow unbounded across
+# months of runs; the previous file is kept as a single ${LOG_FILE}.old
+# generation (any older .old is overwritten).
+if [[ -f "$LOG_FILE" ]] && [[ "$(stat -f%z "$LOG_FILE")" -gt 5242880 ]]; then
+  mv -f "$LOG_FILE" "${LOG_FILE}.old"
+fi
+
+log() {
+  # Every line gets its own timestamp so failures can be correlated with
+  # launchd's own scheduling without cross-referencing a separate log.
+  echo "[$(date '+%Y-%m-%d %H:%M:%S %Z')] $*" >>"$LOG_FILE"
+}
+
+cd "$HOME/repos/cornerstone-fantasy-sleeper-weekly-report"
+
+log "start"
+
+# set +e so a failed build reaches the exit-code handling below instead of
+# aborting the script. The job does not retry: Brian decides what to do.
+set +e
+uv run cornerstone build >>"$LOG_FILE" 2>&1
+build_exit=$?
+set -e
+
+log "end (exit ${build_exit})"
+
+if [[ "$build_exit" -ne 0 ]]; then
+  osascript -e 'display notification "Cornerstone build failed - check build.log" with title "Cornerstone Weekly"' || true
+fi
+
+exit "$build_exit"
