@@ -158,7 +158,7 @@ def test_trades_section_order_and_cards(tbundle, tmp_path):
 
 def test_grade_letter_and_no_grade(tbundle, tmp_path):
     blurbs = _blurbs(tbundle)
-    blurbs["trades"].grades = {"T5.12": "A"}
+    blurbs["trade_5"].grades = {"T5.12": "A"}
     html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
     assert '<span class="grade">A</span>' in html
     assert html.count("No grade") == 11
@@ -166,15 +166,16 @@ def test_grade_letter_and_no_grade(tbundle, tmp_path):
 
 def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
     blurbs = _blurbs(tbundle)
-    del blurbs["trades"]
+    for key in [k for k in blurbs if k.startswith("trade_")]:
+        del blurbs[key]
     html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
     assert html.count('class="trade"') == 6 and html.count("No grade") == 12
 
 
 def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
     blurbs = _blurbs(tbundle)
-    ch = next(c for c in tbundle.sheet.chapters if c.key == "trades")
-    blurbs["trades"] = template_blurb(ch, tbundle.sheet)
+    for ch in (c for c in tbundle.sheet.chapters if c.key.startswith("trade_")):
+        blurbs[ch.key] = template_blurb(ch, tbundle.sheet)
     html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
     assert html.count("No grade") == 12
 

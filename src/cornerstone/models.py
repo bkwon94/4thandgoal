@@ -240,7 +240,7 @@ class Chapter(BaseModel):
     scope_players: list[str]
     min_sentences: int
     max_sentences: int
-    # Keys such as "T1.4" that the writer grades. Only the trades chapter sets them.
+    # Keys such as "T1.4" that the writer grades. Only a trade chapter sets them.
     grade_keys: list[str] = []
 
 
@@ -299,7 +299,7 @@ class Grade(BaseModel):
 
 
 class TradesWriterOut(WriterOut):
-    """The Trades output. A list keeps the structured output schema to fixed keys."""
+    """A trade chapter output. A list keeps the structured output schema to fixed keys."""
 
     grades: list[Grade] = []
 

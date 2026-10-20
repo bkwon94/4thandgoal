@@ -129,12 +129,12 @@ def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
 
 
 def _trades(tbundle):
-    return next(c for c in tbundle.sheet.chapters if c.key == "trades")
+    return next(c for c in tbundle.sheet.chapters if c.key == "trade_5")
 
 
 def test_trades_prompt_lists_grade_keys(tbundle):
     _, user = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert "Grade keys: T1.4, T1.12, T2.7, T2.12, T3.4, T3.7, T4.6, T4.7, T5.11, T5.12, T6.7, T6.8" in user
+    assert "Grade keys: T5.11, T5.12" in user
 
 
 def test_write_blurb_maps_grades(tbundle):
@@ -147,7 +147,7 @@ def test_write_blurb_maps_grades(tbundle):
 
 def test_trades_template_lists_the_sides(tbundle):
     b = template_blurb(_trades(tbundle), tbundle.sheet)
-    assert [s.fact_ids for s in b.sentences] == [[f"T{n}.sides"] for n in range(1, 7)]
+    assert [s.fact_ids for s in b.sentences] == [["T5.sides"]]
     assert b.grades == {}
 
 

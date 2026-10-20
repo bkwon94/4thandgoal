@@ -93,9 +93,9 @@ def _median(bundle: Bundle, teams: dict) -> dict:
 def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]:
     """One card per trade, with a side per team. The grade is None until the writer gives one."""
     facts = bundle.sheet.facts
-    grades = blurbs["trades"].grades if "trades" in blurbs else {}
     cards = []
     for i, trade in enumerate(bundle.data.trades, start=1):
+        grades = blurbs[f"trade_{i}"].grades if f"trade_{i}" in blurbs else {}
         sides = []
         for rid in trade.roster_ids:
             players = []

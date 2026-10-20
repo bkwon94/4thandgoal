@@ -348,34 +348,34 @@ def _decisive_swing_sheet(fixture_raw_dir):
 
 def test_trade_swing_passes_the_cost_and_decided_gates(fixture_raw_dir):
     sheet, winner = _decisive_swing_sheet(fixture_raw_dir)
-    ch = _ch(sheet, "trades")
-    b = _blurb("trades", _s("The trade decided it and cost them.", f"T1.{winner}.swing"))
+    ch = _ch(sheet, "trade_1")
+    b = _blurb("trade_1", _s("The trade decided it and cost them.", f"T1.{winner}.swing"))
     assert not [m for m in code_check(b, ch, sheet) if "needs a cited" in m]
-    other = _blurb("trades", _s("The trade decided it.", "T1.sides"))
+    other = _blurb("trade_1", _s("The trade decided it.", "T1.sides"))
     assert any("decided" in m for m in code_check(other, ch, sheet))
 
 
 def test_decided_needs_a_swing_gap_at_least_the_margin(tbundle):
     sheet = tbundle.sheet
-    ch = _ch(sheet, "trades")
-    below = _blurb("trades", _s("The trade decided it.", "T5.11.swing"))
+    ch = _ch(sheet, "trade_5")
+    below = _blurb("trade_5", _s("The trade decided it.", "T5.11.swing"))
     assert any("decided" in m for m in code_check(below, ch, sheet))
 
 
 def test_swing_against_the_result_opens_no_gate(tbundle):
     # Amon-Ra Dawg Your Team lost M3 by 9.51 although the trade added 29.1, so the trade did not decide it.
     sheet = tbundle.sheet
-    ch = _ch(sheet, "trades")
-    b = _blurb("trades", _s("The trade decided it and cost them.", "T5.12.swing"))
+    ch = _ch(sheet, "trade_5")
+    b = _blurb("trade_5", _s("The trade decided it and cost them.", "T5.12.swing"))
     failures = code_check(b, ch, sheet)
     assert any("'decided' needs" in m for m in failures)
     assert any("'cost' needs" in m for m in failures)
 
 
 def _graded(tbundle, **overrides):
-    ch = _ch(tbundle.sheet, "trades")
+    ch = _ch(tbundle.sheet, "trade_5")
     grades = {k: "C" for k in ch.grade_keys} | overrides
-    blurb = Blurb(chapter="trades", attempt=1, fallback=False, grades=grades,
+    blurb = Blurb(chapter="trade_5", attempt=1, fallback=False, grades=grades,
                   sentences=[Sentence(text=tbundle.sheet.facts[f].text, fact_ids=[f])
                              for f in ch.fact_ids if f.endswith(".sides")])
     return blurb, ch

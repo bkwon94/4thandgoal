@@ -11,7 +11,7 @@ from conftest import _decisive_trade, _trade_bundle
 from cornerstone.history import load_history
 from cornerstone.models import NflverseWeek, Trade
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.sheet import build_bundle
+from cornerstone.sheet import _trade_ids, build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
 
@@ -80,7 +80,7 @@ def test_swing_is_decisive_only_in_the_direction_of_the_result(fixture_raw_dir):
 
 
 def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
-    from cornerstone.models import NflverseWeek, Trade
+    from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     a, b, c = week.matchups[0].a, week.matchups[0].b, week.matchups[1].a
     pa, pb = (next(l for l in s.lines if l.started) for s in (a, b))
@@ -97,15 +97,46 @@ def test_late_trade_has_no_swing_and_no_need(tbundle):
     assert "T6.sides" in f
 
 
-def test_trades_chapter(tbundle):
-    ch = next(c for c in tbundle.sheet.chapters if c.key == "trades")
-    assert ch.grade_keys == ["T1.4", "T1.12", "T2.7", "T2.12", "T3.4", "T3.7",
-                             "T4.6", "T4.7", "T5.11", "T5.12", "T6.7", "T6.8"]
-    assert (ch.min_sentences, ch.max_sentences) == (4, 6)
+def test_one_chapter_per_trade(tbundle):
+    keys = [c.key for c in tbundle.sheet.chapters]
+    trade_keys = [k for k in keys if k.startswith("trade")]
+    assert trade_keys == [f"trade_{n}" for n in range(1, 7)]
+    assert keys.index("trade_1") > keys.index("recap_6") and keys.index("trade_6") < keys.index("median")
 
 
-def test_no_trades_no_chapter(hbundle):
-    assert "trades" not in {c.key for c in hbundle.sheet.chapters}
+def test_trade_chapter(tbundle):
+    ch = next(c for c in tbundle.sheet.chapters if c.key == "trade_5")
+    assert ch.title == "Unsolicited Dak Picks and Amon-Ra Dawg Your Team"
+    assert ch.grade_keys == ["T5.11", "T5.12"]
+    assert (ch.min_sentences, ch.max_sentences) == (3, 5)
+    assert set(ch.fact_ids) == {fid for fid in tbundle.sheet.facts if fid.startswith("T5.")}
+    assert ch.scope_teams == ["Unsolicited Dak Picks", "Amon-Ra Dawg Your Team"]
+
+
+def test_trade_chapters_take_no_week_facts(dbundle):
+    for ch in (c for c in dbundle.sheet.chapters if c.key.startswith("trade_")):
+        n = ch.key.removeprefix("trade_")
+        assert ch.fact_ids and all(fid.startswith(f"T{n}.") for fid in ch.fact_ids)
+
+
+def test_three_team_chapter_title(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    three = next(t for t in h.weeks[5].trades if len(t.roster_ids) == 3)
+    bundle = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=[three])
+    ch = next(c for c in bundle.sheet.chapters if c.key == "trade_1")
+    assert ch.title == "To Infinity and Bijan, Return of T Mac and Amon-Ra Dawg Your Team"
+    assert ch.grade_keys == ["T1.7", "T1.8", "T1.12"]
+
+
+def test_no_trades_no_trade_chapter(hbundle):
+    assert not any(c.key.startswith("trade") for c in hbundle.sheet.chapters)
+
+
+def test_trade_ids_take_one_trade(tbundle):
+    facts = {**tbundle.sheet.facts, "T10.sides": tbundle.sheet.facts["T1.sides"], "TOTAL.x": tbundle.sheet.facts["T1.sides"]}
+    ids = _trade_ids(facts, 1)
+    assert "T1.sides" in ids and "T10.sides" not in ids and "TOTAL.x" not in ids
 
 
 def test_three_team_trade(fixture_raw_dir, fixture_history_root):
@@ -137,7 +168,7 @@ def test_player_with_no_line_stays_in_sides_and_gets_no_got_fact(tbundle, fixtur
 
 def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     # Two non-late trades move one starter on. Only the final roster started him.
-    from cornerstone.models import NflverseWeek, Trade
+    from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     owner = week.matchups[0].a
     star = next(l for l in owner.lines if l.started)
@@ -167,13 +198,6 @@ def _got_tuten(fixture_raw_dir, fixture_history_root, tbundle, keep_points):
         h.weeks[2].points.pop("12490", None)
     f = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=tbundle.data.trades).sheet.facts
     return f["T5.12.got.12490"].text
-
-
-def test_trades_chapter_takes_trade_facts_only(tbundle):
-    from cornerstone.sheet import _trade_ids
-    facts = {**tbundle.sheet.facts, "TOTAL.x": tbundle.sheet.facts["T5.sides"]}
-    ids = _trade_ids(facts)
-    assert "TOTAL.x" not in ids and "T5.sides" in ids and "T5.12.swing" in ids
 
 
 def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):

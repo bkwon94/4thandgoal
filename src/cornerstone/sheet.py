@@ -70,12 +70,11 @@ SENTENCE_RANGES = {
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
-    "trades": (4, 6),
+    "trade": (3, 5),
 }
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
-TRADE_FACT_ID = re.compile(r"T\d+\.")
 # Most telling first: a chapter over the cap keeps the front of this order.
 HISTORY_KINDS = ("streak", "high", "trend", "avg")
 
@@ -910,9 +909,9 @@ def _with_prefix(facts: dict[str, Fact], *prefixes: str) -> list[str]:
     return [fid for fid in facts if any(fid == p or fid.startswith(p) for p in prefixes)]
 
 
-def _trade_ids(facts: dict[str, Fact]) -> list[str]:
-    # A bare "T" prefix would also take any later fact family whose ID starts with T.
-    return [fid for fid in facts if TRADE_FACT_ID.match(fid)]
+def _trade_ids(facts: dict[str, Fact], n: int) -> list[str]:
+    # The dot ends the number: without it, T1 would also take T10.
+    return [fid for fid in facts if fid.startswith(f"T{n}.")]
 
 
 def _dedupe(ids: list[str]) -> list[str]:
@@ -996,13 +995,11 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             + drop_ids(lambda d, mid=mid: d.matchup_id == mid) + injury_ids(started_ids(pair)),
             pair, "recap",
         ))
-    if c.trades:
-        trade_rosters = _dedupe([r for t in c.trades for r in t.roster_ids])
+    for n, trade in enumerate(c.trades, start=1):
         out.append(make(
-            "trades", "Trades",
-            _trade_ids(facts) + standings_ids(trade_rosters),
-            trade_rosters, "trades",
-            grade_keys=[f"T{i}.{r}" for i, t in enumerate(c.trades, start=1) for r in t.roster_ids],
+            f"trade_{n}", _join([c.team(r) for r in trade.roster_ids]),
+            _trade_ids(facts, n), trade.roster_ids, "trade",
+            grade_keys=[f"T{n}.{r}" for r in trade.roster_ids],
         ))
     out.append(make(
         "median", "The Median Game",
