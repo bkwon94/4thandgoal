@@ -21,8 +21,9 @@ RAW_FILES: tuple[str, ...] = (
 OFFICIAL_URL = "https://api.sleeper.app/v1"
 UNOFFICIAL_URL = "https://api.sleeper.app"
 TIMEOUT_SECONDS = 30
-# The players file is about 5 MB and changes slowly, so the cache keeps it a week.
-PLAYERS_CACHE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
+# The players file is about 5 MB. The cache keeps it one day, because the injury status in it
+# changes daily and must be fresh on build day.
+PLAYERS_CACHE_MAX_AGE_SECONDS = 24 * 60 * 60
 
 POSITIONS = ("QB", "RB", "WR", "TE", "DEF", "K")
 
