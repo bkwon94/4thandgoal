@@ -51,7 +51,8 @@ def _sides(f: MatchupFacts, teams: dict) -> list[dict]:
 
 
 def _tile(bundle: Bundle, key: str, teams: dict) -> dict:
-    title = AWARD_TITLES[key]
+    # A reader may not know the acronym, so the tile spells out MVB.
+    title = "MVB · Most Valuable Benchwarmer" if key == "mvb" else AWARD_TITLES[key]
     award = next((a for a in bundle.data.awards if a.key == key), None)
     if award is None:
         return {"title": title, "missing": True}

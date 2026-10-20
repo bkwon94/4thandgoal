@@ -101,7 +101,9 @@ def test_context_missing_award_is_flagged(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
     b.data.awards = [a for a in b.data.awards if a.key != "underperformer"]
     ctx = build_context(b, _blurbs(b), {})
-    assert [t["title"] for t in ctx["awards"]] == ["Top Scorer", "MVB", "Underperformer", "Overachiever"]
+    assert [t["title"] for t in ctx["awards"]] == [
+        "Top Scorer", "MVB · Most Valuable Benchwarmer", "Underperformer", "Overachiever",
+    ]
     assert [t["missing"] for t in ctx["awards"]] == [False, False, True, False]
 
 
@@ -136,3 +138,9 @@ def test_tied_matchup_has_no_winner_color(fixture_raw_dir, tmp_path):
     assert 'class="w"' not in row
     for rid in tied.top_scorer:
         assert b.data.teams[rid].name in row
+
+
+def test_mvb_tile_spells_out_the_title(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    html = render_week(b, _blurbs(b), tmp_path, _no_bytes).read_text()
+    assert "MVB · Most Valuable Benchwarmer" in html
