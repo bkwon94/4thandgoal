@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from conftest import _decisive_trade
 from cornerstone.history import load_history
+from cornerstone.models import Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
@@ -204,3 +205,17 @@ def test_trades_chapter_takes_trade_facts_only(tbundle):
     facts = {**tbundle.sheet.facts, "TOTAL.x": tbundle.sheet.facts["T5.sides"]}
     ids = _trade_ids(facts)
     assert "TOTAL.x" not in ids and "T5.sides" in ids and "T5.12.swing" in ids
+
+
+def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
+    # Any gap changes a tie, so no swing sentence is true for either side.
+    week = parse_week(load_raw(fixture_raw_dir))
+    m = week.matchups[0]
+    tied = m.model_copy(update={"b": m.b.model_copy(update={"points": m.a.points})})
+    week = week.model_copy(update={"matchups": [tied, *week.matchups[1:]]})
+    star = next(l for l in m.a.lines if l.started)
+    trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[m.b.roster_id, m.a.roster_id],
+                  adds={star.player_id: m.a.roster_id}, drops={star.player_id: m.b.roster_id}, draft_picks=[])
+    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
+    assert "M1.result" in f and "tied" in f["M1.result"].text
+    assert f"T1.{m.a.roster_id}.swing" not in f and f"T1.{m.b.roster_id}.swing" not in f

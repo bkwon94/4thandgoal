@@ -657,9 +657,13 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
     x = sum((Decimal(str(l.points)) for l in got_started), Decimal(0))
     y = sum((Decimal(str(l.points)) for l in gave_started), Decimal(0))
     f = next(f for f, m in zip(c.mfacts, c.week.matchups) if rid in (m.a.roster_id, m.b.roster_id))
+    # A tie is neither a win nor a loss, and any gap would change it. No "decisive" or
+    # "not enough" sentence is true for a tie, so a tied matchup gets no swing fact.
+    if f.winner is None:
+        return None
     # The trade decided the game only when it points the same way as the result: the winner gained
-    # at least the margin, or the loser lost at least the margin. A tie has no direction.
-    toward = float(x - y) if rid == f.winner else float(y - x) if rid == f.loser else None
+    # at least the margin, or the loser lost at least the margin.
+    toward = float(x - y) if rid == f.winner else float(y - x)
     team = c.team(rid)
     others = [r for r in trade.roster_ids if r != rid]
     partners = c.team(others[0]) if len(others) == 1 else "its trade partners"
@@ -667,7 +671,7 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
         f"The players {team} got and started scored {n(float(x))} this week; "
         f"the players it gave that {partners} started scored {n(float(y))}. "
     )
-    if toward is not None and r2(toward) >= r2(f.margin):
+    if r2(toward) >= r2(f.margin):
         side = "above" if r2(toward) > r2(f.margin) else "equal to"
         text += f"The gap is {n(toward)}, {side} the margin of {n(f.margin)} in its matchup."
     else:
