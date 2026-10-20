@@ -97,3 +97,16 @@ def test_season_history_covers_this_week_only(fixture_raw_dir):
     assert len(h) == 12
     assert all(x.high == x.low and x.new_high and x.new_low for x in h)
     assert all(set(x.weeks_over) == {100, 110, 120} for x in h)
+
+
+def test_ranks_before_take_off_this_week(fixture_raw_dir):
+    # Checked by hand: with week 6 taken off, behold the lamb is 4-6 on 473.06 (11th),
+    # Bo Girds 7-3 on 613.54 (2nd), Return of T Mac 4-6 on 498.68 (9th), and
+    # Unsolicited Dak Picks 4-6 on 513.44 (7th).
+    wk, _ = _setup(fixture_raw_dir)
+    before = ranks_before(wk, standings(wk))
+    by_name = {wk.teams[rid].name: rank for rid, rank in before.items()}
+    assert by_name["behold the lamb"] == 11
+    assert by_name["Bo Girds"] == 2
+    assert by_name["Return of T Mac"] == 9
+    assert by_name["Unsolicited Dak Picks"] == 7

@@ -21,7 +21,7 @@ from cornerstone.sleeper import load_raw
 
 @pytest.fixture
 def bundle(fixture_raw_dir):
-    return build_bundle(parse_week(load_raw(fixture_raw_dir)))
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [])
 
 
 def test_week_dates():
@@ -62,8 +62,9 @@ def test_every_chapter_fact_id_exists(bundle):
 
 
 def test_upset_fact_exists_for_matchup_4_only_when_the_lower_rank_won(bundle):
-    # The 8th-ranked team beat the 3rd-ranked team before this week, so M4 is an upset.
-    assert "upset" in bundle.sheet.facts["M4.upset"].text
+    # Before this week, behold the lamb was 11th and Bo Girds was 2nd, so M4 is an upset.
+    text = bundle.sheet.facts["M4.upset"].text
+    assert "upset" in text and "11th" in text and "2nd" in text
     assert "M1.upset" not in bundle.sheet.facts
 
 
