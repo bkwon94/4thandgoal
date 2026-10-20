@@ -1,0 +1,14 @@
+<!-- Home page: every published week, newest first.
+     Its link never changes, so it is the one to share. -->
+{% extends "base.html" %}
+{% block mast_extra %}<div class="week"><div class="big">ALL WEEKS</div></div>{% endblock %}
+{% block body %}
+<section class="chap">
+  <div class="lbl">Published weeks</div>
+  {% for w in weeks %}
+  <a class="wk" href="{{ w.href }}"><b>{{ w.label }}</b><span class="dates">{{ w.dates }}</span><span class="teams">{{ w.teams }}</span></a>
+  {% else %}
+  <p class="blurb">No weeks are published yet.</p>
+  {% endfor %}
+</section>
+{% endblock %}
