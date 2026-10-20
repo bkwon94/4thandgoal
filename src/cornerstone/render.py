@@ -95,14 +95,17 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
     facts = bundle.sheet.facts
     cards = []
     for i, trade in enumerate(bundle.data.trades, start=1):
-        grades = blurbs[f"trade_{i}"].grades if f"trade_{i}" in blurbs else {}
+        key = f"trade_{i}"
+        blurb = blurbs.get(key)
+        # A fallback blurb gives no grade, so its card shows "No grade" and the template sentence.
+        grades = blurb.grades if blurb and not blurb.fallback else {}
         sides = []
         for rid in trade.roster_ids:
             players = []
             for pid, owner in trade.adds.items():
                 if owner != rid:
                     continue
-                # The player fact holds the name and the points a game as written. A player with no
+                # The player fact holds the name and the points per game as written. A player with no
                 # lineup line has no fact, so he shows under a plain label. No scored game gives no ppg.
                 fact = facts.get(f"T{i}.{rid}.got.{pid}")
                 if fact is None:
@@ -113,7 +116,8 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
             picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
             sides.append({"team": teams[rid], "grade": grades.get(f"T{i}.{rid}"),
                           "players": players, "picks": picks})
-        cards.append({"sides": sides})
+        text = " ".join(s.text for s in blurb.sentences) if blurb else facts[f"T{i}.sides"].text
+        cards.append({"sides": sides, "blurb": text})
     return cards
 
 

@@ -211,3 +211,53 @@ def test_no_drop_note_and_no_tile_without_drops(fixture_raw_dir, tmp_path):
     html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
     assert "Drop value" not in html and "Drops are a count" not in html
     assert "Butterfingers" not in html
+
+
+def _section(html):
+    return html[html.index('id="trades"'):html.index(">All Matchups<")]
+
+
+def _card(html, n):
+    return _section(html).split('class="trade"')[n]
+
+
+def test_trade_cards_have_a_button_and_a_panel(tbundle, tmp_path):
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    s = _section(html)
+    assert s.count("Read the grade") == 6 and s.count("Hide the grade") == 6
+    assert s.count('aria-expanded="false"') == 6 and s.count('class="body"') == 6
+    assert "Blurb for trade_5." in _card(html, 5)
+
+
+def test_grade_shows_outside_the_panel(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    blurbs["trade_5"].grades = {"T5.11": "C", "T5.12": "A"}
+    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
+    assert card.index('<span class="grade">A</span>') < card.index('class="body"')
+
+
+def test_card_shows_ppg_not_this_week(tbundle, tmp_path):
+    s = _section(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text())
+    assert '11.8 <span class="ppg">ppg</span>' in s
+    assert "22.7" not in s
+    assert "<li><span>Josh Jacobs</span></li>" in s
+
+
+def test_fallback_card_shows_no_grade_and_the_template(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    blurbs["trade_5"] = template_blurb(next(c for c in tbundle.sheet.chapters if c.key == "trade_5"), tbundle.sheet)
+    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
+    assert card.count("No grade") == 2
+    assert tbundle.sheet.facts["T5.sides"].text in card
+
+
+def test_card_without_a_blurb_holds_the_sides_text(tbundle, tmp_path):
+    blurbs = _blurbs(tbundle)
+    del blurbs["trade_5"]
+    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
+    assert card.count("No grade") == 2 and tbundle.sheet.facts["T5.sides"].text in card
+
+
+def test_app_js_toggles_trade_cards(tbundle, tmp_path):
+    render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
+    assert ".trade" in (tmp_path / "static" / "app.js").read_text()
