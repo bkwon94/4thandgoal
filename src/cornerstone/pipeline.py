@@ -37,6 +37,10 @@ def week_dir(repo: Path, season: int, week: int) -> Path:
     return repo / "data" / str(season) / f"week-{week:02d}"
 
 
+def has_raw(repo: Path, season: int, week: int) -> bool:
+    return (week_dir(repo, season, week) / "raw" / "state.json").exists()
+
+
 def resolve_week(season: int | None, week: int | None) -> tuple[int, int]:
     if season is not None and week is not None:
         return season, week
@@ -69,7 +73,7 @@ def run_build(
     if fetch:
         players_cache = repo / "data" / "cache" / "players.json"
         fetch_week(LEAGUE_ID, season, week, raw_dir, players_cache)
-    elif not (raw_dir / "state.json").exists():
+    elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
 
     parsed = parse_week(load_raw(raw_dir), week=week)

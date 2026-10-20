@@ -6,7 +6,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from cornerstone.pipeline import BuildStopped, preview, resolve_week, run_build, run_rewrite
+from cornerstone.pipeline import BuildStopped, has_raw, preview, resolve_week, run_build, run_rewrite
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.writer import claude_call
 
@@ -19,6 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument("--week", type=int)
     build.add_argument("--season", type=int)
     build.add_argument("--no-fetch", action="store_true", help="read the saved raw data")
+    build.add_argument("--refetch", action="store_true", help="fetch even when raw data is saved")
 
     publish = sub.add_parser("publish", help="publish the built report")
     publish.add_argument("--week", type=int)
@@ -43,7 +44,11 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.command == "build":
-            page = run_build(repo, season, week, claude_call, fetch=not args.no_fetch)
+            # A named week with saved raw data rebuilds from disk, so a rebuild sees the same data.
+            fetch = not args.no_fetch and (
+                args.refetch or args.week is None or not has_raw(repo, season, week)
+            )
+            page = run_build(repo, season, week, claude_call, fetch=fetch)
             print(page)
             preview(page)
         elif args.command == "rewrite":
