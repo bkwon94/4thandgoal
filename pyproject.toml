@@ -1,0 +1,31 @@
+[project]
+name = "cornerstone"
+version = "0.1.0"
+description = "Builds the weekly Cornerstone fantasy football report from Sleeper data."
+readme = "README.md"
+authors = [
+    { name = "brianbuoy", email = "brian.kwon@buoyhealth.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=1.15.0",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
+    "pydantic>=2.14.1",
+]
+
+[project.scripts]
+cornerstone = "cornerstone.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
