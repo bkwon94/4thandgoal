@@ -117,3 +117,17 @@ def test_publish_requires_git_checkout(tmp_path):
     page.write_text("<html></html>")
     with pytest.raises(PublishError, match="git"):
         run_publish(tmp_path, 2026, 6, site_repo=tmp_path / "missing", push=False)
+
+
+def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir):
+    repo, site_repo = tmp_path / "source", tmp_path / "site"
+    _init(repo)
+    _init(site_repo)
+    shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
+    (repo / "notes.txt").write_text("untracked\n")
+
+    run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
+
+    assert not (_git(repo, "ls-tree", "-r", "--name-only", "HEAD").count("notes.txt"))

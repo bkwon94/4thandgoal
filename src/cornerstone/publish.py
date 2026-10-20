@@ -14,13 +14,20 @@ class PublishError(Exception):
     """A publish step failed. The message names the step and the cause."""
 
 
-def _git(cwd: Path, *args: str, allow_nothing_to_commit: bool = False) -> None:
+def _git(cwd: Path, *args: str, ok: tuple[int, ...] = (0,)) -> int:
     result = subprocess.run(["git", *args], cwd=cwd, check=False, capture_output=True, text=True)
-    if result.returncode == 0:
+    if result.returncode not in ok:
+        raise PublishError(f"git {' '.join(args)} failed in {cwd}: {result.stderr.strip() or result.stdout.strip()}")
+    return result.returncode
+
+
+def _commit_if_staged(cwd: Path, message: str, *paths: str) -> None:
+    # Ask git about staged changes instead of matching its message text. The message differs
+    # when other untracked files exist, and a retry of a failed push must not stop here.
+    if _git(cwd, "diff", "--cached", "--quiet", "--", *paths, ok=(0, 1)) == 0:
         return
-    if allow_nothing_to_commit and "nothing to commit" in result.stdout + result.stderr:
-        return
-    raise PublishError(f"git {' '.join(args)} failed in {cwd}: {result.stderr.strip() or result.stdout.strip()}")
+    # The pathspec keeps any other staged change out of this commit.
+    _git(cwd, "commit", "-m", message, "--", *paths)
 
 
 def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO, push: bool = True) -> str:
@@ -32,11 +39,11 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
         raise PublishError(f"{site_repo} is not a git checkout.")
 
     _git(repo, "add", "site", "data")
-    _git(repo, "commit", "-m", f"Week {week} report", allow_nothing_to_commit=True)
+    _commit_if_staged(repo, f"Week {week} report", "site", "data")
 
     shutil.copytree(repo / "site", site_repo, dirs_exist_ok=True)
     _git(site_repo, "add", "-A")
-    _git(site_repo, "commit", "-m", f"Week {week}", allow_nothing_to_commit=True)
+    _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:
         _git(site_repo, "push")
     return SITE_URL + f"{season}/week-{week:02d}/"
