@@ -29,6 +29,9 @@ PLAYERS_CACHE_MAX_AGE_SECONDS = 24 * 60 * 60
 
 # The fetch time is saved beside the raw files but is not one of them, so load_raw ignores it.
 FETCHED_FILE = "fetched.json"
+# The transactions of week N-1, fetched again at the build of week N. A trade made after the
+# build of week N-1 carries leg N-1, so only this fresh copy has it. load_raw ignores the file.
+PREV_TRANSACTIONS_FILE = "transactions_prev.json"
 
 POSITIONS = ("QB", "RB", "WR", "TE", "DEF", "K")
 
@@ -100,9 +103,19 @@ def read_fetch_time(raw_dir: Path) -> datetime | None:
     return datetime.fromisoformat(json.loads(path.read_text(encoding="utf-8"))["transactions"])
 
 
+def read_prev_transactions(raw_dir: Path) -> list | None:
+    """The fresh transactions of week N-1 that fetch_week saved. None when no file is saved."""
+    path = raw_dir / PREV_TRANSACTIONS_FILE
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path) -> None:
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+        # Week N-1 comes first, so the fetch time below bounds both calls.
+        previous = _get(client, f"{league}/transactions/{week - 1}") if week > 1 else None
         transactions = _get(client, f"{league}/transactions/{week}")
         # The time is taken right after the call returns. It is the end of the trade window.
         fetched = datetime.now(ZoneInfo("America/New_York"))
@@ -124,6 +137,8 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
+    if previous is not None:
+        _write_json(raw_dir / PREV_TRANSACTIONS_FILE, previous)
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
 
 

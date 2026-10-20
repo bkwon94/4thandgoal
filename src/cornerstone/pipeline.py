@@ -18,7 +18,7 @@ from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
-from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time
+from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, previous_fetch_time, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.writer import ClaudeCall
@@ -85,9 +85,16 @@ def _window_trades(
 ) -> list[Trade]:
     # The window starts at the fetch of the build before. Without it, the Tuesday cut-off stands in.
     after = previous_fetch_time(repo, season, week) or default_cutoff(season_start, week)
+    # The fresh copy of week N-1 holds the trades made after its build. The history copy does not.
+    fresh = read_prev_transactions(week_dir(repo, season, week) / "raw")
+    if fresh is not None:
+        return trades_for_week(parse_trades(raw["transactions"]), parse_trades(fresh), after, until)
     last = history.weeks.get(week - 1) if history else None
     if last is None and week > 1:
         log.warning("week %d is not in the history: trades of its last hours may be missing", week - 1)
+    elif week > 1:
+        log.warning("no fresh transactions for week %d: the history copy stands in, "
+                    "so a trade made after its build may be missing", week - 1)
     return trades_for_week(parse_trades(raw["transactions"]), last.trades if last else [], after, until)
 
 

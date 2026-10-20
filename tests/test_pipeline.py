@@ -359,3 +359,27 @@ def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     run_rewrite(repo, 2026, 6, "median", _fake, **{**OFFLINE, "nflverse": _forbidden_nflverse})
+
+
+def _late_week_5_trade(repo):
+    """A week 5 leg trade made after the build of week 5, so the history copy of week 5 lacks it."""
+    copy = history_dir(history_root(repo, 2026), 5) / "transactions.json"
+    trade = {**next(t for t in json.loads(copy.read_text()) if t["roster_ids"] == [2, 6]),
+             "transaction_id": "late-week-5",
+             "created": int(datetime(2026, 10, 14, 12, 0, tzinfo=ET).timestamp() * 1000)}
+    return json.loads(copy.read_text()) + [trade]
+
+
+def test_window_reads_the_fresh_transactions_of_the_week_before(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    (week_dir(repo, 2026, 6) / "raw" / "transactions_prev.json").write_text(json.dumps(_late_week_5_trade(repo)))
+    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    assert [t.transaction_id for t in bundle.data.trades].count("late-week-5") == 1
+    assert len(bundle.data.trades) == 7
+
+
+def test_window_without_fresh_transactions_reads_the_history_copy(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    assert len(bundle.data.trades) == 6
+    assert "no fresh transactions for week 5" in caplog.text

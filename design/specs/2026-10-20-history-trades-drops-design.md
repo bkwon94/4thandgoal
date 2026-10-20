@@ -181,7 +181,10 @@ in `verify.json`, and the next build uses that time as the cutoff. The fetch tim
 build start, is the bound, so a trade made between the fetch and the build lands on the next
 page and no trade misses both pages. For week 6 only, with no saved fetch time, the window
 ends at the build start, because version 1 saved no fetch time. The history copy of a week's
-transactions is taken at build time and is not refetched.
+transactions is taken at build time. A trade made after that build carries `leg` N-1 and is not
+in the copy, so the build of week N refetches `transactions/{N-1}` into
+`raw/transactions_prev.json` and reads the window from that file. Without the file, the build
+reads the history copy and logs a warning.
 
 A trade is late when a player it moved is on the roster that gave him in `matchups.json`.
 The players it moved scored for their old teams that week. A late trade gets a card and a
