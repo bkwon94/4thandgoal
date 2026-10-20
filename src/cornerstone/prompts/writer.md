@@ -18,3 +18,4 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 12. Keep to the sentence range in the user message. No sentence may be a question.
 13. Do not describe the fact sheet or the task. Write about the matchup, not about "the data".
 14. If a feedback section appears, the last attempt had an unsupported sentence. Fix it, and keep the supported sentences accurate.
+15. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
