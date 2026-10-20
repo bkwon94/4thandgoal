@@ -187,6 +187,21 @@ def recent_add_facts(c: Context) -> list[Fact]:
     return [_fact("W.adds", text, n, teams, [line.name for line, _ in top])]
 
 
+def injured_facts(c: Context) -> list[Fact]:
+    """Every started line with a Sleeper injury status, league-wide."""
+    found = [
+        (line, c.team(side.roster_id))
+        for m in c.week.matchups for side in (m.a, m.b) for line in side.lines
+        if line.started and line.injury_status
+    ]
+    if not found:
+        return []
+    parts = [f"{line.name} ({team}, {line.injury_status})" for line, team in found]
+    text = "Started while on the injury report: " + "; ".join(parts) + "."
+    teams = sorted({team for _, team in found})
+    return [_fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
+
+
 def standings_facts(c: Context) -> list[Fact]:
     out = []
     for s in c.table:
@@ -235,6 +250,7 @@ def matchup_fact_family(c: Context) -> list[Fact]:
         out += _result_facts(c, f, m)
         out += _line_facts(c, f, m)
         out += _story_facts(c, f)
+        out += _injury_facts(c, f, m)
         out += _context_facts(c, f, m)
     return out
 
@@ -308,6 +324,23 @@ def _story_facts(c, f) -> list[Fact]:
             f"and {c.against_projection(line, n)}."
         )
         out.append(_fact(f"{mid}.move.{mv.player_id}", text, n, [team], [line.name]))
+    return out
+
+
+def _injury_facts(c, f, m) -> list[Fact]:
+    """One fact per started line with a Sleeper injury status in one matchup."""
+    out = []
+    for side in (m.a, m.b):
+        team = c.team(side.roster_id)
+        for line in side.lines:
+            if not line.started or not line.injury_status:
+                continue
+            # The fact text defines "listed {status}", so a blurb can say "listed Out" and cite it.
+            status = f"listed {line.injury_status}"
+            if line.injury_body_part:
+                status += f" ({line.injury_body_part})"
+            text = f"{line.name} started for {team} while {status} on Sleeper as of this report."
+            out.append(_fact(f"M{f.matchup_id}.inj.{line.player_id}", text, Nums(), [team], [line.name]))
     return out
 
 
@@ -482,7 +515,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         ))
     out.append(make(
         "awards", "Awards",
-        _with_prefix(facts, "AW.") + ["W.adds"] + [f"RANK.{a.line.player_id}" for a in c.awards]
+        _with_prefix(facts, "AW.") + ["W.adds", "W.injured"] + [f"RANK.{a.line.player_id}" for a in c.awards]
         + [f"M{mid}.result" for mid in roster_ids],
         all_rosters, "awards",
     ))
@@ -503,7 +536,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
 def build_bundle(week: Week, news: Callable[[str], list[dict]] = fetch_news) -> Bundle:
     c = Context(week, news)
     families = (
-        week_facts(c), recent_add_facts(c), standings_facts(c), median_facts_sheet(c),
+        week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), strength_facts(c),
     )

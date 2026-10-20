@@ -17,6 +17,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **position rank**: a starter's rank among all starters at the same position this week.
 - **upset**: the winner ranked below the loser in the standings before this week. Use it only in a sentence that cites a fact with `.upset` in its ID.
 - **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`.
+- **injury status**: the Sleeper designation for a player (Out, Doubtful, Questionable, IR) as of the time this report was built. Use it only in a sentence that cites a fact with `.inj.` in its ID.
 
 ## Banned words
 

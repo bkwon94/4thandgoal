@@ -166,3 +166,39 @@ def test_move_facts_say_recent_add(bundle):
     moves = [f for f in bundle.sheet.facts.values() if ".move." in f.id]
     assert moves, "the fixture has a recent move"
     assert all("recent add" in f.text for f in moves)
+
+
+def test_injury_fact_says_listed_status(bundle):
+    # In the fixture players blob, started Ladd McConkey (M5) is listed Out with a concussion.
+    f = bundle.sheet.facts["M5.inj.11635"]
+    assert f.text == (
+        "Ladd McConkey started for To Infinity and Bijan while listed Out (Concussion) "
+        "on Sleeper as of this report."
+    )
+    assert f.numbers == [] and f.teams == ["To Infinity and Bijan"] and f.players == ["Ladd McConkey"]
+    recap = next(c for c in bundle.sheet.chapters if c.key == "recap_5")
+    assert "M5.inj.11635" in recap.fact_ids
+
+
+def test_no_injury_status_gets_no_injury_fact(bundle):
+    # Tyler Shough starts in M4 and has no injury_status in the fixture.
+    assert "M4.inj.12545" not in bundle.sheet.facts
+    assert not any(".inj." in fid and "Tyler Shough" in f.players for fid, f in bundle.sheet.facts.items())
+
+
+def test_injury_fact_without_body_part_drops_the_parenthesis(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw["players"]["11635"]["injury_body_part"] = None
+    b = build_bundle(parse_week(raw), news=lambda pid: [])
+    assert b.sheet.facts["M5.inj.11635"].text == (
+        "Ladd McConkey started for To Infinity and Bijan while listed Out on Sleeper as of this report."
+    )
+
+
+def test_injured_aggregate_lists_every_injured_starter(bundle):
+    f = bundle.sheet.facts["W.injured"]
+    assert f.text.startswith("Started while on the injury report: ")
+    assert "Ladd McConkey (To Infinity and Bijan, Out)" in f.text
+    assert f.numbers == [] and "Ladd McConkey" in f.players
+    awards = next(c for c in bundle.sheet.chapters if c.key == "awards")
+    assert "W.injured" in awards.fact_ids

@@ -71,6 +71,8 @@ def _line(player_id, entry, roster_positions, projections, players, starters) ->
         season_avg=None,
         started=started,
         slot=roster_positions[starters.index(player_id)] if started else None,
+        injury_status=player.get("injury_status") if player else None,
+        injury_body_part=player.get("injury_body_part") if player else None,
     )
 
 

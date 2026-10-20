@@ -40,6 +40,9 @@ class PlayerLine(BaseModel):
     season_avg: float | None
     started: bool
     slot: str | None
+    # The Sleeper designation, such as "Out", as of the time the players blob was fetched.
+    injury_status: str | None = None
+    injury_body_part: str | None = None
 
 
 class Side(BaseModel):
