@@ -133,7 +133,11 @@ def run_build(
     site_dir = repo / "site"
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     render_index(site_dir)
-    save_week_to_history(raw_dir, history_dir(history_root(repo, season), week))
+    # The page is built by now, so a history problem only logs a warning.
+    try:
+        save_week_to_history(raw_dir, history_dir(history_root(repo, season), week))
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("week %d not saved to history: %s", week, err)
     return page
 
 

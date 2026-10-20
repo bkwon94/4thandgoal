@@ -78,6 +78,17 @@ def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir):
     assert injuries["5859"] == "Questionable"  # A.J. Brown
 
 
+def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    # A file in place of the history directory makes the save fail.
+    root = history_root(repo, 2026)
+    root.parent.mkdir(parents=True, exist_ok=True)
+    root.write_text("not a directory")
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert page.exists()
+    assert "week 6 not saved to history" in caplog.text
+
+
 def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
