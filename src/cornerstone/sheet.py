@@ -197,7 +197,7 @@ def injured_facts(c: Context) -> list[Fact]:
     if not found:
         return []
     parts = [f"{line.name} ({team}, {line.injury_status})" for line, team in found]
-    text = "Started while on the injury report: " + "; ".join(parts) + "."
+    text = "Now on the injury report after this week's games: " + "; ".join(parts) + "."
     teams = sorted({team for _, team in found})
     return [_fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
 
@@ -335,11 +335,15 @@ def _injury_facts(c, f, m) -> list[Fact]:
         for line in side.lines:
             if not line.started or not line.injury_status:
                 continue
-            # The fact text defines "listed {status}", so a blurb can say "listed Out" and cite it.
+            # The status comes from the players file fetched after the games, so it is post-game.
+            # The fact must not imply that the player was hurt at kickoff.
             status = f"listed {line.injury_status}"
             if line.injury_body_part:
                 status += f" ({line.injury_body_part})"
-            text = f"{line.name} started for {team} while {status} on Sleeper as of this report."
+            text = (
+                f"{line.name} is now {status} on Sleeper as of the Tuesday after this week's games. "
+                "The status may have come from this game."
+            )
             out.append(_fact(f"M{f.matchup_id}.inj.{line.player_id}", text, Nums(), [team], [line.name]))
     return out
 

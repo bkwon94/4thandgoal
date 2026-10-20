@@ -172,8 +172,8 @@ def test_injury_fact_says_listed_status(bundle):
     # In the fixture players blob, started Ladd McConkey (M5) is listed Out with a concussion.
     f = bundle.sheet.facts["M5.inj.11635"]
     assert f.text == (
-        "Ladd McConkey started for To Infinity and Bijan while listed Out (Concussion) "
-        "on Sleeper as of this report."
+        "Ladd McConkey is now listed Out (Concussion) on Sleeper as of the Tuesday after "
+        "this week's games. The status may have come from this game."
     )
     assert f.numbers == [] and f.teams == ["To Infinity and Bijan"] and f.players == ["Ladd McConkey"]
     recap = next(c for c in bundle.sheet.chapters if c.key == "recap_5")
@@ -191,13 +191,14 @@ def test_injury_fact_without_body_part_drops_the_parenthesis(fixture_raw_dir):
     raw["players"]["11635"]["injury_body_part"] = None
     b = build_bundle(parse_week(raw), news=lambda pid: [])
     assert b.sheet.facts["M5.inj.11635"].text == (
-        "Ladd McConkey started for To Infinity and Bijan while listed Out on Sleeper as of this report."
+        "Ladd McConkey is now listed Out on Sleeper as of the Tuesday after this week's games. "
+        "The status may have come from this game."
     )
 
 
 def test_injured_aggregate_lists_every_injured_starter(bundle):
     f = bundle.sheet.facts["W.injured"]
-    assert f.text.startswith("Started while on the injury report: ")
+    assert f.text.startswith("Now on the injury report after this week's games: ")
     assert "Ladd McConkey (To Infinity and Bijan, Out)" in f.text
     assert f.numbers == [] and "Ladd McConkey" in f.players
     awards = next(c for c in bundle.sheet.chapters if c.key == "awards")
