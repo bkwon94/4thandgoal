@@ -41,7 +41,7 @@
         {% else %}
         <div class="n">{{ t.player }}</div>
         <div class="pp">{{ t.points|num }}{% if t.drops is not none %} <small>{{ 'drop' if t.drops == 1 else 'drops' }}</small>{% endif %}</div>
-        <div class="sub">{% if t.projection is not none %}proj {{ t.projection|num }} · {% endif %}{% if t.drop_value is not none %}~{{ t.drop_value|num }} pts lost · {% endif %}{{ t.team }}</div>
+        <div class="sub">{% if t.projection is not none %}proj {{ t.projection|num }} · {% endif %}{% if t.drop_value is not none %}~{{ t.drop_value|num }} pts est. · {% endif %}{{ t.team }}</div>
         {% endif %}
       </div>
       {% endfor %}

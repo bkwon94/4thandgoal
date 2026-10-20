@@ -191,7 +191,7 @@ def test_no_trades_no_section(fixture_raw_dir, tmp_path):
 
 def test_butterfingers_tile_and_drop_note(dbundle, tmp_path):
     html = render_week(dbundle, _blurbs(dbundle), tmp_path, _fake_png).read_text()
-    assert "Butterfingers" in html and "14.2" in html
+    assert "Butterfingers" in html and "~14.2 pts est." in html
     assert "Drop value is an estimate" in html
 
 
