@@ -363,7 +363,7 @@ def _butterfingers_reason(line: PlayerLine, d: DropLine, drops: list[DropLine]) 
         rank = "tied for the most of any started player this week"
     else:
         rank = "the most of any started player this week"
-    reason = f"{line.name} dropped {d.drops} passes, {rank}"
+    reason = f"{line.name} dropped {d.drops} {'pass' if d.drops == 1 else 'passes'}, {rank}"
     # With nflverse down there is no value, so the clause after "week" goes.
     if d.value is None:
         return reason + "."

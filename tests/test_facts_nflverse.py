@@ -34,8 +34,8 @@ def test_drop_facts(dbundle):
         "Matthew Golden's drops were worth about 14.2 points by the drop value method, with 1 in the end zone.")
     assert f["M4.dropswing"].text == (
         "Bo Girds's starters dropped 7 passes worth about 17.8, at least the margin of 5.34.")
-    assert f["W.drops"].text == ("Most drops this week: Matthew Golden (Bo Girds), 3; "
-        "Chris Olave (All You Need Is Love), 3; CeeDee Lamb (behold the lamb), 2.")
+    assert f["W.drops"].text == ("Most drops this week: Matthew Golden (Bo Girds), 3 drops; "
+        "Chris Olave (All You Need Is Love), 3 drops; CeeDee Lamb (behold the lamb), 2 drops.")
     assert dbundle.data.drop_source == "nflverse"
 
 
@@ -143,3 +143,21 @@ def test_got_fact_carries_the_pregame_status(fixture_raw_dir, fixture_history_ro
     nfl = nfl_week6.model_copy(update={"injuries": {**nfl_week6.injuries, "12490": {6: "Questionable"}}})
     f = _trade_bundle(fixture_raw_dir, fixture_history_root, nfl=nfl).sheet.facts
     assert "Bhayshul Tuten was listed Questionable on the final NFL injury report" in f["T5.12.got.12490"].text
+
+
+def test_one_drop_is_one_pass(fixture_raw_dir):
+    # Sleeper counts one drop and no targets for one starter, and no drop for any other.
+    wk = parse_week(load_raw(fixture_raw_dir))
+    side = wk.matchups[0].a
+    line = next(l for l in side.lines if l.started)
+    stats = {p: {k: v for k, v in s.items() if k not in ("rec_drop", "rec_tgt")} for p, s in wk.stats.items()}
+    stats[line.player_id] = {**stats.get(line.player_id, {}), "rec_drop": 1}
+    week = wk.model_copy(update={"stats": stats})
+    f = build_bundle(week, news=lambda pid: []).sheet.facts
+    assert f[f"D.{line.player_id}"].text == f"{line.name} dropped 1 pass this week."
+    assert f["W.drops"].text == f"Most drops this week: {line.name} ({wk.teams[side.roster_id].name}), 1 drop."
+    one = [DropLine(player_id=line.player_id, roster_id=side.roster_id, matchup_id=wk.matchups[0].matchup_id,
+                    drops=1, targets=None, value=None, end_zone=None)]
+    award = next(a for a in awards(week, build_bundle(week, news=lambda pid: []).data.matchups, one)
+                 if a.key == "butterfingers")
+    assert award.reason.startswith(f"{line.name} dropped 1 pass, ")

@@ -700,7 +700,7 @@ def _drop_fact(c: Context, d: DropLine) -> list[Fact]:
     line, team = c.lines[d.player_id], c.team(d.roster_id)
     n = Nums()
     if d.targets is None:
-        text = f"{line.name} dropped {n(d.drops)} passes this week."
+        text = f"{line.name} dropped {_passes(d.drops, n)} this week."
     else:
         text = f"{line.name} dropped {n(d.drops)} of {n(d.targets)} targets this week."
     out = [_fact(f"D.{d.player_id}", text, n, [team], [line.name])]
@@ -727,7 +727,7 @@ def _dropswing_facts(c: Context) -> list[Fact]:
         n = Nums()
         team = c.team(f.loser)
         text = (
-            f"{team}'s starters dropped {n(sum(d.drops for d in lost))} passes worth about "
+            f"{team}'s starters dropped {_passes(sum(d.drops for d in lost), n)} worth about "
             f"{n(float(value))}, at least the margin of {n(f.margin)}."
         )
         out.append(_fact(f"M{f.matchup_id}.dropswing", text, n, [team], [c.lines[d.player_id].name for d in lost]))
@@ -740,10 +740,17 @@ def drop_facts(c: Context) -> list[Fact]:
     if c.drops:
         n = Nums()
         top = c.drops[:3]
-        parts = [f"{c.lines[d.player_id].name} ({c.team(d.roster_id)}), {n(d.drops)}" for d in top]
+        parts = [
+            f"{c.lines[d.player_id].name} ({c.team(d.roster_id)}), {n(d.drops)} {'drop' if d.drops == 1 else 'drops'}"
+            for d in top
+        ]
         out.append(_fact("W.drops", "Most drops this week: " + "; ".join(parts) + ".", n,
                          [c.team(d.roster_id) for d in top], [c.lines[d.player_id].name for d in top]))
     return out
+
+
+def _passes(count: int, n: Nums) -> str:
+    return f"{n(count)} pass" + ("" if count == 1 else "es")
 
 
 def _weeks(count: int, n: Nums, adjective: str = "") -> str:
