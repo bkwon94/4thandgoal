@@ -58,7 +58,7 @@
         <div class="a">{{ av(w.team) }}<span><span{{ ' class="w"'|safe if w.winner }}>{{ w.team.name }}</span> <span{{ ' class="w"'|safe if w.winner }}>{{ w.score|num }}</span></span></div>
         <div class="b"><span>{{ l.score|num }} {{ l.team.name }}</span>{{ av(l.team) }}</div>
       </div>
-      <button class="cta recap-btn" type="button"><span class="open-label">Read recap</span><span class="close-label">Hide recap</span><span class="chev"></span></button>
+      <button class="cta recap-btn" type="button" aria-expanded="false"><span class="open-label">Read recap</span><span class="close-label">Hide recap</span><span class="chev"></span></button>
       <div class="body"><div class="inner">
         <div class="stars">
           {% for s in m.sides %}
