@@ -23,7 +23,7 @@ from cornerstone.facts_league import (
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
-from cornerstone.history import player_trend, points_per_game, season_rank
+from cornerstone.history import player_trend, points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -34,6 +34,7 @@ from cornerstone.models import (
     NflverseWeek,
     PlayerLine,
     Trade,
+    UsageShare,
     Week,
     WeekData,
     r2,
@@ -602,7 +603,7 @@ def _pregame_text(c: Context, pid: str) -> str | None:
 
 
 def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fact:
-    """The points a game of a traded player and his position rank, from weeks 1 to N-1 only."""
+    """The points per game of a traded player and his position rank, from weeks 1 to N-1 only."""
     n = Nums()
     line = c.lines[pid]
     team = c.team(rid)
@@ -615,8 +616,8 @@ def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fac
         text = f"{team} {verb} {line.name}: no scored game before the trade."
     else:
         text = (
-            f"{team} {verb} {line.name}: {n(profile[0])} points per game over {n(profile[1])} games "
-            "before the trade"
+            f"{team} {verb} {line.name}: {n(profile[0])} points per game over {n(profile[1])} "
+            f"{'game' if profile[1] == 1 else 'games'} before the trade"
         )
         rank = season_rank(c.history, pid, through)
         if rank is not None:
@@ -711,6 +712,77 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
     return _fact(f"T{i}.{rid}.swing", text, n, teams, [l.name for l in (*got_started, *gave_started)])
 
 
+def _share_fact(c: Context, i: int, pid: str, kind: str, share: UsageShare | None) -> Fact | None:
+    """The snap share or target share of a player before the trade. `kind` is the fact ID suffix."""
+    if share is None:
+        return None
+    n = Nums()
+    name = c.lines[pid].name
+    label = "snap share" if kind == "usage" else "target share"
+    if share.direction is None:
+        games = f"{n(share.weeks)} {'game' if share.weeks == 1 else 'games'}"
+        text = f"{name}'s {label} was {n(share.percent)} percent over {games} before the trade."
+    else:
+        text = (
+            f"{name}'s {label} was {n(share.percent)} percent over the last {n(2)} weeks before the trade, "
+            f"{share.direction} from the {n(2)} weeks before that."
+        )
+    return _fact(f"T{i}.{pid}.{kind}", text, n, [], [name])
+
+
+def _redzone_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
+    """The red-zone targets and carries of a player from week 1 to N-1."""
+    zone = red_zone(c.history, pid, through)
+    if zone is None:
+        return None
+    n = Nums()
+    name = c.lines[pid].name
+    targets, carries = zone
+    text = (
+        f"{name} had {n(targets)} red-zone {'target' if targets == 1 else 'targets'} and "
+        f"{n(carries)} red-zone {'carry' if carries == 1 else 'carries'} this season before the trade."
+    )
+    return _fact(f"T{i}.{pid}.redzone", text, n, [], [name])
+
+
+def _injury_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
+    """The NFL injury report of a player in weeks 1 to N-1. A week N entry is after the trade and never counts."""
+    if c.nfl is None or c.nfl.injuries is None:
+        return None
+    reports = {w: status for w, status in c.nfl.injuries.get(pid, {}).items() if w <= through}
+    if not reports:
+        return None
+    n = Nums()
+    name = c.lines[pid].name
+    count = _weeks(len(reports), n)
+    if through in reports:
+        text = (
+            f"{name} was listed {reports[through]} on the NFL injury report in week {n(through)}, "
+            f"and in {count} this season before the trade."
+        )
+    else:
+        text = f"{name} was on the NFL injury report in {count} this season before the trade."
+    return _fact(f"T{i}.{pid}.injury", text, n, [], [name])
+
+
+def _usage_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
+    """The usage, red-zone, and injury facts of each moved player with a line this week, from weeks 1 to N-1."""
+    through = c.week.week - 1
+    out = []
+    for pid in dict.fromkeys((*trade.adds, *trade.drops)):
+        if pid not in c.lines:
+            continue
+        position = c.lines[pid].position
+        if c.history is not None:
+            out.append(_share_fact(c, i, pid, "usage", snap_share(c.history, pid, through)))
+            if position in ("RB", "WR", "TE"):
+                out.append(_share_fact(c, i, pid, "targets", target_share(c.history, pid, through)))
+            if position in ("QB", "RB", "WR", "TE"):
+                out.append(_redzone_fact(c, i, pid, through))
+        out.append(_injury_fact(c, i, pid, through))
+    return [f for f in out if f is not None]
+
+
 def trade_facts(c: Context) -> list[Fact]:
     out = []
     for i, trade in enumerate(c.trades, start=1):
@@ -723,6 +795,7 @@ def trade_facts(c: Context) -> list[Fact]:
             if team is not None:
                 out.append(team)
             out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
+        out += _usage_facts(c, i, trade)
         # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
             continue

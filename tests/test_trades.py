@@ -7,9 +7,9 @@ from datetime import date, datetime
 from importlib import resources
 from zoneinfo import ZoneInfo
 
-from conftest import _decisive_trade
+from conftest import _decisive_trade, _trade_bundle
 from cornerstone.history import load_history
-from cornerstone.models import Trade
+from cornerstone.models import NflverseWeek, Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
@@ -80,7 +80,7 @@ def test_swing_is_decisive_only_in_the_direction_of_the_result(fixture_raw_dir):
 
 
 def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
-    from cornerstone.models import Trade
+    from cornerstone.models import NflverseWeek, Trade
     week = parse_week(load_raw(fixture_raw_dir))
     a, b, c = week.matchups[0].a, week.matchups[0].b, week.matchups[1].a
     pa, pb = (next(l for l in s.lines if l.started) for s in (a, b))
@@ -137,7 +137,7 @@ def test_player_with_no_line_stays_in_sides_and_gets_no_got_fact(tbundle, fixtur
 
 def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     # Two non-late trades move one starter on. Only the final roster started him.
-    from cornerstone.models import Trade
+    from cornerstone.models import NflverseWeek, Trade
     week = parse_week(load_raw(fixture_raw_dir))
     owner = week.matchups[0].a
     star = next(l for l in owner.lines if l.started)
@@ -250,4 +250,58 @@ def test_late_trade_keeps_profile_team_and_impact(tbundle):
 def test_vocabulary_has_the_profile_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("points per game", "position rank by season points", "trade impact"):
+        assert f"**{term}**" in text
+
+
+def _injured(fixture_raw_dir, fixture_history_root):
+    # The week 6 "Out" is after the trade, so no injury fact may count it.
+    nfl = NflverseWeek(sources={}, gsis={}, drops=None,
+                       injuries={"12490": {4: "Questionable", 5: "Questionable", 6: "Out"}, "8146": {3: "Questionable"}})
+    return _trade_bundle(fixture_raw_dir, fixture_history_root, nfl=nfl).sheet.facts
+
+
+def test_usage_facts(tbundle):
+    f = tbundle.sheet.facts
+    assert f["T5.12490.usage"].text == (
+        "Bhayshul Tuten's snap share was 64 percent over the last 2 weeks before the trade, up from the 2 weeks before that.")
+    assert f["T5.12490.targets"].text == (
+        "Bhayshul Tuten's target share was 11 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.")
+    assert f["T3.7569.usage"].text == "Nico Collins's snap share was 71 percent over 3 games before the trade."
+
+
+def test_redzone_fact(tbundle):
+    assert tbundle.sheet.facts["T5.12490.redzone"].text == (
+        "Bhayshul Tuten had 1 red-zone target and 12 red-zone carries this season before the trade.")
+
+
+def test_quarterback_has_no_target_share(tbundle):
+    f = tbundle.sheet.facts
+    assert "T4.4046.usage" in f and "T4.4046.targets" not in f
+
+
+def test_no_scored_game_has_no_usage(tbundle):
+    assert not any(fid.startswith("T5.5850.") for fid in tbundle.sheet.facts)
+
+
+def test_player_in_two_trades_gets_facts_in_both(tbundle):
+    f = tbundle.sheet.facts
+    assert "T4.8154.usage" in f and "T6.8154.usage" in f
+
+
+def test_injury_facts_end_at_week_5(fixture_raw_dir, fixture_history_root):
+    f = _injured(fixture_raw_dir, fixture_history_root)
+    assert f["T5.12490.injury"].text == (
+        "Bhayshul Tuten was listed Questionable on the NFL injury report in week 5, and in 2 weeks this season before the trade.")
+    assert f["T5.8146.injury"].text == "Garrett Wilson was on the NFL injury report in 1 week this season before the trade."
+    assert "T5.11834.injury" not in f
+    assert "injury report" not in f["T5.12.got.12490"].text
+
+
+def test_no_injury_facts_without_nflverse(tbundle):
+    assert not any(fid.endswith(".injury") for fid in tbundle.sheet.facts)
+
+
+def test_vocabulary_has_the_usage_terms():
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    for term in ("snap share", "target share", "red-zone use", "injury before the trade"):
         assert f"**{term}**" in text
