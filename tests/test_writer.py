@@ -151,7 +151,21 @@ def test_trades_template_lists_the_sides(tbundle):
     assert b.grades == {}
 
 
-def test_writer_rules_hold_the_grade_rule(tbundle):
+def test_writer_rules_18_and_19(tbundle):
     system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert "A trade can be a C for both sides." in system
-    assert "Never put a number on a draft pick." in system
+    assert "18. In a trade chapter, grade each side on value at the moment of the trade" in system
+    assert "Never let `impact` or `swing` facts move a grade." in system
+    assert ("19. In a trade chapter, write the grade reasons first. Then at most one sentence on how "
+            "the trade played out this week, from the `impact` or `swing` facts.") in system
+    assert "With more than two trades" not in system and "In the Trades chapter" not in system
+    assert "20. Never put a number on a draft pick." in system
+    assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
+
+
+def test_trade_template_finds_the_sides_fact(tbundle):
+    ch = next(c for c in tbundle.sheet.chapters if c.key == "trade_6")
+    shuffled = ch.model_copy(update={"fact_ids": list(reversed(ch.fact_ids))})
+    b = template_blurb(shuffled, tbundle.sheet)
+    assert [s.fact_ids for s in b.sentences] == [["T6.sides"]]
+    assert b.sentences[0].text == tbundle.sheet.facts["T6.sides"].text
+    assert b.fallback and b.grades == {}

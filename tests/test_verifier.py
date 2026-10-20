@@ -396,6 +396,10 @@ def test_extra_grade_fails(tbundle):
     assert _grade_failures(tbundle, **{"T9.1": "C"}) == ["[0] grade for T9.1 is not a trade side"]
 
 
+def test_grade_from_another_trade_fails(tbundle):
+    assert _grade_failures(tbundle, **{"T1.4": "C"}) == ["[0] grade for T1.4 is not a trade side"]
+
+
 def test_plus_grade_fails(tbundle):
     assert _grade_failures(tbundle, **{"T5.12": "B+"}) == [
         "[0] grade T5.12 is 'B+'; use one letter A, B, C, D, or F"
