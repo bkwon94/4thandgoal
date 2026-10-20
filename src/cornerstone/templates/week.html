@@ -96,7 +96,7 @@
     <div class="lbl">Standings</div>
     <div class="st hd"><span>#</span><span>Team</span><span>W-L</span><span>Pts</span></div>
     {% for row in table %}
-    <div class="st{{ ' me' if row.team.is_brian }}"><span>{{ row.standing.rank }}</span><span class="tn">{{ tm(row.team) }}</span><span>{{ row.standing.wins }}-{{ row.standing.losses }}</span><span>{{ '%.2f'|format(row.standing.points_for) }}</span></div>
+    <div class="st"><span>{{ row.standing.rank }}</span><span class="tn">{{ tm(row.team) }}</span><span>{{ row.standing.wins }}-{{ row.standing.losses }}</span><span>{{ '%.2f'|format(row.standing.points_for) }}</span></div>
     {% if loop.index == 6 %}<div class="st cut"></div>{% endif %}
     {% endfor %}
     <p class="blurb note">Records include the weekly median game: every team plays its opponent and the league median each week.</p>

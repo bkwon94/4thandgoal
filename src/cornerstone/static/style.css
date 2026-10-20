@@ -128,7 +128,6 @@ a { color:var(--red); }
 .st { display:grid; grid-template-columns:24px 1fr 44px 56px; gap:var(--sp-2); align-items:center; padding:var(--sp-1) 0; border-bottom:1px solid var(--rule-dark); font-size:var(--fs-row); line-height:var(--lh-tight); }
 .st > span:nth-child(n+3) { text-align:right; }
 .st.hd { color:var(--on-dark-muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); padding:0 0 var(--sp-2); }
-.st.me .who { background:var(--red); color:var(--on-dark); border-radius:var(--r-sm); padding:var(--sp-0) var(--sp-2) var(--sp-0) var(--sp-0); }
 .st.cut { padding:0; border-bottom:2px dashed var(--red); }
 
 .nx { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
