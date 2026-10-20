@@ -1,0 +1,175 @@
+/* Styles for the week page and the home page, ported from the approved phone mockup.
+   The page is one centered column, so the same rules serve a phone and a desktop. */
+:root {
+  --blk:#141414; --red:#b8342a; --gry:#ececec; --wht:#fff;
+  /* Tints of the brand colors. One token per job keeps the greys from drifting apart. */
+  --red-lt:#f2a59e; --ink:#1a1a1a; --ink-2:#333; --muted:#666; --rule:#e3e3e3; --bar-off:#cfcfcf;
+  --on-dark:#fff; --on-dark-2:#ccc; --on-dark-muted:#999; --rule-dark:#333;
+
+  /* Spacing scale. Every padding, margin, and gap comes from this list. */
+  --sp-0:2px; --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+  --gutter:var(--sp-4);
+
+  /* Type scale: label, meta, row, body, lead, stat, score, headline. Row is for dense lists, so names and scores stay on one line. */
+  --fs-label:10px; --fs-meta:12px; --fs-row:13px; --fs-body:14px; --fs-lead:16px;
+  --fs-stat:20px; --fs-score:24px; --fs-headline:40px;
+  --lh-body:1.4; --lh-tight:1.15; --lh-stat:1.1;
+  --track-wide:.16em; --track:.1em;
+
+  --r-sm:3px; --r-card:8px;
+  --chap-rule:6px;
+
+  /* Press feedback for every pressable element. Only transform animates, so it stays on the GPU. */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --press:transform 140ms var(--ease-out);
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--wht); color:var(--ink); font-family:"Helvetica Neue",Arial,sans-serif; font-size:var(--fs-body); line-height:var(--lh-body); -webkit-font-smoothing:antialiased; overflow-wrap:break-word; }
+.page { max-width:480px; margin:0 auto; background:var(--wht); }
+a { color:var(--red); }
+/* Scores and stats line up in columns only when every digit has the same width. */
+.pt, .hero-p, .pp, .tile .sub, .kpi .v, .stars b, .mu .hd, .chart .r, .st, .rec, .week .dates, .wk .dates { font-variant-numeric:tabular-nums; }
+
+.avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
+.who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
+
+.mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }
+.brand { display:flex; align-items:center; gap:var(--sp-3); }
+.logo { width:30px; height:30px; border-radius:50%; flex:none; }
+.bar { width:1px; height:28px; background:var(--muted); }
+.brand .t { font-weight:700; letter-spacing:var(--track-wide); text-transform:uppercase; font-size:var(--fs-meta); line-height:var(--lh-tight); }
+.brand .s { color:var(--on-dark-muted); font-size:var(--fs-label); letter-spacing:var(--track); text-transform:uppercase; }
+.week { margin-top:var(--sp-4); }
+.week .big { font-size:var(--fs-headline); font-weight:900; letter-spacing:-.02em; line-height:1; }
+.week .big .n { color:var(--red); }
+.week .dates { color:var(--on-dark-2); font-size:var(--fs-meta); margin-top:var(--sp-1); }
+
+/* Each chapter opens with its label, then a 12px gap, then its blocks, 12px apart. */
+.chap { padding:var(--sp-5) var(--gutter); border-bottom:var(--chap-rule) solid var(--gry); }
+.chap.dark { background:var(--blk); color:var(--on-dark); }
+.lbl { color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:var(--track-wide); font-size:var(--fs-label); line-height:var(--lh-tight); margin-bottom:var(--sp-3); }
+.dark .lbl { color:var(--red-lt); }
+.tag { display:inline-block; background:var(--red); color:var(--on-dark); font-size:var(--fs-label); font-weight:700; letter-spacing:var(--track); text-transform:uppercase; padding:var(--sp-0) var(--sp-2); border-radius:var(--r-sm); margin-left:var(--sp-2); vertical-align:middle; }
+.blurb { font-size:var(--fs-body); color:var(--ink-2); margin:0; }
+.dark .blurb { color:var(--on-dark-2); }
+.blurb.gap, .blurb.note { margin-top:var(--sp-3); }
+.blurb.note { font-size:var(--fs-meta); }
+.hint { font-size:var(--fs-meta); color:var(--muted); margin:var(--sp-2) 0 0; }
+
+.score { display:flex; align-items:center; justify-content:space-between; margin:0 0 var(--sp-3); gap:var(--sp-2); }
+/* A flex item cannot shrink below its longest word by default. With long team names, the row got wider than a phone.
+   min-width:0 lets the name shrink, and hyphens break a long word inside its box. */
+.score .tm { font-weight:800; font-size:var(--fs-lead); line-height:var(--lh-tight); width:36%; min-width:0; display:flex; align-items:center; gap:var(--sp-2); hyphens:auto; }
+.score .tm > span { min-width:0; }
+.score .tm.r { flex-direction:row-reverse; text-align:right; }
+/* Flex centers the small dash on the big numbers. Inline text would sit it on the baseline. */
+.score .mid { display:flex; align-items:center; gap:var(--sp-1); white-space:nowrap; }
+.score .pt { font-size:var(--fs-score); font-weight:900; line-height:var(--lh-stat); white-space:nowrap; }
+.score .pt.miss { color:var(--red); }
+.score .vs { color:var(--muted); font-size:var(--fs-meta); }
+
+.hero-p { font-weight:900; font-size:var(--fs-score); line-height:var(--lh-stat); margin:0 0 var(--sp-1); }
+.hero-p small { font-weight:600; font-size:var(--fs-meta); color:var(--on-dark-muted); margin-left:var(--sp-2); }
+.hero-p.pts { color:var(--red-lt); margin-bottom:var(--sp-3); }
+
+.tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); }
+.tile { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
+/* The MVB title takes two lines at phone width. Every tile title keeps two lines, so names and numbers align across a row. */
+.tile .lbl { margin-bottom:var(--sp-1); min-height:calc(2em * var(--lh-tight)); }
+.tile .n { font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
+.tile .pp { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); margin-top:var(--sp-1); }
+.tile .sub { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
+
+.mu { border-bottom:1px solid var(--rule); }
+.mu:last-of-type { border-bottom:none; }
+/* minmax(0,1fr) keeps both columns equal, even when one name has a long word. */
+.mu .hd { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:var(--sp-2); padding:var(--sp-3) 0 var(--sp-2); }
+/* The chapter label already gives the first row its top space. */
+.lbl + .mu .hd { padding-top:0; }
+.mu .hd .a, .mu .hd .b { display:flex; align-items:center; min-width:0; hyphens:auto; gap:var(--sp-2); font-weight:600; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.mu .hd .b { justify-content:flex-end; text-align:right; }
+.mu .hd .w { color:var(--red); font-weight:800; }
+/* 44px is the smallest comfortable touch target. The color change on open is instant, so only the press animates. */
+.mu .cta { display:flex; align-items:center; justify-content:center; gap:var(--sp-2); width:100%; min-height:44px; padding:0 var(--sp-3); margin:0 0 var(--sp-3); border:0; background:var(--gry); color:var(--red); font:inherit; font-size:var(--fs-meta); font-weight:700; letter-spacing:var(--track); text-transform:uppercase; border-radius:var(--r-card); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:var(--press); }
+.mu .cta:active { transform:scale(.97); }
+.mu.open .cta { background:var(--blk); color:var(--on-dark); }
+/* A rotated square sits low in the line, so a small lift centers it on the text. */
+.mu .cta .chev { display:inline-block; width:6px; height:6px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-2px) rotate(45deg); transition:transform 200ms var(--ease-out); }
+.mu.open .cta .chev { transform:translateY(1px) rotate(-135deg); }
+.close-label { display:none; }
+.mu.open .open-label { display:none; }
+.mu.open .close-label { display:inline; }
+/* The panel opens and closes instantly, so no height animates. The content fades and settles in on open. Close stays instant, because the exit must be faster than the entry. */
+.mu .body { display:none; }
+.mu.open .body { display:block; }
+.mu .inner { padding:0 0 var(--sp-3); transition:opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+@starting-style {
+  .mu.open .inner { opacity:0; transform:translateY(-4px); }
+}
+.stars { display:flex; gap:var(--sp-2); margin:0 0 var(--sp-2); }
+.stars div { flex:1; background:var(--gry); border-radius:var(--r-card); padding:var(--sp-2) var(--sp-3); }
+.stars b { display:block; font-size:var(--fs-body); line-height:var(--lh-tight); margin-top:var(--sp-0); }
+.stars .k { display:block; color:var(--muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); line-height:var(--lh-tight); }
+
+.kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp-2); }
+.kpi > div { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3) var(--sp-2); text-align:center; }
+.kpi .v { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); }
+.kpi .k { font-size:var(--fs-label); color:var(--muted); text-transform:uppercase; letter-spacing:var(--track); line-height:var(--lh-tight); margin-top:var(--sp-1); }
+.chart { --val-col:52px; position:relative; margin-top:var(--sp-3); }
+/* The plot box matches the bar column, so the median line shares the bars' percent scale. */
+.chart .plot { position:absolute; top:0; bottom:0; left:0; right:calc(var(--val-col) + var(--sp-2)); pointer-events:none; }
+.chart .med { position:absolute; top:0; bottom:0; border-left:2px dashed var(--blk); }
+.chart .r { display:grid; grid-template-columns:1fr var(--val-col); align-items:end; gap:var(--sp-2); padding:var(--sp-1) 0; font-size:var(--fs-meta); }
+.chart .r .bar { height:14px; border-radius:var(--r-sm); background:var(--red); }
+.chart .r.below .bar { background:var(--bar-off); }
+.chart .r .nm { font-size:var(--fs-meta); line-height:var(--lh-tight); color:var(--ink-2); margin-bottom:var(--sp-0); }
+.chart .r b { text-align:right; line-height:14px; }
+
+.st { display:grid; grid-template-columns:24px 1fr 44px 56px; gap:var(--sp-2); align-items:center; padding:var(--sp-1) 0; border-bottom:1px solid var(--rule-dark); font-size:var(--fs-row); line-height:var(--lh-tight); }
+.st > span:nth-child(n+3) { text-align:right; }
+.st.hd { color:var(--on-dark-muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); padding:0 0 var(--sp-2); }
+.st.me .who { background:var(--red); color:var(--on-dark); border-radius:var(--r-sm); padding:var(--sp-0) var(--sp-2) var(--sp-0) var(--sp-0); }
+.st.cut { padding:0; border-bottom:2px dashed var(--red); }
+
+.nx { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
+.nx + .nx { margin-top:var(--sp-2); }
+.nx .m { font-weight:800; font-size:var(--fs-body); line-height:var(--lh-body); }
+.nx .m .who { flex-wrap:nowrap; }
+.nx .tag { margin:var(--sp-2) 0 0; }
+.nx .m .rec { font-weight:600; color:var(--muted); }
+.nx .b { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
+
+.wk { display:block; padding:var(--sp-3) 0; border-bottom:1px solid var(--rule); text-decoration:none; color:inherit; transition:var(--press); }
+.lbl + .wk { padding-top:0; }
+.wk b { display:block; font-size:var(--fs-lead); line-height:var(--lh-tight); margin-bottom:var(--sp-1); }
+.wk .dates, .wk .teams { display:block; font-size:var(--fs-meta); color:var(--muted); }
+/* An inline link cannot scale, so a link inside a blurb becomes an inline block. */
+.blurb a { display:inline-block; transition:var(--press); }
+.wk:active, .blurb a:active { transform:scale(.97); }
+
+.foot { background:var(--blk); color:var(--on-dark-muted); font-size:var(--fs-label); padding:var(--sp-4) var(--gutter); text-align:center; letter-spacing:var(--track); text-transform:uppercase; }
+
+:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+
+/* Touch screens fire hover on tap, so hover styles apply only to a real pointer. */
+@media (hover: hover) and (pointer: fine) {
+  .mu:not(.open) .cta:hover { background:var(--rule); }
+  .wk:hover b { color:var(--red); }
+  a:hover { text-decoration-thickness:2px; }
+}
+
+/* Reduced motion keeps the fade, which helps a reader see the change, and drops all movement. */
+@media (prefers-reduced-motion: reduce) {
+  .mu .cta, .mu .cta .chev, .wk, .blurb a { transition:none; }
+  .mu .cta:active, .wk:active, .blurb a:active { transform:none; }
+  .mu .inner { transition:opacity 200ms var(--ease-out); }
+  @starting-style {
+    .mu.open .inner { transform:none; }
+  }
+}
+
+/* The brand is black, red, and white in both themes, so the dark scheme keeps these colors. */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme:light; }
+  body { background:var(--wht); color:var(--ink); }
+}
