@@ -2,6 +2,7 @@
 Tests for the fact sheet, the bundle, and the week gate.
 They run on the recorded week 6 data.
 """
+import re
 from datetime import date
 
 import pytest
@@ -74,3 +75,45 @@ def test_recap_scope_players_cover_both_rosters(bundle):
     recap = next(c for c in bundle.sheet.chapters if c.key == "recap_4")
     assert "Tyler Shough" in recap.scope_players
     assert "Tre Tucker" not in recap.scope_players
+
+
+# A record such as 8-4 is one token. A leading minus belongs to a negative score.
+TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
+
+
+def test_every_number_token_in_text_is_in_numbers(bundle):
+    # Digits inside a team or player name are not number tokens.
+    for f in bundle.sheet.facts.values():
+        text = f.text
+        for name in sorted([*f.teams, *f.players], key=len, reverse=True):
+            text = text.replace(name, "")
+        tokens = set(TOKEN.findall(text))
+        assert tokens <= set(f.numbers), (f.id, tokens - set(f.numbers))
+
+
+def test_rank_fact_names_its_team(bundle):
+    for f in bundle.sheet.facts.values():
+        if f.id.startswith("RANK."):
+            assert all(t in f.text for t in f.teams), f.id
+
+
+def test_news_fact_uses_the_newest_item(fixture_raw_dir):
+    def news(_player_id):
+        return [
+            {"metadata": {"description": "Old note."}, "published": "1792427710312"},
+            {"metadata": {"description": "Newest note, 3 targets."}, "published": "1792500000000"},
+        ]
+
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news)
+    fact = b.sheet.facts["AW.game_changer.news"]
+    assert "Newest note" in fact.text and "Old note" not in fact.text
+    assert "3" in fact.numbers
+    assert "AW.game_changer.news" in next(c for c in b.sheet.chapters if c.key == "game_changer").fact_ids
+
+
+def test_news_failure_skips_the_fact(fixture_raw_dir):
+    def broken(_player_id):
+        raise RuntimeError("network down")
+
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=broken)
+    assert "AW.game_changer.news" not in b.sheet.facts

@@ -4,6 +4,7 @@ The fact sheet is the only input the writer sees, so each fact carries every num
 """
 import logging
 import re
+from collections.abc import Callable
 from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -54,7 +55,9 @@ SENTENCE_RANGES = {
     "median": (2, 4),
     "next_week": (1, 2),
 }
-NUMBER_TOKEN = re.compile(r"\d+(?:\.\d+)?")
+# A record such as 33-30 is one token. A leading minus belongs to a negative number.
+NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
+PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
 
 
 def fmt(x: float) -> str:
@@ -98,10 +101,12 @@ class Nums:
 
     def text(self, raw: str) -> str:
         """Record the numbers in text that code already wrote. Rewrite decimals to the page form."""
-        out = NUMBER_TOKEN.sub(
+        out = PART_TOKEN.sub(
             lambda m: fmt(float(m.group())) if "." in m.group() else m.group(), raw
         )
-        self.seen += NUMBER_TOKEN.findall(out)
+        for token in NUMBER_TOKEN.findall(out):
+            # A record or a negative number also lists its plain parts.
+            self.seen += [token, *(p for p in PART_TOKEN.findall(token) if p != token)]
         return out
 
 
@@ -112,8 +117,9 @@ def _fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) ->
 class Context:
     """Lookups shared by every fact family."""
 
-    def __init__(self, week: Week) -> None:
+    def __init__(self, week: Week, news: Callable[[str], list[dict]]) -> None:
         self.week = week
+        self.news = news
         self.mfacts = [matchup_facts(m, week.moves, week.week) for m in week.matchups]
         self.table = standings(week)
         self.by_rank = {s.roster_id: s for s in self.table}
@@ -341,11 +347,13 @@ def award_facts(c: Context) -> list[Fact]:
 def _news_facts(c: Context, gc) -> list[Fact]:
     # News is an unofficial endpoint. A failure must never stop a build.
     try:
-        items = fetch_news(gc.line.player_id)
+        items = c.news(gc.line.player_id)
     except Exception:
         logger.exception("News fetch failed for %s", gc.line.name)
         return []
-    description = (items[0].get("description") if items else None) or ""
+    # Items arrive in no promised order, and "published" is epoch milliseconds as a string.
+    newest = max(items, key=lambda i: int(i.get("published") or 0), default={})
+    description = (newest.get("metadata") or {}).get("description") or ""
     if not description:
         return []
     n = Nums()
@@ -395,7 +403,7 @@ def rank_facts(c: Context) -> list[Fact]:
         n = Nums()
         line = c.lines[r.player_id]
         team = c.team(c.line_owner[r.player_id])
-        text = f"{line.name} ranked {n(r.rank)} of {n(r.of)} among started {r.position}s this week."
+        text = f"{line.name} ranked {n(r.rank)} of {n(r.of)} among started {r.position}s this week, for {team}."
         out.append(_fact(f"RANK.{r.player_id}", text, n, [team], [line.name]))
     return out
 
@@ -492,8 +500,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     return out
 
 
-def build_bundle(week: Week) -> Bundle:
-    c = Context(week)
+def build_bundle(week: Week, news: Callable[[str], list[dict]] = fetch_news) -> Bundle:
+    c = Context(week, news)
     families = (
         week_facts(c), recent_add_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
