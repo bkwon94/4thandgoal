@@ -5,7 +5,7 @@ This is the only module that knows the shape of the raw data.
 from collections import defaultdict
 from datetime import date
 
-from cornerstone.models import Matchup, Move, PlayerLine, Side, Team, Week
+from cornerstone.models import Matchup, Move, PastWeek, PlayerLine, Side, Team, Week
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")
@@ -118,9 +118,9 @@ def _next_matchups(raw: dict) -> list[tuple[int, int]]:
     return [tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2]
 
 
-def _moves(raw: dict) -> list[Move]:
+def parse_moves(transactions: list[dict]) -> list[Move]:
     moves = []
-    for transaction in raw["transactions"]:
+    for transaction in transactions:
         if transaction["status"] != "complete" or transaction["type"] not in MOVE_KINDS:
             continue
         settings = transaction.get("settings") or {}
@@ -144,7 +144,34 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         teams=_teams(raw, brian_user),
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
-        moves=_moves(raw),
+        moves=parse_moves(raw["transactions"]),
         last_scored_week=raw["league"]["settings"]["last_scored_leg"],
         season_start=date.fromisoformat(state["season_start_date"]),
+    )
+
+
+def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
+    entries = raw["matchups"]
+    groups = defaultdict(list)
+    points: dict[str, float] = {}
+    for entry in entries:
+        if entry["matchup_id"] is not None:
+            groups[entry["matchup_id"]].append(entry["roster_id"])
+        # The empty slot "0" is not a player, so it never gets points.
+        points.update({
+            pid: pts for pid, pts in (entry.get("players_points") or {}).items()
+            if pid != EMPTY_SLOT
+        })
+    return PastWeek(
+        week=week,
+        scores={e["roster_id"]: e["points"] for e in entries},
+        pairs=[tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2],
+        points=points,
+        projections={
+            item["player_id"]: item["stats"]["pts_half_ppr"]
+            for item in raw["projections"]
+            if item["stats"].get("pts_half_ppr") is not None
+        },
+        stats={item["player_id"]: item["stats"] for item in raw["stats"]},
+        moves=parse_moves(raw["transactions"]),
     )

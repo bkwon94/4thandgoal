@@ -65,6 +65,27 @@ class Move(BaseModel):
     bid: int | None
 
 
+class PastWeek(BaseModel):
+    week: int
+    scores: dict[int, float]
+    # Sorted roster id pairs. A lone entry, such as a bye, is not a pair.
+    pairs: list[tuple[int, int]]
+    # The points of every player of every roster, keyed by player id.
+    points: dict[str, float]
+    projections: dict[str, float]
+    stats: dict[str, dict[str, float]]
+    moves: list[Move]
+
+
+class History(BaseModel):
+    week: int
+    weeks: dict[int, PastWeek]
+
+    def complete(self) -> bool:
+        """True when every week from 1 to the current week is present."""
+        return all(w in self.weeks for w in range(1, self.week + 1))
+
+
 class Week(BaseModel):
     season: int
     week: int
