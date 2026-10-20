@@ -194,4 +194,10 @@ def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
         stats={item["player_id"]: item["stats"] for item in raw["stats"]},
         moves=parse_moves(raw["transactions"]),
         trades=parse_trades(raw["transactions"]),
+        positions={
+            item["player_id"]: item["player"]["position"]
+            for item in raw["stats"]
+            if (item.get("player") or {}).get("position")
+        },
+        nfl_teams={item["player_id"]: item["team"] for item in raw["stats"] if item.get("team")},
     )

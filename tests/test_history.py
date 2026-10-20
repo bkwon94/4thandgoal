@@ -6,7 +6,20 @@ import shutil
 
 import pytest
 
-from cornerstone.history import HISTORY_FILES, fetch_history, history_dir, load_history, player_trend
+from cornerstone.history import (
+    HISTORY_FILES,
+    fetch_history,
+    history_dir,
+    load_history,
+    player_trend,
+    points_per_game,
+    red_zone,
+    season_rank,
+    share_direction,
+    snap_share,
+    target_share,
+)
+from cornerstone.models import UsageShare
 from cornerstone.parse import parse_moves, parse_week
 from cornerstone.sleeper import fetch_past_week, load_raw
 
@@ -88,3 +101,65 @@ def test_player_trend_needs_points_and_projection_in_all_three_weeks(fixture_his
     assert player_trend(h, "no-such-player") is None
     del h.weeks[5].projections["12501"]
     assert player_trend(h, "12501") is None
+
+
+def _h(fixture_history_root, fixture_raw_dir):
+    return load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
+
+
+def test_past_week_keeps_position_and_nfl_team(fixture_history_root, fixture_raw_dir):
+    h = _h(fixture_history_root, fixture_raw_dir)
+    assert h.weeks[5].positions["12501"] == "WR" and h.weeks[5].nfl_teams["12501"] == "GB"
+
+
+def test_golden_profile_through_week_5(fixture_history_root, fixture_raw_dir):
+    # Week 5: 47 of 61 snaps, 7 targets, 3 red-zone targets, 17.3 points.
+    h = _h(fixture_history_root, fixture_raw_dir)
+    assert points_per_game(h, "12501", 5) == (13.3, 5)
+    assert season_rank(h, "12501", 5) == (11, 90)
+    assert snap_share(h, "12501", 5) == UsageShare(percent=83, weeks=2, direction="flat")
+    assert target_share(h, "12501", 5) == UsageShare(percent=32, weeks=2, direction="flat")
+    assert red_zone(h, "12501", 5) == (7, 0)
+    assert player_trend(h, "12501", through=5) == 3
+
+
+def test_tuten_profile_ignores_week_6(fixture_history_root, fixture_raw_dir):
+    # He scored 22.7 in week 6. Through week 5 the total is 59.2 over 5 games, 11.8 a game.
+    h = _h(fixture_history_root, fixture_raw_dir)
+    assert points_per_game(h, "12490", 5) == (11.8, 5)
+    assert season_rank(h, "12490", 5) == (16, 77)
+    assert snap_share(h, "12490", 5) == UsageShare(percent=64, weeks=2, direction="up")
+    assert target_share(h, "12490", 5) == UsageShare(percent=11, weeks=2, direction="flat")
+    assert red_zone(h, "12490", 5) == (1, 12)
+    assert player_trend(h, "12490", through=5) == 1
+
+
+def test_fewer_than_4_weeks_has_no_direction(fixture_history_root, fixture_raw_dir):
+    h = _h(fixture_history_root, fixture_raw_dir)
+    assert points_per_game(h, "7569", 5) == (17.7, 3)
+    assert snap_share(h, "7569", 5) == UsageShare(percent=71, weeks=3, direction=None)
+
+
+def test_no_scored_game(fixture_history_root, fixture_raw_dir):
+    h = _h(fixture_history_root, fixture_raw_dir)
+    assert points_per_game(h, "5850", 5) == (0.0, 0)
+    assert snap_share(h, "5850", 5) is None and red_zone(h, "5850", 5) is None
+
+
+def test_ppg_rounds_half_up(fixture_history_root, fixture_raw_dir):
+    # Patrick Mahomes: 85.58 over 4 games is 21.395.
+    assert points_per_game(_h(fixture_history_root, fixture_raw_dir), "4046", 5) == (21.4, 4)
+
+
+def test_stats_outage_removes_the_profile(fixture_history_root, fixture_raw_dir):
+    h = _h(fixture_history_root, fixture_raw_dir)
+    h.weeks[2].stats = {}
+    assert points_per_game(h, "12490", 5) is None
+    assert season_rank(h, "12490", 5) is None
+    assert snap_share(h, "12490", 5) is None and target_share(h, "12490", 5) is None
+
+
+def test_share_direction():
+    assert share_direction(55, 50) == "up"
+    assert share_direction(50, 55) == "down"
+    assert share_direction(54.9, 50) == "flat"

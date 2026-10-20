@@ -5,15 +5,21 @@ It fetches only the weeks that are not on disk.
 import json
 import shutil
 from collections.abc import Callable
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
+from typing import Literal
 
 from cornerstone.facts_league import TREND_WEEKS
-from cornerstone.models import History, PastWeek
+from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.parse import parse_past_week
 from cornerstone.sleeper import fetch_past_week
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
+# Percentage points of change in a share that count as "up" or "down".
+SHARE_SWING = 5
+# A direction needs two windows of two weeks each.
+SHARE_DIRECTION_WEEKS = 4
 
 
 def history_root(repo: Path, season: int) -> Path:
@@ -78,13 +84,15 @@ def player_points(past: PastWeek, player_id: str) -> float | None:
     return (past.stats.get(player_id) or {}).get("pts_half_ppr")
 
 
-def player_trend(history: History, player_id: str) -> int | None:
-    """The count of the last 3 weeks in which the player beat the projection.
+def player_trend(history: History, player_id: str, through: int | None = None) -> int | None:
+    """The count of the last 3 weeks up to `through` in which the player beat the projection.
 
+    `through` is the current week when it is None.
     It is None when any of the 3 weeks lacks points or a projection, so a gap never gives a wrong count.
     """
+    last = history.week if through is None else through
     beaten = 0
-    for week in range(history.week - TREND_WEEKS + 1, history.week + 1):
+    for week in range(last - TREND_WEEKS + 1, last + 1):
         past = history.weeks.get(week)
         if past is None:
             return None
@@ -94,6 +102,145 @@ def player_trend(history: History, player_id: str) -> int | None:
             return None
         beaten += points > projection
     return beaten
+
+
+def _round_half_up(x: float, places: int = 0) -> float:
+    """Round half up. Python's round() rounds half to even."""
+    return float(Decimal(str(x)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
+
+
+def stats_complete(history: History, through: int) -> bool:
+    """True when every week from 1 to `through` is present and has stat lines.
+
+    A stats outage gives an empty file, and a profile built on a gap would be wrong.
+    """
+    return all(
+        (week_data := history.weeks.get(week)) is not None and week_data.stats
+        for week in range(1, through + 1)
+    )
+
+
+def scored_weeks(history: History, player_id: str, through: int) -> list[int]:
+    """The weeks from 1 to `through` in which the player played a game."""
+    return [
+        week for week in range(1, through + 1)
+        if week in history.weeks
+        and (history.weeks[week].stats.get(player_id) or {}).get("gp", 0) > 0
+    ]
+
+
+def points_per_game(history: History, player_id: str, through: int) -> tuple[float, int] | None:
+    """The points a game and the count of games from week 1 to `through`.
+
+    The sum is exact decimals, so 21.395 rounds to 21.4.
+    """
+    if not stats_complete(history, through):
+        return None
+    weeks = scored_weeks(history, player_id, through)
+    if not weeks:
+        return (0.0, 0)
+    total = sum(Decimal(str(player_points(history.weeks[w], player_id))) for w in weeks)
+    return (_round_half_up(float(total / len(weeks)), 1), len(weeks))
+
+
+def season_rank(history: History, player_id: str, through: int) -> tuple[int, int] | None:
+    """The rank of the player by points among the players of his position, and the count of them.
+
+    Only weeks 1 to `through` count, for the player and for every peer.
+    """
+    if not stats_complete(history, through):
+        return None
+    totals: dict[str, float] = {}
+    positions: dict[str, str] = {}
+    for week in range(1, through + 1):
+        past = history.weeks[week]
+        positions.update(past.positions)
+        for pid, line in past.stats.items():
+            totals[pid] = totals.get(pid, 0.0) + line.get("pts_half_ppr", 0.0)
+    position = positions.get(player_id)
+    if position is None or player_id not in totals:
+        return None
+    peers = [pid for pid in totals if positions.get(pid) == position]
+    above = sum(totals[pid] > totals[player_id] for pid in peers)
+    return (above + 1, len(peers))
+
+
+def share_direction(recent: float, prior: float) -> Literal["up", "down", "flat"]:
+    """Compare two unrounded percents. A change of SHARE_SWING points or more has a direction."""
+    if recent - prior >= SHARE_SWING:
+        return "up"
+    if prior - recent >= SHARE_SWING:
+        return "down"
+    return "flat"
+
+
+def _usage_share(
+    history: History,
+    player_id: str,
+    through: int,
+    numerator: Callable[[PastWeek], float],
+    denominator: Callable[[PastWeek], float],
+) -> UsageShare | None:
+    """The share of the player in the last 2 scored weeks, and its direction against the 2 before."""
+    if not stats_complete(history, through):
+        return None
+    weeks = [
+        history.weeks[w] for w in scored_weeks(history, player_id, through)
+        if denominator(history.weeks[w]) > 0
+    ]
+    if not weeks:
+        return None
+
+    def pct(ws: list[PastWeek]) -> float:
+        return 100 * sum(numerator(w) for w in ws) / sum(denominator(w) for w in ws)
+
+    if len(weeks) < SHARE_DIRECTION_WEEKS:
+        return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None)
+    recent, prior = weeks[-2:], weeks[-4:-2]
+    return UsageShare(
+        percent=int(_round_half_up(pct(recent))),
+        weeks=2,
+        direction=share_direction(pct(recent), pct(prior)),
+    )
+
+
+def snap_share(history: History, player_id: str, through: int) -> UsageShare | None:
+    """The share of the offense snaps of the team that the player played."""
+    return _usage_share(
+        history, player_id, through,
+        numerator=lambda past: past.stats[player_id].get("off_snp", 0.0),
+        denominator=lambda past: past.stats[player_id].get("tm_off_snp", 0.0),
+    )
+
+
+def target_share(history: History, player_id: str, through: int) -> UsageShare | None:
+    """The share of the targets of his NFL team that the player took."""
+    def team_targets(past: PastWeek) -> float:
+        team = past.nfl_teams.get(player_id)
+        if team is None:
+            return 0.0
+        return sum(
+            past.stats.get(pid, {}).get("rec_tgt", 0.0)
+            for pid, nfl_team in past.nfl_teams.items() if nfl_team == team
+        )
+
+    return _usage_share(
+        history, player_id, through,
+        numerator=lambda past: past.stats[player_id].get("rec_tgt", 0.0),
+        denominator=team_targets,
+    )
+
+
+def red_zone(history: History, player_id: str, through: int) -> tuple[int, int] | None:
+    """The red-zone targets and the red-zone rushes of the player from week 1 to `through`."""
+    weeks = scored_weeks(history, player_id, through)
+    if not stats_complete(history, through) or not weeks:
+        return None
+    lines = [history.weeks[w].stats[player_id] for w in weeks]
+    return (
+        int(sum(line.get("rec_rz_tgt", 0.0) for line in lines)),
+        int(sum(line.get("rush_rz_att", 0.0) for line in lines)),
+    )
 
 
 def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:

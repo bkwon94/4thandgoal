@@ -95,6 +95,17 @@ class PastWeek(BaseModel):
     stats: dict[str, dict[str, float]]
     moves: list[Move]
     trades: list[Trade] = []
+    # The position and the NFL team of each player with a stat line, keyed by player id.
+    positions: dict[str, str] = {}
+    nfl_teams: dict[str, str] = {}
+
+
+class UsageShare(BaseModel):
+    """A share of the snaps or targets, in percent, over the last `weeks` weeks."""
+    percent: int
+    weeks: int
+    # None when the player has fewer than 4 share weeks, because two windows need 4.
+    direction: Literal["up", "down", "flat"] | None
 
 
 class History(BaseModel):
