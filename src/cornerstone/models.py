@@ -208,3 +208,22 @@ class WriterOut(BaseModel):
     """The structured output of one writer call."""
 
     sentences: list[Sentence]
+
+
+class Verdict(BaseModel):
+    index: int
+    supported: bool
+    reason: str
+
+
+class VerifyOut(BaseModel):
+    """The structured output of one verifier call."""
+
+    verdicts: list[Verdict]
+
+
+class VerifyResult(BaseModel):
+    chapter: str
+    code_failures: list[str]
+    verdicts: list[Verdict]
+    passed: bool
