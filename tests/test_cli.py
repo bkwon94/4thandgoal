@@ -10,3 +10,22 @@ def test_help_lists_commands():
     assert out.returncode == 0
     for cmd in ("build", "publish", "rewrite"):
         assert cmd in out.stdout
+
+
+def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypatch, capsys):
+    import shutil
+
+    from cornerstone import cli
+
+    def no_claude(*args, **kwargs):
+        raise AssertionError("the gate must stop the build before any Claude call")
+
+    monkeypatch.setattr(cli, "claude_call", no_claude)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
+    monkeypatch.chdir(tmp_path)
+
+    code = cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"])
+
+    assert code == 2
+    assert "not final" in capsys.readouterr().out

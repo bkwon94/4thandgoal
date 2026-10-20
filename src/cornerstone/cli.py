@@ -3,6 +3,12 @@ Command line entry point for Cornerstone Weekly.
 It defines the build, publish, and rewrite subcommands.
 """
 import argparse
+import logging
+from pathlib import Path
+
+from cornerstone.pipeline import BuildStopped, preview, resolve_week, run_build, run_rewrite
+from cornerstone.publish import PublishError, run_publish
+from cornerstone.writer import claude_call
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -12,18 +18,45 @@ def build_parser() -> argparse.ArgumentParser:
     build = sub.add_parser("build", help="build the report for a week")
     build.add_argument("--week", type=int)
     build.add_argument("--season", type=int)
+    build.add_argument("--no-fetch", action="store_true", help="read the saved raw data")
 
     publish = sub.add_parser("publish", help="publish the built report")
     publish.add_argument("--week", type=int)
+    publish.add_argument("--season", type=int)
 
     rewrite = sub.add_parser("rewrite", help="rewrite one chapter of the report")
     rewrite.add_argument("--week", type=int)
+    rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
 
     return parser
 
 
-def main() -> int:
-    args = build_parser().parse_args()
-    print(f"{args.command}: not implemented")
-    return 1
+def main(argv: list[str] | None = None) -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    args = build_parser().parse_args(argv)
+    repo = Path.cwd()
+    if not (repo / "pyproject.toml").exists():
+        print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
+        return 2
+    season, week = resolve_week(args.season, args.week)
+
+    try:
+        if args.command == "build":
+            page = run_build(repo, season, week, claude_call, fetch=not args.no_fetch)
+            print(page)
+            preview(page)
+        elif args.command == "rewrite":
+            page = run_rewrite(repo, season, week, args.chapter, claude_call)
+            print(page)
+            preview(page)
+        else:
+            answer = input(f"Publish week {week} to GitHub Pages? [y/N] ")
+            if answer not in ("y", "Y"):
+                print("Not published.")
+                return 0
+            print(run_publish(repo, season, week))
+    except (BuildStopped, PublishError, ValueError) as err:
+        print(err)
+        return 2
+    return 0
