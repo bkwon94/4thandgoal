@@ -2,6 +2,7 @@
 Tests for the build, rewrite, and publish pipeline.
 They use recorded fixtures, a fake writer, and a fake avatar downloader, so no network call runs.
 """
+import gzip
 import json
 import os
 import re
@@ -48,19 +49,19 @@ def _no_network(url):
     raise AssertionError(f"network call to {url}")
 
 
-def _fixture_nflverse(season, week, player_ids, players):
+def _fixture_nflverse(season, week, player_ids, players, teams):
     """The recorded nflverse files, read through the real parser from a fresh cache."""
     cache = Path(tempfile.mkdtemp())
     for f in NFLVERSE_FIXTURES.iterdir():
         shutil.copy(f, cache / f.name)
-    return nflverse_week(season, week, player_ids, players, cache, fetch=_no_network)
+    return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network)
 
 
-def _down_nflverse(season, week, player_ids, players):
+def _down_nflverse(season, week, player_ids, players, teams):
     return NflverseWeek(sources={k: False for k in NFLVERSE_KEYS}, gsis={}, drops=None, injuries=None)
 
 
-def _forbidden_nflverse(season, week, player_ids, players):
+def _forbidden_nflverse(season, week, player_ids, players, teams):
     raise AssertionError("the saved extract must not be fetched again")
 
 
@@ -344,7 +345,7 @@ def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixt
 
 
 def test_a_crashing_fetcher_never_stops_the_build(tmp_path, fixture_raw_dir, caplog):
-    def crash(season, week, player_ids, players):
+    def crash(season, week, player_ids, players, teams):
         raise OSError("disk gone")
 
     repo = _repo(tmp_path, fixture_raw_dir)
@@ -388,3 +389,36 @@ def test_window_without_fresh_transactions_reads_the_history_copy(tmp_path, fixt
     bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 6
     assert "no fresh transactions for week 5" in caplog.text
+
+
+def test_build_gives_the_fetch_the_teams_that_played(tmp_path, fixture_raw_dir):
+    seen = []
+
+    def record(season, week, player_ids, players, teams):
+        seen.append(teams)
+        return _fixture_nflverse(season, week, player_ids, players, teams)
+
+    _, record_ = make_bundle(_repo(tmp_path, fixture_raw_dir), 2026, 6, news=_no_news, nflverse=record)
+    # 28 NFL teams in 14 games had a started player with a Sleeper gp above 0.
+    assert len(seen[0]) == 28 and "LAR" in seen[0]
+    assert record_.sources["nflverse_pbp"] is True
+
+
+def test_partial_week_is_not_saved(tmp_path, fixture_raw_dir):
+    # Both files lack the ARI and LA game, so the started players of ARI and LAR have no game in them.
+    def partial(season, week, player_ids, players, teams):
+        cache = Path(tempfile.mkdtemp())
+        for f in NFLVERSE_FIXTURES.iterdir():
+            shutil.copy(f, cache / f.name)
+        for name in ("play_by_play_2026.csv.gz", "ftn_charting_2026.csv"):
+            opener = gzip.open if name.endswith(".gz") else open
+            with opener(cache / name, "rt", encoding="utf-8", newline="") as f:
+                rows = [line for line in f if "2026_06_ARI_LA" not in line]
+            with opener(cache / name, "wt", encoding="utf-8", newline="") as f:
+                f.writelines(rows)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network)
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=partial)
+    assert record.sources["nflverse_pbp"] is False
+    assert not _nflverse_path(repo).exists()

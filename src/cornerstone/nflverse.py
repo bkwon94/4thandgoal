@@ -8,7 +8,7 @@ import logging
 import os
 import tempfile
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from pathlib import Path
 
 import httpx
@@ -73,28 +73,47 @@ def _number(text: str) -> float:
     return 0.0 if text in ("", "NA") else float(text)
 
 
-def read_drops(pbp: Path, ftn: Path, week: int) -> dict[str, list[DropPlay]] | None:
-    """Drops of the week by receiver gsis_id. None when either file has no row for the week."""
+# Sleeper and nflverse share every team code but this one.
+NFLVERSE_TEAM = {"LAR": "LA"}
+
+
+def read_drops(pbp: Path, ftn: Path, week: int, teams: Collection[str] = ()) -> dict[str, list[DropPlay]] | None:
+    """Drops of the week by receiver gsis_id. None when the files hold a partial week.
+
+    A partial week is one with no row in either file, a game in one file and not the other, or a
+    team in `teams` with no game in the play-by-play. `teams` holds the Sleeper codes of the NFL
+    teams whose started players played. A partial week must not count as complete, because the
+    build saves a complete extract and never fetches it again.
+    """
     week_text = str(week)
     drop_keys = set()
-    ftn_has_week = False
+    ftn_games = set()
     for row in _rows(ftn):
         if row["week"] != week_text:
             continue
-        ftn_has_week = True
+        ftn_games.add(row["nflverse_game_id"])
         if row["is_drop"] == "TRUE":
             drop_keys.add((row["nflverse_game_id"], row["nflverse_play_id"]))
     drops: dict[str, list[DropPlay]] = {}
-    pbp_has_week = False
+    pbp_games = set()
+    pbp_teams = set()
     for row in _rows(pbp):
         if row["week"] != week_text:
             continue
-        pbp_has_week = True
+        pbp_games.add(row["game_id"])
+        pbp_teams.update((row["home_team"], row["away_team"]))
         if (row["game_id"], row["play_id"]) in drop_keys and row["receiver_player_id"]:
             drops.setdefault(row["receiver_player_id"], []).append(DropPlay(
                 game_id=row["game_id"], play_id=row["play_id"],
                 air_yards=_number(row["air_yards"]), yardline_100=_number(row["yardline_100"])))
-    if not (ftn_has_week and pbp_has_week):
+    if not ftn_games or ftn_games != pbp_games:
+        if ftn_games or pbp_games:
+            logger.warning("nflverse week %d is partial: FTN has %d games, play-by-play has %d",
+                           week, len(ftn_games), len(pbp_games))
+        return None
+    missing = {t for t in teams if NFLVERSE_TEAM.get(t, t) not in pbp_teams}
+    if missing:
+        logger.warning("nflverse week %d is partial: no game for %s", week, ", ".join(sorted(missing)))
         return None
     return drops
 
@@ -127,7 +146,7 @@ def gsis_id(player_id: str, players: dict, id_map: dict[str, str]) -> str | None
 
 
 def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, cache_dir: Path,
-                  fetch: Callable[[str], bytes] = http_get) -> NflverseWeek:
+                  teams: Collection[str] = (), fetch: Callable[[str], bytes] = http_get) -> NflverseWeek:
     def get(url_template: str) -> Path | None:
         # The ffverse URL has no season field, and format leaves it as it is.
         url = url_template.format(season=season)
@@ -135,7 +154,7 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
 
     pbp, ftn = get(PBP_URL), get(FTN_URL)
     injuries_path, ffids_path = get(INJURIES_URL), get(FFIDS_URL)
-    drops = read_drops(pbp, ftn, week) if pbp and ftn else None
+    drops = read_drops(pbp, ftn, week, teams) if pbp and ftn else None
     injuries = read_injuries(injuries_path, week) if injuries_path else None
     id_map = read_id_map(ffids_path) if ffids_path else {}
     gsis = {pid: g for pid in player_ids if (g := gsis_id(pid, players, id_map))}

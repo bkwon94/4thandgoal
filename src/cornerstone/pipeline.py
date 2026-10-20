@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.history import fetch_history, history_dir, history_root, load_history, save_week_to_history
-from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult
+from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult, Week
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
@@ -29,7 +29,9 @@ LEAGUE_ID = "1386167364424318976"
 
 NewsFetcher = Callable[[str], list[dict]]
 BytesFetcher = Callable[[str], bytes | None]
-NflverseFetcher = Callable[[int, int, list[str], dict], NflverseWeek]
+# The fetch takes the season, the week, the rostered player IDs, the players file, and the Sleeper
+# codes of the NFL teams whose started players played.
+NflverseFetcher = Callable[[int, int, list[str], dict, set[str]], NflverseWeek]
 NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
@@ -102,8 +104,8 @@ def fetch_nflverse(repo: Path) -> NflverseFetcher:
     """Bind the one nflverse cache directory to the fetch. Tests patch this name with a fixture-backed fetcher."""
     cache_dir = repo / "data" / "cache" / "nflverse"
 
-    def fetch(season: int, week: int, player_ids: list[str], players: dict) -> NflverseWeek:
-        return nflverse_week(season, week, player_ids, players, cache_dir)
+    def fetch(season: int, week: int, player_ids: list[str], players: dict, teams: set[str]) -> NflverseWeek:
+        return nflverse_week(season, week, player_ids, players, cache_dir, teams)
 
     return fetch
 
@@ -115,8 +117,18 @@ def load_nflverse(raw_dir: Path) -> NflverseWeek | None:
     return NflverseWeek.model_validate_json(path.read_text(encoding="utf-8"))
 
 
+def _played_teams(week: Week) -> set[str]:
+    """The NFL teams of the started players with a Sleeper gp above 0. Each one must have a game in nflverse."""
+    return {
+        line.nfl_team
+        for m in week.matchups for side in (m.a, m.b) for line in side.lines
+        if line.started and line.nfl_team and week.stats.get(line.player_id, {}).get("gp", 0) > 0
+    }
+
+
 def _nflverse_for_week(
     raw_dir: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
+    teams: set[str],
 ) -> NflverseWeek | None:
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build."""
     try:
@@ -124,7 +136,7 @@ def _nflverse_for_week(
         if saved is not None or nflverse is None:
             return saved
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
-        nfl = nflverse(season, week, rostered, raw["players"])
+        nfl = nflverse(season, week, rostered, raw["players"], teams)
         # A degraded extract is not saved, so the next build tries the sources again.
         if all(nfl.sources.get(key) for key in NFLVERSE_SOURCES):
             (raw_dir / "nflverse.json").write_text(nfl.model_dump_json(indent=2), encoding="utf-8")
@@ -171,7 +183,7 @@ def make_bundle(
         log.warning("no fetch time for week %d: window ends at the build start", week)
         until = started
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history, until)
-    nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse)
+    nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
     record = BuildRecord(
         started=started,
