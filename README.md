@@ -1,7 +1,7 @@
 # Cornerstone Weekly
 
 This repo builds the weekly report site for the Cornerstone fantasy football league. The
-data comes from Sleeper. The public site is at https://bkwon94.github.io/cpcfantasyfootball/
+data comes from Sleeper. The public site is at https://cpcfantasy.com/
 
 ## Commands
 
@@ -15,4 +15,4 @@ data comes from Sleeper. The public site is at https://bkwon94.github.io/cpcfant
 2. Read the page.
 3. Run `cornerstone rewrite --chapter <key>` for each chapter that needs a fix.
 4. Run `cornerstone publish`.
-5. Share the home page link: https://bkwon94.github.io/cpcfantasyfootball/
+5. Share the home page link: https://cpcfantasy.com/

@@ -10,7 +10,7 @@ from cornerstone.render import render_index
 
 
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
-SITE_URL = "https://bkwon94.github.io/cpcfantasyfootball/"
+SITE_URL = "https://cpcfantasy.com/"
 
 
 class PublishError(Exception):
