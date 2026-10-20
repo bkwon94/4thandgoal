@@ -316,3 +316,10 @@ def test_fact_id_in_text_fails(fixture_raw_dir):
     ch = _ch(sheet, "recap_4")
     b = _blurb("recap_4", _s("See [M4.result].", "M4.result"), _s("Again.", "M4.result"))
     assert any("'['" in m for m in code_check(b, ch, sheet))
+
+
+def test_vocabulary_has_no_season_history_terms():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    assert "season high" not in text.lower() and "season low" not in text.lower()
