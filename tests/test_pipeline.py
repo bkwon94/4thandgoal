@@ -64,10 +64,23 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir):
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     path = week_dir(repo, 2026, 6) / "blurbs.json"
     before = json.loads(path.read_text())
-    page = run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+
+    # The build fake gives one verdict for two sentences, so every built blurb is the template.
+    # This fake passes both sentences, so the rewrite keeps the text it wrote.
+    def rewrite_fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
+        fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.M).group(1)
+        return model(sentences=[Sentence(text="Rewritten median sentence.", fact_ids=[fid])] * 2)
+
+    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **OFFLINE)
     after = json.loads(path.read_text())
     assert set(before) == set(after)
-    assert page.exists()
+    text = [s["text"] for s in after["median"]["sentences"]]
+    assert text != [s["text"] for s in before["median"]["sentences"]]
+    assert text == ["Rewritten median sentence."] * 2
+    assert after["recap_4"] == before["recap_4"]
+    assert "Rewritten median sentence." in page.read_text()
 
 
 def test_rewrite_unknown_chapter_lists_valid_keys(tmp_path, fixture_raw_dir):
