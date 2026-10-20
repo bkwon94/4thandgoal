@@ -173,11 +173,13 @@ A week with no trade has no Trades chapter. The chapter key is `trades`.
 ### Which trades belong to the week
 
 My call, after the review. A trade belongs to the page of week N when its `created` time is
-after the build of week N-1 and before the build of week N. Sleeper's `leg` is not the rule,
+after the fetch of week N-1 and before the fetch of week N. Sleeper's `leg` is not the rule,
 because a trade made on Tuesday after the 8:00 job carries `leg` N but never shows in
 `transactions/{N+1}`. The build therefore reads `transactions/{N}` and `transactions/{N-1}`,
-and keeps each trade's `created` time. The build records its own start time in `verify.json`,
-and the next build uses that time as the cutoff. The history copy of a week's transactions
+and keeps each trade's `created` time. The build records the fetch time of its transactions
+in `verify.json`, and the next build uses that time as the cutoff. The fetch time, not the
+build start, is the bound, so a trade made between the fetch and the build lands on the next
+page and no trade misses both pages. The history copy of a week's transactions
 is taken at build time and is not refetched.
 
 A trade made after the week's first kickoff gets a card and a grade but no `swing` fact. The
@@ -243,7 +245,7 @@ still cites a fact.
 | ID | Text pattern | Vocabulary term |
 | --- | --- | --- |
 | `D.{pid}` | "{name} dropped {n} of {t} targets this week" | **drop**: a pass the FTN charting flags as a drop. With nflverse down, the count is Sleeper's `rec_drop` |
-| `D.{pid}.value` | "{name}'s drops cost about {pts} points by the drop value method, with {n} in the end zone" | **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone |
+| `D.{pid}.value` | "{name}'s drops were worth about {pts} points by the drop value method, with {n} in the end zone" | **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone |
 | `M{mid}.dropswing` | "{team}'s starters dropped {n} passes worth about {pts}, more than the margin of {m}" only when true, for the losing side | **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game |
 | `W.drops` | "Most drops this week: {name} ({team}), {n}; ..." top three league-wide | |
 | `I.{pid}.history` | "{name} was listed {status} in weeks {a}, {b} and returned this week" or "has been on the report {n} weeks" one number | **injury history**: the weekly NFL report status from nflverse, per week |
