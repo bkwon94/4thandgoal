@@ -1,6 +1,7 @@
 """
 Tests for the trade window and the late-trade test.
 They read the recorded week 6 data and the saved history.
+They also test the trade facts and the trade chapters.
 """
 import re
 from datetime import date, datetime
