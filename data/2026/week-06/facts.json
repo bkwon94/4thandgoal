@@ -9470,10 +9470,14 @@
       },
       "T1.4.got.12533": {
         "id": "T1.4.got.12533",
-        "text": "Pukancun on 3 got Jacory Croskey-Merritt: 0 this week, 41.4 this season. Jacory Croskey-Merritt was listed Out on the final NFL injury report before his game this week.",
+        "text": "Pukancun on 3 got Jacory Croskey-Merritt: 8.3 points per game over 5 games before the trade, position rank 27 of 187 by season points. Jacory Croskey-Merritt has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "41.4"
+          "8.3",
+          "5",
+          "27",
+          "187",
+          "2",
+          "3"
         ],
         "teams": [
           "Pukancun on 3"
@@ -9484,10 +9488,14 @@
       },
       "T1.4.got.5892": {
         "id": "T1.4.got.5892",
-        "text": "Pukancun on 3 got David Montgomery: 0 this week, 42 this season. David Montgomery was listed Out on the final NFL injury report before his game this week.",
+        "text": "Pukancun on 3 got David Montgomery: 8.4 points per game over 5 games before the trade, position rank 28 of 187 by season points. David Montgomery has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "42"
+          "8.4",
+          "5",
+          "28",
+          "187",
+          "3",
+          "3"
         ],
         "teams": [
           "Pukancun on 3"
@@ -9498,12 +9506,12 @@
       },
       "T1.4.gave.12507": {
         "id": "T1.4.gave.12507",
-        "text": "Pukancun on 3 gave Omarion Hampton: 5.9 this week, 53 this season, position rank 24 of 31. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
+        "text": "Pukancun on 3 gave Omarion Hampton: 9.4 points per game over 5 games before the trade, position rank 23 of 187 by season points. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "5.9",
-          "53",
-          "24",
-          "31",
+          "9.4",
+          "5",
+          "23",
+          "187",
           "2",
           "3"
         ],
@@ -9516,12 +9524,12 @@
       },
       "T1.4.gave.5967": {
         "id": "T1.4.gave.5967",
-        "text": "Pukancun on 3 gave Tony Pollard: 7.6 this week, 47.3 this season, position rank 20 of 31. Tony Pollard has missed projection in 2 of the last 3 weeks.",
+        "text": "Pukancun on 3 gave Tony Pollard: 7.9 points per game over 5 games before the trade, position rank 30 of 187 by season points. Tony Pollard has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "7.6",
-          "47.3",
-          "20",
-          "31",
+          "7.9",
+          "5",
+          "30",
+          "187",
           "2",
           "3"
         ],
@@ -9532,14 +9540,55 @@
           "Tony Pollard"
         ]
       },
+      "T1.4.team": {
+        "id": "T1.4.team",
+        "text": "Pukancun on 3 was 1-9, 12th of 12, before the trade.",
+        "numbers": [
+          "1",
+          "9",
+          "1-9",
+          "12",
+          "12"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T1.4.impact.12533": {
+        "id": "T1.4.impact.12533",
+        "text": "Jacory Croskey-Merritt scored 0 this week on the bench for Pukancun on 3.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.4.impact.5892": {
+        "id": "T1.4.impact.5892",
+        "text": "David Montgomery scored 0 this week on the bench for Pukancun on 3.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "David Montgomery"
+        ]
+      },
       "T1.12.got.12507": {
         "id": "T1.12.got.12507",
-        "text": "Amon-Ra Dawg Your Team got Omarion Hampton: 5.9 this week, 53 this season, position rank 24 of 31. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team got Omarion Hampton: 9.4 points per game over 5 games before the trade, position rank 23 of 187 by season points. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "5.9",
-          "53",
-          "24",
-          "31",
+          "9.4",
+          "5",
+          "23",
+          "187",
           "2",
           "3"
         ],
@@ -9552,12 +9601,12 @@
       },
       "T1.12.got.5967": {
         "id": "T1.12.got.5967",
-        "text": "Amon-Ra Dawg Your Team got Tony Pollard: 7.6 this week, 47.3 this season, position rank 20 of 31. Tony Pollard has missed projection in 2 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team got Tony Pollard: 7.9 points per game over 5 games before the trade, position rank 30 of 187 by season points. Tony Pollard has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "7.6",
-          "47.3",
-          "20",
-          "31",
+          "7.9",
+          "5",
+          "30",
+          "187",
           "2",
           "3"
         ],
@@ -9570,10 +9619,14 @@
       },
       "T1.12.gave.12533": {
         "id": "T1.12.gave.12533",
-        "text": "Amon-Ra Dawg Your Team gave Jacory Croskey-Merritt: 0 this week, 41.4 this season. Jacory Croskey-Merritt was listed Out on the final NFL injury report before his game this week.",
+        "text": "Amon-Ra Dawg Your Team gave Jacory Croskey-Merritt: 8.3 points per game over 5 games before the trade, position rank 27 of 187 by season points. Jacory Croskey-Merritt has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "41.4"
+          "8.3",
+          "5",
+          "27",
+          "187",
+          "2",
+          "3"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -9584,10 +9637,14 @@
       },
       "T1.12.gave.5892": {
         "id": "T1.12.gave.5892",
-        "text": "Amon-Ra Dawg Your Team gave David Montgomery: 0 this week, 42 this season. David Montgomery was listed Out on the final NFL injury report before his game this week.",
+        "text": "Amon-Ra Dawg Your Team gave David Montgomery: 8.4 points per game over 5 games before the trade, position rank 28 of 187 by season points. David Montgomery has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "42"
+          "8.4",
+          "5",
+          "28",
+          "187",
+          "3",
+          "3"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -9596,16 +9653,204 @@
           "David Montgomery"
         ]
       },
+      "T1.12.team": {
+        "id": "T1.12.team",
+        "text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "8",
+          "12"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T1.12.impact.12507": {
+        "id": "T1.12.impact.12507",
+        "text": "Omarion Hampton scored 5.9 this week for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "5.9"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12.impact.5967": {
+        "id": "T1.12.impact.5967",
+        "text": "Tony Pollard scored 7.6 this week for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "7.6"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.12507.usage": {
+        "id": "T1.12507.usage",
+        "text": "Omarion Hampton's snap share was 33 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "33",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12507.targets": {
+        "id": "T1.12507.targets",
+        "text": "Omarion Hampton's target share was 6 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "6",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12507.redzone": {
+        "id": "T1.12507.redzone",
+        "text": "Omarion Hampton had 0 red-zone targets and 12 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "12"
+        ],
+        "teams": [],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12533.usage": {
+        "id": "T1.12533.usage",
+        "text": "Jacory Croskey-Merritt's snap share was 40 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "40",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.12533.targets": {
+        "id": "T1.12533.targets",
+        "text": "Jacory Croskey-Merritt's target share was 7 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "7",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.12533.redzone": {
+        "id": "T1.12533.redzone",
+        "text": "Jacory Croskey-Merritt had 1 red-zone target and 6 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "6"
+        ],
+        "teams": [],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.5892.usage": {
+        "id": "T1.5892.usage",
+        "text": "David Montgomery's snap share was 33 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "33",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.5892.targets": {
+        "id": "T1.5892.targets",
+        "text": "David Montgomery's target share was 0 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "0",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.5892.redzone": {
+        "id": "T1.5892.redzone",
+        "text": "David Montgomery had 1 red-zone target and 8 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "8"
+        ],
+        "teams": [],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.5967.usage": {
+        "id": "T1.5967.usage",
+        "text": "Tony Pollard's snap share was 50 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "50",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.5967.targets": {
+        "id": "T1.5967.targets",
+        "text": "Tony Pollard's target share was 8 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "8",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.5967.redzone": {
+        "id": "T1.5967.redzone",
+        "text": "Tony Pollard had 0 red-zone targets and 17 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "17"
+        ],
+        "teams": [],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
       "T1.4.need": {
         "id": "T1.4.need",
-        "text": "Pukancun on 3 is 1-11, 12th of 12, with 5 RB after the trade and 0 open roster spots.",
+        "text": "Pukancun on 3 has 5 RB after the trade and 0 open roster spots.",
         "numbers": [
           "5",
-          "1",
-          "11",
-          "1-11",
-          "12",
-          "12",
           "0"
         ],
         "teams": [
@@ -9633,14 +9878,9 @@
       },
       "T1.12.need": {
         "id": "T1.12.need",
-        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB after the trade and 1 open roster spot.",
+        "text": "Amon-Ra Dawg Your Team has 5 RB after the trade and 1 open roster spot.",
         "numbers": [
           "5",
-          "4",
-          "8",
-          "4-8",
-          "9",
-          "12",
           "1"
         ],
         "teams": [
@@ -9681,11 +9921,13 @@
       },
       "T2.7.got.13330": {
         "id": "T2.7.got.13330",
-        "text": "To Infinity and Bijan got Kenyon Sadiq: 1.7 this week, 33.6 this season. Kenyon Sadiq was listed Questionable on the final NFL injury report before his game this week. Kenyon Sadiq has missed projection in 3 of the last 3 weeks.",
+        "text": "To Infinity and Bijan got Kenyon Sadiq: 6.4 points per game over 5 games before the trade, position rank 22 of 180 by season points. Kenyon Sadiq has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "1.7",
-          "33.6",
-          "3",
+          "6.4",
+          "5",
+          "22",
+          "180",
+          "2",
           "3"
         ],
         "teams": [
@@ -9697,12 +9939,12 @@
       },
       "T2.7.gave.10236": {
         "id": "T2.7.gave.10236",
-        "text": "To Infinity and Bijan gave Dalton Kincaid: 7.3 this week, 49 this season, position rank 9 of 15. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
+        "text": "To Infinity and Bijan gave Dalton Kincaid: 8.3 points per game over 5 games before the trade, position rank 12 of 180 by season points. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "7.3",
-          "49",
-          "9",
-          "15",
+          "8.3",
+          "5",
+          "12",
+          "180",
           "3",
           "3"
         ],
@@ -9713,14 +9955,42 @@
           "Dalton Kincaid"
         ]
       },
+      "T2.7.team": {
+        "id": "T2.7.team",
+        "text": "To Infinity and Bijan was 4-6, 10th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "10",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T2.7.impact.13330": {
+        "id": "T2.7.impact.13330",
+        "text": "Kenyon Sadiq scored 1.7 this week on the bench for To Infinity and Bijan.",
+        "numbers": [
+          "1.7"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
       "T2.12.got.10236": {
         "id": "T2.12.got.10236",
-        "text": "Amon-Ra Dawg Your Team got Dalton Kincaid: 7.3 this week, 49 this season, position rank 9 of 15. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team got Dalton Kincaid: 8.3 points per game over 5 games before the trade, position rank 12 of 180 by season points. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "7.3",
-          "49",
-          "9",
-          "15",
+          "8.3",
+          "5",
+          "12",
+          "180",
           "3",
           "3"
         ],
@@ -9733,11 +10003,13 @@
       },
       "T2.12.gave.13330": {
         "id": "T2.12.gave.13330",
-        "text": "Amon-Ra Dawg Your Team gave Kenyon Sadiq: 1.7 this week, 33.6 this season. Kenyon Sadiq was listed Questionable on the final NFL injury report before his game this week. Kenyon Sadiq has missed projection in 3 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team gave Kenyon Sadiq: 6.4 points per game over 5 games before the trade, position rank 22 of 180 by season points. Kenyon Sadiq has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "1.7",
-          "33.6",
-          "3",
+          "6.4",
+          "5",
+          "22",
+          "180",
+          "2",
           "3"
         ],
         "teams": [
@@ -9747,16 +10019,126 @@
           "Kenyon Sadiq"
         ]
       },
+      "T2.12.team": {
+        "id": "T2.12.team",
+        "text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "8",
+          "12"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T2.12.impact.10236": {
+        "id": "T2.12.impact.10236",
+        "text": "Dalton Kincaid scored 7.3 this week for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "7.3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.10236.usage": {
+        "id": "T2.10236.usage",
+        "text": "Dalton Kincaid's snap share was 65 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "65",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.10236.targets": {
+        "id": "T2.10236.targets",
+        "text": "Dalton Kincaid's target share was 8 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "8",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.10236.redzone": {
+        "id": "T2.10236.redzone",
+        "text": "Dalton Kincaid had 1 red-zone target and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.13330.usage": {
+        "id": "T2.13330.usage",
+        "text": "Kenyon Sadiq's snap share was 34 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "34",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.13330.targets": {
+        "id": "T2.13330.targets",
+        "text": "Kenyon Sadiq's target share was 16 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "16",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.13330.redzone": {
+        "id": "T2.13330.redzone",
+        "text": "Kenyon Sadiq had 1 red-zone target and 1 red-zone carry this season before the trade.",
+        "numbers": [
+          "1",
+          "1"
+        ],
+        "teams": [],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.13330.injury": {
+        "id": "T2.13330.injury",
+        "text": "Kenyon Sadiq was on the NFL injury report in 1 week this season before the trade.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
       "T2.7.need": {
         "id": "T2.7.need",
-        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 2 TE after the trade and 0 open roster spots.",
+        "text": "To Infinity and Bijan has 2 TE after the trade and 0 open roster spots.",
         "numbers": [
           "2",
-          "4",
-          "8",
-          "4-8",
-          "11",
-          "12",
           "0"
         ],
         "teams": [
@@ -9783,14 +10165,9 @@
       },
       "T2.12.need": {
         "id": "T2.12.need",
-        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 2 TE after the trade and 1 open roster spot.",
+        "text": "Amon-Ra Dawg Your Team has 2 TE after the trade and 1 open roster spot.",
         "numbers": [
           "2",
-          "4",
-          "8",
-          "4-8",
-          "9",
-          "12",
           "1"
         ],
         "teams": [
@@ -9832,12 +10209,12 @@
       },
       "T3.4.got.12481": {
         "id": "T3.4.got.12481",
-        "text": "Pukancun on 3 got Cam Skattebo: 0 this week, 43.3 this season, position rank 31 of 31. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
+        "text": "Pukancun on 3 got Cam Skattebo: 8.7 points per game over 5 games before the trade, position rank 24 of 187 by season points. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "43.3",
-          "31",
-          "31",
+          "8.7",
+          "5",
+          "24",
+          "187",
           "3",
           "3"
         ],
@@ -9850,14 +10227,12 @@
       },
       "T3.4.got.7569": {
         "id": "T3.4.got.7569",
-        "text": "Pukancun on 3 got Nico Collins: 9.4 this week, 62.5 this season, position rank 23 of 38. Nico Collins has missed projection in 2 of the last 3 weeks.",
+        "text": "Pukancun on 3 got Nico Collins: 17.7 points per game over 3 games before the trade, position rank 21 of 319 by season points.",
         "numbers": [
-          "9.4",
-          "62.5",
-          "23",
-          "38",
-          "2",
-          "3"
+          "17.7",
+          "3",
+          "21",
+          "319"
         ],
         "teams": [
           "Pukancun on 3"
@@ -9868,12 +10243,12 @@
       },
       "T3.4.gave.11635": {
         "id": "T3.4.gave.11635",
-        "text": "Pukancun on 3 gave Ladd McConkey: 2.2 this week, 32.5 this season, position rank 38 of 38.",
+        "text": "Pukancun on 3 gave Ladd McConkey: 7.6 points per game over 4 games before the trade, position rank 55 of 319 by season points.",
         "numbers": [
-          "2.2",
-          "32.5",
-          "38",
-          "38"
+          "7.6",
+          "4",
+          "55",
+          "319"
         ],
         "teams": [
           "Pukancun on 3"
@@ -9884,12 +10259,12 @@
       },
       "T3.4.gave.7611": {
         "id": "T3.4.gave.7611",
-        "text": "Pukancun on 3 gave Rhamondre Stevenson: 3.6 this week, 56.9 this season, position rank 29 of 31. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
+        "text": "Pukancun on 3 gave Rhamondre Stevenson: 10.7 points per game over 5 games before the trade, position rank 18 of 187 by season points. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "3.6",
-          "56.9",
-          "29",
-          "31",
+          "10.7",
+          "5",
+          "18",
+          "187",
           "2",
           "3"
         ],
@@ -9900,14 +10275,55 @@
           "Rhamondre Stevenson"
         ]
       },
+      "T3.4.team": {
+        "id": "T3.4.team",
+        "text": "Pukancun on 3 was 1-9, 12th of 12, before the trade.",
+        "numbers": [
+          "1",
+          "9",
+          "1-9",
+          "12",
+          "12"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T3.4.impact.12481": {
+        "id": "T3.4.impact.12481",
+        "text": "Cam Skattebo scored 0 this week for Pukancun on 3.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.4.impact.7569": {
+        "id": "T3.4.impact.7569",
+        "text": "Nico Collins scored 9.4 this week for Pukancun on 3.",
+        "numbers": [
+          "9.4"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Nico Collins"
+        ]
+      },
       "T3.7.got.11635": {
         "id": "T3.7.got.11635",
-        "text": "To Infinity and Bijan got Ladd McConkey: 2.2 this week, 32.5 this season, position rank 38 of 38.",
+        "text": "To Infinity and Bijan got Ladd McConkey: 7.6 points per game over 4 games before the trade, position rank 55 of 319 by season points.",
         "numbers": [
-          "2.2",
-          "32.5",
-          "38",
-          "38"
+          "7.6",
+          "4",
+          "55",
+          "319"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -9918,12 +10334,12 @@
       },
       "T3.7.got.7611": {
         "id": "T3.7.got.7611",
-        "text": "To Infinity and Bijan got Rhamondre Stevenson: 3.6 this week, 56.9 this season, position rank 29 of 31. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan got Rhamondre Stevenson: 10.7 points per game over 5 games before the trade, position rank 18 of 187 by season points. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "3.6",
-          "56.9",
-          "29",
-          "31",
+          "10.7",
+          "5",
+          "18",
+          "187",
           "2",
           "3"
         ],
@@ -9936,12 +10352,12 @@
       },
       "T3.7.gave.12481": {
         "id": "T3.7.gave.12481",
-        "text": "To Infinity and Bijan gave Cam Skattebo: 0 this week, 43.3 this season, position rank 31 of 31. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
+        "text": "To Infinity and Bijan gave Cam Skattebo: 8.7 points per game over 5 games before the trade, position rank 24 of 187 by season points. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "43.3",
-          "31",
-          "31",
+          "8.7",
+          "5",
+          "24",
+          "187",
           "3",
           "3"
         ],
@@ -9954,14 +10370,12 @@
       },
       "T3.7.gave.7569": {
         "id": "T3.7.gave.7569",
-        "text": "To Infinity and Bijan gave Nico Collins: 9.4 this week, 62.5 this season, position rank 23 of 38. Nico Collins has missed projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan gave Nico Collins: 17.7 points per game over 3 games before the trade, position rank 21 of 319 by season points.",
         "numbers": [
-          "9.4",
-          "62.5",
-          "23",
-          "38",
-          "2",
-          "3"
+          "17.7",
+          "3",
+          "21",
+          "319"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -9970,17 +10384,238 @@
           "Nico Collins"
         ]
       },
+      "T3.7.team": {
+        "id": "T3.7.team",
+        "text": "To Infinity and Bijan was 4-6, 10th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "10",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T3.7.impact.11635": {
+        "id": "T3.7.impact.11635",
+        "text": "Ladd McConkey scored 2.2 this week for To Infinity and Bijan.",
+        "numbers": [
+          "2.2"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.7.impact.7611": {
+        "id": "T3.7.impact.7611",
+        "text": "Rhamondre Stevenson scored 3.6 this week for To Infinity and Bijan.",
+        "numbers": [
+          "3.6"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.11635.usage": {
+        "id": "T3.11635.usage",
+        "text": "Ladd McConkey's snap share was 61 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "61",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.11635.targets": {
+        "id": "T3.11635.targets",
+        "text": "Ladd McConkey's target share was 11 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "11",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.11635.redzone": {
+        "id": "T3.11635.redzone",
+        "text": "Ladd McConkey had 2 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "2",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.11635.injury": {
+        "id": "T3.11635.injury",
+        "text": "Ladd McConkey was listed Questionable on the NFL injury report in week 5, and in 3 weeks this season before the trade.",
+        "numbers": [
+          "3",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.12481.usage": {
+        "id": "T3.12481.usage",
+        "text": "Cam Skattebo's snap share was 63 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "63",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.12481.targets": {
+        "id": "T3.12481.targets",
+        "text": "Cam Skattebo's target share was 5 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "5",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.12481.redzone": {
+        "id": "T3.12481.redzone",
+        "text": "Cam Skattebo had 0 red-zone targets and 11 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "11"
+        ],
+        "teams": [],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.7569.usage": {
+        "id": "T3.7569.usage",
+        "text": "Nico Collins's snap share was 71 percent over 3 games before the trade.",
+        "numbers": [
+          "3",
+          "71"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.7569.targets": {
+        "id": "T3.7569.targets",
+        "text": "Nico Collins's target share was 26 percent over 3 games before the trade.",
+        "numbers": [
+          "3",
+          "26"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.7569.redzone": {
+        "id": "T3.7569.redzone",
+        "text": "Nico Collins had 3 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "3",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.7569.injury": {
+        "id": "T3.7569.injury",
+        "text": "Nico Collins was on the NFL injury report in 2 weeks this season before the trade.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.7611.usage": {
+        "id": "T3.7611.usage",
+        "text": "Rhamondre Stevenson's snap share was 68 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "68",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7611.targets": {
+        "id": "T3.7611.targets",
+        "text": "Rhamondre Stevenson's target share was 12 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "12",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7611.redzone": {
+        "id": "T3.7611.redzone",
+        "text": "Rhamondre Stevenson had 1 red-zone target and 5 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7611.injury": {
+        "id": "T3.7611.injury",
+        "text": "Rhamondre Stevenson was listed Questionable on the NFL injury report in week 5, and in 1 week this season before the trade.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
       "T3.4.need": {
         "id": "T3.4.need",
-        "text": "Pukancun on 3 is 1-11, 12th of 12, with 5 RB and 5 WR after the trade and 0 open roster spots.",
+        "text": "Pukancun on 3 has 5 RB and 5 WR after the trade and 0 open roster spots.",
         "numbers": [
           "5",
           "5",
-          "1",
-          "11",
-          "1-11",
-          "12",
-          "12",
           "0"
         ],
         "teams": [
@@ -10010,15 +10645,10 @@
       },
       "T3.7.need": {
         "id": "T3.7.need",
-        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 3 RB and 7 WR after the trade and 0 open roster spots.",
+        "text": "To Infinity and Bijan has 3 RB and 7 WR after the trade and 0 open roster spots.",
         "numbers": [
           "3",
           "7",
-          "4",
-          "8",
-          "4-8",
-          "11",
-          "12",
           "0"
         ],
         "teams": [
@@ -10062,10 +10692,12 @@
       },
       "T4.6.got.4881": {
         "id": "T4.6.got.4881",
-        "text": "Bo Girds got Lamar Jackson: 0 this week, 80.08 this season. Lamar Jackson was listed Out on the final NFL injury report before his game this week.",
+        "text": "Bo Girds got Lamar Jackson: 20 points per game over 4 games before the trade, position rank 19 of 99 by season points.",
         "numbers": [
-          "0",
-          "80.08"
+          "20",
+          "4",
+          "19",
+          "99"
         ],
         "teams": [
           "Bo Girds"
@@ -10076,12 +10708,12 @@
       },
       "T4.6.gave.4046": {
         "id": "T4.6.gave.4046",
-        "text": "Bo Girds gave Patrick Mahomes: 11.48 this week, 97.06 this season, position rank 12 of 12.",
+        "text": "Bo Girds gave Patrick Mahomes: 21.4 points per game over 4 games before the trade, position rank 16 of 99 by season points.",
         "numbers": [
-          "11.48",
-          "97.06",
-          "12",
-          "12"
+          "21.4",
+          "4",
+          "16",
+          "99"
         ],
         "teams": [
           "Bo Girds"
@@ -10092,10 +10724,12 @@
       },
       "T4.6.gave.8154": {
         "id": "T4.6.gave.8154",
-        "text": "Bo Girds gave Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "Bo Girds gave Brian Robinson: 9.7 points per game over 5 games before the trade, position rank 20 of 187 by season points. Brian Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "2",
-          "50.6",
+          "9.7",
+          "5",
+          "20",
+          "187",
           "2",
           "3"
         ],
@@ -10106,14 +10740,42 @@
           "Brian Robinson"
         ]
       },
+      "T4.6.team": {
+        "id": "T4.6.team",
+        "text": "Bo Girds was 7-3, 2nd of 12, before the trade.",
+        "numbers": [
+          "7",
+          "3",
+          "7-3",
+          "2",
+          "12"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": []
+      },
+      "T4.6.impact.4881": {
+        "id": "T4.6.impact.4881",
+        "text": "Lamar Jackson scored 0 this week on the bench for Bo Girds.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
       "T4.7.got.4046": {
         "id": "T4.7.got.4046",
-        "text": "To Infinity and Bijan got Patrick Mahomes: 11.48 this week, 97.06 this season, position rank 12 of 12.",
+        "text": "To Infinity and Bijan got Patrick Mahomes: 21.4 points per game over 4 games before the trade, position rank 16 of 99 by season points.",
         "numbers": [
-          "11.48",
-          "97.06",
-          "12",
-          "12"
+          "21.4",
+          "4",
+          "16",
+          "99"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10124,10 +10786,12 @@
       },
       "T4.7.got.8154": {
         "id": "T4.7.got.8154",
-        "text": "To Infinity and Bijan got Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan got Brian Robinson: 9.7 points per game over 5 games before the trade, position rank 20 of 187 by season points. Brian Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "2",
-          "50.6",
+          "9.7",
+          "5",
+          "20",
+          "187",
           "2",
           "3"
         ],
@@ -10140,10 +10804,12 @@
       },
       "T4.7.gave.4881": {
         "id": "T4.7.gave.4881",
-        "text": "To Infinity and Bijan gave Lamar Jackson: 0 this week, 80.08 this season. Lamar Jackson was listed Out on the final NFL injury report before his game this week.",
+        "text": "To Infinity and Bijan gave Lamar Jackson: 20 points per game over 4 games before the trade, position rank 19 of 99 by season points.",
         "numbers": [
-          "0",
-          "80.08"
+          "20",
+          "4",
+          "19",
+          "99"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10152,17 +10818,153 @@
           "Lamar Jackson"
         ]
       },
+      "T4.7.team": {
+        "id": "T4.7.team",
+        "text": "To Infinity and Bijan was 4-6, 10th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "10",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T4.7.impact.4046": {
+        "id": "T4.7.impact.4046",
+        "text": "Patrick Mahomes scored 11.48 this week for To Infinity and Bijan.",
+        "numbers": [
+          "11.48"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.7.impact.8154": {
+        "id": "T4.7.impact.8154",
+        "text": "Brian Robinson scored 2 this week on the bench for To Infinity and Bijan.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.4046.usage": {
+        "id": "T4.4046.usage",
+        "text": "Patrick Mahomes's snap share was 100 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "100",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.4046.redzone": {
+        "id": "T4.4046.redzone",
+        "text": "Patrick Mahomes had 0 red-zone targets and 5 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.4881.usage": {
+        "id": "T4.4881.usage",
+        "text": "Lamar Jackson's snap share was 76 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "76",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.4881.redzone": {
+        "id": "T4.4881.redzone",
+        "text": "Lamar Jackson had 0 red-zone targets and 5 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.4881.injury": {
+        "id": "T4.4881.injury",
+        "text": "Lamar Jackson was listed Out on the NFL injury report in week 5, and in 1 week this season before the trade.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.8154.usage": {
+        "id": "T4.8154.usage",
+        "text": "Brian Robinson's snap share was 31 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "31",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.8154.targets": {
+        "id": "T4.8154.targets",
+        "text": "Brian Robinson's target share was 4 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "4",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.8154.redzone": {
+        "id": "T4.8154.redzone",
+        "text": "Brian Robinson had 1 red-zone target and 5 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
       "T4.6.need": {
         "id": "T4.6.need",
-        "text": "Bo Girds is 8-4, 3rd of 12, with 2 QB and 4 RB after the trade and 0 open roster spots.",
+        "text": "Bo Girds has 2 QB and 4 RB after the trade and 0 open roster spots.",
         "numbers": [
           "2",
           "4",
-          "8",
-          "4",
-          "8-4",
-          "3",
-          "12",
           "0"
         ],
         "teams": [
@@ -10189,15 +10991,10 @@
       },
       "T4.7.need": {
         "id": "T4.7.need",
-        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 2 QB and 3 RB after the trade and 0 open roster spots.",
+        "text": "To Infinity and Bijan has 2 QB and 3 RB after the trade and 0 open roster spots.",
         "numbers": [
           "2",
           "3",
-          "4",
-          "8",
-          "4-8",
-          "11",
-          "12",
           "0"
         ],
         "teams": [
@@ -10239,10 +11036,12 @@
       },
       "T5.11.got.11834": {
         "id": "T5.11.got.11834",
-        "text": "Unsolicited Dak Picks got Devaughn Vele: 5.7 this week, 55.4 this season. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
+        "text": "Unsolicited Dak Picks got Devaughn Vele: 9.9 points per game over 5 games before the trade, position rank 23 of 319 by season points. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "5.7",
-          "55.4",
+          "9.9",
+          "5",
+          "23",
+          "319",
           "2",
           "3"
         ],
@@ -10255,11 +11054,8 @@
       },
       "T5.11.got.5850": {
         "id": "T5.11.got.5850",
-        "text": "Unsolicited Dak Picks got Josh Jacobs: 0 this week, 0 this season.",
-        "numbers": [
-          "0",
-          "0"
-        ],
+        "text": "Unsolicited Dak Picks got Josh Jacobs: no scored game before the trade.",
+        "numbers": [],
         "teams": [
           "Unsolicited Dak Picks"
         ],
@@ -10269,12 +11065,12 @@
       },
       "T5.11.gave.12490": {
         "id": "T5.11.gave.12490",
-        "text": "Unsolicited Dak Picks gave Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
+        "text": "Unsolicited Dak Picks gave Bhayshul Tuten: 11.8 points per game over 5 games before the trade, position rank 16 of 187 by season points. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "22.7",
-          "81.9",
-          "4",
-          "31",
+          "11.8",
+          "5",
+          "16",
+          "187",
           "2",
           "3"
         ],
@@ -10287,12 +11083,12 @@
       },
       "T5.11.gave.8146": {
         "id": "T5.11.gave.8146",
-        "text": "Unsolicited Dak Picks gave Garrett Wilson: 6.4 this week, 77.3 this season, position rank 28 of 38. Garrett Wilson has missed projection in 2 of the last 3 weeks.",
+        "text": "Unsolicited Dak Picks gave Garrett Wilson: 14.2 points per game over 5 games before the trade, position rank 7 of 319 by season points. Garrett Wilson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "6.4",
-          "77.3",
-          "28",
-          "38",
+          "14.2",
+          "5",
+          "7",
+          "319",
           "2",
           "3"
         ],
@@ -10303,14 +11099,55 @@
           "Garrett Wilson"
         ]
       },
+      "T5.11.team": {
+        "id": "T5.11.team",
+        "text": "Unsolicited Dak Picks was 4-6, 7th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "7",
+          "12"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "T5.11.impact.11834": {
+        "id": "T5.11.impact.11834",
+        "text": "Devaughn Vele scored 5.7 this week on the bench for Unsolicited Dak Picks.",
+        "numbers": [
+          "5.7"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.11.impact.5850": {
+        "id": "T5.11.impact.5850",
+        "text": "Josh Jacobs scored 0 this week on the bench for Unsolicited Dak Picks.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Josh Jacobs"
+        ]
+      },
       "T5.12.got.12490": {
         "id": "T5.12.got.12490",
-        "text": "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team got Bhayshul Tuten: 11.8 points per game over 5 games before the trade, position rank 16 of 187 by season points. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "22.7",
-          "81.9",
-          "4",
-          "31",
+          "11.8",
+          "5",
+          "16",
+          "187",
           "2",
           "3"
         ],
@@ -10323,12 +11160,12 @@
       },
       "T5.12.got.8146": {
         "id": "T5.12.got.8146",
-        "text": "Amon-Ra Dawg Your Team got Garrett Wilson: 6.4 this week, 77.3 this season, position rank 28 of 38. Garrett Wilson has missed projection in 2 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team got Garrett Wilson: 14.2 points per game over 5 games before the trade, position rank 7 of 319 by season points. Garrett Wilson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "6.4",
-          "77.3",
-          "28",
-          "38",
+          "14.2",
+          "5",
+          "7",
+          "319",
           "2",
           "3"
         ],
@@ -10341,10 +11178,12 @@
       },
       "T5.12.gave.11834": {
         "id": "T5.12.gave.11834",
-        "text": "Amon-Ra Dawg Your Team gave Devaughn Vele: 5.7 this week, 55.4 this season. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
+        "text": "Amon-Ra Dawg Your Team gave Devaughn Vele: 9.9 points per game over 5 games before the trade, position rank 23 of 319 by season points. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "5.7",
-          "55.4",
+          "9.9",
+          "5",
+          "23",
+          "319",
           "2",
           "3"
         ],
@@ -10357,11 +11196,8 @@
       },
       "T5.12.gave.5850": {
         "id": "T5.12.gave.5850",
-        "text": "Amon-Ra Dawg Your Team gave Josh Jacobs: 0 this week, 0 this season.",
-        "numbers": [
-          "0",
-          "0"
-        ],
+        "text": "Amon-Ra Dawg Your Team gave Josh Jacobs: no scored game before the trade.",
+        "numbers": [],
         "teams": [
           "Amon-Ra Dawg Your Team"
         ],
@@ -10369,17 +11205,167 @@
           "Josh Jacobs"
         ]
       },
+      "T5.12.team": {
+        "id": "T5.12.team",
+        "text": "Amon-Ra Dawg Your Team was 4-6, 8th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "8",
+          "12"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T5.12.impact.12490": {
+        "id": "T5.12.impact.12490",
+        "text": "Bhayshul Tuten scored 22.7 this week for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "22.7"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.12.impact.8146": {
+        "id": "T5.12.impact.8146",
+        "text": "Garrett Wilson scored 6.4 this week for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "6.4"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.11834.usage": {
+        "id": "T5.11834.usage",
+        "text": "Devaughn Vele's snap share was 92 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "92",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.11834.targets": {
+        "id": "T5.11834.targets",
+        "text": "Devaughn Vele's target share was 21 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "21",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.11834.redzone": {
+        "id": "T5.11834.redzone",
+        "text": "Devaughn Vele had 6 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "6",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.12490.usage": {
+        "id": "T5.12490.usage",
+        "text": "Bhayshul Tuten's snap share was 64 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "64",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.12490.targets": {
+        "id": "T5.12490.targets",
+        "text": "Bhayshul Tuten's target share was 8 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "8",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.12490.redzone": {
+        "id": "T5.12490.redzone",
+        "text": "Bhayshul Tuten had 1 red-zone target and 12 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "12"
+        ],
+        "teams": [],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.8146.usage": {
+        "id": "T5.8146.usage",
+        "text": "Garrett Wilson's snap share was 95 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "95",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.8146.targets": {
+        "id": "T5.8146.targets",
+        "text": "Garrett Wilson's target share was 34 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "34",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.8146.redzone": {
+        "id": "T5.8146.redzone",
+        "text": "Garrett Wilson had 2 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "2",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
       "T5.11.need": {
         "id": "T5.11.need",
-        "text": "Unsolicited Dak Picks is 4-8, 10th of 12, with 6 RB and 4 WR after the trade and 1 open roster spot.",
+        "text": "Unsolicited Dak Picks has 6 RB and 4 WR after the trade and 1 open roster spot.",
         "numbers": [
           "6",
           "4",
-          "4",
-          "8",
-          "4-8",
-          "10",
-          "12",
           "1"
         ],
         "teams": [
@@ -10407,15 +11393,10 @@
       },
       "T5.12.need": {
         "id": "T5.12.need",
-        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB and 5 WR after the trade and 1 open roster spot.",
+        "text": "Amon-Ra Dawg Your Team has 5 RB and 5 WR after the trade and 1 open roster spot.",
         "numbers": [
           "5",
           "5",
-          "4",
-          "8",
-          "4-8",
-          "9",
-          "12",
           "1"
         ],
         "teams": [
@@ -10461,12 +11442,12 @@
       },
       "T6.7.got.11576": {
         "id": "T6.7.got.11576",
-        "text": "To Infinity and Bijan got Braelon Allen: 11.4 this week, 51.4 this season, position rank 15 of 31. Braelon Allen has missed projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan got Braelon Allen: 8 points per game over 5 games before the trade, position rank 29 of 187 by season points. Braelon Allen has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "11.4",
-          "51.4",
-          "15",
-          "31",
+          "8",
+          "5",
+          "29",
+          "187",
           "2",
           "3"
         ],
@@ -10479,13 +11460,13 @@
       },
       "T6.7.got.11632": {
         "id": "T6.7.got.11632",
-        "text": "To Infinity and Bijan got Malik Nabers: 22.5 this week, 81.9 this season, position rank 2 of 38. Malik Nabers has beaten projection in 3 of the last 3 weeks.",
+        "text": "To Infinity and Bijan got Malik Nabers: 11.9 points per game over 5 games before the trade, position rank 18 of 319 by season points. Malik Nabers has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "22.5",
-          "81.9",
+          "11.9",
+          "5",
+          "18",
+          "319",
           "2",
-          "38",
-          "3",
           "3"
         ],
         "teams": [
@@ -10497,10 +11478,14 @@
       },
       "T6.7.got.3163": {
         "id": "T6.7.got.3163",
-        "text": "To Infinity and Bijan got Jared Goff: 0 this week, 114 this season.",
+        "text": "To Infinity and Bijan got Jared Goff: 22.8 points per game over 5 games before the trade, position rank 3 of 99 by season points. Jared Goff has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "114"
+          "22.8",
+          "5",
+          "3",
+          "99",
+          "2",
+          "3"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10511,10 +11496,12 @@
       },
       "T6.7.got.8155": {
         "id": "T6.7.got.8155",
-        "text": "To Infinity and Bijan got Breece Hall: 0 this week, 37.5 this season. Breece Hall was listed Out on the final NFL injury report before his game this week.",
+        "text": "To Infinity and Bijan got Breece Hall: 12.5 points per game over 3 games before the trade, position rank 33 of 187 by season points.",
         "numbers": [
-          "0",
-          "37.5"
+          "12.5",
+          "3",
+          "33",
+          "187"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10525,12 +11512,12 @@
       },
       "T6.7.gave.11628": {
         "id": "T6.7.gave.11628",
-        "text": "To Infinity and Bijan gave Marvin Harrison: 4.9 this week, 21.9 this season, position rank 33 of 38.",
+        "text": "To Infinity and Bijan gave Marvin Harrison: 4.3 points per game over 4 games before the trade, position rank 89 of 319 by season points.",
         "numbers": [
-          "4.9",
-          "21.9",
-          "33",
-          "38"
+          "4.3",
+          "4",
+          "89",
+          "319"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10541,10 +11528,12 @@
       },
       "T6.7.gave.8154": {
         "id": "T6.7.gave.8154",
-        "text": "To Infinity and Bijan gave Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan gave Brian Robinson: 9.7 points per game over 5 games before the trade, position rank 20 of 187 by season points. Brian Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "2",
-          "50.6",
+          "9.7",
+          "5",
+          "20",
+          "187",
           "2",
           "3"
         ],
@@ -10557,12 +11546,12 @@
       },
       "T6.7.gave.9509": {
         "id": "T6.7.gave.9509",
-        "text": "To Infinity and Bijan gave Bijan Robinson: 6.3 this week, 116.5 this season, position rank 22 of 31. Bijan Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "To Infinity and Bijan gave Bijan Robinson: 22 points per game over 5 games before the trade, position rank 2 of 187 by season points. Bijan Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "6.3",
-          "116.5",
           "22",
-          "31",
+          "5",
+          "2",
+          "187",
           "2",
           "3"
         ],
@@ -10573,14 +11562,81 @@
           "Bijan Robinson"
         ]
       },
+      "T6.7.team": {
+        "id": "T6.7.team",
+        "text": "To Infinity and Bijan was 4-6, 10th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "10",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T6.7.impact.11576": {
+        "id": "T6.7.impact.11576",
+        "text": "Braelon Allen scored 11.4 this week for Return of T Mac.",
+        "numbers": [
+          "11.4"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.7.impact.11632": {
+        "id": "T6.7.impact.11632",
+        "text": "Malik Nabers scored 22.5 this week for Return of T Mac.",
+        "numbers": [
+          "22.5"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.7.impact.3163": {
+        "id": "T6.7.impact.3163",
+        "text": "Jared Goff scored 0 this week on the bench for To Infinity and Bijan.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.7.impact.8155": {
+        "id": "T6.7.impact.8155",
+        "text": "Breece Hall scored 0 this week on the bench for Return of T Mac.",
+        "numbers": [
+          "0"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Breece Hall"
+        ]
+      },
       "T6.8.got.11628": {
         "id": "T6.8.got.11628",
-        "text": "Return of T Mac got Marvin Harrison: 4.9 this week, 21.9 this season, position rank 33 of 38.",
+        "text": "Return of T Mac got Marvin Harrison: 4.3 points per game over 4 games before the trade, position rank 89 of 319 by season points.",
         "numbers": [
-          "4.9",
-          "21.9",
-          "33",
-          "38"
+          "4.3",
+          "4",
+          "89",
+          "319"
         ],
         "teams": [
           "Return of T Mac"
@@ -10591,10 +11647,12 @@
       },
       "T6.8.got.8154": {
         "id": "T6.8.got.8154",
-        "text": "Return of T Mac got Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "Return of T Mac got Brian Robinson: 9.7 points per game over 5 games before the trade, position rank 20 of 187 by season points. Brian Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "2",
-          "50.6",
+          "9.7",
+          "5",
+          "20",
+          "187",
           "2",
           "3"
         ],
@@ -10607,12 +11665,12 @@
       },
       "T6.8.got.9509": {
         "id": "T6.8.got.9509",
-        "text": "Return of T Mac got Bijan Robinson: 6.3 this week, 116.5 this season, position rank 22 of 31. Bijan Robinson has missed projection in 2 of the last 3 weeks.",
+        "text": "Return of T Mac got Bijan Robinson: 22 points per game over 5 games before the trade, position rank 2 of 187 by season points. Bijan Robinson has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "6.3",
-          "116.5",
           "22",
-          "31",
+          "5",
+          "2",
+          "187",
           "2",
           "3"
         ],
@@ -10625,12 +11683,12 @@
       },
       "T6.8.gave.11576": {
         "id": "T6.8.gave.11576",
-        "text": "Return of T Mac gave Braelon Allen: 11.4 this week, 51.4 this season, position rank 15 of 31. Braelon Allen has missed projection in 2 of the last 3 weeks.",
+        "text": "Return of T Mac gave Braelon Allen: 8 points per game over 5 games before the trade, position rank 29 of 187 by season points. Braelon Allen has missed projection in 2 of the last 3 weeks.",
         "numbers": [
-          "11.4",
-          "51.4",
-          "15",
-          "31",
+          "8",
+          "5",
+          "29",
+          "187",
           "2",
           "3"
         ],
@@ -10643,13 +11701,13 @@
       },
       "T6.8.gave.11632": {
         "id": "T6.8.gave.11632",
-        "text": "Return of T Mac gave Malik Nabers: 22.5 this week, 81.9 this season, position rank 2 of 38. Malik Nabers has beaten projection in 3 of the last 3 weeks.",
+        "text": "Return of T Mac gave Malik Nabers: 11.9 points per game over 5 games before the trade, position rank 18 of 319 by season points. Malik Nabers has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "22.5",
-          "81.9",
+          "11.9",
+          "5",
+          "18",
+          "319",
           "2",
-          "38",
-          "3",
           "3"
         ],
         "teams": [
@@ -10661,10 +11719,14 @@
       },
       "T6.8.gave.3163": {
         "id": "T6.8.gave.3163",
-        "text": "Return of T Mac gave Jared Goff: 0 this week, 114 this season.",
+        "text": "Return of T Mac gave Jared Goff: 22.8 points per game over 5 games before the trade, position rank 3 of 99 by season points. Jared Goff has beaten projection in 2 of the last 3 weeks.",
         "numbers": [
-          "0",
-          "114"
+          "22.8",
+          "5",
+          "3",
+          "99",
+          "2",
+          "3"
         ],
         "teams": [
           "Return of T Mac"
@@ -10675,16 +11737,346 @@
       },
       "T6.8.gave.8155": {
         "id": "T6.8.gave.8155",
-        "text": "Return of T Mac gave Breece Hall: 0 this week, 37.5 this season. Breece Hall was listed Out on the final NFL injury report before his game this week.",
+        "text": "Return of T Mac gave Breece Hall: 12.5 points per game over 3 games before the trade, position rank 33 of 187 by season points.",
         "numbers": [
-          "0",
-          "37.5"
+          "12.5",
+          "3",
+          "33",
+          "187"
         ],
         "teams": [
           "Return of T Mac"
         ],
         "players": [
           "Breece Hall"
+        ]
+      },
+      "T6.8.team": {
+        "id": "T6.8.team",
+        "text": "Return of T Mac was 4-6, 9th of 12, before the trade.",
+        "numbers": [
+          "4",
+          "6",
+          "4-6",
+          "9",
+          "12"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": []
+      },
+      "T6.8.impact.11628": {
+        "id": "T6.8.impact.11628",
+        "text": "Marvin Harrison scored 4.9 this week for To Infinity and Bijan.",
+        "numbers": [
+          "4.9"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.8.impact.8154": {
+        "id": "T6.8.impact.8154",
+        "text": "Brian Robinson scored 2 this week on the bench for To Infinity and Bijan.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8.impact.9509": {
+        "id": "T6.8.impact.9509",
+        "text": "Bijan Robinson scored 6.3 this week for To Infinity and Bijan.",
+        "numbers": [
+          "6.3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.11576.usage": {
+        "id": "T6.11576.usage",
+        "text": "Braelon Allen's snap share was 88 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "88",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.11576.targets": {
+        "id": "T6.11576.targets",
+        "text": "Braelon Allen's target share was 14 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "14",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.11576.redzone": {
+        "id": "T6.11576.redzone",
+        "text": "Braelon Allen had 4 red-zone targets and 4 red-zone carries this season before the trade.",
+        "numbers": [
+          "4",
+          "4"
+        ],
+        "teams": [],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.11628.usage": {
+        "id": "T6.11628.usage",
+        "text": "Marvin Harrison's snap share was 72 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "72",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.11628.targets": {
+        "id": "T6.11628.targets",
+        "text": "Marvin Harrison's target share was 11 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "11",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.11628.redzone": {
+        "id": "T6.11628.redzone",
+        "text": "Marvin Harrison had 2 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "2",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.11632.usage": {
+        "id": "T6.11632.usage",
+        "text": "Malik Nabers's snap share was 84 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "84",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.11632.targets": {
+        "id": "T6.11632.targets",
+        "text": "Malik Nabers's target share was 33 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "33",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.11632.redzone": {
+        "id": "T6.11632.redzone",
+        "text": "Malik Nabers had 6 red-zone targets and 0 red-zone carries this season before the trade.",
+        "numbers": [
+          "6",
+          "0"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.11632.injury": {
+        "id": "T6.11632.injury",
+        "text": "Malik Nabers was on the NFL injury report in 1 week this season before the trade.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.3163.usage": {
+        "id": "T6.3163.usage",
+        "text": "Jared Goff's snap share was 98 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "98",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.3163.redzone": {
+        "id": "T6.3163.redzone",
+        "text": "Jared Goff had 0 red-zone targets and 2 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.8154.usage": {
+        "id": "T6.8154.usage",
+        "text": "Brian Robinson's snap share was 31 percent over the last 2 weeks before the trade, down from the 2 weeks before that.",
+        "numbers": [
+          "31",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8154.targets": {
+        "id": "T6.8154.targets",
+        "text": "Brian Robinson's target share was 4 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.",
+        "numbers": [
+          "4",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8154.redzone": {
+        "id": "T6.8154.redzone",
+        "text": "Brian Robinson had 1 red-zone target and 5 red-zone carries this season before the trade.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8155.usage": {
+        "id": "T6.8155.usage",
+        "text": "Breece Hall's snap share was 57 percent over 3 games before the trade.",
+        "numbers": [
+          "3",
+          "57"
+        ],
+        "teams": [],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.8155.targets": {
+        "id": "T6.8155.targets",
+        "text": "Breece Hall's target share was 11 percent over 3 games before the trade.",
+        "numbers": [
+          "3",
+          "11"
+        ],
+        "teams": [],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.8155.redzone": {
+        "id": "T6.8155.redzone",
+        "text": "Breece Hall had 0 red-zone targets and 8 red-zone carries this season before the trade.",
+        "numbers": [
+          "0",
+          "8"
+        ],
+        "teams": [],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.8155.injury": {
+        "id": "T6.8155.injury",
+        "text": "Breece Hall was listed Out on the NFL injury report in week 5, and in 2 weeks this season before the trade.",
+        "numbers": [
+          "2",
+          "5"
+        ],
+        "teams": [],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.9509.usage": {
+        "id": "T6.9509.usage",
+        "text": "Bijan Robinson's snap share was 71 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "71",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.9509.targets": {
+        "id": "T6.9509.targets",
+        "text": "Bijan Robinson's target share was 17 percent over the last 2 weeks before the trade, up from the 2 weeks before that.",
+        "numbers": [
+          "17",
+          "2",
+          "2"
+        ],
+        "teams": [],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.9509.redzone": {
+        "id": "T6.9509.redzone",
+        "text": "Bijan Robinson had 2 red-zone targets and 20 red-zone carries this season before the trade.",
+        "numbers": [
+          "2",
+          "20"
+        ],
+        "teams": [],
+        "players": [
+          "Bijan Robinson"
         ]
       },
       "D.12501": {
@@ -12487,127 +13879,46 @@
         "grade_keys": []
       },
       {
-        "key": "trades",
-        "title": "Trades",
+        "key": "trade_1",
+        "title": "Pukancun on 3 and Amon-Ra Dawg Your Team",
         "fact_ids": [
           "T1.sides",
           "T1.4.got.12533",
           "T1.4.got.5892",
           "T1.4.gave.12507",
           "T1.4.gave.5967",
+          "T1.4.team",
+          "T1.4.impact.12533",
+          "T1.4.impact.5892",
           "T1.12.got.12507",
           "T1.12.got.5967",
           "T1.12.gave.12533",
           "T1.12.gave.5892",
+          "T1.12.team",
+          "T1.12.impact.12507",
+          "T1.12.impact.5967",
+          "T1.12507.usage",
+          "T1.12507.targets",
+          "T1.12507.redzone",
+          "T1.12533.usage",
+          "T1.12533.targets",
+          "T1.12533.redzone",
+          "T1.5892.usage",
+          "T1.5892.targets",
+          "T1.5892.redzone",
+          "T1.5967.usage",
+          "T1.5967.targets",
+          "T1.5967.redzone",
           "T1.4.need",
           "T1.4.swing",
           "T1.12.need",
-          "T1.12.swing",
-          "T2.sides",
-          "T2.7.got.13330",
-          "T2.7.gave.10236",
-          "T2.12.got.10236",
-          "T2.12.gave.13330",
-          "T2.7.need",
-          "T2.7.swing",
-          "T2.12.need",
-          "T2.12.swing",
-          "T3.sides",
-          "T3.4.got.12481",
-          "T3.4.got.7569",
-          "T3.4.gave.11635",
-          "T3.4.gave.7611",
-          "T3.7.got.11635",
-          "T3.7.got.7611",
-          "T3.7.gave.12481",
-          "T3.7.gave.7569",
-          "T3.4.need",
-          "T3.4.swing",
-          "T3.7.need",
-          "T3.7.swing",
-          "T4.sides",
-          "T4.6.got.4881",
-          "T4.6.gave.4046",
-          "T4.6.gave.8154",
-          "T4.7.got.4046",
-          "T4.7.got.8154",
-          "T4.7.gave.4881",
-          "T4.6.need",
-          "T4.6.swing",
-          "T4.7.need",
-          "T4.7.swing",
-          "T5.sides",
-          "T5.11.got.11834",
-          "T5.11.got.5850",
-          "T5.11.gave.12490",
-          "T5.11.gave.8146",
-          "T5.12.got.12490",
-          "T5.12.got.8146",
-          "T5.12.gave.11834",
-          "T5.12.gave.5850",
-          "T5.11.need",
-          "T5.11.swing",
-          "T5.12.need",
-          "T5.12.swing",
-          "T6.sides",
-          "T6.7.got.11576",
-          "T6.7.got.11632",
-          "T6.7.got.3163",
-          "T6.7.got.8155",
-          "T6.7.gave.11628",
-          "T6.7.gave.8154",
-          "T6.7.gave.9509",
-          "T6.8.got.11628",
-          "T6.8.got.8154",
-          "T6.8.got.9509",
-          "T6.8.gave.11576",
-          "T6.8.gave.11632",
-          "T6.8.gave.3163",
-          "T6.8.gave.8155",
-          "S.12",
-          "S.9",
-          "S.11",
-          "S.3",
-          "S.10",
-          "S.7"
+          "T1.12.swing"
         ],
         "scope_teams": [
           "Pukancun on 3",
-          "Amon-Ra Dawg Your Team",
-          "To Infinity and Bijan",
-          "Bo Girds",
-          "Unsolicited Dak Picks",
-          "Return of T Mac"
+          "Amon-Ra Dawg Your Team"
         ],
         "scope_players": [
-          "Braelon Allen",
-          "Malik Nabers",
-          "Dylan Sampson",
-          "Tetairoa McMillan",
-          "TreVeyon Henderson",
-          "Carnell Tate",
-          "Kendrick Bourne",
-          "Jordan Love",
-          "Breece Hall",
-          "Jaylen Warren",
-          "Chase Brown",
-          "Tucker Kraft",
-          "Los Angeles Rams",
-          "Pittsburgh Steelers",
-          "Kimani Vidal",
-          "Devaughn Vele",
-          "Ollie Gordon",
-          "Dak Prescott",
-          "Sam Darnold",
-          "Josh Jacobs",
-          "A.J. Brown",
-          "Jonathan Taylor",
-          "Juwan Johnson",
-          "Rachaad White",
-          "George Pickens",
-          "Josh Downs",
-          "Keaton Mitchell",
-          "Baltimore Ravens",
           "Dalton Kincaid",
           "Sam LaPorta",
           "Emanuel Wilson",
@@ -12622,21 +13933,140 @@
           "Garrett Wilson",
           "Tyjae Spears",
           "New England Patriots",
-          "Blake Corum",
-          "Malik Washington",
-          "Matthew Golden",
-          "Tyler Shough",
-          "Ja'Kobi Lane",
-          "Mike Washington",
-          "Cyrus Allen",
-          "Lamar Jackson",
-          "Pat Freiermuth",
-          "Trey McBride",
-          "Kyren Williams",
-          "Kenneth Walker",
-          "Parker Washington",
-          "Zay Flowers",
-          "Indianapolis Colts",
+          "MarShawn Lloyd",
+          "Rome Odunze",
+          "Xavier Worthy",
+          "Kirk Cousins",
+          "Cam Skattebo",
+          "Tyler Warren",
+          "Jacory Croskey-Merritt",
+          "Hunter Henry",
+          "David Montgomery",
+          "Jalen Hurts",
+          "Rico Dowdle",
+          "Nico Collins",
+          "Jameson Williams",
+          "Puka Nacua",
+          "Kansas City Chiefs"
+        ],
+        "min_sentences": 3,
+        "max_sentences": 5,
+        "grade_keys": [
+          "T1.4",
+          "T1.12"
+        ]
+      },
+      {
+        "key": "trade_2",
+        "title": "To Infinity and Bijan and Amon-Ra Dawg Your Team",
+        "fact_ids": [
+          "T2.sides",
+          "T2.7.got.13330",
+          "T2.7.gave.10236",
+          "T2.7.team",
+          "T2.7.impact.13330",
+          "T2.12.got.10236",
+          "T2.12.gave.13330",
+          "T2.12.team",
+          "T2.12.impact.10236",
+          "T2.10236.usage",
+          "T2.10236.targets",
+          "T2.10236.redzone",
+          "T2.13330.usage",
+          "T2.13330.targets",
+          "T2.13330.redzone",
+          "T2.13330.injury",
+          "T2.7.need",
+          "T2.7.swing",
+          "T2.12.need",
+          "T2.12.swing"
+        ],
+        "scope_teams": [
+          "To Infinity and Bijan",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "scope_players": [
+          "Dalton Kincaid",
+          "Sam LaPorta",
+          "Emanuel Wilson",
+          "Bhayshul Tuten",
+          "Omarion Hampton",
+          "Luther Burden",
+          "DJ Moore",
+          "Tony Pollard",
+          "Tee Higgins",
+          "Trevor Lawrence",
+          "Amon-Ra St. Brown",
+          "Garrett Wilson",
+          "Tyjae Spears",
+          "New England Patriots",
+          "Marvin Harrison",
+          "Ladd McConkey",
+          "Ryan Flournoy",
+          "Harold Fannin",
+          "Efton Chism",
+          "Darius Cooper",
+          "KC Concepcion",
+          "Kenyon Sadiq",
+          "Jared Goff",
+          "Patrick Mahomes",
+          "Terry McLaurin",
+          "Rhamondre Stevenson",
+          "Brian Robinson",
+          "Bijan Robinson",
+          "Carolina Panthers"
+        ],
+        "min_sentences": 3,
+        "max_sentences": 5,
+        "grade_keys": [
+          "T2.7",
+          "T2.12"
+        ]
+      },
+      {
+        "key": "trade_3",
+        "title": "Pukancun on 3 and To Infinity and Bijan",
+        "fact_ids": [
+          "T3.sides",
+          "T3.4.got.12481",
+          "T3.4.got.7569",
+          "T3.4.gave.11635",
+          "T3.4.gave.7611",
+          "T3.4.team",
+          "T3.4.impact.12481",
+          "T3.4.impact.7569",
+          "T3.7.got.11635",
+          "T3.7.got.7611",
+          "T3.7.gave.12481",
+          "T3.7.gave.7569",
+          "T3.7.team",
+          "T3.7.impact.11635",
+          "T3.7.impact.7611",
+          "T3.11635.usage",
+          "T3.11635.targets",
+          "T3.11635.redzone",
+          "T3.11635.injury",
+          "T3.12481.usage",
+          "T3.12481.targets",
+          "T3.12481.redzone",
+          "T3.7569.usage",
+          "T3.7569.targets",
+          "T3.7569.redzone",
+          "T3.7569.injury",
+          "T3.7611.usage",
+          "T3.7611.targets",
+          "T3.7611.redzone",
+          "T3.7611.injury",
+          "T3.4.need",
+          "T3.4.swing",
+          "T3.7.need",
+          "T3.7.swing"
+        ],
+        "scope_teams": [
+          "Pukancun on 3",
+          "To Infinity and Bijan"
+        ],
+        "scope_players": [
           "Marvin Harrison",
           "Ladd McConkey",
           "Ryan Flournoy",
@@ -12668,19 +14098,248 @@
           "Puka Nacua",
           "Kansas City Chiefs"
         ],
-        "min_sentences": 4,
-        "max_sentences": 6,
+        "min_sentences": 3,
+        "max_sentences": 5,
         "grade_keys": [
-          "T1.4",
-          "T1.12",
-          "T2.7",
-          "T2.12",
           "T3.4",
-          "T3.7",
+          "T3.7"
+        ]
+      },
+      {
+        "key": "trade_4",
+        "title": "Bo Girds and To Infinity and Bijan",
+        "fact_ids": [
+          "T4.sides",
+          "T4.6.got.4881",
+          "T4.6.gave.4046",
+          "T4.6.gave.8154",
+          "T4.6.team",
+          "T4.6.impact.4881",
+          "T4.7.got.4046",
+          "T4.7.got.8154",
+          "T4.7.gave.4881",
+          "T4.7.team",
+          "T4.7.impact.4046",
+          "T4.7.impact.8154",
+          "T4.4046.usage",
+          "T4.4046.redzone",
+          "T4.4881.usage",
+          "T4.4881.redzone",
+          "T4.4881.injury",
+          "T4.8154.usage",
+          "T4.8154.targets",
+          "T4.8154.redzone",
+          "T4.6.need",
+          "T4.6.swing",
+          "T4.7.need",
+          "T4.7.swing"
+        ],
+        "scope_teams": [
+          "Bo Girds",
+          "To Infinity and Bijan"
+        ],
+        "scope_players": [
+          "Blake Corum",
+          "Malik Washington",
+          "Matthew Golden",
+          "Tyler Shough",
+          "Ja'Kobi Lane",
+          "Mike Washington",
+          "Cyrus Allen",
+          "Lamar Jackson",
+          "Pat Freiermuth",
+          "Trey McBride",
+          "Kyren Williams",
+          "Kenneth Walker",
+          "Parker Washington",
+          "Zay Flowers",
+          "Indianapolis Colts",
+          "Marvin Harrison",
+          "Ladd McConkey",
+          "Ryan Flournoy",
+          "Harold Fannin",
+          "Efton Chism",
+          "Darius Cooper",
+          "KC Concepcion",
+          "Kenyon Sadiq",
+          "Jared Goff",
+          "Patrick Mahomes",
+          "Terry McLaurin",
+          "Rhamondre Stevenson",
+          "Brian Robinson",
+          "Bijan Robinson",
+          "Carolina Panthers"
+        ],
+        "min_sentences": 3,
+        "max_sentences": 5,
+        "grade_keys": [
           "T4.6",
-          "T4.7",
+          "T4.7"
+        ]
+      },
+      {
+        "key": "trade_5",
+        "title": "Unsolicited Dak Picks and Amon-Ra Dawg Your Team",
+        "fact_ids": [
+          "T5.sides",
+          "T5.11.got.11834",
+          "T5.11.got.5850",
+          "T5.11.gave.12490",
+          "T5.11.gave.8146",
+          "T5.11.team",
+          "T5.11.impact.11834",
+          "T5.11.impact.5850",
+          "T5.12.got.12490",
+          "T5.12.got.8146",
+          "T5.12.gave.11834",
+          "T5.12.gave.5850",
+          "T5.12.team",
+          "T5.12.impact.12490",
+          "T5.12.impact.8146",
+          "T5.11834.usage",
+          "T5.11834.targets",
+          "T5.11834.redzone",
+          "T5.12490.usage",
+          "T5.12490.targets",
+          "T5.12490.redzone",
+          "T5.8146.usage",
+          "T5.8146.targets",
+          "T5.8146.redzone",
+          "T5.11.need",
+          "T5.11.swing",
+          "T5.12.need",
+          "T5.12.swing"
+        ],
+        "scope_teams": [
+          "Unsolicited Dak Picks",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "scope_players": [
+          "Kimani Vidal",
+          "Devaughn Vele",
+          "Ollie Gordon",
+          "Dak Prescott",
+          "Sam Darnold",
+          "Josh Jacobs",
+          "A.J. Brown",
+          "Jonathan Taylor",
+          "Juwan Johnson",
+          "Rachaad White",
+          "George Pickens",
+          "Josh Downs",
+          "Keaton Mitchell",
+          "Baltimore Ravens",
+          "Dalton Kincaid",
+          "Sam LaPorta",
+          "Emanuel Wilson",
+          "Bhayshul Tuten",
+          "Omarion Hampton",
+          "Luther Burden",
+          "DJ Moore",
+          "Tony Pollard",
+          "Tee Higgins",
+          "Trevor Lawrence",
+          "Amon-Ra St. Brown",
+          "Garrett Wilson",
+          "Tyjae Spears",
+          "New England Patriots"
+        ],
+        "min_sentences": 3,
+        "max_sentences": 5,
+        "grade_keys": [
           "T5.11",
-          "T5.12",
+          "T5.12"
+        ]
+      },
+      {
+        "key": "trade_6",
+        "title": "To Infinity and Bijan and Return of T Mac",
+        "fact_ids": [
+          "T6.sides",
+          "T6.7.got.11576",
+          "T6.7.got.11632",
+          "T6.7.got.3163",
+          "T6.7.got.8155",
+          "T6.7.gave.11628",
+          "T6.7.gave.8154",
+          "T6.7.gave.9509",
+          "T6.7.team",
+          "T6.7.impact.11576",
+          "T6.7.impact.11632",
+          "T6.7.impact.3163",
+          "T6.7.impact.8155",
+          "T6.8.got.11628",
+          "T6.8.got.8154",
+          "T6.8.got.9509",
+          "T6.8.gave.11576",
+          "T6.8.gave.11632",
+          "T6.8.gave.3163",
+          "T6.8.gave.8155",
+          "T6.8.team",
+          "T6.8.impact.11628",
+          "T6.8.impact.8154",
+          "T6.8.impact.9509",
+          "T6.11576.usage",
+          "T6.11576.targets",
+          "T6.11576.redzone",
+          "T6.11628.usage",
+          "T6.11628.targets",
+          "T6.11628.redzone",
+          "T6.11632.usage",
+          "T6.11632.targets",
+          "T6.11632.redzone",
+          "T6.11632.injury",
+          "T6.3163.usage",
+          "T6.3163.redzone",
+          "T6.8154.usage",
+          "T6.8154.targets",
+          "T6.8154.redzone",
+          "T6.8155.usage",
+          "T6.8155.targets",
+          "T6.8155.redzone",
+          "T6.8155.injury",
+          "T6.9509.usage",
+          "T6.9509.targets",
+          "T6.9509.redzone"
+        ],
+        "scope_teams": [
+          "To Infinity and Bijan",
+          "Return of T Mac"
+        ],
+        "scope_players": [
+          "Braelon Allen",
+          "Malik Nabers",
+          "Dylan Sampson",
+          "Tetairoa McMillan",
+          "TreVeyon Henderson",
+          "Carnell Tate",
+          "Kendrick Bourne",
+          "Jordan Love",
+          "Breece Hall",
+          "Jaylen Warren",
+          "Chase Brown",
+          "Tucker Kraft",
+          "Los Angeles Rams",
+          "Pittsburgh Steelers",
+          "Marvin Harrison",
+          "Ladd McConkey",
+          "Ryan Flournoy",
+          "Harold Fannin",
+          "Efton Chism",
+          "Darius Cooper",
+          "KC Concepcion",
+          "Kenyon Sadiq",
+          "Jared Goff",
+          "Patrick Mahomes",
+          "Terry McLaurin",
+          "Rhamondre Stevenson",
+          "Brian Robinson",
+          "Bijan Robinson",
+          "Carolina Panthers"
+        ],
+        "min_sentences": 3,
+        "max_sentences": 5,
+        "grade_keys": [
           "T6.7",
           "T6.8"
         ]
