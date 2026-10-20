@@ -71,6 +71,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Sleeper request failed: {err}")
         return 2
     except FileNotFoundError as err:
-        print(f"Missing file {err.filename}. Build the week first.")
+        # On build, a missing file means the saved raw data is incomplete, not an unbuilt week.
+        name = f" {err.filename}" if err.filename else ""
+        hint = "Run the build with --refetch." if args.command == "build" else "Build the week first."
+        print(f"Missing file{name}. {hint}")
         return 2
     return 0

@@ -86,3 +86,23 @@ def test_sleeper_failure_exits_plainly(tmp_path, monkeypatch, capsys):
 
     assert cli.main(["build"]) == 2
     assert "Sleeper request failed: no route" in capsys.readouterr().out
+
+
+def test_missing_file_message_has_no_none_and_hint_fits_command(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    def no_name(*args, **kwargs):
+        raise FileNotFoundError()
+
+    monkeypatch.setattr(cli, "run_build", no_name)
+    monkeypatch.setattr(cli, "run_rewrite", no_name)
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    monkeypatch.chdir(tmp_path)
+
+    assert cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"]) == 2
+    out = capsys.readouterr().out
+    assert out == "Missing file. Run the build with --refetch.\n"
+
+    assert cli.main(["rewrite", "--season", "2026", "--week", "7", "--chapter", "median"]) == 2
+    out = capsys.readouterr().out
+    assert out == "Missing file. Build the week first.\n"
