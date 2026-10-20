@@ -145,3 +145,48 @@ class PositionRank(BaseModel):
     position: str
     rank: int
     of: int
+
+
+class Fact(BaseModel):
+    id: str
+    text: str
+    # Every number in text, as written on the page.
+    numbers: list[str]
+    teams: list[str]
+    players: list[str]
+
+
+class Chapter(BaseModel):
+    key: str
+    title: str
+    fact_ids: list[str]
+    scope_teams: list[str]
+    scope_players: list[str]
+    min_sentences: int
+    max_sentences: int
+
+
+class WeekData(BaseModel):
+    season: int
+    week: int
+    dates: str
+    publish_date: str
+    teams: dict[int, Team]
+    matchups: list[MatchupFacts]
+    median: MedianFacts
+    table: list[Standing]
+    awards: list[Award]
+    pick: Pick
+    next: list[NextMatchup]
+    history: list[SeasonHistory]
+    ranks: list[PositionRank]
+
+
+class FactSheet(BaseModel):
+    facts: dict[str, Fact]
+    chapters: list[Chapter]
+
+
+class Bundle(BaseModel):
+    data: WeekData
+    sheet: FactSheet
