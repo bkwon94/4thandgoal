@@ -154,3 +154,9 @@ def test_long_news_ends_on_a_whole_word(fixture_raw_dir):
     text = b.sheet.facts["AW.game_changer.news"].text
     assert text.endswith(" word")
     assert len(text.split(": ", 1)[1]) <= 300
+
+
+def test_standings_fact_says_one_game(bundle):
+    one = [f for f in bundle.sheet.facts.values() if f.id.startswith("S.") and "1 game " in f.text]
+    assert one, "the fixture has teams one game from the cut"
+    assert not any("1 games" in f.text for f in bundle.sheet.facts.values())

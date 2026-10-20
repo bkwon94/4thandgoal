@@ -194,10 +194,12 @@ def standings_facts(c: Context) -> list[Fact]:
         cut = "in" if s.in_playoffs else "out of"
         side = "above" if s.games_from_cut > 0 else "below" if s.games_from_cut < 0 else "at"
         team = c.team(s.roster_id)
+        gap = abs(s.games_from_cut)
+        games = "game" if gap == 1 else "games"
         text = (
             f"{team} is {n.ord(s.rank)} with a {n.record(s.wins, s.losses)} record "
             f"and {n(s.points_for)} points for, {cut} the playoff spots, "
-            f"{n(abs(s.games_from_cut))} games {side} the cut."
+            f"{n(gap)} {games} {side} the cut."
         )
         out.append(_fact(f"S.{s.rank}", text, n, [team], []))
     return out
