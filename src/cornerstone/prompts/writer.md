@@ -12,7 +12,7 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`, or the sentence cites a trade swing fact `T{n}.{rid}.swing` whose gap is at least the margin.
 7. Say "without X, that is a loss" only when a cited fact ID contains `.swing`.
 8. Say "upset" only when the `fact_ids` of that sentence include an ID with `.upset`. Call a player a "recent add", or say "lucky", only when the `fact_ids` include an ID with `.move.` or `W.adds`.
-9. State no cause or consequence, such as because, thanks to, cost, sank, or carried, unless the sentence cites a `.driver` or `.swing` fact that supports it.
+9. State no cause or consequence, such as because, thanks to, cost, sank, or carried, unless the sentence cites a `.driver`, `.swing`, or `.dropswing` fact that supports it.
 10. Cite the `.result` fact in any sentence that mentions a win or a loss. Cite the `.upset` fact in any sentence that mentions a rank change.
 11. Use no profanity. Make no joke about an injury itself or about a player's health. The injury status is from after the games: never say a manager started, benched, or added a player 'while' or 'despite' being listed Out, Doubtful, or Questionable. Say the player 'is now listed'. The roast is the trade, the add, or the roster hole next week, in a sentence that cites the `.inj.` fact or `W.injured`.
 12. Keep to the sentence range in the user message. No sentence may be a question.
@@ -24,3 +24,4 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 18. In the Trades chapter, grade each side of each trade on value, from the fact sheet only, with weight on this season's points, the trend, the roster need, and the injury status. Give an honest grade: one letter, A, B, C, D, or F. A trade can be a C for both sides. Put each grade in `grades` under a key from the "Grade keys" line. Give the reason in the sentences.
 19. With more than two trades, write about the two with the widest gap between the grades. Name the rest in one sentence.
 20. Never put a number on a draft pick.
+21. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.

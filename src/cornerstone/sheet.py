@@ -21,13 +21,16 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
+from cornerstone.facts_nflverse import drop_lines
 from cornerstone.history import player_points, player_trend
 from cornerstone.models import (
     Bundle,
     Chapter,
+    DropLine,
     Fact,
     FactSheet,
     History,
+    NflverseWeek,
     PlayerLine,
     Trade,
     Week,
@@ -55,6 +58,7 @@ AWARD_TITLES = {
     "mvb": "MVB",
     "underperformer": "Underperformer",
     "overachiever": "Overachiever",
+    "butterfingers": "Butterfingers",
 }
 # (min, max) sentences per chapter, from the spec.
 SENTENCE_RANGES = {
@@ -136,6 +140,7 @@ class Context:
         news: Callable[[str], list[dict]],
         history: History | None = None,
         trades: list[Trade] | None = None,
+        nfl: NflverseWeek | None = None,
     ) -> None:
         self.week = week
         self.history = history
@@ -151,7 +156,9 @@ class Context:
         self.before = ranks_before(week, self.table, history)
         self.median = median_facts(week)
         self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
-        self.awards = awards(week, self.mfacts)
+        self.drops = drop_lines(week, nfl)
+        self.nfl_up = nfl is not None and nfl.drops is not None
+        self.awards = awards(week, self.mfacts, self.drops)
         self.next = next_week(week, self.table)
         self.season_history = season_history(week, history)
         self.ranks = position_ranks(week)
@@ -661,6 +668,56 @@ def trade_facts(c: Context) -> list[Fact]:
     return out
 
 
+def _drop_fact(c: Context, d: DropLine) -> list[Fact]:
+    line, team = c.lines[d.player_id], c.team(d.roster_id)
+    n = Nums()
+    if d.targets is None:
+        text = f"{line.name} dropped {n(d.drops)} passes this week."
+    else:
+        text = f"{line.name} dropped {n(d.drops)} of {n(d.targets)} targets this week."
+    out = [_fact(f"D.{d.player_id}", text, n, [team], [line.name])]
+    if d.value is not None:
+        n = Nums()
+        text = (
+            f"{line.name}'s drops were worth about {n(d.value)} points by the drop value method, "
+            f"with {n(d.end_zone)} in the end zone."
+        )
+        out.append(_fact(f"D.{d.player_id}.value", text, n, [team], [line.name]))
+    return out
+
+
+def _dropswing_facts(c: Context) -> list[Fact]:
+    """The losing side's started drop value against the margin. Only nflverse gives a value."""
+    out = []
+    for f in c.mfacts:
+        if f.loser is None or not c.nfl_up:
+            continue
+        lost = [d for d in c.drops if d.roster_id == f.loser and d.matchup_id == f.matchup_id]
+        value = sum((Decimal(str(d.value)) for d in lost), Decimal(0))
+        if not lost or value < Decimal(str(f.margin)):
+            continue
+        n = Nums()
+        team = c.team(f.loser)
+        text = (
+            f"{team}'s starters dropped {n(sum(d.drops for d in lost))} passes worth about "
+            f"{n(float(value))}, at least the margin of {n(f.margin)}."
+        )
+        out.append(_fact(f"M{f.matchup_id}.dropswing", text, n, [team], [c.lines[d.player_id].name for d in lost]))
+    return out
+
+
+def drop_facts(c: Context) -> list[Fact]:
+    out = [fact for d in c.drops for fact in _drop_fact(c, d)]
+    out += _dropswing_facts(c)
+    if c.drops:
+        n = Nums()
+        top = c.drops[:3]
+        parts = [f"{c.lines[d.player_id].name} ({c.team(d.roster_id)}), {n(d.drops)}" for d in top]
+        out.append(_fact("W.drops", "Most drops this week: " + "; ".join(parts) + ".", n,
+                         [c.team(d.roster_id) for d in top], [c.lines[d.player_id].name for d in top]))
+    return out
+
+
 def _history_ids(facts: dict[str, Fact], rosters, kinds, players=()) -> list[str]:
     """History and player trend fact IDs, most telling first, cut to the cap.
 
@@ -710,6 +767,9 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             grade_keys=list(grade_keys),
         )
 
+    def drop_ids(keep) -> list[str]:
+        return [fid for d in c.drops if keep(d) for fid in (f"D.{d.player_id}", f"D.{d.player_id}.value")]
+
     def standings_ids(rosters) -> list[str]:
         return [f"S.{c.by_rank[r].rank}" for r in rosters]
 
@@ -719,7 +779,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         "motw", "Matchup of the Week",
         _with_prefix(facts, f"M{c.pick.matchup_id}.") + ["PICK"] + standings_ids(pair)
         + [f"RANK.{p}" for p in started_ids(pair)]
-        + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair)),
+        + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair))
+        + drop_ids(lambda d: d.matchup_id == c.pick.matchup_id),
         pair, "motw",
     ))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
@@ -728,14 +789,16 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         out.append(make(
             "game_changer", "Game Changer",
             ["AW.game_changer", "AW.game_changer.news"] + _with_prefix(facts, f"M{gc.matchup_id}.")
-            + [f"RANK.{gc.line.player_id}"] + _history_ids(facts, [], (), [gc.line.player_id]),
+            + [f"RANK.{gc.line.player_id}"] + _history_ids(facts, [], (), [gc.line.player_id])
+            + drop_ids(lambda d: d.player_id == gc.line.player_id),
             pair, "game_changer",
         ))
     out.append(make(
         "awards", "Awards",
         _with_prefix(facts, "AW.") + ["W.adds", "W.injured"] + [f"RANK.{a.line.player_id}" for a in c.awards]
         + [f"M{mid}.result" for mid in roster_ids]
-        + _history_ids(facts, [], (), [a.line.player_id for a in c.awards]),
+        + _history_ids(facts, [], (), [a.line.player_id for a in c.awards])
+        + ["W.drops"] + drop_ids(lambda d: d.player_id in {a.line.player_id for a in c.awards}),
         all_rosters, "awards",
     ))
     for mid, pair in roster_ids.items():
@@ -743,7 +806,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         out.append(make(
             f"recap_{mid}", title,
             _with_prefix(facts, f"M{mid}.") + standings_ids(pair)
-            + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair)),
+            + _history_ids(facts, pair, HISTORY_KINDS, started_ids(pair))
+            + drop_ids(lambda d, mid=mid: d.matchup_id == mid),
             pair, "recap",
         ))
     if c.trades:
@@ -774,12 +838,14 @@ def build_bundle(
     news: Callable[[str], list[dict]] = fetch_news,
     history: History | None = None,
     trades: list[Trade] | None = None,
+    nfl: NflverseWeek | None = None,
 ) -> Bundle:
-    c = Context(week, news, history, trades)
+    c = Context(week, news, history, trades, nfl)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
+        drop_facts(c),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(
@@ -797,6 +863,8 @@ def build_bundle(
         history=c.season_history,
         ranks=c.ranks,
         trades=trades if trades is not None else [],
+        drops=c.drops,
+        drop_source=("nflverse" if c.nfl_up else "sleeper") if c.drops else "none",
     )
     return Bundle(data=data, sheet=FactSheet(facts=facts, chapters=chapters(c, facts)))
 

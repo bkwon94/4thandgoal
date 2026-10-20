@@ -164,6 +164,8 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         season_start=date.fromisoformat(state["season_start_date"]),
         # The reserve slot counts: matchups.json lists the injured reserve player with the others.
         roster_slots=len(raw["league"]["roster_positions"]) + raw["league"]["settings"]["reserve_slots"],
+        scoring=raw["league"]["scoring_settings"],
+        stats={item["player_id"]: item["stats"] for item in raw["stats"]},
     )
 
 

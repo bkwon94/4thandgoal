@@ -31,7 +31,7 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (DECIDED_WORDS, (".driver",)),
     (["upset"], (".upset",)),
     (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
-    (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing")),
+    (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
 GRADE_LETTERS = {"A", "B", "C", "D", "F"}
 NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}

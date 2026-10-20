@@ -117,6 +117,9 @@ class Week(BaseModel):
     season_start: date
     # Lineup lines a full roster holds: the roster positions plus the reserve slots.
     roster_slots: int = 0
+    # The league scoring rates and the Sleeper stats of the week, keyed by player id.
+    scoring: dict[str, float] = {}
+    stats: dict[str, dict[str, float]] = {}
 
 
 class MatchupFacts(BaseModel):
@@ -155,12 +158,23 @@ class Standing(BaseModel):
 
 
 class Award(BaseModel):
-    key: Literal["game_changer", "top_scorer", "mvb", "underperformer", "overachiever"]
+    key: Literal["game_changer", "top_scorer", "mvb", "underperformer", "overachiever", "butterfingers"]
     line: PlayerLine
     roster_id: int
     matchup_id: int
     reason: str
     skipped: list[str]
+
+
+class DropLine(BaseModel):
+    player_id: str
+    roster_id: int
+    matchup_id: int
+    drops: int
+    targets: int | None
+    # value and end_zone are None when nflverse is down, because only nflverse has the plays.
+    value: float | None
+    end_zone: int | None
 
 
 class Pick(BaseModel):
@@ -234,6 +248,8 @@ class WeekData(BaseModel):
     history: list[SeasonHistory]
     ranks: list[PositionRank]
     trades: list[Trade] = []
+    drops: list[DropLine] = []
+    drop_source: Literal["nflverse", "sleeper", "none"] = "none"
 
 
 class FactSheet(BaseModel):

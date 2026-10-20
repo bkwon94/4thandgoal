@@ -51,7 +51,7 @@ def test_bundle_roundtrip_and_ids(bundle, tmp_path):
     assert read_bundle(tmp_path / "facts.json").data.week == 6
 
 
-@pytest.fixture(params=["bundle", "hbundle", "tbundle"])
+@pytest.fixture(params=["bundle", "hbundle", "tbundle", "dbundle"])
 def any_bundle(request):
     return request.getfixturevalue(request.param)
 

@@ -387,3 +387,17 @@ def test_plus_grade_fails(tbundle):
 
 def test_full_grades_pass(tbundle):
     assert _grade_failures(tbundle) == []
+
+
+def test_dropswing_passes_the_cost_gate(dbundle):
+    sheet = dbundle.sheet
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("The drops cost Bo Girds the game.", "M4.dropswing"))
+    assert not [m for m in code_check(b, ch, sheet) if "'cost' needs" in m]
+
+
+def test_drop_value_alone_fails_the_cost_gate(dbundle):
+    sheet = dbundle.sheet
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("The drops cost Bo Girds the game.", "D.12501.value"))
+    assert any("'cost' needs" in m for m in code_check(b, ch, sheet))
