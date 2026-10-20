@@ -2,8 +2,9 @@
 Tests for the drop value, the drop lines, the drop facts, and the Butterfingers award.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
+from cornerstone.facts_league import awards
 from cornerstone.facts_nflverse import drop_lines, drop_value
-from cornerstone.models import NflverseWeek
+from cornerstone.models import DropLine, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
@@ -82,3 +83,24 @@ def test_nfl_none_equals_drops_none(fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
     down = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None)
     assert drop_lines(wk, None) == drop_lines(wk, down)
+
+
+def test_butterfingers_reason_says_tied_on_a_tie(dbundle):
+    assert "tied for the most of any started player" in dbundle.sheet.facts["AW.butterfingers"].text
+
+
+def test_butterfingers_reason_after_a_skip(hbundle, fixture_raw_dir):
+    # The top scorer holds an earlier award, so the next line wins with fewer drops.
+    wk = parse_week(load_raw(fixture_raw_dir))
+    top = next(a for a in hbundle.data.awards if a.key == "top_scorer")
+    other = next(l for m in wk.matchups for s in (m.a, m.b) for l in s.lines
+                 if l.started and l.player_id != top.line.player_id)
+    where = {l.player_id: (s.roster_id, m.matchup_id)
+             for m in wk.matchups for s in (m.a, m.b) for l in s.lines}
+    lines = [DropLine(player_id=p, roster_id=where[p][0], matchup_id=where[p][1],
+                      drops=n, targets=None, value=None, end_zone=None)
+             for p, n in ((top.line.player_id, 5), (other.player_id, 2))]
+    award = next(a for a in awards(wk, hbundle.data.matchups, lines) if a.key == "butterfingers")
+    assert award.line.player_id == other.player_id and award.skipped == [top.line.name]
+    assert award.reason == (f"{other.name} dropped 2 passes, "
+                            "the most among started players with no other award this week.")

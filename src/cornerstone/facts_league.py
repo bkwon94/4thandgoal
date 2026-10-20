@@ -335,7 +335,7 @@ def awards(week: Week, mfacts: list[MatchupFacts], drops: list[DropLine] | None 
     by_player = {x[0].player_id: x for x in started}
     rankings.append((
         "butterfingers",
-        [(by_player[d.player_id], _butterfingers_reason(by_player[d.player_id][0], d)) for d in drops or []],
+        [(by_player[d.player_id], _butterfingers_reason(by_player[d.player_id][0], d, drops)) for d in drops or []],
     ))
 
     picked: set[str] = set()
@@ -354,8 +354,16 @@ def awards(week: Week, mfacts: list[MatchupFacts], drops: list[DropLine] | None 
     return out
 
 
-def _butterfingers_reason(line: PlayerLine, d: DropLine) -> str:
-    reason = f"{line.name} dropped {d.drops} passes, the most of any started player this week"
+def _butterfingers_reason(line: PlayerLine, d: DropLine, drops: list[DropLine]) -> str:
+    # The words follow the real rank, so a skip or a tie never makes the text false.
+    most = max(x.drops for x in drops)
+    if d.drops < most:
+        rank = "the most among started players with no other award this week"
+    elif sum(x.drops == most for x in drops) > 1:
+        rank = "tied for the most of any started player this week"
+    else:
+        rank = "the most of any started player this week"
+    reason = f"{line.name} dropped {d.drops} passes, {rank}"
     # With nflverse down there is no value, so the clause after "week" goes.
     if d.value is None:
         return reason + "."

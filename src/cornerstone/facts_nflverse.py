@@ -10,7 +10,7 @@ from cornerstone.models import DropLine, DropPlay, NflverseWeek, Week
 def _drop_value(play: DropPlay, scoring: dict[str, float]) -> Decimal:
     # Decimal keeps the sum exact: float sums drift, and the page shows two decimals.
     value = Decimal(str(scoring["rec"])) + Decimal(str(max(play.air_yards, 0))) * Decimal(str(scoring["rec_yd"]))
-    # A negative air yards count as 0, but the end zone test uses the raw number.
+    # Negative air yards count as 0, but the end zone test uses the raw number.
     if play.air_yards >= play.yardline_100:
         value += Decimal(str(scoring["rec_td"]))
     return value
