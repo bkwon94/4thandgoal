@@ -111,6 +111,19 @@ a { color:var(--red); }
 .stars b { display:block; font-size:var(--fs-body); line-height:var(--lh-tight); margin-top:var(--sp-0); }
 .stars .k { display:block; color:var(--muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); line-height:var(--lh-tight); }
 
+/* A card holds one side per row. The grade is a stat-size letter, so it reads before the team name does. */
+.trade { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
+.trade + .trade { margin-top:var(--sp-2); }
+.trade .side + .side { margin-top:var(--sp-3); padding-top:var(--sp-3); border-top:1px solid var(--bar-off); }
+.trade .top { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
+.trade .top .who { min-width:0; hyphens:auto; }
+.trade .grade { flex:none; color:var(--red); font-size:var(--fs-score); font-weight:900; line-height:var(--lh-stat); }
+.trade .grade.none { color:var(--muted); font-size:var(--fs-meta); font-weight:600; }
+.trade .got { list-style:none; margin:var(--sp-2) 0 0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.trade .got li { display:flex; justify-content:space-between; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
+.trade .got li span { min-width:0; }
+.trade .got b { flex:none; }
+
 .kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp-2); }
 .kpi > div { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3) var(--sp-2); text-align:center; }
 .kpi .v { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); }
@@ -128,7 +141,6 @@ a { color:var(--red); }
 .st { display:grid; grid-template-columns:24px 1fr 44px 56px; gap:var(--sp-2); align-items:center; padding:var(--sp-1) 0; border-bottom:1px solid var(--rule-dark); font-size:var(--fs-row); line-height:var(--lh-tight); }
 .st > span:nth-child(n+3) { text-align:right; }
 .st.hd { color:var(--on-dark-muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); padding:0 0 var(--sp-2); }
-.st.me .who { background:var(--red); color:var(--on-dark); border-radius:var(--r-sm); padding:var(--sp-0) var(--sp-2) var(--sp-0) var(--sp-0); }
 .st.cut { padding:0; border-bottom:2px dashed var(--red); }
 
 .nx { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
@@ -173,3 +185,6 @@ a { color:var(--red); }
   :root { color-scheme:light; }
   body { background:var(--wht); color:var(--ink); }
 }
+/* The five-tile grid has one tile in a half-empty last row. It spans the row so it does not look lost. */
+.tiles .tile:last-child:nth-child(odd) { grid-column:1 / -1; }
+.tile .pp small { font-size:var(--fs-meta); font-weight:700; color:var(--muted); }

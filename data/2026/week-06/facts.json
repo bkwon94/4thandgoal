@@ -172,6 +172,20 @@
             "kind": "free_agent",
             "week": 6,
             "bid": null
+          },
+          {
+            "player_id": "5022",
+            "roster_id": 1,
+            "kind": "free_agent",
+            "week": 5,
+            "bid": null
+          },
+          {
+            "player_id": "DEN",
+            "roster_id": 3,
+            "kind": "free_agent",
+            "week": 5,
+            "bid": null
           }
         ]
       },
@@ -220,6 +234,34 @@
             "kind": "waiver",
             "week": 6,
             "bid": 1
+          },
+          {
+            "player_id": "BAL",
+            "roster_id": 11,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 0
+          },
+          {
+            "player_id": "4454",
+            "roster_id": 8,
+            "kind": "free_agent",
+            "week": 5,
+            "bid": null
+          },
+          {
+            "player_id": "13279",
+            "roster_id": 8,
+            "kind": "trade",
+            "week": 5,
+            "bid": null
+          },
+          {
+            "player_id": "8228",
+            "roster_id": 8,
+            "kind": "trade",
+            "week": 5,
+            "bid": null
           }
         ]
       },
@@ -408,6 +450,27 @@
             "roster_id": 9,
             "kind": "free_agent",
             "week": 6,
+            "bid": null
+          },
+          {
+            "player_id": "SF",
+            "roster_id": 9,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 0
+          },
+          {
+            "player_id": "NE",
+            "roster_id": 12,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 3
+          },
+          {
+            "player_id": "11435",
+            "roster_id": 12,
+            "kind": "trade",
+            "week": 5,
             "bid": null
           }
         ]
@@ -720,6 +783,34 @@
             "kind": "free_agent",
             "week": 6,
             "bid": null
+          },
+          {
+            "player_id": "1479",
+            "roster_id": 10,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 6
+          },
+          {
+            "player_id": "8129",
+            "roster_id": 10,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 12
+          },
+          {
+            "player_id": "13274",
+            "roster_id": 10,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 12
+          },
+          {
+            "player_id": "10235",
+            "roster_id": 10,
+            "kind": "free_agent",
+            "week": 5,
+            "bid": null
           }
         ]
       },
@@ -788,6 +879,20 @@
             "roster_id": 7,
             "kind": "free_agent",
             "week": 6,
+            "bid": null
+          },
+          {
+            "player_id": "12506",
+            "roster_id": 7,
+            "kind": "trade",
+            "week": 5,
+            "bid": null
+          },
+          {
+            "player_id": "5927",
+            "roster_id": 7,
+            "kind": "trade",
+            "week": 5,
             "bid": null
           }
         ]
@@ -931,6 +1036,27 @@
             "roster_id": 2,
             "kind": "free_agent",
             "week": 6,
+            "bid": null
+          },
+          {
+            "player_id": "9480",
+            "roster_id": 2,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 15
+          },
+          {
+            "player_id": "KC",
+            "roster_id": 4,
+            "kind": "waiver",
+            "week": 5,
+            "bid": 8
+          },
+          {
+            "player_id": "11581",
+            "roster_id": 4,
+            "kind": "free_agent",
+            "week": 5,
             "bid": null
           }
         ]
@@ -1101,21 +1227,21 @@
       {
         "key": "game_changer",
         "line": {
-          "player_id": "10213",
-          "name": "Tre Tucker",
+          "player_id": "13274",
+          "name": "Germie Bernard",
           "position": "WR",
-          "nfl_team": "LV",
-          "points": 24.2,
-          "projection": 7.58,
+          "nfl_team": "PIT",
+          "points": 20.2,
+          "projection": 8.13,
           "season_avg": null,
           "started": true,
           "slot": "WR",
           "injury_status": null,
           "injury_body_part": null
         },
-        "roster_id": 2,
-        "matchup_id": 6,
-        "reason": "Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over, in a 12.95-point win.",
+        "roster_id": 10,
+        "matchup_id": 4,
+        "reason": "Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over, in a 5.34-point win after a recent roster move.",
         "skipped": []
       },
       {
@@ -1181,24 +1307,42 @@
       {
         "key": "overachiever",
         "line": {
-          "player_id": "13274",
-          "name": "Germie Bernard",
+          "player_id": "10213",
+          "name": "Tre Tucker",
           "position": "WR",
-          "nfl_team": "PIT",
-          "points": 20.2,
-          "projection": 8.13,
+          "nfl_team": "LV",
+          "points": 24.2,
+          "projection": 7.58,
           "season_avg": null,
           "started": true,
           "slot": "WR",
           "injury_status": null,
           "injury_body_part": null
         },
-        "roster_id": 10,
+        "roster_id": 2,
+        "matchup_id": 6,
+        "reason": "Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over.",
+        "skipped": []
+      },
+      {
+        "key": "butterfingers",
+        "line": {
+          "player_id": "12501",
+          "name": "Matthew Golden",
+          "position": "WR",
+          "nfl_team": "GB",
+          "points": 19.4,
+          "projection": 13.14,
+          "season_avg": null,
+          "started": true,
+          "slot": "FLEX",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "roster_id": 6,
         "matchup_id": 4,
-        "reason": "Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over.",
-        "skipped": [
-          "Tre Tucker"
-        ]
+        "reason": "Matthew Golden dropped 3 passes, tied for the most of any started player this week, worth about 14.2 points by the drop value method.",
+        "skipped": []
       }
     ],
     "pick": {
@@ -1252,147 +1396,183 @@
     "history": [
       {
         "roster_id": 1,
-        "high": 88.31,
-        "low": 88.31,
+        "high": 158.91,
+        "low": 88.22,
         "weeks_over": {
-          "100": 0,
-          "110": 0,
-          "120": 0
+          "100": 3,
+          "110": 3,
+          "120": 2
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 114.17,
+        "trend": 111.81,
+        "streak": -1
       },
       {
         "roster_id": 2,
-        "high": 97.02,
-        "low": 97.02,
+        "high": 114.33,
+        "low": 91.43,
         "weeks_over": {
-          "100": 0,
-          "110": 0,
+          "100": 3,
+          "110": 2,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 101.95,
+        "trend": 97.48,
+        "streak": 1
       },
       {
         "roster_id": 3,
-        "high": 126.79,
-        "low": 126.79,
+        "high": 156.52,
+        "low": 88.06,
         "weeks_over": {
-          "100": 1,
-          "110": 1,
-          "120": 1
+          "100": 5,
+          "110": 5,
+          "120": 4
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 123.28,
+        "trend": 113.91,
+        "streak": 2
       },
       {
         "roster_id": 4,
-        "high": 84.07,
-        "low": 84.07,
+        "high": 103.5,
+        "low": 61.57,
         "weeks_over": {
-          "100": 0,
+          "100": 1,
           "110": 0,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 82.23,
+        "trend": 93.93,
+        "streak": -1
       },
       {
         "roster_id": 5,
-        "high": 112.48,
-        "low": 112.48,
+        "high": 145.63,
+        "low": 100.51,
         "weeks_over": {
-          "100": 1,
-          "110": 1,
-          "120": 0
+          "100": 6,
+          "110": 5,
+          "120": 2
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 120.33,
+        "trend": 122.9,
+        "streak": 4
       },
       {
         "roster_id": 6,
-        "high": 109.61,
-        "low": 109.61,
+        "high": 153.54,
+        "low": 98.84,
         "weeks_over": {
-          "100": 1,
-          "110": 0,
-          "120": 0
+          "100": 5,
+          "110": 4,
+          "120": 2
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 120.53,
+        "trend": 117.71,
+        "streak": -2
       },
       {
         "roster_id": 7,
-        "high": 46.08,
+        "high": 118.28,
         "low": 46.08,
         "weeks_over": {
-          "100": 0,
-          "110": 0,
+          "100": 3,
+          "110": 1,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": true,
+        "average": 90.65,
+        "trend": 77.06,
+        "streak": -2
       },
       {
         "roster_id": 8,
-        "high": 120.29,
-        "low": 120.29,
+        "high": 136.68,
+        "low": 52.05,
         "weeks_over": {
-          "100": 1,
-          "110": 1,
-          "120": 1
+          "100": 4,
+          "110": 3,
+          "120": 3
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 103.16,
+        "trend": 128.82,
+        "streak": 3
       },
       {
         "roster_id": 9,
-        "high": 113.55,
-        "low": 113.55,
+        "high": 158.96,
+        "low": 87.93,
         "weeks_over": {
-          "100": 1,
-          "110": 1,
-          "120": 0
+          "100": 3,
+          "110": 3,
+          "120": 2
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 116.38,
+        "trend": 120.15,
+        "streak": 2
       },
       {
         "roster_id": 10,
-        "high": 114.95,
-        "low": 114.95,
+        "high": 116.17,
+        "low": 79.21,
         "weeks_over": {
-          "100": 1,
-          "110": 1,
+          "100": 3,
+          "110": 2,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 98.0,
+        "trend": 103.64,
+        "streak": 1
       },
       {
         "roster_id": 11,
-        "high": 81.47,
+        "high": 113.81,
         "low": 81.47,
         "weeks_over": {
-          "100": 0,
-          "110": 0,
+          "100": 3,
+          "110": 1,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": true,
+        "average": 99.15,
+        "trend": 92.05,
+        "streak": -3
       },
       {
         "roster_id": 12,
-        "high": 104.04,
-        "low": 104.04,
+        "high": 115.3,
+        "low": 79.36,
         "weeks_over": {
-          "100": 1,
-          "110": 0,
+          "100": 4,
+          "110": 1,
           "120": 0
         },
-        "new_high": true,
-        "new_low": true
+        "new_high": false,
+        "new_low": false,
+        "average": 100.63,
+        "trend": 100.74,
+        "streak": -2
       }
     ],
     "ranks": [
@@ -2044,7 +2224,300 @@
         "rank": 12,
         "of": 12
       }
-    ]
+    ],
+    "trades": [
+      {
+        "transaction_id": "1416142005473443840",
+        "created": "2026-10-14T16:57:54.053000Z",
+        "roster_ids": [
+          4,
+          12
+        ],
+        "adds": {
+          "12507": 12,
+          "12533": 4,
+          "5892": 4,
+          "5967": 12
+        },
+        "drops": {
+          "12507": 4,
+          "12533": 12,
+          "5892": 12,
+          "5967": 4
+        },
+        "draft_picks": []
+      },
+      {
+        "transaction_id": "1416147957350211584",
+        "created": "2026-10-14T17:21:33.091000Z",
+        "roster_ids": [
+          7,
+          12
+        ],
+        "adds": {
+          "10236": 12,
+          "13330": 7
+        },
+        "drops": {
+          "10236": 7,
+          "13330": 12
+        },
+        "draft_picks": []
+      },
+      {
+        "transaction_id": "1416258035583635456",
+        "created": "2026-10-15T00:38:57.787000Z",
+        "roster_ids": [
+          4,
+          7
+        ],
+        "adds": {
+          "11635": 7,
+          "12481": 4,
+          "7569": 4,
+          "7611": 7
+        },
+        "drops": {
+          "11635": 4,
+          "12481": 7,
+          "7569": 7,
+          "7611": 4
+        },
+        "draft_picks": []
+      },
+      {
+        "transaction_id": "1416914469497405440",
+        "created": "2026-10-16T20:07:23.827000Z",
+        "roster_ids": [
+          6,
+          7
+        ],
+        "adds": {
+          "4046": 7,
+          "4881": 6,
+          "8154": 7
+        },
+        "drops": {
+          "4046": 6,
+          "4881": 7,
+          "8154": 6
+        },
+        "draft_picks": []
+      },
+      {
+        "transaction_id": "1416977764329725952",
+        "created": "2026-10-17T00:18:54.492000Z",
+        "roster_ids": [
+          11,
+          12
+        ],
+        "adds": {
+          "11834": 11,
+          "12490": 12,
+          "5850": 11,
+          "8146": 12
+        },
+        "drops": {
+          "11834": 12,
+          "12490": 11,
+          "5850": 12,
+          "8146": 11
+        },
+        "draft_picks": []
+      },
+      {
+        "transaction_id": "1418300673505644544",
+        "created": "2026-10-20T15:55:40.617000Z",
+        "roster_ids": [
+          7,
+          8
+        ],
+        "adds": {
+          "11576": 7,
+          "11628": 8,
+          "11632": 7,
+          "3163": 7,
+          "8154": 8,
+          "8155": 7,
+          "9509": 8
+        },
+        "drops": {
+          "11576": 8,
+          "11628": 7,
+          "11632": 8,
+          "3163": 8,
+          "8154": 7,
+          "8155": 8,
+          "9509": 7
+        },
+        "draft_picks": []
+      }
+    ],
+    "drops": [
+      {
+        "player_id": "12501",
+        "roster_id": 6,
+        "matchup_id": 4,
+        "drops": 3,
+        "targets": 13,
+        "value": 14.2,
+        "end_zone": 1
+      },
+      {
+        "player_id": "8144",
+        "roster_id": 2,
+        "matchup_id": 6,
+        "drops": 3,
+        "targets": 7,
+        "value": 3.1,
+        "end_zone": 0
+      },
+      {
+        "player_id": "6786",
+        "roster_id": 10,
+        "matchup_id": 4,
+        "drops": 2,
+        "targets": 18,
+        "value": 2.5,
+        "end_zone": 0
+      },
+      {
+        "player_id": "8150",
+        "roster_id": 6,
+        "matchup_id": 4,
+        "drops": 2,
+        "targets": 6,
+        "value": 1.4,
+        "end_zone": 0
+      },
+      {
+        "player_id": "8167",
+        "roster_id": 1,
+        "matchup_id": 1,
+        "drops": 1,
+        "targets": 8,
+        "value": 9.1,
+        "end_zone": 1
+      },
+      {
+        "player_id": "9493",
+        "roster_id": 4,
+        "matchup_id": 6,
+        "drops": 1,
+        "targets": 7,
+        "value": 3.8,
+        "end_zone": 0
+      },
+      {
+        "player_id": "8137",
+        "roster_id": 11,
+        "matchup_id": 2,
+        "drops": 1,
+        "targets": 11,
+        "value": 2.4,
+        "end_zone": 0
+      },
+      {
+        "player_id": "9500",
+        "roster_id": 11,
+        "matchup_id": 2,
+        "drops": 1,
+        "targets": 8,
+        "value": 1.2,
+        "end_zone": 0
+      },
+      {
+        "player_id": "7600",
+        "roster_id": 6,
+        "matchup_id": 4,
+        "drops": 1,
+        "targets": 3,
+        "value": 1.2,
+        "end_zone": 0
+      },
+      {
+        "player_id": "12527",
+        "roster_id": 2,
+        "matchup_id": 6,
+        "drops": 1,
+        "targets": 6,
+        "value": 1.1,
+        "end_zone": 0
+      },
+      {
+        "player_id": "11646",
+        "roster_id": 9,
+        "matchup_id": 3,
+        "drops": 1,
+        "targets": 13,
+        "value": 1.1,
+        "end_zone": 0
+      },
+      {
+        "player_id": "5859",
+        "roster_id": 11,
+        "matchup_id": 2,
+        "drops": 1,
+        "targets": 10,
+        "value": 1.0,
+        "end_zone": 0
+      },
+      {
+        "player_id": "9487",
+        "roster_id": 6,
+        "matchup_id": 4,
+        "drops": 1,
+        "targets": 11,
+        "value": 1.0,
+        "end_zone": 0
+      },
+      {
+        "player_id": "12526",
+        "roster_id": 8,
+        "matchup_id": 2,
+        "drops": 1,
+        "targets": 9,
+        "value": 1.0,
+        "end_zone": 0
+      },
+      {
+        "player_id": "3214",
+        "roster_id": 4,
+        "matchup_id": 6,
+        "drops": 1,
+        "targets": 5,
+        "value": 0.9,
+        "end_zone": 0
+      },
+      {
+        "player_id": "10213",
+        "roster_id": 2,
+        "matchup_id": 6,
+        "drops": 1,
+        "targets": 7,
+        "value": 0.8,
+        "end_zone": 0
+      },
+      {
+        "player_id": "8129",
+        "roster_id": 10,
+        "matchup_id": 4,
+        "drops": 1,
+        "targets": 5,
+        "value": 0.5,
+        "end_zone": 0
+      },
+      {
+        "player_id": "11581",
+        "roster_id": 4,
+        "matchup_id": 6,
+        "drops": 1,
+        "targets": 1,
+        "value": 0.5,
+        "end_zone": 0
+      }
+    ],
+    "drop_source": "nflverse"
   },
   "sheet": {
     "facts": {
@@ -2073,30 +2546,30 @@
       },
       "W.adds": {
         "id": "W.adds",
-        "text": "The top recent adds who started: Bhayshul Tuten (RB, JAX) for Amon-Ra Dawg Your Team, a trade in week 6, scored 22.7 on a 12.16 projection, 10.54 over; Kirk Cousins (QB, LV) for Pukancun on 3, a waiver add in week 6, scored 19.52 on a 17.68 projection, 1.84 over; Aaron Rodgers (QB, PIT) for All You Need Is Love, a free agent add in week 6, scored 17.02 on a 16.37 projection, 0.65 over.",
+        "text": "The top recent adds who started: Bhayshul Tuten (RB, JAX) for Amon-Ra Dawg Your Team, a trade in week 6, scored 22.7 on a 12.16 projection, 10.54 over; Germie Bernard (WR, PIT) for behold the lamb, a waiver add in week 5, scored 20.2 on a 8.13 projection, 12.07 over; Kirk Cousins (QB, LV) for Pukancun on 3, a waiver add in week 6, scored 19.52 on a 17.68 projection, 1.84 over.",
         "numbers": [
           "6",
           "22.7",
           "12.16",
           "10.54",
+          "5",
+          "20.2",
+          "8.13",
+          "12.07",
           "6",
           "19.52",
           "17.68",
-          "1.84",
-          "6",
-          "17.02",
-          "16.37",
-          "0.65"
+          "1.84"
         ],
         "teams": [
-          "All You Need Is Love",
           "Amon-Ra Dawg Your Team",
-          "Pukancun on 3"
+          "Pukancun on 3",
+          "behold the lamb"
         ],
         "players": [
           "Bhayshul Tuten",
-          "Kirk Cousins",
-          "Aaron Rodgers"
+          "Germie Bernard",
+          "Kirk Cousins"
         ]
       },
       "W.injured": {
@@ -2804,6 +3277,38 @@
           "Tampa Bay Buccaneers"
         ]
       },
+      "M1.move.5022": {
+        "id": "M1.move.5022",
+        "text": "Dallas Goedert is a recent add: Dallas Goedert started for Brock ‘N’ Roll after a free agent add in week 5 and scored 9.1 on a 8.76 projection, 0.34 over.",
+        "numbers": [
+          "5",
+          "9.1",
+          "8.76",
+          "0.34"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Dallas Goedert"
+        ]
+      },
+      "M1.move.DEN": {
+        "id": "M1.move.DEN",
+        "text": "Denver Broncos is a recent add: Denver Broncos started for Lil Fridge after a free agent add in week 5 and scored 13.35 on a 6.53 projection, 6.82 over.",
+        "numbers": [
+          "5",
+          "13.35",
+          "6.53",
+          "6.82"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Denver Broncos"
+        ]
+      },
       "M1.inj.2133": {
         "id": "M1.inj.2133",
         "text": "Davante Adams is now listed Out (Knee) on Sleeper as of the Tuesday after this week's games. The status may have come from this game.",
@@ -3180,6 +3685,70 @@
         ],
         "players": [
           "Kimani Vidal"
+        ]
+      },
+      "M2.move.BAL": {
+        "id": "M2.move.BAL",
+        "text": "Baltimore Ravens is a recent add: Baltimore Ravens started for Unsolicited Dak Picks after a waiver add in week 5 and scored 8.95 on a 8.64 projection, 0.31 over.",
+        "numbers": [
+          "5",
+          "8.95",
+          "8.64",
+          "0.31"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Baltimore Ravens"
+        ]
+      },
+      "M2.move.4454": {
+        "id": "M2.move.4454",
+        "text": "Kendrick Bourne is a recent add: Kendrick Bourne started for Return of T Mac after a free agent add in week 5 and scored 7.2 on a 6.52 projection, 0.68 over.",
+        "numbers": [
+          "5",
+          "7.2",
+          "6.52",
+          "0.68"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Kendrick Bourne"
+        ]
+      },
+      "M2.move.13279": {
+        "id": "M2.move.13279",
+        "text": "Carnell Tate is a recent add: Carnell Tate started for Return of T Mac after a trade in week 5 and scored 16 on a 10.35 projection, 5.65 over.",
+        "numbers": [
+          "5",
+          "16",
+          "10.35",
+          "5.65"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Carnell Tate"
+        ]
+      },
+      "M2.move.8228": {
+        "id": "M2.move.8228",
+        "text": "Jaylen Warren is a recent add: Jaylen Warren started for Return of T Mac after a trade in week 5 and scored 8.8 on a 13.68 projection, 4.88 under.",
+        "numbers": [
+          "5",
+          "8.8",
+          "13.68",
+          "4.88"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Jaylen Warren"
         ]
       },
       "M2.inj.5859": {
@@ -3747,6 +4316,54 @@
         ],
         "players": [
           "Jaleel McLaughlin"
+        ]
+      },
+      "M3.move.SF": {
+        "id": "M3.move.SF",
+        "text": "San Francisco 49ers is a recent add: San Francisco 49ers started for Maye d'force B with U after a waiver add in week 5 and scored 5.05 on a 7.23 projection, 2.18 under.",
+        "numbers": [
+          "5",
+          "5.05",
+          "7.23",
+          "2.18"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "San Francisco 49ers"
+        ]
+      },
+      "M3.move.NE": {
+        "id": "M3.move.NE",
+        "text": "New England Patriots is a recent add: New England Patriots started for Amon-Ra Dawg Your Team after a waiver add in week 5 and scored 7.1 on a 8.85 projection, 1.75 under.",
+        "numbers": [
+          "5",
+          "7.1",
+          "8.85",
+          "1.75"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "New England Patriots"
+        ]
+      },
+      "M3.move.11435": {
+        "id": "M3.move.11435",
+        "text": "Emanuel Wilson is a recent add: Emanuel Wilson started for Amon-Ra Dawg Your Team after a trade in week 5 and scored 5.2 on a 12.12 projection, 6.92 under.",
+        "numbers": [
+          "5",
+          "5.2",
+          "12.12",
+          "6.92"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Emanuel Wilson"
         ]
       },
       "M3.inj.7526": {
@@ -4436,6 +5053,70 @@
           "Indianapolis Colts"
         ]
       },
+      "M4.move.1479": {
+        "id": "M4.move.1479",
+        "text": "Keenan Allen is a recent add: Keenan Allen started for behold the lamb after a waiver add in week 5 and scored 12.2 on a 7.36 projection, 4.84 over.",
+        "numbers": [
+          "5",
+          "12.2",
+          "7.36",
+          "4.84"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Keenan Allen"
+        ]
+      },
+      "M4.move.8129": {
+        "id": "M4.move.8129",
+        "text": "Dameon Pierce is a recent add: Dameon Pierce started for behold the lamb after a waiver add in week 5 and scored 13 on a 10.14 projection, 2.86 over.",
+        "numbers": [
+          "5",
+          "13",
+          "10.14",
+          "2.86"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Dameon Pierce"
+        ]
+      },
+      "M4.move.13274": {
+        "id": "M4.move.13274",
+        "text": "Germie Bernard is a recent add: Germie Bernard started for behold the lamb after a waiver add in week 5 and scored 20.2 on a 8.13 projection, 12.07 over.",
+        "numbers": [
+          "5",
+          "20.2",
+          "8.13",
+          "12.07"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Germie Bernard"
+        ]
+      },
+      "M4.move.10235": {
+        "id": "M4.move.10235",
+        "text": "Roschon Johnson is a recent add: Roschon Johnson started for behold the lamb after a free agent add in week 5 and scored 13.5 on a 6.09 projection, 7.41 over.",
+        "numbers": [
+          "5",
+          "13.5",
+          "6.09",
+          "7.41"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Roschon Johnson"
+        ]
+      },
       "M4.upset": {
         "id": "M4.upset",
         "text": "This was an upset: behold the lamb was 11th before this week and Bo Girds was 2nd.",
@@ -4840,6 +5521,38 @@
         ],
         "players": [
           "Carolina Panthers"
+        ]
+      },
+      "M5.move.12506": {
+        "id": "M5.move.12506",
+        "text": "Harold Fannin is a recent add: Harold Fannin started for To Infinity and Bijan after a trade in week 5 and scored 1.4 on a 8.95 projection, 7.55 under.",
+        "numbers": [
+          "5",
+          "1.4",
+          "8.95",
+          "7.55"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Harold Fannin"
+        ]
+      },
+      "M5.move.5927": {
+        "id": "M5.move.5927",
+        "text": "Terry McLaurin is a recent add: Terry McLaurin started for To Infinity and Bijan after a trade in week 5 and scored 3.2 on a 9.58 projection, 6.38 under.",
+        "numbers": [
+          "5",
+          "3.2",
+          "9.58",
+          "6.38"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Terry McLaurin"
         ]
       },
       "M5.inj.11635": {
@@ -5345,6 +6058,54 @@
           "Aaron Rodgers"
         ]
       },
+      "M6.move.9480": {
+        "id": "M6.move.9480",
+        "text": "Brenton Strange is a recent add: Brenton Strange started for All You Need Is Love after a waiver add in week 5 and scored 6.9 on a 8.23 projection, 1.33 under.",
+        "numbers": [
+          "5",
+          "6.9",
+          "8.23",
+          "1.33"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Brenton Strange"
+        ]
+      },
+      "M6.move.KC": {
+        "id": "M6.move.KC",
+        "text": "Kansas City Chiefs is a recent add: Kansas City Chiefs started for Pukancun on 3 after a waiver add in week 5 and scored 14.15 on a 9.01 projection, 5.14 over.",
+        "numbers": [
+          "5",
+          "14.15",
+          "9.01",
+          "5.14"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Kansas City Chiefs"
+        ]
+      },
+      "M6.move.11581": {
+        "id": "M6.move.11581",
+        "text": "MarShawn Lloyd is a recent add: MarShawn Lloyd started for Pukancun on 3 after a free agent add in week 5 and scored 1 on a 10.96 projection, 9.96 under.",
+        "numbers": [
+          "5",
+          "1",
+          "10.96",
+          "9.96"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "MarShawn Lloyd"
+        ]
+      },
       "M6.records": {
         "id": "M6.records",
         "text": "All You Need Is Love is now 7-5 (5th). Pukancun on 3 is now 1-11 (12th).",
@@ -5366,18 +6127,18 @@
       },
       "AW.game_changer": {
         "id": "AW.game_changer",
-        "text": "Game Changer: Tre Tucker (WR, LV), All You Need Is Love. Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over, in a 12.95-point win.",
+        "text": "Game Changer: Germie Bernard (WR, PIT), behold the lamb. Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over, in a 5.34-point win after a recent roster move.",
         "numbers": [
-          "24.2",
-          "7.58",
-          "16.62",
-          "12.95"
+          "20.2",
+          "8.13",
+          "12.07",
+          "5.34"
         ],
         "teams": [
-          "All You Need Is Love"
+          "behold the lamb"
         ],
         "players": [
-          "Tre Tucker"
+          "Germie Bernard"
         ]
       },
       "AW.top_scorer": {
@@ -5423,35 +6184,47 @@
       },
       "AW.overachiever": {
         "id": "AW.overachiever",
-        "text": "Overachiever: Germie Bernard (WR, PIT), behold the lamb. Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over. Skipped: Tre Tucker.",
+        "text": "Overachiever: Tre Tucker (WR, LV), All You Need Is Love. Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over.",
         "numbers": [
-          "20.2",
-          "8.13",
-          "12.07"
+          "24.2",
+          "7.58",
+          "16.62"
         ],
         "teams": [
-          "behold the lamb"
+          "All You Need Is Love"
         ],
         "players": [
-          "Germie Bernard",
           "Tre Tucker"
+        ]
+      },
+      "AW.butterfingers": {
+        "id": "AW.butterfingers",
+        "text": "Butterfingers: Matthew Golden (WR, GB), Bo Girds. Matthew Golden dropped 3 passes, tied for the most of any started player this week, worth about 14.2 points by the drop value method.",
+        "numbers": [
+          "3",
+          "14.2"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Matthew Golden"
         ]
       },
       "AW.game_changer.news": {
         "id": "AW.game_changer.news",
-        "text": "Latest news on Tre Tucker: Tre Tucker caught 5-of-7 targets for 97 yards and two touchdowns in Sunday's 33-30 loss to the Buffalo Bills.",
+        "text": "Latest news on Germie Bernard: Pittsburgh Steelers wide receiver Germie Bernard continued his rapid emergence in Sunday's 26-19 overtime victory over the Tampa Bay Buccaneers, setting a franchise rookie record with 11 receptions for 87 yards and his first career touchdown. The 22-year-old caught the game-winning six-yard score",
         "numbers": [
-          "5",
-          "-7",
-          "7",
-          "97",
-          "33-30",
-          "33",
-          "30"
+          "26-19",
+          "26",
+          "19",
+          "11",
+          "87",
+          "22"
         ],
         "teams": [],
         "players": [
-          "Tre Tucker"
+          "Germie Bernard"
         ]
       },
       "PICK": {
@@ -7249,6 +8022,3422 @@
           "Pukancun on 3"
         ],
         "players": []
+      },
+      "H.1.trend": {
+        "id": "H.1.trend",
+        "text": "Brock ‘N’ Roll has scored 111.81 per week over the last 3 weeks, down from a season average of 114.17.",
+        "numbers": [
+          "111.81",
+          "3",
+          "114.17"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": []
+      },
+      "H.1.avg": {
+        "id": "H.1.avg",
+        "text": "Brock ‘N’ Roll averages 114.17 per week this season.",
+        "numbers": [
+          "114.17"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": []
+      },
+      "H.2.trend": {
+        "id": "H.2.trend",
+        "text": "All You Need Is Love has scored 97.48 per week over the last 3 weeks, down from a season average of 101.95.",
+        "numbers": [
+          "97.48",
+          "3",
+          "101.95"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": []
+      },
+      "H.2.avg": {
+        "id": "H.2.avg",
+        "text": "All You Need Is Love averages 101.95 per week this season.",
+        "numbers": [
+          "101.95"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": []
+      },
+      "H.3.streak": {
+        "id": "H.3.streak",
+        "text": "Lil Fridge has won 2 straight.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": []
+      },
+      "H.3.trend": {
+        "id": "H.3.trend",
+        "text": "Lil Fridge has scored 113.91 per week over the last 3 weeks, down from a season average of 123.28.",
+        "numbers": [
+          "113.91",
+          "3",
+          "123.28"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": []
+      },
+      "H.3.avg": {
+        "id": "H.3.avg",
+        "text": "Lil Fridge averages 123.28 per week this season.",
+        "numbers": [
+          "123.28"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": []
+      },
+      "H.4.trend": {
+        "id": "H.4.trend",
+        "text": "Pukancun on 3 has scored 93.93 per week over the last 3 weeks, up from a season average of 82.23.",
+        "numbers": [
+          "93.93",
+          "3",
+          "82.23"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "H.4.avg": {
+        "id": "H.4.avg",
+        "text": "Pukancun on 3 averages 82.23 per week this season.",
+        "numbers": [
+          "82.23"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "H.5.streak": {
+        "id": "H.5.streak",
+        "text": "London Cooking has won 4 straight.",
+        "numbers": [
+          "4"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": []
+      },
+      "H.5.trend": {
+        "id": "H.5.trend",
+        "text": "London Cooking has scored 122.9 per week over the last 3 weeks, up from a season average of 120.33.",
+        "numbers": [
+          "122.9",
+          "3",
+          "120.33"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": []
+      },
+      "H.5.avg": {
+        "id": "H.5.avg",
+        "text": "London Cooking averages 120.33 per week this season.",
+        "numbers": [
+          "120.33"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": []
+      },
+      "H.6.streak": {
+        "id": "H.6.streak",
+        "text": "Bo Girds has lost 2 straight.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": []
+      },
+      "H.6.trend": {
+        "id": "H.6.trend",
+        "text": "Bo Girds has scored 117.71 per week over the last 3 weeks, down from a season average of 120.53.",
+        "numbers": [
+          "117.71",
+          "3",
+          "120.53"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": []
+      },
+      "H.6.avg": {
+        "id": "H.6.avg",
+        "text": "Bo Girds averages 120.53 per week this season.",
+        "numbers": [
+          "120.53"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": []
+      },
+      "H.7.streak": {
+        "id": "H.7.streak",
+        "text": "To Infinity and Bijan has lost 2 straight.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "H.7.trend": {
+        "id": "H.7.trend",
+        "text": "To Infinity and Bijan has scored 77.06 per week over the last 3 weeks, down from a season average of 90.65.",
+        "numbers": [
+          "77.06",
+          "3",
+          "90.65"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "H.7.high": {
+        "id": "H.7.high",
+        "text": "To Infinity and Bijan's 46.08 this week is a season low.",
+        "numbers": [
+          "46.08"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "H.7.avg": {
+        "id": "H.7.avg",
+        "text": "To Infinity and Bijan averages 90.65 per week this season.",
+        "numbers": [
+          "90.65"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "H.8.streak": {
+        "id": "H.8.streak",
+        "text": "Return of T Mac has won 3 straight.",
+        "numbers": [
+          "3"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": []
+      },
+      "H.8.trend": {
+        "id": "H.8.trend",
+        "text": "Return of T Mac has scored 128.82 per week over the last 3 weeks, up from a season average of 103.16.",
+        "numbers": [
+          "128.82",
+          "3",
+          "103.16"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": []
+      },
+      "H.8.avg": {
+        "id": "H.8.avg",
+        "text": "Return of T Mac averages 103.16 per week this season.",
+        "numbers": [
+          "103.16"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": []
+      },
+      "H.9.streak": {
+        "id": "H.9.streak",
+        "text": "Maye d'force B with U has won 2 straight.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": []
+      },
+      "H.9.trend": {
+        "id": "H.9.trend",
+        "text": "Maye d'force B with U has scored 120.15 per week over the last 3 weeks, up from a season average of 116.38.",
+        "numbers": [
+          "120.15",
+          "3",
+          "116.38"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": []
+      },
+      "H.9.avg": {
+        "id": "H.9.avg",
+        "text": "Maye d'force B with U averages 116.38 per week this season.",
+        "numbers": [
+          "116.38"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": []
+      },
+      "H.10.trend": {
+        "id": "H.10.trend",
+        "text": "behold the lamb has scored 103.64 per week over the last 3 weeks, up from a season average of 98.",
+        "numbers": [
+          "103.64",
+          "3",
+          "98"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "H.10.avg": {
+        "id": "H.10.avg",
+        "text": "behold the lamb averages 98 per week this season.",
+        "numbers": [
+          "98"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "H.11.streak": {
+        "id": "H.11.streak",
+        "text": "Unsolicited Dak Picks has lost 3 straight.",
+        "numbers": [
+          "3"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "H.11.trend": {
+        "id": "H.11.trend",
+        "text": "Unsolicited Dak Picks has scored 92.05 per week over the last 3 weeks, down from a season average of 99.15.",
+        "numbers": [
+          "92.05",
+          "3",
+          "99.15"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "H.11.high": {
+        "id": "H.11.high",
+        "text": "Unsolicited Dak Picks's 81.47 this week is a season low.",
+        "numbers": [
+          "81.47"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "H.11.avg": {
+        "id": "H.11.avg",
+        "text": "Unsolicited Dak Picks averages 99.15 per week this season.",
+        "numbers": [
+          "99.15"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "H.12.streak": {
+        "id": "H.12.streak",
+        "text": "Amon-Ra Dawg Your Team has lost 2 straight.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "H.12.trend": {
+        "id": "H.12.trend",
+        "text": "Amon-Ra Dawg Your Team has scored 100.74 per week over the last 3 weeks, up from a season average of 100.63.",
+        "numbers": [
+          "100.74",
+          "3",
+          "100.63"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "H.12.avg": {
+        "id": "H.12.avg",
+        "text": "Amon-Ra Dawg Your Team averages 100.63 per week this season.",
+        "numbers": [
+          "100.63"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "P.11584.trend": {
+        "id": "P.11584.trend",
+        "text": "Bucky Irving has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Bucky Irving"
+        ]
+      },
+      "P.11604.trend": {
+        "id": "P.11604.trend",
+        "text": "Brock Bowers has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Brock Bowers"
+        ]
+      },
+      "P.12489.trend": {
+        "id": "P.12489.trend",
+        "text": "RJ Harvey has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "RJ Harvey"
+        ]
+      },
+      "P.2216.trend": {
+        "id": "P.2216.trend",
+        "text": "Mike Evans has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Mike Evans"
+        ]
+      },
+      "P.8167.trend": {
+        "id": "P.8167.trend",
+        "text": "Christian Watson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Christian Watson"
+        ]
+      },
+      "P.8183.trend": {
+        "id": "P.8183.trend",
+        "text": "Brock Purdy has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Brock Purdy"
+        ]
+      },
+      "P.TB.trend": {
+        "id": "P.TB.trend",
+        "text": "Tampa Bay Buccaneers has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tampa Bay Buccaneers"
+        ]
+      },
+      "P.3198.trend": {
+        "id": "P.3198.trend",
+        "text": "Derrick Henry has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Derrick Henry"
+        ]
+      },
+      "P.4034.trend": {
+        "id": "P.4034.trend",
+        "text": "Christian McCaffrey has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Christian McCaffrey"
+        ]
+      },
+      "P.6806.trend": {
+        "id": "P.6806.trend",
+        "text": "J.K. Dobbins has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "J.K. Dobbins"
+        ]
+      },
+      "P.8121.trend": {
+        "id": "P.8121.trend",
+        "text": "Romeo Doubs has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Romeo Doubs"
+        ]
+      },
+      "P.9488.trend": {
+        "id": "P.9488.trend",
+        "text": "Jaxon Smith-Njigba has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jaxon Smith-Njigba"
+        ]
+      },
+      "P.DEN.trend": {
+        "id": "P.DEN.trend",
+        "text": "Denver Broncos has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Denver Broncos"
+        ]
+      },
+      "P.11576.trend": {
+        "id": "P.11576.trend",
+        "text": "Braelon Allen has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "P.11632.trend": {
+        "id": "P.11632.trend",
+        "text": "Malik Nabers has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "P.13279.trend": {
+        "id": "P.13279.trend",
+        "text": "Carnell Tate has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Carnell Tate"
+        ]
+      },
+      "P.6804.trend": {
+        "id": "P.6804.trend",
+        "text": "Jordan Love has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jordan Love"
+        ]
+      },
+      "P.8228.trend": {
+        "id": "P.8228.trend",
+        "text": "Jaylen Warren has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jaylen Warren"
+        ]
+      },
+      "P.9484.trend": {
+        "id": "P.9484.trend",
+        "text": "Tucker Kraft has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tucker Kraft"
+        ]
+      },
+      "P.PIT.trend": {
+        "id": "P.PIT.trend",
+        "text": "Pittsburgh Steelers has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Pittsburgh Steelers"
+        ]
+      },
+      "P.11647.trend": {
+        "id": "P.11647.trend",
+        "text": "Kimani Vidal has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Kimani Vidal"
+        ]
+      },
+      "P.3294.trend": {
+        "id": "P.3294.trend",
+        "text": "Dak Prescott has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Dak Prescott"
+        ]
+      },
+      "P.6813.trend": {
+        "id": "P.6813.trend",
+        "text": "Jonathan Taylor has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jonathan Taylor"
+        ]
+      },
+      "P.7002.trend": {
+        "id": "P.7002.trend",
+        "text": "Juwan Johnson has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Juwan Johnson"
+        ]
+      },
+      "P.8137.trend": {
+        "id": "P.8137.trend",
+        "text": "George Pickens has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "George Pickens"
+        ]
+      },
+      "P.9500.trend": {
+        "id": "P.9500.trend",
+        "text": "Josh Downs has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Josh Downs"
+        ]
+      },
+      "P.BAL.trend": {
+        "id": "P.BAL.trend",
+        "text": "Baltimore Ravens has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Baltimore Ravens"
+        ]
+      },
+      "P.11564.trend": {
+        "id": "P.11564.trend",
+        "text": "Drake Maye has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Drake Maye"
+        ]
+      },
+      "P.11637.trend": {
+        "id": "P.11637.trend",
+        "text": "Keon Coleman has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Keon Coleman"
+        ]
+      },
+      "P.6790.trend": {
+        "id": "P.6790.trend",
+        "text": "D'Andre Swift has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "D'Andre Swift"
+        ]
+      },
+      "P.7526.trend": {
+        "id": "P.7526.trend",
+        "text": "Jaylen Waddle has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jaylen Waddle"
+        ]
+      },
+      "P.8131.trend": {
+        "id": "P.8131.trend",
+        "text": "Isaiah Likely has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Isaiah Likely"
+        ]
+      },
+      "P.8132.trend": {
+        "id": "P.8132.trend",
+        "text": "Tyler Allgeier has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tyler Allgeier"
+        ]
+      },
+      "P.SF.trend": {
+        "id": "P.SF.trend",
+        "text": "San Francisco 49ers has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "San Francisco 49ers"
+        ]
+      },
+      "P.10236.trend": {
+        "id": "P.10236.trend",
+        "text": "Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "P.11435.trend": {
+        "id": "P.11435.trend",
+        "text": "Emanuel Wilson has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Emanuel Wilson"
+        ]
+      },
+      "P.12490.trend": {
+        "id": "P.12490.trend",
+        "text": "Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "P.12507.trend": {
+        "id": "P.12507.trend",
+        "text": "Omarion Hampton has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "P.12519.trend": {
+        "id": "P.12519.trend",
+        "text": "Luther Burden has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Luther Burden"
+        ]
+      },
+      "P.5967.trend": {
+        "id": "P.5967.trend",
+        "text": "Tony Pollard has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "P.7523.trend": {
+        "id": "P.7523.trend",
+        "text": "Trevor Lawrence has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Trevor Lawrence"
+        ]
+      },
+      "P.8146.trend": {
+        "id": "P.8146.trend",
+        "text": "Garrett Wilson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "P.NE.trend": {
+        "id": "P.NE.trend",
+        "text": "New England Patriots has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "New England Patriots"
+        ]
+      },
+      "P.12501.trend": {
+        "id": "P.12501.trend",
+        "text": "Matthew Golden has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Matthew Golden"
+        ]
+      },
+      "P.12545.trend": {
+        "id": "P.12545.trend",
+        "text": "Tyler Shough has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tyler Shough"
+        ]
+      },
+      "P.7600.trend": {
+        "id": "P.7600.trend",
+        "text": "Pat Freiermuth has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Pat Freiermuth"
+        ]
+      },
+      "P.8130.trend": {
+        "id": "P.8130.trend",
+        "text": "Trey McBride has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Trey McBride"
+        ]
+      },
+      "P.8150.trend": {
+        "id": "P.8150.trend",
+        "text": "Kyren Williams has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Kyren Williams"
+        ]
+      },
+      "P.9487.trend": {
+        "id": "P.9487.trend",
+        "text": "Parker Washington has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Parker Washington"
+        ]
+      },
+      "P.9997.trend": {
+        "id": "P.9997.trend",
+        "text": "Zay Flowers has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Zay Flowers"
+        ]
+      },
+      "P.IND.trend": {
+        "id": "P.IND.trend",
+        "text": "Indianapolis Colts has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Indianapolis Colts"
+        ]
+      },
+      "P.10235.trend": {
+        "id": "P.10235.trend",
+        "text": "Roschon Johnson has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Roschon Johnson"
+        ]
+      },
+      "P.12514.trend": {
+        "id": "P.12514.trend",
+        "text": "Emeka Egbuka has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Emeka Egbuka"
+        ]
+      },
+      "P.13274.trend": {
+        "id": "P.13274.trend",
+        "text": "Germie Bernard has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Germie Bernard"
+        ]
+      },
+      "P.3271.trend": {
+        "id": "P.3271.trend",
+        "text": "Tyler Higbee has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tyler Higbee"
+        ]
+      },
+      "P.4984.trend": {
+        "id": "P.4984.trend",
+        "text": "Josh Allen has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Josh Allen"
+        ]
+      },
+      "P.6786.trend": {
+        "id": "P.6786.trend",
+        "text": "CeeDee Lamb has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "CeeDee Lamb"
+        ]
+      },
+      "P.CLE.trend": {
+        "id": "P.CLE.trend",
+        "text": "Cleveland Browns has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Cleveland Browns"
+        ]
+      },
+      "P.10232.trend": {
+        "id": "P.10232.trend",
+        "text": "Michael Wilson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Michael Wilson"
+        ]
+      },
+      "P.12474.trend": {
+        "id": "P.12474.trend",
+        "text": "Woody Marks has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Woody Marks"
+        ]
+      },
+      "P.421.trend": {
+        "id": "P.421.trend",
+        "text": "Matthew Stafford has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Matthew Stafford"
+        ]
+      },
+      "P.4217.trend": {
+        "id": "P.4217.trend",
+        "text": "George Kittle has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "George Kittle"
+        ]
+      },
+      "P.7588.trend": {
+        "id": "P.7588.trend",
+        "text": "Javonte Williams has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Javonte Williams"
+        ]
+      },
+      "P.8112.trend": {
+        "id": "P.8112.trend",
+        "text": "Drake London has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Drake London"
+        ]
+      },
+      "P.8138.trend": {
+        "id": "P.8138.trend",
+        "text": "James Cook has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "James Cook"
+        ]
+      },
+      "P.SEA.trend": {
+        "id": "P.SEA.trend",
+        "text": "Seattle Seahawks has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Seattle Seahawks"
+        ]
+      },
+      "P.12506.trend": {
+        "id": "P.12506.trend",
+        "text": "Harold Fannin has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Harold Fannin"
+        ]
+      },
+      "P.13298.trend": {
+        "id": "P.13298.trend",
+        "text": "KC Concepcion has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "KC Concepcion"
+        ]
+      },
+      "P.7611.trend": {
+        "id": "P.7611.trend",
+        "text": "Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "P.9509.trend": {
+        "id": "P.9509.trend",
+        "text": "Bijan Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "P.10213.trend": {
+        "id": "P.10213.trend",
+        "text": "Tre Tucker has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Tre Tucker"
+        ]
+      },
+      "P.12517.trend": {
+        "id": "P.12517.trend",
+        "text": "Colston Loveland has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Colston Loveland"
+        ]
+      },
+      "P.12527.trend": {
+        "id": "P.12527.trend",
+        "text": "Ashton Jeanty has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Ashton Jeanty"
+        ]
+      },
+      "P.8126.trend": {
+        "id": "P.8126.trend",
+        "text": "Wan'Dale Robinson has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Wan'Dale Robinson"
+        ]
+      },
+      "P.8144.trend": {
+        "id": "P.8144.trend",
+        "text": "Chris Olave has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Chris Olave"
+        ]
+      },
+      "P.9480.trend": {
+        "id": "P.9480.trend",
+        "text": "Brenton Strange has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Brenton Strange"
+        ]
+      },
+      "P.96.trend": {
+        "id": "P.96.trend",
+        "text": "Aaron Rodgers has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Aaron Rodgers"
+        ]
+      },
+      "P.9757.trend": {
+        "id": "P.9757.trend",
+        "text": "Kendre Miller has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Kendre Miller"
+        ]
+      },
+      "P.JAX.trend": {
+        "id": "P.JAX.trend",
+        "text": "Jacksonville Jaguars has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Jacksonville Jaguars"
+        ]
+      },
+      "P.11581.trend": {
+        "id": "P.11581.trend",
+        "text": "MarShawn Lloyd has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "MarShawn Lloyd"
+        ]
+      },
+      "P.11620.trend": {
+        "id": "P.11620.trend",
+        "text": "Rome Odunze has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Rome Odunze"
+        ]
+      },
+      "P.1166.trend": {
+        "id": "P.1166.trend",
+        "text": "Kirk Cousins has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Kirk Cousins"
+        ]
+      },
+      "P.12481.trend": {
+        "id": "P.12481.trend",
+        "text": "Cam Skattebo has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "P.3214.trend": {
+        "id": "P.3214.trend",
+        "text": "Hunter Henry has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "3",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Hunter Henry"
+        ]
+      },
+      "P.7569.trend": {
+        "id": "P.7569.trend",
+        "text": "Nico Collins has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "P.9493.trend": {
+        "id": "P.9493.trend",
+        "text": "Puka Nacua has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "3"
+        ],
+        "teams": [],
+        "players": [
+          "Puka Nacua"
+        ]
+      },
+      "T1.sides": {
+        "id": "T1.sides",
+        "text": "Pukancun on 3 traded Omarion Hampton and Tony Pollard to Amon-Ra Dawg Your Team for Jacory Croskey-Merritt and David Montgomery.",
+        "numbers": [],
+        "teams": [
+          "Pukancun on 3",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Omarion Hampton",
+          "Jacory Croskey-Merritt",
+          "David Montgomery",
+          "Tony Pollard"
+        ]
+      },
+      "T1.4.got.12533": {
+        "id": "T1.4.got.12533",
+        "text": "Pukancun on 3 got Jacory Croskey-Merritt: 0 this week, 41.4 this season. Jacory Croskey-Merritt was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "41.4"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.4.got.5892": {
+        "id": "T1.4.got.5892",
+        "text": "Pukancun on 3 got David Montgomery: 0 this week, 42 this season. David Montgomery was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "42"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.4.gave.12507": {
+        "id": "T1.4.gave.12507",
+        "text": "Pukancun on 3 gave Omarion Hampton: 5.9 this week, 53 this season, position rank 24 of 31. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "5.9",
+          "53",
+          "24",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.4.gave.5967": {
+        "id": "T1.4.gave.5967",
+        "text": "Pukancun on 3 gave Tony Pollard: 7.6 this week, 47.3 this season, position rank 20 of 31. Tony Pollard has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "7.6",
+          "47.3",
+          "20",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.12.got.12507": {
+        "id": "T1.12.got.12507",
+        "text": "Amon-Ra Dawg Your Team got Omarion Hampton: 5.9 this week, 53 this season, position rank 24 of 31. Omarion Hampton has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "5.9",
+          "53",
+          "24",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12.got.5967": {
+        "id": "T1.12.got.5967",
+        "text": "Amon-Ra Dawg Your Team got Tony Pollard: 7.6 this week, 47.3 this season, position rank 20 of 31. Tony Pollard has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "7.6",
+          "47.3",
+          "20",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.12.gave.12533": {
+        "id": "T1.12.gave.12533",
+        "text": "Amon-Ra Dawg Your Team gave Jacory Croskey-Merritt: 0 this week, 41.4 this season. Jacory Croskey-Merritt was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "41.4"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.12.gave.5892": {
+        "id": "T1.12.gave.5892",
+        "text": "Amon-Ra Dawg Your Team gave David Montgomery: 0 this week, 42 this season. David Montgomery was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "42"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.4.need": {
+        "id": "T1.4.need",
+        "text": "Pukancun on 3 is 1-11, 12th of 12, with 5 RB after the trade and 0 open roster spots.",
+        "numbers": [
+          "5",
+          "1",
+          "11",
+          "1-11",
+          "12",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T1.4.swing": {
+        "id": "T1.4.swing",
+        "text": "The players Pukancun on 3 got and started scored 0 this week; the players it gave that Amon-Ra Dawg Your Team started scored 13.5. The gap is 13.5, above the margin of 12.95 in its matchup.",
+        "numbers": [
+          "0",
+          "13.5",
+          "13.5",
+          "12.95"
+        ],
+        "teams": [
+          "Pukancun on 3",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Omarion Hampton",
+          "Tony Pollard"
+        ]
+      },
+      "T1.12.need": {
+        "id": "T1.12.need",
+        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB after the trade and 1 open roster spot.",
+        "numbers": [
+          "5",
+          "4",
+          "8",
+          "4-8",
+          "9",
+          "12",
+          "1"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T1.12.swing": {
+        "id": "T1.12.swing",
+        "text": "The players Amon-Ra Dawg Your Team got and started scored 13.5 this week; the players it gave that Pukancun on 3 started scored 0. In its matchup, that is a gap of 13.5 against a margin of 9.51, not enough to change the result.",
+        "numbers": [
+          "13.5",
+          "0",
+          "13.5",
+          "9.51"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team",
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Omarion Hampton",
+          "Tony Pollard"
+        ]
+      },
+      "T2.sides": {
+        "id": "T2.sides",
+        "text": "To Infinity and Bijan traded Dalton Kincaid to Amon-Ra Dawg Your Team for Kenyon Sadiq.",
+        "numbers": [],
+        "teams": [
+          "To Infinity and Bijan",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Dalton Kincaid",
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.7.got.13330": {
+        "id": "T2.7.got.13330",
+        "text": "To Infinity and Bijan got Kenyon Sadiq: 1.7 this week, 33.6 this season. Kenyon Sadiq was listed Questionable on the final NFL injury report before his game this week. Kenyon Sadiq has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "1.7",
+          "33.6",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.7.gave.10236": {
+        "id": "T2.7.gave.10236",
+        "text": "To Infinity and Bijan gave Dalton Kincaid: 7.3 this week, 49 this season, position rank 9 of 15. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "7.3",
+          "49",
+          "9",
+          "15",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.12.got.10236": {
+        "id": "T2.12.got.10236",
+        "text": "Amon-Ra Dawg Your Team got Dalton Kincaid: 7.3 this week, 49 this season, position rank 9 of 15. Dalton Kincaid has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "7.3",
+          "49",
+          "9",
+          "15",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.12.gave.13330": {
+        "id": "T2.12.gave.13330",
+        "text": "Amon-Ra Dawg Your Team gave Kenyon Sadiq: 1.7 this week, 33.6 this season. Kenyon Sadiq was listed Questionable on the final NFL injury report before his game this week. Kenyon Sadiq has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "1.7",
+          "33.6",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.7.need": {
+        "id": "T2.7.need",
+        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 2 TE after the trade and 0 open roster spots.",
+        "numbers": [
+          "2",
+          "4",
+          "8",
+          "4-8",
+          "11",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T2.7.swing": {
+        "id": "T2.7.swing",
+        "text": "The players To Infinity and Bijan got and started scored 0 this week; the players it gave that Amon-Ra Dawg Your Team started scored 7.3. In its matchup, that is a gap of 7.3 against a margin of 66.4, not enough to change the result.",
+        "numbers": [
+          "0",
+          "7.3",
+          "7.3",
+          "66.4"
+        ],
+        "teams": [
+          "To Infinity and Bijan",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.12.need": {
+        "id": "T2.12.need",
+        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 2 TE after the trade and 1 open roster spot.",
+        "numbers": [
+          "2",
+          "4",
+          "8",
+          "4-8",
+          "9",
+          "12",
+          "1"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T2.12.swing": {
+        "id": "T2.12.swing",
+        "text": "The players Amon-Ra Dawg Your Team got and started scored 7.3 this week; the players it gave that To Infinity and Bijan started scored 0. In its matchup, that is a gap of 7.3 against a margin of 9.51, not enough to change the result.",
+        "numbers": [
+          "7.3",
+          "0",
+          "7.3",
+          "9.51"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team",
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T3.sides": {
+        "id": "T3.sides",
+        "text": "Pukancun on 3 traded Ladd McConkey and Rhamondre Stevenson to To Infinity and Bijan for Cam Skattebo and Nico Collins.",
+        "numbers": [],
+        "teams": [
+          "Pukancun on 3",
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Ladd McConkey",
+          "Cam Skattebo",
+          "Nico Collins",
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.4.got.12481": {
+        "id": "T3.4.got.12481",
+        "text": "Pukancun on 3 got Cam Skattebo: 0 this week, 43.3 this season, position rank 31 of 31. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "0",
+          "43.3",
+          "31",
+          "31",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.4.got.7569": {
+        "id": "T3.4.got.7569",
+        "text": "Pukancun on 3 got Nico Collins: 9.4 this week, 62.5 this season, position rank 23 of 38. Nico Collins has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "9.4",
+          "62.5",
+          "23",
+          "38",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.4.gave.11635": {
+        "id": "T3.4.gave.11635",
+        "text": "Pukancun on 3 gave Ladd McConkey: 2.2 this week, 32.5 this season, position rank 38 of 38.",
+        "numbers": [
+          "2.2",
+          "32.5",
+          "38",
+          "38"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.4.gave.7611": {
+        "id": "T3.4.gave.7611",
+        "text": "Pukancun on 3 gave Rhamondre Stevenson: 3.6 this week, 56.9 this season, position rank 29 of 31. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "3.6",
+          "56.9",
+          "29",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7.got.11635": {
+        "id": "T3.7.got.11635",
+        "text": "To Infinity and Bijan got Ladd McConkey: 2.2 this week, 32.5 this season, position rank 38 of 38.",
+        "numbers": [
+          "2.2",
+          "32.5",
+          "38",
+          "38"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.7.got.7611": {
+        "id": "T3.7.got.7611",
+        "text": "To Infinity and Bijan got Rhamondre Stevenson: 3.6 this week, 56.9 this season, position rank 29 of 31. Rhamondre Stevenson has beaten projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "3.6",
+          "56.9",
+          "29",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7.gave.12481": {
+        "id": "T3.7.gave.12481",
+        "text": "To Infinity and Bijan gave Cam Skattebo: 0 this week, 43.3 this season, position rank 31 of 31. Cam Skattebo has missed projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "0",
+          "43.3",
+          "31",
+          "31",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.7.gave.7569": {
+        "id": "T3.7.gave.7569",
+        "text": "To Infinity and Bijan gave Nico Collins: 9.4 this week, 62.5 this season, position rank 23 of 38. Nico Collins has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "9.4",
+          "62.5",
+          "23",
+          "38",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.4.need": {
+        "id": "T3.4.need",
+        "text": "Pukancun on 3 is 1-11, 12th of 12, with 5 RB and 5 WR after the trade and 0 open roster spots.",
+        "numbers": [
+          "5",
+          "5",
+          "1",
+          "11",
+          "1-11",
+          "12",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T3.4.swing": {
+        "id": "T3.4.swing",
+        "text": "The players Pukancun on 3 got and started scored 9.4 this week; the players it gave that To Infinity and Bijan started scored 5.8. In its matchup, that is a gap of 3.6 against a margin of 12.95, not enough to change the result.",
+        "numbers": [
+          "9.4",
+          "5.8",
+          "3.6",
+          "12.95"
+        ],
+        "teams": [
+          "Pukancun on 3",
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Cam Skattebo",
+          "Nico Collins",
+          "Ladd McConkey",
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.7.need": {
+        "id": "T3.7.need",
+        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 3 RB and 7 WR after the trade and 0 open roster spots.",
+        "numbers": [
+          "3",
+          "7",
+          "4",
+          "8",
+          "4-8",
+          "11",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T3.7.swing": {
+        "id": "T3.7.swing",
+        "text": "The players To Infinity and Bijan got and started scored 5.8 this week; the players it gave that Pukancun on 3 started scored 9.4. In its matchup, that is a gap of 3.6 against a margin of 66.4, not enough to change the result.",
+        "numbers": [
+          "5.8",
+          "9.4",
+          "3.6",
+          "66.4"
+        ],
+        "teams": [
+          "To Infinity and Bijan",
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Ladd McConkey",
+          "Rhamondre Stevenson",
+          "Cam Skattebo",
+          "Nico Collins"
+        ]
+      },
+      "T4.sides": {
+        "id": "T4.sides",
+        "text": "Bo Girds traded Patrick Mahomes and Brian Robinson to To Infinity and Bijan for Lamar Jackson.",
+        "numbers": [],
+        "teams": [
+          "Bo Girds",
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Patrick Mahomes",
+          "Lamar Jackson",
+          "Brian Robinson"
+        ]
+      },
+      "T4.6.got.4881": {
+        "id": "T4.6.got.4881",
+        "text": "Bo Girds got Lamar Jackson: 0 this week, 80.08 this season. Lamar Jackson was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "80.08"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.6.gave.4046": {
+        "id": "T4.6.gave.4046",
+        "text": "Bo Girds gave Patrick Mahomes: 11.48 this week, 97.06 this season, position rank 12 of 12.",
+        "numbers": [
+          "11.48",
+          "97.06",
+          "12",
+          "12"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.6.gave.8154": {
+        "id": "T4.6.gave.8154",
+        "text": "Bo Girds gave Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "50.6",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.7.got.4046": {
+        "id": "T4.7.got.4046",
+        "text": "To Infinity and Bijan got Patrick Mahomes: 11.48 this week, 97.06 this season, position rank 12 of 12.",
+        "numbers": [
+          "11.48",
+          "97.06",
+          "12",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.7.got.8154": {
+        "id": "T4.7.got.8154",
+        "text": "To Infinity and Bijan got Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "50.6",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.7.gave.4881": {
+        "id": "T4.7.gave.4881",
+        "text": "To Infinity and Bijan gave Lamar Jackson: 0 this week, 80.08 this season. Lamar Jackson was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "80.08"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.6.need": {
+        "id": "T4.6.need",
+        "text": "Bo Girds is 8-4, 3rd of 12, with 2 QB and 4 RB after the trade and 0 open roster spots.",
+        "numbers": [
+          "2",
+          "4",
+          "8",
+          "4",
+          "8-4",
+          "3",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": []
+      },
+      "T4.6.swing": {
+        "id": "T4.6.swing",
+        "text": "The players Bo Girds got and started scored 0 this week; the players it gave that To Infinity and Bijan started scored 11.48. The gap is 11.48, above the margin of 5.34 in its matchup.",
+        "numbers": [
+          "0",
+          "11.48",
+          "11.48",
+          "5.34"
+        ],
+        "teams": [
+          "Bo Girds",
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.7.need": {
+        "id": "T4.7.need",
+        "text": "To Infinity and Bijan is 4-8, 11th of 12, with 2 QB and 3 RB after the trade and 0 open roster spots.",
+        "numbers": [
+          "2",
+          "3",
+          "4",
+          "8",
+          "4-8",
+          "11",
+          "12",
+          "0"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "T4.7.swing": {
+        "id": "T4.7.swing",
+        "text": "The players To Infinity and Bijan got and started scored 11.48 this week; the players it gave that Bo Girds started scored 0. In its matchup, that is a gap of 11.48 against a margin of 66.4, not enough to change the result.",
+        "numbers": [
+          "11.48",
+          "0",
+          "11.48",
+          "66.4"
+        ],
+        "teams": [
+          "To Infinity and Bijan",
+          "Bo Girds"
+        ],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T5.sides": {
+        "id": "T5.sides",
+        "text": "Unsolicited Dak Picks traded Bhayshul Tuten and Garrett Wilson to Amon-Ra Dawg Your Team for Devaughn Vele and Josh Jacobs.",
+        "numbers": [],
+        "teams": [
+          "Unsolicited Dak Picks",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Devaughn Vele",
+          "Bhayshul Tuten",
+          "Josh Jacobs",
+          "Garrett Wilson"
+        ]
+      },
+      "T5.11.got.11834": {
+        "id": "T5.11.got.11834",
+        "text": "Unsolicited Dak Picks got Devaughn Vele: 5.7 this week, 55.4 this season. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "5.7",
+          "55.4",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.11.got.5850": {
+        "id": "T5.11.got.5850",
+        "text": "Unsolicited Dak Picks got Josh Jacobs: 0 this week, 0 this season.",
+        "numbers": [
+          "0",
+          "0"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Josh Jacobs"
+        ]
+      },
+      "T5.11.gave.12490": {
+        "id": "T5.11.gave.12490",
+        "text": "Unsolicited Dak Picks gave Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "22.7",
+          "81.9",
+          "4",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.11.gave.8146": {
+        "id": "T5.11.gave.8146",
+        "text": "Unsolicited Dak Picks gave Garrett Wilson: 6.4 this week, 77.3 this season, position rank 28 of 38. Garrett Wilson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "6.4",
+          "77.3",
+          "28",
+          "38",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.12.got.12490": {
+        "id": "T5.12.got.12490",
+        "text": "Amon-Ra Dawg Your Team got Bhayshul Tuten: 22.7 this week, 81.9 this season, position rank 4 of 31. Bhayshul Tuten has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "22.7",
+          "81.9",
+          "4",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.12.got.8146": {
+        "id": "T5.12.got.8146",
+        "text": "Amon-Ra Dawg Your Team got Garrett Wilson: 6.4 this week, 77.3 this season, position rank 28 of 38. Garrett Wilson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "6.4",
+          "77.3",
+          "28",
+          "38",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.12.gave.11834": {
+        "id": "T5.12.gave.11834",
+        "text": "Amon-Ra Dawg Your Team gave Devaughn Vele: 5.7 this week, 55.4 this season. Devaughn Vele has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "5.7",
+          "55.4",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.12.gave.5850": {
+        "id": "T5.12.gave.5850",
+        "text": "Amon-Ra Dawg Your Team gave Josh Jacobs: 0 this week, 0 this season.",
+        "numbers": [
+          "0",
+          "0"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Josh Jacobs"
+        ]
+      },
+      "T5.11.need": {
+        "id": "T5.11.need",
+        "text": "Unsolicited Dak Picks is 4-8, 10th of 12, with 6 RB and 4 WR after the trade and 1 open roster spot.",
+        "numbers": [
+          "6",
+          "4",
+          "4",
+          "8",
+          "4-8",
+          "10",
+          "12",
+          "1"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "T5.11.swing": {
+        "id": "T5.11.swing",
+        "text": "The players Unsolicited Dak Picks got and started scored 0 this week; the players it gave that Amon-Ra Dawg Your Team started scored 29.1. In its matchup, that is a gap of 29.1 against a margin of 38.82, not enough to change the result.",
+        "numbers": [
+          "0",
+          "29.1",
+          "29.1",
+          "38.82"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Bhayshul Tuten",
+          "Garrett Wilson"
+        ]
+      },
+      "T5.12.need": {
+        "id": "T5.12.need",
+        "text": "Amon-Ra Dawg Your Team is 4-8, 9th of 12, with 5 RB and 5 WR after the trade and 1 open roster spot.",
+        "numbers": [
+          "5",
+          "5",
+          "4",
+          "8",
+          "4-8",
+          "9",
+          "12",
+          "1"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "T5.12.swing": {
+        "id": "T5.12.swing",
+        "text": "The players Amon-Ra Dawg Your Team got and started scored 29.1 this week; the players it gave that Unsolicited Dak Picks started scored 0. In its matchup, that is a gap of 29.1 against a margin of 9.51, not enough to change the result.",
+        "numbers": [
+          "29.1",
+          "0",
+          "29.1",
+          "9.51"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team",
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Bhayshul Tuten",
+          "Garrett Wilson"
+        ]
+      },
+      "T6.sides": {
+        "id": "T6.sides",
+        "text": "To Infinity and Bijan traded Marvin Harrison, Brian Robinson and Bijan Robinson to Return of T Mac for Braelon Allen, Malik Nabers, Jared Goff and Breece Hall.",
+        "numbers": [],
+        "teams": [
+          "To Infinity and Bijan",
+          "Return of T Mac"
+        ],
+        "players": [
+          "Braelon Allen",
+          "Marvin Harrison",
+          "Malik Nabers",
+          "Jared Goff",
+          "Brian Robinson",
+          "Breece Hall",
+          "Bijan Robinson"
+        ]
+      },
+      "T6.7.got.11576": {
+        "id": "T6.7.got.11576",
+        "text": "To Infinity and Bijan got Braelon Allen: 11.4 this week, 51.4 this season, position rank 15 of 31. Braelon Allen has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "11.4",
+          "51.4",
+          "15",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.7.got.11632": {
+        "id": "T6.7.got.11632",
+        "text": "To Infinity and Bijan got Malik Nabers: 22.5 this week, 81.9 this season, position rank 2 of 38. Malik Nabers has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "22.5",
+          "81.9",
+          "2",
+          "38",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.7.got.3163": {
+        "id": "T6.7.got.3163",
+        "text": "To Infinity and Bijan got Jared Goff: 0 this week, 114 this season.",
+        "numbers": [
+          "0",
+          "114"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.7.got.8155": {
+        "id": "T6.7.got.8155",
+        "text": "To Infinity and Bijan got Breece Hall: 0 this week, 37.5 this season. Breece Hall was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "37.5"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.7.gave.11628": {
+        "id": "T6.7.gave.11628",
+        "text": "To Infinity and Bijan gave Marvin Harrison: 4.9 this week, 21.9 this season, position rank 33 of 38.",
+        "numbers": [
+          "4.9",
+          "21.9",
+          "33",
+          "38"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.7.gave.8154": {
+        "id": "T6.7.gave.8154",
+        "text": "To Infinity and Bijan gave Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "50.6",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.7.gave.9509": {
+        "id": "T6.7.gave.9509",
+        "text": "To Infinity and Bijan gave Bijan Robinson: 6.3 this week, 116.5 this season, position rank 22 of 31. Bijan Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "6.3",
+          "116.5",
+          "22",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.8.got.11628": {
+        "id": "T6.8.got.11628",
+        "text": "Return of T Mac got Marvin Harrison: 4.9 this week, 21.9 this season, position rank 33 of 38.",
+        "numbers": [
+          "4.9",
+          "21.9",
+          "33",
+          "38"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.8.got.8154": {
+        "id": "T6.8.got.8154",
+        "text": "Return of T Mac got Brian Robinson: 2 this week, 50.6 this season. Brian Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "2",
+          "50.6",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8.got.9509": {
+        "id": "T6.8.got.9509",
+        "text": "Return of T Mac got Bijan Robinson: 6.3 this week, 116.5 this season, position rank 22 of 31. Bijan Robinson has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "6.3",
+          "116.5",
+          "22",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.8.gave.11576": {
+        "id": "T6.8.gave.11576",
+        "text": "Return of T Mac gave Braelon Allen: 11.4 this week, 51.4 this season, position rank 15 of 31. Braelon Allen has missed projection in 2 of the last 3 weeks.",
+        "numbers": [
+          "11.4",
+          "51.4",
+          "15",
+          "31",
+          "2",
+          "3"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.8.gave.11632": {
+        "id": "T6.8.gave.11632",
+        "text": "Return of T Mac gave Malik Nabers: 22.5 this week, 81.9 this season, position rank 2 of 38. Malik Nabers has beaten projection in 3 of the last 3 weeks.",
+        "numbers": [
+          "22.5",
+          "81.9",
+          "2",
+          "38",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.8.gave.3163": {
+        "id": "T6.8.gave.3163",
+        "text": "Return of T Mac gave Jared Goff: 0 this week, 114 this season.",
+        "numbers": [
+          "0",
+          "114"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.8.gave.8155": {
+        "id": "T6.8.gave.8155",
+        "text": "Return of T Mac gave Breece Hall: 0 this week, 37.5 this season. Breece Hall was listed Out on the final NFL injury report before his game this week.",
+        "numbers": [
+          "0",
+          "37.5"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "D.12501": {
+        "id": "D.12501",
+        "text": "Matthew Golden dropped 3 of 13 targets this week.",
+        "numbers": [
+          "3",
+          "13"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Matthew Golden"
+        ]
+      },
+      "D.12501.value": {
+        "id": "D.12501.value",
+        "text": "Matthew Golden's drops were worth about 14.2 points by the drop value method, with 1 in the end zone.",
+        "numbers": [
+          "14.2",
+          "1"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Matthew Golden"
+        ]
+      },
+      "D.8144": {
+        "id": "D.8144",
+        "text": "Chris Olave dropped 3 of 7 targets this week.",
+        "numbers": [
+          "3",
+          "7"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Chris Olave"
+        ]
+      },
+      "D.8144.value": {
+        "id": "D.8144.value",
+        "text": "Chris Olave's drops were worth about 3.1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "3.1",
+          "0"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Chris Olave"
+        ]
+      },
+      "D.6786": {
+        "id": "D.6786",
+        "text": "CeeDee Lamb dropped 2 of 18 targets this week.",
+        "numbers": [
+          "2",
+          "18"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "CeeDee Lamb"
+        ]
+      },
+      "D.6786.value": {
+        "id": "D.6786.value",
+        "text": "CeeDee Lamb's drops were worth about 2.5 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "2.5",
+          "0"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "CeeDee Lamb"
+        ]
+      },
+      "D.8150": {
+        "id": "D.8150",
+        "text": "Kyren Williams dropped 2 of 6 targets this week.",
+        "numbers": [
+          "2",
+          "6"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Kyren Williams"
+        ]
+      },
+      "D.8150.value": {
+        "id": "D.8150.value",
+        "text": "Kyren Williams's drops were worth about 1.4 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1.4",
+          "0"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Kyren Williams"
+        ]
+      },
+      "D.8167": {
+        "id": "D.8167",
+        "text": "Christian Watson dropped 1 of 8 targets this week.",
+        "numbers": [
+          "1",
+          "8"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Christian Watson"
+        ]
+      },
+      "D.8167.value": {
+        "id": "D.8167.value",
+        "text": "Christian Watson's drops were worth about 9.1 points by the drop value method, with 1 in the end zone.",
+        "numbers": [
+          "9.1",
+          "1"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Christian Watson"
+        ]
+      },
+      "D.9493": {
+        "id": "D.9493",
+        "text": "Puka Nacua dropped 1 of 7 targets this week.",
+        "numbers": [
+          "1",
+          "7"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Puka Nacua"
+        ]
+      },
+      "D.9493.value": {
+        "id": "D.9493.value",
+        "text": "Puka Nacua's drops were worth about 3.8 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "3.8",
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Puka Nacua"
+        ]
+      },
+      "D.8137": {
+        "id": "D.8137",
+        "text": "George Pickens dropped 1 of 11 targets this week.",
+        "numbers": [
+          "1",
+          "11"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "George Pickens"
+        ]
+      },
+      "D.8137.value": {
+        "id": "D.8137.value",
+        "text": "George Pickens's drops were worth about 2.4 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "2.4",
+          "0"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "George Pickens"
+        ]
+      },
+      "D.9500": {
+        "id": "D.9500",
+        "text": "Josh Downs dropped 1 of 8 targets this week.",
+        "numbers": [
+          "1",
+          "8"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Josh Downs"
+        ]
+      },
+      "D.9500.value": {
+        "id": "D.9500.value",
+        "text": "Josh Downs's drops were worth about 1.2 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1.2",
+          "0"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Josh Downs"
+        ]
+      },
+      "D.7600": {
+        "id": "D.7600",
+        "text": "Pat Freiermuth dropped 1 of 3 targets this week.",
+        "numbers": [
+          "1",
+          "3"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Pat Freiermuth"
+        ]
+      },
+      "D.7600.value": {
+        "id": "D.7600.value",
+        "text": "Pat Freiermuth's drops were worth about 1.2 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1.2",
+          "0"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Pat Freiermuth"
+        ]
+      },
+      "D.12527": {
+        "id": "D.12527",
+        "text": "Ashton Jeanty dropped 1 of 6 targets this week.",
+        "numbers": [
+          "1",
+          "6"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Ashton Jeanty"
+        ]
+      },
+      "D.12527.value": {
+        "id": "D.12527.value",
+        "text": "Ashton Jeanty's drops were worth about 1.1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1.1",
+          "0"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Ashton Jeanty"
+        ]
+      },
+      "D.11646": {
+        "id": "D.11646",
+        "text": "Jalen Coker dropped 1 of 13 targets this week.",
+        "numbers": [
+          "1",
+          "13"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Jalen Coker"
+        ]
+      },
+      "D.11646.value": {
+        "id": "D.11646.value",
+        "text": "Jalen Coker's drops were worth about 1.1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1.1",
+          "0"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Jalen Coker"
+        ]
+      },
+      "D.5859": {
+        "id": "D.5859",
+        "text": "A.J. Brown dropped 1 of 10 targets this week.",
+        "numbers": [
+          "1",
+          "10"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "A.J. Brown"
+        ]
+      },
+      "D.5859.value": {
+        "id": "D.5859.value",
+        "text": "A.J. Brown's drops were worth about 1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1",
+          "0"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "A.J. Brown"
+        ]
+      },
+      "D.9487": {
+        "id": "D.9487",
+        "text": "Parker Washington dropped 1 of 11 targets this week.",
+        "numbers": [
+          "1",
+          "11"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Parker Washington"
+        ]
+      },
+      "D.9487.value": {
+        "id": "D.9487.value",
+        "text": "Parker Washington's drops were worth about 1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1",
+          "0"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Parker Washington"
+        ]
+      },
+      "D.12526": {
+        "id": "D.12526",
+        "text": "Tetairoa McMillan dropped 1 of 9 targets this week.",
+        "numbers": [
+          "1",
+          "9"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Tetairoa McMillan"
+        ]
+      },
+      "D.12526.value": {
+        "id": "D.12526.value",
+        "text": "Tetairoa McMillan's drops were worth about 1 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "1",
+          "0"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Tetairoa McMillan"
+        ]
+      },
+      "D.3214": {
+        "id": "D.3214",
+        "text": "Hunter Henry dropped 1 of 5 targets this week.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Hunter Henry"
+        ]
+      },
+      "D.3214.value": {
+        "id": "D.3214.value",
+        "text": "Hunter Henry's drops were worth about 0.9 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "0.9",
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Hunter Henry"
+        ]
+      },
+      "D.10213": {
+        "id": "D.10213",
+        "text": "Tre Tucker dropped 1 of 7 targets this week.",
+        "numbers": [
+          "1",
+          "7"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Tre Tucker"
+        ]
+      },
+      "D.10213.value": {
+        "id": "D.10213.value",
+        "text": "Tre Tucker's drops were worth about 0.8 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "0.8",
+          "0"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Tre Tucker"
+        ]
+      },
+      "D.8129": {
+        "id": "D.8129",
+        "text": "Dameon Pierce dropped 1 of 5 targets this week.",
+        "numbers": [
+          "1",
+          "5"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Dameon Pierce"
+        ]
+      },
+      "D.8129.value": {
+        "id": "D.8129.value",
+        "text": "Dameon Pierce's drops were worth about 0.5 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "0.5",
+          "0"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Dameon Pierce"
+        ]
+      },
+      "D.11581": {
+        "id": "D.11581",
+        "text": "MarShawn Lloyd dropped 1 of 1 targets this week.",
+        "numbers": [
+          "1",
+          "1"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "MarShawn Lloyd"
+        ]
+      },
+      "D.11581.value": {
+        "id": "D.11581.value",
+        "text": "MarShawn Lloyd's drops were worth about 0.5 points by the drop value method, with 0 in the end zone.",
+        "numbers": [
+          "0.5",
+          "0"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "MarShawn Lloyd"
+        ]
+      },
+      "M4.dropswing": {
+        "id": "M4.dropswing",
+        "text": "Bo Girds's starters dropped 7 passes worth about 17.8, at least the margin of 5.34.",
+        "numbers": [
+          "7",
+          "17.8",
+          "5.34"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Matthew Golden",
+          "Kyren Williams",
+          "Pat Freiermuth",
+          "Parker Washington"
+        ]
+      },
+      "W.drops": {
+        "id": "W.drops",
+        "text": "Most drops this week: Matthew Golden (Bo Girds), 3 drops; Chris Olave (All You Need Is Love), 3 drops; CeeDee Lamb (behold the lamb), 2 drops.",
+        "numbers": [
+          "3",
+          "3",
+          "2"
+        ],
+        "teams": [
+          "Bo Girds",
+          "All You Need Is Love",
+          "behold the lamb"
+        ],
+        "players": [
+          "Matthew Golden",
+          "Chris Olave",
+          "CeeDee Lamb"
+        ]
+      },
+      "I.2216.pregame": {
+        "id": "I.2216.pregame",
+        "text": "Mike Evans was listed Questionable on the final NFL injury report before his game this week.",
+        "numbers": [],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Mike Evans"
+        ]
+      },
+      "I.2216.history": {
+        "id": "I.2216.history",
+        "text": "Mike Evans has been on the NFL injury report 3 weeks.",
+        "numbers": [
+          "3"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Mike Evans"
+        ]
+      },
+      "I.2449.pregame": {
+        "id": "I.2449.pregame",
+        "text": "Stefon Diggs was listed Questionable on the final NFL injury report before his game this week.",
+        "numbers": [],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Stefon Diggs"
+        ]
+      },
+      "I.2449.history": {
+        "id": "I.2449.history",
+        "text": "Stefon Diggs has been on the NFL injury report 2 weeks.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Stefon Diggs"
+        ]
+      },
+      "I.13279.history": {
+        "id": "I.13279.history",
+        "text": "Carnell Tate was on the NFL injury report in 1 earlier week this season and plays this week.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Carnell Tate"
+        ]
+      },
+      "I.5859.pregame": {
+        "id": "I.5859.pregame",
+        "text": "A.J. Brown was listed Questionable on the final NFL injury report before his game this week.",
+        "numbers": [],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "A.J. Brown"
+        ]
+      },
+      "I.5859.history": {
+        "id": "I.5859.history",
+        "text": "A.J. Brown has been on the NFL injury report 1 week.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "A.J. Brown"
+        ]
+      },
+      "I.7600.pregame": {
+        "id": "I.7600.pregame",
+        "text": "Pat Freiermuth was listed Questionable on the final NFL injury report before his game this week.",
+        "numbers": [],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Pat Freiermuth"
+        ]
+      },
+      "I.7600.history": {
+        "id": "I.7600.history",
+        "text": "Pat Freiermuth has been on the NFL injury report 1 week.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Pat Freiermuth"
+        ]
+      },
+      "I.9997.history": {
+        "id": "I.9997.history",
+        "text": "Zay Flowers was on the NFL injury report in 4 earlier weeks this season and plays this week.",
+        "numbers": [
+          "4"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Zay Flowers"
+        ]
+      },
+      "I.1479.history": {
+        "id": "I.1479.history",
+        "text": "Keenan Allen was on the NFL injury report in 2 earlier weeks this season and plays this week.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Keenan Allen"
+        ]
+      },
+      "I.11635.history": {
+        "id": "I.11635.history",
+        "text": "Ladd McConkey was on the NFL injury report in 3 earlier weeks this season and plays this week.",
+        "numbers": [
+          "3"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "I.5927.history": {
+        "id": "I.5927.history",
+        "text": "Terry McLaurin was on the NFL injury report in 2 earlier weeks this season and plays this week.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Terry McLaurin"
+        ]
+      },
+      "I.7611.history": {
+        "id": "I.7611.history",
+        "text": "Rhamondre Stevenson was on the NFL injury report in 1 earlier week this season and plays this week.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "I.12527.history": {
+        "id": "I.12527.history",
+        "text": "Ashton Jeanty was on the NFL injury report in 1 earlier week this season and plays this week.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Ashton Jeanty"
+        ]
+      },
+      "I.8144.pregame": {
+        "id": "I.8144.pregame",
+        "text": "Chris Olave was listed Questionable on the final NFL injury report before his game this week.",
+        "numbers": [],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Chris Olave"
+        ]
+      },
+      "I.8144.history": {
+        "id": "I.8144.history",
+        "text": "Chris Olave has been on the NFL injury report 2 weeks.",
+        "numbers": [
+          "2"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Chris Olave"
+        ]
       }
     },
     "chapters": [
@@ -7299,8 +11488,13 @@
           "M4.move.CLE",
           "M4.move.7600",
           "M4.move.IND",
+          "M4.move.1479",
+          "M4.move.8129",
+          "M4.move.13274",
+          "M4.move.10235",
           "M4.upset",
           "M4.records",
+          "M4.dropswing",
           "PICK",
           "S.3",
           "S.8",
@@ -7321,7 +11515,29 @@
           "RANK.4984",
           "RANK.6786",
           "RANK.8129",
-          "RANK.CLE"
+          "RANK.CLE",
+          "H.6.streak",
+          "H.6.trend",
+          "H.10.trend",
+          "H.6.avg",
+          "P.12501.trend",
+          "P.12545.trend",
+          "D.12501",
+          "D.12501.value",
+          "D.6786",
+          "D.6786.value",
+          "D.8150",
+          "D.8150.value",
+          "D.7600",
+          "D.7600.value",
+          "D.9487",
+          "D.9487.value",
+          "D.8129",
+          "D.8129.value",
+          "I.7600.pregame",
+          "I.7600.history",
+          "I.9997.history",
+          "I.1479.history"
         ],
         "scope_teams": [
           "Bo Girds",
@@ -7360,7 +11576,8 @@
           "Cleveland Browns"
         ],
         "min_sentences": 4,
-        "max_sentences": 6
+        "max_sentences": 6,
+        "grade_keys": []
       },
       {
         "key": "game_changer",
@@ -7368,78 +11585,98 @@
         "fact_ids": [
           "AW.game_changer",
           "AW.game_changer.news",
-          "M6.result",
-          "M6.top.2",
-          "M6.top.4",
-          "M6.starter.2.10213",
-          "M6.starter.2.12517",
-          "M6.starter.2.12527",
-          "M6.starter.2.8126",
-          "M6.starter.2.8144",
-          "M6.starter.2.9480",
-          "M6.starter.2.96",
-          "M6.starter.2.9757",
-          "M6.starter.2.JAX",
-          "M6.starter.4.11581",
-          "M6.starter.4.11620",
-          "M6.starter.4.11624",
-          "M6.starter.4.1166",
-          "M6.starter.4.12481",
-          "M6.starter.4.3214",
-          "M6.starter.4.7569",
-          "M6.starter.4.9493",
-          "M6.starter.4.KC",
-          "M6.driver.10213",
-          "M6.swing.10213",
-          "M6.swing.96",
-          "M6.swing.12517",
-          "M6.swing.12527",
-          "M6.move.3214",
-          "M6.move.1166",
-          "M6.move.12481",
-          "M6.move.7569",
-          "M6.move.96",
-          "M6.records",
-          "RANK.10213"
+          "M4.result",
+          "M4.top.6",
+          "M4.top.10",
+          "M4.starter.6.12501",
+          "M4.starter.6.12545",
+          "M4.starter.6.7600",
+          "M4.starter.6.8130",
+          "M4.starter.6.8150",
+          "M4.starter.6.8151",
+          "M4.starter.6.9487",
+          "M4.starter.6.9997",
+          "M4.starter.6.IND",
+          "M4.starter.10.10235",
+          "M4.starter.10.12514",
+          "M4.starter.10.13274",
+          "M4.starter.10.1479",
+          "M4.starter.10.3271",
+          "M4.starter.10.4984",
+          "M4.starter.10.6786",
+          "M4.starter.10.8129",
+          "M4.starter.10.CLE",
+          "M4.driver.13274",
+          "M4.driver.8150",
+          "M4.driver.12545",
+          "M4.driver.IND",
+          "M4.driver.10235",
+          "M4.driver.4984",
+          "M4.driver.12501",
+          "M4.driver.8151",
+          "M4.driver.12514",
+          "M4.driver.3271",
+          "M4.driver.6786",
+          "M4.swing.13274",
+          "M4.swing.4984",
+          "M4.swing.12514",
+          "M4.swing.10235",
+          "M4.swing.8129",
+          "M4.swing.1479",
+          "M4.swing.6786",
+          "M4.swing.CLE",
+          "M4.move.CLE",
+          "M4.move.7600",
+          "M4.move.IND",
+          "M4.move.1479",
+          "M4.move.8129",
+          "M4.move.13274",
+          "M4.move.10235",
+          "M4.upset",
+          "M4.records",
+          "M4.dropswing",
+          "RANK.13274",
+          "P.13274.trend"
         ],
         "scope_teams": [
-          "All You Need Is Love",
-          "Pukancun on 3"
+          "Bo Girds",
+          "behold the lamb"
         ],
         "scope_players": [
-          "Tre Tucker",
-          "Colston Loveland",
-          "Ashton Jeanty",
-          "Jeremiyah Love",
-          "Aaron Jones",
-          "Joe Burrow",
-          "Ja'Marr Chase",
-          "Wan'Dale Robinson",
-          "Chris Olave",
-          "Brenton Strange",
-          "Aaron Rodgers",
-          "Zach Charbonnet",
-          "Jordan Addison",
-          "Kendre Miller",
-          "Jacksonville Jaguars",
-          "MarShawn Lloyd",
-          "Rome Odunze",
-          "Xavier Worthy",
-          "Kirk Cousins",
-          "Cam Skattebo",
-          "Tyler Warren",
-          "Jacory Croskey-Merritt",
-          "Hunter Henry",
-          "David Montgomery",
-          "Jalen Hurts",
-          "Rico Dowdle",
-          "Nico Collins",
-          "Jameson Williams",
-          "Puka Nacua",
-          "Kansas City Chiefs"
+          "Blake Corum",
+          "Malik Washington",
+          "Matthew Golden",
+          "Tyler Shough",
+          "Ja'Kobi Lane",
+          "Mike Washington",
+          "Cyrus Allen",
+          "Lamar Jackson",
+          "Pat Freiermuth",
+          "Trey McBride",
+          "Kyren Williams",
+          "Kenneth Walker",
+          "Parker Washington",
+          "Zay Flowers",
+          "Indianapolis Colts",
+          "Roschon Johnson",
+          "Jonathon Brooks",
+          "Quinshon Judkins",
+          "Emeka Egbuka",
+          "Kyle Monangai",
+          "Germie Bernard",
+          "Keenan Allen",
+          "Tyler Higbee",
+          "Saquon Barkley",
+          "Josh Allen",
+          "Deebo Samuel",
+          "CeeDee Lamb",
+          "Jake Ferguson",
+          "Dameon Pierce",
+          "Cleveland Browns"
         ],
         "min_sentences": 3,
-        "max_sentences": 5
+        "max_sentences": 5,
+        "grade_keys": []
       },
       {
         "key": "awards",
@@ -7450,19 +11687,28 @@
           "AW.mvb",
           "AW.underperformer",
           "AW.overachiever",
+          "AW.butterfingers",
           "AW.game_changer.news",
           "W.adds",
           "W.injured",
-          "RANK.10213",
+          "RANK.13274",
           "RANK.7523",
           "RANK.9509",
-          "RANK.13274",
+          "RANK.10213",
+          "RANK.12501",
           "M1.result",
           "M2.result",
           "M3.result",
           "M4.result",
           "M5.result",
-          "M6.result"
+          "M6.result",
+          "P.13274.trend",
+          "P.7523.trend",
+          "W.drops",
+          "D.12501",
+          "D.12501.value",
+          "D.10213",
+          "D.10213.value"
         ],
         "scope_teams": [
           "Brock ‘N’ Roll",
@@ -7657,7 +11903,8 @@
           "Kansas City Chiefs"
         ],
         "min_sentences": 2,
-        "max_sentences": 4
+        "max_sentences": 4,
+        "grade_keys": []
       },
       {
         "key": "recap_1",
@@ -7685,12 +11932,26 @@
           "M1.starter.3.9488",
           "M1.starter.3.DEN",
           "M1.move.TB",
+          "M1.move.5022",
+          "M1.move.DEN",
           "M1.inj.2133",
           "M1.inj.2216",
           "M1.inj.8121",
           "M1.records",
           "S.6",
-          "S.1"
+          "S.1",
+          "H.3.streak",
+          "H.1.trend",
+          "H.3.trend",
+          "H.1.avg",
+          "P.11584.trend",
+          "P.11604.trend",
+          "D.8167",
+          "D.8167.value",
+          "I.2216.pregame",
+          "I.2216.history",
+          "I.2449.pregame",
+          "I.2449.history"
         ],
         "scope_teams": [
           "Brock ‘N’ Roll",
@@ -7728,7 +11989,8 @@
           "Denver Broncos"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
       },
       {
         "key": "recap_2",
@@ -7756,11 +12018,32 @@
           "M2.starter.11.9500",
           "M2.starter.11.BAL",
           "M2.move.11647",
+          "M2.move.BAL",
+          "M2.move.4454",
+          "M2.move.13279",
+          "M2.move.8228",
           "M2.inj.5859",
           "M2.upset",
           "M2.records",
           "S.7",
-          "S.10"
+          "S.10",
+          "H.8.streak",
+          "H.11.streak",
+          "H.11.high",
+          "H.8.trend",
+          "P.11576.trend",
+          "P.11632.trend",
+          "D.8137",
+          "D.8137.value",
+          "D.9500",
+          "D.9500.value",
+          "D.5859",
+          "D.5859.value",
+          "D.12526",
+          "D.12526.value",
+          "I.13279.history",
+          "I.5859.pregame",
+          "I.5859.history"
         ],
         "scope_teams": [
           "Return of T Mac",
@@ -7797,7 +12080,8 @@
           "Baltimore Ravens"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
       },
       {
         "key": "recap_3",
@@ -7838,11 +12122,22 @@
           "M3.move.12507",
           "M3.move.5967",
           "M3.move.11439",
+          "M3.move.SF",
+          "M3.move.NE",
+          "M3.move.11435",
           "M3.inj.7526",
           "M3.inj.10236",
           "M3.records",
           "S.4",
-          "S.9"
+          "S.9",
+          "H.9.streak",
+          "H.12.streak",
+          "H.9.trend",
+          "H.12.trend",
+          "P.11564.trend",
+          "P.11637.trend",
+          "D.11646",
+          "D.11646.value"
         ],
         "scope_teams": [
           "Maye d'force B with U",
@@ -7880,7 +12175,8 @@
           "New England Patriots"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
       },
       {
         "key": "recap_4",
@@ -7929,10 +12225,37 @@
           "M4.move.CLE",
           "M4.move.7600",
           "M4.move.IND",
+          "M4.move.1479",
+          "M4.move.8129",
+          "M4.move.13274",
+          "M4.move.10235",
           "M4.upset",
           "M4.records",
+          "M4.dropswing",
           "S.3",
-          "S.8"
+          "S.8",
+          "H.6.streak",
+          "H.6.trend",
+          "H.10.trend",
+          "H.6.avg",
+          "P.12501.trend",
+          "P.12545.trend",
+          "D.12501",
+          "D.12501.value",
+          "D.6786",
+          "D.6786.value",
+          "D.8150",
+          "D.8150.value",
+          "D.7600",
+          "D.7600.value",
+          "D.9487",
+          "D.9487.value",
+          "D.8129",
+          "D.8129.value",
+          "I.7600.pregame",
+          "I.7600.history",
+          "I.9997.history",
+          "I.1479.history"
         ],
         "scope_teams": [
           "Bo Girds",
@@ -7971,7 +12294,8 @@
           "Cleveland Browns"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
       },
       {
         "key": "recap_5",
@@ -8002,11 +12326,22 @@
           "M5.move.11635",
           "M5.move.7611",
           "M5.move.CAR",
+          "M5.move.12506",
+          "M5.move.5927",
           "M5.inj.11635",
           "M5.inj.5927",
           "M5.records",
           "S.2",
-          "S.11"
+          "S.11",
+          "H.5.streak",
+          "H.7.streak",
+          "H.7.high",
+          "H.5.trend",
+          "P.10232.trend",
+          "P.12474.trend",
+          "I.11635.history",
+          "I.5927.history",
+          "I.7611.history"
         ],
         "scope_teams": [
           "London Cooking",
@@ -8045,7 +12380,8 @@
           "Carolina Panthers"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
       },
       {
         "key": "recap_6",
@@ -8082,9 +12418,33 @@
           "M6.move.12481",
           "M6.move.7569",
           "M6.move.96",
+          "M6.move.9480",
+          "M6.move.KC",
+          "M6.move.11581",
           "M6.records",
           "S.5",
-          "S.12"
+          "S.12",
+          "H.2.trend",
+          "H.4.trend",
+          "H.2.avg",
+          "H.4.avg",
+          "P.10213.trend",
+          "P.12517.trend",
+          "D.8144",
+          "D.8144.value",
+          "D.9493",
+          "D.9493.value",
+          "D.12527",
+          "D.12527.value",
+          "D.3214",
+          "D.3214.value",
+          "D.10213",
+          "D.10213.value",
+          "D.11581",
+          "D.11581.value",
+          "I.12527.history",
+          "I.8144.pregame",
+          "I.8144.history"
         ],
         "scope_teams": [
           "All You Need Is Love",
@@ -8123,7 +12483,207 @@
           "Kansas City Chiefs"
         ],
         "min_sentences": 2,
-        "max_sentences": 3
+        "max_sentences": 3,
+        "grade_keys": []
+      },
+      {
+        "key": "trades",
+        "title": "Trades",
+        "fact_ids": [
+          "T1.sides",
+          "T1.4.got.12533",
+          "T1.4.got.5892",
+          "T1.4.gave.12507",
+          "T1.4.gave.5967",
+          "T1.12.got.12507",
+          "T1.12.got.5967",
+          "T1.12.gave.12533",
+          "T1.12.gave.5892",
+          "T1.4.need",
+          "T1.4.swing",
+          "T1.12.need",
+          "T1.12.swing",
+          "T2.sides",
+          "T2.7.got.13330",
+          "T2.7.gave.10236",
+          "T2.12.got.10236",
+          "T2.12.gave.13330",
+          "T2.7.need",
+          "T2.7.swing",
+          "T2.12.need",
+          "T2.12.swing",
+          "T3.sides",
+          "T3.4.got.12481",
+          "T3.4.got.7569",
+          "T3.4.gave.11635",
+          "T3.4.gave.7611",
+          "T3.7.got.11635",
+          "T3.7.got.7611",
+          "T3.7.gave.12481",
+          "T3.7.gave.7569",
+          "T3.4.need",
+          "T3.4.swing",
+          "T3.7.need",
+          "T3.7.swing",
+          "T4.sides",
+          "T4.6.got.4881",
+          "T4.6.gave.4046",
+          "T4.6.gave.8154",
+          "T4.7.got.4046",
+          "T4.7.got.8154",
+          "T4.7.gave.4881",
+          "T4.6.need",
+          "T4.6.swing",
+          "T4.7.need",
+          "T4.7.swing",
+          "T5.sides",
+          "T5.11.got.11834",
+          "T5.11.got.5850",
+          "T5.11.gave.12490",
+          "T5.11.gave.8146",
+          "T5.12.got.12490",
+          "T5.12.got.8146",
+          "T5.12.gave.11834",
+          "T5.12.gave.5850",
+          "T5.11.need",
+          "T5.11.swing",
+          "T5.12.need",
+          "T5.12.swing",
+          "T6.sides",
+          "T6.7.got.11576",
+          "T6.7.got.11632",
+          "T6.7.got.3163",
+          "T6.7.got.8155",
+          "T6.7.gave.11628",
+          "T6.7.gave.8154",
+          "T6.7.gave.9509",
+          "T6.8.got.11628",
+          "T6.8.got.8154",
+          "T6.8.got.9509",
+          "T6.8.gave.11576",
+          "T6.8.gave.11632",
+          "T6.8.gave.3163",
+          "T6.8.gave.8155",
+          "S.12",
+          "S.9",
+          "S.11",
+          "S.3",
+          "S.10",
+          "S.7"
+        ],
+        "scope_teams": [
+          "Pukancun on 3",
+          "Amon-Ra Dawg Your Team",
+          "To Infinity and Bijan",
+          "Bo Girds",
+          "Unsolicited Dak Picks",
+          "Return of T Mac"
+        ],
+        "scope_players": [
+          "Braelon Allen",
+          "Malik Nabers",
+          "Dylan Sampson",
+          "Tetairoa McMillan",
+          "TreVeyon Henderson",
+          "Carnell Tate",
+          "Kendrick Bourne",
+          "Jordan Love",
+          "Breece Hall",
+          "Jaylen Warren",
+          "Chase Brown",
+          "Tucker Kraft",
+          "Los Angeles Rams",
+          "Pittsburgh Steelers",
+          "Kimani Vidal",
+          "Devaughn Vele",
+          "Ollie Gordon",
+          "Dak Prescott",
+          "Sam Darnold",
+          "Josh Jacobs",
+          "A.J. Brown",
+          "Jonathan Taylor",
+          "Juwan Johnson",
+          "Rachaad White",
+          "George Pickens",
+          "Josh Downs",
+          "Keaton Mitchell",
+          "Baltimore Ravens",
+          "Dalton Kincaid",
+          "Sam LaPorta",
+          "Emanuel Wilson",
+          "Bhayshul Tuten",
+          "Omarion Hampton",
+          "Luther Burden",
+          "DJ Moore",
+          "Tony Pollard",
+          "Tee Higgins",
+          "Trevor Lawrence",
+          "Amon-Ra St. Brown",
+          "Garrett Wilson",
+          "Tyjae Spears",
+          "New England Patriots",
+          "Blake Corum",
+          "Malik Washington",
+          "Matthew Golden",
+          "Tyler Shough",
+          "Ja'Kobi Lane",
+          "Mike Washington",
+          "Cyrus Allen",
+          "Lamar Jackson",
+          "Pat Freiermuth",
+          "Trey McBride",
+          "Kyren Williams",
+          "Kenneth Walker",
+          "Parker Washington",
+          "Zay Flowers",
+          "Indianapolis Colts",
+          "Marvin Harrison",
+          "Ladd McConkey",
+          "Ryan Flournoy",
+          "Harold Fannin",
+          "Efton Chism",
+          "Darius Cooper",
+          "KC Concepcion",
+          "Kenyon Sadiq",
+          "Jared Goff",
+          "Patrick Mahomes",
+          "Terry McLaurin",
+          "Rhamondre Stevenson",
+          "Brian Robinson",
+          "Bijan Robinson",
+          "Carolina Panthers",
+          "MarShawn Lloyd",
+          "Rome Odunze",
+          "Xavier Worthy",
+          "Kirk Cousins",
+          "Cam Skattebo",
+          "Tyler Warren",
+          "Jacory Croskey-Merritt",
+          "Hunter Henry",
+          "David Montgomery",
+          "Jalen Hurts",
+          "Rico Dowdle",
+          "Nico Collins",
+          "Jameson Williams",
+          "Puka Nacua",
+          "Kansas City Chiefs"
+        ],
+        "min_sentences": 4,
+        "max_sentences": 6,
+        "grade_keys": [
+          "T1.4",
+          "T1.12",
+          "T2.7",
+          "T2.12",
+          "T3.4",
+          "T3.7",
+          "T4.6",
+          "T4.7",
+          "T5.11",
+          "T5.12",
+          "T6.7",
+          "T6.8"
+        ]
       },
       {
         "key": "median",
@@ -8154,7 +12714,9 @@
           "S.9",
           "S.10",
           "S.11",
-          "S.12"
+          "S.12",
+          "H.7.high",
+          "H.11.high"
         ],
         "scope_teams": [
           "Brock ‘N’ Roll",
@@ -8349,7 +12911,8 @@
           "Kansas City Chiefs"
         ],
         "min_sentences": 2,
-        "max_sentences": 4
+        "max_sentences": 4,
+        "grade_keys": []
       },
       {
         "key": "next_week",
@@ -8384,7 +12947,13 @@
           "SOS.12",
           "SOS.11",
           "SOS.7",
-          "SOS.4"
+          "SOS.4",
+          "H.3.streak",
+          "H.8.streak",
+          "H.9.streak",
+          "H.11.streak",
+          "H.5.streak",
+          "H.12.streak"
         ],
         "scope_teams": [
           "Brock ‘N’ Roll",
@@ -8579,7 +13148,8 @@
           "Kansas City Chiefs"
         ],
         "min_sentences": 1,
-        "max_sentences": 2
+        "max_sentences": 2,
+        "grade_keys": []
       }
     ]
   }
