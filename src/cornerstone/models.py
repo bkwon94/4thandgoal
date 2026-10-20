@@ -310,3 +310,19 @@ class VerifyFile(BaseModel):
 
     build: BuildRecord | None = None
     chapters: dict[str, list[VerifyResult]]
+
+
+class DropPlay(BaseModel):
+    game_id: str
+    play_id: str
+    air_yards: float
+    yardline_100: float
+
+
+class NflverseWeek(BaseModel):
+    # sources says which of the four files gave data, so a chapter can say what it lacks.
+    sources: dict[str, bool]
+    gsis: dict[str, str]
+    # None means the source gave no data for the week. An empty dict means no player matched.
+    drops: dict[str, list[DropPlay]] | None
+    injuries: dict[str, dict[int, str]] | None
