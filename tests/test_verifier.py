@@ -353,3 +353,37 @@ def test_decided_needs_a_swing_gap_at_least_the_margin(tbundle):
     ch = _ch(sheet, "trades")
     below = _blurb("trades", _s("The trade decided it.", "T5.11.swing"))
     assert any("decided" in m for m in code_check(below, ch, sheet))
+
+
+def _graded(tbundle, **overrides):
+    ch = _ch(tbundle.sheet, "trades")
+    grades = {k: "C" for k in ch.grade_keys} | overrides
+    blurb = Blurb(chapter="trades", attempt=1, fallback=False, grades=grades,
+                  sentences=[Sentence(text=tbundle.sheet.facts[f].text, fact_ids=[f])
+                             for f in ch.fact_ids if f.endswith(".sides")])
+    return blurb, ch
+
+
+def _grade_failures(tbundle, **overrides):
+    blurb, ch = _graded(tbundle, **overrides)
+    return [f for f in code_check(blurb, ch, tbundle.sheet) if "grade" in f]
+
+
+def test_missing_grade_fails(tbundle):
+    blurb, ch = _graded(tbundle)
+    del blurb.grades["T5.12"]
+    assert "[0] grade for T5.12 is missing" in code_check(blurb, ch, tbundle.sheet)
+
+
+def test_extra_grade_fails(tbundle):
+    assert _grade_failures(tbundle, **{"T9.1": "C"}) == ["[0] grade for T9.1 is not a trade side"]
+
+
+def test_plus_grade_fails(tbundle):
+    assert _grade_failures(tbundle, **{"T5.12": "B+"}) == [
+        "[0] grade T5.12 is 'B+'; use one letter A, B, C, D, or F"
+    ]
+
+
+def test_full_grades_pass(tbundle):
+    assert _grade_failures(tbundle) == []

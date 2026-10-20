@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from cornerstone.models import Sentence, WriterOut
+from cornerstone.models import Grade, Sentence, TradesWriterOut, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
@@ -125,3 +125,32 @@ def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert "or the sentence cites a trade swing fact `T{n}.{rid}.swing`" in system
+
+
+def _trades(tbundle):
+    return next(c for c in tbundle.sheet.chapters if c.key == "trades")
+
+
+def test_trades_prompt_lists_grade_keys(tbundle):
+    _, user = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
+    assert "Grade keys: T1.4, T1.12, T2.7, T2.12, T3.4, T3.7, T4.6, T4.7, T5.11, T5.12, T6.7, T6.8" in user
+
+
+def test_write_blurb_maps_grades(tbundle):
+    def call(system, user, model):
+        assert model is TradesWriterOut
+        return model(sentences=[Sentence(text="x.", fact_ids=["T5.sides"])],
+                     grades=[Grade(key="T5.12", letter="A")])
+    assert write_blurb(_trades(tbundle), tbundle.sheet, call).grades == {"T5.12": "A"}
+
+
+def test_trades_template_lists_the_sides(tbundle):
+    b = template_blurb(_trades(tbundle), tbundle.sheet)
+    assert [s.fact_ids for s in b.sentences] == [[f"T{n}.sides"] for n in range(1, 7)]
+    assert b.grades == {}
+
+
+def test_writer_rules_hold_the_grade_rule(tbundle):
+    system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
+    assert "A trade can be a C for both sides." in system
+    assert "Never put a number on a draft pick." in system

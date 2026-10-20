@@ -33,6 +33,7 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing")),
 ]
+GRADE_LETTERS = {"A", "B", "C", "D", "F"}
 NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
@@ -153,6 +154,19 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         failures.append(
             f"[0] {count} sentences; the range is {chapter.min_sentences} to {chapter.max_sentences}"
         )
+    if chapter.grade_keys:
+        failures += _grade_failures(blurb, chapter)
+    return failures
+
+
+def _grade_failures(blurb: Blurb, chapter: Chapter) -> list[str]:
+    failures = [f"[0] grade for {k} is missing" for k in chapter.grade_keys if k not in blurb.grades]
+    failures += [f"[0] grade for {k} is not a trade side" for k in blurb.grades if k not in chapter.grade_keys]
+    failures += [
+        f"[0] grade {k} is '{v}'; use one letter A, B, C, D, or F"
+        for k, v in blurb.grades.items()
+        if k in chapter.grade_keys and v not in GRADE_LETTERS
+    ]
     return failures
 
 

@@ -256,12 +256,25 @@ class Blurb(BaseModel):
     sentences: list[Sentence]
     attempt: int
     fallback: bool
+    # Keyed by T{n}.{rid}: one roster can make several trades in a week.
+    grades: dict[str, str] = {}
 
 
 class WriterOut(BaseModel):
     """The structured output of one writer call."""
 
     sentences: list[Sentence]
+
+
+class Grade(BaseModel):
+    key: str
+    letter: str
+
+
+class TradesWriterOut(WriterOut):
+    """The Trades output. A list keeps the structured output schema to fixed keys."""
+
+    grades: list[Grade] = []
 
 
 class Verdict(BaseModel):
