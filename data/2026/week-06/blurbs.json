@@ -292,14 +292,29 @@
     "chapter": "recap_6",
     "sentences": [
       {
-        "text": "All You Need Is Love beat Pukancun on 3 97.02 to 84.07, a margin of 12.95.",
+        "text": "All You Need Is Love beat Pukancun on 3 by 12.95, and Tre Tucker decided it by finishing 16.62 over projection.",
         "fact_ids": [
-          "M6.result"
+          "M6.result",
+          "M6.driver.10213"
+        ]
+      },
+      {
+        "text": "Pukancun on 3 rebuilt its backfield with recent adds, and the payoff was trade pickup Cam Skattebo at 0 and free agent MarShawn Lloyd at 1.",
+        "fact_ids": [
+          "M6.move.12481",
+          "M6.move.11581"
+        ]
+      },
+      {
+        "text": "Pukancun on 3 now sits 5 games below the cut, and the namesake, Puka Nacua, chipped in 11.",
+        "fact_ids": [
+          "S.12",
+          "M6.starter.4.9493"
         ]
       }
     ],
-    "attempt": 0,
-    "fallback": true,
+    "attempt": 1,
+    "fallback": false,
     "grades": {}
   },
   "trade_1": {

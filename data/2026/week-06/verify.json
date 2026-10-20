@@ -236,33 +236,25 @@
     "recap_6": [
       {
         "chapter": "recap_6",
-        "code_failures": [
-          "[2] number 3 is not in the cited facts M6.result, M6.records, S.12"
-        ],
-        "verdicts": [],
-        "passed": false
-      },
-      {
-        "chapter": "recap_6",
         "code_failures": [],
         "verdicts": [
           {
             "index": 0,
             "supported": true,
-            "reason": "The 12.95 margin matches M6.result. Tucker's 24.2 makes him both a margin driver, which allows 'decider', and a swing player, which allows 'without him, that is a loss'."
+            "reason": "The margin of 12.95 is in M6.result, and M6.driver.10213 makes Tucker a margin driver with a 16.62 gap, so 'decided' is allowed."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "The 1-11 record matches M6.records, and M6.move.12481 makes Skattebo a recent add by trade who scored 0. The rebuild line is a joke that adds no factual claim."
+            "reason": "Skattebo (RB) was a week 6 trade add who scored 0, and Lloyd (RB) was a week 5 free agent add who scored 1. Both are recent adds per the cited move facts; 'payoff' is sarcasm, not a claim."
           },
           {
             "index": 2,
-            "supported": false,
-            "reason": "Nacua's 11 points, 8.36 under projection, match the fact, but no chapter fact says the team is named for Puka Nacua."
+            "supported": true,
+            "reason": "S.12 gives 5 games below the cut, and Nacua started and scored 11. 'Namesake' is a joke, not a factual claim."
           }
         ],
-        "passed": false
+        "passed": true
       }
     ],
     "trade_1": [
