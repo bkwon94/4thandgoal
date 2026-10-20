@@ -135,14 +135,33 @@
     "chapter": "recap_1",
     "sentences": [
       {
-        "text": "Lil Fridge beat Brock ‘N’ Roll 126.79 to 88.31, a margin of 38.48.",
+        "text": "Brock ‘N’ Roll lost to Lil Fridge by 38.48, and its Top Scorer was namesake Brock Purdy with 17.36, which is not a lot of roll.",
         "fact_ids": [
+          "M1.result",
+          "M1.top.1"
+        ]
+      },
+      {
+        "text": "Recent adds Dallas Goedert at 9.1 and the Tampa Bay Buccaneers at 9.65 both beat projection, making them the lucky part of a blowout loss for Brock ‘N’ Roll.",
+        "fact_ids": [
+          "M1.move.5022",
+          "M1.move.TB",
           "M1.result"
+        ]
+      },
+      {
+        "text": "Lil Fridge's recent add Denver Broncos scored 13.35 and Romeo Doubs is now listed IR, while Brock ‘N’ Roll, 6-6 and sitting right at the cut, now has Davante Adams and Mike Evans listed Out.",
+        "fact_ids": [
+          "M1.move.DEN",
+          "M1.inj.8121",
+          "M1.inj.2133",
+          "M1.inj.2216",
+          "S.6"
         ]
       }
     ],
-    "attempt": 0,
-    "fallback": true,
+    "attempt": 1,
+    "fallback": false,
     "grades": {}
   },
   "recap_2": {

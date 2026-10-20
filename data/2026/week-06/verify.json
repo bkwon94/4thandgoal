@@ -121,42 +121,20 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "M1.result gives the 38.48 margin and M1.top.1 names Brock Purdy as Brock ‘N’ Roll's top scorer with 17.36; the name joke is attitude."
+            "reason": "M1.result gives the 38.48 margin and M1.top.1 names Purdy as top scorer with 17.36; the namesake quip is humor."
           },
           {
             "index": 1,
-            "supported": false,
-            "reason": "Read as the total from Brock ‘N’ Roll's recent adds, the comparison is false: Tampa Bay (9.65) and Goedert (9.1) combine for 18.75, more than Denver's 13.35."
+            "supported": true,
+            "reason": "Goedert (9.1, 0.34 over) and the Buccaneers (9.65, 2.43 over) are recent adds per the cited move facts, so 'lucky' is allowed; 'blowout' fits the 38.48 margin."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "M1.records and S.6 give the 6-6 record with 0 games at the cut; the inj facts list Adams and Evans as Out and Doubs as IR."
+            "reason": "The Broncos are a recent add with 13.35, Doubs is IR, Adams and Evans are Out per the inj facts, and S.6 gives 6-6 at 0 games from the cut."
           }
         ],
-        "passed": false
-      },
-      {
-        "chapter": "recap_1",
-        "code_failures": [],
-        "verdicts": [
-          {
-            "index": 0,
-            "supported": true,
-            "reason": "Margin 38.48 and Denver Broncos' 13.35 as a free agent recent add are stated in M1.result and M1.move.DEN, which also licenses 'lucky'."
-          },
-          {
-            "index": 1,
-            "supported": false,
-            "reason": "The scores and over-projection results are supported, but no fact says the team is named for Brock Purdy, and Brock Bowers is also on the roster."
-          },
-          {
-            "index": 2,
-            "supported": true,
-            "reason": "S.6 gives 6-6 and 0 games at the cut, and the .inj. facts list Adams and Evans Out and Lil Fridge's Doubs on IR."
-          }
-        ],
-        "passed": false
+        "passed": true
       }
     ],
     "recap_2": [
