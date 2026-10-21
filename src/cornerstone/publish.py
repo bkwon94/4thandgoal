@@ -49,7 +49,9 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     # The site repo is a Next.js app, and its static export serves public/ at the root.
     public_dir = site_repo / "public"
     week_path = Path(str(season)) / f"week-{week:02d}"
-    shutil.copytree(repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True)
+    shutil.copytree(
+        repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
+    )
     shutil.copytree(repo / "site" / "static", public_dir / "static", dirs_exist_ok=True)
     render_index(public_dir)
     _git(site_repo, "add", "-A")
