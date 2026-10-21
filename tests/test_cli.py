@@ -298,11 +298,11 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
     # Each side ends with the schedule lean and the final letter, after the five adjusters with steps.
     assert out.count("  Schedule: even. ") == 2
-    assert out.count("  Final letter: C\n") == 2
+    assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     assert out.endswith(
-        "\nVerdict for Amon-Ra Dawg Your Team: accept. "
-        "The asking side grades C and the other side grades C, so the trade is fair.\n")
+        "\nVerdict for Amon-Ra Dawg Your Team: decline. "
+        "The asking side grades D, so the trade costs it too much.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out
@@ -430,10 +430,10 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
 
     def fake_claude(system, user, output_model):
         assert output_model is AnalysisOut
-        side = {"final_letter": "C", "reason": None, "cited": ["8146.ppg"],
+        side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
                 "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
         return AnalysisOut.model_validate({
-            "sides": [{**side, "roster_id": 11, "final_letter": "D", "reason": "Jacobs has not played."},
+            "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
                       {**side, "roster_id": 12}],
             "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
         })
@@ -445,11 +445,12 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     out = capsys.readouterr().out
     assert code == 0
     # The breakdown's letter is the rubric's. The final letter is Claude's, with its reason when it differs.
-    assert out.count("  Rubric letter: C\n") == 2
-    assert "  Final letter: D. Reason: Jacobs has not played.\n" in out
-    assert "  Final letter: C\n" in out
+    assert "  Rubric letter: B\n" in out and "  Rubric letter: D\n" in out
+    assert "  Final letter: C. Reason: Jacobs has not played.\n" in out
+    assert "  Final letter: D\n" in out
     assert out.count("  Analysis: Garrett Wilson scored 14.2 points per game before the trade.") == 2
-    assert out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: D") < out.index("Analysis: ")
+    assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: C")
+            < out.index("Analysis: "))
     assert out.endswith("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
                         "(differs from the rubric's default)\n")
 
@@ -465,8 +466,8 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     out = capsys.readouterr().out
     assert code == 0
     assert out.count("  Analysis: Analysis unavailable\n") == 2
-    assert out.count("  Final letter: C\n") == 2
+    assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert out.endswith(
-        "\nVerdict for Amon-Ra Dawg Your Team: accept. "
-        "The asking side grades C and the other side grades C, so the trade is fair.\n")
+        "\nVerdict for Amon-Ra Dawg Your Team: decline. "
+        "The asking side grades D, so the trade costs it too much.\n")

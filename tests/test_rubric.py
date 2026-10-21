@@ -589,24 +589,24 @@ def test_a_kicker_does_not_count_in_the_byes_left(slow_snap):
 IRVING, HENRY = "11584", "3198"
 
 
-def test_the_clamp_holds_three_steps_up_to_two(snap):
+def test_the_clamp_holds_three_steps_up_to_one(snap):
     # Roster 1, a contender, gets Henry for Irving. Its best lineup gains now, and the shares favor it:
     # roster fit, standing, and trend each step up. Irving at 40 for Henry at 20 starts roster 1 at F.
-    # Three steps up from F would reach B. The clamp holds the sum at two, so the final letter is C.
+    # Three steps up from F would reach B. The clamp holds the sum at one, so the final letter is D.
     first, _ = grade(_trade(1, [IRVING], 3, [HENRY]), _with_values(snap, {IRVING: 40.0, HENRY: 20.0}))
     assert first.start_letter == "F"
     assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0]
-    assert first.final_letter == "C"
+    assert first.final_letter == "D"
 
 
-def test_the_clamp_holds_three_steps_down_to_two(snap):
+def test_the_clamp_holds_three_steps_down_to_one(snap):
     # Roster 5, a contender, gets Rice for Cook. Its best lineup loses now for a player with no return week,
     # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
-    # Three steps down from A would reach D. The clamp holds the sum at two, so the final letter is C.
+    # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
     fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(snap, {RICE: 40.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
     assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0]
-    assert fifth.final_letter == "C"
+    assert fifth.final_letter == "B"
 
 
 def test_the_same_trade_on_the_same_snapshot_gives_the_same_breakdown_every_time(slow_snap):
@@ -721,7 +721,7 @@ HAND_WORKED = [
     # Roster 7: the lineup loses 4.51, fit down. Middle, no standing step. Gets up shares only, gives up and down
     # shares, so trend is mixed. Breece Hall is out with no return week, injury down. Byes left: four got against
     # three gave, against. Playoff opponent mean rank 18.58 got against 16.67 gave, inside the gap, even.
-    # Schedule against. Sum minus two, D to F.
+    # Schedule against. Sum minus two, clamped to minus one, D to F.
     # Roster 8: the lineup gains 2.67, under the threshold, and it gives the highest-value player, no fit step.
     # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
     # Roster 8 asked and grades A: accept.
@@ -732,17 +732,18 @@ HAND_WORKED = [
     # Jacobs is due back in week 7, so his use does not count, and week 7 is inside the return window of week 8.
     # Roster 11: the lineup loses 11.60, fit down. Middle. Gets Vele, flat, and gives Tuten and Wilson, each with
     # one share up, so trend down. No injury step. Byes two and two, even. Playoff mean rank 13.83 got against
-    # 16.83 gave, a gap of 3.0, inside the gap, even. Schedule even. Sum minus two, A to C.
-    # Roster 12: the lineup gains 9.20, fit up. Middle. Trend up. No injury step. Schedule even. Sum plus two, F to C.
-    # Roster 12 asked and grades C, with roster 11 at C: accept.
-    (("A", [-1, 0, -1, 0, 0, 0], "even", "C"), ("F", [1, 0, 1, 0, 0, 0], "even", "C"), "accept"),
+    # 16.83 gave, a gap of 3.0, inside the gap, even. Schedule even. Sum minus two, clamped to minus one, A to B.
+    # Roster 12: the lineup gains 9.20, fit up. Middle. Trend up. No injury step. Schedule even.
+    # Sum plus two, clamped to plus one, F to D.
+    # Roster 12 asked and grades D, with roster 11 at B: decline.
+    (("A", [-1, 0, -1, 0, 0, 0], "even", "B"), ("F", [1, 0, 1, 0, 0, 0], "even", "D"), "decline"),
     # Roster 6 gives Patrick Mahomes 15.5 and Brian Robinson 22.0, a sum of 37.5. Roster 7 gives Lamar Jackson 7.0.
     # One for two: the depth sum counts as 37.5 over 1.25, which is 30.0. Roster 6: 7.0 over 30.0 is 0.233, F.
     # Roster 7: 4.29, A. Brian Robinson at 22.0 is the highest-value player.
     # Roster 6: the lineup loses 4.55, fit down. A contender that loses now for Lamar Jackson, out with no return
     # week, standing down. Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is out
     # with no return week, injury down. Byes one left and one left, even. Playoff mean rank 19.67 got against 22.17
-    # gave, inside the gap, even. Schedule even. Sum minus three, clamped to minus two, F stays F.
+    # gave, inside the gap, even. Schedule even. Sum minus three, clamped to minus one, F stays F.
     # Roster 7: the lineup gains 8.48 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
     # Schedule even. Sum plus one, A stays A.
     # Roster 7 asked and grades A: accept.
@@ -752,9 +753,10 @@ HAND_WORKED = [
     # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
     # Roster 4: the lineup gains 7.38, fit up. A seller that gets the highest-value player, standing up.
     # Gets one share down, gives shares up and down, so trend is mixed. No injury step. Byes two and two, even.
-    # Playoff mean rank 14.00 got against 19.67 gave, a gap of 5.67, for. Schedule for. Sum plus two, A stays A.
+    # Playoff mean rank 14.00 got against 19.67 gave, a gap of 5.67, for. Schedule for.
+    # Sum plus two, clamped to plus one, A stays A.
     # Roster 7: the lineup loses 9.42, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week,
-    # injury down. Schedule against. Sum minus two, F stays F.
+    # injury down. Schedule against. Sum minus two, clamped to minus one, F stays F.
     # Roster 7 asked and grades F: decline.
     (("A", [1, 1, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, -1, 0, 0], "against", "F"), "decline"),
     # Roster 7 gives Dalton Kincaid 31.5. Roster 12 gives Kenyon Sadiq, with no row on the chart, so both start at C.
@@ -772,7 +774,7 @@ HAND_WORKED = [
     # Roster 4: the lineup loses 3.41, fit down. A seller that gives the highest-value player with no lineup gain,
     # no standing step. Gets shares up and down, so trend is mixed. Croskey-Merritt is on IR with no return week,
     # injury down. Byes two and two, even. Playoff mean rank 23.17 got against 10.67 gave, against.
-    # Schedule against. Sum minus two, F stays F.
+    # Schedule against. Sum minus two, clamped to minus one, F stays F.
     # Roster 12: the lineup gains 2.75, under the threshold, and it gets Hampton, fit up. Middle. Trend mixed.
     # No injury step. Schedule for. Sum plus one, A stays A.
     # Roster 12 asked and grades A: accept.
