@@ -24,9 +24,15 @@
   {% if game_changer %}
   {% set gc = game_changer.award.line %}
   <section class="chap dark">
-    <div class="lbl">Game Changer</div>
-    <div class="hero-p">{{ hs(gc.player_id) }}{{ gc.name }} <small>{{ gc.position }}{% if gc.nfl_team %} · {{ gc.nfl_team }}{% endif %} · {{ game_changer.team }}</small></div>
-    <div class="hero-p pts">{{ gc.points|num }}{% if gc.projection is not none %} <small>projected {{ gc.projection|num }}</small>{% endif %}</div>
+    <div class="stage">
+      <div class="stage-text">
+        <div class="lbl">Game Changer</div>
+        <div class="hero-p">{{ gc.name }}<small>{{ gc.position }}{% if gc.nfl_team %} · {{ gc.nfl_team }}{% endif %} · {{ game_changer.team }}</small></div>
+        <div class="hero-p pts">{{ gc.points|num }}</div>
+        {% if gc.projection is not none %}<div class="proj">projected {{ gc.projection|num }}</div>{% endif %}
+      </div>
+      {{ hs(gc.player_id) }}
+    </div>
     <p class="blurb">{{ blurbs.game_changer }}</p>
   </section>
   {% endif %}
