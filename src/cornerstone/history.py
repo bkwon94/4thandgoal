@@ -66,12 +66,18 @@ def _read_week(directory: Path) -> dict[str, object] | None:
     }
 
 
-def load_history(root: Path, raw: dict[str, object], week: int) -> History:
+def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
+    """The saved weeks 1 to `through`, by week. A week that is not saved has no entry."""
     weeks = {}
-    for past in range(1, week):
+    for past in range(1, through + 1):
         saved = _read_week(history_dir(root, past))
         if saved is not None:
             weeks[past] = parse_past_week(saved, past)
+    return weeks
+
+
+def load_history(root: Path, raw: dict[str, object], week: int) -> History:
+    weeks = load_saved_weeks(root, week - 1)
     # The current week comes from the raw data of this run, not from the cache.
     weeks[week] = parse_past_week(raw, week)
     return History(week=week, weeks=weeks)

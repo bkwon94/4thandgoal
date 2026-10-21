@@ -38,10 +38,15 @@ def http_get(url: str) -> bytes:
     return response.content
 
 
+def is_fresh(path: Path, max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> bool:
+    """True when the file exists and is younger than `max_age_seconds`, by the clock of the disk."""
+    return path.exists() and time.time() - path.stat().st_mtime < max_age_seconds
+
+
 def download(url: str, path: Path, max_age_seconds: int = CACHE_MAX_AGE_SECONDS,
              fetch: Callable[[str], bytes] = http_get) -> Path | None:
     """The cached file, fresh if possible. A stale cache on a failure, None with no cache."""
-    if path.exists() and time.time() - path.stat().st_mtime < max_age_seconds:
+    if is_fresh(path, max_age_seconds):
         return path
     try:
         body = fetch(url)

@@ -4,16 +4,17 @@ It defines the build, publish, rewrite, history, chart, and analyze subcommands.
 """
 import argparse
 import logging
+from collections.abc import Iterable
 from datetime import date, datetime
 from pathlib import Path
 
 import httpx
 from pydantic import ValidationError
 
-from cornerstone.chart import check_chart, match_chart, saved_chart_read
+from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
 from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
-from cornerstone.models import ChartValues, week_lines
+from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
     BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
@@ -57,8 +58,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     analyze = sub.add_parser(
         "analyze", help="grade a proposed trade from the league now, or from the saved data of a week",
-        description="Grade a proposed trade from a snapshot. Without --week, the snapshot is the league now, "
-                    "fetched from Sleeper. With --week, it is the saved data of that week. "
+        description="Grade a proposed trade from a snapshot. Without --week, the command fetches the league "
+                    "from Sleeper now. With --week, it reads the saved data of that week. "
                     "Give --side twice, once for each roster, as ROSTER:PLAYER,PLAYER. "
                     "Example: --side 4:7569 --side 12:10236,8146 --asker 4 --no-claude")
     analyze.add_argument("--season", type=int, required=True)
@@ -92,6 +93,11 @@ def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
     return match_chart(chart, week_lines(parse_week(raw)))
 
 
+def _given_chart(path: Path) -> ChartValues:
+    """The trade values in a --chart JSON file."""
+    return ChartValues.model_validate_json(path.read_text(encoding="utf-8"))
+
+
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name if pid in snapshot.players else pid for pid in pids)
 
@@ -117,7 +123,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         return None
     raw_dir = week_dir(repo, args.season, args.week) / "raw"
     if args.chart is not None:
-        chart = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
+        chart = _given_chart(args.chart)
     else:
         chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
     history = history_root(repo, args.season)
@@ -128,12 +134,15 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
 
 def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     """The snapshot of the league now. A given --chart file stands in for the chart read."""
-    kwargs = {}
+    read_chart = chart_values
     if args.chart is not None:
-        given = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
-        kwargs["read_chart"] = lambda repo, season_start, week, lines: given
+        given = _given_chart(args.chart)
+
+        # A given file is the chart of the trade, so the reader needs neither the week nor the lines.
+        def read_chart(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
+            return given
     try:
-        return live_snapshot(repo, args.season, now=datetime.now(EASTERN), **kwargs)
+        return live_snapshot(repo, args.season, now=datetime.now(EASTERN), read_chart=read_chart)
     except ValueError as err:
         print(err)
         return None

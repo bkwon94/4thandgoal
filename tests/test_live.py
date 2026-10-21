@@ -59,12 +59,16 @@ def _no_network(url):
     raise AssertionError(f"network call to {url}")
 
 
+def _no_history_fetch(league_id, season, week, out_dir):
+    raise AssertionError(f"network call for history week {week}")
+
+
 def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, sleeper, chart_week6):
     chart = ChartRecorder(chart_week6)
     # The cutoff of week 7 is Tuesday 2026-10-20 08:00.
-    after = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    after = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                           fetch_nflverse=_no_network, read_chart=chart)
-    before = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET), fetch_sleeper=sleeper,
+    before = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                            fetch_nflverse=_no_network, read_chart=chart)
     assert [week for _, week in chart.weeks] == [7, 6]
     assert after.as_of.chart_week == chart_week6.week
@@ -72,10 +76,9 @@ def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, 
 
 
 def test_the_stamps_hold_the_stats_through_week_and_the_rosters_fetch_time(live_repo, sleeper, chart_week6):
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6))
     assert snap.as_of.chart_week == 6
-    assert snap.as_of.stats_through == 6
     assert snap.as_of.rosters_fetched == FETCHED
     assert snap.season == 2026
     assert "7569" in snap.rosters[4]
@@ -92,7 +95,7 @@ def test_a_source_older_than_a_day_refreshes_before_the_snapshot(live_repo, slee
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert asked == [SCHEDULES_URL]
     assert time.time() - path.stat().st_mtime < DAY
@@ -107,7 +110,7 @@ def test_a_failed_refresh_keeps_the_old_cache_and_notes_it(live_repo, sleeper):
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert path.read_bytes() == before
     assert snap.stale == ["depth charts"]
@@ -120,7 +123,7 @@ def test_a_source_with_no_cache_and_a_failed_fetch_is_missing_and_noted(live_rep
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert snap.stale == ["id map"]
     assert "id_map" in snap.missing
@@ -128,5 +131,47 @@ def test_a_source_with_no_cache_and_a_failed_fetch_is_missing_and_noted(live_rep
 
 def test_a_season_that_is_not_in_progress_stops_the_build(live_repo, sleeper):
     with pytest.raises(ValueError, match="2025"):
-        live_snapshot(live_repo, 2025, now=datetime(2026, 10, 19, tzinfo=ET), fetch_sleeper=sleeper,
+        live_snapshot(live_repo, 2025, now=datetime(2026, 10, 19, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                       fetch_nflverse=_no_network, read_chart=ChartRecorder(None))
+
+
+def test_on_monday_night_the_raw_week_is_the_trade_week_and_stays_out_of_the_history(
+        live_repo, sleeper, chart_week6):
+    # Monday 2026-10-19 is before the week 7 cutoff, so the chart week is 6. Sleeper shows week 6 too.
+    chart = ChartRecorder(chart_week6)
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart)
+    assert [week for _, week in chart.weeks] == [6]
+    assert snap.week == 6
+    assert snap.as_of.stats_through == 5
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    assert sum(s.wins + s.losses for s in snap.standings) == 5 * 2 * 12
+    assert snap.stale == []
+
+
+def test_on_the_tuesday_before_the_roll_the_raw_week_joins_the_history(live_repo, sleeper, chart_week6):
+    # Tuesday 2026-10-20 09:00 is after the week 7 cutoff, so the chart week is 7. Sleeper still shows week 6.
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.week == 7
+    assert snap.as_of.stats_through == 6
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
+    assert sum(s.wins + s.losses for s in snap.standings) == 6 * 2 * 12
+    assert snap.stale == []
+
+
+def test_a_failed_history_fetch_keeps_the_saved_weeks_and_notes_it(live_repo, sleeper, chart_week6):
+    shutil.rmtree(live_repo / "data" / "2026" / "history" / "week-05")
+    asked = []
+
+    def fetch(league_id, season, week, out_dir):
+        asked.append(week)
+        raise httpx.ConnectError("down")
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=fetch, fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6))
+    assert asked == [5]
+    assert snap.stale == ["history"]
+    assert snap.as_of.stats_through == 4
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4]

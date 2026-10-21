@@ -21,13 +21,35 @@ def test_week_6_snapshot_holds_rosters_teams_standings_and_slots(fixture_raw_dir
     assert snap.roster_positions[:3] == ["QB", "RB", "RB"]
 
 
-def test_week_6_snapshot_holds_the_chart_week_and_stats_through_the_last_completed_week(
+def test_week_6_snapshot_is_the_trade_week_and_its_inputs_end_at_week_5(
         fixture_raw_dir, fixture_history_root, chart_week6):
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert snap.week == 6
     assert snap.chart == chart_week6
     assert snap.as_of.chart_week == 6
-    assert snap.as_of.stats_through == 6
-    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
+    assert snap.as_of.stats_through == 5
+    # The raw week 6 is the trade week, so its games stay out of the history.
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    assert snap.stale == []
+
+
+def test_week_6_standings_count_the_games_of_weeks_1_to_5(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Each week is two games for each of the 12 rosters: the head-to-head game and the median game.
+    games = sum(s.wins + s.losses for s in snap.standings)
+    assert games == 5 * 2 * 12
+
+
+def test_a_history_without_week_5_stamps_the_last_week_it_holds_and_notes_it(
+        fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
+    root = tmp_path / "history"
+    shutil.copytree(fixture_history_root, root)
+    shutil.rmtree(root / "week-05")
+    snap = load_snapshot(fixture_raw_dir, root, chart_week6)
+    assert snap.week == 6
+    assert snap.as_of.stats_through == 4
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4]
+    assert snap.stale == ["history"]
 
 
 def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_history_root, chart_week6):

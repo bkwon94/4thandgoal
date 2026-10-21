@@ -238,7 +238,8 @@ def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
     assert "Nico Collins" in out and "Dalton Kincaid" in out and "Garrett Wilson" in out
     assert out.count("Start letter: C") == 2
     assert "(asked)" in out
-    assert "Chart week 6" in out
+    # Week 6 is the trade week, so the stats end at week 5.
+    assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
     # The repo has no nflverse cache. The points allowed come from the history, so they are present.
     assert "Sources missing: schedules, depth charts, id map." in out
     # The trade values 46.5, 31.5, and 27.5, their sum, and the ratio never print.
@@ -296,8 +297,12 @@ def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
     assert out.strip() == "A proposed trade needs two different rosters"
 
 
-def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line(
-        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch, capsys):
+def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch,
+                  fetch_history_week, unsaved_week=None):
+    """Run analyze without --week. The live entry runs for real, with every fetch swapped for a fixture-backed one.
+
+    An `unsaved_week` is removed from the history, so the live build must fetch it.
+    """
     import shutil
     from datetime import datetime
 
@@ -308,20 +313,51 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    if unsaved_week is not None:
+        shutil.rmtree(tmp_path / "data" / "2026" / "history" / f"week-{unsaved_week:02d}")
     shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
+        cached.touch()
     monkeypatch.chdir(tmp_path)
     fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cli.EASTERN)
-    # The live entry runs for real, with every fetch swapped for a fixture-backed one.
     real = live.live_snapshot
     monkeypatch.setattr(cli, "live_snapshot", lambda repo, season, **kw: real(
         repo, season, now=datetime(2026, 10, 19, 12, 0, tzinfo=cli.EASTERN),
         fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
+        fetch_history_week=fetch_history_week,
         read_chart=lambda repo, start, week, lines: chart_week6))
-    code = cli.main(["analyze", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
+    return cli.main(["analyze", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
                      "--asker", "4", "--no-claude"])
+
+
+def _no_history_fetch(league_id, season, week, out_dir):
+    raise AssertionError(f"network call for history week {week}")
+
+
+def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch, capsys):
+    code = _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6,
+                         monkeypatch, _no_history_fetch)
 
     out = capsys.readouterr().out
     assert code == 0
-    assert "Chart week 6. Stats through week 6. Rosters fetched 2026-10-19T09:30-04:00." in out
+    assert "Week 6 of 2026. Chart week 6. Stats through week 5. Rosters fetched 2026-10-19T09:30-04:00." in out
+    assert "Refresh failed" not in out
     assert "Nico Collins" in out
+
+
+def test_analyze_without_week_names_a_failed_refresh(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch, capsys):
+    import httpx
+
+    def down(league_id, season, week, out_dir):
+        raise httpx.ConnectError("down")
+
+    code = _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6,
+                         monkeypatch, down, unsaved_week=5)
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Stats through week 4." in out
+    assert "Refresh failed, so the cache is old or absent: history.\n" in out

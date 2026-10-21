@@ -116,29 +116,41 @@ def read_prev_transactions(raw_dir: Path) -> list | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _league_raw(
+        client: httpx.Client, league: str, season: int, week: int, players_cache: Path,
+        known: dict[str, object]) -> dict[str, object]:
+    """The raw data of the league in `week`, with the keys of RAW_FILES. A key in `known` keeps its value.
+
+    Each caller fetches some keys first and stamps its fetch time after them, so the rest come from Sleeper here.
+    """
+    calls = {
+        "state": lambda: _get(client, f"{OFFICIAL_URL}/state/nfl"),
+        "league": lambda: _get(client, league),
+        "users": lambda: _get(client, f"{league}/users"),
+        "rosters": lambda: _get(client, f"{league}/rosters"),
+        "matchups": lambda: _get(client, f"{league}/matchups/{week}"),
+        "matchups_next": lambda: _get(client, f"{league}/matchups/{week + 1}"),
+        "transactions": lambda: _get(client, f"{league}/transactions/{week}"),
+        "projections": lambda: _get_or_empty(
+            client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
+        "stats": lambda: _get_or_empty(
+            client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params()),
+        "players": lambda: _players(client, players_cache),
+        "bracket": lambda: _get(client, f"{league}/winners_bracket"),
+    }
+    # The calls run in the order of RAW_FILES, as the dict keeps the order of its keys.
+    return {name: known[name] if name in known else call() for name, call in calls.items()}
+
+
 def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path) -> None:
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
         # Week N-1 comes first, so the fetch time below is later than both calls.
         previous = _get(client, f"{league}/transactions/{week - 1}") if week > 1 else None
         transactions = _get(client, f"{league}/transactions/{week}")
-        # The time is taken right after the call returns. The page shows it and the history keeps it.
+        # The code takes the time right after the call returns. The page shows it and the history keeps it.
         fetched = datetime.now(ZoneInfo("America/New_York"))
-        data = {
-            "state": _get(client, f"{OFFICIAL_URL}/state/nfl"),
-            "league": _get(client, league),
-            "users": _get(client, f"{league}/users"),
-            "rosters": _get(client, f"{league}/rosters"),
-            "matchups": _get(client, f"{league}/matchups/{week}"),
-            "matchups_next": _get(client, f"{league}/matchups/{week + 1}"),
-            "transactions": transactions,
-            "projections": _get_or_empty(
-                client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
-            "stats": _get_or_empty(
-                client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params()),
-            "players": _players(client, players_cache),
-            "bracket": _get(client, f"{league}/winners_bracket"),
-        }
+        data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
@@ -157,23 +169,9 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         state = _get(client, f"{OFFICIAL_URL}/state/nfl")
         season, week = int(state["season"]), int(state["display_week"])
         rosters = _get(client, f"{league}/rosters")
-        # The time is taken right after the rosters return, because the rosters are the freshest fact here.
+        # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
         fetched = datetime.now(ZoneInfo("America/New_York"))
-        data = {
-            "state": state,
-            "league": _get(client, league),
-            "users": _get(client, f"{league}/users"),
-            "rosters": rosters,
-            "matchups": _get(client, f"{league}/matchups/{week}"),
-            "matchups_next": _get(client, f"{league}/matchups/{week + 1}"),
-            "transactions": _get(client, f"{league}/transactions/{week}"),
-            "projections": _get_or_empty(
-                client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
-            "stats": _get_or_empty(
-                client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params()),
-            "players": _players(client, players_cache),
-            "bracket": _get(client, f"{league}/winners_bracket"),
-        }
+        data = _league_raw(client, league, season, week, players_cache, {"state": state, "rosters": rosters})
     return data, fetched
 
 
