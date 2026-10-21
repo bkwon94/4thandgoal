@@ -122,28 +122,11 @@ def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
     assert "I.{pid}.pregame" in system and "Friday" in system and "**pre-game status**" in system
 
 
-def test_writer_rule_6_allows_the_trade_swing(fixture_raw_dir):
+def test_writer_rule_6_gates_decided_on_a_driver_only(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
-    assert "or the sentence cites a trade swing fact `T{n}.{rid}.swing`" in system
-
-
-def _trades(tbundle):
-    return next(c for c in tbundle.sheet.chapters if c.key == "trade_5")
-
-
-def test_trade_recap_brief_has_no_grade_keys(tbundle):
-    _, user = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert "Grade" not in user and "T5.11," not in user
-    assert user.splitlines()[:2] == ["Chapter: Unsolicited Dak Picks and Amon-Ra Dawg Your Team", "Write 1 to 3 sentences."]
-
-
-def test_trade_recap_blurb_has_no_grades(tbundle):
-    def call(system, user, model):
-        assert model is WriterOut
-        return model(sentences=[Sentence(text="x.", fact_ids=["T5.sides"])])
-    blurb = write_blurb(_trades(tbundle), tbundle.sheet, call)
-    assert "grades" not in blurb.model_dump()
+    assert '6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.' in system
+    assert "T{n}.{rid}.swing" not in system
 
 
 def test_a_saved_blurb_with_a_grades_map_still_parses():
@@ -152,32 +135,15 @@ def test_a_saved_blurb_with_a_grades_map_still_parses():
     assert blurb.chapter == "trade_5" and "grades" not in blurb.model_dump()
 
 
-def test_trades_template_lists_the_sides(tbundle):
-    b = template_blurb(_trades(tbundle), tbundle.sheet)
-    assert [s.fact_ids for s in b.sentences] == [["T5.sides"]]
-
-
-def test_writer_rule_18_is_the_trade_recap(tbundle):
-    system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert ("18. In a trade recap, say who moved first. Then say how the week went for each side, "
-            "from the `impact` and `swing` facts.") in system
-    assert "The tone rules allow humor." in system
-    assert "Give no grade and no letter. Never say who won the trade." in system
-    assert ("Say the trade decided or cost a game only in a sentence that cites a `swing` fact. "
-            "The gap must be at least the margin, as rule 6 says.") in system
+def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "In a trade recap" not in system and "`impact`" not in system and "`.late`" not in system
     assert "grade each side" not in system and "Grade keys" not in system and "`.value`" not in system
     assert "With more than two trades" not in system and "In the Trades chapter" not in system
-    assert "19. Never put a number on a draft pick." in system
+    assert "18. Never put a number on a draft pick." in system
+    assert "19. A drop fact names the receiver only." in system
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
-
-
-def test_trade_template_finds_the_sides_fact(tbundle):
-    ch = next(c for c in tbundle.sheet.chapters if c.key == "trade_6")
-    shuffled = ch.model_copy(update={"fact_ids": list(reversed(ch.fact_ids))})
-    b = template_blurb(shuffled, tbundle.sheet)
-    assert [s.fact_ids for s in b.sentences] == [["T6.sides"]]
-    assert b.sentences[0].text == tbundle.sheet.facts["T6.sides"].text
-    assert b.fallback
 
 
 def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed"):

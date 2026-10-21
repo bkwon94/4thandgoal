@@ -1,21 +1,20 @@
 """
 Tests for the trade window and the late-trade test.
 They read the recorded week 6 data and the saved history.
-They also test the trade facts and the trade chapters.
+They also test the trade recap facts, the grade input facts, and that the weekly sheet has neither.
 """
 import re
 from datetime import date, datetime
 from importlib import resources
 from zoneinfo import ZoneInfo
 
-from conftest import _decisive_trade, _trade_inputs, grade_inputs
+from conftest import _decisive_trade, _trade_inputs, grade_inputs, recap_facts
 from cornerstone.history import load_history
-from cornerstone.models import Blurb, DraftPick, NflverseWeek, Sentence, Trade
+from cornerstone.models import DraftPick, NflverseWeek, Trade
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.sheet import _trade_ids, build_bundle
+from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
-from cornerstone.verifier import code_check
 
 ET = ZoneInfo("America/New_York")
 
@@ -79,14 +78,14 @@ def test_roster_slots_count_the_reserve_slot(fixture_raw_dir):
     assert parse_week(load_raw(fixture_raw_dir)).roster_slots == 15
 
 
-def test_sides_fact(tbundle):
-    assert tbundle.sheet.facts["T5.sides"].text == (
+def test_sides_fact(rfacts):
+    assert rfacts["T5.sides"].text == (
         "Unsolicited Dak Picks traded Bhayshul Tuten and Garrett Wilson to "
         "Amon-Ra Dawg Your Team for Devaughn Vele and Josh Jacobs.")
 
 
-def test_swing_facts(tbundle):
-    f = tbundle.sheet.facts
+def test_swing_facts(rfacts):
+    f = rfacts
     # Amon-Ra Dawg Your Team lost M3 104.04 to 113.55. The trade added points, so it did not decide the loss.
     assert f["T5.12.swing"].text == (
         "The players Amon-Ra Dawg Your Team got and started scored 29.1 this week; "
@@ -102,7 +101,7 @@ def test_swing_facts(tbundle):
 def test_swing_is_decisive_only_in_the_direction_of_the_result(fixture_raw_dir):
     week = parse_week(load_raw(fixture_raw_dir))
     trade, winner, loser = _decisive_trade(week)
-    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
+    f = recap_facts(week, trades=[trade])
     # The winner got the points and the loser gave them, so both sides point the same way as the result.
     assert "above the margin of" in f[f"T1.{winner}.swing"].text
     assert "above the margin of" in f[f"T1.{loser}.swing"].text
@@ -117,86 +116,28 @@ def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
     trade = Trade(transaction_id="x", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[a.roster_id, b.roster_id, c.roster_id],
                   adds={pa.player_id: a.roster_id, pb.player_id: b.roster_id},
                   drops={pa.player_id: c.roster_id, pb.player_id: a.roster_id}, draft_picks=[])
-    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
+    f = recap_facts(week, trades=[trade])
     assert "the players it gave that its trade partners started scored" in f[f"T1.{a.roster_id}.swing"].text
 
 
-def test_late_trade_has_no_swing_and_no_need(tbundle):
-    f = tbundle.sheet.facts
+def test_late_trade_has_no_swing_and_no_need(rfacts):
+    f = rfacts
     assert not any(fid.startswith("T6.") and fid.endswith((".swing", ".need")) for fid in f)
     assert "T6.sides" in f
 
 
-def test_one_chapter_per_trade(tbundle):
-    keys = [c.key for c in tbundle.sheet.chapters]
-    trade_keys = [k for k in keys if k.startswith("trade")]
-    assert trade_keys == [f"trade_{n}" for n in range(1, 7)]
-    assert keys.index("trade_1") > keys.index("recap_6") and keys.index("trade_6") < keys.index("median")
-
-
-def test_trade_chapter(tbundle):
-    ch = next(c for c in tbundle.sheet.chapters if c.key == "trade_5")
-    assert ch.title == "Unsolicited Dak Picks and Amon-Ra Dawg Your Team"
-    assert (ch.min_sentences, ch.max_sentences) == (1, 3)
-    assert set(ch.fact_ids) == {fid for fid in tbundle.sheet.facts if fid.startswith("T5.")}
-    assert ch.scope_teams == ["Unsolicited Dak Picks", "Amon-Ra Dawg Your Team"]
-
-
-def test_trade_recap_scopes_the_sides_impact_swing_and_late_facts(tbundle):
-    scopes = {c.key: c.fact_ids for c in tbundle.sheet.chapters if c.key.startswith("trade_")}
-    assert scopes["trade_1"] == [
-        "T1.sides", "T1.4.impact.12533", "T1.4.impact.5892", "T1.12.impact.12507", "T1.12.impact.5967",
-        "T1.4.swing", "T1.12.swing",
-    ]
-    # Trade 6 is late, so it has a late fact and no swing fact.
-    assert scopes["trade_6"] == [
-        "T6.sides", "T6.7.impact.11576", "T6.7.impact.11632", "T6.7.impact.3163", "T6.7.impact.8155",
-        "T6.8.impact.11628", "T6.8.impact.8154", "T6.8.impact.9509", "T6.late",
-    ]
-
-
-def test_the_weekly_sheet_has_no_grade_input_facts(tbundle):
-    kinds = (".got.", ".gave.", ".team", ".need", ".usage", ".targets", ".redzone", ".injury", ".value")
-    assert not [fid for fid in tbundle.sheet.facts if fid.startswith("T") and any(k in fid for k in kinds)]
-
-
-def test_late_fact_says_the_lineup_shows_the_roster_from_before(tbundle):
-    f = tbundle.sheet.facts
+def test_late_fact_says_the_lineup_shows_the_roster_from_before(rfacts):
+    f = rfacts
     assert f["T6.late"].text == "The trade came after the lineups locked, so the lineups show the rosters from before it."
     assert f["T6.late"].teams == f["T6.sides"].teams
     assert not any(fid.startswith(f"T{n}.late") for n in range(1, 6) for fid in f)
-
-
-def test_trade_chapters_take_no_week_facts(dbundle):
-    for ch in (c for c in dbundle.sheet.chapters if c.key.startswith("trade_")):
-        n = ch.key.removeprefix("trade_")
-        assert ch.fact_ids and all(fid.startswith(f"T{n}.") for fid in ch.fact_ids)
-
-
-def test_three_team_chapter_title(fixture_raw_dir, fixture_history_root):
-    raw = load_raw(fixture_raw_dir)
-    h = load_history(fixture_history_root, raw, week=6)
-    three = next(t for t in h.weeks[5].trades if len(t.roster_ids) == 3)
-    bundle = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=[three])
-    ch = next(c for c in bundle.sheet.chapters if c.key == "trade_1")
-    assert ch.title == "To Infinity and Bijan, Return of T Mac and Amon-Ra Dawg Your Team"
-
-
-def test_no_trades_no_trade_chapter(hbundle):
-    assert not any(c.key.startswith("trade") for c in hbundle.sheet.chapters)
-
-
-def test_trade_ids_take_one_trade(tbundle):
-    facts = {**tbundle.sheet.facts, "T10.sides": tbundle.sheet.facts["T1.sides"], "TOTAL.x": tbundle.sheet.facts["T1.sides"]}
-    ids = _trade_ids(facts, 1)
-    assert "T1.sides" in ids and "T10.sides" not in ids and "TOTAL.x" not in ids
 
 
 def test_three_team_trade(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
     three = next(t for t in h.weeks[5].trades if len(t.roster_ids) == 3)
-    f = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=[three]).sheet.facts
+    f = recap_facts(parse_week(raw), history=h, trades=[three])
     assert f["T1.sides"].text.startswith("In a 3-team trade,")
     assert all(name in f["T1.sides"].text for name in ("To Infinity and Bijan", "Return of T Mac", "Amon-Ra Dawg Your Team"))
 
@@ -214,7 +155,7 @@ def test_player_with_no_line_stays_in_sides_and_gets_no_got_fact(tbundle, fixtur
         "adds": {**tbundle.data.trades[4].adds, "99999999": 12},
         "drops": {**tbundle.data.trades[4].drops, "99999999": 11},
     })
-    f = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], trades=[trade]).sheet.facts
+    f = recap_facts(parse_week(load_raw(fixture_raw_dir)), trades=[trade])
     assert "an unlisted player" in f["T1.sides"].text
     assert not any(fid.endswith(".99999999") for fid in f)
 
@@ -233,7 +174,7 @@ def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
         Trade(transaction_id="b", created=made, roster_ids=[second, owner.roster_id],
               adds={star.player_id: owner.roster_id}, drops={star.player_id: second}, draft_picks=[]),
     ]
-    f = build_bundle(week, news=lambda pid: [], trades=trades).sheet.facts
+    f = recap_facts(week, trades=trades)
     assert f"T1.{first}.swing" not in f and f"T1.{second}.swing" not in f
     # The roster that gave him on to the owner sees his points as the gave side.
     assert f"{week.teams[owner.roster_id].name} started scored {star.points:g}." in f[f"T2.{second}.swing"].text
@@ -262,8 +203,8 @@ def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
     star = next(l for l in m.a.lines if l.started)
     trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[m.b.roster_id, m.a.roster_id],
                   adds={star.player_id: m.a.roster_id}, drops={star.player_id: m.b.roster_id}, draft_picks=[])
-    f = build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts
-    assert "M1.result" in f and "tied" in f["M1.result"].text
+    assert "tied" in build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts["M1.result"].text
+    f = recap_facts(week, trades=[trade])
     assert f"T1.{m.a.roster_id}.swing" not in f and f"T1.{m.b.roster_id}.swing" not in f
 
 
@@ -312,22 +253,22 @@ def test_need_fact_has_no_record(tinputs):
         "Amon-Ra Dawg Your Team has 5 RB and 5 WR after the trade and 1 open roster spot.")
 
 
-def test_impact_facts(tbundle):
-    f = tbundle.sheet.facts
+def test_impact_facts(rfacts):
+    f = rfacts
     assert f["T5.12.impact.12490"].text == "Bhayshul Tuten scored 22.7 this week for Amon-Ra Dawg Your Team."
     assert f["T5.11.impact.11834"].text == "Devaughn Vele scored 5.7 this week on the bench for Unsolicited Dak Picks."
 
 
-def test_late_trade_keeps_profile_team_and_impact(tbundle, tinputs):
+def test_late_trade_keeps_profile_team_and_impact(rfacts, tinputs):
     # Braelon Allen went to roster 7 after his game, so roster 8 started him.
-    f = tbundle.sheet.facts
+    f = rfacts
     assert f["T6.7.impact.11576"].text == "Braelon Allen scored 11.4 this week for Return of T Mac."
     assert "T6.7.got.11576" in tinputs and "T6.7.team" in tinputs
 
 
 def test_vocabulary_has_the_profile_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
-    for term in ("points per game", "position rank by season points", "trade impact"):
+    for term in ("points per game", "position rank by season points"):
         assert f"**{term}**" in text
 
 
@@ -379,10 +320,10 @@ def test_no_injury_facts_without_nflverse(tinputs):
     assert not any(fid.endswith(".injury") for fid in tinputs)
 
 
-def test_vocabulary_keeps_the_recap_terms_and_drops_the_grade_terms():
+def test_vocabulary_drops_the_recap_terms_and_the_grade_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("trade impact", "trade swing", "late trade"):
-        assert f"**{term}**" in text
+        assert f"**{term}**" not in text
     for term in ("trade grade", "trade value", "roster need", "snap share", "target share", "red-zone use",
                  "injury before the trade"):
         assert f"**{term}**" not in text
@@ -399,27 +340,6 @@ def test_trade_of_a_player_with_no_points_stat_still_gets_a_got_fact(fixture_raw
     h = load_history(fixture_history_root, raw, week=6)
     f = grade_inputs(week, history=h, trades=[trade])
     assert f"T1.{second}.got.3271" in f
-
-
-def test_chain_trade_keeps_the_moved_player_in_scope(fixture_raw_dir, fixture_history_root):
-    # Bucky Irving goes 2 to 3 in trade 1 and 3 to 1 in trade 2, so his line sits on roster 1.
-    raw = load_raw(fixture_raw_dir)
-    h = load_history(fixture_history_root, raw, week=6)
-    made = datetime(2026, 10, 14, tzinfo=ET)
-    pid = next(l.player_id for m in parse_week(raw).matchups for s in (m.a, m.b) if s.roster_id == 1
-               for l in s.lines if l.name == "Bucky Irving")
-    trades = [
-        Trade(transaction_id="a", created=made, roster_ids=[2, 3],
-              adds={pid: 3}, drops={pid: 2}, draft_picks=[]),
-        Trade(transaction_id="b", created=made, roster_ids=[3, 1],
-              adds={pid: 1}, drops={pid: 3}, draft_picks=[]),
-    ]
-    sheet = build_bundle(parse_week(raw), news=lambda p: [], history=h, trades=trades).sheet
-    chapter = next(c for c in sheet.chapters if c.key == "trade_1")
-    for fid in ("T1.sides",):
-        blurb = Blurb(chapter="trade_1", attempt=1, fallback=False,
-                      sentences=[Sentence(text=sheet.facts[fid].text, fact_ids=[fid])])
-        assert not [m for m in code_check(blurb, chapter, sheet) if "not on a team" in m]
 
 
 def _value_ids(facts):
@@ -505,3 +425,9 @@ def test_player_with_no_line_is_outside_the_value_sums(fixture_raw_dir, fixture_
     f = grade_inputs(parse_week(raw), history=h, trades=[trade], chart=chart)
     assert "T1.gone.value" not in f
     assert f["T1.12.value"].text == "Amon-Ra Dawg Your Team gave 0 and got 22 in trade value."
+
+
+def test_the_week_6_sheet_has_no_trade_chapter_and_no_trade_fact(tbundle):
+    assert tbundle.data.trades and tbundle.data.trade_players
+    assert not [c.key for c in tbundle.sheet.chapters if c.key.startswith("trade")]
+    assert not [fid for fid in tbundle.sheet.facts if re.match(r"T\d+\.", fid)]

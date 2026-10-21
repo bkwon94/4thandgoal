@@ -13,7 +13,7 @@ from cornerstone.history import load_history
 from cornerstone.models import ChartValues, NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.sheet import Context, build_bundle, grade_input_facts
+from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_facts
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, trades_for_week
 
@@ -55,6 +55,18 @@ def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):
     return {f.id: f for f in grade_input_facts(Context(week, lambda pid: [], history, trades, nfl, chart))}
 
 
+def recap_facts(week, history=None, trades=None):
+    """The sides, impact, swing, and late facts by ID. The weekly sheet leaves them out, so these tests call the builder."""
+    return {f.id: f for f in trade_facts(Context(week, lambda pid: [], history, trades))}
+
+
+def _recap_facts(raw_dir, history_root):
+    """The sides, impact, swing, and late facts of the week 6 trades."""
+    raw = load_raw(raw_dir)
+    h = load_history(history_root, raw, week=6)
+    return recap_facts(parse_week(raw), history=h, trades=_window(raw, h))
+
+
 def _trade_inputs(raw_dir, history_root, nfl=None, chart=None):
     """The grade input facts of the week 6 trades. Chart values, when given, add the trade value facts."""
     raw = load_raw(raw_dir)
@@ -88,6 +100,11 @@ def tbundle(fixture_raw_dir, fixture_history_root):
 def chart_week6() -> ChartValues:
     path = Path(__file__).parent / "fixtures" / "charts" / "week-06.json"
     return ChartValues.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def rfacts(fixture_raw_dir, fixture_history_root):
+    return _recap_facts(fixture_raw_dir, fixture_history_root)
 
 
 @pytest.fixture

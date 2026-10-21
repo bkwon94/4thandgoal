@@ -287,7 +287,7 @@ def test_leader_fact_names_the_player_team_and_numbers(bundle):
 
 
 @pytest.mark.parametrize("name", ["bundle", "tbundle"])
-def test_position_leaders_chapter_sits_after_awards_and_before_trades(request, name):
+def test_position_leaders_chapter_sits_after_awards(request, name):
     b = request.getfixturevalue(name)
     keys = [c.key for c in b.sheet.chapters]
     ch = b.sheet.chapters[keys.index("position_leaders")]
@@ -298,10 +298,6 @@ def test_position_leaders_chapter_sits_after_awards_and_before_trades(request, n
     assert set(ch.scope_teams) == {t.name for t in b.data.teams.values()}
     assert {l.line.name for l in b.data.leaders} == set(ch.scope_players)
     assert keys.index("position_leaders") == keys.index("awards") + 1
-    trades = [i for i, k in enumerate(keys) if k.startswith("trade_")]
-    assert all(i > keys.index("position_leaders") for i in trades)
-    if name == "tbundle":
-        assert trades
 
 
 def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw_dir):

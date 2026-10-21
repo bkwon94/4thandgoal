@@ -22,10 +22,6 @@ from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_b
 
 log = logging.getLogger(__name__)
 
-# A trade swing fact lets the writer say "decided" or a cause word only when its gap is at least
-# the margin in the direction of the result. The fact text says so with one of these phrases.
-TRADE_SWING_ID = re.compile(r"T\d+\.\d+\.swing")
-SWING_AT_LEAST_MARGIN = ("above the margin", "equal to the margin")
 DECIDED_WORDS = ["decided", "decider", "decide"]
 # Gated words need a cited fact ID that contains one of the markers.
 GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
@@ -86,23 +82,6 @@ def _week_numbers(sheet: FactSheet) -> set[str]:
     return {str(number), str(number + 1)}
 
 
-def _decisive_swing(fid: str, sheet: FactSheet) -> bool:
-    """True for a trade swing fact whose gap, in the direction of the result, is at least the margin."""
-    fact = sheet.facts.get(fid)
-    return bool(TRADE_SWING_ID.fullmatch(fid) and fact and any(w in fact.text for w in SWING_AT_LEAST_MARGIN))
-
-
-def _opens_gate(fid: str, word: str, markers: tuple[str, ...], sheet: FactSheet) -> bool:
-    """True when a cited fact lets the sentence use a gated word.
-
-    A trade swing fact opens a gate only when it is decisive, so a swing against the result
-    never lets the writer say the trade decided or cost the game.
-    """
-    if TRADE_SWING_ID.fullmatch(fid):
-        return (word in DECIDED_WORDS or ".swing" in markers) and _decisive_swing(fid, sheet)
-    return any(m in fid for m in markers)
-
-
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
@@ -158,7 +137,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for words, markers in GATED_WORDS:
             for word in words:
                 if _whole_word(word, bare) and not any(
-                    _opens_gate(fid, word, markers, sheet) for fid in sentence.fact_ids
+                    m in fid for fid in sentence.fact_ids for m in markers
                 ):
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")

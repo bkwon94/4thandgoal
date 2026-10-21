@@ -209,8 +209,6 @@ a { color:var(--red); }
 .blurb a { display:inline-block; transition:var(--press); }
 .wk:active, .blurb a:active { transform:scale(.97); }
 
-.foot { background:var(--blk); color:var(--on-dark-muted); font-size:var(--fs-label); padding:var(--sp-4) var(--gutter); text-align:center; letter-spacing:var(--track); text-transform:uppercase; }
-
 :focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 
 /* Touch screens fire hover on tap, so hover styles apply only to a real pointer. */

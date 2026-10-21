@@ -96,16 +96,6 @@ def write_blurb(
 
 def template_blurb(chapter: Chapter, sheet: FactSheet) -> Blurb:
     """One sentence built from a fact. A boring sentence beats a wrong one."""
-    if chapter.key.startswith("trade_"):
-        # One cited sentence: the sides fact says who moved. Find the
-        # sides fact by ID, because fact order is not a contract.
-        fid = f"T{chapter.key.removeprefix('trade_')}.sides"
-        return Blurb(
-            chapter=chapter.key,
-            sentences=[Sentence(text=sheet.facts[fid].text, fact_ids=[fid])],
-            attempt=0,
-            fallback=True,
-        )
     result_id = next(
         (f for f in chapter.fact_ids if f.endswith(".result")), None
     ) if chapter.key == "motw" or chapter.key.startswith("recap_") else None

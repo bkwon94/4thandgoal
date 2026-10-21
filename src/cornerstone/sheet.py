@@ -72,7 +72,6 @@ SENTENCE_RANGES = {
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
-    "trade": (1, 3),
 }
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
@@ -850,7 +849,8 @@ def _late_fact(c: Context, i: int, trade: Trade) -> Fact:
 
 
 def trade_facts(c: Context) -> list[Fact]:
-    """The trade recap facts: the sides, the impact of each player got, and the swing or the late fact."""
+    """The trade recap facts: the sides, the impact of each player got, and the swing or the late fact.
+    The weekly sheet leaves them out, because the page shows the trade card with no recap."""
     out = []
     for i, trade in enumerate(c.trades, start=1):
         out.append(_sides_fact(c, i, trade))
@@ -995,11 +995,6 @@ def _with_prefix(facts: dict[str, Fact], *prefixes: str) -> list[str]:
     return [fid for fid in facts if any(fid == p or fid.startswith(p) for p in prefixes)]
 
 
-def _trade_ids(facts: dict[str, Fact], n: int) -> list[str]:
-    # The dot ends the number: without it, T1 would also take T10.
-    return [fid for fid in facts if fid.startswith(f"T{n}.")]
-
-
 def _dedupe(ids: list[str]) -> list[str]:
     return list(dict.fromkeys(ids))
 
@@ -1022,13 +1017,13 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             for l in s.lines if l.started
         ]
 
-    def make(key, title, ids, rosters, rng, extra_players=(), players=None) -> Chapter:
+    def make(key, title, ids, rosters, rng, players=None) -> Chapter:
         return Chapter(
             key=key,
             title=title,
             fact_ids=_dedupe([i for i in ids if i in facts]),
             scope_teams=[c.team(r) for r in rosters],
-            scope_players=_dedupe([*(players_of(rosters) if players is None else players), *extra_players]),
+            scope_players=_dedupe(players_of(rosters) if players is None else players),
             min_sentences=SENTENCE_RANGES[rng][0],
             max_sentences=SENTENCE_RANGES[rng][1],
         )
@@ -1086,14 +1081,6 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             + drop_ids(lambda d, mid=mid: d.matchup_id == mid) + injury_ids(started_ids(pair)),
             pair, "recap",
         ))
-    for n, trade in enumerate(c.trades, start=1):
-        out.append(make(
-            f"trade_{n}", _join([c.team(r) for r in trade.roster_ids]),
-            _trade_ids(facts, n), trade.roster_ids, "trade",
-            # A player who moves on in a later trade has his line on another roster.
-            # The facts of this trade still name him, so he stays in scope.
-            extra_players=[c.lines[p].name for p in (*trade.adds, *trade.drops) if p in c.lines],
-        ))
     out.append(make(
         "median", "The Median Game",
         _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
@@ -1120,7 +1107,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
+        rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c),
     )
     facts = {f.id: f for family in families for f in family}
