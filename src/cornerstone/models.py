@@ -73,6 +73,17 @@ class DraftPick(BaseModel):
     owner_id: int
 
 
+class ChartValues(BaseModel):
+    """The trade values of one chart week, keyed by Sleeper player ID.
+
+    They come from the half-PPR redraft trade value chart for that week and never appear on the page.
+    """
+
+    week: int
+    date: date
+    values: dict[str, float]
+
+
 class Trade(BaseModel):
     transaction_id: str
     # The aware time of Sleeper's epoch milliseconds.

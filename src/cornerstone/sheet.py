@@ -27,6 +27,7 @@ from cornerstone.history import player_trend, points_per_game, red_zone, season_
 from cornerstone.models import (
     Bundle,
     Chapter,
+    ChartValues,
     DropLine,
     Fact,
     FactSheet,
@@ -143,6 +144,7 @@ class Context:
         history: History | None = None,
         trades: list[Trade] | None = None,
         nfl: NflverseWeek | None = None,
+        chart: ChartValues | None = None,
     ) -> None:
         self.week = week
         self.history = history
@@ -160,6 +162,7 @@ class Context:
         self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
         self.drops = drop_lines(week, nfl)
         self.nfl = nfl
+        self.chart = chart
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts, self.drops)
         self.next = next_week(week, self.table)
@@ -782,6 +785,42 @@ def _usage_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
     return [f for f in out if f is not None]
 
 
+def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
+    """The chart trade value of each moved player and the value each side gave and got. None without a chart."""
+    if c.chart is None:
+        return []
+    # A player with no line has no name to cite, so he stays out of the sums and the unlisted names.
+    moved = [pid for pid in dict.fromkeys((*trade.adds, *trade.drops)) if pid in c.lines]
+    valued = [pid for pid in moved if pid in c.chart.values]
+    if not valued:
+        return []
+    out = []
+    for pid in valued:
+        n = Nums()
+        name = c.lines[pid].name
+        text = f"{name}'s trade value was {n(c.chart.values[pid])} before the trade."
+        out.append(_fact(f"T{i}.{pid}.value", text, n, [], [name]))
+    unlisted = [c.lines[pid].name for pid in moved if pid not in c.chart.values]
+    for rid in trade.roster_ids:
+        n = Nums()
+        team = c.team(rid)
+
+        def total(got: bool) -> float:
+            # Decimal sums keep a half-point total exact.
+            pids = [pid for pid in _moved(trade, rid, got) if pid in c.chart.values]
+            return float(sum((Decimal(str(c.chart.values[pid])) for pid in pids), Decimal(0)))
+
+        text = f"{team} gave {n(total(False))} and got {n(total(True))} in trade value"
+        if unlisted:
+            text += f", with {_join(unlisted)} unlisted"
+        if trade.draft_picks:
+            text += "; the pick is not valued." if len(trade.draft_picks) == 1 else "; the picks are not valued."
+        else:
+            text += "."
+        out.append(_fact(f"T{i}.{rid}.value", text, n, [team], unlisted))
+    return out
+
+
 def trade_facts(c: Context) -> list[Fact]:
     out = []
     for i, trade in enumerate(c.trades, start=1):
@@ -795,6 +834,8 @@ def trade_facts(c: Context) -> list[Fact]:
                 out.append(team)
             out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
         out += _usage_facts(c, i, trade)
+        # The chart values are from before the trade, so late trades keep them.
+        out += _value_facts(c, i, trade)
         # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
             continue
@@ -1025,8 +1066,9 @@ def build_bundle(
     history: History | None = None,
     trades: list[Trade] | None = None,
     nfl: NflverseWeek | None = None,
+    chart: ChartValues | None = None,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl)
+    c = Context(week, news, history, trades, nfl, chart)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),

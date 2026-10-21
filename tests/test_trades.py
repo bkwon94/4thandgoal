@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from conftest import _decisive_trade, _trade_bundle
 from cornerstone.history import load_history
-from cornerstone.models import Blurb, NflverseWeek, Sentence, Trade
+from cornerstone.models import Blurb, DraftPick, NflverseWeek, Sentence, Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import _trade_ids, build_bundle
 from cornerstone.sleeper import load_raw
@@ -364,3 +364,76 @@ def test_chain_trade_keeps_the_moved_player_in_scope(fixture_raw_dir, fixture_hi
         blurb = Blurb(chapter="trade_1", attempt=1, fallback=False,
                       sentences=[Sentence(text=sheet.facts[fid].text, fact_ids=[fid])])
         assert not [m for m in code_check(blurb, chapter, sheet) if "not on a team" in m]
+
+
+def _value_facts(bundle, i):
+    return {k: f for k, f in bundle.sheet.facts.items() if k.startswith(f"T{i}.") and k.endswith(".value")}
+
+
+def test_player_trade_value_fact(vbundle):
+    f = vbundle.sheet.facts["T1.12507.value"]
+    assert f.text == "Omarion Hampton's trade value was 68.5 before the trade."
+    assert f.numbers == ["68.5"]
+    assert f.players == ["Omarion Hampton"]
+
+
+def test_side_trade_value_fact_sums_what_each_side_gave_and_got(vbundle):
+    # Roster 4 gave Hampton (68.5) and Pollard (9.0), and got 24.0 and 12.5.
+    f = vbundle.sheet.facts["T1.4.value"]
+    assert f.text == "Pukancun on 3 gave 77.5 and got 36.5 in trade value."
+    assert f.numbers == ["77.5", "36.5"]
+    assert f.teams == ["Pukancun on 3"]
+
+
+def test_unlisted_player_gets_no_value_fact_and_a_clause_on_each_side(vbundle):
+    # Kenyon Sadiq (13330) is left out of the chart on purpose.
+    facts = vbundle.sheet.facts
+    assert "T2.13330.value" not in facts
+    assert "T2.10236.value" in facts
+    assert facts["T2.7.value"].text == "To Infinity and Bijan gave 31.5 and got 0 in trade value, with Kenyon Sadiq unlisted."
+    assert facts["T2.12.value"].text == (
+        "Amon-Ra Dawg Your Team gave 0 and got 31.5 in trade value, with Kenyon Sadiq unlisted."
+    )
+    assert facts["T2.12.value"].players == ["Kenyon Sadiq"]
+
+
+def test_two_unlisted_players_join_with_and(fixture_raw_dir, fixture_history_root, chart_week6):
+    # Roster 7 gave Braelon Allen (11576) and Marvin Harrison (11628) in trade 6.
+    unlisted = chart_week6.model_copy(update={"values": {k: v for k, v in chart_week6.values.items()
+                                                         if k not in ("11576", "11628")}})
+    text = _trade_bundle(fixture_raw_dir, fixture_history_root, chart=unlisted).sheet.facts["T6.7.value"].text
+    assert text.endswith("in trade value, with Braelon Allen and Marvin Harrison unlisted.")
+
+
+def test_trade_with_no_valued_player_has_no_side_fact(fixture_raw_dir, fixture_history_root, chart_week6):
+    empty = chart_week6.model_copy(update={"values": {}})
+    facts = _trade_bundle(fixture_raw_dir, fixture_history_root, chart=empty).sheet.facts
+    assert not [k for k in facts if k.endswith(".value") and k.startswith("T")]
+
+
+def test_draft_picks_are_not_valued(fixture_raw_dir, fixture_history_root, chart_week6):
+    raw = load_raw(fixture_raw_dir)
+    week = parse_week(raw)
+    h = load_history(fixture_history_root, raw, week=6)
+    made = datetime(2026, 10, 14, tzinfo=ET)
+
+    def pick(rnd):
+        return DraftPick(season="2027", round=rnd, roster_id=4, previous_owner_id=4, owner_id=12)
+
+    def trade(picks):
+        return Trade(transaction_id="p", created=made, roster_ids=[4, 12], adds={"12507": 12},
+                     drops={"12507": 4}, draft_picks=picks)
+
+    one = build_bundle(week, news=lambda p: [], history=h, trades=[trade([pick(1)])], chart=chart_week6)
+    two = build_bundle(week, news=lambda p: [], history=h, trades=[trade([pick(1), pick(2)])], chart=chart_week6)
+    assert one.sheet.facts["T1.4.value"].text.endswith("gave 68.5 and got 0 in trade value; the pick is not valued.")
+    assert two.sheet.facts["T1.4.value"].text.endswith("in trade value; the picks are not valued.")
+
+
+def test_without_chart_values_the_sheet_has_no_value_facts(tbundle):
+    assert not [k for k in tbundle.sheet.facts if k.endswith(".value") and k.startswith("T")]
+
+
+def test_vocabulary_has_the_trade_value_term():
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    assert "**trade value**" in text

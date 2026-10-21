@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from cornerstone.history import load_history
-from cornerstone.models import NflverseWeek, Trade
+from cornerstone.models import ChartValues, NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
@@ -37,13 +37,16 @@ def hbundle(fixture_raw_dir, fixture_history_root):
                         history=load_history(fixture_history_root, raw, week=6))
 
 
-def _trade_bundle(raw_dir, history_root, nfl=None):
-    """The week 6 bundle with history and trades. A given nflverse week adds the drop facts."""
+def _trade_bundle(raw_dir, history_root, nfl=None, chart=None):
+    """The week 6 bundle with history and trades. A given nflverse week adds the drop facts.
+
+    Given chart values add the trade value facts.
+    """
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)
     trades = trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
                              default_cutoff(date(2026, 9, 9), 6), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=trades, nfl=nfl)
+    return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=trades, nfl=nfl, chart=chart)
 
 
 def _decisive_trade(week):
@@ -66,6 +69,17 @@ def _decisive_trade(week):
 @pytest.fixture
 def tbundle(fixture_raw_dir, fixture_history_root):
     return _trade_bundle(fixture_raw_dir, fixture_history_root)
+
+
+@pytest.fixture
+def chart_week6() -> ChartValues:
+    path = Path(__file__).parent / "fixtures" / "charts" / "week-06.json"
+    return ChartValues.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def vbundle(fixture_raw_dir, fixture_history_root, chart_week6):
+    return _trade_bundle(fixture_raw_dir, fixture_history_root, chart=chart_week6)
 
 
 @pytest.fixture
