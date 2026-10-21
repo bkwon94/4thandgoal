@@ -2,6 +2,7 @@
 Tests for the week page and the home page renderer.
 They build the page from the recorded fixture and check the HTML that a reader sees.
 """
+import json
 import re
 
 import pytest
@@ -444,3 +445,14 @@ def test_page_has_no_footer(fixture_raw_dir, tmp_path):
     html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
     assert "Built from Sleeper data" not in html
     assert not re.search(r"<[^>]*\bfoot\b", html)
+
+
+def test_render_week_writes_page_json_with_the_context(tbundle, tmp_path):
+    page = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
+    data = json.loads((page.parent / "page.json").read_text(encoding="utf-8"))
+    context = build_context(tbundle, _blurbs(tbundle), {}, {})
+    assert data["schema_version"] == 1
+    assert data["week"] == context["week"]
+    assert len(data["trades"]) == len(context["trades"]) > 0
+    assert [s["team"]["name"] for s in data["pick"]["sides"]] == [s["team"].name for s in context["pick"]["sides"]]
+    assert data["avatars"]["1"] == "avatars/1.jpg"

@@ -4,6 +4,7 @@ Templates get one plain context dict, so they hold layout and no logic.
 """
 import hashlib
 import html
+import json
 import logging
 import re
 import shutil
@@ -13,6 +14,7 @@ from urllib.parse import urlparse
 
 import httpx
 from jinja2 import Environment, FileSystemLoader
+from pydantic_core import to_jsonable_python
 
 from cornerstone.facts_league import LEADER_POSITIONS
 from cornerstone.models import Blurb, Bundle, MatchupFacts, PlayerLine
@@ -27,6 +29,8 @@ DEFAULT_HEADSHOT_PATH = f"../../{DEFAULT_HEADSHOT}"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
+# Bump this when a key in page.json changes meaning or leaves. A new key does not need a bump.
+PAGE_SCHEMA_VERSION = 1
 SUMMARY_META = re.compile(r'<meta name="cornerstone-summary" content="([^"]*)">')
 
 log = logging.getLogger(__name__)
@@ -234,17 +238,22 @@ def headshot_url(player_id: str, is_def: bool) -> str:
     return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg"
 
 
-def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[str, str]:
-    """Save the headshot of each player on the Game Changer hero, the award tiles, the leader rows, and the trade cards.
-    A failed download falls back to the default silhouette."""
+def _headshot_players(bundle: Bundle) -> list[tuple[str, bool]]:
+    """The player ID and the DEF flag of each player who shows a headshot on the page."""
     data = bundle.data
     lines = [a.line for a in data.awards if a.key == "game_changer" or a.key in TILE_KEYS]
     lines += [lead.line for lead in data.leaders]
     players = [(line.player_id, is_def(line.player_id)) for line in lines]
     # A trade holds player IDs and no lineup lines, so the ID alone tells a DEF apart.
     players += [(pid, is_def(pid)) for trade in data.trades for pid in trade.adds]
+    return players
+
+
+def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[str, str]:
+    """Save the headshot of each player on the Game Changer hero, the award tiles, the leader rows, and the trade cards.
+    A failed download falls back to the default silhouette."""
     paths = {}
-    for player_id, is_defense in players:
+    for player_id, is_defense in _headshot_players(bundle):
         # A player can hold an award, a leader row, and a trade chip, so each player is fetched once.
         if player_id in paths:
             continue
@@ -259,6 +268,41 @@ def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callabl
     return paths
 
 
+def _saved_avatars(bundle: Bundle, week_dir: Path) -> dict[int, str]:
+    """The avatar path of each team from the files that a past build saved. A missing file gets the default."""
+    paths = {}
+    for rid in bundle.data.teams:
+        saved = next((week_dir / "avatars").glob(f"{rid}.*"), None)
+        paths[rid] = f"avatars/{saved.name}" if saved else f"../../{DEFAULT_AVATAR}"
+    return paths
+
+
+def _saved_headshots(bundle: Bundle, week_dir: Path) -> dict[str, str]:
+    """The headshot path of each player from the files that a past build saved. A missing file gets the default."""
+    return {
+        pid: f"headshots/{pid}.png" if (week_dir / "headshots" / f"{pid}.png").exists() else DEFAULT_HEADSHOT_PATH
+        for pid, _ in _headshot_players(bundle)
+    }
+
+
+def _write_page_json(context: dict, week_dir: Path) -> Path:
+    """Write the render context as page.json, with the schema version first."""
+    # The context holds Pydantic models and dates. to_jsonable_python turns them into plain values.
+    # The int keys of the teams and avatars become strings, as JSON needs.
+    body = {"schema_version": PAGE_SCHEMA_VERSION, **to_jsonable_python(context)}
+    out = week_dir / "page.json"
+    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    return out
+
+
+def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -> Path:
+    """Write page.json for a week that a past build saved. It fetches nothing and keeps the page and images."""
+    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
+    week_dir.mkdir(parents=True, exist_ok=True)
+    context = build_context(bundle, blurbs, _saved_avatars(bundle, week_dir), _saved_headshots(bundle, week_dir))
+    return _write_page_json(context, week_dir)
+
+
 def _copy_static(site_dir: Path) -> None:
     shutil.copytree(STATIC_DIR, site_dir / "static", dirs_exist_ok=True)
 
@@ -269,13 +313,15 @@ def render_week(
     site_dir: Path,
     fetch_bytes: Callable[[str], bytes | None] = _download_bytes,
 ) -> Path:
-    """Write the week page and copy the static files. Return the page path."""
+    """Write the week page and its page.json, and copy the static files. Return the page path."""
     week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
     week_dir.mkdir(parents=True, exist_ok=True)
     avatars = _download_avatars(bundle, week_dir / "avatars", fetch_bytes)
     headshots = _download_headshots(bundle, week_dir / "headshots", fetch_bytes)
     page = week_dir / "index.html"
-    page.write_text(_env.get_template("week.html").render(build_context(bundle, blurbs, avatars, headshots)))
+    context = build_context(bundle, blurbs, avatars, headshots)
+    page.write_text(_env.get_template("week.html").render(context))
+    _write_page_json(context, week_dir)
     _copy_static(site_dir)
     return page
 
