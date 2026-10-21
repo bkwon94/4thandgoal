@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The week data holds a list of position leaders. Each leader holds the player line, the position, the rank 1 to 3, the count of started players at that position, and the roster id.
 - [ ] FLEX players count at their real position. Bench players do not count. The sort is points descending, then name ascending. Three rows always, fewer only when a position has fewer than three started players.

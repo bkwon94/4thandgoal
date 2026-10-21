@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The award key leaves the award model, the award computation, the award titles, the tile keys, and the render context.
 - [ ] The Awards chapter cites no `AW.butterfingers` fact and no rank or history fact for that award. `W.drops` stays in the chapter.

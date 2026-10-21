@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The tone rule reads: "lucky" at most once per page, only for a recent add that scored at least twice its projection.
 - [ ] Writer rule 8 and the vocabulary entry for recent add carry the same limit, in the same words.

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The whole brand block in the shared shell is one link to the season index, built from the `root` the page already receives.
 - [ ] On a week page the link goes up two levels to the index. On the index page the link points at the page itself.

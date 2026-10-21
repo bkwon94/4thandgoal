@@ -4,7 +4,7 @@
 
 **Blocked by:** 03 (Position leaders, end to end)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] At a 390 by 844 viewport, the five boards stack and every row holds on one line, measured with `agent-browser` on a rendered page.
 - [ ] At a wide viewport the boards sit in a grid.
