@@ -3,9 +3,10 @@
 The trade value chart Brian trusts, the half-PPR redraft chart at peakedinhighskool.com, exists
 only as a weekly PNG. The site has no table, CSV, or API, and the Patreon tier gives the redraft
 chart as an image too. We read the image with Claude vision once a week, cache the parsed values
-per week, and refuse the read when a guard fails: the header week must match, values must never
-rise down the sheet, every value must be a half point from 0 to 100, every position must be RB,
-WR, TE, or QB, and the row count must stay near the prior week's.
+per week, and refuse the read when a guard fails: the header week must match, trade values must
+never rise down the sheet, every trade value must be a half point from 0 to 100, every position
+must be RB, WR, TE, or QB, the sheet must hold at least 100 rows, rows that two strips both hold
+must agree, and the row count must stay near the prior week's.
 
 ## Considered Options
 

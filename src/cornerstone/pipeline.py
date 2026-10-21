@@ -127,11 +127,11 @@ def _chart_for_week(parsed: Week, week: int, chart: ChartFetcher | None) -> Char
     """The trade values of the week, or None. A chart problem never stops a build."""
     if chart is None:
         return None
-    lines = list({l.player_id: l for m in parsed.matchups for side in (m.a, m.b) for l in side.lines}.values())
+    lines = list({line.player_id: line for m in parsed.matchups for side in (m.a, m.b) for line in side.lines}.values())
     try:
         values = chart(parsed.season_start, week, lines)
     except Exception as err:
-        log.warning("chart unavailable, build goes on without trade values: %s", err)
+        log.warning("The chart is unavailable, so the build goes on without trade values: %s", err)
         return None
     if values is not None and values.week != week:
         log.warning("chart is for week %d, not week %d, so the trade values may be stale", values.week, week)
@@ -229,7 +229,8 @@ def make_bundle(
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),
-                 "chart": chart_week is not None,
+                 # The flag says trade values shaped a grade, so a chart with no valued trade does not set it.
+                 "chart": any(fid.startswith("T") and fid.endswith(".value") for fid in bundle.sheet.facts),
                  **{key: nfl is not None and nfl.sources.get(key, False) for key in NFLVERSE_SOURCES}},
         fetched=until,
     )

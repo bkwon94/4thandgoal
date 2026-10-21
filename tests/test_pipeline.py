@@ -19,9 +19,11 @@ from pathlib import Path
 
 from cornerstone.models import BuildRecord, NflverseWeek, Sentence, Verdict, VerifyFile, VerifyOut
 from cornerstone.nflverse import nflverse_week
+from cornerstone.parse import parse_week
 from cornerstone.pipeline import BuildStopped, make_bundle, read_verify, run_build, run_rewrite, week_dir
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.sheet import read_bundle
+from cornerstone.sleeper import load_raw
 
 ET = ZoneInfo("America/New_York")
 
@@ -471,7 +473,9 @@ def test_build_with_chart_values_makes_value_facts(tmp_path, fixture_raw_dir, fi
     facts = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert any(key.startswith("T") and key.endswith(".value") for key in facts)
     # The match covers the lines of both sides of every matchup.
-    assert seen[0][1] == 6 and seen[0][2] > 0
+    parsed = parse_week(load_raw(fixture_raw_dir))
+    both_sides = {line.player_id for m in parsed.matchups for side in (m.a, m.b) for line in side.lines}
+    assert seen[0][1] == 6 and seen[0][2] == len(both_sides)
 
 
 def test_build_without_chart_values_has_no_value_facts(tmp_path, fixture_raw_dir, fixture_history_root):
@@ -491,7 +495,7 @@ def test_a_crashing_chart_fetcher_never_stops_the_build(tmp_path, fixture_raw_di
     page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "chart": crash})
     assert page.exists()
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources["chart"] is False
-    assert "chart unavailable" in caplog.text
+    assert "The chart is unavailable" in caplog.text
 
 
 def test_a_stale_chart_still_builds_and_warns_with_both_weeks(
@@ -507,5 +511,17 @@ def test_a_stale_chart_still_builds_and_warns_with_both_weeks(
 def test_rewrite_renders_from_saved_facts_with_chart_values(tmp_path, fixture_raw_dir, fixture_history_root, chart_week6):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "chart": _chart_fetcher(chart_week6)})
-    page = run_rewrite(repo, 2026, 6, "median", _fake, news=_no_news, fetch_bytes=_no_bytes)
+    def no_chart(*args):
+        raise AssertionError("a rewrite reads the saved facts and never fetches the chart")
+
+    page = run_rewrite(repo, 2026, 6, "median", _fake, news=_no_news, fetch_bytes=_no_bytes, chart=lambda repo: no_chart)
     assert page.exists()
+    facts = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
+    assert any(key.startswith("T") and key.endswith(".value") for key in facts)
+
+
+def test_chart_with_no_valued_trade_does_not_set_the_flag(tmp_path, fixture_raw_dir, fixture_history_root, chart_week6):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    empty = chart_week6.model_copy(update={"values": {}})
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "chart": _chart_fetcher(empty)})
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources["chart"] is False
