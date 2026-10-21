@@ -14,13 +14,14 @@ from cornerstone.facts_league import TREND_WEEKS
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.parse import parse_past_week
 from cornerstone.sleeper import fetch_past_week
+from cornerstone.tunables import SHARE_WEEKS
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
 # Percentage points of change in a share that count as "up" or "down".
 SHARE_SWING = 5
-# A direction needs two windows of two weeks each.
-SHARE_DIRECTION_WEEKS = 4
+# A direction needs two windows of SHARE_WEEKS weeks each.
+SHARE_DIRECTION_WEEKS = 2 * SHARE_WEEKS
 
 
 def history_root(repo: Path, season: int) -> Path:
@@ -195,7 +196,7 @@ def _usage_share(
     numerator: Callable[[PastWeek], float],
     denominator: Callable[[PastWeek], float],
 ) -> UsageShare | None:
-    """The share of the player in the last 2 scored weeks, and its direction against the 2 before."""
+    """The share of the player in the last SHARE_WEEKS scored weeks, and its direction against the SHARE_WEEKS before."""
     if not stats_complete(history, through):
         return None
     weeks = [
@@ -210,10 +211,10 @@ def _usage_share(
 
     if len(weeks) < SHARE_DIRECTION_WEEKS:
         return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None)
-    recent, prior = weeks[-2:], weeks[-4:-2]
+    recent, prior = weeks[-SHARE_WEEKS:], weeks[-SHARE_DIRECTION_WEEKS:-SHARE_WEEKS]
     return UsageShare(
         percent=int(_round_half_up(pct(recent))),
-        weeks=2,
+        weeks=SHARE_WEEKS,
         direction=share_direction(pct(recent), pct(prior)),
     )
 

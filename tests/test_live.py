@@ -85,7 +85,7 @@ def test_the_stamps_hold_the_stats_through_week_and_the_rosters_fetch_time(live_
     assert "7569" in snap.rosters[4]
     assert snap.schedules is not None and snap.depth_charts is not None and snap.points_allowed is not None
     assert snap.stale == []
-    assert snap.usage is None and snap.injuries is None
+    assert snap.injuries is not None
 
 
 def test_a_source_older_than_a_day_refreshes_before_the_snapshot(live_repo, sleeper, fixture_nflverse_dir):

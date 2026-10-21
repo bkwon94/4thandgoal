@@ -20,11 +20,10 @@ from cornerstone.sleeper import load_raw, read_fetch_time
 
 logger = logging.getLogger(__name__)
 
-# The sources the snapshot lacks without a SlowSources. The first four use the names of load_slow_sources.
-# Each one is None and its name is in Snapshot.missing. Usage and injuries have no loader yet.
-SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "usage", "injuries")
-# The sources that no SlowSources fills, so they stay missing in every case.
-UNLOADED_SOURCES = ("usage", "injuries")
+# The sources the snapshot lacks without a SlowSources, in the names of load_slow_sources.
+# Each one is None and its name is in Snapshot.missing.
+# Snap, target, and red-zone use need no source of their own: the history helpers read them from the stats.
+SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "injuries")
 
 
 class SnapshotPlayer(BaseModel):
@@ -66,9 +65,7 @@ class Snapshot(BaseModel):
     # Season stats from week 1 through as_of.stats_through, which is week N-1 when the history holds it.
     stats: History
     as_of: AsOf
-    # Snap, target, and red-zone use, by player id.
-    usage: dict[str, dict[str, float]] | None = None
-    # The injury report status, by player id and week.
+    # The injury report status, by gsis_id and week. The id map joins it to Sleeper ids.
     injuries: dict[str, dict[int, str]] | None = None
     # The opponent of each NFL team, by team and week. A bye week has no entry.
     schedules: dict[str, TeamSchedule] | None = None
@@ -145,7 +142,7 @@ def build_snapshot(
         for entry in [entries.get(pid) or {}]
     }
     # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
-    slow_missing = list(SLOW_SOURCES) if slow is None else [*slow.missing, *UNLOADED_SOURCES]
+    slow_missing = list(SLOW_SOURCES) if slow is None else list(slow.missing)
     missing = ([] if chart is not None else ["chart"]) + slow_missing + ([] if returns is not None else ["returns"])
     return Snapshot(
         season=week.season,
@@ -167,6 +164,7 @@ def build_snapshot(
         depth_charts=slow.depth_charts if slow else None,
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
+        injuries=slow.injuries if slow else None,
         returns=returns or {},
         missing=missing,
         stale=stale,

@@ -1,6 +1,7 @@
 """
 The trade analyzer rubric in code: the proposed trade, its input check, and the grade of each side.
-The grade gives each side a start letter, then runs the adjusters in ADJUSTERS, roster fit and standing, in rubric order.
+The grade gives each side a start letter, then runs the adjusters in ADJUSTERS in rubric order:
+roster fit, standing, trend and usage, injury, and handcuff.
 The breakdown per side holds no trade value, sum, or ratio.
 """
 from collections.abc import Callable
@@ -9,13 +10,15 @@ from typing import Literal
 
 from pydantic import BaseModel, model_validator
 
-from cornerstone.history import player_points
+from cornerstone.history import player_points, red_zone, snap_share, target_share
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     CONSOLIDATION_MARGIN,
     FIT_THRESHOLD,
+    INJURY_WEEKS,
     LINEUP_WEEKS,
     RETURN_BY_WEEK,
+    RETURN_WINDOW_WEEKS,
     SELLER_GAP,
     START_LETTER_BANDS,
 )
@@ -126,12 +129,17 @@ def _both_at_c(a: TradeSide, b: TradeSide, reason: str) -> tuple[Breakdown, Brea
             Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason))
 
 
-def _start_letters(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
-    """The start letter and its reason for each side, before any adjuster."""
+def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
+    """The trade value of each player on the chart, with every handcuff in the trade at zero, listed or not."""
+    return {**snapshot.chart.values, **{pid: 0.0 for pid in handcuffs}}
+
+
+def _start_letters(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[Breakdown, Breakdown]:
+    """The start letter and its reason for each side, before any adjuster. A handcuff counts as zero in the sums."""
     a, b = trade.sides
     if snapshot.chart is None:
         return _both_at_c(a, b, NO_CHART_REASON)
-    values = snapshot.chart.values
+    values = _trade_values(snapshot, handcuffs)
     unlisted = [pid for side in trade.sides for pid in side.gives if pid not in values]
     if unlisted:
         names = [snapshot.players[pid].name for pid in unlisted]
@@ -228,6 +236,12 @@ class _Side(BaseModel):
     gets_highest_value: bool
     # True when the side gives that player.
     gives_highest_value: bool
+    # Every handcuff in the trade, whichever side gets him.
+    handcuffs: list[str] = []
+
+    @property
+    def gets_handcuffs(self) -> list[str]:
+        return [pid for pid in self.gets if pid in self.handcuffs]
 
     @property
     def lineup_gains(self) -> bool:
@@ -238,14 +252,14 @@ class _Side(BaseModel):
         return -self.lineup_change >= FIT_THRESHOLD
 
 
-def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot) -> str | None:
+def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:
     """The single highest-value player in the trade, or None when two or more tie at the top.
 
-    Trade value picks him. When the week has no chart or a traded player is unlisted, the trade values
-    of the two sides do not compare, so recent points per game pick him.
+    Trade value picks him, with a handcuff at zero as in the sums. When the week has no chart or a traded
+    player is unlisted, the trade values of the two sides do not compare, so recent points per game pick him.
     """
     players = [pid for side in trade.sides for pid in side.gives]
-    values = snapshot.chart.values if snapshot.chart is not None else {}
+    values = _trade_values(snapshot, handcuffs) if snapshot.chart is not None else {}
     if all(pid in values for pid in players):
         worth = {pid: Decimal(str(values[pid])) for pid in players}
     else:
@@ -255,16 +269,48 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot) -> str | Non
     return leaders[0] if len(leaders) == 1 else None
 
 
-def _side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None) -> _Side:
+def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str]) -> list[str]:
+    return [pid for pid in snapshot.rosters[roster_id] if pid not in gives] + gets
+
+
+def _side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None,
+          handcuffs: list[str]) -> _Side:
     before = snapshot.rosters[roster_id]
-    after = [pid for pid in before if pid not in gives] + gets
+    after = _roster_after(snapshot, roster_id, gives, gets)
     return _Side(
         roster_id=roster_id, gets=gets, gives=gives,
         starters_after=best_lineup(after, snapshot.roster_positions, snapshot),
         lineup_change=_lineup_total(after, snapshot) - _lineup_total(before, snapshot),
         gets_highest_value=top in gets,
         gives_highest_value=top in gives,
+        handcuffs=handcuffs,
     )
+
+
+def _has_depth_chart(snapshot: Snapshot) -> bool:
+    # The depth chart lists gsis_ids, so it needs the id map to reach the Sleeper rosters.
+    return snapshot.depth_charts is not None and snapshot.id_map is not None
+
+
+def _trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
+    """The running backs in the trade who back up a starter on the roster that gets them.
+
+    A handcuff is second or lower on his NFL team's RB depth chart, and the first on that chart is on the
+    getting roster after the trade. With no depth chart, no player is a handcuff.
+    """
+    if not _has_depth_chart(snapshot):
+        return []
+    id_map = snapshot.id_map
+    found = []
+    for giver, getter in (trade.sides, trade.sides[::-1]):
+        after = {id_map[pid] for pid in _roster_after(snapshot, getter.roster_id, getter.gives, giver.gives)
+                 if pid in id_map}
+        for pid in giver.gives:
+            player = snapshot.players[pid]
+            chart = snapshot.depth_charts.get(player.nfl_team or "", {}).get("RB", [])
+            if player.position == "RB" and id_map.get(pid) in chart[1:] and chart[0] in after:
+                found.append(pid)
+    return found
 
 
 # The name of each adjuster. The breakdown shows it, so each string lives here only.
@@ -275,6 +321,13 @@ STANDING = "standing"
 def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Roster fit: the change in the side's best lineup."""
     if side.lineup_loses:
+        # A handcuff is insurance that sits on the bench, so a lineup loss in a trade for him does not count.
+        if side.gets_handcuffs:
+            names = _join([snapshot.players[pid].name for pid in side.gets_handcuffs])
+            verb = "is a handcuff" if len(side.gets_handcuffs) == 1 else "are handcuffs"
+            return Adjuster(name=ROSTER_FIT, step=0,
+                            reason=f"The best lineup loses after the trade, but {names} {verb}, "
+                                   "so the loss does not count.")
         return Adjuster(name=ROSTER_FIT, step=-1, reason="The best lineup loses after the trade.")
     # In a one-for-two-or-more trade, the side that gets the depth must start every player it gets.
     # Otherwise it pays for a bench player, so neither the gain nor the highest-value player earns the step up.
@@ -325,6 +378,16 @@ def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
     return None
 
 
+def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
+    """The players the standing adjuster credits as a return bet: a contender with no lineup gain gets them.
+
+    The injury adjuster reads this too, so a player the standing step counts in favor never counts against.
+    """
+    if _race(snapshot, side.roster_id) != "contender" or side.lineup_gains:
+        return []
+    return [pid for pid in side.gets if _return_bet(snapshot, pid)]
+
+
 def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Standing: a contender's win-now move or return bet, and a seller's bet on the future."""
     race = _race(snapshot, side.roster_id)
@@ -332,7 +395,7 @@ def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
         lead = "The team holds a playoff spot"
         if side.lineup_gains:
             return Adjuster(name=STANDING, step=1, reason=f"{lead}, and the best lineup gains now.")
-        bets = [pid for pid in side.gets if _return_bet(snapshot, pid)]
+        bets = _credited_return_bets(snapshot, side)
         if bets:
             names = _join([snapshot.players[pid].name for pid in bets])
             verb = "is" if len(bets) == 1 else "are"
@@ -355,18 +418,134 @@ def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=STANDING, step=0, reason="The team is neither in a playoff spot nor out of the race.")
 
 
+TREND = "trend and usage"
+
+
+def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
+    """The set of share directions, up or down, of the players. A flat share or a player with no usage data adds none."""
+    through = snapshot.as_of.stats_through
+    shares = [share(snapshot.stats, pid, through) for pid in players for share in (snap_share, target_share)]
+    return {share.direction for share in shares if share is not None and share.direction in ("up", "down")}
+
+
+def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
+    """The red-zone targets and rushes of the players, summed over the season through the last completed week."""
+    through = snapshot.as_of.stats_through
+    return sum(sum(red_zone(snapshot.stats, pid, through) or (0, 0)) for pid in players)
+
+
+def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """Trend and usage: the snap and target share directions of the players it gets against the players it gives.
+
+    A handcuff's use does not count on either side, so the trend never steps a side down because of him.
+    """
+    adjuster = _trend_step(snapshot, [pid for pid in side.gets if pid not in side.handcuffs],
+                           [pid for pid in side.gives if pid not in side.handcuffs])
+    left_out = [pid for pid in side.gets + side.gives if pid in side.handcuffs]
+    if not left_out:
+        return adjuster
+    names = _join([snapshot.players[pid].name for pid in left_out])
+    note = (f"{names} is a handcuff, so his use does not count." if len(left_out) == 1
+            else f"{names} are handcuffs, so their use does not count.")
+    return adjuster.model_copy(update={"reason": f"{adjuster.reason} {note}"})
+
+
+def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster:
+    got, gave = _directions(snapshot, gets), _directions(snapshot, gives)
+    # A player with one share up and one share down puts both in his side's set, so his trade is mixed.
+    if got <= {"up"} and gave <= {"down"} and (got or gave):
+        return Adjuster(name=TREND, step=1,
+                        reason="The players it gets gain snap or target share, and the players it gives lose it.")
+    if got <= {"down"} and gave <= {"up"} and (got or gave):
+        return Adjuster(name=TREND, step=-1,
+                        reason="The players it gets lose snap or target share, and the players it gives gain it.")
+    if got or gave:
+        return Adjuster(name=TREND, step=0, reason="The snap and target shares point both ways.")
+    # Every share is flat, so red-zone use breaks the tie.
+    got_rz, gave_rz = _red_zone_touches(snapshot, gets), _red_zone_touches(snapshot, gives)
+    lead = "The snap and target shares hold steady"
+    if got_rz > gave_rz:
+        return Adjuster(name=TREND, step=1, reason=f"{lead}, and the players it gets have more red-zone use.")
+    if got_rz < gave_rz:
+        return Adjuster(name=TREND, step=-1, reason=f"{lead}, and the players it gives have more red-zone use.")
+    return Adjuster(name=TREND, step=0, reason=f"{lead}, and the red-zone use is even.")
+
+
+INJURY = "injury"
+
+
+def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player is out now and the returns file has him back no sooner than RETURN_WINDOW_WEEKS on."""
+    if snapshot.players[player_id].injury_status not in OUT_STATUSES:
+        return False
+    week = snapshot.returns.get(player_id)
+    return week is None or week > snapshot.as_of.stats_through + RETURN_WINDOW_WEEKS
+
+
+def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
+    """The count of weeks through the last completed week with the player on the injury report.
+
+    None when the injury report or the id map that joins it to the Sleeper id is not in the snapshot.
+    """
+    if snapshot.injuries is None or snapshot.id_map is None:
+        return None
+    weeks = snapshot.injuries.get(snapshot.id_map.get(player_id, ""), {})
+    # GLOSSARY.md, "Before the trade": a report for the trade week itself does not count.
+    return sum(1 for week in weeks if week <= snapshot.as_of.stats_through)
+
+
+def _injury(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """Injury: a player it gets who is out with no near return, or who was on the report in many weeks."""
+    exempt = set(_credited_return_bets(snapshot, side))
+    for pid in side.gets:
+        if pid in exempt:
+            continue
+        name = snapshot.players[pid].name
+        if _out_with_no_near_return(snapshot, pid):
+            return Adjuster(name=INJURY, step=-1, reason=f"{name} is out with no near return.")
+        if (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS:
+            return Adjuster(name=INJURY, step=-1, reason=f"{name} was on the injury report in many weeks this season.")
+    reason = "No player it gets is out for long or often on the injury report."
+    if snapshot.injuries is None or snapshot.id_map is None:
+        reason += " The injury report is not available, so no count of report weeks ran."
+    return Adjuster(name=INJURY, step=0, reason=reason)
+
+
+HANDCUFF = "handcuff"
+
+
+def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """Handcuff: a backup to the roster's own starting running back is insurance.
+
+    It never moves the letter itself. A handcuff counts as zero in the sums, and the fit and trend
+    adjusters cannot step down because of him.
+    """
+    if not _has_depth_chart(snapshot):
+        return Adjuster(name=HANDCUFF, step=0, reason="The depth chart is not available, so no handcuff check ran.")
+    if not side.gets_handcuffs:
+        return Adjuster(name=HANDCUFF, step=0, reason="No player it gets is a handcuff.")
+    names = _join([snapshot.players[pid].name for pid in side.gets_handcuffs])
+    if len(side.gets_handcuffs) == 1:
+        reason = f"{names} backs up the team's own starter, so he counts as insurance."
+    else:
+        reason = f"{names} back up the team's own starters, so they count as insurance."
+    return Adjuster(name=HANDCUFF, step=0, reason=reason)
+
+
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.
-ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (_fit, _standing)
+ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (_fit, _standing, _trend, _injury, _handcuff)
 
 
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
     a, b = trade.sides
-    top = _highest_value_player(trade, snapshot)
-    sides = (_side(snapshot, a.roster_id, a.gives, b.gives, top),
-             _side(snapshot, b.roster_id, b.gives, a.gives, top))
-    starts = _start_letters(trade, snapshot)
+    # The handcuffs come first, because the start letter sums and the highest-value player count them at zero.
+    handcuffs = _trade_handcuffs(trade, snapshot)
+    top = _highest_value_player(trade, snapshot, handcuffs)
+    sides = (_side(snapshot, a.roster_id, a.gives, b.gives, top, handcuffs),
+             _side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
+    starts = _start_letters(trade, snapshot, handcuffs)
     return tuple(  # type: ignore[return-value]
         start.model_copy(update={"adjusters": [adjuster(snapshot, side) for adjuster in ADJUSTERS]})
         for start, side in zip(starts, sides)

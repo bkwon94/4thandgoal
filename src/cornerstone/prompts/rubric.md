@@ -41,6 +41,9 @@ player in the trade is unlisted, neither side gets a start letter from trade val
 start at C, and the breakdown names the unlisted player. When the week has no chart at all, both
 sides start at C too.
 
+A handcuff is the exception. A handcuff counts as zero in the sums, with a chart row or without
+one. A handcuff with no chart row keeps the start letter. See the handcuff section.
+
 ## Adjusters
 
 After the start letter, each adjuster moves a side by one step at most: up, down, or not at all.
@@ -78,6 +81,48 @@ playoff spot. Every other team is in the middle and gets no step.
 A return week comes from the returns file, `data/<season>/returns.json`, which the commissioner
 keeps. It holds the week each injured or suspended player returns. A player who is out, on IR, or
 suspended, and who has no row in the file, counts as not back by week `RETURN_BY_WEEK`.
+
+## Trend and usage
+
+Compare each player's snap share and target share over the last `SHARE_WEEKS` scored weeks with
+the `SHARE_WEEKS` scored weeks before them. A share that moves by enough points is up or down.
+Every other share is flat. A player with too few weeks of data counts as flat.
+
+- The players the side gets are up and the players it gives are down: one step up.
+- The players the side gets are down and the players it gives are up: one step down.
+- Shares that point both ways are mixed: no step. A player with one share up and one share down
+  makes the trade mixed.
+- When every share is flat, red-zone use breaks the tie. Red-zone use is the red-zone targets and
+  rushes over the season. More red-zone use in the players the side gets is one step up. More in the
+  players it gives is one step down. Equal use is no step.
+
+A handcuff's use does not count on either side, and the reason says so.
+
+## Injury
+
+A player the side gets is an injury risk in two cases:
+
+- He is out now, on IR, or suspended, and the returns file has him back no sooner than
+  `RETURN_WINDOW_WEEKS` weeks after the last completed week.
+- He was on the injury report in `INJURY_WEEKS` or more weeks this season. Only the weeks
+  before the trade count.
+
+One such player is one step down. The adjuster never fires for a player the standing adjuster
+credited as a return bet. When the injury report is not available, only the first case runs, and
+the reason says so.
+
+## Handcuff
+
+A handcuff is a running back the side gets who is second or lower on his NFL team's depth chart,
+when the first on that chart is on the side's roster after the trade. He is insurance for the
+team's own starter.
+
+- He counts as zero in the start letter sums.
+- Roster fit cannot step down for a lineup loss in a trade that gets him.
+- Trend and usage leaves his use out.
+
+The handcuff adjuster itself gives no step. It names the handcuff. When the depth chart is not
+available, no player is a handcuff, and the reason says that no handcuff check ran.
 
 ## What the breakdown never holds
 

@@ -37,3 +37,13 @@ PLAYOFF_SPOTS = 6
 SELLER_GAP = 2
 # The last week of the regular season. When the side gets a player who is due back by this week, the trade is a return bet.
 RETURN_BY_WEEK = 14
+
+# Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
+# The count of scored weeks in each window. The share helpers in history.py read it, so both windows change here.
+SHARE_WEEKS = 2
+
+# Injury: a player the side gets who is out now, or who was on the injury report in many weeks, is a step down.
+# The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
+INJURY_WEEKS = 3
+# A player who is out now and due back within this many weeks after the last completed week is a near return.
+RETURN_WINDOW_WEEKS = 2

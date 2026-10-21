@@ -54,20 +54,19 @@ def test_a_history_without_week_5_stamps_the_last_week_it_holds_and_notes_it(
 
 def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_history_root, chart_week6):
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
-    assert snap.usage is None
     assert snap.injuries is None
     assert snap.schedules is None
     assert snap.depth_charts is None
     assert snap.points_allowed is None
     assert snap.id_map is None
-    assert snap.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "usage", "injuries"]
+    assert snap.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries"]
 
 
-def test_slow_sources_fill_the_snapshot_and_only_usage_and_injuries_stay_missing(
+def test_slow_sources_fill_the_snapshot_and_none_stay_missing(
         fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
     cache = tmp_path / "nflverse"
     cache.mkdir()
-    for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv"):
+    for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv", "injuries_2026.csv.gz"):
         shutil.copy(fixture_nflverse_dir / name, cache / name)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
@@ -75,7 +74,8 @@ def test_slow_sources_fill_the_snapshot_and_only_usage_and_injuries_stay_missing
     assert snap.depth_charts == slow.depth_charts and snap.depth_charts
     assert snap.id_map == slow.id_map and snap.id_map
     assert snap.points_allowed == slow.points_allowed and snap.points_allowed
-    assert snap.missing == ["usage", "injuries"]
+    assert snap.injuries == slow.injuries and snap.injuries
+    assert snap.missing == []
 
 
 def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history_root):

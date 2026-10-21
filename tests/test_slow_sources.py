@@ -1,5 +1,5 @@
 """
-Tests for the loader of the three slow sources.
+Tests for the loader of the slow sources.
 It reads the cache and the history, so no test needs the network.
 """
 import shutil
@@ -11,7 +11,7 @@ from cornerstone.slow_sources import load_slow_sources
 def _cache(fixture_nflverse_dir, tmp_path):
     cache = tmp_path / "nflverse"
     cache.mkdir()
-    for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv"):
+    for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv", "injuries_2026.csv.gz"):
         shutil.copy(fixture_nflverse_dir / name, cache / name)
     return cache
 
@@ -23,12 +23,15 @@ def test_load_slow_sources_gives_every_source(fixture_nflverse_dir, fixture_hist
     assert sources.depth_charts["SF"]["RB"][0] == "00-0033280"
     assert sources.points_allowed["NO"]["RB"].rank == 1
     assert sources.id_map == read_id_map(fixture_nflverse_dir / "db_playerids.csv")
+    # Terry McLaurin is Questionable in weeks 4 and 5 and has no status in week 6.
+    assert sources.injuries["00-0035659"] == {4: "Questionable", 5: "Questionable"}
 
 
 def test_load_slow_sources_without_a_cache_names_each_missing_source(tmp_path):
     sources = load_slow_sources(tmp_path / "none", 2026, 6, tmp_path / "no-history")
-    assert (sources.schedules, sources.depth_charts, sources.id_map, sources.points_allowed) == (None,) * 4
-    assert sources.missing == ["schedules", "depth_charts", "id_map", "points_allowed"]
+    assert (sources.schedules, sources.depth_charts, sources.id_map, sources.points_allowed, sources.injuries) == (
+        None,) * 5
+    assert sources.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries"]
 
 
 def test_load_slow_sources_without_the_ffids_file_misses_only_the_id_map(
@@ -52,3 +55,11 @@ def test_load_slow_sources_with_a_broken_file_does_not_raise(fixture_nflverse_di
     (cache / "depth_charts_2026.csv.gz").write_bytes(b"not gzip")
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
     assert sources.missing == ["schedules", "depth_charts"]
+
+
+def test_load_slow_sources_without_the_injuries_file_misses_only_the_injuries(
+        fixture_nflverse_dir, fixture_history_root, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    (cache / "injuries_2026.csv.gz").unlink()
+    sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    assert sources.injuries is None and sources.missing == ["injuries"]

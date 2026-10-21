@@ -1,13 +1,15 @@
 """
-Tests for the grade of a proposed trade: the start letter, consolidation, unlisted, fit, and standing rules.
+Tests for the grade of a proposed trade: the start letter, consolidation, unlisted, and each adjuster.
 They feed a proposed trade and the week 6 snapshot at the grade seam.
 """
 import re
+import shutil
 
 import pytest
 
 from cornerstone.rubric import ProposedTrade, TradeInputError, TradeSide, grade
 from cornerstone.sleeper import load_raw
+from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_snapshot
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
@@ -21,6 +23,15 @@ HARRISON, B_ROBINSON, BIJAN = "11628", "8154", "9509"
 @pytest.fixture
 def snap(fixture_raw_dir, fixture_history_root, chart_week6):
     return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+
+
+@pytest.fixture
+def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
+    """The week 6 snapshot with the slow sources from the nflverse fixture: the depth chart, the id map, and the injuries."""
+    cache = tmp_path / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
 
 
 def _trade(a: int, a_gives: list[str], b: int, b_gives: list[str], asker: int | None = None) -> ProposedTrade:
@@ -108,7 +119,8 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
             for reason in [side.reason, *(a.reason for a in side.adjusters)]:
                 assert not re.search(r"\d", reason)
-                assert not re.search(r"ratio|sum|peaked|chart", reason, re.IGNORECASE)
+                # The trade value chart never shows. The NFL depth chart is a plain source, so its name may.
+                assert not re.search(r"ratio|sum|peaked|(?<!depth )chart", reason, re.IGNORECASE)
 
 
 # Points per game over weeks 2 to 5, the last four completed weeks of the week 6 snapshot.
@@ -240,7 +252,7 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
 
 def test_the_adjusters_show_in_rubric_order(snap):
     for side in grade(_trade(10, [SAQUON], 5, [COOK]), snap):
-        assert [a.name for a in side.adjusters] == ["roster fit", "standing"]
+        assert [a.name for a in side.adjusters] == ["roster fit", "standing", "trend and usage", "injury", "handcuff"]
 
 
 # The week 6 Josh Jacobs trade: roster 11 got Jacobs and Devaughn Vele from roster 12
@@ -307,3 +319,166 @@ def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_valu
     fit = _adjuster(seventh, "roster fit")
     assert fit.step == 1
     assert fit.reason == "It gets the highest-value player in the trade, and the best lineup does not lose."
+
+
+# Snap and target share directions through week 5, the last two weeks against the two before.
+# Rome Odunze on roster 4 is up in both. Christian Watson on roster 1 is down in both.
+# Rashee Rice on roster 1 is down in snap share and up in target share.
+ODUNZE, WATSON, RICE = "11620", "8167", "10229"
+
+
+def test_trend_steps_up_for_the_side_that_gets_the_rising_player_and_down_for_the_other(snap):
+    first, fourth = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    assert _adjuster(first, "trend and usage").step == 1
+    assert _adjuster(first, "trend and usage").reason == (
+        "The players it gets gain snap or target share, and the players it gives lose it.")
+    assert _adjuster(fourth, "trend and usage").step == -1
+    assert _adjuster(fourth, "trend and usage").reason == (
+        "The players it gets lose snap or target share, and the players it gives gain it.")
+
+
+def test_trend_gives_no_step_when_the_shares_point_both_ways(snap):
+    # Roster 4 gets Watson, who is down, and Rice, who is down in snap share and up in target share.
+    _, fourth = grade(_trade(1, [WATSON, RICE], 4, [ODUNZE]), snap)
+    assert _adjuster(fourth, "trend and usage").step == 0
+    assert _adjuster(fourth, "trend and usage").reason == "The snap and target shares point both ways."
+
+
+# Both shares are flat through week 5 for RJ Harvey on roster 1, with 3 red-zone touches,
+# and for Alvin Kamara on roster 9, with 5.
+HARVEY, KAMARA = "12489", "4035"
+
+
+def test_red_zone_use_breaks_the_tie_when_every_share_is_flat(snap):
+    first, ninth = grade(_trade(1, [HARVEY], 9, [KAMARA]), snap)
+    assert _adjuster(first, "trend and usage").step == 1
+    assert _adjuster(first, "trend and usage").reason == (
+        "The snap and target shares hold steady, and the players it gets have more red-zone use.")
+    assert _adjuster(ninth, "trend and usage").step == -1
+
+
+def test_injury_steps_down_for_a_player_out_now_with_no_near_return(snap):
+    # Saquon Barkley is Out and has no row in the returns file. Wicks is Questionable, which is not out.
+    third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").step == -1
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+    assert _adjuster(tenth, "injury").step == 0
+
+
+def test_injury_gives_no_step_for_a_player_due_back_within_the_return_window(snap):
+    # Stats run through week 5, so a return in week 7 is near.
+    snap = snap.model_copy(update={"returns": {SAQUON: 7}})
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").step == 0
+
+
+# Chris Olave on roster 2 is on the injury report in weeks 2 and 6, and in week 5 with no status.
+# Jakobi Meyers on roster 3 is never on it.
+OLAVE, OLAVE_GSIS, MEYERS = "8144", "00-0037239", "5947"
+
+
+def _with_report_weeks(snap, gsis: str, weeks: list[int]):
+    injuries = {**snap.injuries, gsis: {**snap.injuries[gsis], **{week: "Questionable" for week in weeks}}}
+    return snap.model_copy(update={"injuries": injuries})
+
+
+def test_injury_steps_down_at_the_count_of_report_weeks_and_never_counts_the_trade_week(slow_snap):
+    # Weeks 2, 3, and 6 are three weeks, but week 6 is the trade week, so only two count.
+    third, _ = grade(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3]))
+    assert _adjuster(third, "injury").step == 0
+    third, _ = grade(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3, 4]))
+    assert _adjuster(third, "injury").step == -1
+    assert _adjuster(third, "injury").reason == "Chris Olave was on the injury report in many weeks this season."
+
+
+def test_injury_without_the_injury_report_says_no_count_ran(snap):
+    third, _ = grade(_trade(3, [MEYERS], 2, [OLAVE]), snap)
+    assert _adjuster(third, "injury").step == 0
+    assert "The injury report is not available" in _adjuster(third, "injury").reason
+
+
+def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_return_bet(snap):
+    # Jacobs is suspended and due back in week 10: past the return window, but before the playoffs.
+    snap = _before_the_jacobs_trade(snap).model_copy(update={"returns": {JACOBS: 10}})
+    trade = _trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE])
+    # In the middle of the standings, roster 11 gets no return bet credit, so the injury counts.
+    eleventh, _ = grade(trade, snap)
+    assert _adjuster(eleventh, "injury").step == -1
+    assert _adjuster(eleventh, "injury").reason == "Josh Jacobs is out with no near return."
+    # As a contender, the standing step credits Jacobs as a return bet, so the injury does not count.
+    eleventh, _ = grade(trade, _as_contender(snap, 11))
+    assert _adjuster(eleventh, "standing").step == 1
+    assert _adjuster(eleventh, "injury").step == 0
+
+
+# The LAC depth chart: Omarion Hampton on roster 12 first, then Keaton Mitchell and Kimani Vidal on roster 11.
+# The id map fixture lacks them, so the tests join their gsis_ids here.
+MITCHELL, HAMPTON, VIDAL = "9511", "12507", "11647"
+LAC_IDS = {MITCHELL: "00-0038454", HAMPTON: "00-0040666", VIDAL: "00-0039391"}
+
+
+def _with_ids(snap, ids: dict[str, str]):
+    return snap.model_copy(update={"id_map": {**snap.id_map, **ids}})
+
+
+def test_a_handcuff_with_a_chart_row_counts_as_zero_in_the_sums(slow_snap):
+    # With Mitchell at 10.0 for Pollard at 9.0, roster 12 would start at B and roster 11 at C.
+    snap = _with_values(_with_ids(slow_snap, LAC_IDS), {MITCHELL: 10.0})
+    twelfth, eleventh = grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)
+    assert _letters([twelfth, eleventh]) == ["F", "A"]
+    handcuff = _adjuster(twelfth, "handcuff")
+    assert handcuff.step == 0
+    assert handcuff.reason == "Keaton Mitchell backs up the team's own starter, so he counts as insurance."
+    assert _adjuster(eleventh, "handcuff").reason == "No player it gets is a handcuff."
+
+
+def test_a_handcuff_with_no_chart_row_keeps_the_start_letter(slow_snap):
+    # Mitchell has no trade value. As a handcuff he counts as zero, so no side starts at C for him.
+    twelfth, eleventh = grade(_trade(12, [POLLARD], 11, [MITCHELL]), _with_ids(slow_snap, LAC_IDS))
+    assert _letters([twelfth, eleventh]) == ["F", "A"]
+    assert "no trade value" not in twelfth.reason
+
+
+def test_a_backup_whose_starter_is_on_another_roster_is_no_handcuff(slow_snap):
+    # Roster 7 has no LAC starter, so Mitchell is unlisted there and both sides start at C.
+    seventh, _ = grade(_trade(7, [B_ROBINSON], 11, [MITCHELL]), _with_ids(slow_snap, LAC_IDS))
+    assert seventh.start_letter == "C"
+    assert _adjuster(seventh, "handcuff").reason == "No player it gets is a handcuff."
+
+
+# Amon-Ra St. Brown starts at WR for roster 12. Mitchell sits on its bench after the trade.
+ST_BROWN = "7547"
+
+
+def test_fit_never_steps_down_because_of_a_handcuff(slow_snap):
+    twelfth, _ = grade(_trade(12, [ST_BROWN], 11, [MITCHELL]), _with_ids(slow_snap, LAC_IDS))
+    fit = _adjuster(twelfth, "roster fit")
+    assert fit.step == 0
+    assert fit.reason == (
+        "The best lineup loses after the trade, but Keaton Mitchell is a handcuff, so the loss does not count.")
+
+
+# The NE depth chart: Rhamondre Stevenson on roster 7 first, then TreVeyon Henderson on roster 8.
+# Henderson's snap share is down through week 5. The Carolina defense has no share direction and no red-zone use.
+STEVENSON, HENDERSON, CAR_DEF = "7611", "12529", "CAR"
+NE_IDS = {STEVENSON: "00-0036875", HENDERSON: "00-0040734"}
+
+
+def test_trend_never_steps_down_because_of_a_handcuff(snap, slow_snap):
+    trade = _trade(7, [CAR_DEF], 8, [HENDERSON])
+    # With no depth chart, Henderson is no handcuff, and his falling share steps roster 7 down.
+    seventh, _ = grade(trade, snap)
+    assert _adjuster(seventh, "trend and usage").step == -1
+    seventh, _ = grade(trade, _with_ids(slow_snap, NE_IDS))
+    trend = _adjuster(seventh, "trend and usage")
+    assert trend.step == 0
+    assert trend.reason.endswith("TreVeyon Henderson is a handcuff, so his use does not count.")
+
+
+def test_with_no_depth_chart_the_handcuff_check_does_not_run_and_the_breakdown_says_so(slow_snap):
+    for snap in (slow_snap.model_copy(update={"depth_charts": None}), slow_snap.model_copy(update={"id_map": None})):
+        twelfth, _ = grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)
+        assert _letters(grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)) == ["C", "C"]
+        handcuff = _adjuster(twelfth, "handcuff")
+        assert handcuff.step == 0
+        assert handcuff.reason == "The depth chart is not available, so no handcuff check ran."
