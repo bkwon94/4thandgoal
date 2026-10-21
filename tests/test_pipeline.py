@@ -77,10 +77,11 @@ def _repo(tmp_path, fixture_raw_dir):
 def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    assert page == repo / "site" / "2026" / "week-06" / "index.html"
+    assert page == repo / "site" / "2026" / "week-06" / "page.json"
     for f in ("facts.json", "blurbs.json", "verify.json"):
         assert (week_dir(repo, 2026, 6) / f).exists()
-    assert (repo / "site" / "index.html").exists()
+    assert not (repo / "site" / "index.html").exists()
+    assert not (repo / "site" / "static").exists()
     sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
     assert "chart" not in sources
 
@@ -225,11 +226,11 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
 
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "public/2026/week-06/index.html" in files
     assert "public/2026/week-06/page.json" in files
+    assert "public/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
-    assert any(f.startswith("public/static/") for f in files)
-    assert "public/index.html" in files
+    assert not any(f.startswith("public/static/") for f in files)
+    assert "public/index.html" not in files
     assert not (site_repo / "2026").exists()
     assert not (site_repo / "index.html").exists()
     assert not (site_repo / "static").exists()
@@ -245,26 +246,24 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     for week in (6, 7):
         shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, week) / "raw")
         run_build(repo, 2026, week, _fake, fetch=False, **OFFLINE)
-    assert "week-07/" in (repo / "site" / "index.html").read_text()
+    assert (repo / "site" / "2026" / "week-07" / "page.json").exists()
 
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
 
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "public/2026/week-06/index.html" in files
+    assert "public/2026/week-06/page.json" in files
     assert not any(f.startswith("public/2026/week-07/") for f in files)
-    home = (site_repo / "public" / "index.html").read_text()
-    assert "week-06/" in home and "week-07/" not in home
 
 
 def test_publish_requires_built_page(tmp_path):
-    with pytest.raises(PublishError, match="index.html"):
+    with pytest.raises(PublishError, match="page.json"):
         run_publish(tmp_path, 2026, 6, site_repo=tmp_path / "site", push=False)
 
 
 def test_publish_requires_git_checkout(tmp_path):
-    page = tmp_path / "site" / "2026" / "week-06" / "index.html"
+    page = tmp_path / "site" / "2026" / "week-06" / "page.json"
     page.parent.mkdir(parents=True)
-    page.write_text("<html></html>")
+    page.write_text("{}")
     with pytest.raises(PublishError, match="git"):
         run_publish(tmp_path, 2026, 6, site_repo=tmp_path / "missing", push=False)
 
@@ -474,6 +473,6 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
     assert cli.main(["page-json", "--season", "2026", "--week", "6"]) == 0
 
     data = json.loads(page_json.read_text(encoding="utf-8"))
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == 2
     assert data["week"] == 6
     assert len(data["matchups"]) == 6

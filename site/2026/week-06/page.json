@@ -1,6 +1,5 @@
 {
-  "schema_version": 1,
-  "asset_version": "4c469f80",
+  "schema_version": 2,
   "season": 2026,
   "week": 6,
   "dates": "Oct 15 – Oct 19, 2026",
@@ -2055,6 +2054,5 @@
     "5850": "headshots/5850.png",
     "8146": "headshots/8146.png"
   },
-  "summary": "Week 6 · Oct 15 – Oct 19, 2026 · behold the lamb vs Bo Girds",
-  "root": "../../"
+  "summary": "Week 6 · Oct 15 – Oct 19, 2026 · behold the lamb vs Bo Girds"
 }

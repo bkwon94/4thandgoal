@@ -1,52 +1,31 @@
 """
-Renders the week page and the home page from a bundle and its blurbs.
-Templates get one plain context dict, so they hold layout and no logic.
+Writes the page.json of a week from a bundle and its blurbs, and saves the images it names.
+The site repo reads the JSON and renders the pages.
 """
-import hashlib
-import html
 import json
 import logging
-import re
-import shutil
 from collections.abc import Callable
 from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
-from jinja2 import Environment, FileSystemLoader
 from pydantic import TypeAdapter
 
 from cornerstone.facts_league import LEADER_POSITIONS
-from cornerstone.models import Blurb, Bundle, MatchupFacts, PlayerLine
-from cornerstone.sheet import AWARD_TITLES, fmt
+from cornerstone.models import Blurb, Bundle, MatchupFacts
+from cornerstone.sheet import AWARD_TITLES
 
-PACKAGE_DIR = Path(__file__).parent
-STATIC_DIR = PACKAGE_DIR / "static"
 DEFAULT_AVATAR = "static/avatar-default.svg"
 DEFAULT_HEADSHOT = "static/headshot-default.svg"
-# The week page sits two folders below the site root, so it reaches the default silhouette with this path.
+# The week folder sits two folders below the site root, so it reaches the default silhouette with this path.
 DEFAULT_HEADSHOT_PATH = f"../../{DEFAULT_HEADSHOT}"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 # Bump this when a key in page.json changes meaning or leaves. A new key does not need a bump.
-PAGE_SCHEMA_VERSION = 1
-SUMMARY_META = re.compile(r'<meta name="cornerstone-summary" content="([^"]*)">')
+PAGE_SCHEMA_VERSION = 2
 
 log = logging.getLogger(__name__)
-
-_env = Environment(loader=FileSystemLoader(PACKAGE_DIR / "templates"), autoescape=True)
-_env.filters["num"] = fmt
-_env.filters["gap"] = lambda x: f"+{fmt(x)}" if x >= 0 else f"−{fmt(-x)}"
-
-
-def _short_name(line: PlayerLine) -> str:
-    first, _, rest = line.name.partition(" ")
-    return f"{first[0]}. {rest}" if rest else line.name
-
-
-_env.filters["short_name"] = _short_name
-
 
 def _sides(f: MatchupFacts, teams: dict) -> list[dict]:
     """The two sides of a matchup, winner first. A tie has neither flag set and keeps the roster order.
@@ -136,20 +115,10 @@ def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
     return list(boards.values())
 
 
-def _asset_version() -> str:
-    """Return a short content hash of the stylesheet and the script."""
-    # A browser cache keeps a stylesheet past a publish because the path never changes.
-    # The stamp changes with the file, so the browser fetches a fresh copy.
-    digest = hashlib.sha256()
-    for name in ("style.css", "app.js"):
-        digest.update((STATIC_DIR / name).read_bytes())
-    return digest.hexdigest()[:8]
-
-
 def build_context(
     bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str], headshots: dict[str, str],
 ) -> dict:
-    """Turn the bundle into the values the templates read."""
+    """Turn the bundle into the values that page.json holds."""
     data = bundle.data
     teams = data.teams
     text = {key: " ".join(s.text for s in b.sentences) for key, b in blurbs.items()}
@@ -167,7 +136,6 @@ def build_context(
         for f in sorted(data.matchups, key=lambda f: f.matchup_id)
     ]
     return {
-        "asset_version": _asset_version(),
         "season": data.season,
         "week": data.week,
         "dates": data.dates,
@@ -190,7 +158,6 @@ def build_context(
         "avatars": avatars,
         "headshots": headshots,
         "summary": f"Week {data.week} · {data.dates} · {pick_sides[0]['team'].name} vs {pick_sides[1]['team'].name}",
-        "root": "../../",
     }
 
 
@@ -310,41 +277,15 @@ def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -
     return _write_page_json(context, week_dir)
 
 
-def _copy_static(site_dir: Path) -> None:
-    shutil.copytree(STATIC_DIR, site_dir / "static", dirs_exist_ok=True)
-
-
 def render_week(
     bundle: Bundle,
     blurbs: dict[str, Blurb],
     site_dir: Path,
     fetch_bytes: Callable[[str], bytes | None] = _download_bytes,
 ) -> Path:
-    """Write the week page and its page.json, and copy the static files. Return the page path."""
+    """Save the images of a week and write its page.json. Return the page.json path."""
     week_dir = _week_dir(site_dir, bundle)
     avatars = _download_avatars(bundle, week_dir / "avatars", fetch_bytes)
     headshots = _download_headshots(bundle, week_dir / "headshots", fetch_bytes)
-    page = week_dir / "index.html"
     context = build_context(bundle, blurbs, avatars, headshots)
-    page.write_text(_env.get_template("week.html").render(context))
-    _write_page_json(context, week_dir)
-    _copy_static(site_dir)
-    return page
-
-
-def render_index(site_dir: Path) -> Path:
-    """Write the home page. It lists every published week, newest first."""
-    weeks = []
-    for page in site_dir.glob("*/week-*/index.html"):
-        found = SUMMARY_META.search(page.read_text())
-        if not found:
-            continue
-        season, week = int(page.parent.parent.name), int(page.parent.name.removeprefix("week-"))
-        label, dates, teams = html.unescape(found.group(1)).split(" · ", 2)
-        weeks.append({"key": (season, week), "href": f"{season}/week-{week:02d}/",
-                      "label": label, "dates": dates, "teams": teams})
-    weeks.sort(key=lambda w: w["key"], reverse=True)
-    out = site_dir / "index.html"
-    out.write_text(_env.get_template("index.html").render(weeks=weeks, root="", asset_version=_asset_version()))
-    _copy_static(site_dir)
-    return out
+    return _write_page_json(context, week_dir)

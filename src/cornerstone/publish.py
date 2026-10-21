@@ -6,9 +6,6 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from cornerstone.render import render_index
-
-
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://cpcfantasy.com/"
 
@@ -34,7 +31,7 @@ def _commit_if_staged(cwd: Path, message: str, *paths: str) -> None:
 
 
 def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO, push: bool = True) -> str:
-    page = repo / "site" / str(season) / f"week-{week:02d}" / "index.html"
+    page = repo / "site" / str(season) / f"week-{week:02d}" / "page.json"
     if not page.exists():
         raise PublishError(f"{page} does not exist. Build the week first.")
     # Check the site repo before the first commit, so a bad path leaves no half-done publish.
@@ -44,16 +41,13 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     _git(repo, "add", "site", "data")
     _commit_if_staged(repo, f"Week {week} report", "site", "data")
 
-    # Copy only this week and the static files. A built but unpublished week must stay off
-    # the public site, so the home page is rendered again from the weeks in the site repo.
-    # The site repo is a Next.js app, and its static export serves public/ at the root.
+    # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must stay off
+    # the public site. The site repo is a Next.js app. It renders the pages and the home page from these folders.
     public_dir = site_repo / "public"
     week_path = Path(str(season)) / f"week-{week:02d}"
     shutil.copytree(
         repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
     )
-    shutil.copytree(repo / "site" / "static", public_dir / "static", dirs_exist_ok=True)
-    render_index(public_dir)
     _git(site_repo, "add", "-A")
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:

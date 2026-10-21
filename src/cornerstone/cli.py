@@ -24,7 +24,7 @@ from cornerstone.pipeline import (
     run_rewrite, week_dir,
 )
 from cornerstone.sleeper import fetch_state, load_raw
-from cornerstone.publish import PublishError, run_publish
+from cornerstone.publish import SITE_URL, PublishError, run_publish
 from cornerstone.rubric import ProposedTrade, TradeSide, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
@@ -286,6 +286,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             page = run_build(repo, season, week, claude_call, fetch=fetch)
             print(page)
+            print(f"Site page after publish: {SITE_URL}{season}/week-{week:02d}/")
             preview(page)
         elif args.command == "chart":
             return run_chart(repo, season, week)
@@ -294,6 +295,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, claude_call)
             print(page)
+            print(f"Site page after publish: {SITE_URL}{season}/week-{week:02d}/")
             preview(page)
         else:
             answer = input(f"Publish week {week} to GitHub Pages? [y/N] ")

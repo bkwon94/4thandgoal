@@ -1,16 +1,15 @@
 """
-Tests for the week page and the home page renderer.
-They build the page from the recorded fixture and check the HTML that a reader sees.
+Tests for the page.json writer.
+They build the JSON from the recorded fixture and check the values that the site reads.
 """
 import json
-import re
 
 import pytest
 from pydantic import TypeAdapter
 
 from cornerstone.models import Blurb, Sentence
 from cornerstone.parse import parse_week
-from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_index, render_week
+from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 
@@ -36,15 +35,30 @@ def _no_bytes(url):
     return None
 
 
-def test_render_week_has_every_chapter(fixture_raw_dir, tmp_path):
+def _page(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_render_week_writes_every_chapter_to_the_json(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     page = render_week(b, _blurbs(b), tmp_path, _fake_png)
-    html = page.read_text()
-    for s in ("WEEK", "Matchup of the Week", "Game Changer", "Top Scorer", "MVB", "Read recap",
-              "The Median Game", "Standings", "Next Week", "Oct 15 – Oct 19, 2026", "Bo Girds"):
-        assert s in html
-    assert html.count("Read recap") == 6
-    assert (tmp_path / "static" / "style.css").exists()
+    assert page == tmp_path / "2026" / "week-06" / "page.json"
+    data = _page(page)
+    for key in ("pick", "motw", "game_changer", "awards", "leaders", "trades", "matchups", "median", "table", "next"):
+        assert key in data
+    assert data["week"] == 6 and data["dates"] == "Oct 15 – Oct 19, 2026"
+    assert len(data["matchups"]) == 6
+    assert len(data["table"]) == 12
+    assert not (page.parent / "index.html").exists()
+    assert not (tmp_path / "static").exists()
+    assert not (tmp_path / "index.html").exists()
+
+
+def test_the_json_drops_the_keys_that_only_the_templates_read(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))
+    assert data["schema_version"] == 2
+    assert "asset_version" not in data and "root" not in data
 
 
 def test_avatars_are_written_next_to_the_page(fixture_raw_dir, tmp_path):
@@ -52,7 +66,7 @@ def test_avatars_are_written_next_to_the_page(fixture_raw_dir, tmp_path):
     page = render_week(b, _blurbs(b), tmp_path, _fake_png)
     assert (page.parent / "avatars" / "1.jpg").read_bytes() == PNG_BYTES
     assert (page.parent / "avatars" / "2.webp").exists()
-    assert 'src="avatars/1.jpg"' in page.read_text()
+    assert _page(page)["avatars"]["1"] == "avatars/1.jpg"
 
 
 def test_missing_avatar_uses_default(fixture_raw_dir, tmp_path):
@@ -60,40 +74,15 @@ def test_missing_avatar_uses_default(fixture_raw_dir, tmp_path):
     for t in b.data.teams.values():
         t.avatar_url = None
     page = render_week(b, _blurbs(b), tmp_path, _fake_png)
-    assert "avatar-default.svg" in page.read_text()
+    assert set(_page(page)["avatars"].values()) == {"../../static/avatar-default.svg"}
     assert not (page.parent / "avatars").exists()
 
 
 def test_failed_download_uses_default(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     page = render_week(b, _blurbs(b), tmp_path, _no_bytes)
-    assert "avatar-default.svg" in page.read_text()
+    assert set(_page(page)["avatars"].values()) == {"../../static/avatar-default.svg"}
     assert not list((page.parent / "avatars").glob("*"))
-
-
-def test_index_lists_week(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    render_week(b, _blurbs(b), tmp_path, _fake_png)
-    idx = render_index(tmp_path).read_text()
-    assert "Week 6" in idx and "2026/week-06/" in idx
-
-
-def test_asset_links_carry_the_same_content_stamp(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    week = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    idx = render_index(tmp_path).read_text()
-    stamps = {re.search(r"static/style\.css\?v=([0-9a-f]{8})\"", page).group(1) for page in (week, idx)}
-    assert len(stamps) == 1
-
-
-def test_index_sorts_newest_first(tmp_path):
-    for season, week in ((2026, 6), (2026, 10), (2026, 7)):
-        d = tmp_path / str(season) / f"week-{week:02d}"
-        d.mkdir(parents=True)
-        (d / "index.html").write_text(
-            f'<meta name="cornerstone-summary" content="Week {week} · Dates · A vs B">')
-    idx = render_index(tmp_path).read_text()
-    assert idx.index("week-10/") < idx.index("week-07/") < idx.index("week-06/")
 
 
 def test_context_median_bars(fixture_raw_dir):
@@ -117,18 +106,17 @@ def test_context_missing_award_is_flagged(fixture_raw_dir):
     assert [t["missing"] for t in ctx["awards"]] == [False, False, True, False]
 
 
-def test_summary_meta_names_the_pick(fixture_raw_dir, tmp_path):
+def test_summary_names_the_pick(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert '<meta name="cornerstone-summary" content="Week 6 · Oct 15 – Oct 19, 2026 · ' in html
-    assert "behold the lamb vs Bo Girds" in html or "Bo Girds vs behold the lamb" in html
+    summary = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))["summary"]
+    assert summary.startswith("Week 6 · Oct 15 – Oct 19, 2026 · ")
+    assert summary.endswith(("behold the lamb vs Bo Girds", "Bo Girds vs behold the lamb"))
 
 
-def test_pick_row_links_to_top_of_page(fixture_raw_dir, tmp_path):
+def test_one_matchup_is_the_pick(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert html.count("This is the Matchup of the Week.") == 1
-    assert 'href="#motw"' in html
+    data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))
+    assert [m["id"] for m in data["matchups"] if m["is_pick"]] == [b.data.pick.matchup_id]
 
 
 @pytest.mark.live
@@ -138,41 +126,33 @@ def test_real_download_writes_avatars(fixture_raw_dir, tmp_path):
     assert list((page.parent / "avatars").glob("*"))
 
 
-def test_tied_matchup_has_no_winner_color(fixture_raw_dir, tmp_path):
+def test_tied_matchup_has_no_winner_flag(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     tied = next(f for f in b.data.matchups if f.matchup_id != b.data.pick.matchup_id)
     tied.winner = tied.loser = None
     tied.score_l = tied.score_w
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    row = re.findall(r'<div class="mu">.*?<button', html, re.S)[tied.matchup_id - 1]
-    assert 'class="w"' not in row
-    for rid in tied.top_scorer:
-        assert b.data.teams[rid].name in row
+    data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))
+    sides = next(m for m in data["matchups"] if m["id"] == tied.matchup_id)["sides"]
+    assert not any(side["winner"] or side["loser"] for side in sides)
+    assert {side["team"]["roster_id"] for side in sides} == set(tied.top_scorer)
 
 
 def test_mvb_tile_spells_out_the_title(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _no_bytes).read_text()
-    assert "MVB · Most Valuable Benchwarmer" in html
+    data = _page(render_week(b, _blurbs(b), tmp_path, _no_bytes))
+    assert "MVB · Most Valuable Benchwarmer" in [t["title"] for t in data["awards"]]
 
 
-def test_trades_section_order_and_cards(tbundle, tmp_path):
-    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
-    assert html.index('id="trades"') > html.index(">Awards<")
-    assert html.index('id="trades"') < html.index(">All Matchups<")
-    assert html.count('class="trade"') == 6
-    assert "Bhayshul Tuten" in html
+def test_trades_hold_one_card_per_trade_with_the_traded_players(tbundle, tmp_path):
+    data = _page(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png))
+    assert len(data["trades"]) == 6
+    names = {p["name"] for card in data["trades"] for side in card["sides"] for p in side["players"]}
+    assert "Bhayshul Tuten" in names
 
 
-def test_trades_have_no_opinion_note(tbundle, tmp_path):
-    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
-    assert 'id="trades"' in html
-    assert "opinion from the fact sheet" not in html
-
-
-def test_no_trades_no_section(fixture_raw_dir, tmp_path):
+def test_no_trades_gives_an_empty_list(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    assert 'id="trades"' not in render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert _page(render_week(b, _blurbs(b), tmp_path, _fake_png))["trades"] == []
 
 
 def test_awards_show_four_tiles_for_a_bundle_with_drops(dbundle):
@@ -182,48 +162,14 @@ def test_awards_show_four_tiles_for_a_bundle_with_drops(dbundle):
     ]
 
 
-def test_no_drop_note_for_any_drop_source(dbundle, tmp_path):
-    for source in ("nflverse", "sleeper"):
-        bundle = dbundle.model_copy(deep=True)
-        bundle.data.drop_source = source
-        html = render_week(bundle, _blurbs(bundle), tmp_path, _fake_png).read_text()
-        assert "Drop value is an estimate" not in html and "Drops are a count" not in html
-
-
-def _section(html):
-    return html[html.index('id="trades"'):html.index(">All Matchups<")]
-
-
-def _card(html, n):
-    return _section(html).split('class="trade"')[n]
-
-
-def test_trade_cards_show_no_recap_no_grade_and_no_toggle(tbundle, tmp_path):
-    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
-    s = _section(html)
-    assert s.count('class="col"') == 12
-    assert 'class="grade' not in s and "No grade" not in s
-    assert "<button" not in s and "recap-btn" not in s and "the grade" not in s
-    assert 'class="body"' not in s and "aria-expanded" not in s
-    assert 'class="blurb' not in s and "Blurb for trade_" not in s
-
-
-def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_dir, tmp_path):
+def test_trade_cards_name_every_traded_player(tbundle, fixture_raw_dir, tmp_path):
     week = parse_week(load_raw(fixture_raw_dir))
     names = {l.player_id: l.name for m in week.matchups for side in (m.a, m.b) for l in side.lines}
-    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
-    for n, trade in enumerate(tbundle.data.trades, start=1):
-        card = _card(html, n)
-        for pid in trade.adds:
-            assert f"<b>{names[pid]}</b>" in card
-    assert "An unlisted player" not in _section(html)
-    assert "ppg" not in _section(html)
-
-
-def test_app_js_toggles_matchup_rows_only(tbundle, tmp_path):
-    render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
-    js = (tmp_path / "static" / "app.js").read_text()
-    assert ".recap-btn" in js and ".mu" in js and ".trade" not in js
+    data = _page(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png))
+    for card, trade in zip(data["trades"], tbundle.data.trades):
+        listed = {p["name"] for side in card["sides"] for p in side["players"]}
+        assert listed == {names[pid] for pid in trade.adds}
+    assert "An unlisted player" not in str(data["trades"])
 
 
 def test_build_context_trade_sides_carry_no_grade(tbundle):
@@ -231,31 +177,10 @@ def test_build_context_trade_sides_carry_no_grade(tbundle):
     assert all("grade" not in side for card in ctx["trades"] for side in card["sides"])
 
 
-def test_next_week_card_puts_each_team_on_its_own_row(hbundle, tmp_path):
-    html = render_week(hbundle, {}, tmp_path, fetch_bytes=lambda url: None).read_text()
-    card = html[html.index('class="nx"'):]
-    card = card[:card.index("</div>\n    </div>")]
-    assert card.count('class="side"') == 2 and card.count('class="vs"') == 1
-    # The record carries no parentheses, so it reads as a column on the right of the card.
-    assert "(" not in card.split('class="rec"')[1].split("</span>")[0]
-
-
-def test_week_brand_links_to_season_index(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert '<a class="brand" href="../../">' in html
-
-
-def test_index_brand_links_to_season_index(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    render_week(b, _blurbs(b), tmp_path, _fake_png)
-    idx = render_index(tmp_path).read_text()
-    assert '<a class="brand" href="./">' in idx
-
-
-def _leaders_section(html):
-    section = html[html.index('id="leaders"'):]
-    return section[:section.index("</section>")]
+def test_next_week_holds_both_teams_of_each_game(hbundle, tmp_path):
+    data = _page(render_week(hbundle, {}, tmp_path, fetch_bytes=lambda url: None))
+    assert data["next"]
+    assert all(game["a"]["name"] and game["b"]["name"] for game in data["next"])
 
 
 def test_build_context_has_five_leader_boards(fixture_raw_dir):
@@ -269,37 +194,17 @@ def test_build_context_has_five_leader_boards(fixture_raw_dir):
 def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     b.data.leaders = [l for l in b.data.leaders if l.position != "DEF"]
-    boards = build_context(b, _blurbs(b), {}, {})["leaders"]
+    boards = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))["leaders"]
     assert len(boards) == 5
     assert boards[-1] == {"position": "DEF", "rows": []}
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert html.count("No starters this week") == 1
 
 
-def test_position_leaders_section_shows_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
+def test_position_leaders_hold_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert "Position Leaders" in html
-    # The section sits after Awards and before the next chapter.
-    assert html.index(">Awards<") < html.index('id="leaders"') < html.index("The Median Game")
-    section = _leaders_section(html)
-    assert section.count('class="board"') == 5
-    assert section.count('class="row"') == 15
-    row = re.search(r'<li class="row">(.*?)</li>', section.split("RB", 1)[1], re.S).group(1)
-    for s in ("1", "Kenneth Walker", "KC", "26.9", "Bo Girds"):
-        assert s in row
-
-
-def test_position_leaders_section_sits_before_trades(tbundle, tmp_path):
-    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
-    assert html.index('id="leaders"') < html.index('id="trades"')
-
-
-def test_position_leaders_blurb_renders_under_the_boards(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    section = _leaders_section(html)
-    assert section.index("Blurb for position_leaders.") > section.rindex('class="board"')
+    data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))
+    assert len(data["leaders"]) == 5
+    assert sum(len(board["rows"]) for board in data["leaders"]) == 15
+    assert data["blurbs"]["position_leaders"] == "Blurb for position_leaders."
 
 
 def _headshot_players(b):
@@ -309,12 +214,7 @@ def _headshot_players(b):
     return awards + [lead.line for lead in b.data.leaders]
 
 
-def _game_changer_section(html):
-    section = html[html.index(">Game Changer<"):]
-    return section[:section.index("</section>")]
-
-
-def test_headshots_show_on_the_hero_the_tiles_and_the_rows(fixture_raw_dir, tmp_path):
+def test_headshots_cover_the_hero_the_tiles_and_the_rows(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     headshots = {line.player_id: f"headshots/{line.player_id}.png" for line in _headshot_players(b)}
     ctx = build_context(b, _blurbs(b), {}, headshots)
@@ -324,12 +224,6 @@ def test_headshots_show_on_the_hero_the_tiles_and_the_rows(fixture_raw_dir, tmp_
     for board in ctx["leaders"]:
         for r in board["rows"]:
             assert r["player_id"] in headshots
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert _game_changer_section(html).count('class="headshot"') == 1
-    tiles = re.findall(r'<div class="tile">(.*?)<div class="sub">', html, re.S)
-    assert len(tiles) == 4 and all('class="headshot"' in t for t in tiles)
-    rows = re.findall(r'<li class="row">(.*?)</li>', _leaders_section(html), re.S)
-    assert len(rows) == 15 and all('class="headshot"' in r and 'loading="lazy"' in r for r in rows)
 
 
 def test_headshots_are_fetched_once_per_player_and_saved_next_to_the_page(fixture_raw_dir, tmp_path):
@@ -350,10 +244,10 @@ def test_headshots_are_fetched_once_per_player_and_saved_next_to_the_page(fixtur
     defense = next(l for l in lines.values() if l.position == "DEF")
     assert f"https://sleepercdn.com/images/team_logos/nfl/{defense.player_id.lower()}.png" in headshot_urls
     assert defense.player_id != defense.player_id.lower()
-    html = page.read_text()
+    saved = _page(page)["headshots"]
     for pid in lines:
         assert (page.parent / "headshots" / f"{pid}.png").read_bytes() == PNG_BYTES
-        assert f'src="headshots/{pid}.png"' in html
+        assert saved[pid] == f"headshots/{pid}.png"
 
 
 def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
@@ -362,13 +256,11 @@ def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
     failed = next(l for l in lines.values() if l.position == "WR")
     failed_url = f"https://sleepercdn.com/content/nfl/players/{failed.player_id}.jpg"
     page = render_week(b, _blurbs(b), tmp_path, lambda url: None if url == failed_url else PNG_BYTES)
-    html = page.read_text()
-    assert f'src="headshots/{failed.player_id}.png"' not in html
-    assert '<img class="headshot" src="../../static/headshot-default.svg"' in html
+    saved = _page(page)["headshots"]
+    assert saved[failed.player_id] == "../../static/headshot-default.svg"
     assert not (page.parent / "headshots" / f"{failed.player_id}.png").exists()
     for pid in lines.keys() - {failed.player_id}:
-        assert f'src="headshots/{pid}.png"' in html
-    assert (tmp_path / "static" / "headshot-default.svg").exists()
+        assert saved[pid] == f"headshots/{pid}.png"
 
 
 def test_trade_context_gives_each_player_a_name_and_a_headshot(tbundle):
@@ -394,24 +286,20 @@ def test_headshots_of_traded_players_are_fetched_with_the_silhouette_on_a_failed
     traded = {pid for trade in tbundle.data.trades for pid in trade.adds}
     for pid in traded:
         assert f"https://sleepercdn.com/content/nfl/players/{pid}.jpg" in urls
-    card = _card(page.read_text(), 1)
-    assert 'src="headshots/12507.png"' in card
-    assert f'src="headshots/{failed}.png"' not in card
-    assert 'src="../../static/headshot-default.svg"' in card
+    players = [p for side in _page(page)["trades"][0]["sides"] for p in side["players"]]
+    assert "headshots/12507.png" in {p["headshot"] for p in players}
+    assert f"headshots/{failed}.png" not in {p["headshot"] for p in players}
+    assert "../../static/headshot-default.svg" in {p["headshot"] for p in players}
 
 
-def test_two_side_card_has_two_columns_one_for_tag_and_a_chip_per_player(tbundle, tmp_path):
-    card = _card(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text(), 1)
-    assert card.count('class="col"') == 2
-    assert card.count('class="for"') == 1
-    assert card.count('<span class="gets">Gets</span>') == 2
-    assert card.count('<li class="chip">') == 4
-    # A chip is the headshot and the name, with no points line.
-    assert '<b>Omarion Hampton</b></li>' in card
-    assert 'pts' not in card and 'bench' not in card
+def test_two_side_card_has_two_sides_and_a_player_for_each_chip(tbundle, tmp_path):
+    card = _page(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png))["trades"][0]
+    assert len(card["sides"]) == 2
+    assert sum(len(side["players"]) for side in card["sides"]) == 4
+    assert "Omarion Hampton" in {p["name"] for side in card["sides"] for p in side["players"]}
 
 
-def test_three_side_card_wraps_with_no_for_tag_and_shows_a_pick_row(tbundle, tmp_path):
+def test_three_side_card_has_three_sides_and_a_pick_row(tbundle, tmp_path):
     from cornerstone.models import DraftPick, Trade
     first = tbundle.data.trades[0]
     a, b = first.roster_ids
@@ -420,11 +308,10 @@ def test_three_side_card_wraps_with_no_for_tag_and_shows_a_pick_row(tbundle, tmp
                   adds={"12507": a, "12533": b, "4046": c}, drops={"12507": b, "12533": c, "4046": a},
                   draft_picks=[DraftPick(season="2027", round=2, roster_id=c, previous_owner_id=c, owner_id=a)])
     bundle = tbundle.model_copy(update={"data": tbundle.data.model_copy(update={"trades": [trade]})})
-    card = _card(render_week(bundle, _blurbs(bundle), tmp_path, _fake_png).read_text(), 1)
-    assert card.count('class="col"') == 3
-    assert 'class="for"' not in card and 'class="swap pair"' not in card
-    assert '<li class="pick">2027 round 2 pick</li>' in card
-    assert '<b>Patrick Mahomes</b></li>' in card
+    card = _page(render_week(bundle, _blurbs(bundle), tmp_path, _fake_png))["trades"][0]
+    assert len(card["sides"]) == 3
+    assert [pick for side in card["sides"] for pick in side["picks"]] == ["2027 round 2 pick"]
+    assert "Patrick Mahomes" in {p["name"] for side in card["sides"] for p in side["players"]}
 
 
 def test_a_traded_defense_gets_the_team_logo(tbundle, tmp_path):
@@ -441,18 +328,11 @@ def test_a_traded_defense_gets_the_team_logo(tbundle, tmp_path):
     assert "https://sleepercdn.com/content/nfl/players/SEA.jpg" not in urls
 
 
-def test_page_has_no_footer(fixture_raw_dir, tmp_path):
-    b = _bundle(fixture_raw_dir)
-    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
-    assert "Built from Sleeper data" not in html
-    assert not re.search(r"<[^>]*\bfoot\b", html)
-
-
 def test_render_week_writes_page_json_with_the_context(tbundle, tmp_path):
     page = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
-    data = json.loads((page.parent / "page.json").read_text(encoding="utf-8"))
+    data = _page(page)
     context = build_context(tbundle, _blurbs(tbundle), {}, {})
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == 2
     assert data["week"] == context["week"]
     assert len(data["trades"]) == len(context["trades"]) > 0
     assert [s["team"]["name"] for s in data["pick"]["sides"]] == [s["team"].name for s in context["pick"]["sides"]]
@@ -461,9 +341,9 @@ def test_render_week_writes_page_json_with_the_context(tbundle, tmp_path):
 
 def test_page_json_holds_the_whole_context(tbundle, tmp_path):
     page = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
-    written = json.loads((page.parent / "page.json").read_text(encoding="utf-8"))
+    written = _page(page)
     # The saved-file lookups read the images on disk, so they do not copy the writer's own paths.
     context = build_context(
         tbundle, _blurbs(tbundle), _saved_avatars(tbundle, page.parent), _saved_headshots(tbundle, page.parent),
     )
-    assert written == {"schema_version": 1, **TypeAdapter(dict).dump_python(context, mode="json")}
+    assert written == {"schema_version": 2, **TypeAdapter(dict).dump_python(context, mode="json")}
