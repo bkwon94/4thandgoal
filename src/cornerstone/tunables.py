@@ -21,3 +21,17 @@ START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "
 
 # In a one-for-two-or-more trade, both ratios use the depth side's sum divided by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
+
+# Roster fit and standing compare a side's best lineup before and after the trade.
+# The count of completed weeks whose points per game pick the best lineup. Fewer weeks use what exists.
+LINEUP_WEEKS = 4
+# The change in the best lineup's total points per game that counts as a gain or a loss. A first cut to tune.
+FIT_THRESHOLD = Decimal("3.0")
+
+# Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
+# The count of playoff spots. The league ranks by wins, then by points for.
+PLAYOFF_SPOTS = 6
+# A seller has more than this many wins fewer than the team in the last playoff spot.
+SELLER_GAP = 2
+# The last week of the regular season. A got player due back by this week is a return bet.
+RETURN_BY_WEEK = 14

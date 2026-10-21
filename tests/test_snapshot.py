@@ -83,3 +83,22 @@ def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history
     assert snap.chart is None
     assert snap.as_of.chart_week is None
     assert "chart" in snap.missing
+
+
+def test_the_returns_file_gives_the_return_week_and_sleeper_gives_the_injury_status(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Brian keeps the returns file by hand. Josh Jacobs, suspended in week 6, is back in week 7.
+    assert snap.returns == {"5850": 7}
+    assert snap.players["5850"].injury_status == "NA"
+    assert snap.players["7569"].injury_status is None
+    assert "returns" not in snap.missing
+
+
+def test_a_season_with_no_returns_file_has_no_return_weeks_and_names_it_as_missing(
+        fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
+    raw_dir = tmp_path / "2026" / "week-06" / "raw"
+    shutil.copytree(fixture_raw_dir, raw_dir)
+    snap = load_snapshot(raw_dir, fixture_history_root, chart_week6)
+    assert snap.returns == {}
+    assert snap.missing[-1] == "returns"

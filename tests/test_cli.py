@@ -237,6 +237,9 @@ def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
     assert code == 0
     assert "Nico Collins" in out and "Dalton Kincaid" in out and "Garrett Wilson" in out
     assert out.count("Start letter: C") == 2
+    # Each side prints its adjusters in rubric order, after the start letter.
+    assert out.count("Roster fit: ") == 2 and out.count("Standing: ") == 2
+    assert out.index("Start letter") < out.index("Roster fit: ") < out.index("Standing: ")
     assert "(asked)" in out
     # Week 6 is the trade week, so the stats end at week 5.
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out

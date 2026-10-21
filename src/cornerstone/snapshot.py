@@ -1,7 +1,8 @@
 """
 The data snapshot the trade analyzer grades a proposed trade from, and the builder that loads it.
-The builder reads saved raw Sleeper data, the saved history, and trade values, with no network.
+The builder reads saved raw Sleeper data, the saved history, trade values, and the returns file, with no network.
 """
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,8 @@ class SnapshotPlayer(BaseModel):
     name: str
     position: str
     nfl_team: str | None
+    # The injury report status from Sleeper, such as Out, IR, or NA. None when the player is healthy.
+    injury_status: str | None = None
 
 
 class AsOf(BaseModel):
@@ -75,11 +78,26 @@ class Snapshot(BaseModel):
     id_map: dict[str, str] | None = None
     # The points each defense allows to a position, by NFL team and position.
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
+    # The week each player returns, by player id, from the returns file the commissioner keeps.
+    # No data source holds a return week, so a suspended or injured player's week comes from that file.
+    returns: dict[str, int] = {}
     # The names of the sources the snapshot lacks, so the breakdown can say what it could not use.
     missing: list[str] = []
     # The sources whose refresh failed, so the cache is older than a day or absent.
     # "history" is here when the history lacks week N-1, on a live or a saved build.
     stale: list[str] = []
+
+
+def returns_path(raw_dir: Path) -> Path:
+    """The returns file of the season, data/<season>/returns.json, two levels above the raw directory."""
+    return raw_dir.parent.parent / "returns.json"
+
+
+def load_returns(path: Path) -> dict[str, int] | None:
+    """The return week by player id, or None when the season has no returns file."""
+    if not path.exists():
+        return None
+    return {pid: int(week) for pid, week in json.loads(path.read_text(encoding="utf-8")).items()}
 
 
 def load_snapshot(
@@ -123,13 +141,15 @@ def build_snapshot(
             name=player_name(pid, entry),
             position=entry.get("position") or "?",
             nfl_team=entry.get("team"),
+            injury_status=entry.get("injury_status"),
         )
         for pids in rosters.values() for pid in pids
         for entry in [entries.get(pid) or {}]
     }
     # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
     slow_missing = list(SLOW_SOURCES) if slow is None else [*slow.missing, *UNLOADED_SOURCES]
-    missing = ([] if chart is not None else ["chart"]) + slow_missing
+    returns = load_returns(returns_path(raw_dir))
+    missing = ([] if chart is not None else ["chart"]) + slow_missing + ([] if returns is not None else ["returns"])
     return Snapshot(
         season=week.season,
         week=trade_week,
@@ -150,6 +170,7 @@ def build_snapshot(
         depth_charts=slow.depth_charts if slow else None,
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
+        returns=returns or {},
         missing=missing,
         stale=stale,
     )

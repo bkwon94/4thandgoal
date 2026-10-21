@@ -148,6 +148,10 @@ def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         return None
 
 
+# The analyze output names an adjuster's step in words.
+_STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
+
+
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     """Grade the proposed trade from the live or saved snapshot and print the breakdown of each side."""
     if len(args.side) != 2:
@@ -184,6 +188,8 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         print(f"  Gets: {_names(snapshot, other.gives)}")
         print(f"  Start letter: {breakdown.start_letter}")
         print(f"  Reason: {breakdown.reason}")
+        for adjuster in breakdown.adjusters:
+            print(f"  {adjuster.name.capitalize()}: {_STEP_WORDS[adjuster.step]}. {adjuster.reason}")
     return 0
 
 
