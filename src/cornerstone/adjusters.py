@@ -241,7 +241,7 @@ def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 
-def _race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "seller", "middle"]:
+def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "seller", "middle"]:
     """Where the team stands by record. The standings rank by wins, then by points for."""
     standing = next(s for s in snapshot.standings if s.roster_id == roster_id)
     if standing.in_playoffs:
@@ -273,14 +273,14 @@ def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
 
     The injury adjuster reads this too, so a player the standing step counts in favor never counts against.
     """
-    if _race(snapshot, side.roster_id) != "contender" or side.lineup_gains:
+    if team_race(snapshot, side.roster_id) != "contender" or side.lineup_gains:
         return []
     return [pid for pid in side.gets if _return_bet(snapshot, pid)]
 
 
 def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Standing: a contender's win-now move or return bet, and a seller's bet on the future."""
-    race = _race(snapshot, side.roster_id)
+    race = team_race(snapshot, side.roster_id)
     if race == "contender":
         lead = "The team holds a playoff spot"
         if side.lineup_gains:

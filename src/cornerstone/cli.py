@@ -11,6 +11,7 @@ from pathlib import Path
 import httpx
 from pydantic import ValidationError
 
+from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
 from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
@@ -153,13 +154,12 @@ _STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
 
 
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
-    """Grade the proposed trade from the live or saved snapshot. Print the breakdown of each side and the verdict."""
+    """Grade the proposed trade from the live or saved snapshot. Print the breakdown of each side and the verdict.
+
+    Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
+    """
     if len(args.side) != 2:
         print("Give --side exactly twice, once for each roster.")
-        return 2
-    if not args.no_claude:
-        # Only the breakdown exists. The Claude call is out of scope here.
-        print("The Claude call is not built yet. Run with --no-claude.")
         return 2
     snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
     if snapshot is None:
@@ -171,7 +171,14 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         for error in err.errors():
             print(error["msg"].removeprefix("Value error, "))
         return 2
-    result = grade(trade, snapshot)
+    # The Claude call grades the trade itself, so the breakdown and the analysis come from one grade.
+    analysis: Analysis | None = None
+    if args.no_claude:
+        result = grade(trade, snapshot)
+        choice = verdict(trade, result)
+    else:
+        analysis = analyze(trade, snapshot, call=claude_call)
+        result, choice = analysis.breakdowns, analysis.code_verdict
     stamps = snapshot.as_of
     chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
     fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
@@ -180,7 +187,8 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     print(_sources_line(snapshot))
     if snapshot.stale:
         print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
-    for side, other, breakdown in ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1])):
+    for index, (side, other, breakdown) in enumerate(
+            ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1]))):
         asked = " (asked)" if side.roster_id == trade.asker else ""
         print()
         print(f"{snapshot.teams[side.roster_id].name}{asked}")
@@ -192,10 +200,21 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
             # The schedule never moves a letter, so its line shows the lean in place of a step.
             words = adjuster.lean if adjuster.lean is not None else _STEP_WORDS[adjuster.step]
             print(f"  {adjuster.name.capitalize()}: {words}. {adjuster.reason}")
-        print(f"  Final letter: {breakdown.final_letter}")
-    choice = verdict(trade, result)
+        if analysis is None:
+            print(f"  Final letter: {breakdown.final_letter}")
+            continue
+        # Claude's letter can differ from the rubric's by one step, so both print, each under its own label.
+        final = analysis.sides[index]
+        print(f"  Rubric letter: {breakdown.final_letter}")
+        print(f"  Final letter: {final.final_letter}" + (f". Reason: {final.reason}" if final.reason else ""))
+        print(f"  Analysis: {final.analysis}")
     print()
-    print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}")
+    if analysis is not None:
+        if analysis.fallback:
+            print("The Claude call failed twice, so the rubric's letters and verdict stand.")
+        choice = analysis.verdict
+    flag = " (differs from the rubric's default)" if analysis is not None and analysis.verdict_differs else ""
+    print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}{flag}")
     return 0
 
 

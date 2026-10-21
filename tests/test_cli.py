@@ -407,3 +407,66 @@ def test_analyze_without_week_names_a_failed_refresh(
     assert code == 0
     assert "Stats through week 4." in out
     assert "Refresh failed, so the cache is old or absent: history.\n" in out
+
+
+def _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch):
+    """The analyze repo with the nflverse cache, the returns file, and the rosters from before the Jacobs trade."""
+    import shutil
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+    _set_back_the_jacobs_trade(tmp_path)
+
+
+JACOBS_ARGS = ["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+               "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12"]
+
+
+def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    from cornerstone import cli
+    from cornerstone.analysis import AnalysisOut
+
+    def fake_claude(system, user, output_model):
+        assert output_model is AnalysisOut
+        side = {"final_letter": "C", "reason": None, "cited": ["8146.ppg"],
+                "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
+        return AnalysisOut.model_validate({
+            "sides": [{**side, "roster_id": 11, "final_letter": "D", "reason": "Jacobs has not played."},
+                      {**side, "roster_id": 12}],
+            "verdict": {"choice": "counter", "reason": "Ask for one more starter.", "differs": True},
+        })
+
+    monkeypatch.setattr(cli, "claude_call", fake_claude)
+    _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
+    code = cli.main(JACOBS_ARGS)
+
+    out = capsys.readouterr().out
+    assert code == 0
+    # The breakdown's letter is the rubric's. The final letter is Claude's, with its reason when it differs.
+    assert out.count("  Rubric letter: C\n") == 2
+    assert "  Final letter: D. Reason: Jacobs has not played.\n" in out
+    assert "  Final letter: C\n" in out
+    assert out.count("  Analysis: Garrett Wilson scored 14.2 points per game before the trade.") == 2
+    assert out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: D") < out.index("Analysis: ")
+    assert out.endswith("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
+                        "(differs from the rubric's default)\n")
+
+
+def test_analyze_with_claude_says_when_the_call_fell_back(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    from cornerstone import cli
+
+    monkeypatch.setattr(cli, "claude_call", lambda system, user, output_model: None)
+    _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
+    code = cli.main(JACOBS_ARGS)
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert out.count("  Analysis: Analysis unavailable\n") == 2
+    assert out.count("  Final letter: C\n") == 2
+    assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
+    assert out.endswith(
+        "\nVerdict for Amon-Ra Dawg Your Team: accept. "
+        "The asking side grades C and the other side grades C, so the trade is fair.\n")

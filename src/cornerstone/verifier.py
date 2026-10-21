@@ -40,13 +40,13 @@ NUMBER_WORDS = [
 ]
 
 
-def _normalize(number: str) -> str:
+def normalize_number(number: str) -> str:
     number = number.replace(",", "")
     return number[:-2] if number.endswith(".0") else number
 
 
 def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:
-    return {_normalize(n) for fid in fids for n in sheet.facts[fid].numbers}
+    return {normalize_number(n) for fid in fids for n in sheet.facts[fid].numbers}
 
 
 def _whole_word(word: str, text: str) -> bool:
@@ -59,7 +59,7 @@ def _banned_words() -> list[str]:
     return [w.strip().rstrip(".") for w in line.split(":", 1)[1].split(",")]
 
 
-def _remove_names(text: str, names: list[str]) -> str:
+def remove_names(text: str, names: list[str]) -> str:
     # Longest first, so "Tre Tucker" goes before any shorter name inside it. Whole words only,
     # so an odd name such as "0" does not remove the digit from "100".
     for name in sorted(names, key=len, reverse=True):
@@ -102,9 +102,9 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         cited = _numbers(valid_ids, sheet)
 
         # Digits inside a name ("Pukancun on 3") are not numbers.
-        bare = _remove_names(sentence.text, scope_names)
+        bare = remove_names(sentence.text, scope_names)
         for token in NUMBER_TOKEN.findall(bare):
-            number = _normalize(token)
+            number = normalize_number(token)
             if number not in cited and number not in always_allowed:
                 failures.append(
                     f"[{i}] number {token} is not in the cited facts {', '.join(sentence.fact_ids)}"
