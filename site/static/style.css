@@ -147,17 +147,26 @@ a { color:var(--red); }
 .stars b { display:block; font-size:var(--fs-body); line-height:var(--lh-tight); margin-top:var(--sp-0); }
 .stars .k { display:block; color:var(--muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); line-height:var(--lh-tight); }
 
-/* A card holds one side per row, then the trade recap. */
+/* A card holds the sides as columns. Two sides face each other across a FOR tag. More sides wrap two per row. */
 .trade { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 .trade + .trade { margin-top:var(--sp-2); }
-.trade .side + .side { margin-top:var(--sp-3); padding-top:var(--sp-3); border-top:1px solid var(--bar-off); }
-.trade .top { display:flex; align-items:center; font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
-.trade .top .who { min-width:0; hyphens:auto; }
-.trade .got { list-style:none; margin:var(--sp-2) 0 0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
-.trade .got li { display:flex; justify-content:space-between; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
-.trade .got li span { min-width:0; }
-/* The recap is always visible, so it sits under the rows with the same space as a side. */
-.trade > .blurb { margin:var(--sp-3) 0 0; }
+.trade .swap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:var(--sp-2); row-gap:var(--sp-4); }
+.trade .swap.pair { grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); }
+/* Each column spans three rows of the card grid: the team, the GETS label, and the chips. A long team name grows its row in both columns, so the chips start on one line. */
+.trade .col { display:grid; grid-row:span 3; grid-template-rows:subgrid; row-gap:0; min-width:0; }
+.trade .hd { display:flex; flex-direction:column; align-items:center; gap:var(--sp-1); text-align:center; font-weight:800; font-size:var(--fs-meta); line-height:var(--lh-tight); hyphens:auto; }
+.trade .gets { justify-self:center; color:var(--muted); font-size:var(--fs-label); font-weight:700; text-transform:uppercase; letter-spacing:var(--track-wide); margin:var(--sp-2) 0 var(--sp-1); }
+.trade .got { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2); }
+.trade .chip { display:flex; flex-direction:column; align-items:center; text-align:center; background:var(--wht); border-radius:var(--r-card); padding:var(--sp-2) var(--sp-2) var(--sp-3); overflow:hidden; }
+/* The cutout fills the chip top edge to edge, so the chip reads as a card for that player. The red rule matches the page accent.
+   64px keeps a column of chips short at 390. */
+.trade .chip .headshot { display:block; width:calc(100% + var(--sp-2) * 2); height:64px; margin:calc(var(--sp-2) * -1) calc(var(--sp-2) * -1) var(--sp-2); border-radius:0; object-fit:contain; object-position:center bottom; background:linear-gradient(var(--gry), var(--wht)); border-bottom:2px solid var(--red); }
+.trade .chip b { font-size:var(--fs-row); font-weight:800; line-height:var(--lh-tight); letter-spacing:-.01em; }
+.trade .pick { color:var(--muted); font-size:var(--fs-meta); text-align:center; padding:var(--sp-1) 0; }
+/* The divider runs the full card height between the two columns. The tag sits on it, level with the team names. */
+.trade .for { grid-row:span 3; position:relative; display:flex; flex-direction:column; align-items:center; }
+.trade .for::before { content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:var(--bar-off); }
+.trade .for span { position:relative; margin-top:var(--sp-5); background:var(--red); color:var(--on-dark); font-size:var(--fs-label); font-weight:800; text-transform:uppercase; letter-spacing:var(--track); padding:var(--sp-1); border-radius:var(--r-sm); }
 
 .kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp-2); }
 .kpi > div { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3) var(--sp-2); text-align:center; }
@@ -199,8 +208,6 @@ a { color:var(--red); }
 /* An inline link cannot scale, so a link inside a blurb becomes an inline block. */
 .blurb a { display:inline-block; transition:var(--press); }
 .wk:active, .blurb a:active { transform:scale(.97); }
-
-.foot { background:var(--blk); color:var(--on-dark-muted); font-size:var(--fs-label); padding:var(--sp-4) var(--gutter); text-align:center; letter-spacing:var(--track); text-transform:uppercase; }
 
 :focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 
