@@ -103,17 +103,22 @@ class RefreshResult:
     chart: ChartValues | None
 
 
+def fetch_current_week(repo: Path, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+    """The raw Sleeper data now, its fetch time, and its parsed week, in the season that Sleeper is in."""
+    raw, fetched = fetch_sleeper(LEAGUE_ID, repo / "data" / "cache" / "players.json")
+    return raw, fetched, parse_week(raw)
+
+
 def fetch_live_week(
         repo: Path, season: int, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
     """The raw Sleeper data now, its fetch time, and its parsed week.
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
     """
-    raw, fetched = fetch_sleeper(LEAGUE_ID, repo / "data" / "cache" / "players.json")
-    state = raw["state"]
-    if int(state["season"]) != season:
-        raise ValueError(f"Sleeper is in season {state['season']}, not {season}. Use --week to read a saved week.")
-    return raw, fetched, parse_week(raw)
+    raw, fetched, week = fetch_current_week(repo, fetch_sleeper)
+    if week.season != season:
+        raise ValueError(f"Sleeper is in season {week.season}, not {season}. Use --week to read a saved week.")
+    return raw, fetched, week
 
 
 def refresh_sources(
@@ -152,6 +157,16 @@ def refresh_sources(
     return RefreshResult(refreshed=refreshed, stale=stale, trade_week=trade_week, chart=chart)
 
 
+def _build_live(
+        repo: Path, season: int, raw: dict[str, object], fetched: datetime, trade_week: int,
+        chart: ChartValues | None, stale: list[str]) -> Snapshot:
+    """The snapshot of the raw Sleeper data, with the slow sources and the returns read from the disk."""
+    root = history_root(repo, season)
+    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)
+    returns = load_returns(returns_path(repo, season))
+    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns)
+
+
 def live_snapshot(
         repo: Path, season: int, *, now: datetime,
         fetch_sleeper: SleeperFetcher = fetch_live_raw,
@@ -182,6 +197,18 @@ def live_snapshot(
             logger.warning("Week %d not saved to history (%s), so the saved weeks stand", week.week, error)
             if "history" not in stale:
                 stale.append("history")
-    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)
-    returns = load_returns(returns_path(repo, season))
-    return build_snapshot(raw, root, result.chart, slow, fetched, stale, trade_week=trade_week, returns=returns)
+    return _build_live(repo, season, raw, fetched, trade_week, result.chart, stale)
+
+
+def live_rosters_snapshot(
+        repo: Path, season: int, *, now: datetime, fetch_sleeper: SleeperFetcher = fetch_live_raw) -> Snapshot:
+    """The snapshot of the league now for the rosters only. The teams route reads it.
+
+    It fetches only Sleeper. It reads the slow sources and the history from the disk as they are. It refreshes
+    no source, saves no history week, and reads no chart, so it never waits on a download.
+
+    Raises ValueError when Sleeper is not in `season`, as live_snapshot does.
+    """
+    raw, fetched, week = fetch_live_week(repo, season, fetch_sleeper)
+    # No refresh ran, so no source goes in the stale list here. The build still notes a gap in the saved history.
+    return _build_live(repo, season, raw, fetched, window_week(week.season_start, now), None, [])

@@ -21,9 +21,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
-from cornerstone.nflverse import DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.rubric import LETTERS, grade, verdict
 from cornerstone.sleeper import load_raw
+from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
@@ -171,6 +172,131 @@ def test_teams_skips_the_chart_read(settings, sources):
         "/teams", params={"season": 2026}, headers=HEADERS)
     assert response.status_code == 200
     assert chart.calls == 0
+
+
+class CountingSleeper:
+    """The fixture Sleeper fetch, with a count of its calls."""
+
+    def __init__(self, fixture_raw_dir):
+        self.fixture_raw_dir = fixture_raw_dir
+        self.calls = 0
+
+    def __call__(self, league_id, players_cache):
+        self.calls += 1
+        return load_raw(self.fixture_raw_dir), FETCHED
+
+
+class MonotonicClock:
+    """A monotonic clock in seconds that a test moves on, for the window of the teams cache."""
+
+    def __init__(self):
+        self.now = 1000.0
+
+    def __call__(self):
+        return self.now
+
+
+def test_a_second_teams_request_in_the_window_answers_from_memory(settings, sources, fixture_raw_dir):
+    sleeper = CountingSleeper(fixture_raw_dir)
+    client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper))
+    first = client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    second = client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    assert first.status_code == second.status_code == 200
+    assert second.json() == first.json()
+    assert sleeper.calls == 1
+
+
+def test_a_teams_request_past_the_window_builds_again(settings, sources, fixture_raw_dir):
+    sleeper = CountingSleeper(fixture_raw_dir)
+    client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper))
+    clock = MonotonicClock()
+    client.app.state.teams_cache.clock = clock
+    client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    clock.now += TEAMS_CACHE_SECONDS - 1
+    client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    assert sleeper.calls == 1
+    clock.now += 2
+    response = client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    assert response.status_code == 200
+    assert sleeper.calls == 2
+
+
+def test_two_first_teams_requests_make_one_build(settings, sources, fixture_raw_dir):
+    sleeper = CountingSleeper(fixture_raw_dir)
+    client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper))
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        responses = list(pool.map(lambda _: client.get("/teams", params={"season": 2026}, headers=HEADERS), range(2)))
+    assert [r.status_code for r in responses] == [200, 200]
+    assert sleeper.calls == 1
+
+
+def test_the_teams_build_fetches_no_slow_source_and_no_history(settings, sources):
+    # Every nflverse file is two days old, so a slow-source refresh would fetch each one again.
+    old = time.time() - 2 * 24 * 3600
+    for cached in (settings.repo / "data" / "cache" / "nflverse").iterdir():
+        os.utime(cached, (old, old))
+    nflverse, history = [], []
+    counting = dataclasses.replace(
+        sources, fetch_nflverse=lambda url: nflverse.append(url) or b"",
+        fetch_history_week=lambda league_id, season, week, out_dir: history.append(week))
+    response = _client(settings, counting).get("/teams", params={"season": 2026}, headers=HEADERS)
+    assert response.status_code == 200
+    assert len(response.json()["teams"]) == 12
+    assert nflverse == []
+    assert history == []
+
+
+def test_a_trade_input_error_from_analyze_clears_the_teams_of_its_season(settings, sources, fixture_raw_dir):
+    sleeper = CountingSleeper(fixture_raw_dir)
+    client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper), StubAnalyzer())
+    client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    # Garrett Wilson is on roster 12, not roster 4, so the form showed a roster that Sleeper no longer has.
+    trade = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
+    assert client.post("/analyze", json=trade, headers=HEADERS).status_code == 422
+    assert sleeper.calls == 2
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+    assert sleeper.calls == 3
+
+
+def test_a_season_that_is_not_in_progress_is_never_cached(settings, sources, fixture_raw_dir):
+    sleeper = CountingSleeper(fixture_raw_dir)
+    client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper))
+    for _ in range(2):
+        assert client.get("/teams", params={"season": 2025}, headers=HEADERS).status_code == 422
+    assert sleeper.calls == 2
+
+
+def test_the_start_up_refresh_refreshes_the_current_season_once(settings, sources, fixture_raw_dir, monkeypatch):
+    calls = []
+    monkeypatch.setattr("cornerstone_api.sources.refresh_sources",
+                        lambda repo, season, now, week, **kwargs: calls.append((season, kwargs["max_age_seconds"])))
+    sleeper = CountingSleeper(fixture_raw_dir)
+    app = create_app(settings, sources=dataclasses.replace(sources, fetch_sleeper=sleeper), refresh_on_start=True)
+    app.state.refresh_thread.join(timeout=10)
+    # The refresh keeps the normal max age, so it fetches only the files older than a day.
+    assert calls == [(2026, CACHE_MAX_AGE_SECONDS)]
+    assert sleeper.calls == 1
+
+
+def test_the_start_up_refresh_is_off_unless_the_app_asks_for_it(settings, sources, monkeypatch):
+    calls = []
+    monkeypatch.setattr(Sources, "refresh_current_season", lambda self, repo, **kwargs: calls.append(repo))
+    app = create_app(settings, sources=sources)
+    assert app.state.refresh_thread is None
+    assert calls == []
+
+
+def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings, sources, monkeypatch, caplog):
+    def raising(self, repo, **kwargs):
+        raise httpx.ConnectError("no network")
+
+    monkeypatch.setattr(Sources, "refresh_current_season", raising)
+    app = create_app(settings, sources=sources, refresh_on_start=True)
+    app.state.refresh_thread.join(timeout=10)
+    assert "start-up refresh of the slow sources failed (ConnectError)" in caplog.text
+    client = TestClient(app)
+    assert client.get("/health").status_code == 200
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
 
 
 def test_a_chart_read_that_raises_makes_analyze_503(settings, sources):

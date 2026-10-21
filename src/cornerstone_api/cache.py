@@ -1,10 +1,14 @@
 """
-The result cache of the analyze route: one JSON file per proposed trade and the data it was graded on.
-A repeat of the same trade on the same data reads the file and makes no Claude call.
+The two caches of the API. The result cache of the analyze route keeps one JSON file per graded trade and data.
+The teams cache keeps the teams answer per season in memory for a short window, so the trade form fills at once.
 """
 import hashlib
 import json
+import threading
+import time
+from collections.abc import Callable
 from pathlib import Path
+from typing import NamedTuple
 
 from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
@@ -60,3 +64,42 @@ class ResultCache:
         partial = path.with_suffix(".tmp")
         partial.write_text(json.dumps(document), encoding="utf-8")
         partial.replace(path)
+
+
+class TeamsEntry(NamedTuple):
+    """One teams answer and the monotonic time of its build."""
+
+    built_at: float
+    answer: dict
+
+
+class TeamsCache:
+    """The last teams answer per season, with the monotonic time of its build.
+
+    One lock covers the check and the build, so two first requests make one build and not two.
+    Only the teams route builds through it, so the refresh route and the analyze route never wait on a build.
+    """
+
+    def __init__(self, max_age_seconds: float, clock: Callable[[], float] = time.monotonic) -> None:
+        self.max_age_seconds = max_age_seconds
+        self.clock = clock
+        self._lock = threading.Lock()
+        self._entries: dict[int, TeamsEntry] = {}
+
+    def get_or_build(self, season: int, build: Callable[[], dict]) -> dict:
+        """The answer for `season` from memory within the window. Past it, `build` runs and the cache keeps its answer.
+
+        A build that raises leaves the cache as it was, so the next request tries again.
+        """
+        with self._lock:
+            entry = self._entries.get(season)
+            if entry is not None and self.clock() - entry.built_at < self.max_age_seconds:
+                return entry.answer
+            answer = build()
+            self._entries[season] = TeamsEntry(built_at=self.clock(), answer=answer)
+            return answer
+
+    def clear(self, season: int) -> None:
+        """Drop the answer for `season`, so the next request builds again."""
+        # A dict pop is atomic, so the analyze route clears with no wait on a build that holds the lock.
+        self._entries.pop(season, None)
