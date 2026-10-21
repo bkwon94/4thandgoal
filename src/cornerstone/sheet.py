@@ -849,7 +849,7 @@ def _late_fact(c: Context, i: int, trade: Trade) -> Fact:
 
 
 def trade_facts(c: Context) -> list[Fact]:
-    """The trade recap facts: the sides, the impact of each player got, and the swing or the late fact.
+    """The sides, impact, swing, and late facts of each trade, kept for the trade analyzer.
     The weekly sheet leaves them out, because the page shows the trade card with no recap."""
     out = []
     for i, trade in enumerate(c.trades, start=1):

@@ -22,6 +22,8 @@ PACKAGE_DIR = Path(__file__).parent
 STATIC_DIR = PACKAGE_DIR / "static"
 DEFAULT_AVATAR = "static/avatar-default.svg"
 DEFAULT_HEADSHOT = "static/headshot-default.svg"
+# The week page sits two folders below the site root, so it reaches the default silhouette with this path.
+DEFAULT_HEADSHOT_PATH = f"../../{DEFAULT_HEADSHOT}"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
@@ -106,7 +108,7 @@ def _trades(bundle: Bundle, teams: dict, headshots: dict[str, str]) -> list[dict
                 players.append({
                     # A player with no lineup line has no name in the week data, so he shows under a plain label.
                     "name": bundle.data.trade_players.get(pid, "An unlisted player"),
-                    "headshot": headshots.get(pid, f"../../{DEFAULT_HEADSHOT}"),
+                    "headshot": headshots.get(pid, DEFAULT_HEADSHOT_PATH),
                 })
             picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
             sides.append({"team": teams[rid], "players": players, "picks": picks})
@@ -218,6 +220,12 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
     return paths
 
 
+def _is_def(player_id: str) -> bool:
+    """Whether a player ID is a DEF.
+    Sleeper gives a DEF the team abbreviation as its player ID, and a player a numeric ID."""
+    return not player_id.isdigit()
+
+
 def _headshot_url(player_id: str, is_def: bool) -> str:
     """The Sleeper CDN URL for a player's headshot.
     A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
@@ -232,16 +240,15 @@ def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callabl
     data = bundle.data
     lines = [a.line for a in data.awards if a.key == "game_changer" or a.key in TILE_KEYS]
     lines += [lead.line for lead in data.leaders]
-    players = [(line.player_id, line.position == "DEF") for line in lines]
-    # A trade holds player IDs and no lineup lines. A Sleeper player ID is a number and a DEF ID is
-    # the team abbreviation, so the form of the ID tells a DEF apart.
-    players += [(pid, not pid.isdigit()) for trade in data.trades for pid in trade.adds]
+    players = [(line.player_id, _is_def(line.player_id)) for line in lines]
+    # A trade holds player IDs and no lineup lines, so the ID alone tells a DEF apart.
+    players += [(pid, _is_def(pid)) for trade in data.trades for pid in trade.adds]
     paths = {}
     for player_id, is_def in players:
         # A player can hold an award, a leader row, and a trade chip, so each player is fetched once.
         if player_id in paths:
             continue
-        paths[player_id] = f"../../{DEFAULT_HEADSHOT}"
+        paths[player_id] = DEFAULT_HEADSHOT_PATH
         content = fetch_bytes(_headshot_url(player_id, is_def))
         if content is None:
             continue

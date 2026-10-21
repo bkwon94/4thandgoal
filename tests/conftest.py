@@ -56,7 +56,7 @@ def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):
 
 
 def recap_facts(week, history=None, trades=None):
-    """The sides, impact, swing, and late facts by ID. The weekly sheet leaves them out, so these tests call the builder."""
+    """The sides, impact, swing, and late facts of each trade, kept for the trade analyzer, by ID. The weekly sheet leaves them out, so these tests call the builder."""
     return {f.id: f for f in trade_facts(Context(week, lambda pid: [], history, trades))}
 
 

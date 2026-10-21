@@ -158,8 +158,8 @@ a { color:var(--red); }
 .trade .gets { justify-self:center; color:var(--muted); font-size:var(--fs-label); font-weight:700; text-transform:uppercase; letter-spacing:var(--track-wide); margin:var(--sp-2) 0 var(--sp-1); }
 .trade .got { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2); }
 .trade .chip { display:flex; flex-direction:column; align-items:center; text-align:center; background:var(--wht); border-radius:var(--r-card); padding:var(--sp-2) var(--sp-2) var(--sp-3); overflow:hidden; }
-/* The cutout fills the chip top edge to edge, so the chip reads as a card for that player. The red rule ties it to the brand.
-   The band is about 10 percent under the 72px of the approved prototype, so a column of chips stays short at phone width. */
+/* The cutout fills the chip top edge to edge, so the chip reads as a card for that player. The red rule matches the page accent.
+   64px keeps a column of chips short at 390. */
 .trade .chip .headshot { display:block; width:calc(100% + var(--sp-2) * 2); height:64px; margin:calc(var(--sp-2) * -1) calc(var(--sp-2) * -1) var(--sp-2); border-radius:0; object-fit:contain; object-position:center bottom; background:linear-gradient(var(--gry), var(--wht)); border-bottom:2px solid var(--red); }
 .trade .chip b { font-size:var(--fs-row); font-weight:800; line-height:var(--lh-tight); letter-spacing:-.01em; }
 .trade .pick { color:var(--muted); font-size:var(--fs-meta); text-align:center; padding:var(--sp-1) 0; }

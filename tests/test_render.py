@@ -423,3 +423,24 @@ def test_three_side_card_wraps_with_no_for_tag_and_shows_a_pick_row(tbundle, tmp
     assert 'class="for"' not in card and 'class="swap pair"' not in card
     assert '<li class="pick">2027 round 2 pick</li>' in card
     assert '<b>Patrick Mahomes</b></li>' in card
+
+
+def test_a_traded_defense_gets_the_team_logo(tbundle, tmp_path):
+    trade = tbundle.data.trades[0]
+    trade.adds["SEA"] = trade.roster_ids[0]
+    urls = []
+
+    def fetch(url):
+        urls.append(url)
+        return PNG_BYTES
+
+    render_week(tbundle, _blurbs(tbundle), tmp_path, fetch)
+    assert "https://sleepercdn.com/images/team_logos/nfl/sea.png" in urls
+    assert "https://sleepercdn.com/content/nfl/players/SEA.jpg" not in urls
+
+
+def test_page_has_no_footer(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert "Built from Sleeper data" not in html
+    assert not re.search(r"<[^>]*\bfoot\b", html)

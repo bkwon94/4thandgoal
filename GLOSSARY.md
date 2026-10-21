@@ -54,10 +54,9 @@ Tuesday or Wednesday trade belongs to the week whose games come next.
 **Late trade**:
 A trade made after the lineups locked, so the lineup shows the roster from before it.
 
-**Trade recap**:
-The weekly chapter about one trade: who moved and how the week went for each side. It carries no
-grade.
-_Avoid_: trade chapter, trade card (that is the page element)
+**Trade card**:
+The page element for one trade: one column per side with the team and the players it got, a FOR tag
+between two sides.
 
 ### The analyzer
 
