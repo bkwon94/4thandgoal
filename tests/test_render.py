@@ -77,6 +77,14 @@ def test_index_lists_week(fixture_raw_dir, tmp_path):
     assert "Week 6" in idx and "2026/week-06/" in idx
 
 
+def test_asset_links_carry_the_same_content_stamp(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    week = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    idx = render_index(tmp_path).read_text()
+    stamps = {re.search(r"static/style\.css\?v=([0-9a-f]{8})\"", page).group(1) for page in (week, idx)}
+    assert len(stamps) == 1
+
+
 def test_index_sorts_newest_first(tmp_path):
     for season, week in ((2026, 6), (2026, 10), (2026, 7)):
         d = tmp_path / str(season) / f"week-{week:02d}"

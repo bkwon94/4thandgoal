@@ -2,6 +2,7 @@
 Renders the week page and the home page from a bundle and its blurbs.
 Templates get one plain context dict, so they hold layout and no logic.
 """
+import hashlib
 import html
 import logging
 import re
@@ -139,6 +140,16 @@ def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
     return list(boards.values())
 
 
+def _asset_version() -> str:
+    """Return a short content hash of the stylesheet and the script."""
+    # A browser cache keeps a stylesheet past a publish because the path never changes.
+    # The stamp changes with the file, so the browser fetches a fresh copy.
+    digest = hashlib.sha256()
+    for name in ("style.css", "app.js"):
+        digest.update((STATIC_DIR / name).read_bytes())
+    return digest.hexdigest()[:8]
+
+
 def build_context(
     bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str], headshots: dict[str, str],
 ) -> dict:
@@ -160,6 +171,7 @@ def build_context(
         for f in sorted(data.matchups, key=lambda f: f.matchup_id)
     ]
     return {
+        "asset_version": _asset_version(),
         "season": data.season,
         "week": data.week,
         "dates": data.dates,
@@ -280,6 +292,6 @@ def render_index(site_dir: Path) -> Path:
                       "label": label, "dates": dates, "teams": teams})
     weeks.sort(key=lambda w: w["key"], reverse=True)
     out = site_dir / "index.html"
-    out.write_text(_env.get_template("index.html").render(weeks=weeks, root=""))
+    out.write_text(_env.get_template("index.html").render(weeks=weeks, root="", asset_version=_asset_version()))
     _copy_static(site_dir)
     return out
