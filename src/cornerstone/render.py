@@ -3,6 +3,7 @@ Renders the week page and the home page from a bundle and its blurbs.
 Templates get one plain context dict, so they hold layout and no logic.
 """
 import html
+import logging
 import re
 import shutil
 from collections.abc import Callable
@@ -24,6 +25,8 @@ AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 SUMMARY_META = re.compile(r'<meta name="cornerstone-summary" content="([^"]*)">')
+
+log = logging.getLogger(__name__)
 
 _env = Environment(loader=FileSystemLoader(PACKAGE_DIR / "templates"), autoescape=True)
 _env.filters["num"] = fmt
@@ -137,7 +140,7 @@ def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
 
 
 def build_context(
-    bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str], headshots: dict[str, str] | None = None,
+    bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str], headshots: dict[str, str],
 ) -> dict:
     """Turn the bundle into the values the templates read."""
     data = bundle.data
@@ -177,7 +180,7 @@ def build_context(
         ],
         "blurbs": text,
         "avatars": avatars,
-        "headshots": headshots or {},
+        "headshots": headshots,
         "summary": f"Week {data.week} · {data.dates} · {pick_sides[0]['team'].name} vs {pick_sides[1]['team'].name}",
         "root": "../../",
     }
@@ -187,9 +190,13 @@ def _download_bytes(url: str) -> bytes | None:
     """Fetch one image. Return None on any failure, so a build never stops on one avatar."""
     try:
         resp = httpx.get(url, timeout=AVATAR_TIMEOUT, follow_redirects=True)
-    except Exception:
+    except Exception as exc:
+        log.warning("Image fetch failed for %s: %s", url, exc)
         return None
-    return resp.content if resp.status_code == 200 else None
+    if resp.status_code != 200:
+        log.warning("Image fetch failed for %s: status %s", url, resp.status_code)
+        return None
+    return resp.content
 
 
 def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[int, str]:
@@ -211,7 +218,7 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
 
 def _headshot_url(line: PlayerLine) -> str:
     """The Sleeper CDN URL for a player's headshot.
-    A DEF has no portrait, and its player ID is the team abbreviation, so it maps to the team logo."""
+    A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
     if line.position == "DEF":
         return f"https://sleepercdn.com/images/team_logos/nfl/{line.player_id.lower()}.png"
     return f"https://sleepercdn.com/content/nfl/players/{line.player_id}.jpg"

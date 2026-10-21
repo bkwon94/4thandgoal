@@ -31,8 +31,7 @@ a { color:var(--red); }
 .pt, .hero-p, .pp, .tile .sub, .kpi .v, .stars b, .mu .hd, .chart .r, .st, .rec, .week .dates, .wk .dates { font-variant-numeric:tabular-nums; }
 
 .avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
-.headshot { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
-/* The headshot sizes double at each step on the --sp-5 unit, so the hero, the tile, and the row read as one scale. */
+.headshot { border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
 .who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
 
 .mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }
@@ -73,7 +72,8 @@ a { color:var(--red); }
 .hero-p { font-weight:900; font-size:var(--fs-score); line-height:var(--lh-stat); margin:0 0 var(--sp-1); }
 .hero-p small { font-weight:600; font-size:var(--fs-meta); color:var(--on-dark-muted); margin-left:var(--sp-2); }
 .hero-p.pts { color:var(--red-lt); margin-bottom:var(--sp-3); }
-/* The portrait sits above the name, so a long name and its meta line keep the full width at phone size. */
+/* The headshot sits above the name, so a long name and its meta line keep the full width at phone size. */
+/* The headshot sizes double at each step on the --sp-5 unit, so the hero, the tile, and the row read as one scale. */
 .hero-p .headshot { display:block; width:calc(var(--sp-5) * 4); height:calc(var(--sp-5) * 4); margin-bottom:var(--sp-3); }
 
 .tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); }

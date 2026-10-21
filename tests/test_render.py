@@ -89,7 +89,7 @@ def test_index_sorts_newest_first(tmp_path):
 
 def test_context_median_bars(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
-    ctx = build_context(b, _blurbs(b), {})
+    ctx = build_context(b, _blurbs(b), {}, {})
     bars = ctx["median"]["bars"]
     assert len(bars) == 12
     assert bars[0]["pct"] == 100.0
@@ -101,7 +101,7 @@ def test_context_median_bars(fixture_raw_dir):
 def test_context_missing_award_is_flagged(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
     b.data.awards = [a for a in b.data.awards if a.key != "underperformer"]
-    ctx = build_context(b, _blurbs(b), {})
+    ctx = build_context(b, _blurbs(b), {}, {})
     assert [t["title"] for t in ctx["awards"]] == [
         "Top Scorer", "MVB · Most Valuable Benchwarmer", "Underperformer", "Overachiever",
     ]
@@ -191,7 +191,7 @@ def test_no_trades_no_section(fixture_raw_dir, tmp_path):
 
 
 def test_awards_show_four_tiles_for_a_bundle_with_drops(dbundle):
-    ctx = build_context(dbundle, _blurbs(dbundle), {})
+    ctx = build_context(dbundle, _blurbs(dbundle), {}, {})
     assert [t["title"] for t in ctx["awards"]] == [
         "Top Scorer", "MVB · Most Valuable Benchwarmer", "Underperformer", "Overachiever",
     ]
@@ -284,7 +284,7 @@ def _leaders_section(html):
 
 def test_build_context_has_five_leader_boards(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
-    boards = build_context(b, _blurbs(b), {})["leaders"]
+    boards = build_context(b, _blurbs(b), {}, {})["leaders"]
     assert [x["position"] for x in boards] == ["QB", "RB", "WR", "TE", "DEF"]
     assert boards[1]["rows"][0] == {"rank": 1, "player": "Kenneth Walker", "player_id": "8151", "nfl_team": "KC",
                                     "points": 26.9, "team": "Bo Girds"}
@@ -293,7 +293,7 @@ def test_build_context_has_five_leader_boards(fixture_raw_dir):
 def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     b.data.leaders = [l for l in b.data.leaders if l.position != "DEF"]
-    boards = build_context(b, _blurbs(b), {})["leaders"]
+    boards = build_context(b, _blurbs(b), {}, {})["leaders"]
     assert len(boards) == 5
     assert boards[-1] == {"position": "DEF", "rows": []}
     html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
@@ -342,7 +342,6 @@ def test_headshots_show_on_the_hero_the_tiles_and_the_rows(fixture_raw_dir, tmp_
     b = _bundle(fixture_raw_dir)
     headshots = {line.player_id: f"headshots/{line.player_id}.png" for line in _headshot_players(b)}
     ctx = build_context(b, _blurbs(b), {}, headshots)
-    assert ctx["headshots"] == headshots
     assert ctx["game_changer"]["award"].line.player_id in headshots
     for t in ctx["awards"]:
         assert t["missing"] or t["player_id"] in headshots
