@@ -84,6 +84,20 @@ class ChartValues(BaseModel):
     values: dict[str, float]
 
 
+class ChartRow(BaseModel):
+    value: float
+    name: str
+    position: str
+
+
+class ChartRead(BaseModel):
+    """What Claude reads off the chart image: the header week and date, and the rows top to bottom."""
+
+    week: int
+    date: date
+    rows: list[ChartRow]
+
+
 class Trade(BaseModel):
     transaction_id: str
     # The aware time of Sleeper's epoch milliseconds.

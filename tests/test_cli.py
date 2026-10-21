@@ -112,3 +112,47 @@ def test_missing_file_message_has_no_none_and_hint_fits_command(tmp_path, monkey
     assert cli.main(["rewrite", "--season", "2026", "--week", "7", "--chapter", "median"]) == 2
     out = capsys.readouterr().out
     assert out == "Missing file. Build the week first.\n"
+
+
+def _chart_repo(tmp_path, fixture_raw_dir, monkeypatch):
+    import shutil
+
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-06" / "raw")
+    monkeypatch.chdir(tmp_path)
+
+
+def test_chart_without_saved_raw_data_says_so(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    monkeypatch.chdir(tmp_path)
+
+    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 2
+    assert "No raw data" in capsys.readouterr().out
+
+
+def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw_dir, monkeypatch, capsys):
+    from cornerstone import cli
+    from cornerstone.chart import chart_dir
+    from cornerstone.models import ChartRead, ChartRow
+    from cornerstone.parse import parse_week
+    from cornerstone.sleeper import load_raw
+
+    _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
+    line = parse_week(load_raw(fixture_raw_dir)).matchups[0].a.lines[0]
+    parsed = ChartRead(week=6, date="2026-10-13", rows=[
+        ChartRow(value=60.0, name=line.name, position=line.position),
+        ChartRow(value=50.0, name="Nobody Atall", position="RB"),
+    ])
+    charts = chart_dir(tmp_path)
+    charts.mkdir(parents=True)
+    # A saved parse means the command makes no fetch and no Claude call.
+    (charts / "week-06.json").write_text(parsed.model_dump_json())
+
+    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 0
+
+    out = capsys.readouterr().out
+    assert f"60.0  {line.name}  {line.position}" in out
+    assert "header week: pass" in out
+    assert "Matched 1 of 2 chart rows" in out
