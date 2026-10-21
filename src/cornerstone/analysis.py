@@ -16,7 +16,7 @@ from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import normalize_number, number_failures, remove_names, whole_word
-from cornerstone.writer import ClaudeCall, RefusalError, WriterError, claude_call, load_prompt
+from cornerstone.writer import ClaudeCall, RefusalError, WriterError, analyzer_call, load_prompt
 
 log = logging.getLogger(__name__)
 
@@ -200,7 +200,7 @@ def code_only(trade: ProposedTrade, snapshot: Snapshot) -> Analysis:
     return _fallback(breakdowns, verdict(trade, breakdowns))
 
 
-def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = claude_call) -> Analysis:
+def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = analyzer_call) -> Analysis:
     """Grade the trade, then ask Claude for the final letters, the analysis, and the verdict.
 
     A failed check retries once with the failures as feedback. A second failure keeps the code's letters

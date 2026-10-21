@@ -146,13 +146,22 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed"):
+def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed", has_usage=True):
     sent = {}
 
     class Messages:
         def parse(self, **kwargs):
             sent.update(kwargs)
-            return type("Response", (), {"stop_reason": stop_reason, "parsed_output": parsed_output})()
+            usage = type("Usage", (), {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 1,
+            })
+            return type("Response", (), {
+                "stop_reason": stop_reason,
+                "parsed_output": parsed_output,
+                "usage": usage if has_usage else None,
+            })()
 
     monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
     return sent
@@ -163,7 +172,9 @@ def test_claude_call_sends_the_system_and_the_user_text_through_parse_call(monke
 
     sent = _fake_client(monkeypatch)
     assert claude_call("system text", "user text", WriterOut) == "parsed"
-    assert sent["system"] == "system text"
+    assert sent["system"] == [
+        {"type": "text", "text": "system text", "cache_control": {"type": "ephemeral"}}
+    ]
     assert sent["messages"] == [{"role": "user", "content": "user text"}]
     assert sent["output_format"] is WriterOut
     assert sent["output_config"] == {"effort": "high"}
@@ -178,3 +189,54 @@ def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output(monkeypatch):
     _fake_client(monkeypatch, parsed_output=None)
     with pytest.raises(WriterError):
         parse_call("user text", WriterOut)
+
+
+def test_the_analyzer_call_alone_sets_the_one_hour_lifetime(monkeypatch):
+    from cornerstone.analysis import AnalysisOut
+    from cornerstone.writer import analyzer_call, claude_call
+
+    sent = _fake_client(monkeypatch)
+    analyzer_call("analyzer system", "user text", AnalysisOut)
+    assert sent["system"] == [{
+        "type": "text",
+        "text": "analyzer system",
+        "cache_control": {"type": "ephemeral", "ttl": "1h"},
+    }]
+    # The writer and the verifier share claude_call. They keep five minutes, no ttl.
+    claude_call("writer system", "user text", WriterOut)
+    assert sent["system"][0]["cache_control"] == {"type": "ephemeral"}
+
+
+# The API route calls `analyze` with no `call` argument, so this default is the API's lifetime.
+def test_analyze_uses_the_analyzer_call_by_default():
+    import inspect
+
+    from cornerstone.analysis import analyze
+    from cornerstone.writer import analyzer_call
+
+    assert inspect.signature(analyze).parameters["call"].default is analyzer_call
+
+
+def test_parse_call_logs_the_kind_and_the_three_usage_counts(monkeypatch, caplog):
+    import logging
+
+    from cornerstone.writer import parse_call
+
+    _fake_client(monkeypatch)
+    with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
+        parse_call("user text", WriterOut, "system text")
+    assert (
+        "WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0"
+        " input_tokens=1"
+    ) in caplog.messages
+
+
+def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(monkeypatch, caplog):
+    import logging
+
+    from cornerstone.writer import parse_call
+
+    _fake_client(monkeypatch, has_usage=False)
+    with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
+        assert parse_call("user text", WriterOut, "system text") == "parsed"
+    assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)

@@ -438,7 +438,7 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
             "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
         })
 
-    monkeypatch.setattr(cli, "claude_call", fake_claude)
+    monkeypatch.setattr(cli, "analyzer_call", fake_claude)
     _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
     code = cli.main(JACOBS_ARGS)
 
@@ -458,7 +458,7 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
         tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
     from cornerstone import cli
 
-    monkeypatch.setattr(cli, "claude_call", lambda system, user, output_model: None)
+    monkeypatch.setattr(cli, "analyzer_call", lambda system, user, output_model: None)
     _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
     code = cli.main(JACOBS_ARGS)
 

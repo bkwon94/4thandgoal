@@ -2,6 +2,7 @@
 Asks Claude for one blurb per chapter from the fact sheet, with fact IDs on every sentence.
 The template blurb is the safe fallback when the writer fails twice.
 """
+import logging
 from collections.abc import Callable
 from importlib import resources
 
@@ -15,6 +16,13 @@ PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
 
 # (system, user, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ClaudeCall = Callable[[str, str, type[BaseModel]], BaseModel]
+
+# The analyzer prefix stays warm for an hour, because trade requests come minutes
+# apart. Every other call keeps the default five minutes, because the weekly build
+# runs its calls back to back.
+ANALYZER_CACHE_TTL = "1h"
+
+log = logging.getLogger(__name__)
 
 _client: anthropic.Anthropic | None = None
 
@@ -35,10 +43,24 @@ def _get_client() -> anthropic.Anthropic:
     return _client
 
 
-def parse_call(content: str | list[dict], output_model: type[BaseModel], system: str | None = None) -> BaseModel:
-    """One user message to Claude, parsed into the output model. Every Claude call in the tool goes through here."""
+def parse_call(
+    content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
+    cache_ttl: str | None = None,
+) -> BaseModel:
+    """One user message to Claude, parsed into the output model.
+
+    Every Claude call in the tool goes through here. The system prompt goes out as
+    one cached block. `cache_ttl` None keeps the default five-minute lifetime.
+    """
     # The chart read has no system prompt, so the argument goes out only when there is one.
-    extra = {"system": system} if system is not None else {}
+    extra = {}
+    if system is not None:
+        cache_control = {"type": "ephemeral"}
+        if cache_ttl is not None:
+            cache_control["ttl"] = cache_ttl
+        extra["system"] = [
+            {"type": "text", "text": system, "cache_control": cache_control}
+        ]
     response = _get_client().messages.parse(
         model=MODEL,
         max_tokens=16000,
@@ -47,6 +69,18 @@ def parse_call(content: str | list[dict], output_model: type[BaseModel], system:
         output_config={"effort": "high"},
         **extra,
     )
+    # A cache read of zero on a repeat call shows a cold or unstable prefix.
+    usage = response.usage
+    # A response with no usage skips the log line. The parsed output still counts.
+    if usage is not None:
+        log.info(
+            "%s call: cache_creation_input_tokens=%s cache_read_input_tokens=%s"
+            " input_tokens=%s",
+            output_model.__name__,
+            usage.cache_creation_input_tokens,
+            usage.cache_read_input_tokens,
+            usage.input_tokens,
+        )
     if response.stop_reason == "refusal":
         raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
     if response.parsed_output is None:
@@ -56,6 +90,11 @@ def parse_call(content: str | list[dict], output_model: type[BaseModel], system:
 
 def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
     return parse_call(user, output_model, system)
+
+
+def analyzer_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
+    """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
+    return parse_call(user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL)
 
 
 def load_prompt(name: str) -> str:
