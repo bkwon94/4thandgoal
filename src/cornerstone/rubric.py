@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 
 from cornerstone.adjusters import (
-    ADJUSTERS, SCHEDULE, Adjuster, build_side, named, recent_points_per_game, trade_handcuffs,
+    ADJUSTERS, SCHEDULE, Adjuster, Lean, build_side, named, recent_points_per_game, trade_handcuffs,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -84,6 +84,11 @@ class Breakdown(BaseModel):
     # The start letter moved by the sum of the adjuster steps, clamped to CLAMP_STEPS either way.
     final_letter: Letter
 
+    @property
+    def lean(self) -> Lean | None:
+        """The lean of the schedule adjuster, or None when the side has none."""
+        return next((a.lean for a in self.adjusters if a.name == SCHEDULE), None)
+
 
 class Verdict(BaseModel):
     """Accept, counter, or decline, for the side that asked, with one reason."""
@@ -117,9 +122,8 @@ def _letter(got: Decimal, gave: Decimal) -> Letter:
     return "F"
 
 
-def _both_at_c(a: TradeSide, b: TradeSide, reason: str) -> tuple[Breakdown, Breakdown]:
-    return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=reason, final_letter="C"),
-            Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason, final_letter="C"))
+def _both_at_c(reason: str) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
+    return ("C", reason), ("C", reason)
 
 
 def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
@@ -127,17 +131,19 @@ def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
     return {**snapshot.chart.values, **{pid: 0.0 for pid in handcuffs}}
 
 
-def _start_letters(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[Breakdown, Breakdown]:
-    """The start letter and its reason for each side, before any adjuster. A handcuff counts as zero in the sums."""
+def _start_letters(
+    trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str],
+) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
+    """The start letter and its reason for each side, as a pair, before any adjuster. A handcuff counts as zero in the sums."""
     a, b = trade.sides
     if snapshot.chart is None:
-        return _both_at_c(a, b, NO_CHART_REASON)
+        return _both_at_c(NO_CHART_REASON)
     values = _trade_values(snapshot, handcuffs)
     unlisted = [pid for side in trade.sides for pid in side.gives if pid not in values]
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
                   + " no trade value, so neither side gets a start letter and both start at C.")
-        return _both_at_c(a, b, reason)
+        return _both_at_c(reason)
     # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
     sum_a = sum((Decimal(str(values[pid])) for pid in a.gives), Decimal(0))
     sum_b = sum((Decimal(str(values[pid])) for pid in b.gives), Decimal(0))
@@ -149,12 +155,11 @@ def _start_letters(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str
         else:
             sum_b /= CONSOLIDATION_MARGIN
 
-    def breakdown(roster_id: int, got: Decimal, gave: Decimal) -> Breakdown:
+    def start(got: Decimal, gave: Decimal) -> tuple[Letter, str]:
         letter = _letter(got, gave)
-        reason = BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
-        return Breakdown(roster_id=roster_id, start_letter=letter, reason=reason, final_letter=letter)
+        return letter, BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
 
-    return breakdown(a.roster_id, sum_b, sum_a), breakdown(b.roster_id, sum_a, sum_b)
+    return start(sum_b, sum_a), start(sum_a, sum_b)
 
 
 def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:
@@ -191,10 +196,10 @@ def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdow
              build_side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
     starts = _start_letters(trade, snapshot, handcuffs)
     breakdowns = []
-    for start, side in zip(starts, sides):
+    for trade_side, (letter, reason), side in zip(trade.sides, starts, sides):
         adjusters = [adjuster(snapshot, side) for adjuster in ADJUSTERS]
-        breakdowns.append(start.model_copy(update={
-            "adjusters": adjusters, "final_letter": _final_letter(start.start_letter, adjusters)}))
+        breakdowns.append(Breakdown(roster_id=trade_side.roster_id, start_letter=letter, reason=reason,
+                                    adjusters=adjusters, final_letter=_final_letter(letter, adjusters)))
     return breakdowns[0], breakdowns[1]
 
 
@@ -211,7 +216,7 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Ve
     asker = next(b for b in breakdowns if b.roster_id == trade.asker)
     other = next(b for b in breakdowns if b.roster_id != trade.asker)
     mine, theirs = asker.final_letter, other.final_letter
-    lean = next((a.lean for a in asker.adjusters if a.name == SCHEDULE), None)
+    lean = asker.lean
     if _at_or_above(mine, ACCEPT_AT_OR_ABOVE):
         return Verdict(choice="accept", reason=f"The asking side grades {mine}, so the trade favors it.")
     if _at_or_below(mine, DECLINE_AT_OR_BELOW):

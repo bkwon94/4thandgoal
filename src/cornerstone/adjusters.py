@@ -31,6 +31,9 @@ if TYPE_CHECKING:
 # The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, and schedule.
 
 
+Lean = Literal["for", "against", "even"]
+
+
 class Adjuster(BaseModel):
     """One criterion of the rubric for one side: its name, its step of at most one, and a one-line reason."""
 
@@ -38,7 +41,7 @@ class Adjuster(BaseModel):
     step: Literal[-1, 0, 1]
     reason: str
     # Only the schedule adjuster has a lean. It never moves a letter, so its step is always 0.
-    lean: Literal["for", "against", "even"] | None = None
+    lean: Lean | None = None
 
 
 def _join(names: list[str]) -> str:
@@ -435,12 +438,12 @@ def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
 
 
 def _scheduled(snapshot: Snapshot, player_id: str) -> TeamSchedule | None:
-    """The NFL schedule of the player's team. None for a defense or a player whose team has no schedule.
+    """The NFL schedule of the player's team. None for a defense, a kicker, or a player whose team has no schedule.
 
-    A defense has no points allowed to its own position, so the schedule leaves it out on both signals.
+    A defense or a kicker has no points allowed rank to his position, so the schedule leaves him out on both signals.
     """
     player = snapshot.players[player_id]
-    if player.position == "DEF":
+    if player.position in ("DEF", "K"):
         return None
     return snapshot.schedules.get(player.nfl_team or "")
 
@@ -481,7 +484,7 @@ def _schedule(snapshot: Snapshot, side: _Side) -> Adjuster:
     if snapshot.schedules is None or snapshot.points_allowed is None:
         return Adjuster(name=SCHEDULE, step=0, lean="even", reason="The schedule sources are not available.")
     byes_got, byes_gave = _byes_left(snapshot, side.gets), _byes_left(snapshot, side.gives)
-    bye_lean = "for" if byes_got < byes_gave else "against" if byes_got > byes_gave else "even"
+    bye_lean: Lean = "for" if byes_got < byes_gave else "against" if byes_got > byes_gave else "even"
     rank_got, rank_gave = _playoff_rank(snapshot, side.gets), _playoff_rank(snapshot, side.gives)
     if rank_got is None or rank_gave is None:
         playoff_lean = "even"
@@ -502,7 +505,7 @@ def _schedule(snapshot: Snapshot, side: _Side) -> Adjuster:
     }[bye_lean]
     # Two signals that agree, or one signal with the other even, give the lean. Two that conflict cancel out.
     leans = {bye_lean, playoff_lean} - {"even"}
-    lean = leans.pop() if len(leans) == 1 else "even"
+    lean: Lean = leans.pop() if len(leans) == 1 else "even"
     verdict = "The schedule is even." if lean == "even" else f"The schedule leans {lean} this side."
     return Adjuster(name=SCHEDULE, step=0, lean=lean, reason=f"{byes}, and {playoffs}. {verdict}")
 

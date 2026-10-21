@@ -48,9 +48,9 @@ INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
 RETURN_WINDOW_WEEKS = 2
 
-# Schedule: byes left and the playoff opponents of the players got against the players gave. It never moves a letter.
+# Schedule: byes left and the playoff opponents of the players it gets against the players it gives. It never moves a letter.
 # The gap in the mean rank of the week 15 to 17 opponents, in points allowed to the position, that makes a lean.
-# The value is a first cut, and the commissioner tunes it.
+# Set this number by hand. The commissioner tunes it.
 SCHEDULE_RANK_GAP = 4
 
 # The final letter is the start letter moved by the sum of the adjuster steps.

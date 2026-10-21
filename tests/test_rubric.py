@@ -7,6 +7,7 @@ import shutil
 
 import pytest
 
+from cornerstone.adjusters import _byes_left
 from cornerstone.rubric import Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
@@ -573,6 +574,15 @@ def test_schedule_leans_on_the_byes_alone_when_the_playoff_opponents_are_even(sl
     assert _adjuster(tenth, "schedule").reason.startswith(
         "The players it gets have fewer byes left than the players it gives, "
         "and the playoff opponents are about as hard on both sides.")
+
+
+def test_a_kicker_does_not_count_in_the_byes_left(slow_snap):
+    # Saquon Barkley's PHI bye in week 10 is still left. As a kicker, he has no points allowed rank, so he counts on neither signal.
+    players = dict(slow_snap.players)
+    players[SAQUON] = players[SAQUON].model_copy(update={"position": "K"})
+    kicker_snap = slow_snap.model_copy(update={"players": players})
+    assert _byes_left(slow_snap, [SAQUON]) == 1
+    assert _byes_left(kicker_snap, [SAQUON]) == 0
 
 
 # Bucky Irving on roster 1, Derrick Henry on roster 3, and Rashee Rice on roster 1, who is out with no return week.
