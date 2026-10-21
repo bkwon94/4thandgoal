@@ -29,3 +29,17 @@ Nothing publishes without `cornerstone publish`. No other command or script push
 
 Prose follows Simplified Technical English. The rules are in
 `~/.claude/rules/communication/simplified-technical-english.md`.
+
+## Agent skills
+
+### Issue tracker
+
+Local markdown under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default names, unchanged. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` and `docs/adr/` at the root, neither exists yet. See `docs/agents/domain.md`.
