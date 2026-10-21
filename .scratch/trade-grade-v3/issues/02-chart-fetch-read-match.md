@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 (Value facts on the sheet), for the chart values model
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A chart module exposes a fetch, a read, and a match. The fetch takes a `fetch` callable like the nflverse download. The read takes a `read` callable like the writer takes a Claude call.
 - [ ] The fetch queries the site's WordPress media API for the half-PPR redraft files and picks the file whose filename date falls on or after the Tuesday cutoff of week N and before the cutoff of week N+1. The cutoff is the trade window cutoff.

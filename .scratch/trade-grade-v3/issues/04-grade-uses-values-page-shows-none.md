@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 (Value facts on the sheet)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Rule 18 gains a sentence on the position order: at equal rank and points, an RB outweighs a WR, a WR outweighs a TE, and a TE outweighs a QB; a DEF carries little trade value. No mention of kickers.
 - [ ] Rule 18 gains a sentence that the value facts weigh the two sides and never appear in a sentence: no value, no sum, no chart, no tier.

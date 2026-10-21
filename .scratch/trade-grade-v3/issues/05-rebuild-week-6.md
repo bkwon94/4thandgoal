@@ -4,7 +4,7 @@
 
 **Blocked by:** 03 (Pipeline wiring), 04 (The grade uses the values and the page shows none)
 
-**Status:** ready-for-agent
+**Status:** built, waits on the review and the publish
 
 - [ ] `cornerstone chart --season 2026 --week 6` fetches the chart dated 2026-10-13, passes every guard, and matches every traded player of week 6 or lists which ones did not match.
 - [ ] The live read test passes on the real week 6 image.

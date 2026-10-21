@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The bundle builder takes an optional chart values input beside the nflverse week. Without it, the sheet is the v2 sheet.
 - [ ] A chart values model holds the chart week, the chart date, and a map from player id to value.

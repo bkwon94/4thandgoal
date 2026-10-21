@@ -4,7 +4,7 @@
 
 **Blocked by:** 02 (Chart fetch, read, match, and the `chart` command)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The pipeline wires a chart fetcher the same way it wires the nflverse fetcher, bound to the repo's cache directory, and tests patch that name.
 - [ ] The bundle builder receives the matched values for the week's trades, or none.
