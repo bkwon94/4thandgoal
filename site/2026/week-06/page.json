@@ -1,0 +1,2060 @@
+{
+  "schema_version": 1,
+  "asset_version": "4c469f80",
+  "season": 2026,
+  "week": 6,
+  "dates": "Oct 15 – Oct 19, 2026",
+  "publish_date": "Wed Oct 21, 2026",
+  "teams": {
+    "1": {
+      "roster_id": 1,
+      "name": "Brock ‘N’ Roll",
+      "owner": "tjhong0104",
+      "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg",
+      "wins": 6,
+      "losses": 6,
+      "points_for": 685.01,
+      "is_brian": false
+    },
+    "2": {
+      "roster_id": 2,
+      "name": "All You Need Is Love",
+      "owner": "wsh5022",
+      "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+      "wins": 7,
+      "losses": 5,
+      "points_for": 611.71,
+      "is_brian": false
+    },
+    "3": {
+      "roster_id": 3,
+      "name": "Lil Fridge",
+      "owner": "TeamJu",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+      "wins": 10,
+      "losses": 2,
+      "points_for": 739.67,
+      "is_brian": false
+    },
+    "4": {
+      "roster_id": 4,
+      "name": "Pukancun on 3",
+      "owner": "justinjjoo",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+      "wins": 1,
+      "losses": 11,
+      "points_for": 493.39,
+      "is_brian": false
+    },
+    "5": {
+      "roster_id": 5,
+      "name": "London Cooking",
+      "owner": "DumpsterFiresRUs",
+      "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+      "wins": 9,
+      "losses": 3,
+      "points_for": 721.96,
+      "is_brian": false
+    },
+    "6": {
+      "roster_id": 6,
+      "name": "Bo Girds",
+      "owner": "bkwon",
+      "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+      "wins": 8,
+      "losses": 4,
+      "points_for": 723.15,
+      "is_brian": true
+    },
+    "7": {
+      "roster_id": 7,
+      "name": "To Infinity and Bijan",
+      "owner": "bjpicard96",
+      "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+      "wins": 4,
+      "losses": 8,
+      "points_for": 543.88,
+      "is_brian": false
+    },
+    "8": {
+      "roster_id": 8,
+      "name": "Return of T Mac",
+      "owner": "jkwak03",
+      "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+      "wins": 6,
+      "losses": 6,
+      "points_for": 618.97,
+      "is_brian": false
+    },
+    "9": {
+      "roster_id": 9,
+      "name": "Maye d'force B with U",
+      "owner": "dkim475",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+      "wins": 7,
+      "losses": 5,
+      "points_for": 698.3,
+      "is_brian": false
+    },
+    "10": {
+      "roster_id": 10,
+      "name": "behold the lamb",
+      "owner": "steveekimm",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+      "wins": 6,
+      "losses": 6,
+      "points_for": 588.01,
+      "is_brian": false
+    },
+    "11": {
+      "roster_id": 11,
+      "name": "Unsolicited Dak Picks",
+      "owner": "mkim120",
+      "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+      "wins": 4,
+      "losses": 8,
+      "points_for": 594.91,
+      "is_brian": false
+    },
+    "12": {
+      "roster_id": 12,
+      "name": "Amon-Ra Dawg Your Team",
+      "owner": "pdurkim",
+      "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+      "wins": 4,
+      "losses": 8,
+      "points_for": 603.75,
+      "is_brian": false
+    }
+  },
+  "pick": {
+    "reason": "Closest Finish",
+    "sides": [
+      {
+        "team": {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "owner": "steveekimm",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+          "wins": 6,
+          "losses": 6,
+          "points_for": 588.01,
+          "is_brian": false
+        },
+        "score": 114.95,
+        "top": {
+          "player_id": "13274",
+          "name": "Germie Bernard",
+          "position": "WR",
+          "nfl_team": "PIT",
+          "points": 20.2,
+          "projection": 8.13,
+          "season_avg": null,
+          "started": true,
+          "slot": "WR",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "winner": true,
+        "loser": false
+      },
+      {
+        "team": {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "owner": "bkwon",
+          "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+          "wins": 8,
+          "losses": 4,
+          "points_for": 723.15,
+          "is_brian": true
+        },
+        "score": 109.61,
+        "top": {
+          "player_id": "12545",
+          "name": "Tyler Shough",
+          "position": "QB",
+          "nfl_team": "NO",
+          "points": 26.96,
+          "projection": 17.06,
+          "season_avg": null,
+          "started": true,
+          "slot": "QB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "winner": false,
+        "loser": true
+      }
+    ]
+  },
+  "motw": {
+    "matchup_id": 4,
+    "winner": 10,
+    "loser": 6,
+    "score_w": 114.95,
+    "score_l": 109.61,
+    "margin": 5.34,
+    "top_scorer": {
+      "6": {
+        "player_id": "12545",
+        "name": "Tyler Shough",
+        "position": "QB",
+        "nfl_team": "NO",
+        "points": 26.96,
+        "projection": 17.06,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      "10": {
+        "player_id": "13274",
+        "name": "Germie Bernard",
+        "position": "WR",
+        "nfl_team": "PIT",
+        "points": 20.2,
+        "projection": 8.13,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    },
+    "drivers": [
+      {
+        "player_id": "13274",
+        "name": "Germie Bernard",
+        "position": "WR",
+        "nfl_team": "PIT",
+        "points": 20.2,
+        "projection": 8.13,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8150",
+        "name": "Kyren Williams",
+        "position": "RB",
+        "nfl_team": "LAR",
+        "points": 8.2,
+        "projection": 19.42,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12545",
+        "name": "Tyler Shough",
+        "position": "QB",
+        "nfl_team": "NO",
+        "points": 26.96,
+        "projection": 17.06,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "IND",
+        "name": "Indianapolis Colts",
+        "position": "DEF",
+        "nfl_team": "IND",
+        "points": -0.85,
+        "projection": 8.85,
+        "season_avg": null,
+        "started": true,
+        "slot": "DEF",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "10235",
+        "name": "Roschon Johnson",
+        "position": "RB",
+        "nfl_team": "CHI",
+        "points": 13.5,
+        "projection": 6.09,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "4984",
+        "name": "Josh Allen",
+        "position": "QB",
+        "nfl_team": "BUF",
+        "points": 18.3,
+        "projection": 25.28,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12501",
+        "name": "Matthew Golden",
+        "position": "WR",
+        "nfl_team": "GB",
+        "points": 19.4,
+        "projection": 13.14,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8151",
+        "name": "Kenneth Walker",
+        "position": "RB",
+        "nfl_team": "KC",
+        "points": 26.9,
+        "projection": 20.81,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12514",
+        "name": "Emeka Egbuka",
+        "position": "WR",
+        "nfl_team": "TB",
+        "points": 14.3,
+        "projection": 8.54,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "3271",
+        "name": "Tyler Higbee",
+        "position": "TE",
+        "nfl_team": "LAR",
+        "points": 2.2,
+        "projection": 7.73,
+        "season_avg": null,
+        "started": true,
+        "slot": "TE",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "6786",
+        "name": "CeeDee Lamb",
+        "position": "WR",
+        "nfl_team": "DAL",
+        "points": 11.5,
+        "projection": 17.01,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    ],
+    "swing": [
+      {
+        "player_id": "13274",
+        "name": "Germie Bernard",
+        "position": "WR",
+        "nfl_team": "PIT",
+        "points": 20.2,
+        "projection": 8.13,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "4984",
+        "name": "Josh Allen",
+        "position": "QB",
+        "nfl_team": "BUF",
+        "points": 18.3,
+        "projection": 25.28,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "12514",
+        "name": "Emeka Egbuka",
+        "position": "WR",
+        "nfl_team": "TB",
+        "points": 14.3,
+        "projection": 8.54,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "10235",
+        "name": "Roschon Johnson",
+        "position": "RB",
+        "nfl_team": "CHI",
+        "points": 13.5,
+        "projection": 6.09,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "8129",
+        "name": "Dameon Pierce",
+        "position": "RB",
+        "nfl_team": "PHI",
+        "points": 13.0,
+        "projection": 10.14,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "1479",
+        "name": "Keenan Allen",
+        "position": "WR",
+        "nfl_team": "IND",
+        "points": 12.2,
+        "projection": 7.36,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "6786",
+        "name": "CeeDee Lamb",
+        "position": "WR",
+        "nfl_team": "DAL",
+        "points": 11.5,
+        "projection": 17.01,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "CLE",
+        "name": "Cleveland Browns",
+        "position": "DEF",
+        "nfl_team": "CLE",
+        "points": 9.75,
+        "projection": 6.27,
+        "season_avg": null,
+        "started": true,
+        "slot": "DEF",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    ],
+    "bench_regret": [],
+    "recent_moves": [
+      {
+        "player_id": "CLE",
+        "roster_id": 10,
+        "kind": "free_agent",
+        "week": 6,
+        "bid": null
+      },
+      {
+        "player_id": "7600",
+        "roster_id": 6,
+        "kind": "free_agent",
+        "week": 6,
+        "bid": null
+      },
+      {
+        "player_id": "IND",
+        "roster_id": 6,
+        "kind": "free_agent",
+        "week": 6,
+        "bid": null
+      },
+      {
+        "player_id": "1479",
+        "roster_id": 10,
+        "kind": "waiver",
+        "week": 5,
+        "bid": 6
+      },
+      {
+        "player_id": "8129",
+        "roster_id": 10,
+        "kind": "waiver",
+        "week": 5,
+        "bid": 12
+      },
+      {
+        "player_id": "13274",
+        "roster_id": 10,
+        "kind": "waiver",
+        "week": 5,
+        "bid": 12
+      },
+      {
+        "player_id": "10235",
+        "roster_id": 10,
+        "kind": "free_agent",
+        "week": 5,
+        "bid": null
+      }
+    ]
+  },
+  "game_changer": {
+    "award": {
+      "key": "game_changer",
+      "line": {
+        "player_id": "13274",
+        "name": "Germie Bernard",
+        "position": "WR",
+        "nfl_team": "PIT",
+        "points": 20.2,
+        "projection": 8.13,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      "roster_id": 10,
+      "matchup_id": 4,
+      "reason": "Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over, in a 5.34-point win after a recent roster move.",
+      "skipped": []
+    },
+    "team": "behold the lamb"
+  },
+  "awards": [
+    {
+      "title": "Top Scorer",
+      "missing": false,
+      "player": "Trevor Lawrence",
+      "player_id": "7523",
+      "points": 28.34,
+      "team": "Amon-Ra Dawg Your Team",
+      "projection": null
+    },
+    {
+      "title": "MVB · Most Valuable Benchwarmer",
+      "missing": false,
+      "player": "Jayden Daniels",
+      "player_id": "11566",
+      "points": 21.0,
+      "team": "London Cooking",
+      "projection": null
+    },
+    {
+      "title": "Underperformer",
+      "missing": false,
+      "player": "Bijan Robinson",
+      "player_id": "9509",
+      "points": 6.3,
+      "team": "To Infinity and Bijan",
+      "projection": 23.08
+    },
+    {
+      "title": "Overachiever",
+      "missing": false,
+      "player": "Tre Tucker",
+      "player_id": "10213",
+      "points": 24.2,
+      "team": "All You Need Is Love",
+      "projection": 7.58
+    }
+  ],
+  "leaders": [
+    {
+      "position": "QB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Trevor Lawrence",
+          "player_id": "7523",
+          "nfl_team": "JAX",
+          "points": 28.34,
+          "team": "Amon-Ra Dawg Your Team"
+        },
+        {
+          "rank": 2,
+          "player": "Tyler Shough",
+          "player_id": "12545",
+          "nfl_team": "NO",
+          "points": 26.96,
+          "team": "Bo Girds"
+        },
+        {
+          "rank": 3,
+          "player": "Drake Maye",
+          "player_id": "11564",
+          "nfl_team": "NE",
+          "points": 23.8,
+          "team": "Maye d'force B with U"
+        }
+      ]
+    },
+    {
+      "position": "RB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Kenneth Walker",
+          "player_id": "8151",
+          "nfl_team": "KC",
+          "points": 26.9,
+          "team": "Bo Girds"
+        },
+        {
+          "rank": 2,
+          "player": "Christian McCaffrey",
+          "player_id": "4034",
+          "nfl_team": "SF",
+          "points": 26.2,
+          "team": "Lil Fridge"
+        },
+        {
+          "rank": 3,
+          "player": "James Cook",
+          "player_id": "8138",
+          "nfl_team": "BUF",
+          "points": 22.8,
+          "team": "London Cooking"
+        }
+      ]
+    },
+    {
+      "position": "WR",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Tre Tucker",
+          "player_id": "10213",
+          "nfl_team": "LV",
+          "points": 24.2,
+          "team": "All You Need Is Love"
+        },
+        {
+          "rank": 2,
+          "player": "Malik Nabers",
+          "player_id": "11632",
+          "nfl_team": "NYG",
+          "points": 22.5,
+          "team": "Return of T Mac"
+        },
+        {
+          "rank": 3,
+          "player": "Germie Bernard",
+          "player_id": "13274",
+          "nfl_team": "PIT",
+          "points": 20.2,
+          "team": "behold the lamb"
+        }
+      ]
+    },
+    {
+      "position": "TE",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Isaiah Likely",
+          "player_id": "8131",
+          "nfl_team": "NYG",
+          "points": 20.9,
+          "team": "Maye d'force B with U"
+        },
+        {
+          "rank": 2,
+          "player": "Colston Loveland",
+          "player_id": "12517",
+          "nfl_team": "CHI",
+          "points": 15.5,
+          "team": "All You Need Is Love"
+        },
+        {
+          "rank": 3,
+          "player": "George Kittle",
+          "player_id": "4217",
+          "nfl_team": "SF",
+          "points": 15.4,
+          "team": "London Cooking"
+        }
+      ]
+    },
+    {
+      "position": "DEF",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Pittsburgh Steelers",
+          "player_id": "PIT",
+          "nfl_team": "PIT",
+          "points": 15.35,
+          "team": "Return of T Mac"
+        },
+        {
+          "rank": 2,
+          "player": "Kansas City Chiefs",
+          "player_id": "KC",
+          "nfl_team": "KC",
+          "points": 14.15,
+          "team": "Pukancun on 3"
+        },
+        {
+          "rank": 3,
+          "player": "Denver Broncos",
+          "player_id": "DEN",
+          "nfl_team": "DEN",
+          "points": 13.35,
+          "team": "Lil Fridge"
+        }
+      ]
+    }
+  ],
+  "trades": [
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "Pukancun on 3",
+            "owner": "justinjjoo",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+            "wins": 1,
+            "losses": 11,
+            "points_for": 493.39,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Jacory Croskey-Merritt",
+              "headshot": "headshots/12533.png"
+            },
+            {
+              "name": "David Montgomery",
+              "headshot": "headshots/5892.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "Amon-Ra Dawg Your Team",
+            "owner": "pdurkim",
+            "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 603.75,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Omarion Hampton",
+              "headshot": "headshots/12507.png"
+            },
+            {
+              "name": "Tony Pollard",
+              "headshot": "headshots/5967.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    },
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "To Infinity and Bijan",
+            "owner": "bjpicard96",
+            "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 543.88,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Kenyon Sadiq",
+              "headshot": "headshots/13330.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "Amon-Ra Dawg Your Team",
+            "owner": "pdurkim",
+            "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 603.75,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Dalton Kincaid",
+              "headshot": "headshots/10236.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    },
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "Pukancun on 3",
+            "owner": "justinjjoo",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+            "wins": 1,
+            "losses": 11,
+            "points_for": 493.39,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Cam Skattebo",
+              "headshot": "headshots/12481.png"
+            },
+            {
+              "name": "Nico Collins",
+              "headshot": "headshots/7569.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "To Infinity and Bijan",
+            "owner": "bjpicard96",
+            "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 543.88,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Ladd McConkey",
+              "headshot": "headshots/11635.png"
+            },
+            {
+              "name": "Rhamondre Stevenson",
+              "headshot": "headshots/7611.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    },
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 6,
+            "name": "Bo Girds",
+            "owner": "bkwon",
+            "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+            "wins": 8,
+            "losses": 4,
+            "points_for": 723.15,
+            "is_brian": true
+          },
+          "players": [
+            {
+              "name": "Lamar Jackson",
+              "headshot": "headshots/4881.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "To Infinity and Bijan",
+            "owner": "bjpicard96",
+            "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 543.88,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Patrick Mahomes",
+              "headshot": "headshots/4046.png"
+            },
+            {
+              "name": "Brian Robinson",
+              "headshot": "headshots/8154.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    },
+    {
+      "sides": [
+        {
+          "team": {
+            "roster_id": 11,
+            "name": "Unsolicited Dak Picks",
+            "owner": "mkim120",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 594.91,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Devaughn Vele",
+              "headshot": "headshots/11834.png"
+            },
+            {
+              "name": "Josh Jacobs",
+              "headshot": "headshots/5850.png"
+            }
+          ],
+          "picks": []
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "Amon-Ra Dawg Your Team",
+            "owner": "pdurkim",
+            "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 603.75,
+            "is_brian": false
+          },
+          "players": [
+            {
+              "name": "Bhayshul Tuten",
+              "headshot": "headshots/12490.png"
+            },
+            {
+              "name": "Garrett Wilson",
+              "headshot": "headshots/8146.png"
+            }
+          ],
+          "picks": []
+        }
+      ]
+    }
+  ],
+  "matchups": [
+    {
+      "id": 1,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 3,
+            "name": "Lil Fridge",
+            "owner": "TeamJu",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+            "wins": 10,
+            "losses": 2,
+            "points_for": 739.67,
+            "is_brian": false
+          },
+          "score": 126.79,
+          "top": {
+            "player_id": "4034",
+            "name": "Christian McCaffrey",
+            "position": "RB",
+            "nfl_team": "SF",
+            "points": 26.2,
+            "projection": 18.76,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 1,
+            "name": "Brock ‘N’ Roll",
+            "owner": "tjhong0104",
+            "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg",
+            "wins": 6,
+            "losses": 6,
+            "points_for": 685.01,
+            "is_brian": false
+          },
+          "score": 88.31,
+          "top": {
+            "player_id": "8183",
+            "name": "Brock Purdy",
+            "position": "QB",
+            "nfl_team": "SF",
+            "points": 17.36,
+            "projection": 21.92,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Lil Fridge beat Brock ‘N’ Roll by 38.48, with recent add Denver Broncos chipping in 13.35 off the free agent pile. Brock ‘N’ Roll went to the same pile and came back with recent adds Tampa Bay Buccaneers and Dallas Goedert, who scored 9.65 and 9.1, so the free agent pile plays favorites. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR."
+    },
+    {
+      "id": 2,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 8,
+            "name": "Return of T Mac",
+            "owner": "jkwak03",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 6,
+            "losses": 6,
+            "points_for": 618.97,
+            "is_brian": false
+          },
+          "score": 120.29,
+          "top": {
+            "player_id": "11632",
+            "name": "Malik Nabers",
+            "position": "WR",
+            "nfl_team": "NYG",
+            "points": 22.5,
+            "projection": 12.11,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 11,
+            "name": "Unsolicited Dak Picks",
+            "owner": "mkim120",
+            "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 594.91,
+            "is_brian": false
+          },
+          "score": 81.47,
+          "top": {
+            "player_id": "6813",
+            "name": "Jonathan Taylor",
+            "position": "RB",
+            "nfl_team": "IND",
+            "points": 20.1,
+            "projection": 21.32,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Return of T Mac beat Unsolicited Dak Picks by 38.82 in an upset, and the losers' 81.47 was a season low. Recent add Carnell Tate scored 16 for Return of T Mac, while Unsolicited Dak Picks got 5.5 from recent add Kimani Vidal. The Dak in Unsolicited Dak Picks scored 13.02, and A.J. Brown, now listed Questionable, added 3.2."
+    },
+    {
+      "id": 3,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 9,
+            "name": "Maye d'force B with U",
+            "owner": "dkim475",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+            "wins": 7,
+            "losses": 5,
+            "points_for": 698.3,
+            "is_brian": false
+          },
+          "score": 113.55,
+          "top": {
+            "player_id": "11564",
+            "name": "Drake Maye",
+            "position": "QB",
+            "nfl_team": "NE",
+            "points": 23.8,
+            "projection": 20.48,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "Amon-Ra Dawg Your Team",
+            "owner": "pdurkim",
+            "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 603.75,
+            "is_brian": false
+          },
+          "score": 104.04,
+          "top": {
+            "player_id": "7523",
+            "name": "Trevor Lawrence",
+            "position": "QB",
+            "nfl_team": "JAX",
+            "points": 28.34,
+            "projection": 18.39,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Maye d'force B with U won by 9.51 despite Jaylen Waddle, now listed Questionable, putting up 4.4, and without Isaiah Likely, that is a loss. The trade haul for Amon-Ra Dawg Your Team delivered recent add Garrett Wilson at 6.4 and recent add Dalton Kincaid, now listed Questionable, at 7.3. At 4-8 and 2 games below the cut, Amon-Ra Dawg Your Team is mostly dogging its own team."
+    },
+    {
+      "id": 4,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 10,
+            "name": "behold the lamb",
+            "owner": "steveekimm",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+            "wins": 6,
+            "losses": 6,
+            "points_for": 588.01,
+            "is_brian": false
+          },
+          "score": 114.95,
+          "top": {
+            "player_id": "13274",
+            "name": "Germie Bernard",
+            "position": "WR",
+            "nfl_team": "PIT",
+            "points": 20.2,
+            "projection": 8.13,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 6,
+            "name": "Bo Girds",
+            "owner": "bkwon",
+            "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+            "wins": 8,
+            "losses": 4,
+            "points_for": 723.15,
+            "is_brian": true
+          },
+          "score": 109.61,
+          "top": {
+            "player_id": "12545",
+            "name": "Tyler Shough",
+            "position": "QB",
+            "nfl_team": "NO",
+            "points": 26.96,
+            "projection": 17.06,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": true,
+      "recap": "behold the lamb beat Bo Girds by 5.34, an upset from a team that sat 11th before the week. Lucky recent add Germie Bernard was a decider with 20.2 points on a projection of 8.13. Bo Girds's starters dropped passes worth about 17.8, so the drops cost the game, and recent add Indianapolis Colts chipped in -0.85 for good measure."
+    },
+    {
+      "id": 5,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 5,
+            "name": "London Cooking",
+            "owner": "DumpsterFiresRUs",
+            "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+            "wins": 9,
+            "losses": 3,
+            "points_for": 721.96,
+            "is_brian": false
+          },
+          "score": 112.48,
+          "top": {
+            "player_id": "8138",
+            "name": "James Cook",
+            "position": "RB",
+            "nfl_team": "BUF",
+            "points": 22.8,
+            "projection": 16.36,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "To Infinity and Bijan",
+            "owner": "bjpicard96",
+            "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+            "wins": 4,
+            "losses": 8,
+            "points_for": 543.88,
+            "is_brian": false
+          },
+          "score": 46.08,
+          "top": {
+            "player_id": "4046",
+            "name": "Patrick Mahomes",
+            "position": "QB",
+            "nfl_team": "KC",
+            "points": 11.48,
+            "projection": 18.59,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "London Cooking won by 66.4, and To Infinity and Bijan got 6.3 from Bijan. The trade desk at To Infinity and Bijan delivered recent adds Rhamondre Stevenson at 3.6 and Harold Fannin at 1.4. Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, and recent add Terry McLaurin is now listed Out with a knee designation, so the trades are going great."
+    },
+    {
+      "id": 6,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 2,
+            "name": "All You Need Is Love",
+            "owner": "wsh5022",
+            "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+            "wins": 7,
+            "losses": 5,
+            "points_for": 611.71,
+            "is_brian": false
+          },
+          "score": 97.02,
+          "top": {
+            "player_id": "10213",
+            "name": "Tre Tucker",
+            "position": "WR",
+            "nfl_team": "LV",
+            "points": 24.2,
+            "projection": 7.58,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "Pukancun on 3",
+            "owner": "justinjjoo",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+            "wins": 1,
+            "losses": 11,
+            "points_for": 493.39,
+            "is_brian": false
+          },
+          "score": 84.07,
+          "top": {
+            "player_id": "1166",
+            "name": "Kirk Cousins",
+            "position": "QB",
+            "nfl_team": "LV",
+            "points": 19.52,
+            "projection": 17.68,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Tre Tucker decided this one, clearing his projection by 16.62 in a game All You Need Is Love won by 12.95. Pukancun on 3 traded for recent add Cam Skattebo, got 0 from him, and fell to 1-11. Pukancun on 3 now sits 5 games below the cut, and recent add MarShawn Lloyd chipped in 1 toward closing it."
+    }
+  ],
+  "median": {
+    "value": 106.83,
+    "above": {
+      "team": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 8,
+        "losses": 4,
+        "points_for": 723.15,
+        "is_brian": true
+      },
+      "gap": 2.79
+    },
+    "below": {
+      "team": {
+        "roster_id": 12,
+        "name": "Amon-Ra Dawg Your Team",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 603.75,
+        "is_brian": false
+      },
+      "gap": -2.79
+    },
+    "bars": [
+      {
+        "team": {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "owner": "TeamJu",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+          "wins": 10,
+          "losses": 2,
+          "points_for": 739.67,
+          "is_brian": false
+        },
+        "score": 126.79,
+        "above": true,
+        "pct": 100.0
+      },
+      {
+        "team": {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "owner": "jkwak03",
+          "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+          "wins": 6,
+          "losses": 6,
+          "points_for": 618.97,
+          "is_brian": false
+        },
+        "score": 120.29,
+        "above": true,
+        "pct": 94.9
+      },
+      {
+        "team": {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "owner": "steveekimm",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+          "wins": 6,
+          "losses": 6,
+          "points_for": 588.01,
+          "is_brian": false
+        },
+        "score": 114.95,
+        "above": true,
+        "pct": 90.7
+      },
+      {
+        "team": {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "owner": "dkim475",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+          "wins": 7,
+          "losses": 5,
+          "points_for": 698.3,
+          "is_brian": false
+        },
+        "score": 113.55,
+        "above": true,
+        "pct": 89.6
+      },
+      {
+        "team": {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "owner": "DumpsterFiresRUs",
+          "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+          "wins": 9,
+          "losses": 3,
+          "points_for": 721.96,
+          "is_brian": false
+        },
+        "score": 112.48,
+        "above": true,
+        "pct": 88.7
+      },
+      {
+        "team": {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "owner": "bkwon",
+          "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+          "wins": 8,
+          "losses": 4,
+          "points_for": 723.15,
+          "is_brian": true
+        },
+        "score": 109.61,
+        "above": true,
+        "pct": 86.5
+      },
+      {
+        "team": {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "owner": "pdurkim",
+          "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+          "wins": 4,
+          "losses": 8,
+          "points_for": 603.75,
+          "is_brian": false
+        },
+        "score": 104.04,
+        "above": false,
+        "pct": 82.1
+      },
+      {
+        "team": {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "owner": "wsh5022",
+          "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+          "wins": 7,
+          "losses": 5,
+          "points_for": 611.71,
+          "is_brian": false
+        },
+        "score": 97.02,
+        "above": false,
+        "pct": 76.5
+      },
+      {
+        "team": {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "owner": "tjhong0104",
+          "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg",
+          "wins": 6,
+          "losses": 6,
+          "points_for": 685.01,
+          "is_brian": false
+        },
+        "score": 88.31,
+        "above": false,
+        "pct": 69.7
+      },
+      {
+        "team": {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "owner": "justinjjoo",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+          "wins": 1,
+          "losses": 11,
+          "points_for": 493.39,
+          "is_brian": false
+        },
+        "score": 84.07,
+        "above": false,
+        "pct": 66.3
+      },
+      {
+        "team": {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "owner": "mkim120",
+          "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+          "wins": 4,
+          "losses": 8,
+          "points_for": 594.91,
+          "is_brian": false
+        },
+        "score": 81.47,
+        "above": false,
+        "pct": 64.3
+      },
+      {
+        "team": {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "owner": "bjpicard96",
+          "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+          "wins": 4,
+          "losses": 8,
+          "points_for": 543.88,
+          "is_brian": false
+        },
+        "score": 46.08,
+        "above": false,
+        "pct": 36.3
+      }
+    ],
+    "line_pct": 84.3
+  },
+  "table": [
+    {
+      "standing": {
+        "rank": 1,
+        "roster_id": 3,
+        "wins": 10,
+        "losses": 2,
+        "points_for": 739.67,
+        "in_playoffs": true,
+        "games_from_cut": 4,
+        "schedule_strength": 0.5,
+        "strength_rank": 6
+      },
+      "team": {
+        "roster_id": 3,
+        "name": "Lil Fridge",
+        "owner": "TeamJu",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+        "wins": 10,
+        "losses": 2,
+        "points_for": 739.67,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 2,
+        "roster_id": 5,
+        "wins": 9,
+        "losses": 3,
+        "points_for": 721.96,
+        "in_playoffs": true,
+        "games_from_cut": 3,
+        "schedule_strength": 0.33,
+        "strength_rank": 9
+      },
+      "team": {
+        "roster_id": 5,
+        "name": "London Cooking",
+        "owner": "DumpsterFiresRUs",
+        "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+        "wins": 9,
+        "losses": 3,
+        "points_for": 721.96,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 3,
+        "roster_id": 6,
+        "wins": 8,
+        "losses": 4,
+        "points_for": 723.15,
+        "in_playoffs": true,
+        "games_from_cut": 2,
+        "schedule_strength": 0.58,
+        "strength_rank": 4
+      },
+      "team": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 8,
+        "losses": 4,
+        "points_for": 723.15,
+        "is_brian": true
+      }
+    },
+    {
+      "standing": {
+        "rank": 4,
+        "roster_id": 9,
+        "wins": 7,
+        "losses": 5,
+        "points_for": 698.3,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.5,
+        "strength_rank": 7
+      },
+      "team": {
+        "roster_id": 9,
+        "name": "Maye d'force B with U",
+        "owner": "dkim475",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+        "wins": 7,
+        "losses": 5,
+        "points_for": 698.3,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 5,
+        "roster_id": 2,
+        "wins": 7,
+        "losses": 5,
+        "points_for": 611.71,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.67,
+        "strength_rank": 3
+      },
+      "team": {
+        "roster_id": 2,
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+        "wins": 7,
+        "losses": 5,
+        "points_for": 611.71,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 6,
+        "roster_id": 1,
+        "wins": 6,
+        "losses": 6,
+        "points_for": 685.01,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.58,
+        "strength_rank": 5
+      },
+      "team": {
+        "roster_id": 1,
+        "name": "Brock ‘N’ Roll",
+        "owner": "tjhong0104",
+        "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 685.01,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 7,
+        "roster_id": 8,
+        "wins": 6,
+        "losses": 6,
+        "points_for": 618.97,
+        "in_playoffs": false,
+        "games_from_cut": 0,
+        "schedule_strength": 0.83,
+        "strength_rank": 1
+      },
+      "team": {
+        "roster_id": 8,
+        "name": "Return of T Mac",
+        "owner": "jkwak03",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 618.97,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 8,
+        "roster_id": 10,
+        "wins": 6,
+        "losses": 6,
+        "points_for": 588.01,
+        "in_playoffs": false,
+        "games_from_cut": 0,
+        "schedule_strength": 0.33,
+        "strength_rank": 10
+      },
+      "team": {
+        "roster_id": 10,
+        "name": "behold the lamb",
+        "owner": "steveekimm",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 588.01,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 9,
+        "roster_id": 12,
+        "wins": 4,
+        "losses": 8,
+        "points_for": 603.75,
+        "in_playoffs": false,
+        "games_from_cut": -2,
+        "schedule_strength": 0.75,
+        "strength_rank": 2
+      },
+      "team": {
+        "roster_id": 12,
+        "name": "Amon-Ra Dawg Your Team",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 603.75,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 10,
+        "roster_id": 11,
+        "wins": 4,
+        "losses": 8,
+        "points_for": 594.91,
+        "in_playoffs": false,
+        "games_from_cut": -2,
+        "schedule_strength": 0.5,
+        "strength_rank": 8
+      },
+      "team": {
+        "roster_id": 11,
+        "name": "Unsolicited Dak Picks",
+        "owner": "mkim120",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 594.91,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 11,
+        "roster_id": 7,
+        "wins": 4,
+        "losses": 8,
+        "points_for": 543.88,
+        "in_playoffs": false,
+        "games_from_cut": -2,
+        "schedule_strength": 0.08,
+        "strength_rank": 12
+      },
+      "team": {
+        "roster_id": 7,
+        "name": "To Infinity and Bijan",
+        "owner": "bjpicard96",
+        "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 543.88,
+        "is_brian": false
+      }
+    },
+    {
+      "standing": {
+        "rank": 12,
+        "roster_id": 4,
+        "wins": 1,
+        "losses": 11,
+        "points_for": 493.39,
+        "in_playoffs": false,
+        "games_from_cut": -5,
+        "schedule_strength": 0.33,
+        "strength_rank": 11
+      },
+      "team": {
+        "roster_id": 4,
+        "name": "Pukancun on 3",
+        "owner": "justinjjoo",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+        "wins": 1,
+        "losses": 11,
+        "points_for": 493.39,
+        "is_brian": false
+      }
+    }
+  ],
+  "next": [
+    {
+      "a": {
+        "roster_id": 3,
+        "name": "Lil Fridge",
+        "owner": "TeamJu",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
+        "wins": 10,
+        "losses": 2,
+        "points_for": 739.67,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 8,
+        "name": "Return of T Mac",
+        "owner": "jkwak03",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 618.97,
+        "is_brian": false
+      },
+      "must_watch": true,
+      "reason": "1st vs 7th, near the playoff cut"
+    },
+    {
+      "a": {
+        "roster_id": 1,
+        "name": "Brock ‘N’ Roll",
+        "owner": "tjhong0104",
+        "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 685.01,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 9,
+        "name": "Maye d'force B with U",
+        "owner": "dkim475",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
+        "wins": 7,
+        "losses": 5,
+        "points_for": 698.3,
+        "is_brian": false
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 10,
+        "name": "behold the lamb",
+        "owner": "steveekimm",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+        "wins": 6,
+        "losses": 6,
+        "points_for": 588.01,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 11,
+        "name": "Unsolicited Dak Picks",
+        "owner": "mkim120",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 594.91,
+        "is_brian": false
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 5,
+        "name": "London Cooking",
+        "owner": "DumpsterFiresRUs",
+        "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
+        "wins": 9,
+        "losses": 3,
+        "points_for": 721.96,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 12,
+        "name": "Amon-Ra Dawg Your Team",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 603.75,
+        "is_brian": false
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 2,
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
+        "wins": 7,
+        "losses": 5,
+        "points_for": 611.71,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 6,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 8,
+        "losses": 4,
+        "points_for": 723.15,
+        "is_brian": true
+      },
+      "must_watch": true,
+      "reason": "3rd vs 5th, near the playoff cut"
+    },
+    {
+      "a": {
+        "roster_id": 4,
+        "name": "Pukancun on 3",
+        "owner": "justinjjoo",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+        "wins": 1,
+        "losses": 11,
+        "points_for": 493.39,
+        "is_brian": false
+      },
+      "b": {
+        "roster_id": 7,
+        "name": "To Infinity and Bijan",
+        "owner": "bjpicard96",
+        "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
+        "wins": 4,
+        "losses": 8,
+        "points_for": 543.88,
+        "is_brian": false
+      },
+      "must_watch": false,
+      "reason": null
+    }
+  ],
+  "blurbs": {
+    "motw": "behold the lamb beat Bo Girds by 5.34, and it was an upset: the lamb was 11th before the week. Recent add Germie Bernard scored 20.2 on a 8.13 projection, a lucky waiver pickup and the biggest decider on the field. Bo Girds's starters dropped 7 passes worth about 17.8, so the drops cost the game. Matthew Golden's drops alone were worth about 14.2. Bo Girds also started recent add Indianapolis Colts, a free agent pickup that scored -0.85. Bo Girds has now lost 2 straight, while behold the lamb sits at 6-6, right at the cut.",
+    "game_changer": "Germie Bernard is the Game Changer, a recent add who scored 20.2 for behold the lamb. He beat his projection by 12.07, which makes him a margin driver and the decider in a 5.34-point win over Bo Girds. It was an upset: behold the lamb sat 11th before the week and Bo Girds sat 2nd. Without Bernard, that is a loss, which is a lot to hang on a lucky waiver pickup from week 5. The team is named behold the lamb, and CeeDee Lamb finished 5.51 under projection; the beholding went to Bernard.",
+    "awards": "Game Changer goes to behold the lamb's Germie Bernard, a recent add who scored 20.2 in a 5.34-point win, which is lucky and also the entire point of waivers. Underperformer is Bijan Robinson at 6.3, a branding problem for a team called To Infinity and Bijan. Top Scorer Trevor Lawrence put up 28.34 for Amon-Ra Dawg Your Team, which lost anyway. MVB Jayden Daniels scored 21 on the London Cooking bench, and London Cooking still won by 66.4.",
+    "position_leaders": "Trevor Lawrence led all started QBs at 28.34 for Amon-Ra Dawg Your Team, a team named after somebody else. Bo Girds put Kenneth Walker 1st among started RBs and Tyler Shough 2nd among started QBs, which is a lot of position leader for one roster. Maye d'force B with U got the advertised Drake Maye at 3rd among QBs, then got Isaiah Likely at 1st among TEs as a bonus nobody put in the name. All You Need Is Love had Tre Tucker 1st at WR and Colston Loveland 2nd at TE, so the name checks out.",
+    "recap_1": "Lil Fridge beat Brock ‘N’ Roll by 38.48, with recent add Denver Broncos chipping in 13.35 off the free agent pile. Brock ‘N’ Roll went to the same pile and came back with recent adds Tampa Bay Buccaneers and Dallas Goedert, who scored 9.65 and 9.1, so the free agent pile plays favorites. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR.",
+    "recap_2": "Return of T Mac beat Unsolicited Dak Picks by 38.82 in an upset, and the losers' 81.47 was a season low. Recent add Carnell Tate scored 16 for Return of T Mac, while Unsolicited Dak Picks got 5.5 from recent add Kimani Vidal. The Dak in Unsolicited Dak Picks scored 13.02, and A.J. Brown, now listed Questionable, added 3.2.",
+    "recap_3": "Maye d'force B with U won by 9.51 despite Jaylen Waddle, now listed Questionable, putting up 4.4, and without Isaiah Likely, that is a loss. The trade haul for Amon-Ra Dawg Your Team delivered recent add Garrett Wilson at 6.4 and recent add Dalton Kincaid, now listed Questionable, at 7.3. At 4-8 and 2 games below the cut, Amon-Ra Dawg Your Team is mostly dogging its own team.",
+    "recap_4": "behold the lamb beat Bo Girds by 5.34, an upset from a team that sat 11th before the week. Lucky recent add Germie Bernard was a decider with 20.2 points on a projection of 8.13. Bo Girds's starters dropped passes worth about 17.8, so the drops cost the game, and recent add Indianapolis Colts chipped in -0.85 for good measure.",
+    "recap_5": "London Cooking won by 66.4, and To Infinity and Bijan got 6.3 from Bijan. The trade desk at To Infinity and Bijan delivered recent adds Rhamondre Stevenson at 3.6 and Harold Fannin at 1.4. Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, and recent add Terry McLaurin is now listed Out with a knee designation, so the trades are going great.",
+    "recap_6": "Tre Tucker decided this one, clearing his projection by 16.62 in a game All You Need Is Love won by 12.95. Pukancun on 3 traded for recent add Cam Skattebo, got 0 from him, and fell to 1-11. Pukancun on 3 now sits 5 games below the cut, and recent add MarShawn Lloyd chipped in 1 toward closing it.",
+    "median": "Lil Fridge cleared the median by 19.97, which is what a 10-2 team is supposed to do. To Infinity and Bijan posted a season low of 46.08, less a median game than a rumor of one. Unsolicited Dak Picks also hit a season low at 81.47, and at 4-8 nobody is soliciting. Bo Girds and Amon-Ra Dawg Your Team landed 2.79 on opposite sides of the line, so only one of them got dogged.",
+    "next_week": "The Must Watch is Lil Fridge at 10-2 against Return of T Mac, whose 3-game streak now runs into the toughest next opponent win rate in the league. Further down, Pukancun on 3 at 1-11 and To Infinity and Bijan at 4-8, both below the cut, meet in a showdown of the awful."
+  },
+  "avatars": {
+    "1": "avatars/1.jpg",
+    "2": "avatars/2.webp",
+    "3": "avatars/3.jpg",
+    "4": "avatars/4.jpg",
+    "5": "avatars/5.jpg",
+    "6": "avatars/6.jpg",
+    "7": "avatars/7.jpg",
+    "8": "avatars/8.webp",
+    "9": "avatars/9.jpg",
+    "10": "avatars/10.jpg",
+    "11": "avatars/11.webp",
+    "12": "avatars/12.jpg"
+  },
+  "headshots": {
+    "13274": "headshots/13274.png",
+    "7523": "headshots/7523.png",
+    "11566": "headshots/11566.png",
+    "9509": "headshots/9509.png",
+    "10213": "headshots/10213.png",
+    "12545": "headshots/12545.png",
+    "11564": "headshots/11564.png",
+    "8151": "headshots/8151.png",
+    "4034": "headshots/4034.png",
+    "8138": "headshots/8138.png",
+    "11632": "headshots/11632.png",
+    "8131": "headshots/8131.png",
+    "12517": "headshots/12517.png",
+    "4217": "headshots/4217.png",
+    "PIT": "headshots/PIT.png",
+    "KC": "headshots/KC.png",
+    "DEN": "headshots/DEN.png",
+    "12507": "headshots/12507.png",
+    "12533": "headshots/12533.png",
+    "5892": "headshots/5892.png",
+    "5967": "headshots/5967.png",
+    "10236": "headshots/10236.png",
+    "13330": "headshots/13330.png",
+    "11635": "headshots/11635.png",
+    "12481": "headshots/12481.png",
+    "7569": "headshots/7569.png",
+    "7611": "headshots/7611.png",
+    "4046": "headshots/4046.png",
+    "4881": "headshots/4881.png",
+    "8154": "headshots/8154.png",
+    "11834": "headshots/11834.png",
+    "12490": "headshots/12490.png",
+    "5850": "headshots/5850.png",
+    "8146": "headshots/8146.png"
+  },
+  "summary": "Week 6 · Oct 15 – Oct 19, 2026 · behold the lamb vs Bo Girds",
+  "root": "../../"
+}
