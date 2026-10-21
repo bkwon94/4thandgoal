@@ -798,7 +798,7 @@ def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
     for pid in valued:
         n = Nums()
         name = c.lines[pid].name
-        text = f"{name}'s trade value was {n(c.chart.values[pid])} before the trade."
+        text = f"{name}'s trade value was {n(c.chart.values[pid])} in the week of the trade."
         out.append(_fact(f"T{i}.{pid}.value", text, n, [], [name]))
     unlisted = [c.lines[pid].name for pid in moved if pid not in c.chart.values]
     for rid in trade.roster_ids:

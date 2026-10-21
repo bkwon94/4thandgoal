@@ -106,7 +106,7 @@ says so.
 
 ### The facts
 
-- `T{n}.{pid}.value`: "{name}'s trade value was {v} before the trade." One number.
+- `T{n}.{pid}.value`: "{name}'s trade value was {v} in the week of the trade." One number.
 - `T{n}.{rid}.value`: "{team} gave {x} and got {y} in trade value." When a traded player has no
   value, the sentence adds ", with {name} unlisted" and names each such player. When the trade
   holds draft picks, the sentence adds "; the pick is not valued" or "the picks are not valued".

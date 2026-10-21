@@ -372,7 +372,7 @@ def _value_facts(bundle, i):
 
 def test_player_trade_value_fact(vbundle):
     f = vbundle.sheet.facts["T1.12507.value"]
-    assert f.text == "Omarion Hampton's trade value was 68.5 before the trade."
+    assert f.text == "Omarion Hampton's trade value was 68.5 in the week of the trade."
     assert f.numbers == ["68.5"]
     assert f.players == ["Omarion Hampton"]
 
