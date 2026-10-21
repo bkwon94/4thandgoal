@@ -169,3 +169,12 @@ def test_trade_template_finds_the_sides_fact(tbundle):
     assert [s.fact_ids for s in b.sentences] == [["T6.sides"]]
     assert b.sentences[0].text == tbundle.sheet.facts["T6.sides"].text
     assert b.fallback and b.grades == {}
+
+
+def test_writer_rule_18_orders_the_positions_and_hides_the_values(tbundle):
+    system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
+    assert ("At equal rank and points, an RB outweighs a WR, a WR outweighs a TE, "
+            "and a TE outweighs a QB; a DEF carries little trade value.") in system
+    assert ("Weigh the two sides with the `.value` facts, and never write a trade value, "
+            "a value sum, the chart, or a tier in a sentence.") in system
+    assert "kicker" not in system.lower()

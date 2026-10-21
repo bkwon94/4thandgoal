@@ -109,6 +109,11 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     in_scope_last = {_last_name(p) for p in chapter.scope_players}
     banned = _banned_words()
     always_allowed = _week_numbers(sheet)
+    # A trade value or a value sum must never reach the page, so a trade chapter bars these numbers.
+    value_numbers = {
+        _normalize(n) for fid in chapter.fact_ids if fid.endswith(".value") and fid in sheet.facts
+        for n in sheet.facts[fid].numbers
+    } if chapter.key.startswith("trade_") else set()
 
     for i, sentence in enumerate(blurb.sentences):
         valid_ids = []
@@ -118,6 +123,10 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
             else:
                 failures.append(f"[{i}] fact ID {fid} is not in this chapter")
         cited = {_normalize(n) for fid in valid_ids for n in sheet.facts[fid].numbers}
+        # A number that a cited non-value fact holds too (a points figure) is no leak.
+        cited_not_value = {
+            _normalize(n) for fid in valid_ids if not fid.endswith(".value") for n in sheet.facts[fid].numbers
+        }
 
         # Digits inside a name ("Pukancun on 3") are not numbers.
         bare = _remove_names(sentence.text, scope_names)
@@ -127,6 +136,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 failures.append(
                     f"[{i}] number {token} is not in the cited facts {', '.join(sentence.fact_ids)}"
                 )
+            if number in value_numbers and number not in cited_not_value:
+                failures.append(f"[{i}] number {token} is a trade value and may not appear")
 
         cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
         for word in NUMBER_WORDS:

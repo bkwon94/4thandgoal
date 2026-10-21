@@ -422,3 +422,38 @@ def test_drop_value_alone_fails_the_cost_gate(dbundle):
     ch = _ch(sheet, "recap_4")
     b = _blurb("recap_4", _s("The drops cost Bo Girds the game.", "D.12501.value"))
     assert any("'cost' needs" in m for m in code_check(b, ch, sheet))
+
+
+def _value_failures(bundle, text, fact_ids):
+    chapter = next(c for c in bundle.sheet.chapters if c.key == "trade_1")
+    blurb = _blurb("trade_1", _s(text, *fact_ids))
+    return [m for m in code_check(blurb, chapter, bundle.sheet) if "trade value" in m]
+
+
+def test_trade_value_number_fails_when_it_cites_the_value_fact(vbundle):
+    failures = _value_failures(vbundle, "Hampton was worth 68.5 here.", ["T1.12507.value"])
+    assert failures == ["[0] number 68.5 is a trade value and may not appear"]
+
+
+def test_trade_value_number_fails_when_it_cites_nothing(vbundle):
+    assert _value_failures(vbundle, "Hampton was worth 68.5 here.", [])
+
+
+def test_trade_value_number_compares_after_normalizing(vbundle):
+    # 24 is the value of Croskey-Merritt. The sheet writes it without ".0".
+    assert _value_failures(vbundle, "He was worth 24.0 here.", ["T1.4.got.12533"])
+
+
+def test_trade_value_number_passes_when_a_cited_fact_holds_it_too(vbundle):
+    # The same number is a points-per-game figure in a cited got fact, so it is no leak.
+    facts = vbundle.sheet.facts
+    got = facts["T1.4.got.5892"]
+    facts["T1.4.got.5892"] = got.model_copy(update={"numbers": [*got.numbers, "68.5"]})
+    assert not _value_failures(vbundle, "He scored 68.5 per game.", ["T1.4.got.5892"])
+
+
+def test_value_number_is_not_checked_outside_a_trade_chapter(vbundle):
+    sheet = vbundle.sheet
+    chapter = next(c for c in sheet.chapters if not c.key.startswith("trade_"))
+    blurb = _blurb(chapter.key, _s("A score of 68.5 is odd.", chapter.fact_ids[0]))
+    assert not [m for m in code_check(blurb, chapter, sheet) if "trade value" in m]
