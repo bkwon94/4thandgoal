@@ -40,7 +40,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
 def _trade_bundle(raw_dir, history_root, nfl=None, chart=None):
     """The week 6 bundle with history and trades. A given nflverse week adds the drop facts.
 
-    Given chart values add the trade value facts.
+    Chart values, when given, add the trade value facts.
     """
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)

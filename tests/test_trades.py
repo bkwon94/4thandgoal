@@ -366,8 +366,8 @@ def test_chain_trade_keeps_the_moved_player_in_scope(fixture_raw_dir, fixture_hi
         assert not [m for m in code_check(blurb, chapter, sheet) if "not on a team" in m]
 
 
-def _value_facts(bundle, i):
-    return {k: f for k, f in bundle.sheet.facts.items() if k.startswith(f"T{i}.") and k.endswith(".value")}
+def _value_ids(facts):
+    return [k for k in facts if k.startswith("T") and k.endswith(".value")]
 
 
 def test_player_trade_value_fact(vbundle):
@@ -408,7 +408,7 @@ def test_two_unlisted_players_join_with_and(fixture_raw_dir, fixture_history_roo
 def test_trade_with_no_valued_player_has_no_side_fact(fixture_raw_dir, fixture_history_root, chart_week6):
     empty = chart_week6.model_copy(update={"values": {}})
     facts = _trade_bundle(fixture_raw_dir, fixture_history_root, chart=empty).sheet.facts
-    assert not [k for k in facts if k.endswith(".value") and k.startswith("T")]
+    assert not _value_ids(facts)
 
 
 def test_draft_picks_are_not_valued(fixture_raw_dir, fixture_history_root, chart_week6):
@@ -431,9 +431,26 @@ def test_draft_picks_are_not_valued(fixture_raw_dir, fixture_history_root, chart
 
 
 def test_without_chart_values_the_sheet_has_no_value_facts(tbundle):
-    assert not [k for k in tbundle.sheet.facts if k.endswith(".value") and k.startswith("T")]
+    assert not _value_ids(tbundle.sheet.facts)
 
 
 def test_vocabulary_has_the_trade_value_term():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     assert "**trade value**" in text
+
+
+def test_late_trade_keeps_its_value_facts(vbundle):
+    # T6 is the late trade of week 6. The chart is for the week of the trade, so the late rule does not drop it.
+    assert "T6.7.value" in vbundle.sheet.facts and "T6.8.value" in vbundle.sheet.facts
+
+
+def test_player_with_no_line_is_outside_the_value_sums(fixture_raw_dir, fixture_history_root, chart_week6):
+    # A chain trade moves a player who is on no roster at lock. He has no name on the sheet, so the sums skip him.
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    trade = Trade(transaction_id="chain", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[4, 12],
+                  adds={"gone": 4, "8154": 12}, drops={"gone": 12, "8154": 4}, draft_picks=[])
+    chart = chart_week6.model_copy(update={"values": {**chart_week6.values, "gone": 50.0}})
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=[trade], chart=chart)
+    assert "T1.gone.value" not in b.sheet.facts
+    assert b.sheet.facts["T1.12.value"].text == "Amon-Ra Dawg Your Team gave 0 and got 22 in trade value."

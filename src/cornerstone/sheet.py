@@ -786,29 +786,30 @@ def _usage_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
 
 
 def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
-    """The chart trade value of each moved player and the value each side gave and got. None without a chart."""
+    """The trade value of each moved player and the value each side gave and got. No facts without a chart."""
     if c.chart is None:
         return []
+    values = c.chart.values
     # A player with no line has no name to cite, so he stays out of the sums and the unlisted names.
     moved = [pid for pid in dict.fromkeys((*trade.adds, *trade.drops)) if pid in c.lines]
-    valued = [pid for pid in moved if pid in c.chart.values]
+    valued = [pid for pid in moved if pid in values]
     if not valued:
         return []
     out = []
     for pid in valued:
         n = Nums()
         name = c.lines[pid].name
-        text = f"{name}'s trade value was {n(c.chart.values[pid])} in the week of the trade."
+        text = f"{name}'s trade value was {n(values[pid])} in the week of the trade."
         out.append(_fact(f"T{i}.{pid}.value", text, n, [], [name]))
-    unlisted = [c.lines[pid].name for pid in moved if pid not in c.chart.values]
+    unlisted = [c.lines[pid].name for pid in moved if pid not in values]
     for rid in trade.roster_ids:
         n = Nums()
         team = c.team(rid)
 
         def total(got: bool) -> float:
             # Decimal sums keep a half-point total exact.
-            pids = [pid for pid in _moved(trade, rid, got) if pid in c.chart.values]
-            return float(sum((Decimal(str(c.chart.values[pid])) for pid in pids), Decimal(0)))
+            pids = [pid for pid in _moved(trade, rid, got) if pid in valued]
+            return float(sum((Decimal(str(values[pid])) for pid in pids), Decimal(0)))
 
         text = f"{team} gave {n(total(False))} and got {n(total(True))} in trade value"
         if unlisted:
@@ -834,7 +835,7 @@ def trade_facts(c: Context) -> list[Fact]:
                 out.append(team)
             out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
         out += _usage_facts(c, i, trade)
-        # The chart values are from before the trade, so late trades keep them.
+        # The chart is for the week of the trade, so late trades keep their value facts.
         out += _value_facts(c, i, trade)
         # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
