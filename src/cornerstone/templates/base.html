@@ -13,7 +13,7 @@
 <body>
 <main class="page">
   <header class="mast">
-    <div class="brand"><img class="logo" src="{{ root }}static/logo.png" alt="Cornerstone"><div class="bar"></div><div><div class="t">Cornerstone</div><div class="s">League Weekly</div></div></div>
+    <a class="brand" href="{{ root or './' }}"><img class="logo" src="{{ root }}static/logo.png" alt="Cornerstone"><div class="bar"></div><div><div class="t">Cornerstone</div><div class="s">League Weekly</div></div></a>
     {% block mast_extra %}{% endblock %}
   </header>
   {% block body %}{% endblock %}

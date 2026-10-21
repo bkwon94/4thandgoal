@@ -271,3 +271,16 @@ def test_next_week_card_puts_each_team_on_its_own_row(hbundle, tmp_path):
     assert card.count('class="side"') == 2 and card.count('class="vs"') == 1
     # The record carries no parentheses, so it reads as a column on the right of the card.
     assert "(" not in card.split('class="rec"')[1].split("</span>")[0]
+
+
+def test_week_brand_links_to_season_index(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert '<a class="brand" href="../../">' in html
+
+
+def test_index_brand_links_to_season_index(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    render_week(b, _blurbs(b), tmp_path, _fake_png)
+    idx = render_index(tmp_path).read_text()
+    assert '<a class="brand" href="./">' in idx

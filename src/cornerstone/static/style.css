@@ -34,7 +34,7 @@ a { color:var(--red); }
 .who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
 
 .mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }
-.brand { display:flex; align-items:center; gap:var(--sp-3); }
+.brand { display:flex; align-items:center; gap:var(--sp-3); color:inherit; text-decoration:none; }
 .logo { width:30px; height:30px; border-radius:50%; flex:none; }
 .bar { width:1px; height:28px; background:var(--muted); }
 .brand .t { font-weight:700; letter-spacing:var(--track-wide); text-transform:uppercase; font-size:var(--fs-meta); line-height:var(--lh-tight); }
