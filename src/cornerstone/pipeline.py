@@ -14,7 +14,8 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.history import fetch_history, history_dir, history_root, load_history, save_week_to_history
-from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult, Week
+from cornerstone.chart import chart_values
+from cornerstone.models import Blurb, BuildRecord, Bundle, ChartValues, History, NflverseWeek, PlayerLine, Trade, VerifyFile, VerifyResult, Week
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
@@ -33,6 +34,8 @@ BytesFetcher = Callable[[str], bytes | None]
 # The fetch takes the season, the week, the rostered player IDs, the players file, and the Sleeper
 # codes of the NFL teams whose started players played.
 NflverseFetcher = Callable[[int, int, list[str], dict, set[str]], NflverseWeek]
+# The fetch takes the season start, the week, and the player lines of the league.
+ChartFetcher = Callable[[date, int, list[PlayerLine]], ChartValues | None]
 NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
@@ -111,6 +114,30 @@ def fetch_nflverse(repo: Path) -> NflverseFetcher:
     return fetch
 
 
+def fetch_chart(repo: Path) -> ChartFetcher:
+    """Bind the repo's chart cache to the fetch. Tests patch this name with a fixture-backed fetcher."""
+
+    def fetch(season_start: date, week: int, lines: list[PlayerLine]) -> ChartValues | None:
+        return chart_values(repo, season_start, week, lines)
+
+    return fetch
+
+
+def _chart_for_week(parsed: Week, week: int, chart: ChartFetcher | None) -> ChartValues | None:
+    """The chart values of the week, or None. A chart problem never stops a build."""
+    if chart is None:
+        return None
+    lines = list({l.player_id: l for m in parsed.matchups for side in (m.a, m.b) for l in side.lines}.values())
+    try:
+        values = chart(parsed.season_start, week, lines)
+    except Exception as err:
+        log.warning("chart unavailable, build goes on without trade values: %s", err)
+        return None
+    if values is not None and values.week != week:
+        log.warning("chart is for week %d, not week %d, so the trade values may be stale", values.week, week)
+    return values
+
+
 def load_nflverse(raw_dir: Path) -> NflverseWeek | None:
     path = raw_dir / "nflverse.json"
     if not path.exists():
@@ -179,6 +206,7 @@ def make_bundle(
     started: datetime | None = None,
     fetched: datetime | None = None,
     nflverse: NflverseFetcher | None = None,
+    chart: ChartFetcher | None = None,
 ) -> tuple[Bundle, BuildRecord]:
     """Load the raw data, run the week gate, load the history, and build the bundle."""
     raw = load_raw(week_dir(repo, season, week) / "raw")
@@ -196,10 +224,12 @@ def make_bundle(
         until = started
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history, until)
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
-    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
+    chart_week = _chart_for_week(parsed, week, chart)
+    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, chart=chart_week)
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),
+                 "chart": chart_week is not None,
                  **{key: nfl is not None and nfl.sources.get(key, False) for key in NFLVERSE_SOURCES}},
         fetched=until,
     )
@@ -231,6 +261,7 @@ def run_build(
     news: NewsFetcher = fetch_news,
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
+    chart: ChartFetcher | None = None,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_dir = directory / "raw"
@@ -246,7 +277,7 @@ def run_build(
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
         repo, season, week, news, fetched=first_fetch.fetched if first_fetch else None,
-        nflverse=nflverse or fetch_nflverse(repo))
+        nflverse=nflverse or fetch_nflverse(repo), chart=chart or fetch_chart(repo))
     write_bundle(bundle, directory / "facts.json")
 
     blurbs: dict[str, Blurb] = {}
@@ -276,8 +307,9 @@ def run_rewrite(
     news: NewsFetcher = fetch_news,
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
+    chart: ChartFetcher | None = None,
 ) -> Path:
-    # The news and nflverse arguments keep the signature the same as run_build.
+    # The news, nflverse, and chart arguments keep the signature the same as run_build.
     # A rewrite reads the saved facts, so it needs neither news nor a fetch.
     directory = week_dir(repo, season, week)
     bundle = read_bundle(directory / "facts.json")
