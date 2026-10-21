@@ -4,15 +4,15 @@
 
 **Blocked by:** 08 (The FastAPI app)
 
-**Status:** ready-for-human
+**Status:** done
 
 - [x] Before the deploy, a one-line cost check of Cloud Run against Fly with auto-stop, in the ticket comments. Fly stands unless Cloud Run is cheaper.
 - [x] A Dockerfile builds the app with the project's package manager and runs the ASGI server.
 - [x] A Fly config: New York region, one shared CPU, auto-stop and auto-start, one small volume mounted for the data cache and the result cache, and the public hostname.
 - [ ] The Claude key, the passphrase, and the Sleeper league id are Fly secrets. None is in the repo. The deploy notes list the secret names and the hand command that sets them.
 - [x] A daily job inside the service refreshes the slow sources at 06:00 Eastern. The job uses the same refresh path as the day-old check from ticket 06. A failed refresh logs and leaves the old cache.
-- [ ] The first deploy runs by hand. The notes list the commands and the volume setup step.
-- [ ] After the deploy: health answers with no passphrase, the teams route answers with the passphrase, and one real trade grades from the deployed route in under about 20 seconds. Record the timing in the ticket comments.
+- [x] The first deploy runs by hand. The notes list the commands and the volume setup step.
+- [x] After the deploy: health answers with no passphrase, the teams route answers with the passphrase, and one real trade grades from the deployed route in under about 20 seconds. Record the timing in the ticket comments.
 - [x] The response fixture is copied into the site repo's fixtures. The copy is byte-identical to this repo's fixture.
 - [x] A short runbook in the docs directory: how to deploy, how to rotate the passphrase, how to force a refresh, and how to read the logs.
 - [x] `uv run pytest -q` passes with no failed test.
@@ -46,3 +46,10 @@ refreshes daily. A chart read that raises now gives no chart and notes the chart
 
 **League id.** The Sleeper league id stays a public constant until Brian decides. If he accepts that, the PRD
 line that names the league id as a secret needs a change.
+
+**Deployed 2026-10-21.** App `cpcfantasy-api`, org `personal`, region `ewr`, volume `cornerstone_data`. The
+certificate for `api.cpcfantasy.com` is issued. Health answers with no passphrase. Teams answers with the
+passphrase. The first trade answered 503, because the Anthropic key's account had no credits, so the week 7
+chart read failed. After Brian added credits, the refresh workflow ran in one minute and the same trade
+answered 200. Brian did not record the time. The refresh workflow ran by hand twice from `main` and
+completed both times.
