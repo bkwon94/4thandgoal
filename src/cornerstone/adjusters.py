@@ -1,16 +1,18 @@
 """
-The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, and handcuff.
+The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, handcuff, and schedule.
 It also holds what they read of one side: the best lineup before and after the trade, and the handcuffs.
 """
 from __future__ import annotations
 
 from collections.abc import Callable
 from decimal import Decimal
+from fractions import Fraction
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
 from cornerstone.history import player_points, red_zone, snap_share, target_share
+from cornerstone.nflverse import TeamSchedule
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     FIT_THRESHOLD,
@@ -18,6 +20,7 @@ from cornerstone.tunables import (
     LINEUP_WEEKS,
     RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
+    SCHEDULE_RANK_GAP,
     SELLER_GAP,
 )
 
@@ -25,7 +28,7 @@ if TYPE_CHECKING:
     # The rubric module imports this one, so the trade model is a name for the type checker only.
     from cornerstone.rubric import ProposedTrade
 
-# The adjusters run in this order: roster fit, standing, trend and usage, injury, and handcuff.
+# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, and schedule.
 
 
 class Adjuster(BaseModel):
@@ -34,6 +37,8 @@ class Adjuster(BaseModel):
     name: str
     step: Literal[-1, 0, 1]
     reason: str
+    # Only the schedule adjuster has a lean. It never moves a letter, so its step is always 0.
+    lean: Literal["for", "against", "even"] | None = None
 
 
 def _join(names: list[str]) -> str:
@@ -198,6 +203,7 @@ STANDING = "standing"
 TREND = "trend and usage"
 INJURY = "injury"
 HANDCUFF = "handcuff"
+SCHEDULE = "schedule"
 
 
 def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
@@ -428,5 +434,79 @@ def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=HANDCUFF, step=0, reason=reason)
 
 
+def _scheduled(snapshot: Snapshot, player_id: str) -> TeamSchedule | None:
+    """The NFL schedule of the player's team. None for a defense or a player whose team has no schedule.
+
+    A defense has no points allowed to its own position, so the schedule leaves it out on both signals.
+    """
+    player = snapshot.players[player_id]
+    if player.position == "DEF":
+        return None
+    return snapshot.schedules.get(player.nfl_team or "")
+
+
+def _byes_left(snapshot: Snapshot, players: list[str]) -> int:
+    """The count of players whose NFL team still has its bye in the trade week or later."""
+    return sum(1 for pid in players
+               if (schedule := _scheduled(snapshot, pid)) is not None
+               and schedule.bye_week is not None and schedule.bye_week >= snapshot.week)
+
+
+def _playoff_rank(snapshot: Snapshot, players: list[str]) -> Fraction | None:
+    """The mean over the players of the mean rank of each one's week 15 to 17 opponents in points allowed to his position.
+
+    Rank 1 allows the most points, so a low mean is a soft schedule. A player with no schedule, no opponent with a
+    points allowed row, or a position with no rank counts on neither side. None when no player counts.
+    """
+    means = []
+    for pid in players:
+        schedule = _scheduled(snapshot, pid)
+        if schedule is None:
+            continue
+        position = snapshot.players[pid].position
+        ranks = [snapshot.points_allowed[opponent][position].rank
+                 for opponent in schedule.playoff_opponents.values()
+                 if position in snapshot.points_allowed.get(opponent, {})]
+        if ranks:
+            # Fractions keep the means exact, so a gap right at SCHEDULE_RANK_GAP counts.
+            means.append(Fraction(sum(ranks), len(ranks)))
+    return sum(means, Fraction(0)) / len(means) if means else None
+
+
+def _schedule(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """Schedule: the byes left and the playoff opponents of the players it gets against the players it gives.
+
+    It shows a lean for, against, or even, and never moves the letter.
+    """
+    if snapshot.schedules is None or snapshot.points_allowed is None:
+        return Adjuster(name=SCHEDULE, step=0, lean="even", reason="The schedule sources are not available.")
+    byes_got, byes_gave = _byes_left(snapshot, side.gets), _byes_left(snapshot, side.gives)
+    bye_lean = "for" if byes_got < byes_gave else "against" if byes_got > byes_gave else "even"
+    rank_got, rank_gave = _playoff_rank(snapshot, side.gets), _playoff_rank(snapshot, side.gives)
+    if rank_got is None or rank_gave is None:
+        playoff_lean = "even"
+        playoffs = "the playoff opponents do not compare"
+    elif rank_gave - rank_got >= SCHEDULE_RANK_GAP:
+        playoff_lean = "for"
+        playoffs = "the players it gets face softer playoff opponents at their positions"
+    elif rank_got - rank_gave >= SCHEDULE_RANK_GAP:
+        playoff_lean = "against"
+        playoffs = "the players it gets face harder playoff opponents at their positions"
+    else:
+        playoff_lean = "even"
+        playoffs = "the playoff opponents are about as hard on both sides"
+    byes = {
+        "for": "The players it gets have fewer byes left than the players it gives",
+        "against": "The players it gets have more byes left than the players it gives",
+        "even": "The players it gets and the players it gives have the same count of byes left",
+    }[bye_lean]
+    # Two signals that agree, or one signal with the other even, give the lean. Two that conflict cancel out.
+    leans = {bye_lean, playoff_lean} - {"even"}
+    lean = leans.pop() if len(leans) == 1 else "even"
+    verdict = "The schedule is even." if lean == "even" else f"The schedule leans {lean} this side."
+    return Adjuster(name=SCHEDULE, step=0, lean=lean, reason=f"{byes}, and {playoffs}. {verdict}")
+
+
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.
-ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (_fit, _standing, _trend, _injury, _handcuff)
+ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (
+    _fit, _standing, _trend, _injury, _handcuff, _schedule)

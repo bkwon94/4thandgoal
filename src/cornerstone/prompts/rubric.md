@@ -47,7 +47,9 @@ one. A handcuff with no chart row keeps the start letter. See the handcuff secti
 ## Adjusters
 
 After the start letter, each adjuster moves a side by one step at most: up, down, or not at all.
-The breakdown lists every adjuster in this order, with its step and a one-line reason.
+The breakdown lists every adjuster in this order, with its step and a one-line reason: roster
+fit, standing, trend and usage, injury, handcuff, and schedule. Schedule shows a lean in place of a
+step.
 
 ## Roster fit
 
@@ -132,6 +134,46 @@ team's own starter.
 The handcuff adjuster itself gives no step. It names the handcuff. When the depth chart or the id
 map is not available, no player is a handcuff, and the reason names the missing source. A running
 back with no entry in the id map gets no handcuff check, and the reason names him.
+
+## Schedule
+
+Schedule never moves a letter. It shows a lean for the side: for, against, or even. The verdict
+rule reads the lean of the side that asked. It reads two signals for the players the side gets
+against the players it gives. The trade week is N.
+
+- Byes. A player's bye is left when his NFL team's bye week is N or later. Otherwise it is done.
+  Fewer byes left in the players the side gets leans for. More leans against. An equal count is
+  even.
+- Playoff opponents. For each player, find his NFL team's opponents in weeks 15 to 17. Find the
+  rank of each opponent in points allowed to his position. Rank 1 allows the most points, so a low
+  rank is a soft opponent. Take the mean rank for each player, then the mean over the players on
+  each side. A mean for the players it gets lower by `SCHEDULE_RANK_GAP` or more leans for. Higher
+  by `SCHEDULE_RANK_GAP` or more leans against. Anything closer is even.
+
+Two signals that agree give that lean. One signal with the other even gives that lean too. Two
+signals that conflict give even. A player with no schedule, a defense, or a position with no
+points allowed rank counts on neither side. When the schedules or the points allowed are not
+available, the lean is even, and the reason says so.
+
+## Final letter
+
+Add the steps of all the adjusters. Clamp the sum to `CLAMP_STEPS` either way. Move the start
+letter by the clamped sum: up toward A, down toward F. The letter stops at A and at F. The
+breakdown shows the start letter, each adjuster, and the final letter.
+
+## Verdict
+
+The verdict is for the side that asked: accept, counter, or decline, with one reason. It reads the
+final letter of each side.
+
+- The asker's letter is `ACCEPT_AT_OR_ABOVE` or better: accept.
+- The asker's letter is `DECLINE_AT_OR_BELOW` or worse: decline.
+- A letter between the two: accept when the other side's letter is no better than the asker's.
+  Counter when the other side's letter is better.
+
+Schedule turns only a letter between the two bands. A schedule for the asker turns a counter into
+an accept. A schedule against the asker turns that accept into a counter. Schedule never turns an
+accept at `ACCEPT_AT_OR_ABOVE` or better, and never turns a decline.
 
 ## What the breakdown never holds
 

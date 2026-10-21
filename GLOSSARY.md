@@ -82,7 +82,7 @@ One named criterion of the rubric that moves a grade by at most one step: roster
 trend and usage, injury history, handcuff, or schedule.
 
 **Breakdown**:
-The start letter and every adjuster with its step, for one side.
+The start letter, every adjuster with its step, and the final letter, for one side.
 
 **Contender**:
 A team in a playoff spot by record.

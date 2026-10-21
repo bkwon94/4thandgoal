@@ -21,7 +21,7 @@ from cornerstone.pipeline import (
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish
-from cornerstone.rubric import ProposedTrade, TradeSide, grade
+from cornerstone.rubric import ProposedTrade, TradeSide, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.trades import EASTERN
@@ -153,7 +153,7 @@ _STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
 
 
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
-    """Grade the proposed trade from the live or saved snapshot and print the breakdown of each side."""
+    """Grade the proposed trade from the live or saved snapshot. Print the breakdown of each side and the verdict."""
     if len(args.side) != 2:
         print("Give --side exactly twice, once for each roster.")
         return 2
@@ -189,7 +189,13 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         print(f"  Start letter: {breakdown.start_letter}")
         print(f"  Reason: {breakdown.reason}")
         for adjuster in breakdown.adjusters:
-            print(f"  {adjuster.name.capitalize()}: {_STEP_WORDS[adjuster.step]}. {adjuster.reason}")
+            # The schedule never moves a letter, so its line shows the lean in place of a step.
+            words = adjuster.lean if adjuster.lean is not None else _STEP_WORDS[adjuster.step]
+            print(f"  {adjuster.name.capitalize()}: {words}. {adjuster.reason}")
+        print(f"  Final letter: {breakdown.final_letter}")
+    choice = verdict(trade, result)
+    print()
+    print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}")
     return 0
 
 

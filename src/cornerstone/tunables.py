@@ -47,3 +47,19 @@ SHARE_WEEKS = 2
 INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
 RETURN_WINDOW_WEEKS = 2
+
+# Schedule: byes left and the playoff opponents of the players got against the players gave. It never moves a letter.
+# The gap in the mean rank of the week 15 to 17 opponents, in points allowed to the position, that makes a lean.
+# The value is a first cut, and the commissioner tunes it.
+SCHEDULE_RANK_GAP = 4
+
+# The final letter is the start letter moved by the sum of the adjuster steps.
+# The sum clamps to this many steps either way, so the adjusters never outweigh the trade value by much.
+CLAMP_STEPS = 2
+
+# The verdict for the side that asked reads its final letter.
+# The lowest final letter that accepts outright.
+ACCEPT_AT_OR_ABOVE = "B"
+# The highest final letter that declines outright. A letter between the two bands accepts when the other side's
+# final letter is no better, and counters when it is better. The schedule lean can turn that middle result.
+DECLINE_AT_OR_BELOW = "D"

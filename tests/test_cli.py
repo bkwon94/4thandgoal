@@ -265,6 +265,49 @@ def test_analyze_names_the_sources_it_has_from_the_cache(
     assert "Sources: schedules, depth charts, points allowed.\n" in capsys.readouterr().out
 
 
+def _set_back_the_jacobs_trade(tmp_path):
+    """Rewrite the saved rosters to before the Josh Jacobs trade. The saved rosters show the league after it."""
+    import json
+
+    path = tmp_path / "data" / "2026" / "week-06" / "raw" / "rosters.json"
+    rosters = json.loads(path.read_text())
+    moves = {11: (["5850", "11834"], ["12490", "8146"]), 12: (["12490", "8146"], ["5850", "11834"])}
+    for roster in rosters:
+        if roster["roster_id"] in moves:
+            out, back = moves[roster["roster_id"]]
+            roster["players"] = [pid for pid in roster["players"] if pid not in out] + back
+    path.write_text(json.dumps(rosters))
+
+
+def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_trade(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    import shutil
+
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    # The returns file has Jacobs back in week 7.
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+    _set_back_the_jacobs_trade(tmp_path)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
+    # Each side ends with the schedule lean and the final letter, after the five adjusters with steps.
+    assert out.count("  Schedule: even. ") == 2
+    assert out.count("  Final letter: C\n") == 2
+    assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
+    assert out.endswith(
+        "\nVerdict for Amon-Ra Dawg Your Team: accept. "
+        "The asking side grades C and the other side grades C, so the trade is fair.\n")
+    # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
+    for number in ("27.5", "11.5", "55", "30.5", "66.5"):
+        assert number not in out
+
+
 def test_analyze_names_a_player_not_on_the_giving_roster(
         tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
     from cornerstone import cli

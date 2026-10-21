@@ -1,5 +1,5 @@
 """
-Tests for the grade of a proposed trade: the start letter, consolidation, unlisted, and each adjuster.
+Tests for the grade of a proposed trade: the start letter, each adjuster, the clamp, the final letter, and the verdict.
 They feed a proposed trade and the week 6 snapshot at the grade seam.
 """
 import re
@@ -7,7 +7,7 @@ import shutil
 
 import pytest
 
-from cornerstone.rubric import ProposedTrade, TradeInputError, TradeSide, grade
+from cornerstone.rubric import Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_snapshot
@@ -115,7 +115,7 @@ def test_a_proposed_trade_needs_two_rosters_players_on_each_side_and_an_asker_in
 def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
     for trade in (_trade(4, [COLLINS], 12, [KINCAID, WILSON]), _trade(4, [CROSKEY], 12, [KINCAID])):
         for side in grade(trade, snap):
-            assert set(side.model_dump()) == {"roster_id", "start_letter", "reason", "adjusters"}
+            assert set(side.model_dump()) == {"roster_id", "start_letter", "reason", "adjusters", "final_letter"}
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
             for reason in [side.reason, *(a.reason for a in side.adjusters)]:
                 assert not re.search(r"\d", reason)
@@ -252,7 +252,8 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
 
 def test_the_adjusters_show_in_rubric_order(snap):
     for side in grade(_trade(10, [SAQUON], 5, [COOK]), snap):
-        assert [a.name for a in side.adjusters] == ["roster fit", "standing", "trend and usage", "injury", "handcuff"]
+        assert [a.name for a in side.adjusters] == [
+            "roster fit", "standing", "trend and usage", "injury", "handcuff", "schedule"]
 
 
 # The week 6 Josh Jacobs trade: roster 11 got Jacobs and Devaughn Vele from roster 12
@@ -518,3 +519,266 @@ def test_trend_leaves_out_a_player_who_is_due_back(snap):
     # Jacobs is suspended through week 5 and due back in week 7, so he has no use to compare on either side.
     for side in grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), _before_the_jacobs_trade(snap)):
         assert _adjuster(side, "trend and usage").reason.endswith("Josh Jacobs is due back, so his use does not count.")
+
+
+def test_schedule_without_its_sources_is_even_and_says_so(snap):
+    for side in grade(_trade(10, [SAQUON], 5, [COOK]), snap):
+        schedule = _adjuster(side, "schedule")
+        assert (schedule.step, schedule.lean) == (0, "even")
+        assert schedule.reason == "The schedule sources are not available."
+
+
+# Byes and playoff opponents from the nflverse fixture, for a trade in week 6.
+# Saquon Barkley plays for PHI, with the bye in week 10 still left. His week 15 to 17 opponents are SEA, HOU, and SF,
+# ranked 18, 28, and 15 in points allowed to running backs, a mean of 20.33.
+# James Cook plays for BUF, with the bye in week 7 still left. His opponents are CHI, DEN, and MIA,
+# ranked 25, 7, and 6, a mean of 12.67. That is 7.67 softer, past the gap of 4.
+def test_schedule_leans_for_the_side_that_gets_softer_playoff_opponents_and_against_the_other(slow_snap):
+    tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), slow_snap)
+    for_tenth, against_fifth = _adjuster(tenth, "schedule"), _adjuster(fifth, "schedule")
+    assert (for_tenth.step, for_tenth.lean) == (0, "for")
+    assert for_tenth.reason == (
+        "The players it gets and the players it gives have the same count of byes left, "
+        "and the players it gets face softer playoff opponents at their positions. The schedule leans for this side.")
+    assert (against_fifth.step, against_fifth.lean) == (0, "against")
+    assert against_fifth.reason == (
+        "The players it gets and the players it gives have the same count of byes left, "
+        "and the players it gets face harder playoff opponents at their positions. The schedule leans against this side.")
+
+
+def _with_bye(snap, team: str, week: int):
+    schedules = dict(snap.schedules)
+    schedules[team] = schedules[team].model_copy(update={"bye_week": week})
+    return snap.model_copy(update={"schedules": schedules})
+
+
+def test_schedule_is_even_when_the_byes_and_the_playoff_opponents_conflict(slow_snap):
+    # With the PHI bye moved to week 5, Saquon Barkley's bye is done and James Cook's bye is left.
+    # Roster 10 then gets more byes left, which leans against, and softer playoff opponents, which lean for.
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
+    schedule = _adjuster(tenth, "schedule")
+    assert (schedule.step, schedule.lean) == (0, "even")
+    assert schedule.reason == (
+        "The players it gets have more byes left than the players it gives, "
+        "and the players it gets face softer playoff opponents at their positions. The schedule is even.")
+
+
+def test_schedule_leans_on_the_byes_alone_when_the_playoff_opponents_are_even(slow_snap):
+    # With the BUF opponents set to those of PHI, the playoff signal is even.
+    # With the BUF bye moved to week 5, roster 10 gets fewer byes left, which leans for.
+    schedules = dict(slow_snap.schedules)
+    schedules["BUF"] = schedules["PHI"].model_copy(update={"bye_week": 5})
+    tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), slow_snap.model_copy(update={"schedules": schedules}))
+    assert (_adjuster(tenth, "schedule").lean, _adjuster(fifth, "schedule").lean) == ("for", "against")
+    assert _adjuster(tenth, "schedule").reason.startswith(
+        "The players it gets have fewer byes left than the players it gives, "
+        "and the playoff opponents are about as hard on both sides.")
+
+
+# Bucky Irving on roster 1, Derrick Henry on roster 3, and Rashee Rice on roster 1, who is out with no return week.
+IRVING, HENRY = "11584", "3198"
+
+
+def test_the_clamp_holds_three_steps_up_to_two(snap):
+    # Roster 1, a contender, gets Henry for Irving. Its best lineup gains now, and the shares favor it:
+    # roster fit, standing, and trend each step up. Irving at 40 for Henry at 20 starts roster 1 at F.
+    # Three steps up from F would reach B. The clamp holds the sum at two, so the final letter is C.
+    first, _ = grade(_trade(1, [IRVING], 3, [HENRY]), _with_values(snap, {IRVING: 40.0, HENRY: 20.0}))
+    assert first.start_letter == "F"
+    assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0]
+    assert first.final_letter == "C"
+
+
+def test_the_clamp_holds_three_steps_down_to_two(snap):
+    # Roster 5, a contender, gets Rice for Cook. Its best lineup loses now for a player with no return week,
+    # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
+    # Three steps down from A would reach D. The clamp holds the sum at two, so the final letter is C.
+    fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(snap, {RICE: 40.0, COOK: 20.0}))
+    assert fifth.start_letter == "A"
+    assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0]
+    assert fifth.final_letter == "C"
+
+
+def test_the_same_trade_on_the_same_snapshot_gives_the_same_breakdown_every_time(slow_snap):
+    trade = _trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE])
+    snap = _before_the_jacobs_trade(slow_snap)
+    first = grade(trade, snap)
+    assert all(grade(trade, snap) == first for _ in range(3))
+
+
+def _graded(roster_id: int, final: str, lean: str = "even") -> Breakdown:
+    """A breakdown with a final letter and a schedule lean, the two parts the verdict reads."""
+    schedule = Adjuster(name="schedule", step=0, lean=lean, reason="The schedule is even.")
+    return Breakdown(roster_id=roster_id, start_letter=final, reason="", adjusters=[schedule], final_letter=final)
+
+
+def _verdict_for(asker_final: str, other_final: str, lean: str = "even") -> Verdict:
+    """The verdict for roster 4, the asker, in a trade with roster 12."""
+    trade = _trade(4, [CROSKEY], 12, [KINCAID], asker=4)
+    return verdict(trade, (_graded(4, asker_final, lean), _graded(12, other_final)))
+
+
+@pytest.mark.parametrize("asker, other", [("A", "A"), ("B", "A"), ("B", "F")])
+def test_the_verdict_accepts_at_b_or_better(asker, other):
+    assert _verdict_for(asker, other).choice == "accept"
+    assert _verdict_for(asker, other).reason == f"The asking side grades {asker}, so the trade favors it."
+
+
+@pytest.mark.parametrize("other", ["C", "D", "F"])
+def test_the_verdict_accepts_at_c_when_the_other_side_is_at_c_or_worse(other):
+    result = _verdict_for("C", other)
+    assert result.choice == "accept"
+    assert result.reason == f"The asking side grades C and the other side grades {other}, so the trade is fair."
+
+
+@pytest.mark.parametrize("asker, other", [("D", "F"), ("F", "F"), ("D", "A")])
+def test_the_verdict_declines_at_d_or_worse(asker, other):
+    result = _verdict_for(asker, other)
+    assert result.choice == "decline"
+    assert result.reason == f"The asking side grades {asker}, so the trade costs it too much."
+
+
+@pytest.mark.parametrize("other", ["A", "B"])
+def test_the_verdict_counters_at_c_when_the_other_side_does_better(other):
+    result = _verdict_for("C", other)
+    assert result.choice == "counter"
+    assert result.reason == f"The asking side grades C and the other side grades {other}, so ask for more."
+
+
+def test_a_schedule_for_the_asker_turns_a_counter_into_an_accept():
+    result = _verdict_for("C", "B", lean="for")
+    assert result.choice == "accept"
+    assert result.reason == (
+        "The asking side grades C and the other side grades B, but the schedule leans for the asking side, "
+        "so the trade is worth it.")
+
+
+def test_a_schedule_against_the_asker_turns_an_accept_at_c_into_a_counter():
+    result = _verdict_for("C", "D", lean="against")
+    assert result.choice == "counter"
+    assert result.reason == (
+        "The asking side grades C and the other side grades D, but the schedule leans against the asking side, "
+        "so ask for more.")
+
+
+@pytest.mark.parametrize("asker, lean, choice", [("B", "against", "accept"), ("D", "for", "decline")])
+def test_the_schedule_never_turns_a_clear_accept_or_a_decline(asker, lean, choice):
+    assert _verdict_for(asker, "C", lean=lean).choice == choice
+
+
+def test_the_verdict_reads_the_asker_side_whichever_side_it_is():
+    trade = _trade(4, [CROSKEY], 12, [KINCAID], asker=12)
+    assert verdict(trade, (_graded(4, "A"), _graded(12, "F"))).choice == "decline"
+
+
+# The six real week 6 trades, newest first, as in the transactions file: (roster a, a gives, roster b, b gives, asker).
+# The asker is the roster that made the trade in Sleeper.
+# The saved rosters show the league after all six. To grade one trade, the test sets back that trade and every
+# trade newer than it, newest first. Roster 7 is in four trades: with roster 8, then 6, then 4, then 12.
+# Brian Robinson moves in two of them, so the order matters: the 7-8 set-back puts him on roster 7,
+# and the 6-7 set-back then puts him on roster 6.
+REAL_TRADES = [
+    (7, [HARRISON, B_ROBINSON, BIJAN], 8, ["11576", "11632", "3163", "8155"], 8),
+    # The Josh Jacobs trade.
+    (11, [TUTEN, WILSON], 12, [JACOBS, VELE], 12),
+    (6, [MAHOMES, B_ROBINSON], 7, [LAMAR], 7),
+    (4, ["11635", "7611"], 7, ["12481", COLLINS], 7),
+    (7, [KINCAID], 12, ["13330"], 12),
+    (4, ["12507", "5967"], 12, [CROSKEY, "5892"], 12),
+]
+
+
+def _before_real_trade(snap, index: int):
+    """The snapshot with the rosters set back to before REAL_TRADES[index], one trade at a time, newest first."""
+    rosters = {roster_id: list(players) for roster_id, players in snap.rosters.items()}
+    for a, a_gives, b, b_gives, _ in REAL_TRADES[:index + 1]:
+        rosters[a] = [pid for pid in rosters[a] if pid not in b_gives] + a_gives
+        rosters[b] = [pid for pid in rosters[b] if pid not in a_gives] + b_gives
+    return snap.model_copy(update={"rosters": rosters})
+
+
+# Each row: the start letter, the six adjuster steps, the schedule lean, and the final letter of side a, then of
+# side b, then the verdict for the asker. Worked by hand from the rubric on the week 6 snapshot with the nflverse
+# fixture and the returns file: trade values from the week 6 chart, points per game over weeks 2 to 5,
+# standings through week 5, and shares of weeks 4 and 5 against weeks 2 and 3. Trade week N is 6, so a bye in
+# week 6 or later is left. Roster 4 is a seller at 1-9. Roster 6 is a contender. Rosters 7, 8, 11, and 12 are
+# in the middle at 4-6.
+HAND_WORKED = [
+    # Roster 7 gives Marvin Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5, a sum of 78.5.
+    # Roster 8 gives Braelon Allen 1.5, Malik Nabers 6.5, Jared Goff 13.0, and Breece Hall 41.0, a sum of 62.0.
+    # Three for four is no consolidation. Roster 7: 62.0 over 78.5 is 0.790, D. Roster 8: 1.266, A.
+    # Breece Hall at 41.0 is the highest-value player.
+    # Roster 7: the lineup loses 4.51, fit down. Middle, no standing step. Gets up shares only, gives up and down
+    # shares, so trend is mixed. Breece Hall is out with no return week, injury down. Byes left: four got against
+    # three gave, against. Playoff opponent mean rank 18.58 got against 16.67 gave, inside the gap, even.
+    # Schedule against. Sum minus two, D to F.
+    # Roster 8: the lineup gains 2.67, under the threshold, and it gives the highest-value player, no fit step.
+    # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
+    # Roster 8 asked and grades A: accept.
+    (("D", [-1, 0, 0, -1, 0, 0], "against", "F"), ("A", [0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+    # The Josh Jacobs trade. Roster 11 gives Bhayshul Tuten 3.0 and Garrett Wilson 27.5, a sum of 30.5.
+    # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
+    # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.
+    # Jacobs is due back in week 7, so his use does not count, and week 7 is inside the return window of week 8.
+    # Roster 11: the lineup loses 11.60, fit down. Middle. Gets Vele, flat, and gives Tuten and Wilson, each with
+    # one share up, so trend down. No injury step. Byes two and two, even. Playoff mean rank 13.83 got against
+    # 16.83 gave, a gap of 3.0, inside the gap, even. Schedule even. Sum minus two, A to C.
+    # Roster 12: the lineup gains 9.20, fit up. Middle. Trend up. No injury step. Schedule even. Sum plus two, F to C.
+    # Roster 12 asked and grades C, with roster 11 at C: accept.
+    (("A", [-1, 0, -1, 0, 0, 0], "even", "C"), ("F", [1, 0, 1, 0, 0, 0], "even", "C"), "accept"),
+    # Roster 6 gives Patrick Mahomes 15.5 and Brian Robinson 22.0, a sum of 37.5. Roster 7 gives Lamar Jackson 7.0.
+    # One for two: the depth sum counts as 37.5 over 1.25, which is 30.0. Roster 6: 7.0 over 30.0 is 0.233, F.
+    # Roster 7: 4.29, A. Brian Robinson at 22.0 is the highest-value player.
+    # Roster 6: the lineup loses 4.55, fit down. A contender that loses now for Lamar Jackson, out with no return
+    # week, standing down. Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is out
+    # with no return week, injury down. Byes one left and one left, even. Playoff mean rank 19.67 got against 22.17
+    # gave, inside the gap, even. Schedule even. Sum minus three, clamped to minus two, F stays F.
+    # Roster 7: the lineup gains 8.48 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
+    # Schedule even. Sum plus one, A stays A.
+    # Roster 7 asked and grades A: accept.
+    (("F", [-1, -1, 0, -1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0], "even", "A"), "accept"),
+    # Roster 4 gives Ladd McConkey 4.5 and Rhamondre Stevenson 2.5, a sum of 7.0.
+    # Roster 7 gives Cam Skattebo 18.0 and Nico Collins 46.5, a sum of 64.5. Two for two, no consolidation.
+    # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
+    # Roster 4: the lineup gains 7.38, fit up. A seller that gets the highest-value player, standing up.
+    # Gets one share down, gives shares up and down, so trend is mixed. No injury step. Byes two and two, even.
+    # Playoff mean rank 14.00 got against 19.67 gave, a gap of 5.67, for. Schedule for. Sum plus two, A stays A.
+    # Roster 7: the lineup loses 9.42, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week,
+    # injury down. Schedule against. Sum minus two, F stays F.
+    # Roster 7 asked and grades F: decline.
+    (("A", [1, 1, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, -1, 0, 0], "against", "F"), "decline"),
+    # Roster 7 gives Dalton Kincaid 31.5. Roster 12 gives Kenyon Sadiq, with no row on the chart, so both start at C.
+    # Points per game pick the highest-value player: Kincaid at 6.55 against Sadiq at 5.50.
+    # Roster 7: the lineup changes by minus 0.50, no loss, and it gives Kincaid, no fit step. Middle. Each player
+    # has one share down, so trend is mixed. Sadiq is healthy. Byes one and one, even. Playoff mean rank 17.67
+    # got against 13.67 gave, a gap of exactly 4, against. Schedule against. Sum zero, C.
+    # Roster 12: no lineup change, and it gets Kincaid, fit up. Middle. Trend mixed. Kincaid is Questionable,
+    # which is not out. Schedule for. Sum plus one, C to B.
+    # Roster 12 asked and grades B: accept.
+    (("C", [0, 0, 0, 0, 0, 0], "against", "C"), ("C", [1, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    # Roster 4 gives Omarion Hampton 68.5 and Tony Pollard 9.0, a sum of 77.5.
+    # Roster 12 gives Jacory Croskey-Merritt 24.0 and David Montgomery 12.5, a sum of 36.5.
+    # Roster 4: 36.5 over 77.5 is 0.471, F. Roster 12: 2.12, A. Omarion Hampton is the highest-value player.
+    # Roster 4: the lineup loses 3.41, fit down. A seller that gives the highest-value player with no lineup gain,
+    # no standing step. Gets shares up and down, so trend is mixed. Croskey-Merritt is on IR with no return week,
+    # injury down. Byes two and two, even. Playoff mean rank 23.17 got against 10.67 gave, against.
+    # Schedule against. Sum minus two, F stays F.
+    # Roster 12: the lineup gains 2.75, under the threshold, and it gets Hampton, fit up. Middle. Trend mixed.
+    # No injury step. Schedule for. Sum plus one, A stays A.
+    # Roster 12 asked and grades A: accept.
+    (("F", [-1, 0, 0, -1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+]
+
+
+@pytest.mark.parametrize("index", range(len(REAL_TRADES)))
+def test_each_real_week_6_trade_grades_as_worked_by_hand(slow_snap, index):
+    a, a_gives, b, b_gives, asker = REAL_TRADES[index]
+    trade = _trade(a, a_gives, b, b_gives, asker=asker)
+    result = grade(trade, _before_real_trade(slow_snap, index))
+    side_a, side_b, choice = HAND_WORKED[index]
+    for breakdown, (start, steps, lean, final) in zip(result, (side_a, side_b)):
+        assert breakdown.start_letter == start
+        assert [adjuster.step for adjuster in breakdown.adjusters] == steps
+        assert _adjuster(breakdown, "schedule").lean == lean
+        assert breakdown.final_letter == final
+    assert verdict(trade, result).choice == choice

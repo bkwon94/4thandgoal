@@ -1,19 +1,25 @@
 """
-The trade analyzer rubric in code: the proposed trade, its input check, and the grade of each side.
-The grade gives each side a start letter, then runs the adjusters in ADJUSTERS in rubric order.
+The trade analyzer rubric in code: the proposed trade, its input check, the grade of each side, and the verdict.
+The grade gives each side a start letter, runs the adjusters in ADJUSTERS, and clamps their sum into a final letter.
 """
 from decimal import Decimal
 from typing import Literal
 
 from pydantic import BaseModel, model_validator
 
-from cornerstone.adjusters import ADJUSTERS, Adjuster, build_side, named, recent_points_per_game, trade_handcuffs
+from cornerstone.adjusters import (
+    ADJUSTERS, SCHEDULE, Adjuster, build_side, named, recent_points_per_game, trade_handcuffs,
+)
 from cornerstone.snapshot import Snapshot
-from cornerstone.tunables import CONSOLIDATION_MARGIN, START_LETTER_BANDS
+from cornerstone.tunables import (
+    ACCEPT_AT_OR_ABOVE, CLAMP_STEPS, CONSOLIDATION_MARGIN, DECLINE_AT_OR_BELOW, START_LETTER_BANDS,
+)
 
 # The breakdown per side holds no trade value, sum, or ratio.
 
 Letter = Literal["A", "B", "C", "D", "F"]
+# The letters from the best down, so a step up moves one place toward the front.
+LETTERS: tuple[Letter, ...] = ("A", "B", "C", "D", "F")
 
 # The reasons name a direction only. A trade value, a sum, or a ratio never reaches the breakdown.
 BAND_REASONS: dict[str, str] = {
@@ -69,12 +75,21 @@ class ProposedTrade(BaseModel):
 
 
 class Breakdown(BaseModel):
-    """The grade of one side: the start letter, the reason for it, and each adjuster in rubric order."""
+    """The grade of one side: the start letter, the reason for it, each adjuster in rubric order, and the final letter."""
 
     roster_id: int
     start_letter: Letter
     reason: str
     adjusters: list[Adjuster] = []
+    # The start letter moved by the sum of the adjuster steps, clamped to CLAMP_STEPS either way.
+    final_letter: Letter
+
+
+class Verdict(BaseModel):
+    """Accept, counter, or decline, for the side that asked, with one reason."""
+
+    choice: Literal["accept", "counter", "decline"]
+    reason: str
 
 
 def check_trade(trade: ProposedTrade, snapshot: Snapshot) -> None:
@@ -103,8 +118,8 @@ def _letter(got: Decimal, gave: Decimal) -> Letter:
 
 
 def _both_at_c(a: TradeSide, b: TradeSide, reason: str) -> tuple[Breakdown, Breakdown]:
-    return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=reason),
-            Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason))
+    return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=reason, final_letter="C"),
+            Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason, final_letter="C"))
 
 
 def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
@@ -137,7 +152,7 @@ def _start_letters(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str
     def breakdown(roster_id: int, got: Decimal, gave: Decimal) -> Breakdown:
         letter = _letter(got, gave)
         reason = BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
-        return Breakdown(roster_id=roster_id, start_letter=letter, reason=reason)
+        return Breakdown(roster_id=roster_id, start_letter=letter, reason=reason, final_letter=letter)
 
     return breakdown(a.roster_id, sum_b, sum_a), breakdown(b.roster_id, sum_a, sum_b)
 
@@ -159,6 +174,12 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
     return leaders[0] if len(leaders) == 1 else None
 
 
+def _final_letter(start: Letter, adjusters: list[Adjuster]) -> Letter:
+    """The start letter moved by the sum of the steps. The sum clamps to CLAMP_STEPS either way, the letter to A to F."""
+    total = max(-CLAMP_STEPS, min(CLAMP_STEPS, sum(adjuster.step for adjuster in adjusters)))
+    return LETTERS[max(0, min(len(LETTERS) - 1, LETTERS.index(start) - total))]
+
+
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
@@ -169,7 +190,41 @@ def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdow
     sides = (build_side(snapshot, a.roster_id, a.gives, b.gives, top, handcuffs),
              build_side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
     starts = _start_letters(trade, snapshot, handcuffs)
-    return tuple(  # type: ignore[return-value]
-        start.model_copy(update={"adjusters": [adjuster(snapshot, side) for adjuster in ADJUSTERS]})
-        for start, side in zip(starts, sides)
-    )
+    breakdowns = []
+    for start, side in zip(starts, sides):
+        adjusters = [adjuster(snapshot, side) for adjuster in ADJUSTERS]
+        breakdowns.append(start.model_copy(update={
+            "adjusters": adjusters, "final_letter": _final_letter(start.start_letter, adjusters)}))
+    return breakdowns[0], breakdowns[1]
+
+
+def _at_or_above(letter: Letter, bound: Letter) -> bool:
+    return LETTERS.index(letter) <= LETTERS.index(bound)
+
+
+def _at_or_below(letter: Letter, bound: Letter) -> bool:
+    return LETTERS.index(letter) >= LETTERS.index(bound)
+
+
+def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Verdict:
+    """The code's default verdict for the asker, from the final letters of both sides and the asker's schedule lean."""
+    asker = next(b for b in breakdowns if b.roster_id == trade.asker)
+    other = next(b for b in breakdowns if b.roster_id != trade.asker)
+    mine, theirs = asker.final_letter, other.final_letter
+    lean = next((a.lean for a in asker.adjusters if a.name == SCHEDULE), None)
+    if _at_or_above(mine, ACCEPT_AT_OR_ABOVE):
+        return Verdict(choice="accept", reason=f"The asking side grades {mine}, so the trade favors it.")
+    if _at_or_below(mine, DECLINE_AT_OR_BELOW):
+        return Verdict(choice="decline", reason=f"The asking side grades {mine}, so the trade costs it too much.")
+    # The letters between the two bands accept only when the other side does no better than the asker.
+    grades = f"The asking side grades {mine} and the other side grades {theirs}"
+    if _at_or_above(mine, theirs):
+        # Schedule is the tie break between fair and not quite fair. It never turns a clear letter.
+        if lean == "against":
+            return Verdict(choice="counter",
+                           reason=f"{grades}, but the schedule leans against the asking side, so ask for more.")
+        return Verdict(choice="accept", reason=f"{grades}, so the trade is fair.")
+    if lean == "for":
+        return Verdict(choice="accept",
+                       reason=f"{grades}, but the schedule leans for the asking side, so the trade is worth it.")
+    return Verdict(choice="counter", reason=f"{grades}, so ask for more.")
