@@ -6,10 +6,11 @@ import json
 import re
 
 import pytest
+from pydantic import TypeAdapter
 
 from cornerstone.models import Blurb, Sentence
 from cornerstone.parse import parse_week
-from cornerstone.render import build_context, render_index, render_week
+from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_index, render_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 
@@ -456,3 +457,13 @@ def test_render_week_writes_page_json_with_the_context(tbundle, tmp_path):
     assert len(data["trades"]) == len(context["trades"]) > 0
     assert [s["team"]["name"] for s in data["pick"]["sides"]] == [s["team"].name for s in context["pick"]["sides"]]
     assert data["avatars"]["1"] == "avatars/1.jpg"
+
+
+def test_page_json_holds_the_whole_context(tbundle, tmp_path):
+    page = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
+    written = json.loads((page.parent / "page.json").read_text(encoding="utf-8"))
+    # The saved-file lookups read the images on disk, so they do not copy the writer's own paths.
+    context = build_context(
+        tbundle, _blurbs(tbundle), _saved_avatars(tbundle, page.parent), _saved_headshots(tbundle, page.parent),
+    )
+    assert written == {"schema_version": 1, **TypeAdapter(dict).dump_python(context, mode="json")}

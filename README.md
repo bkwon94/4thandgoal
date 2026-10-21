@@ -22,7 +22,7 @@ data comes from Sleeper. The public site is at https://cpcfantasy.com/
 
 The build writes `site/<season>/week-NN/page.json` next to `index.html`. The file holds the
 render context that `week.html` reads, plus a `schema_version` key. The image paths in it are
-relative to the week folder. The publish copies the whole week folder, so the file lands at
+relative to the week folder. `cornerstone publish` copies the whole week folder, so the file goes to
 `public/<season>/week-NN/page.json` in the site repo, with the images beside it.
 
 To write the file for a saved week, run `cornerstone page-json --season <S> --week <W>`. The

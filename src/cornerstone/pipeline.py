@@ -274,6 +274,14 @@ def run_build(
     return page
 
 
+def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
+    """Read the saved facts and blurbs of a week."""
+    directory = week_dir(repo, season, week)
+    bundle = read_bundle(directory / "facts.json")
+    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
+    return bundle, blurbs
+
+
 def run_rewrite(
     repo: Path,
     season: int,
@@ -287,13 +295,12 @@ def run_rewrite(
     # The news and nflverse arguments keep the signature the same as run_build.
     # A rewrite reads the saved facts, so it needs neither news nor a fetch.
     directory = week_dir(repo, season, week)
-    bundle = read_bundle(directory / "facts.json")
+    bundle, blurbs = _load_saved_week(repo, season, week)
     chosen = next((c for c in bundle.sheet.chapters if c.key == chapter), None)
     if chosen is None:
         keys = ", ".join(c.key for c in bundle.sheet.chapters)
         raise ValueError(f"Unknown chapter '{chapter}'. Valid chapters: {keys}")
 
-    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
     verify = read_verify(directory / "verify.json")
     blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, call)
     _log_chapter(chapter, blurbs[chapter])
@@ -307,9 +314,7 @@ def run_rewrite(
 
 def run_page_json(repo: Path, season: int, week: int) -> Path:
     """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
-    directory = week_dir(repo, season, week)
-    bundle = read_bundle(directory / "facts.json")
-    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
+    bundle, blurbs = _load_saved_week(repo, season, week)
     return render_page_json(bundle, blurbs, repo / "site")
 
 

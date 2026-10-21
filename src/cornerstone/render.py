@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 import httpx
 from jinja2 import Environment, FileSystemLoader
-from pydantic_core import to_jsonable_python
+from pydantic import TypeAdapter
 
 from cornerstone.facts_league import LEADER_POSITIONS
 from cornerstone.models import Blurb, Bundle, MatchupFacts, PlayerLine
@@ -285,11 +285,19 @@ def _saved_headshots(bundle: Bundle, week_dir: Path) -> dict[str, str]:
     }
 
 
+def _week_dir(site_dir: Path, bundle: Bundle) -> Path:
+    """Return the week folder under the site folder. Make it if it is missing."""
+    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
+    week_dir.mkdir(parents=True, exist_ok=True)
+    return week_dir
+
+
 def _write_page_json(context: dict, week_dir: Path) -> Path:
     """Write the render context as page.json, with the schema version first."""
-    # The context holds Pydantic models and dates. to_jsonable_python turns them into plain values.
+    # The context holds Pydantic models and dates. TypeAdapter(dict) turns them into plain values.
     # The int keys of the teams and avatars become strings, as JSON needs.
-    body = {"schema_version": PAGE_SCHEMA_VERSION, **to_jsonable_python(context)}
+    plain = TypeAdapter(dict).dump_python(context, mode="json")
+    body = {"schema_version": PAGE_SCHEMA_VERSION, **plain}
     out = week_dir / "page.json"
     out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
@@ -297,8 +305,7 @@ def _write_page_json(context: dict, week_dir: Path) -> Path:
 
 def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -> Path:
     """Write page.json for a week that a past build saved. It fetches nothing and keeps the page and images."""
-    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
-    week_dir.mkdir(parents=True, exist_ok=True)
+    week_dir = _week_dir(site_dir, bundle)
     context = build_context(bundle, blurbs, _saved_avatars(bundle, week_dir), _saved_headshots(bundle, week_dir))
     return _write_page_json(context, week_dir)
 
@@ -314,8 +321,7 @@ def render_week(
     fetch_bytes: Callable[[str], bytes | None] = _download_bytes,
 ) -> Path:
     """Write the week page and its page.json, and copy the static files. Return the page path."""
-    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
-    week_dir.mkdir(parents=True, exist_ok=True)
+    week_dir = _week_dir(site_dir, bundle)
     avatars = _download_avatars(bundle, week_dir / "avatars", fetch_bytes)
     headshots = _download_headshots(bundle, week_dir / "headshots", fetch_bytes)
     page = week_dir / "index.html"
