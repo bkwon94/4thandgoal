@@ -9846,6 +9846,74 @@
           "Tony Pollard"
         ]
       },
+      "T1.12507.value": {
+        "id": "T1.12507.value",
+        "text": "Omarion Hampton's trade value was 15 in the week of the trade.",
+        "numbers": [
+          "15"
+        ],
+        "teams": [],
+        "players": [
+          "Omarion Hampton"
+        ]
+      },
+      "T1.12533.value": {
+        "id": "T1.12533.value",
+        "text": "Jacory Croskey-Merritt's trade value was 10 in the week of the trade.",
+        "numbers": [
+          "10"
+        ],
+        "teams": [],
+        "players": [
+          "Jacory Croskey-Merritt"
+        ]
+      },
+      "T1.5892.value": {
+        "id": "T1.5892.value",
+        "text": "David Montgomery's trade value was 9.5 in the week of the trade.",
+        "numbers": [
+          "9.5"
+        ],
+        "teams": [],
+        "players": [
+          "David Montgomery"
+        ]
+      },
+      "T1.5967.value": {
+        "id": "T1.5967.value",
+        "text": "Tony Pollard's trade value was 12.5 in the week of the trade.",
+        "numbers": [
+          "12.5"
+        ],
+        "teams": [],
+        "players": [
+          "Tony Pollard"
+        ]
+      },
+      "T1.4.value": {
+        "id": "T1.4.value",
+        "text": "Pukancun on 3 gave 27.5 and got 19.5 in trade value.",
+        "numbers": [
+          "27.5",
+          "19.5"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T1.12.value": {
+        "id": "T1.12.value",
+        "text": "Amon-Ra Dawg Your Team gave 19.5 and got 27.5 in trade value.",
+        "numbers": [
+          "19.5",
+          "27.5"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
       "T1.4.need": {
         "id": "T1.4.need",
         "text": "Pukancun on 3 has 5 RB after the trade and 0 open roster spots.",
@@ -10130,6 +10198,45 @@
           "1"
         ],
         "teams": [],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.10236.value": {
+        "id": "T2.10236.value",
+        "text": "Dalton Kincaid's trade value was 6 in the week of the trade.",
+        "numbers": [
+          "6"
+        ],
+        "teams": [],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "T2.7.value": {
+        "id": "T2.7.value",
+        "text": "To Infinity and Bijan gave 6 and got 0 in trade value, with Kenyon Sadiq unlisted.",
+        "numbers": [
+          "6",
+          "0"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Kenyon Sadiq"
+        ]
+      },
+      "T2.12.value": {
+        "id": "T2.12.value",
+        "text": "Amon-Ra Dawg Your Team gave 0 and got 6 in trade value, with Kenyon Sadiq unlisted.",
+        "numbers": [
+          "0",
+          "6"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
         "players": [
           "Kenyon Sadiq"
         ]
@@ -10610,6 +10717,74 @@
           "Rhamondre Stevenson"
         ]
       },
+      "T3.11635.value": {
+        "id": "T3.11635.value",
+        "text": "Ladd McConkey's trade value was 11 in the week of the trade.",
+        "numbers": [
+          "11"
+        ],
+        "teams": [],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "T3.12481.value": {
+        "id": "T3.12481.value",
+        "text": "Cam Skattebo's trade value was 16.5 in the week of the trade.",
+        "numbers": [
+          "16.5"
+        ],
+        "teams": [],
+        "players": [
+          "Cam Skattebo"
+        ]
+      },
+      "T3.7569.value": {
+        "id": "T3.7569.value",
+        "text": "Nico Collins's trade value was 38 in the week of the trade.",
+        "numbers": [
+          "38"
+        ],
+        "teams": [],
+        "players": [
+          "Nico Collins"
+        ]
+      },
+      "T3.7611.value": {
+        "id": "T3.7611.value",
+        "text": "Rhamondre Stevenson's trade value was 15.5 in the week of the trade.",
+        "numbers": [
+          "15.5"
+        ],
+        "teams": [],
+        "players": [
+          "Rhamondre Stevenson"
+        ]
+      },
+      "T3.4.value": {
+        "id": "T3.4.value",
+        "text": "Pukancun on 3 gave 26.5 and got 54.5 in trade value.",
+        "numbers": [
+          "26.5",
+          "54.5"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "T3.7.value": {
+        "id": "T3.7.value",
+        "text": "To Infinity and Bijan gave 54.5 and got 26.5 in trade value.",
+        "numbers": [
+          "54.5",
+          "26.5"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
       "T3.4.need": {
         "id": "T3.4.need",
         "text": "Pukancun on 3 has 5 RB and 5 WR after the trade and 0 open roster spots.",
@@ -10955,6 +11130,56 @@
           "5"
         ],
         "teams": [],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.4046.value": {
+        "id": "T4.4046.value",
+        "text": "Patrick Mahomes's trade value was 12 in the week of the trade.",
+        "numbers": [
+          "12"
+        ],
+        "teams": [],
+        "players": [
+          "Patrick Mahomes"
+        ]
+      },
+      "T4.4881.value": {
+        "id": "T4.4881.value",
+        "text": "Lamar Jackson's trade value was 18 in the week of the trade.",
+        "numbers": [
+          "18"
+        ],
+        "teams": [],
+        "players": [
+          "Lamar Jackson"
+        ]
+      },
+      "T4.6.value": {
+        "id": "T4.6.value",
+        "text": "Bo Girds gave 12 and got 18 in trade value, with Brian Robinson unlisted.",
+        "numbers": [
+          "12",
+          "18"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T4.7.value": {
+        "id": "T4.7.value",
+        "text": "To Infinity and Bijan gave 18 and got 12 in trade value, with Brian Robinson unlisted.",
+        "numbers": [
+          "18",
+          "12"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
         "players": [
           "Brian Robinson"
         ]
@@ -11358,6 +11583,67 @@
         "teams": [],
         "players": [
           "Garrett Wilson"
+        ]
+      },
+      "T5.11834.value": {
+        "id": "T5.11834.value",
+        "text": "Devaughn Vele's trade value was 9.5 in the week of the trade.",
+        "numbers": [
+          "9.5"
+        ],
+        "teams": [],
+        "players": [
+          "Devaughn Vele"
+        ]
+      },
+      "T5.12490.value": {
+        "id": "T5.12490.value",
+        "text": "Bhayshul Tuten's trade value was 25 in the week of the trade.",
+        "numbers": [
+          "25"
+        ],
+        "teams": [],
+        "players": [
+          "Bhayshul Tuten"
+        ]
+      },
+      "T5.8146.value": {
+        "id": "T5.8146.value",
+        "text": "Garrett Wilson's trade value was 27.5 in the week of the trade.",
+        "numbers": [
+          "27.5"
+        ],
+        "teams": [],
+        "players": [
+          "Garrett Wilson"
+        ]
+      },
+      "T5.11.value": {
+        "id": "T5.11.value",
+        "text": "Unsolicited Dak Picks gave 52.5 and got 9.5 in trade value, with Josh Jacobs unlisted.",
+        "numbers": [
+          "52.5",
+          "9.5"
+        ],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "Josh Jacobs"
+        ]
+      },
+      "T5.12.value": {
+        "id": "T5.12.value",
+        "text": "Amon-Ra Dawg Your Team gave 9.5 and got 52.5 in trade value, with Josh Jacobs unlisted.",
+        "numbers": [
+          "9.5",
+          "52.5"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Josh Jacobs"
         ]
       },
       "T5.11.need": {
@@ -12077,6 +12363,100 @@
         "teams": [],
         "players": [
           "Bijan Robinson"
+        ]
+      },
+      "T6.11576.value": {
+        "id": "T6.11576.value",
+        "text": "Braelon Allen's trade value was 3.5 in the week of the trade.",
+        "numbers": [
+          "3.5"
+        ],
+        "teams": [],
+        "players": [
+          "Braelon Allen"
+        ]
+      },
+      "T6.11628.value": {
+        "id": "T6.11628.value",
+        "text": "Marvin Harrison's trade value was 0.5 in the week of the trade.",
+        "numbers": [
+          "0.5"
+        ],
+        "teams": [],
+        "players": [
+          "Marvin Harrison"
+        ]
+      },
+      "T6.11632.value": {
+        "id": "T6.11632.value",
+        "text": "Malik Nabers's trade value was 30.5 in the week of the trade.",
+        "numbers": [
+          "30.5"
+        ],
+        "teams": [],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "T6.3163.value": {
+        "id": "T6.3163.value",
+        "text": "Jared Goff's trade value was 10 in the week of the trade.",
+        "numbers": [
+          "10"
+        ],
+        "teams": [],
+        "players": [
+          "Jared Goff"
+        ]
+      },
+      "T6.8155.value": {
+        "id": "T6.8155.value",
+        "text": "Breece Hall's trade value was 25.5 in the week of the trade.",
+        "numbers": [
+          "25.5"
+        ],
+        "teams": [],
+        "players": [
+          "Breece Hall"
+        ]
+      },
+      "T6.9509.value": {
+        "id": "T6.9509.value",
+        "text": "Bijan Robinson's trade value was 64.5 in the week of the trade.",
+        "numbers": [
+          "64.5"
+        ],
+        "teams": [],
+        "players": [
+          "Bijan Robinson"
+        ]
+      },
+      "T6.7.value": {
+        "id": "T6.7.value",
+        "text": "To Infinity and Bijan gave 65 and got 69.5 in trade value, with Brian Robinson unlisted.",
+        "numbers": [
+          "65",
+          "69.5"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Brian Robinson"
+        ]
+      },
+      "T6.8.value": {
+        "id": "T6.8.value",
+        "text": "Return of T Mac gave 69.5 and got 65 in trade value, with Brian Robinson unlisted.",
+        "numbers": [
+          "69.5",
+          "65"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Brian Robinson"
         ]
       },
       "D.12501": {
@@ -13909,6 +14289,12 @@
           "T1.5967.usage",
           "T1.5967.targets",
           "T1.5967.redzone",
+          "T1.12507.value",
+          "T1.12533.value",
+          "T1.5892.value",
+          "T1.5967.value",
+          "T1.4.value",
+          "T1.12.value",
           "T1.4.need",
           "T1.4.swing",
           "T1.12.need",
@@ -13976,6 +14362,9 @@
           "T2.13330.targets",
           "T2.13330.redzone",
           "T2.13330.injury",
+          "T2.10236.value",
+          "T2.7.value",
+          "T2.12.value",
           "T2.7.need",
           "T2.7.swing",
           "T2.12.need",
@@ -14057,6 +14446,12 @@
           "T3.7611.targets",
           "T3.7611.redzone",
           "T3.7611.injury",
+          "T3.11635.value",
+          "T3.12481.value",
+          "T3.7569.value",
+          "T3.7611.value",
+          "T3.4.value",
+          "T3.7.value",
           "T3.4.need",
           "T3.4.swing",
           "T3.7.need",
@@ -14129,6 +14524,10 @@
           "T4.8154.usage",
           "T4.8154.targets",
           "T4.8154.redzone",
+          "T4.4046.value",
+          "T4.4881.value",
+          "T4.6.value",
+          "T4.7.value",
           "T4.6.need",
           "T4.6.swing",
           "T4.7.need",
@@ -14205,6 +14604,11 @@
           "T5.8146.usage",
           "T5.8146.targets",
           "T5.8146.redzone",
+          "T5.11834.value",
+          "T5.12490.value",
+          "T5.8146.value",
+          "T5.11.value",
+          "T5.12.value",
           "T5.11.need",
           "T5.11.swing",
           "T5.12.need",
@@ -14300,7 +14704,15 @@
           "T6.8155.injury",
           "T6.9509.usage",
           "T6.9509.targets",
-          "T6.9509.redzone"
+          "T6.9509.redzone",
+          "T6.11576.value",
+          "T6.11628.value",
+          "T6.11632.value",
+          "T6.3163.value",
+          "T6.8155.value",
+          "T6.9509.value",
+          "T6.7.value",
+          "T6.8.value"
         ],
         "scope_teams": [
           "To Infinity and Bijan",

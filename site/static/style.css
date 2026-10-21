@@ -150,9 +150,15 @@ a { color:var(--red); }
 .nx { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 .nx + .nx { margin-top:var(--sp-2); }
 .nx .m { font-weight:800; font-size:var(--fs-body); line-height:var(--lh-body); }
-.nx .m .who { flex-wrap:nowrap; }
+/* One team per row. The name takes the free width and the record stays whole on the right, so a long
+   name never pushes a record or the other team onto a new line. */
+.nx .side { display:flex; align-items:center; gap:var(--sp-2); min-width:0; }
+.nx .side .who { display:flex; flex:1; min-width:0; }
+.nx .side .who > span { min-width:0; }
+.nx .m .rec { font-weight:600; color:var(--muted); white-space:nowrap; flex:none; }
+/* The "vs" lines up under the names, past the avatar column. */
+.nx .vs { font-size:var(--fs-meta); font-weight:600; color:var(--muted); line-height:1; padding-left:calc(28px + var(--sp-2)); margin:var(--sp-1) 0; }
 .nx .tag { margin:var(--sp-2) 0 0; }
-.nx .m .rec { font-weight:600; color:var(--muted); }
 .nx .b { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
 
 .wk { display:block; padding:var(--sp-3) 0; border-bottom:1px solid var(--rule); text-decoration:none; color:inherit; transition:var(--press); }
