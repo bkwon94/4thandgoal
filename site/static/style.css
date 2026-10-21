@@ -126,43 +126,38 @@ a { color:var(--red); }
 .mu .hd .b { justify-content:flex-end; text-align:right; }
 .mu .hd .w { color:var(--red); font-weight:800; }
 /* 44px is the smallest comfortable touch target. The color change on open is instant, so only the press animates. */
-.mu .cta, .trade .cta { display:flex; align-items:center; justify-content:center; gap:var(--sp-2); width:100%; min-height:44px; padding:0 var(--sp-3); margin:0 0 var(--sp-3); border:0; background:var(--gry); color:var(--red); font:inherit; font-size:var(--fs-meta); font-weight:700; letter-spacing:var(--track); text-transform:uppercase; border-radius:var(--r-card); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:var(--press); }
-.mu .cta:active, .trade .cta:active { transform:scale(.97); }
-.mu.open .cta, .trade.open .cta { background:var(--blk); color:var(--on-dark); }
+.mu .cta { display:flex; align-items:center; justify-content:center; gap:var(--sp-2); width:100%; min-height:44px; padding:0 var(--sp-3); margin:0 0 var(--sp-3); border:0; background:var(--gry); color:var(--red); font:inherit; font-size:var(--fs-meta); font-weight:700; letter-spacing:var(--track); text-transform:uppercase; border-radius:var(--r-card); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:var(--press); }
+.mu .cta:active { transform:scale(.97); }
+.mu.open .cta { background:var(--blk); color:var(--on-dark); }
 /* A rotated square sits low in the line, so a small lift centers it on the text. */
-.mu .cta .chev, .trade .cta .chev { display:inline-block; width:6px; height:6px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-2px) rotate(45deg); transition:transform 200ms var(--ease-out); }
-.mu.open .cta .chev, .trade.open .cta .chev { transform:translateY(1px) rotate(-135deg); }
+.mu .cta .chev { display:inline-block; width:6px; height:6px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-2px) rotate(45deg); transition:transform 200ms var(--ease-out); }
+.mu.open .cta .chev { transform:translateY(1px) rotate(-135deg); }
 .close-label { display:none; }
-.mu.open .open-label, .trade.open .open-label { display:none; }
-.mu.open .close-label, .trade.open .close-label { display:inline; }
+.mu.open .open-label { display:none; }
+.mu.open .close-label { display:inline; }
 /* The panel opens and closes instantly, so no height animates. The content fades and settles in on open. Close stays instant, because the exit must be faster than the entry. */
-.mu .body, .trade .body { display:none; }
-.mu.open .body, .trade.open .body { display:block; }
-.mu .inner, .trade .inner { padding:0 0 var(--sp-3); transition:opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+.mu .body { display:none; }
+.mu.open .body { display:block; }
+.mu .inner { padding:0 0 var(--sp-3); transition:opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
 @starting-style {
-  .mu.open .inner, .trade.open .inner { opacity:0; transform:translateY(-4px); }
+  .mu.open .inner { opacity:0; transform:translateY(-4px); }
 }
 .stars { display:flex; gap:var(--sp-2); margin:0 0 var(--sp-2); }
 .stars div { flex:1; background:var(--gry); border-radius:var(--r-card); padding:var(--sp-2) var(--sp-3); }
 .stars b { display:block; font-size:var(--fs-body); line-height:var(--lh-tight); margin-top:var(--sp-0); }
 .stars .k { display:block; color:var(--muted); font-size:var(--fs-label); text-transform:uppercase; letter-spacing:var(--track); line-height:var(--lh-tight); }
 
-/* A card holds one side per row. The grade is a stat-size letter, so it reads before the team name does. */
+/* A card holds one side per row, then the trade recap. */
 .trade { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 .trade + .trade { margin-top:var(--sp-2); }
 .trade .side + .side { margin-top:var(--sp-3); padding-top:var(--sp-3); border-top:1px solid var(--bar-off); }
-.trade .top { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
+.trade .top { display:flex; align-items:center; font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
 .trade .top .who { min-width:0; hyphens:auto; }
-.trade .grade { flex:none; color:var(--red); font-size:var(--fs-score); font-weight:900; line-height:var(--lh-stat); }
-.trade .grade.none { color:var(--muted); font-size:var(--fs-meta); font-weight:600; }
 .trade .got { list-style:none; margin:var(--sp-2) 0 0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
 .trade .got li { display:flex; justify-content:space-between; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
 .trade .got li span { min-width:0; }
-.trade .got b { flex:none; }
-.trade .got .ppg { color:var(--muted); font-size:var(--fs-meta); font-weight:600; }
-/* The card is gray, so the button is white while closed. It uses the recap button rules for the rest. */
-.trade .cta { margin:var(--sp-3) 0 0; background:var(--wht); }
-.trade .inner { padding:var(--sp-3) 0 0; }
+/* The recap is always visible, so it sits under the rows with the same space as a side. */
+.trade > .blurb { margin:var(--sp-3) 0 0; }
 
 .kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp-2); }
 .kpi > div { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3) var(--sp-2); text-align:center; }
@@ -211,18 +206,18 @@ a { color:var(--red); }
 
 /* Touch screens fire hover on tap, so hover styles apply only to a real pointer. */
 @media (hover: hover) and (pointer: fine) {
-  .mu:not(.open) .cta:hover, .trade:not(.open) .cta:hover { background:var(--rule); }
+  .mu:not(.open) .cta:hover { background:var(--rule); }
   .wk:hover b { color:var(--red); }
   a:hover { text-decoration-thickness:2px; }
 }
 
 /* Reduced motion keeps the fade, which helps a reader see the change, and drops all movement. */
 @media (prefers-reduced-motion: reduce) {
-  .mu .cta, .trade .cta, .mu .cta .chev, .trade .cta .chev, .wk, .blurb a { transition:none; }
-  .mu .cta:active, .trade .cta:active, .wk:active, .blurb a:active { transform:none; }
-  .mu .inner, .trade .inner { transition:opacity 200ms var(--ease-out); }
+  .mu .cta, .mu .cta .chev, .wk, .blurb a { transition:none; }
+  .mu .cta:active, .wk:active, .blurb a:active { transform:none; }
+  .mu .inner { transition:opacity 200ms var(--ease-out); }
   @starting-style {
-    .mu.open .inner, .trade.open .inner { transform:none; }
+    .mu.open .inner { transform:none; }
   }
 }
 

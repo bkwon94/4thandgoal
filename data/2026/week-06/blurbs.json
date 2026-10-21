@@ -3,68 +3,73 @@
     "chapter": "motw",
     "sentences": [
       {
-        "text": "behold the lamb, 11th before the week, beat Bo Girds by 5.34, and that is an upset.",
+        "text": "behold the lamb beat Bo Girds by 5.34, an upset of a team that sat 2nd before the week.",
         "fact_ids": [
           "M4.result",
           "M4.upset"
         ]
       },
       {
-        "text": "Recent add Germie Bernard was the Top Scorer for behold the lamb at 12.07 over projection, a lucky waiver pickup, and without him, that is a loss.",
+        "text": "Recent add Germie Bernard, a week 5 waiver claim, was the decider with 20.2, and without him, that is a loss.",
         "fact_ids": [
-          "M4.top.10",
           "M4.move.13274",
+          "M4.driver.13274",
           "M4.swing.13274",
           "M4.result"
         ]
       },
       {
-        "text": "Bo Girds starters dropped 7 passes worth about 17.8, and the drops cost the game.",
+        "text": "Bo Girds's starters dropped 7 passes worth about 17.8, so the drops cost the game.",
         "fact_ids": [
           "M4.dropswing",
           "M4.result"
         ]
       },
       {
-        "text": "Recent add Indianapolis Colts, a margin driver, returned -0.85 for Bo Girds on a free agent add.",
+        "text": "Matthew Golden alone dropped 3 passes worth about 14.2, which is not a golden afternoon.",
         "fact_ids": [
-          "M4.move.IND",
-          "M4.driver.IND"
+          "D.12501",
+          "D.12501.value"
         ]
       },
       {
-        "text": "Bo Girds has now lost 2 straight and sits 3rd.",
+        "text": "Bo Girds also started recent add Indianapolis Colts, a free agent pickup that scored -0.85.",
         "fact_ids": [
-          "H.6.streak",
+          "M4.move.IND"
+        ]
+      },
+      {
+        "text": "behold the lamb is now 6-6 and sitting right at the cut, while Bo Girds has lost 2 straight.",
+        "fact_ids": [
           "M4.records",
-          "M4.result",
-          "M4.upset"
-        ]
-      },
-      {
-        "text": "behold the lamb is 6-6 and 0 games at the cut, which is as close to the playoffs as a lamb gets.",
-        "fact_ids": [
-          "S.8"
+          "S.8",
+          "H.6.streak",
+          "M4.result"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "game_changer": {
     "chapter": "game_changer",
     "sentences": [
       {
-        "text": "Game Changer goes to Germie Bernard, a recent add who scored 20.2 for behold the lamb on a projection of 8.13.",
+        "text": "The Game Changer is Germie Bernard, a recent add who scored 20.2 for behold the lamb.",
         "fact_ids": [
           "AW.game_changer",
-          "M4.move.13274",
-          "M4.starter.10.13274"
+          "M4.move.13274"
         ]
       },
       {
-        "text": "Without Bernard, that is a loss, and he was a decider in a game behold the lamb won by 5.34.",
+        "text": "It was an upset: behold the lamb came in 11th and beat Bo Girds by 5.34.",
+        "fact_ids": [
+          "M4.upset",
+          "M4.result"
+        ]
+      },
+      {
+        "text": "Without Bernard, that is a loss, and at 12.07 over projection he is the margin driver who decided it.",
         "fact_ids": [
           "M4.swing.13274",
           "M4.driver.13274",
@@ -72,78 +77,74 @@
         ]
       },
       {
-        "text": "It was an upset: behold the lamb sat 11th before the week, and Bo Girds sat 2nd.",
+        "text": "Bernard has now beaten projection in 3 of the last 3 weeks, which makes calling the waiver add lucky a little harder each time.",
         "fact_ids": [
-          "M4.upset",
-          "M4.result"
+          "P.13274.trend",
+          "M4.move.13274"
         ]
       },
       {
-        "text": "Call the week 5 waiver claim lucky, though he has now beaten projection in 3 of the last 3 weeks.",
+        "text": "Bo Girds also dropped 7 passes worth about 17.8, so the lamb had help from the other sideline.",
         "fact_ids": [
-          "M4.move.13274",
-          "P.13274.trend"
-        ]
-      },
-      {
-        "text": "Bo Girds also had its starters drop 7 passes worth about 17.8, and the drops cost the game.",
-        "fact_ids": [
-          "M4.dropswing",
-          "M4.result"
+          "M4.dropswing"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "awards": {
     "chapter": "awards",
     "sentences": [
       {
-        "text": "Game Changer goes to Germie Bernard, a recent add for behold the lamb who scored 20.2 on a 8.13 projection.",
+        "text": "Recent add Germie Bernard was the Game Changer for behold the lamb, a lucky waiver pickup who scored 20.2 in a 5.34-point win.",
         "fact_ids": [
           "AW.game_changer",
-          "W.adds"
+          "W.adds",
+          "M4.result"
         ]
       },
       {
-        "text": "Top Scorer Trevor Lawrence put up 28.34 for Amon-Ra Dawg Your Team, which still lost by 9.51.",
+        "text": "Trevor Lawrence was Top Scorer with 28.34 for Amon-Ra Dawg Your Team, which lost anyway.",
         "fact_ids": [
           "AW.top_scorer",
           "M3.result"
         ]
       },
       {
-        "text": "London Cooking left the MVB on the bench, Jayden Daniels with 21, and won anyway.",
+        "text": "Tre Tucker was the Overachiever at 16.62 over projection for All You Need Is Love, and Jayden Daniels was MVB with 21 points that London Cooking left on the bench.",
         "fact_ids": [
-          "AW.mvb",
-          "M5.result"
+          "AW.overachiever",
+          "AW.mvb"
         ]
       },
       {
-        "text": "The Underperformer is Bijan Robinson, who gave To Infinity and Bijan 6.3 points, 16.78 under projection.",
+        "text": "The Underperformer was Bijan Robinson at 6.3, which makes To Infinity and Bijan less a team name than a warning label.",
         "fact_ids": [
           "AW.underperformer"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "position_leaders": {
     "chapter": "position_leaders",
     "sentences": [
       {
-        "text": "Maye d'force B with U got its namesake into the QB position leaders at 23.8, and Isaiah Likely topped every started TE at 20.9.",
+        "text": "Maye d'force B with U got 23.8 from Drake Maye, 3rd among started QBs, so the team name at least checks out.",
         "fact_ids": [
-          "LEAD.QB.3",
+          "LEAD.QB.3"
+        ]
+      },
+      {
+        "text": "The same roster also had the top started TE, with Isaiah Likely at 20.9.",
+        "fact_ids": [
           "LEAD.TE.1"
         ]
       },
       {
-        "text": "Bo Girds owns the RB position leader in Kenneth Walker at 26.9, plus Tyler Shough sitting right behind Trevor Lawrence among QBs.",
+        "text": "Bo Girds put Kenneth Walker atop the started RBs at 26.9, with Tyler Shough finishing right behind Trevor Lawrence among QBs.",
         "fact_ids": [
           "LEAD.RB.1",
           "LEAD.QB.2",
@@ -151,43 +152,35 @@
         ]
       },
       {
-        "text": "London Cooking got James Cook in at 3rd among RBs, which is the minimum a team named London Cooking can ask of a Cook.",
+        "text": "London Cooking got 22.8 from James Cook, which the team name more or less promised.",
         "fact_ids": [
           "LEAD.RB.3"
         ]
-      },
-      {
-        "text": "Tre Tucker led all started WRs at 24.2 for All You Need Is Love, which, it turns out, also needed Tre Tucker.",
-        "fact_ids": [
-          "LEAD.WR.1"
-        ]
       }
     ],
-    "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "attempt": 2,
+    "fallback": false
   },
   "recap_1": {
     "chapter": "recap_1",
     "sentences": [
       {
-        "text": "Lil Fridge won by 38.48, which is more than both Brocks on Brock ‘N’ Roll scored put together.",
+        "text": "Lil Fridge beat Brock ‘N’ Roll by 38.48, and recent add Dallas Goedert's 9.1 for Brock ‘N’ Roll was a polite gesture toward that gap.",
         "fact_ids": [
           "M1.result",
-          "M1.starter.1.8183",
-          "M1.starter.1.11604"
-        ]
-      },
-      {
-        "text": "Recent add Denver Broncos put up 13.35 for Lil Fridge, while Brock ‘N’ Roll's recent adds, Tampa Bay Buccaneers and Dallas Goedert, each finished below that.",
-        "fact_ids": [
-          "M1.move.DEN",
-          "M1.move.TB",
           "M1.move.5022"
         ]
       },
       {
-        "text": "Brock ‘N’ Roll, 6-6 and sitting right on the cut, now has Davante Adams and Mike Evans listed Out, while Lil Fridge's Romeo Doubs is now listed IR.",
+        "text": "Recent add Denver Broncos gave Lil Fridge 13.35, while Brock ‘N’ Roll's recent add Tampa Bay Buccaneers answered with 9.65, which is how waiver shopping goes against the 1st-place team.",
+        "fact_ids": [
+          "M1.move.DEN",
+          "M1.move.TB",
+          "S.1"
+        ]
+      },
+      {
+        "text": "Brock ‘N’ Roll, now 6-6 and sitting exactly at the cut, has Davante Adams and Mike Evans now listed Out, while Lil Fridge has Romeo Doubs now listed IR.",
         "fact_ids": [
           "S.6",
           "M1.inj.2133",
@@ -197,495 +190,333 @@
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "recap_2": {
     "chapter": "recap_2",
     "sentences": [
       {
-        "text": "In an upset, Return of T Mac beat Unsolicited Dak Picks by 38.82, with recent add Carnell Tate chipping in 16.",
+        "text": "Return of T Mac pulled the upset from 9th place, beating Unsolicited Dak Picks by 38.82.",
         "fact_ids": [
           "M2.result",
-          "M2.upset",
-          "M2.move.13279"
+          "M2.upset"
         ]
       },
       {
-        "text": "Unsolicited Dak Picks got 13.02 from Dak himself, a fitting contribution to a season low of 81.47.",
+        "text": "Recent add Carnell Tate scored 16 for the winners, while Juwan Johnson gave Unsolicited Dak Picks a flat 0, which was at least unsolicited.",
         "fact_ids": [
-          "M2.starter.11.3294",
-          "H.11.high"
+          "M2.move.13279",
+          "M2.starter.11.7002",
+          "M2.result"
         ]
       },
       {
-        "text": "A.J. Brown put up 3.2 and is now listed Questionable, while Unsolicited Dak Picks sit 2 games below the cut.",
+        "text": "A.J. Brown is now listed Questionable, and Unsolicited Dak Picks sits 4-8, 2 games below the cut, with a season low to show for the week.",
         "fact_ids": [
-          "M2.starter.11.5859",
           "M2.inj.5859",
-          "S.10"
+          "S.10",
+          "H.11.high"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "recap_3": {
     "chapter": "recap_3",
     "sentences": [
       {
-        "text": "Maye d'force B with U beat Amon-Ra Dawg Your Team by 9.51, and Isaiah Likely was a decider at 9.84 over projection.",
+        "text": "Maye d'force B with U beat Amon-Ra Dawg Your Team by 9.51, and the decider on the winning side was Isaiah Likely, a tight end who put up 20.9.",
         "fact_ids": [
           "M3.result",
           "M3.driver.8131"
         ]
       },
       {
-        "text": "The week 6 trade shopping spree brought Amon-Ra Dawg Your Team recent add Garrett Wilson, who scored 6.4, and recent add Dalton Kincaid, who is now listed Questionable.",
+        "text": "The trade haul of Amon-Ra Dawg Your Team came back mixed: recent add Bhayshul Tuten scored 22.7, and recent add Garrett Wilson scored 6.4, which is the other half of the mix.",
         "fact_ids": [
-          "M3.move.8146",
-          "M3.move.10236",
-          "M3.inj.10236"
+          "M3.move.12490",
+          "M3.move.8146"
         ]
       },
       {
-        "text": "Amon-Ra Dawg Your Team is 4-8 and 2 games below the cut, while across the field Jaylen Waddle is now listed Questionable.",
+        "text": "Recent add Dalton Kincaid and Jaylen Waddle are both now listed Questionable, and Amon-Ra Dawg Your Team sits at 4-8, 2 games below the cut, which needs no commentary.",
         "fact_ids": [
-          "S.9",
-          "M3.inj.7526"
+          "M3.inj.10236",
+          "M3.inj.7526",
+          "M3.move.10236",
+          "S.9"
         ]
       }
     ],
-    "attempt": 2,
-    "fallback": false,
-    "grades": {}
+    "attempt": 1,
+    "fallback": false
   },
   "recap_4": {
     "chapter": "recap_4",
     "sentences": [
       {
-        "text": "behold the lamb was 11th before this week and still beat a Bo Girds team sitting 2nd, an upset nobody in the top half asked for.",
+        "text": "behold the lamb was 11th before this week and beat Bo Girds anyway, an upset by 5.34.",
         "fact_ids": [
           "M4.result",
           "M4.upset"
         ]
       },
       {
-        "text": "The lucky part was recent add Germie Bernard, a waiver pickup who decided it with 20.2.",
+        "text": "Recent add Germie Bernard scored 20.2 off waivers, and without him, that is a loss.",
         "fact_ids": [
           "M4.move.13274",
-          "M4.driver.13274",
+          "M4.swing.13274",
           "M4.result"
         ]
       },
       {
-        "text": "Bo Girds's starters dropped passes worth about 17.8, enough that the drops cost the game, and recent add Indianapolis Colts contributed -0.85 for good measure.",
+        "text": "Bo Girds's starters dropped passes worth about 17.8, so the drops cost the game, and the losing streak is now 2.",
         "fact_ids": [
           "M4.dropswing",
-          "M4.move.IND",
-          "M4.result"
+          "M4.result",
+          "H.6.streak"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "recap_5": {
     "chapter": "recap_5",
     "sentences": [
       {
-        "text": "To Infinity and Bijan lost to London Cooking by 66.4, and Bijan scored 6.3, which is one way to honor the team name.",
+        "text": "London Cooking beat To Infinity and Bijan by 66.4, and the 46.08 was a season low for the losers.",
         "fact_ids": [
           "M5.result",
+          "H.7.high"
+        ]
+      },
+      {
+        "text": "Bijan Robinson scored 6.3 for a team named after him, 16.78 under projection.",
+        "fact_ids": [
           "M5.starter.7.9509"
         ]
       },
       {
-        "text": "The manager traded for recent adds Patrick Mahomes, Rhamondre Stevenson, Harold Fannin and Terry McLaurin, picked up the Carolina Panthers for good measure, and the Top Scorer of the whole operation was Mahomes at 11.48.",
-        "fact_ids": [
-          "M5.move.4046",
-          "M5.move.7611",
-          "M5.move.12506",
-          "M5.move.5927",
-          "M5.move.CAR",
-          "M5.top.7"
-        ]
-      },
-      {
-        "text": "Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, next to McLaurin, now listed Out with a knee, so the trades are going great.",
+        "text": "The trade shopping went about as well: recent add Ladd McConkey scored 2.2 and is now listed Out (Concussion), and recent add Terry McLaurin scored 3.2 and is now listed Out (Knee).",
         "fact_ids": [
           "M5.move.11635",
           "M5.inj.11635",
+          "M5.move.5927",
           "M5.inj.5927"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "recap_6": {
     "chapter": "recap_6",
     "sentences": [
       {
-        "text": "Tre Tucker decided this one, clearing his projection by 16.62 in a game All You Need Is Love won by 12.95; without Tre Tucker, that is a loss.",
+        "text": "All You Need Is Love beat Pukancun on 3 by 12.95, and Tre Tucker decided it with 24.2.",
         "fact_ids": [
-          "M6.driver.10213",
+          "M6.result",
+          "M6.driver.10213"
+        ]
+      },
+      {
+        "text": "Without Tucker, that is a loss.",
+        "fact_ids": [
           "M6.swing.10213",
           "M6.result"
         ]
       },
       {
-        "text": "Pukancun on 3 traded for recent add Cam Skattebo and got 0 from him, which tracks for a 1-11 team.",
+        "text": "Pukancun on 3 traded for recent add Cam Skattebo and got 0 points from him, which fits a team now sitting at 1-11.",
         "fact_ids": [
           "M6.move.12481",
           "M6.records"
         ]
-      },
-      {
-        "text": "Puka Nacua finished 8.36 under projection for Pukancun on 3, so the team name is now more of a wish.",
-        "fact_ids": [
-          "M6.starter.4.9493"
-        ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "trade_1": {
     "chapter": "trade_1",
     "sentences": [
       {
-        "text": "Pukancun on 3 was 1-9 before the trade, so a move earns some credit, just not this move.",
-        "fact_ids": [
-          "T1.4.team"
-        ]
-      },
-      {
-        "text": "It gave Omarion Hampton, who had the highest points per game in the deal at 9.4, plus Tony Pollard and his flat 50 percent snap share.",
+        "text": "Pukancun on 3 moved first, sending Omarion Hampton and Tony Pollard to Amon-Ra Dawg Your Team for Jacory Croskey-Merritt and David Montgomery, then parked both new arrivals on the bench to score 0.",
         "fact_ids": [
           "T1.sides",
-          "T1.4.gave.12507",
-          "T1.4.gave.5967",
-          "T1.5967.usage"
-        ]
-      },
-      {
-        "text": "Back came David Montgomery, whose target share fell to 0 percent, and Jacory Croskey-Merritt, whose snap share fell to 40 percent.",
-        "fact_ids": [
-          "T1.sides",
-          "T1.5892.targets",
-          "T1.12533.usage"
-        ]
-      },
-      {
-        "text": "Amon-Ra Dawg Your Team, at 4-6, collected that top points-per-game back and a Pollard with 17 red-zone carries, which is a fair B for a middling team.",
-        "fact_ids": [
-          "T1.12.team",
-          "T1.12.got.12507",
-          "T1.5967.redzone"
-        ]
-      },
-      {
-        "text": "This week Pukancun on 3 left both new backs on the bench, and the pair it gave away outscored them by 13.5, above the margin in its matchup.",
-        "fact_ids": [
-          "T1.4.swing",
           "T1.4.impact.12533",
           "T1.4.impact.5892"
         ]
+      },
+      {
+        "text": "Hampton and Pollard started for Amon-Ra Dawg Your Team and put up 13.5, not enough to change its result, though still 13.5 more than the other side got from the deal.",
+        "fact_ids": [
+          "T1.12.swing",
+          "T1.12.impact.12507",
+          "T1.12.impact.5967"
+        ]
+      },
+      {
+        "text": "That gap clears the 12.95 margin in the other matchup, so the trade cost Pukancun on 3 the game, which is an efficient way to lose twice in one transaction.",
+        "fact_ids": [
+          "T1.4.swing"
+        ]
       }
     ],
-    "attempt": 2,
-    "fallback": false,
-    "grades": {
-      "T1.4": "D",
-      "T1.12": "B"
-    }
+    "attempt": 1,
+    "fallback": false
   },
   "trade_2": {
     "chapter": "trade_2",
     "sentences": [
       {
-        "text": "To Infinity and Bijan sat at 4-6 and 10th before the trade, and chose that moment to send away the higher-ranked tight end.",
+        "text": "To Infinity and Bijan sent Dalton Kincaid to Amon-Ra Dawg Your Team for Kenyon Sadiq.",
         "fact_ids": [
-          "T2.7.team",
-          "T2.sides",
-          "T2.7.gave.10236"
+          "T2.sides"
         ]
       },
       {
-        "text": "Kenyon Sadiq arrived at 6.4 points per game with his snap share down to 34 percent, which earns To Infinity and Bijan a D.",
+        "text": "Sadiq scored 1.7 on the bench for To Infinity and Bijan, while Kincaid put up 7.3 for his new team, which is the kind of exchange rate nobody brags about.",
         "fact_ids": [
-          "T2.7.got.13330",
-          "T2.13330.usage"
+          "T2.7.impact.13330",
+          "T2.12.impact.10236"
         ]
       },
       {
-        "text": "Amon-Ra Dawg Your Team earns a B for Dalton Kincaid, who held a position rank by season points of 12, even with his target share down to 8 percent.",
+        "text": "In To Infinity and Bijan's matchup, that 7.3 gap sat against a 66.4 margin, so the trade changed nothing, which is the nicest thing anyone can say about it.",
         "fact_ids": [
-          "T2.12.got.10236",
-          "T2.10236.targets"
-        ]
-      },
-      {
-        "text": "Kincaid had also missed projection in each of the last 3 weeks, so the B comes with an asterisk.",
-        "fact_ids": [
-          "T2.12.got.10236"
-        ]
-      },
-      {
-        "text": "This week Kincaid scored 7.3 for Amon-Ra Dawg Your Team, while Sadiq scored 1.7 on the bench for To Infinity and Bijan.",
-        "fact_ids": [
-          "T2.12.impact.10236",
-          "T2.7.impact.13330"
+          "T2.7.swing"
         ]
       }
     ],
-    "attempt": 2,
-    "fallback": false,
-    "grades": {
-      "T2.7": "D",
-      "T2.12": "B"
-    }
+    "attempt": 1,
+    "fallback": false
   },
   "trade_3": {
     "chapter": "trade_3",
     "sentences": [
       {
-        "text": "Pukancun on 3 was 1-9 and last before the trade, so landing Nico Collins at 17.7 points per game is the rare good move out of the basement.",
+        "text": "Pukancun on 3 sent Ladd McConkey and Rhamondre Stevenson to To Infinity and Bijan for Cam Skattebo and Nico Collins.",
         "fact_ids": [
-          "T3.4.team",
-          "T3.4.got.7569"
+          "T3.sides"
         ]
       },
       {
-        "text": "Swapping Rhamondre Stevenson for Cam Skattebo gives a little back at running back, as Skattebo had missed projection in 3 of the last 3 weeks.",
+        "text": "Pukancun on 3 got 9.4 from Nico Collins and 0 from Cam Skattebo, which is half a trade.",
         "fact_ids": [
-          "T3.4.gave.7611",
-          "T3.4.got.12481"
-        ]
-      },
-      {
-        "text": "To Infinity and Bijan, sitting at 4-6, handed over Nico Collins for Ladd McConkey, whose target share had fallen to 11 percent.",
-        "fact_ids": [
-          "T3.7.team",
-          "T3.7.gave.7569",
-          "T3.11635.targets"
-        ]
-      },
-      {
-        "text": "Rhamondre Stevenson, 18th among running backs by season points and trending up, is the consolation prize, which is not the same thing as a plan.",
-        "fact_ids": [
-          "T3.7.got.7611",
-          "T3.7611.usage"
-        ]
-      },
-      {
-        "text": "In the week of the trade, Ladd McConkey scored 2.2 for To Infinity and Bijan and Cam Skattebo scored 0 for Pukancun on 3, a first week that flattered no one.",
-        "fact_ids": [
-          "T3.7.impact.11635",
+          "T3.4.impact.7569",
           "T3.4.impact.12481"
+        ]
+      },
+      {
+        "text": "To Infinity and Bijan started its new pair for 5.8 combined, a 3.6-point gap that changed neither result.",
+        "fact_ids": [
+          "T3.7.swing",
+          "T3.4.swing"
         ]
       }
     ],
-    "attempt": 1,
-    "fallback": false,
-    "grades": {
-      "T3.4": "A",
-      "T3.7": "D"
-    }
+    "attempt": 2,
+    "fallback": false
   },
   "trade_4": {
     "chapter": "trade_4",
     "sentences": [
       {
-        "text": "Bo Girds, 7-3 before the trade, sent Patrick Mahomes and Brian Robinson to To Infinity and Bijan for Lamar Jackson.",
+        "text": "Bo Girds sent Patrick Mahomes and Brian Robinson to To Infinity and Bijan for Lamar Jackson, who promptly scored 0 on the Bo Girds bench.",
         "fact_ids": [
           "T4.sides",
-          "T4.6.team"
+          "T4.6.impact.4881"
         ]
       },
       {
-        "text": "It is a contender's upside bet on a quarterback listed Out in week 5, with 4 RB still on hand to absorb losing Robinson, and it lands the more valuable piece, so a B.",
-        "fact_ids": [
-          "T4.4881.injury",
-          "T4.6.need",
-          "T4.6.value",
-          "T4.6.got.4881"
-        ]
-      },
-      {
-        "text": "To Infinity and Bijan, 10th before the trade, got the quarterback with more points per game in Mahomes at 21.4, but it gave up the more valuable piece, so a C.",
-        "fact_ids": [
-          "T4.7.team",
-          "T4.7.got.4046",
-          "T4.7.value"
-        ]
-      },
-      {
-        "text": "The sweetener, Robinson, arrives with a 31 percent snap share, which is depth in the most technical sense.",
-        "fact_ids": [
-          "T4.8154.usage",
-          "T4.7.got.8154"
-        ]
-      },
-      {
-        "text": "This week the trade decided Bo Girds' matchup: Jackson sat on the bench for 0 while Mahomes put up 11.48 for the other side.",
+        "text": "Mahomes started for To Infinity and Bijan and scored 11.48, a gap above the 5.34 margin in the Bo Girds matchup, so the trade decided it.",
         "fact_ids": [
           "T4.6.swing",
-          "T4.6.impact.4881",
           "T4.7.impact.4046"
+        ]
+      },
+      {
+        "text": "For To Infinity and Bijan, the same gap changed nothing against a margin of 66.4, which is a lot of margin for one quarterback to matter.",
+        "fact_ids": [
+          "T4.7.swing"
         ]
       }
     ],
-    "attempt": 1,
-    "fallback": false,
-    "grades": {
-      "T4.6": "B",
-      "T4.7": "C"
-    }
+    "attempt": 2,
+    "fallback": false
   },
   "trade_5": {
     "chapter": "trade_5",
     "sentences": [
       {
-        "text": "Unsolicited Dak Picks, 4-6 and 7th, sent Garrett Wilson and Bhayshul Tuten to Amon-Ra Dawg Your Team for Devaughn Vele and a Josh Jacobs with no scored game before the trade.",
+        "text": "Unsolicited Dak Picks sent Bhayshul Tuten and Garrett Wilson to Amon-Ra Dawg Your Team for Devaughn Vele and Josh Jacobs.",
         "fact_ids": [
-          "T5.sides",
-          "T5.11.team",
-          "T5.11.got.5850"
+          "T5.sides"
         ]
       },
       {
-        "text": "Wilson arrived at position rank 7 by season points with a target share up to 34 percent, which is a lot to hand over for Vele.",
-        "fact_ids": [
-          "T5.11.gave.8146",
-          "T5.8146.targets",
-          "T5.11.got.11834"
-        ]
-      },
-      {
-        "text": "Tuten also leaves with a rising snap share and 12 red-zone carries, and the return is a bet on Jacobs from a roster already holding 6 RB.",
-        "fact_ids": [
-          "T5.12490.usage",
-          "T5.12490.redzone",
-          "T5.11.got.5850",
-          "T5.11.need"
-        ]
-      },
-      {
-        "text": "Amon-Ra Dawg Your Team, 4-6 and 8th, gets the top half of this deal by turning Vele and a Jacobs with no scored game into Wilson and Tuten.",
-        "fact_ids": [
-          "T5.12.team",
-          "T5.12.gave.11834",
-          "T5.12.gave.5850",
-          "T5.12.got.8146",
-          "T5.12.got.12490"
-        ]
-      },
-      {
-        "text": "This week Tuten scored 22.7 for Amon-Ra Dawg Your Team, while Jacobs scored 0 on the bench for Unsolicited Dak Picks.",
+        "text": "Tuten scored 22.7 in his new colors, while Josh Jacobs scored 0 on the Unsolicited Dak Picks bench.",
         "fact_ids": [
           "T5.12.impact.12490",
           "T5.11.impact.5850"
         ]
-      }
-    ],
-    "attempt": 1,
-    "fallback": false,
-    "grades": {
-      "T5.11": "D",
-      "T5.12": "A"
-    }
-  },
-  "trade_6": {
-    "chapter": "trade_6",
-    "sentences": [
-      {
-        "text": "To Infinity and Bijan traded away Bijan Robinson, which leaves the team name doing a lot of unsupported work.",
-        "fact_ids": [
-          "T6.sides"
-        ]
       },
       {
-        "text": "Sitting 10th, To Infinity and Bijan earns credit for making a move, and Malik Nabers arrives with a target share of 33 percent and rising.",
+        "text": "Devaughn Vele added 5.7, also from the bench, which is where Unsolicited Dak Picks parked everything it got in the deal.",
         "fact_ids": [
-          "T6.7.team",
-          "T6.11632.targets"
-        ]
-      },
-      {
-        "text": "Jared Goff adds a quarterback at position rank 3, while Breece Hall brings upside and an injury history that includes an Out in week 5, so To Infinity and Bijan gets a B.",
-        "fact_ids": [
-          "T6.7.got.3163",
-          "T6.7.got.8155",
-          "T6.8155.injury"
-        ]
-      },
-      {
-        "text": "Return of T Mac consolidated into Bijan Robinson, position rank 2 with 20 red-zone carries, which earns a B even with Marvin Harrison's flat target share stapled to the package.",
-        "fact_ids": [
-          "T6.8.got.9509",
-          "T6.9509.redzone",
-          "T6.11628.targets"
-        ]
-      },
-      {
-        "text": "As for the payoff, Jared Goff scored 0 this week on the bench for To Infinity and Bijan, which is one way to protect an asset.",
-        "fact_ids": [
-          "T6.7.impact.3163"
+          "T5.11.impact.11834",
+          "T5.11.swing"
         ]
       }
     ],
     "attempt": 2,
-    "fallback": false,
-    "grades": {
-      "T6.7": "B",
-      "T6.8": "B"
-    }
+    "fallback": false
   },
   "median": {
     "chapter": "median",
     "sentences": [
       {
-        "text": "To Infinity and Bijan posted 46.08, a season low, and finished 60.75 under the median.",
+        "text": "The league median landed at 106.83, and Lil Fridge cleared it by 19.97, as a first-place team tends to.",
+        "fact_ids": [
+          "MED.value",
+          "MED.above.3",
+          "S.1"
+        ]
+      },
+      {
+        "text": "To Infinity and Bijan put up a season low of 46.08 and missed the median by 60.75, which is less a miss than a different sport.",
         "fact_ids": [
           "MED.below.7",
           "H.7.high"
         ]
       },
       {
-        "text": "At 4-8 and 11th, this was not the week to find a new floor.",
+        "text": "Bo Girds and Amon-Ra Dawg Your Team landed on opposite sides of the line by the same 2.79, so close and yet so 4-8.",
         "fact_ids": [
-          "S.11"
+          "MED.closest",
+          "S.9"
         ]
       },
       {
-        "text": "Unsolicited Dak Picks also set a season low at 81.47, so the picks remain unsolicited and the points remain absent.",
+        "text": "Unsolicited Dak Picks also found a season low at 81.47, an odd week to bottom out for a team 2 games below the cut.",
         "fact_ids": [
+          "MED.below.11",
           "H.11.high",
-          "MED.below.11"
-        ]
-      },
-      {
-        "text": "Bo Girds got over the median by 2.79, the same gap Amon-Ra Dawg Your Team came up short by.",
-        "fact_ids": [
-          "MED.closest"
+          "S.10"
         ]
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   },
   "next_week": {
     "chapter": "next_week",
     "sentences": [
       {
-        "text": "Must Watch is Lil Fridge at 10-2 against Return of T Mac, which has won 3 straight and now draws the toughest next opponent win rate in the league.",
+        "text": "The Must Watch has Lil Fridge at 10-2 against Return of T Mac, who have won 3 straight and now draw the toughest next opponent win rate in the league.",
         "fact_ids": [
           "NX.3v8",
           "H.8.streak",
@@ -693,7 +524,7 @@
         ]
       },
       {
-        "text": "Below the cut, Pukancun on 3 at 1-11 meets To Infinity and Bijan at 4-8, a showdown of the awful in which To Infinity and Bijan gets the softest next opponent win rate in the league.",
+        "text": "Below the cut, Pukancun on 3 at 1-11 meets To Infinity and Bijan at 4-8 in a showdown of the awful, and To Infinity and Bijan have the softest next opponent win rate in the league.",
         "fact_ids": [
           "NX.4v7",
           "S.12",
@@ -703,7 +534,6 @@
       }
     ],
     "attempt": 1,
-    "fallback": false,
-    "grades": {}
+    "fallback": false
   }
 }
