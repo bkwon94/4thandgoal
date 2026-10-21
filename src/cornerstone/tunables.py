@@ -53,9 +53,9 @@ RETURN_WINDOW_WEEKS = 2
 # Set this number by hand. The commissioner tunes it.
 SCHEDULE_RANK_GAP = 4
 
-# The final letter is the start letter moved by the sum of the adjuster steps.
-# The sum clamps to this many steps either way, so the adjusters never outweigh the trade value by much.
-CLAMP_STEPS = 2
+# The chart ratio picks the start letter. The sum of the adjuster steps clamps to this many steps either way,
+# so a side that starts at C never ends at A or F, and the chart weighs more than the adjusters.
+CLAMP_STEPS = 1
 
 # The verdict for the side that asked reads its final letter.
 # The lowest final letter that accepts outright.

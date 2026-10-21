@@ -56,17 +56,21 @@ class FakeClaude:
         return AnalysisOut.model_validate(self.responses[len(self.calls) - 1](_facts(user)))
 
 
-def _side(roster_id, letter="C", reason=None, analysis=None, cited=None):
+# The code's final letters for the Jacobs trade: roster 11 grades B and roster 12 grades D.
+JACOBS_CODE_LETTERS = {11: "B", 12: "D"}
+
+
+def _side(roster_id, letter=None, reason=None, analysis=None, cited=None):
     return {
-        "roster_id": roster_id, "final_letter": letter, "reason": reason,
+        "roster_id": roster_id, "final_letter": letter or JACOBS_CODE_LETTERS[roster_id], "reason": reason,
         "analysis": analysis or ("Garrett Wilson scored 14.2 points per game before the trade. "
                                  "His target share went up. The trade moves him to a new roster."),
         "cited": cited or [f"{WILSON}.ppg", f"{WILSON}.targets"],
     }
 
 
-def _response(eleven=None, twelve=None, choice="accept"):
-    """A response that passes every check, with the given changes. Both code letters are C, and the code accepts."""
+def _response(eleven=None, twelve=None, choice="decline"):
+    """A response that passes every check, with the given changes. It keeps the code letters, and the code declines."""
     return lambda facts: {
         "sides": [eleven or _side(11), twelve or _side(12)],
         "verdict": {"choice": choice, "reason": "The trade is fair for both sides."},
@@ -91,8 +95,8 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
         f"{pid}.value" for pid in (TUTEN, WILSON, JACOBS, VELE))
     # The call reads the rubric, the breakdown of both sides, and the code's default verdict.
     assert "# Rubric" in system and "# Analysis rules" in system
-    assert user.count("Final letter: C") == 2 and "Roster fit: one step down." in user
-    assert "Code's default verdict for Amon-Ra Dawg Your Team: accept." in user
+    assert "Final letter: B" in user and "Final letter: D" in user and "Roster fit: one step down." in user
+    assert "Code's default verdict for Amon-Ra Dawg Your Team: decline." in user
 
 
 def test_a_good_response_passes_through(trade, snap):
@@ -100,41 +104,41 @@ def test_a_good_response_passes_through(trade, snap):
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 1
     assert not result.fallback
-    assert [s.final_letter for s in result.sides] == ["C", "C"]
+    assert [s.final_letter for s in result.sides] == ["B", "D"]
     assert result.sides[0].analysis.startswith("Garrett Wilson scored 14.2 points per game")
     assert result.sides[0].cited == [f"{WILSON}.ppg", f"{WILSON}.targets"]
-    assert result.verdict.choice == "accept" and result.verdict.reason == "The trade is fair for both sides."
+    assert result.verdict.choice == "decline" and result.verdict.reason == "The trade is fair for both sides."
     assert not result.verdict_differs
-    assert [b.final_letter for b in result.breakdowns] == ["C", "C"]
-    assert result.code_verdict.choice == "accept"
+    assert [b.final_letter for b in result.breakdowns] == ["B", "D"]
+    assert result.code_verdict.choice == "decline"
 
 
 def test_a_letter_one_step_off_passes_with_its_reason(trade, snap):
-    eleven = _side(11, letter="D", reason="Jacobs has no scored game before the trade.")
+    eleven = _side(11, letter="C", reason="Jacobs has no scored game before the trade.")
     result = analyze(trade, snap, call=FakeClaude(_response(eleven=eleven)))
     assert not result.fallback
-    assert result.sides[0].final_letter == "D"
+    assert result.sides[0].final_letter == "C"
     assert result.sides[0].reason == "Jacobs has no scored game before the trade."
     # The side whose letter stays at the code's letter has no reason.
-    assert result.sides[1].final_letter == "C" and result.sides[1].reason is None
+    assert result.sides[1].final_letter == "D" and result.sides[1].reason is None
 
 
 def test_a_letter_two_steps_off_retries_then_falls_back_to_the_code(trade, snap):
-    far = _response(eleven=_side(11, letter="A", reason="Wilson is a strong receiver."))
+    far = _response(eleven=_side(11, letter="D", reason="Wilson is a strong receiver."))
     fake = FakeClaude(far, far)
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 2
     # The retry tells Claude what failed.
     assert "Feedback from the last attempt:" in fake.calls[1][1]
-    assert "final letter A is 2 steps from the code's C" in fake.calls[1][1]
+    assert "final letter D is 2 steps from the code's B" in fake.calls[1][1]
     assert result.fallback
-    assert [s.final_letter for s in result.sides] == ["C", "C"]
+    assert [s.final_letter for s in result.sides] == ["B", "D"]
     assert [s.analysis for s in result.sides] == ["Analysis unavailable", "Analysis unavailable"]
     assert result.verdict == result.code_verdict and not result.verdict_differs
 
 
 def test_a_retry_that_passes_stands(trade, snap):
-    far = _response(eleven=_side(11, letter="A", reason="Wilson is a strong receiver."))
+    far = _response(eleven=_side(11, letter="D", reason="Wilson is a strong receiver."))
     fake = FakeClaude(far, _response())
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 2 and not result.fallback
@@ -251,14 +255,14 @@ def test_a_cited_id_not_in_the_facts_fails(trade, snap):
 
 
 def test_a_letter_that_differs_with_no_reason_fails(trade, snap):
-    bad = _response(twelve=_side(12, letter="B"))
+    bad = _response(twelve=_side(12, letter="C"))
     assert analyze(trade, snap, call=FakeClaude(bad, bad)).fallback
 
 
 def test_the_verdict_flag_is_set_when_it_differs_from_the_code(trade, snap):
     result = analyze(trade, snap, call=FakeClaude(_response(choice="counter")))
     assert not result.fallback
-    assert result.verdict.choice == "counter" and result.code_verdict.choice == "accept"
+    assert result.verdict.choice == "counter" and result.code_verdict.choice == "decline"
     assert result.verdict_differs
 
 
