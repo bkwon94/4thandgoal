@@ -1,6 +1,7 @@
 """
 Builds the snapshot of the league as it is now, for the trade analyzer.
 It fetches Sleeper at request time, refreshes the slow sources that are a day old, and writes no weekly raw file.
+On the Tuesday after the cutoff, it saves the week before the trade week into the history.
 """
 import logging
 from collections.abc import Callable, Iterable
@@ -10,7 +11,7 @@ from pathlib import Path
 import httpx
 
 from cornerstone.chart import chart_values
-from cornerstone.history import fetch_history, history_root, returns_path
+from cornerstone.history import fetch_history, history_dir, history_root, returns_path, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, cache_path, download, http_get, is_fresh,
@@ -84,6 +85,11 @@ def live_snapshot(
     except httpx.HTTPError as error:
         logger.warning("History refresh failed (%s), so the saved weeks stand", error)
         stale.append("history")
+    # On the Tuesday after the cutoff, Sleeper still shows week N-1, and only this raw data holds it.
+    # The points allowed read the history on disk, so week N-1 goes there before the slow sources load.
+    # The weekly build saves the same week later and overwrites these files with the same data.
+    if week.week == trade_week - 1:
+        save_raw_to_history(raw, history_dir(root, week.week))
     # The chart is the one of the trade window, which can be a week ahead of the last scored week.
     chart = read_chart(repo, week.season_start, trade_week, week_lines(week))
     slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)

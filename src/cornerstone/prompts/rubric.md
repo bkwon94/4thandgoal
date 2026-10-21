@@ -50,15 +50,15 @@ The breakdown lists every adjuster in this order, with its step and a one-line r
 
 Find the side's best lineup before the trade and after it. The best lineup fills the league's
 roster slots with the players who have the most points per game over the last `LINEUP_WEEKS`
-completed weeks. The fixed slots fill first. Then each flex slot takes the best player left who
-can play there. At equal points, the position order breaks the tie: RB over WR, WR over TE, TE
-over QB, DEF low.
+completed weeks. The fixed slots fill first. Then each flex slot takes the player left with the
+most points per game who can play there. At equal points, the position order breaks the tie: RB
+over WR, WR over TE, TE over QB, QB over K, K over DEF.
 
 - A lineup loss of `FIT_THRESHOLD` or more is one step down.
 - A lineup gain of `FIT_THRESHOLD` or more is one step up.
 - The side that gets the single highest-value player in the trade, with no lineup loss, gets one
-  step up. Trade value picks that player. When the week has no chart or a traded player is
-  unlisted, points per game pick him.
+  step up. A lineup change smaller than `FIT_THRESHOLD` is no lineup loss. Trade value picks that
+  player. When the week has no chart or a traded player is unlisted, points per game pick him.
 - In a trade of one player for two or more, the side that gets two or more gets the step up only
   when every player it gets starts in its best lineup after the trade.
 

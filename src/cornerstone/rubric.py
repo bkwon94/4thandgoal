@@ -1,7 +1,9 @@
 """
 The trade analyzer rubric in code: the proposed trade, its input check, and the grade of each side.
-The grade reads a snapshot and gives a breakdown per side that holds no trade value, sum, or ratio.
+The grade gives each side a start letter, then runs the adjusters in ADJUSTERS, roster fit and standing, in rubric order.
+The breakdown per side holds no trade value, sum, or ratio.
 """
+from collections.abc import Callable
 from decimal import Decimal
 from typing import Literal
 
@@ -13,7 +15,6 @@ from cornerstone.tunables import (
     CONSOLIDATION_MARGIN,
     FIT_THRESHOLD,
     LINEUP_WEEKS,
-    PLAYOFF_SPOTS,
     RETURN_BY_WEEK,
     SELLER_GAP,
     START_LETTER_BANDS,
@@ -179,7 +180,7 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     ]
     if not played:
         return Decimal(0)
-    # Sleeper leaves out a stat whose value is 0, so a game with no points scored 0.
+    # Sleeper leaves out a stat whose value is 0. A game with no points entry is a game of 0 points.
     total = sum((Decimal(str(player_points(past, player_id) or 0)) for past in played), Decimal(0))
     return total / len(played)
 
@@ -187,7 +188,7 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:
     """The starters of the roster's best lineup, by recent points per game, with the position order as the tie rule.
 
-    The fixed slots fill first, so a flex slot takes the best player that no fixed slot took.
+    The fixed slots fill first, so a flex slot takes the player with the most points per game that no fixed slot took.
     """
     def position(pid: str) -> str:
         return snapshot.players[pid].position
@@ -224,9 +225,9 @@ class _Side(BaseModel):
     # The best lineup's total after the trade minus the total before.
     lineup_change: Decimal
     # True when the side gets the single highest-value player in the trade.
-    gets_best: bool
+    gets_highest_value: bool
     # True when the side gives that player.
-    gives_best: bool
+    gives_highest_value: bool
 
     @property
     def lineup_gains(self) -> bool:
@@ -237,10 +238,10 @@ class _Side(BaseModel):
         return -self.lineup_change >= FIT_THRESHOLD
 
 
-def _best_player(trade: ProposedTrade, snapshot: Snapshot) -> str | None:
+def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot) -> str | None:
     """The single highest-value player in the trade, or None when two or more tie at the top.
 
-    Trade value picks him. When the week has no chart or a traded player is unlisted, the values
+    Trade value picks him. When the week has no chart or a traded player is unlisted, the trade values
     of the two sides do not compare, so recent points per game pick him.
     """
     players = [pid for side in trade.sides for pid in side.gives]
@@ -254,36 +255,42 @@ def _best_player(trade: ProposedTrade, snapshot: Snapshot) -> str | None:
     return leaders[0] if len(leaders) == 1 else None
 
 
-def _side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], best: str | None) -> _Side:
+def _side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None) -> _Side:
     before = snapshot.rosters[roster_id]
     after = [pid for pid in before if pid not in gives] + gets
     return _Side(
         roster_id=roster_id, gets=gets, gives=gives,
         starters_after=best_lineup(after, snapshot.roster_positions, snapshot),
         lineup_change=_lineup_total(after, snapshot) - _lineup_total(before, snapshot),
-        gets_best=best in gets,
-        gives_best=best in gives,
+        gets_highest_value=top in gets,
+        gives_highest_value=top in gives,
     )
 
 
-def _fit(side: _Side) -> Adjuster:
+# The name of each adjuster. The breakdown shows it, so each string lives here only.
+ROSTER_FIT = "roster fit"
+STANDING = "standing"
+
+
+def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Roster fit: the change in the side's best lineup."""
     if side.lineup_loses:
-        return Adjuster(name="roster fit", step=-1, reason="The best lineup loses after the trade.")
+        return Adjuster(name=ROSTER_FIT, step=-1, reason="The best lineup loses after the trade.")
     # In a one-for-two-or-more trade, the side that gets the depth must start every player it gets.
-    # Otherwise it pays for a bench player, so neither the gain nor the best player earns the step up.
+    # Otherwise it pays for a bench player, so neither the gain nor the highest-value player earns the step up.
     gets_depth = len(side.gets) > 1 and len(side.gives) == 1
     if gets_depth and not all(pid in side.starters_after for pid in side.gets):
         if side.lineup_gains:
-            return Adjuster(name="roster fit", step=0,
+            return Adjuster(name=ROSTER_FIT, step=0,
                             reason="The best lineup gains after the trade, but not every player it gets starts.")
-        return Adjuster(name="roster fit", step=0, reason="Not every player it gets starts.")
+        return Adjuster(name=ROSTER_FIT, step=0, reason="Not every player it gets starts.")
     if side.lineup_gains:
-        return Adjuster(name="roster fit", step=1, reason="The best lineup gains after the trade.")
-    if side.gets_best and side.lineup_change >= 0:
-        return Adjuster(name="roster fit", step=1,
-                        reason="It gets the best player in the trade, and the best lineup does not lose.")
-    return Adjuster(name="roster fit", step=0, reason="The best lineup stays about the same.")
+        return Adjuster(name=ROSTER_FIT, step=1, reason="The best lineup gains after the trade.")
+    # A lineup change smaller than the fit threshold is no lineup loss, so it does not block this step.
+    if side.gets_highest_value:
+        return Adjuster(name=ROSTER_FIT, step=1,
+                        reason="It gets the highest-value player in the trade, and the best lineup does not lose.")
+    return Adjuster(name=ROSTER_FIT, step=0, reason="The best lineup stays about the same.")
 
 
 # Injury report statuses that keep a player out of games. A player with one of them and no row in the
@@ -293,12 +300,11 @@ OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 def _race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "seller", "middle"]:
     """Where the team stands by record. The standings rank by wins, then by points for."""
-    ranked = sorted(snapshot.standings, key=lambda s: s.rank)
-    cut_wins = ranked[min(PLAYOFF_SPOTS, len(ranked)) - 1].wins
-    standing = next(s for s in ranked if s.roster_id == roster_id)
-    if standing.rank <= PLAYOFF_SPOTS:
+    standing = next(s for s in snapshot.standings if s.roster_id == roster_id)
+    if standing.in_playoffs:
         return "contender"
-    if cut_wins - standing.wins > SELLER_GAP:
+    # games_from_cut is the team's wins minus the wins of the team in the last playoff spot.
+    if -standing.games_from_cut > SELLER_GAP:
         return "seller"
     return "middle"
 
@@ -325,38 +331,43 @@ def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     if race == "contender":
         lead = "The team holds a playoff spot"
         if side.lineup_gains:
-            return Adjuster(name="standing", step=1, reason=f"{lead}, and the best lineup gains now.")
+            return Adjuster(name=STANDING, step=1, reason=f"{lead}, and the best lineup gains now.")
         bets = [pid for pid in side.gets if _return_bet(snapshot, pid)]
         if bets:
             names = _join([snapshot.players[pid].name for pid in bets])
             verb = "is" if len(bets) == 1 else "are"
-            return Adjuster(name="standing", step=1, reason=f"{lead}, and {names} {verb} due back before the playoffs.")
+            return Adjuster(name=STANDING, step=1, reason=f"{lead}, and {names} {verb} due back before the playoffs.")
         late = [(pid, why) for pid in side.gets if (why := _late_return(snapshot, pid)) is not None]
         if side.lineup_loses and late:
             pid, why = late[0]
-            return Adjuster(name="standing", step=-1,
+            return Adjuster(name=STANDING, step=-1,
                             reason=f"{lead}, but the best lineup loses now for {snapshot.players[pid].name}, who {why}.")
-        return Adjuster(name="standing", step=0, reason=f"{lead}, and the trade is no win-now move or return bet.")
+        return Adjuster(name=STANDING, step=0, reason=f"{lead}, and the trade is no win-now move or return bet.")
     if race == "seller":
         lead = "The team is out of the playoff race"
-        if side.gets_best:
-            return Adjuster(name="standing", step=1, reason=f"{lead}, and it gets the best player in the trade.")
-        if side.gives_best and side.lineup_gains:
-            return Adjuster(name="standing", step=-1,
-                            reason=f"{lead}, but it gives the best player in the trade for a lineup gain now.")
-        return Adjuster(name="standing", step=0, reason=f"{lead}, and the trade is no bet on the future.")
-    return Adjuster(name="standing", step=0, reason="The team is neither in a playoff spot nor out of the race.")
+        if side.gets_highest_value:
+            return Adjuster(name=STANDING, step=1,
+                            reason=f"{lead}, and it gets the highest-value player in the trade.")
+        if side.gives_highest_value and side.lineup_gains:
+            return Adjuster(name=STANDING, step=-1,
+                            reason=f"{lead}, but it gives the highest-value player in the trade for a lineup gain now.")
+        return Adjuster(name=STANDING, step=0, reason=f"{lead}, and the trade is no bet on the future.")
+    return Adjuster(name=STANDING, step=0, reason="The team is neither in a playoff spot nor out of the race.")
+
+
+# The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.
+ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (_fit, _standing)
 
 
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
     a, b = trade.sides
-    best = _best_player(trade, snapshot)
-    sides = (_side(snapshot, a.roster_id, a.gives, b.gives, best),
-             _side(snapshot, b.roster_id, b.gives, a.gives, best))
+    top = _highest_value_player(trade, snapshot)
+    sides = (_side(snapshot, a.roster_id, a.gives, b.gives, top),
+             _side(snapshot, b.roster_id, b.gives, a.gives, top))
     starts = _start_letters(trade, snapshot)
     return tuple(  # type: ignore[return-value]
-        start.model_copy(update={"adjusters": [_fit(side), _standing(snapshot, side)]})
+        start.model_copy(update={"adjusters": [adjuster(snapshot, side) for adjuster in ADJUSTERS]})
         for start, side in zip(starts, sides)
     )

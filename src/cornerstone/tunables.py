@@ -25,13 +25,15 @@ CONSOLIDATION_MARGIN = Decimal("1.25")
 # Roster fit and standing compare a side's best lineup before and after the trade.
 # The count of completed weeks whose points per game pick the best lineup. Fewer weeks use what exists.
 LINEUP_WEEKS = 4
-# The change in the best lineup's total points per game that counts as a gain or a loss. A first cut to tune.
+# The change in the best lineup's total points per game that counts as a gain or a loss.
+# The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
 
 # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
-# The count of playoff spots. The league ranks by wins, then by points for.
+# The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.
 PLAYOFF_SPOTS = 6
 # A seller has more than this many wins fewer than the team in the last playoff spot.
+# The league scores a median game each week, so each week gives two results, and two games are one week of results.
 SELLER_GAP = 2
-# The last week of the regular season. A got player due back by this week is a return bet.
+# The last week of the regular season. When the side gets a player who is due back by this week, the trade is a return bet.
 RETURN_BY_WEEK = 14

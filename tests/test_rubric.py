@@ -7,7 +7,8 @@ import re
 import pytest
 
 from cornerstone.rubric import ProposedTrade, TradeInputError, TradeSide, grade
-from cornerstone.snapshot import load_snapshot
+from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import build_snapshot, load_snapshot
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -110,11 +111,11 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
                 assert not re.search(r"ratio|sum|peaked|chart", reason, re.IGNORECASE)
 
 
-# Points per game over weeks 3 to 6, the last four completed weeks of the week 6 snapshot.
-# Roster 10, in the middle at 6-6: Saquon Barkley 4.50 on the bench, Monangai 15.30 and Judkins 11.33 at RB,
-# Egbuka 9.88 at the last flex spot.
-# Roster 5, a contender: James Cook 19.70, Hubbard 19.00, and Javonte Williams 17.57 at RB and flex,
-# Michael Wilson 10.97 at the last flex spot, Metcalf 10.55 and Woody Marks 9.10 on the bench.
+# Points per game over weeks 2 to 5, the last four completed weeks of the week 6 snapshot.
+# Roster 10, in the middle at 4-6: Saquon Barkley 3.83 on the bench, Monangai 12.47 and Judkins 10.32 at RB,
+# Egbuka 8.50 and Ferguson 8.03 at flex.
+# Roster 5, a contender: James Cook 19.10, Hubbard 17.27, and Javonte Williams 16.20 at RB and flex,
+# Denzel Boston 12.03 at the last flex spot, Michael Wilson 10.37, Woody Marks 8.32, and Metcalf 8.03 on the bench.
 SAQUON, COOK, HUBBARD, MARKS = "4866", "8138", "7594", "12474"
 
 
@@ -123,7 +124,8 @@ def _adjuster(breakdown, name: str):
 
 
 def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
-    # Cook takes Egbuka's flex spot on roster 10, a gain of 9.82. Roster 5 loses Cook for Metcalf, a loss of 9.15.
+    # Cook takes an RB spot on roster 10 and Judkins moves to flex for Ferguson, a gain of 11.07.
+    # Roster 5 loses Cook, and Michael Wilson takes the last flex spot, a loss of 8.73.
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
     assert _adjuster(tenth, "roster fit").reason == "The best lineup gains after the trade."
@@ -131,44 +133,46 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     assert _adjuster(fifth, "roster fit").reason == "The best lineup loses after the trade."
 
 
-# Roster 12: Tony Pollard 9.10 sits behind St. Brown 9.77 at the last flex spot.
+# Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70 at the last flex spot.
 POLLARD = "5967"
 
 
-def test_fit_steps_up_for_the_best_player_in_the_trade_with_no_lineup_loss(snap):
-    # Both players sit on the bench after the trade, so neither lineup changes.
+def test_fit_steps_up_for_the_highest_value_player_in_the_trade_with_no_lineup_loss(snap):
+    # Saquon Barkley sits on roster 12's bench after the trade, so its lineup does not change.
+    # Pollard takes the last flex spot on roster 10, a gain of 0.93, which is less than the fit threshold.
     snap = _with_values(snap, {SAQUON: 30.0})
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(twelfth, "roster fit").step == 1
     assert _adjuster(twelfth, "roster fit").reason == (
-        "It gets the best player in the trade, and the best lineup does not lose.")
+        "It gets the highest-value player in the trade, and the best lineup does not lose.")
     assert _adjuster(tenth, "roster fit").step == 0
 
 
-def test_an_unlisted_player_makes_points_per_game_pick_the_best_player_in_the_trade(snap):
-    # Saquon Barkley has no trade value. Pollard has more points per game, so roster 10 gets the best player.
+def test_an_unlisted_player_makes_points_per_game_pick_the_highest_value_player_in_the_trade(snap):
+    # Saquon Barkley has no trade value. Pollard has more points per game, so roster 10 gets the highest-value player.
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
     assert _adjuster(twelfth, "roster fit").step == 0
 
 
-def test_fit_holds_at_one_step_when_the_gain_is_large_and_the_side_gets_the_best_player(snap):
-    # Cook and Hubbard take both RB spots on roster 10, and Monangai and Judkins move to flex, a gain of 18.36.
-    # Cook is also the best player in the trade by points per game.
+def test_fit_holds_at_one_step_when_the_gain_is_large_and_the_side_gets_the_highest_value_player(snap):
+    # Cook and Hubbard take both RB spots on roster 10, and Monangai and Judkins move to flex, a gain of 19.84.
+    # Saquon Barkley has no trade value, so points per game make Cook the highest-value player in the trade.
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, HUBBARD]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
 
 
 def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_starts(snap):
-    # Cook starts on roster 10, but Woody Marks at 9.10 sits behind Egbuka at 9.88 on the bench.
+    # Cook starts on roster 10, but Woody Marks at 8.32 sits on the bench, behind Egbuka at 8.50.
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, MARKS]), snap)
     assert _adjuster(tenth, "roster fit").step == 0
     assert _adjuster(tenth, "roster fit").reason == (
         "The best lineup gains after the trade, but not every player it gets starts.")
 
 
-# Week 6 standings: rosters 3, 5, 6, 9, 2, and 1 hold the six playoff spots, and roster 1 has 6 wins.
-# Roster 4 has 1 win, more than two games out, so it is a seller. Rosters 7, 8, 10, 11, and 12 are in the middle.
+# Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots, and roster 9 in the sixth has 5 wins.
+# Roster 4 has 1 win, four games out, so it is a seller.
+# Rosters 7, 8, 10, 11, and 12 have 4 wins, one game out, so they are in the middle.
 WICKS, JACOBS, SMITH_NJIGBA = "9486", "5850", "9488"
 
 
@@ -180,7 +184,7 @@ def test_a_team_in_the_middle_gets_no_standing_step(snap):
 
 
 def test_a_contender_steps_up_for_a_lineup_gain_now(snap):
-    # Cook takes an RB spot on roster 3, and Henry moves to flex for Meyers.
+    # Cook takes an RB spot on roster 3, and McCaffrey moves to flex for Dobbins.
     third, _ = grade(_trade(3, [WICKS], 5, [COOK]), snap)
     standing = _adjuster(third, "standing")
     assert standing.step == 1
@@ -197,7 +201,7 @@ def test_a_contender_steps_up_for_a_player_due_back_by_the_last_regular_season_w
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):
-    # Roster 3 loses McCaffrey at RB, and Diggs at 8.23 takes the last flex spot, a loss of 10.79.
+    # Roster 3 loses McCaffrey at RB. Dobbins moves to RB, and Meyers at 7.17 takes the last flex spot, a loss of 10.45.
     # Saquon Barkley is Out and has no row in the returns file.
     third, _ = grade(_trade(3, [MCCAFFREY], 10, [SAQUON]), snap)
     standing = _adjuster(third, "standing")
@@ -215,23 +219,23 @@ def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_due_back_afte
     assert "is not due back before the playoffs" in standing.reason
 
 
-def test_a_seller_steps_up_when_it_gets_the_best_player_in_the_trade(snap):
+def test_a_seller_steps_up_when_it_gets_the_highest_value_player_in_the_trade(snap):
     # McCaffrey at 64.0 is worth more than Collins at 46.5.
     fourth, _ = grade(_trade(4, [COLLINS], 3, [MCCAFFREY]), snap)
     standing = _adjuster(fourth, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team is out of the playoff race, and it gets the best player in the trade."
+    assert standing.reason == "The team is out of the playoff race, and it gets the highest-value player in the trade."
 
 
-def test_a_seller_steps_down_when_it_gives_the_best_player_for_a_lineup_gain_now(snap):
-    # Smith-Njigba takes Collins's WR spot on roster 4, a gain of 5.11 over weeks 3 to 6 and 6.99 over weeks 2 to 5.
+def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup_gain_now(snap):
+    # Smith-Njigba takes Collins's WR spot on roster 4, a gain of 6.99.
     # At 20.0 he is worth less than Collins at 46.5.
     snap = _with_values(snap, {SMITH_NJIGBA: 20.0})
     fourth, _ = grade(_trade(4, [COLLINS], 3, [SMITH_NJIGBA]), snap)
     standing = _adjuster(fourth, "standing")
     assert standing.step == -1
     assert standing.reason == (
-        "The team is out of the playoff race, but it gives the best player in the trade for a lineup gain now.")
+        "The team is out of the playoff race, but it gives the highest-value player in the trade for a lineup gain now.")
 
 
 def test_the_adjusters_show_in_rubric_order(snap):
@@ -253,18 +257,24 @@ def _before_the_jacobs_trade(snap):
 
 
 def _as_contender(snap, roster_id: int):
-    """The snapshot with the roster moved to the sixth playoff spot, at the record of the team it moves past."""
+    """The snapshot with the roster moved to the sixth playoff spot, at the record of the team it moves past.
+
+    Each standing gets its rank, its playoff spot, and its games from the cut again, as the standings builder sets them.
+    """
     ranked = sorted(snap.standings, key=lambda s: s.rank)
     team = next(s for s in ranked if s.roster_id == roster_id)
     sixth = ranked[5]
     others = [s for s in ranked if s.roster_id != roster_id]
     moved = team.model_copy(update={"wins": sixth.wins, "losses": sixth.losses, "points_for": sixth.points_for + 1})
     order = others[:5] + [moved] + others[5:]
-    return snap.model_copy(update={"standings": [s.model_copy(update={"rank": i + 1}) for i, s in enumerate(order)]})
+    cut_wins = order[5].wins
+    standings = [s.model_copy(update={"rank": i + 1, "in_playoffs": i < 6, "games_from_cut": s.wins - cut_wins})
+                 for i, s in enumerate(order)]
+    return snap.model_copy(update={"standings": standings})
 
 
 def test_the_jacobs_trade_as_a_contender_bet_on_jacobs_back_in_week_7_gets_the_standing_step_up(snap):
-    # Roster 11 was 4-8 and tenth in week 6, so this case moves it into the sixth playoff spot to test the bet.
+    # Roster 11 is 4-6 and seventh through week 5, so this case moves it into the sixth playoff spot to test the bet.
     snap = _as_contender(_before_the_jacobs_trade(snap), 11)
     eleventh, _ = grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), snap)
     standing = _adjuster(eleventh, "standing")
@@ -273,6 +283,27 @@ def test_the_jacobs_trade_as_a_contender_bet_on_jacobs_back_in_week_7_gets_the_s
 
 
 def test_the_jacobs_trade_never_steps_the_side_that_got_jacobs_down_for_standing(snap):
-    # With the real week 6 standings, roster 11 is in the middle, two games out of the last spot.
+    # With the real standings through week 5, roster 11 is in the middle, one game out of the last spot.
     eleventh, _ = grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), _before_the_jacobs_trade(snap))
     assert _adjuster(eleventh, "standing").step == 0
+
+
+# The week 6 trade between rosters 6 and 7: roster 7 got Patrick Mahomes and Brian Robinson for Lamar Jackson.
+MAHOMES, LAMAR = "4046", "4881"
+
+
+def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_value_player_step(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # With stats through week 5, the lineup of roster 7 gains 8.48, so the gain alone earns the step.
+    # This case grades the trade on the Tuesday after week 6, so points per game cover weeks 3 to 6.
+    # Mahomes at 15.14 takes the QB spot from Lamar Jackson at 19.66, and Brian Robinson starts at flex.
+    # The best lineup of roster 7 changes by about -0.60, which is less than the fit threshold.
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7)
+    rosters = dict(snap.rosters)
+    rosters[7] = [pid for pid in rosters[7] if pid not in (MAHOMES, B_ROBINSON)] + [LAMAR]
+    rosters[6] = [pid for pid in rosters[6] if pid != LAMAR] + [MAHOMES, B_ROBINSON]
+    snap = snap.model_copy(update={"rosters": rosters})
+    _, seventh = grade(_trade(6, [MAHOMES, B_ROBINSON], 7, [LAMAR]), snap)
+    fit = _adjuster(seventh, "roster fit")
+    assert fit.step == 1
+    assert fit.reason == "It gets the highest-value player in the trade, and the best lineup does not lose."

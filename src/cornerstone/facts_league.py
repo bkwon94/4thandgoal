@@ -22,10 +22,10 @@ from cornerstone.models import (
     r2,
     sub,
 )
+from cornerstone.tunables import PLAYOFF_SPOTS
 
 logger = logging.getLogger(__name__)
 
-PLAYOFF_SPOTS = 6
 TEAM_COUNT = 12
 # The team trend is the mean of this many latest weeks.
 TREND_WEEKS = 3

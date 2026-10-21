@@ -175,3 +175,16 @@ def test_a_failed_history_fetch_keeps_the_saved_weeks_and_notes_it(live_repo, sl
     assert snap.stale == ["history"]
     assert snap.as_of.stats_through == 4
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4]
+
+
+def test_on_the_tuesday_before_the_roll_the_raw_week_is_saved_so_points_allowed_count_it(
+        live_repo, sleeper, chart_week6):
+    # The points allowed read weeks 1 to 6 from the history on disk, and only the raw data of this run holds week 6.
+    saved = live_repo / "data" / "2026" / "history" / "week-06"
+    assert not saved.exists()
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.points_allowed is not None
+    assert "points_allowed" not in snap.missing
+    assert (saved / "stats.json").exists()

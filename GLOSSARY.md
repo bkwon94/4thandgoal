@@ -82,7 +82,22 @@ One named criterion of the rubric that moves a grade by at most one step: roster
 trend and usage, injury history, handcuff, or schedule.
 
 **Breakdown**:
-The start letter and every adjuster that fired, with its direction, for one side.
+The start letter and every adjuster with its step, for one side.
+
+**Contender**:
+A team in a playoff spot by record.
+
+**Seller**:
+A team more than two games out of the last playoff spot.
+_Avoid_: rebuilder, tanker
+
+**Middle team**:
+A team that is neither a contender nor a seller. The standing adjuster gives it no step.
+
+**Highest-value player**:
+The one player in a proposed trade with the most trade value, or the most recent points per game
+when trade value does not compare.
+_Avoid_: best player, top player
 
 **Verdict**:
 Accept, counter, or decline, for the side that asked, with one reason.
@@ -111,4 +126,5 @@ player before the sides count as even.
 The backup to a roster's own starting running back. Insurance, never a player with no stats.
 
 **Position order**:
-The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, DEF low.
+The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
+K, K over DEF.

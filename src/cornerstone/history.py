@@ -267,6 +267,21 @@ def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:
         shutil.copyfile(raw_dir / f"{name}.json", out_dir / f"{name}.json")
     matchups = json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))
     players = json.loads((raw_dir / "players.json").read_text(encoding="utf-8"))
+    _save_injuries(matchups, players, out_dir)
+
+
+def save_raw_to_history(raw: dict[str, object], out_dir: Path) -> None:
+    """Put the raw data of a week, held in memory, into the history. It writes the same files as save_week_to_history.
+
+    The live path has no raw directory, so it writes the parsed raw data instead of a copy.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name in HISTORY_FILES:
+        (out_dir / f"{name}.json").write_text(json.dumps(raw[name]), encoding="utf-8")
+    _save_injuries(raw["matchups"], raw["players"], out_dir)
+
+
+def _save_injuries(matchups: list[dict], players: dict[str, dict], out_dir: Path) -> None:
     injuries = {}
     for roster in matchups:
         for player_id in roster["players"]:
