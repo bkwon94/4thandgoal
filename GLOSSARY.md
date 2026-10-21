@@ -1,7 +1,7 @@
 # Cornerstone Weekly
 
 The weekly report page for the Cornerstone fantasy football league. It turns Sleeper and nflverse
-data into facts, the facts into chapters of prose, and the chapters into a static site.
+data into facts, the facts into chapters of prose, and the chapters into page data for the site.
 
 ## Language
 
