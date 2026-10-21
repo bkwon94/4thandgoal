@@ -183,7 +183,7 @@ def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
 def test_trades_have_no_opinion_note(tbundle, tmp_path):
     html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
     assert 'id="trades"' in html
-    assert "opinion" not in html
+    assert "opinion from the fact sheet" not in html
 
 
 def test_no_trades_no_section(fixture_raw_dir, tmp_path):

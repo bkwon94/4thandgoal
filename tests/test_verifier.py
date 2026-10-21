@@ -440,7 +440,7 @@ def test_trade_value_number_fails_when_it_cites_nothing(vbundle):
 
 
 def test_trade_value_number_compares_after_normalizing(vbundle):
-    # 24 is the value of Croskey-Merritt. The sheet writes it without ".0".
+    # 24 is the trade value of Croskey-Merritt. The sheet writes it without ".0".
     assert _value_failures(vbundle, "He was worth 24.0 here.", ["T1.4.got.12533"])
 
 
@@ -457,3 +457,14 @@ def test_value_number_is_not_checked_outside_a_trade_chapter(vbundle):
     chapter = next(c for c in sheet.chapters if not c.key.startswith("trade_"))
     blurb = _blurb(chapter.key, _s("A score of 68.5 is odd.", chapter.fact_ids[0]))
     assert not [m for m in code_check(blurb, chapter, sheet) if "trade value" in m]
+
+
+def test_a_trade_value_that_equals_the_week_number_passes(vbundle):
+    # A week number is always allowed. A chart row at 6.0 must not bar "week 6" from a trade chapter.
+    ch = next(c for c in vbundle.sheet.chapters if c.key == "trade_1")
+    facts = dict(vbundle.sheet.facts)
+    fid = next(f for f in ch.fact_ids if f.startswith("T1.") and f.endswith(".value") and f.count(".") == 2)
+    facts[fid] = facts[fid].model_copy(update={"numbers": [*facts[fid].numbers, "6"]})
+    sheet = vbundle.sheet.model_copy(update={"facts": facts})
+    blurb = _blurb("trade_1", Sentence(text="The deal looks better by week 6.", fact_ids=["T1.sides"]))
+    assert not [f for f in code_check(blurb, ch, sheet) if "trade value" in f]
