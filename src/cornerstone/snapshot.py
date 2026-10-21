@@ -76,6 +76,8 @@ class Snapshot(BaseModel):
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The names of the sources the snapshot lacks, so the breakdown can say what it could not use.
     missing: list[str] = []
+    # The slow sources whose refresh failed, so the cache is older than a day or absent. Only a live build fills it.
+    stale: list[str] = []
 
 
 def load_snapshot(
@@ -84,7 +86,13 @@ def load_snapshot(
 
     Without `slow`, the slow sources stay None and all of them are named as missing.
     """
-    raw = load_raw(raw_dir)
+    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir))
+
+
+def build_snapshot(
+        raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
+        rosters_fetched: datetime | None = None, stale: list[str] | None = None) -> Snapshot:
+    """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same."""
     week = parse_week(raw)
     history = load_history(history_root, raw, week.week)
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
@@ -115,11 +123,12 @@ def load_snapshot(
         as_of=AsOf(
             chart_week=chart.week if chart is not None else None,
             stats_through=week.last_scored_week,
-            rosters_fetched=read_fetch_time(raw_dir),
+            rosters_fetched=rosters_fetched,
         ),
         schedules=slow.schedules if slow else None,
         depth_charts=slow.depth_charts if slow else None,
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
         missing=missing,
+        stale=stale or [],
     )

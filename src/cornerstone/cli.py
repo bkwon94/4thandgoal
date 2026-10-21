@@ -4,7 +4,7 @@ It defines the build, publish, rewrite, history, chart, and analyze subcommands.
 """
 import argparse
 import logging
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import httpx
@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from cornerstone.chart import check_chart, match_chart, saved_chart_read
 from cornerstone.history import history_root
+from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
@@ -22,6 +23,7 @@ from cornerstone.publish import PublishError, run_publish
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
+from cornerstone.trades import EASTERN
 from cornerstone.writer import claude_call
 
 
@@ -54,17 +56,19 @@ def build_parser() -> argparse.ArgumentParser:
     chart.add_argument("--season", type=int)
 
     analyze = sub.add_parser(
-        "analyze", help="grade a proposed trade from the saved data of a week",
-        description="Grade a proposed trade from a snapshot of the saved data of a week. "
+        "analyze", help="grade a proposed trade from the league now, or from the saved data of a week",
+        description="Grade a proposed trade from a snapshot. Without --week, the snapshot is the league now, "
+                    "fetched from Sleeper. With --week, it is the saved data of that week. "
                     "Give --side twice, once for each roster, as ROSTER:PLAYER,PLAYER. "
                     "Example: --side 4:7569 --side 12:10236,8146 --asker 4 --no-claude")
     analyze.add_argument("--season", type=int, required=True)
-    analyze.add_argument("--week", type=int, required=True, help="the week of the saved snapshot")
+    analyze.add_argument("--week", type=int,
+                         help="read the saved data of this week; without it, fetch the league now")
     analyze.add_argument("--side", type=_trade_side, action="append", required=True, metavar="ROSTER:PLAYERS",
                          help="a roster id and the comma-separated player ids it gives; give it twice")
     analyze.add_argument("--asker", type=int, required=True, help="the roster id of the side that asked")
     analyze.add_argument("--chart", type=Path,
-                         help="a trade values JSON file; the default is the saved chart read of the week")
+                         help="a trade values JSON file; the default is the chart of the trade window week")
     analyze.add_argument("--no-claude", action="store_true", help="skip the Claude call and print the breakdown only")
 
     return parser
@@ -106,8 +110,37 @@ def _sources_line(snapshot: Snapshot) -> str:
     return f"Sources missing: {', '.join(missing)}."
 
 
+def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+    """The snapshot of the saved week, or None after a plain line when the week has no raw data."""
+    if not has_raw(repo, args.season, args.week):
+        print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
+        return None
+    raw_dir = week_dir(repo, args.season, args.week) / "raw"
+    if args.chart is not None:
+        chart = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
+    else:
+        chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
+    history = history_root(repo, args.season)
+    # A saved week never fetches. A cache that the build did not fill gives missing sources.
+    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history)
+    return load_snapshot(raw_dir, history, chart, slow)
+
+
+def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+    """The snapshot of the league now. A given --chart file stands in for the chart read."""
+    kwargs = {}
+    if args.chart is not None:
+        given = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
+        kwargs["read_chart"] = lambda repo, season_start, week, lines: given
+    try:
+        return live_snapshot(repo, args.season, now=datetime.now(EASTERN), **kwargs)
+    except ValueError as err:
+        print(err)
+        return None
+
+
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
-    """Grade the proposed trade from the saved snapshot and print the breakdown of each side."""
+    """Grade the proposed trade from the live or saved snapshot and print the breakdown of each side."""
     if len(args.side) != 2:
         print("Give --side exactly twice, once for each roster.")
         return 2
@@ -115,18 +148,9 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         # Only the breakdown exists. The Claude call is out of scope here.
         print("The Claude call is not built yet. Run with --no-claude.")
         return 2
-    if not has_raw(repo, args.season, args.week):
-        print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
+    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    if snapshot is None:
         return 2
-    raw_dir = week_dir(repo, args.season, args.week) / "raw"
-    if args.chart is not None:
-        chart = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
-    else:
-        chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
-    history = history_root(repo, args.season)
-    # The analyze command never fetches. A cache that the build did not fill gives missing sources.
-    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history)
-    snapshot = load_snapshot(raw_dir, history, chart, slow)
     try:
         trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
     except ValidationError as err:
@@ -141,6 +165,8 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
           f"Rosters fetched {fetched}.")
     print(_sources_line(snapshot))
+    if snapshot.stale:
+        print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
     for side, other, breakdown in ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1])):
         asked = " (asked)" if side.roster_id == trade.asker else ""
         print()
@@ -206,7 +232,7 @@ def main(argv: list[str] | None = None) -> int:
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
         if args.command == "analyze":
-            # Analyze names its week, so it skips resolve_week and never calls Sleeper.
+            # Analyze skips resolve_week. Without --week it reads Sleeper itself, and with --week it reads disk.
             return run_analyze(repo, args)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)

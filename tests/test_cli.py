@@ -294,3 +294,34 @@ def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
     out = capsys.readouterr().out
     assert code == 2
     assert out.strip() == "A proposed trade needs two different rosters"
+
+
+def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch, capsys):
+    import shutil
+    from datetime import datetime
+
+    import pytest
+
+    from cornerstone import cli, live
+    from cornerstone.sleeper import load_raw
+
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    monkeypatch.chdir(tmp_path)
+    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cli.EASTERN)
+    # The live entry runs for real, with every fetch swapped for a fixture-backed one.
+    real = live.live_snapshot
+    monkeypatch.setattr(cli, "live_snapshot", lambda repo, season, **kw: real(
+        repo, season, now=datetime(2026, 10, 19, 12, 0, tzinfo=cli.EASTERN),
+        fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
+        fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
+        read_chart=lambda repo, start, week, lines: chart_week6))
+    code = cli.main(["analyze", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
+                     "--asker", "4", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Chart week 6. Stats through week 6. Rosters fetched 2026-10-19T09:30-04:00." in out
+    assert "Nico Collins" in out

@@ -147,6 +147,36 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
 
 
+def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, object], datetime]:
+    """The raw data of the league now, in memory, and the time the rosters came back. It writes no weekly file.
+
+    The key set is the same as load_raw gives, so the parse and the snapshot read it as a saved week.
+    """
+    league = f"{OFFICIAL_URL}/league/{league_id}"
+    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+        state = _get(client, f"{OFFICIAL_URL}/state/nfl")
+        season, week = int(state["season"]), int(state["display_week"])
+        rosters = _get(client, f"{league}/rosters")
+        # The time is taken right after the rosters return, because the rosters are the freshest fact here.
+        fetched = datetime.now(ZoneInfo("America/New_York"))
+        data = {
+            "state": state,
+            "league": _get(client, league),
+            "users": _get(client, f"{league}/users"),
+            "rosters": rosters,
+            "matchups": _get(client, f"{league}/matchups/{week}"),
+            "matchups_next": _get(client, f"{league}/matchups/{week + 1}"),
+            "transactions": _get(client, f"{league}/transactions/{week}"),
+            "projections": _get_or_empty(
+                client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{week}", _position_params()),
+            "stats": _get_or_empty(
+                client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params()),
+            "players": _players(client, players_cache),
+            "bracket": _get(client, f"{league}/winners_bracket"),
+        }
+    return data, fetched
+
+
 def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> None:
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
