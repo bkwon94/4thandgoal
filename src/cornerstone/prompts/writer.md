@@ -21,6 +21,6 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 15. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
 16. Write every number as digits, even a small count such as 2 or 3. Never write a number as a word.
 17. Never state a count of players, adds, or teams, such as "2 recent adds". No fact holds that count. Name them instead.
-18. In a trade recap, say who moved first. Then say how the week went for each side, from the `impact` and `swing` facts. Humor is allowed within the tone rules. Give no grade, no letter, and no verdict on the trade as a whole. Say the trade decided or cost a game only in a sentence that cites a `swing` fact whose gap is at least the margin, as rule 6 says. For a late trade, cite the `.late` fact to say why the points went to the old rosters.
+18. In a trade recap, say who moved first. Then say how the week went for each side, from the `impact` and `swing` facts. The tone rules allow humor. Give no grade and no letter. Never say who won the trade. Say the trade decided or cost a game only in a sentence that cites a `swing` fact. The gap must be at least the margin, as rule 6 says. For a late trade, cite the `.late` fact to say why the points went to the old rosters.
 19. Never put a number on a draft pick.
 20. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.

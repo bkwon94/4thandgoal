@@ -48,6 +48,27 @@ def test_week_7_window_holds_the_tuesday_trade(fixture_raw_dir, fixture_history_
     assert [x.roster_ids for x in t] == [[7, 8]]
 
 
+def _trade_at(fixture_raw_dir, created):
+    trade = parse_trades(load_raw(fixture_raw_dir)["transactions"])[0]
+    return trade.model_copy(update={"created": created})
+
+
+def _holds(trade, week):
+    return trades_for_week([trade], [], default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1))
+
+
+def test_a_trade_at_the_week_6_cutoff_is_in_week_5_only(fixture_raw_dir):
+    trade = _trade_at(fixture_raw_dir, datetime(2026, 10, 13, 8, 0, tzinfo=ET))
+    assert _holds(trade, 5) == [trade]
+    assert _holds(trade, 6) == []
+
+
+def test_a_trade_at_the_week_7_cutoff_is_in_week_6_only(fixture_raw_dir):
+    trade = _trade_at(fixture_raw_dir, datetime(2026, 10, 20, 8, 0, tzinfo=ET))
+    assert _holds(trade, 6) == [trade]
+    assert _holds(trade, 7) == []
+
+
 def test_late_trade(fixture_raw_dir, fixture_history_root):
     t = _six(fixture_raw_dir, fixture_history_root, datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     wk = parse_week(load_raw(fixture_raw_dir))

@@ -19,7 +19,6 @@ from pathlib import Path
 
 from cornerstone.models import BuildRecord, NflverseWeek, Sentence, Verdict, VerifyFile, VerifyOut
 from cornerstone.nflverse import nflverse_week
-from cornerstone import pipeline
 from cornerstone.pipeline import BuildStopped, make_bundle, read_verify, run_build, run_rewrite, week_dir
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.sheet import read_bundle
@@ -75,17 +74,15 @@ def _repo(tmp_path, fixture_raw_dir):
     return tmp_path
 
 
-def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir, monkeypatch):
+def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
-    # The weekly build wires no chart fetcher, so the chart module is never asked.
-    asked = []
-    monkeypatch.setattr(pipeline, "chart_values", lambda *args: asked.append(args), raising=False)
     page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     assert page == repo / "site" / "2026" / "week-06" / "index.html"
     for f in ("facts.json", "blurbs.json", "verify.json"):
         assert (week_dir(repo, 2026, 6) / f).exists()
     assert (repo / "site" / "index.html").exists()
-    assert not asked
+    sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
+    assert "chart" not in sources
 
 
 def test_an_old_verify_file_with_a_chart_flag_still_reads(tmp_path):
@@ -284,13 +281,14 @@ def _fetched(repo, when):
     (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text(json.dumps({"transactions": when.isoformat()}))
 
 
-def test_window_ends_at_the_saved_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_window_holds_the_five_trades_before_the_cutoff_whatever_the_fetch_time(
+        tmp_path, fixture_raw_dir, fixture_history_root):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    _fetched(repo, datetime(2026, 10, 20, 8, 0, tzinfo=ET))
+    _fetched(repo, datetime(2026, 10, 21, 9, 0, tzinfo=ET))
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
     assert len(bundle.data.trades) == 5
-    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 8, 0, tzinfo=ET)
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 21, 9, 0, tzinfo=ET)
 
 
 def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root):
@@ -302,12 +300,12 @@ def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_h
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
 
 
-def test_window_without_a_fetch_time_ends_at_the_raw_fetch(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
-    # The week 6 raw files were fetched before 11:55 on Tuesday, when the late trade of rosters 7 and 8 was made.
+def test_fetch_time_without_a_saved_one_comes_from_the_raw_write_time(
+        tmp_path, fixture_raw_dir, fixture_history_root, caplog):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     fetched = datetime(2026, 10, 20, 8, 0, tzinfo=ET)
     os.utime(week_dir(repo, 2026, 6) / "raw" / "transactions.json", (fetched.timestamp(), fetched.timestamp()))
-    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 22, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 5 and record.fetched == fetched
     assert record.fetched.tzinfo == ET
     assert "transactions.json" in caplog.text

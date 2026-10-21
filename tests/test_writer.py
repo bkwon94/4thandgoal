@@ -161,10 +161,10 @@ def test_writer_rule_18_is_the_trade_recap(tbundle):
     system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
     assert ("18. In a trade recap, say who moved first. Then say how the week went for each side, "
             "from the `impact` and `swing` facts.") in system
-    assert "Humor is allowed within the tone rules." in system
-    assert "Give no grade, no letter, and no verdict on the trade as a whole." in system
-    assert ("Say the trade decided or cost a game only in a sentence that cites a `swing` fact "
-            "whose gap is at least the margin, as rule 6 says.") in system
+    assert "The tone rules allow humor." in system
+    assert "Give no grade and no letter. Never say who won the trade." in system
+    assert ("Say the trade decided or cost a game only in a sentence that cites a `swing` fact. "
+            "The gap must be at least the margin, as rule 6 says.") in system
     assert "grade each side" not in system and "Grade keys" not in system and "`.value`" not in system
     assert "With more than two trades" not in system and "In the Trades chapter" not in system
     assert "19. Never put a number on a draft pick." in system

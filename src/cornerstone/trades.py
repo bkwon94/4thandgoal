@@ -1,7 +1,6 @@
 """
-The trades of one week: the time window that picks them and the late-trade test.
-A trade belongs to the week whose calendar span holds it: after the Tuesday cutoff that opens
-the week, up to and including the Tuesday cutoff that opens the next. Build time plays no part.
+The trades of one week: the calendar window that picks them and the late-trade test.
+A week holds the trades after its Tuesday cutoff, up to and including the next Tuesday cutoff.
 """
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo

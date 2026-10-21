@@ -119,10 +119,10 @@ def read_prev_transactions(raw_dir: Path) -> list | None:
 def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path) -> None:
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
-        # Week N-1 comes first, so the fetch time below bounds both calls.
+        # Week N-1 comes first, so the fetch time below is later than both calls.
         previous = _get(client, f"{league}/transactions/{week - 1}") if week > 1 else None
         transactions = _get(client, f"{league}/transactions/{week}")
-        # The time is taken right after the call returns. It is the end of the trade window.
+        # The time is taken right after the call returns. The page shows it and the history keeps it.
         fetched = datetime.now(ZoneInfo("America/New_York"))
         data = {
             "state": _get(client, f"{OFFICIAL_URL}/state/nfl"),

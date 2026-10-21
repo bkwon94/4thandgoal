@@ -575,6 +575,11 @@ def _join(items: list[str]) -> str:
     return f"{', '.join(items[:-1])} and {items[-1]}"
 
 
+def _got_with_lines(c: Context, trade: Trade, rid: int) -> list[str]:
+    """The player IDs a roster got that have a line this week."""
+    return [pid for pid in _moved(trade, rid, True) if pid in c.lines]
+
+
 def _moved(trade: Trade, rid: int, got: bool) -> list[str]:
     """The player IDs a roster got or gave, in the order of `adds`."""
     if got:
@@ -850,9 +855,8 @@ def trade_facts(c: Context) -> list[Fact]:
     for i, trade in enumerate(c.trades, start=1):
         out.append(_sides_fact(c, i, trade))
         for rid in trade.roster_ids:
-            got = [pid for pid in _moved(trade, rid, True) if pid in c.lines]
+            got = _got_with_lines(c, trade, rid)
             out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
-        # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
         if is_late(trade, c.week):
             out.append(_late_fact(c, i, trade))
             continue
@@ -871,7 +875,7 @@ def grade_input_facts(c: Context) -> list[Fact]:
     out = []
     for i, trade in enumerate(c.trades, start=1):
         for rid in trade.roster_ids:
-            got = [pid for pid in _moved(trade, rid, True) if pid in c.lines]
+            got = _got_with_lines(c, trade, rid)
             out += [_player_trade_fact(c, i, rid, pid, "got") for pid in got]
             out += [_player_trade_fact(c, i, rid, pid, "gave") for pid in _moved(trade, rid, False) if pid in c.lines]
             team = _team_fact(c, i, rid)

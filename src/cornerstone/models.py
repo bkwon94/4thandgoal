@@ -353,7 +353,7 @@ class BuildRecord(BaseModel):
     started: datetime
     # An older record may also hold a "chart" key. The weekly build reads no chart.
     sources: dict[str, bool]
-    # The fetch time of this week's transactions.json. It is the end of the trade window.
+    # The time of the Sleeper fetch of this week's transactions.json. The page shows it and the history keeps it.
     fetched: datetime | None = None
 
 
@@ -374,7 +374,6 @@ class DropPlay(BaseModel):
 
 class NflverseWeek(BaseModel):
     # sources says which of the four files gave data, so a chapter can say what it lacks.
-    # An older record may also hold a "chart" key. The weekly build reads no chart.
     sources: dict[str, bool]
     gsis: dict[str, str]
     # None means the source gave no data for the week. An empty dict means no player matched.
