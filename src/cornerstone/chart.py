@@ -232,6 +232,11 @@ def _json_path(charts: Path, week: int) -> Path:
     return charts / f"week-{week:02d}.json"
 
 
+def saved_chart_read(repo: Path, week: int) -> ChartRead | None:
+    """The saved read of the week under the cache rules, or None. It never fetches or reads an image."""
+    return _current_saved_read(chart_dir(repo), week)
+
+
 def _prior_row_count(charts: Path, week: int) -> int | None:
     """The row count of the saved read of the week before, or None when no good read is saved."""
     prior = _saved_read(_json_path(charts, week - 1))

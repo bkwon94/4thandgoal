@@ -24,11 +24,14 @@ its lower bound.
 - `BAND_D` and up starts at D.
 - Below `BAND_D` starts at F.
 
+When a side gives no trade value and gets some, it starts at A. When both sides are at zero, both
+start at C.
+
 ## Consolidation
 
 Two good players must not beat one great player on a plain sum. When one side gives exactly one
 player and gets two or more, divide the depth side's sum by `CONSOLIDATION_MARGIN`. The depth side
-is the side that gives two or more. Use the divided sum in the ratios of both sides. A trade of
+is the side that gives two or more. Both sides use the divided sum in their ratios. A trade of
 three for two, or of any two or more for two or more, gets no discount.
 
 ## Unlisted

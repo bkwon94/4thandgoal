@@ -158,6 +158,11 @@ class Week(BaseModel):
     stats: dict[str, dict[str, float]] = {}
 
 
+def week_lines(week: Week) -> list[PlayerLine]:
+    """Every lineup line of both sides of every matchup of the week."""
+    return [line for m in week.matchups for side in (m.a, m.b) for line in side.lines]
+
+
 class MatchupFacts(BaseModel):
     matchup_id: int
     winner: int | None

@@ -48,7 +48,7 @@ def _projection_map(raw: dict) -> dict[str, float | None]:
     }
 
 
-def _player_name(player_id: str, entry: dict | None) -> str:
+def player_name(player_id: str, entry: dict | None) -> str:
     if entry is None:
         return player_id
     if entry.get("full_name"):
@@ -62,7 +62,7 @@ def _line(player_id, entry, roster_positions, projections, players, starters) ->
     started = player_id in starters
     return PlayerLine(
         player_id=player_id,
-        name=_player_name(player_id, player),
+        name=player_name(player_id, player),
         position=player["position"] if player else "?",
         nfl_team=player.get("team") if player else None,
         points=entry["players_points"].get(player_id, 0.0),

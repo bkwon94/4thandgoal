@@ -8,11 +8,11 @@ from datetime import date
 from pathlib import Path
 
 import httpx
+from pydantic import ValidationError
 
-
-from cornerstone.chart import chart_dir, check_chart, match_chart
+from cornerstone.chart import check_chart, match_chart, saved_chart_read
 from cornerstone.history import history_root
-from cornerstone.models import ChartRead, ChartValues
+from cornerstone.models import ChartValues, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
     BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
@@ -63,7 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
                          help="a roster id and the comma-separated player ids it gives; give it twice")
     analyze.add_argument("--asker", type=int, required=True, help="the roster id of the side that asked")
     analyze.add_argument("--chart", type=Path,
-                         help="a chart values JSON file; the default is the saved chart read of the week")
+                         help="a trade values JSON file; the default is the saved chart read of the week")
     analyze.add_argument("--no-claude", action="store_true", help="skip the Claude call and print the breakdown only")
 
     return parser
@@ -80,12 +80,11 @@ def _trade_side(text: str) -> TradeSide:
 
 def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
     """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
-    path = chart_dir(repo) / f"week-{week:02d}.json"
-    if not path.exists():
+    # The chart module owns the rules for a saved read, so a bad or stale one gives None here too.
+    chart = saved_chart_read(repo, week)
+    if chart is None:
         return None
-    league = parse_week(raw)
-    lines = [l for m in league.matchups for side in (m.a, m.b) for l in side.lines]
-    return match_chart(ChartRead.model_validate_json(path.read_text(encoding="utf-8")), lines)
+    return match_chart(chart, week_lines(parse_week(raw)))
 
 
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
@@ -98,7 +97,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         print("Give --side exactly twice, once for each roster.")
         return 2
     if not args.no_claude:
-        # The Claude call is a later step of the analyzer. Until then the breakdown is the whole result.
+        # Only the breakdown exists. The Claude call is out of scope here.
         print("The Claude call is not built yet. Run with --no-claude.")
         return 2
     if not has_raw(repo, args.season, args.week):
@@ -110,7 +109,13 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     else:
         chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
     snapshot = load_snapshot(raw_dir, history_root(repo, args.season), chart)
-    trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
+    try:
+        trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
+    except ValidationError as err:
+        # One plain line per broken rule, with no pydantic text and no echo of the input.
+        for error in err.errors():
+            print(error["msg"].removeprefix("Value error, "))
+        return 2
     result = grade(trade, snapshot)
     stamps = snapshot.as_of
     chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
@@ -157,7 +162,7 @@ def run_chart(repo: Path, season: int, week: int) -> int:
     if raw is None:
         print(f"No raw data for week {week}, so no player match.")
         return 0
-    lines = {l.player_id: l for m in league.matchups for side in (m.a, m.b) for l in side.lines}
+    lines = {l.player_id: l for l in week_lines(league)}
     values = match_chart(check.chart, lines.values()).values
     print(f"Matched {len(values)} of {len(check.chart.rows)} chart rows")
     traded = {pid for t in parse_trades(raw["transactions"]) for pid in t.adds}

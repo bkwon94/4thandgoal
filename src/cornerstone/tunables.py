@@ -19,5 +19,5 @@ BAND_D = Decimal("0.75")
 # The bands from the top down. A ratio below the last bound starts at F.
 START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "B"), (BAND_C, "C"), (BAND_D, "D"))
 
-# In a one-for-two-or-more trade, the depth side's sum is divided by this in both ratios.
+# In a one-for-two-or-more trade, both ratios use the depth side's sum divided by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")

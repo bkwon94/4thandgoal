@@ -1,6 +1,6 @@
 """
 The data snapshot the trade analyzer grades a proposed trade from, and the builder that loads it.
-The builder reads saved raw Sleeper data, the saved history, and chart values, with no network.
+The builder reads saved raw Sleeper data, the saved history, and trade values, with no network.
 """
 import logging
 from datetime import datetime
@@ -11,12 +11,12 @@ from pydantic import BaseModel
 from cornerstone.facts_league import standings
 from cornerstone.history import load_history
 from cornerstone.models import ChartValues, History, Standing, Team
-from cornerstone.parse import _player_name, parse_week
+from cornerstone.parse import player_name, parse_week
 from cornerstone.sleeper import load_raw, read_fetch_time
 
 logger = logging.getLogger(__name__)
 
-# The sources a later step fills. Until then each one is None and its name is in Snapshot.missing.
+# The sources the snapshot does not load. Each one is None and its name is in Snapshot.missing.
 SLOW_SOURCES = ("usage", "injuries", "schedules", "depth_charts", "points_allowed")
 
 
@@ -80,11 +80,12 @@ def load_snapshot(raw_dir: Path, history_root: Path, chart: ChartValues | None) 
     players = {
         pid: SnapshotPlayer(
             player_id=pid,
-            name=_player_name(pid, entries.get(pid)),
-            position=(entries.get(pid) or {}).get("position") or "?",
-            nfl_team=(entries.get(pid) or {}).get("team"),
+            name=player_name(pid, entry),
+            position=entry.get("position") or "?",
+            nfl_team=entry.get("team"),
         )
         for pids in rosters.values() for pid in pids
+        for entry in [entries.get(pid) or {}]
     }
     missing = ([] if chart is not None else ["chart"]) + list(SLOW_SOURCES)
     return Snapshot(

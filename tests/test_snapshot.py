@@ -1,6 +1,6 @@
 """
 Tests for the snapshot the trade analyzer grades from.
-They build it from the recorded week 6 data and the week 6 chart values, with no network.
+They build it from the recorded week 6 data and the week 6 trade values, with no network.
 """
 from cornerstone.snapshot import load_snapshot
 

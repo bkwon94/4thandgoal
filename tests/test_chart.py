@@ -12,7 +12,7 @@ from PIL import Image
 
 from cornerstone.chart import (
     CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_dir, chart_values, claude_read, cut_strips,
-    fetch_chart, guard_results, load_chart, match_chart, read_chart,
+    fetch_chart, guard_results, load_chart, match_chart, read_chart, saved_chart_read,
 )
 from cornerstone.writer import WriterError
 from cornerstone.models import ChartRead, ChartRow, PlayerLine
@@ -378,3 +378,12 @@ def test_live_week_6_chart_passes_the_guards(tmp_path):
     assert chart_week == 6
     top = parsed.rows[0]
     assert (top.name, top.position, top.value) == ("Jahmyr Gibbs", "RB", 68.5)
+
+
+def test_saved_chart_read_gives_the_saved_read_or_none(tmp_path):
+    assert saved_chart_read(tmp_path, 6) is None
+    charts = chart_dir(tmp_path)
+    charts.mkdir(parents=True)
+    read = _read((40.0, "Ja'Marr Chase", "WR"))
+    (charts / "week-06.json").write_text(read.model_dump_json(), encoding="utf-8")
+    assert saved_chart_read(tmp_path, 6) == read

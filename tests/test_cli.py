@@ -264,3 +264,16 @@ def test_analyze_needs_exactly_two_sides(tmp_path, fixture_raw_dir, fixture_hist
 
     assert code == 2
     assert "exactly twice" in capsys.readouterr().out
+
+
+def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569", "--side", "4:10236", "--asker", "4", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 2
+    assert out.strip() == "A proposed trade needs two different rosters"

@@ -102,21 +102,24 @@ def _join(names: list[str]) -> str:
     return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
 
 
+def _both_at_c(a: TradeSide, b: TradeSide, reason: str) -> tuple[Breakdown, Breakdown]:
+    return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=reason),
+            Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason))
+
+
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
     a, b = trade.sides
     if snapshot.chart is None:
-        return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=NO_CHART_REASON),
-                Breakdown(roster_id=b.roster_id, start_letter="C", reason=NO_CHART_REASON))
+        return _both_at_c(a, b, NO_CHART_REASON)
     values = snapshot.chart.values
     unlisted = [pid for side in trade.sides for pid in side.gives if pid not in values]
     if unlisted:
         names = [snapshot.players[pid].name for pid in unlisted]
         verb = "has" if len(names) == 1 else "have"
         reason = f"{_join(names)} {verb} no trade value, so neither side gets a start letter and both start at C."
-        return (Breakdown(roster_id=a.roster_id, start_letter="C", reason=reason),
-                Breakdown(roster_id=b.roster_id, start_letter="C", reason=reason))
+        return _both_at_c(a, b, reason)
     # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
     sum_a = sum((Decimal(str(values[pid])) for pid in a.gives), Decimal(0))
     sum_b = sum((Decimal(str(values[pid])) for pid in b.gives), Decimal(0))
