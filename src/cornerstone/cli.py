@@ -1,6 +1,6 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, history, and chart subcommands.
+It defines the build, publish, rewrite, history, chart, and analyze subcommands.
 """
 import argparse
 import logging
@@ -10,13 +10,17 @@ from pathlib import Path
 import httpx
 
 
-from cornerstone.chart import check_chart, match_chart
+from cornerstone.chart import chart_dir, check_chart, match_chart
+from cornerstone.history import history_root
+from cornerstone.models import ChartRead, ChartValues
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
     BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish
+from cornerstone.rubric import ProposedTrade, TradeSide, grade
+from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.writer import claude_call
 
 
@@ -48,7 +52,80 @@ def build_parser() -> argparse.ArgumentParser:
     chart.add_argument("--week", type=int)
     chart.add_argument("--season", type=int)
 
+    analyze = sub.add_parser(
+        "analyze", help="grade a proposed trade from the saved data of a week",
+        description="Grade a proposed trade from a snapshot of the saved data of a week. "
+                    "Give --side twice, once for each roster, as ROSTER:PLAYER,PLAYER. "
+                    "Example: --side 4:7569 --side 12:10236,8146 --asker 4 --no-claude")
+    analyze.add_argument("--season", type=int, required=True)
+    analyze.add_argument("--week", type=int, required=True, help="the week of the saved snapshot")
+    analyze.add_argument("--side", type=_trade_side, action="append", required=True, metavar="ROSTER:PLAYERS",
+                         help="a roster id and the comma-separated player ids it gives; give it twice")
+    analyze.add_argument("--asker", type=int, required=True, help="the roster id of the side that asked")
+    analyze.add_argument("--chart", type=Path,
+                         help="a chart values JSON file; the default is the saved chart read of the week")
+    analyze.add_argument("--no-claude", action="store_true", help="skip the Claude call and print the breakdown only")
+
     return parser
+
+
+def _trade_side(text: str) -> TradeSide:
+    """One --side value, ROSTER:PLAYER,PLAYER, as a trade side."""
+    roster, _, players = text.partition(":")
+    gives = [pid.strip() for pid in players.split(",") if pid.strip()]
+    if not roster.strip().isdigit() or not gives:
+        raise argparse.ArgumentTypeError(f"{text!r} is not ROSTER:PLAYER,PLAYER")
+    return TradeSide(roster_id=int(roster), gives=gives)
+
+
+def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
+    """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
+    path = chart_dir(repo) / f"week-{week:02d}.json"
+    if not path.exists():
+        return None
+    league = parse_week(raw)
+    lines = [l for m in league.matchups for side in (m.a, m.b) for l in side.lines]
+    return match_chart(ChartRead.model_validate_json(path.read_text(encoding="utf-8")), lines)
+
+
+def _names(snapshot: Snapshot, pids: list[str]) -> str:
+    return ", ".join(snapshot.players[pid].name if pid in snapshot.players else pid for pid in pids)
+
+
+def run_analyze(repo: Path, args: argparse.Namespace) -> int:
+    """Grade the proposed trade from the saved snapshot and print the breakdown of each side."""
+    if len(args.side) != 2:
+        print("Give --side exactly twice, once for each roster.")
+        return 2
+    if not args.no_claude:
+        # The Claude call is a later step of the analyzer. Until then the breakdown is the whole result.
+        print("The Claude call is not built yet. Run with --no-claude.")
+        return 2
+    if not has_raw(repo, args.season, args.week):
+        print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
+        return 2
+    raw_dir = week_dir(repo, args.season, args.week) / "raw"
+    if args.chart is not None:
+        chart = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
+    else:
+        chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
+    snapshot = load_snapshot(raw_dir, history_root(repo, args.season), chart)
+    trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
+    result = grade(trade, snapshot)
+    stamps = snapshot.as_of
+    chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
+    fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
+    print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
+          f"Rosters fetched {fetched}.")
+    for side, other, breakdown in ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1])):
+        asked = " (asked)" if side.roster_id == trade.asker else ""
+        print()
+        print(f"{snapshot.teams[side.roster_id].name}{asked}")
+        print(f"  Gives: {_names(snapshot, side.gives)}")
+        print(f"  Gets: {_names(snapshot, other.gives)}")
+        print(f"  Start letter: {breakdown.start_letter}")
+        print(f"  Reason: {breakdown.reason}")
+    return 0
 
 
 def run_chart(repo: Path, season: int, week: int) -> int:
@@ -104,6 +181,9 @@ def main(argv: list[str] | None = None) -> int:
             weeks = run_history(repo, season, args.through, force=args.force)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
+        if args.command == "analyze":
+            # Analyze names its week, so it skips resolve_week and never calls Sleeper.
+            return run_analyze(repo, args)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)
         if args.command == "build":

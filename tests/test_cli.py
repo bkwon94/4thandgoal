@@ -3,6 +3,7 @@ Tests for the cornerstone command line.
 They run the real console script.
 """
 import subprocess
+from pathlib import Path
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -209,3 +210,57 @@ def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw
     assert f"60.0  {line.name}  {line.position}" in out
     assert "header week: pass" in out
     assert "Matched 1 of 102 chart rows" in out
+
+
+def _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch):
+    """A repo in tmp_path with the week 6 raw data and history, as the analyze command reads them."""
+    import shutil
+
+    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-06" / "raw")
+    shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    monkeypatch.chdir(tmp_path)
+
+
+CHART_FIXTURE = str(Path(__file__).parent / "fixtures" / "charts" / "week-06.json")
+
+
+def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Nico Collins" in out and "Dalton Kincaid" in out and "Garrett Wilson" in out
+    assert out.count("Start letter: C") == 2
+    assert "(asked)" in out
+    assert "Chart week 6" in out
+    # The trade values 46.5, 31.5, and 27.5, their sum, and the ratio never print.
+    for number in ("46.5", "31.5", "27.5", "59", "47.2", "1.0"):
+        assert number not in out
+
+
+def test_analyze_names_a_player_not_on_the_giving_roster(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:4034", "--side", "12:10236", "--asker", "4", "--no-claude"])
+
+    assert code == 2
+    assert "4034" in capsys.readouterr().out
+
+
+def test_analyze_needs_exactly_two_sides(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--side", "4:7569", "--asker", "4", "--no-claude"])
+
+    assert code == 2
+    assert "exactly twice" in capsys.readouterr().out
