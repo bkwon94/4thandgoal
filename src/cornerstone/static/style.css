@@ -81,16 +81,20 @@ a { color:var(--red); }
 .tile .sub { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
 
 /* The boards stack, one position per card, so a row never wraps at phone width. */
-.boards { display:grid; gap:var(--sp-2); }
+/* minmax(0,1fr) caps the column at the section width. A one-line row has a wide min-content size, and an auto column grows past the gutter to fit it. */
+.boards { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--sp-2); }
 .board { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 .board .lbl { margin-bottom:var(--sp-1); }
 .board ol { list-style:none; margin:0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
+/* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left and truncates, so the points never leave the row. */
 .board .row { display:flex; align-items:baseline; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
-.board .rk { flex:none; color:var(--muted); font-weight:700; }
-.board .pl { flex:1; min-width:0; }
+.board .row + .row { border-top:1px solid var(--rule); }
+.board .rk { flex:none; color:var(--muted); font-size:var(--fs-meta); font-weight:700; }
+.board .pl { flex:0 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .board .pl small { color:var(--muted); font-size:var(--fs-meta); }
-.board .pl .tm { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.board .pts { flex:none; font-weight:800; }
+.board .tm { flex:1 1 0; min-width:0; color:var(--muted); font-size:var(--fs-meta); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* The points are the stat a reader scans for, so they take the body size and the heaviest weight in the row. */
+.board .pts { flex:none; font-size:var(--fs-body); font-weight:800; }
 
 .mu { border-bottom:1px solid var(--rule); }
 .mu:last-of-type { border-bottom:none; }
@@ -210,3 +214,16 @@ a { color:var(--red); }
 /* The five-tile grid has one tile in a half-empty last row. It spans the row so it does not look lost. */
 .tiles .tile:last-child:nth-child(odd) { grid-column:1 / -1; }
 .tile .pp small { font-size:var(--fs-meta); font-weight:700; color:var(--muted); }
+
+/* A wide screen gets a two-column grid, so the section does not run five cards long. The fifth board spans the row so it does not look lost.
+   A half-width card is too narrow for one line, so the fantasy team drops under the player and the points stay on the right. */
+@media (min-width: 768px) {
+  .boards { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .boards .board:last-child:nth-child(odd) { grid-column:1 / -1; }
+  .board .row { display:grid; grid-template-columns:auto minmax(0,1fr) auto; column-gap:var(--sp-2); row-gap:var(--sp-0); }
+  .board .pl { grid-column:2; grid-row:1; }
+  .board .tm { grid-column:2; grid-row:2; }
+  .board .pts { grid-column:3; grid-row:1; }
+  /* The spanned board is as wide as a phone board, so its rows keep the one-line layout. */
+  .boards .board:last-child:nth-child(odd) .row { display:flex; }
+}
