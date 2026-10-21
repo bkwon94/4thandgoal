@@ -10,7 +10,8 @@ import httpx
 import pytest
 
 from cornerstone.nflverse import (
-    PBP_URL, download, gsis_id, http_get, read_drops, read_id_map, read_injuries,
+    DEPTH_CHARTS_URL, PBP_URL, SCHEDULES_URL, download, gsis_id, http_get, nflverse_week,
+    read_depth_charts, read_drops, read_id_map, read_injuries, read_schedules,
 )
 from cornerstone.sleeper import load_raw
 
@@ -146,3 +147,57 @@ def test_read_drops_keeps_a_missing_yardline_as_none(fixture_nflverse_dir, tmp_p
         writer.writerows(rows)
     d = read_drops(pbp, fixture_nflverse_dir / "ftn_charting_2026.csv", 6)
     assert [p.yardline_100 for p in d["00-0040667"]] == [43.0, None, 51.0]
+
+
+def test_read_schedules_gives_the_bye_week_and_the_late_opponents(fixture_nflverse_dir):
+    schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
+    assert schedules["SF"].bye_week == 8
+    assert schedules["SF"].late_opponents == {15: "LAC", 16: "KC", 17: "PHI"}
+    assert schedules["BAL"].bye_week == 13
+
+
+def test_read_schedules_names_the_rams_as_sleeper_does(fixture_nflverse_dir):
+    schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
+    assert "LAR" in schedules and "LA" not in schedules
+    assert schedules["SF"].late_opponents != {} and schedules["ARI"].late_opponents[17] in schedules
+
+
+def test_read_schedules_without_the_season_is_none(fixture_nflverse_dir):
+    assert read_schedules(fixture_nflverse_dir / "games.csv", 2030) is None
+
+
+def test_read_depth_charts_gives_the_backfield_in_order(fixture_nflverse_dir):
+    charts = read_depth_charts(fixture_nflverse_dir / "depth_charts_2026.csv.gz")
+    assert charts["SF"]["RB"] == ["00-0033280", "00-0041052", "00-0040177", "00-0039363"]
+    assert "LAR" in charts and "LA" not in charts
+
+
+def test_read_depth_charts_uses_only_the_latest_snapshot(tmp_path):
+    path = tmp_path / "depth_charts_2026.csv"
+    path.write_text(
+        "dt,team,player_name,gsis_id,pos_abb,pos_slot,pos_rank\n"
+        "2026-10-20T12:00:00Z,SF,Old Starter,00-1,RB,11,1\n"
+        "2026-10-21T12:00:00Z,SF,New Backup,00-3,RB,11,2\n"
+        "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,11,1\n"
+        "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,12,1\n")
+    assert read_depth_charts(path) == {"SF": {"RB": ["00-2", "00-3"]}}
+
+
+def test_read_depth_charts_without_a_row_is_none(tmp_path):
+    path = tmp_path / "depth_charts_2026.csv"
+    path.write_text("dt,team,player_name,gsis_id,pos_abb,pos_slot,pos_rank\n")
+    assert read_depth_charts(path) is None
+
+
+def test_the_downloads_cache_the_schedules_and_the_depth_charts(tmp_path):
+    seen = []
+
+    def fetch(url):
+        seen.append(url)
+        if url in (SCHEDULES_URL, DEPTH_CHARTS_URL.format(season=2026)):
+            return b"x"
+        raise httpx.ConnectError("down")
+
+    nflverse_week(2026, 6, [], {}, tmp_path, fetch=fetch)
+    assert SCHEDULES_URL in seen and DEPTH_CHARTS_URL.format(season=2026) in seen
+    assert (tmp_path / "games.csv").exists() and (tmp_path / "depth_charts_2026.csv.gz").exists()
