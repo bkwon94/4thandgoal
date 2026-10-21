@@ -44,32 +44,72 @@ _Avoid_: photo, avatar (that is the team image)
 A Sleeper transaction that moves players or picks between two or more rosters.
 
 **Trade window**:
-The span of time whose trades belong to one week's page: from the prior build to this build, or
-from the Tuesday cutoff when no prior fetch time is saved.
+The span of time whose trades belong to one week's page: from the Tuesday cutoff that opens the
+week to the Tuesday cutoff that opens the next. Build time plays no part.
 
 **Tuesday cutoff**:
-08:00 Eastern on the Tuesday after a week's games. It opens the next week's trade window.
+08:00 Eastern on the Tuesday after a week's games. It opens the next week's trade window, so a
+Tuesday or Wednesday trade belongs to the week whose games come next.
 
 **Late trade**:
 A trade made after the lineups locked, so the lineup shows the roster from before it.
 
+**Trade recap**:
+The weekly chapter about one trade: who moved and how the week went for each side. It carries no
+grade.
+_Avoid_: trade chapter, trade card (that is the page element)
+
+### The analyzer
+
+**Proposed trade**:
+A trade the analyzer grades before it happens: two sides, the players each gives, and which side
+asked.
+
+**Rubric**:
+The criteria the grade follows, their order, their caps, and what each letter means.
+_Avoid_: criteria (alone), system, scoring
+
 **Grade**:
-The writer's letter, A to F, for one side of a trade, formed from the trade chapter's facts.
+The analyzer's letter, A to F, for one side of a proposed trade, formed by the rubric. The weekly
+page shows no grade.
 _Avoid_: score, rating
 
+**Start letter**:
+The letter the chart ratio gives one side before any adjuster.
+_Avoid_: anchor, base grade
+
+**Adjuster**:
+One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
+trend and usage, injury history, handcuff, or schedule.
+
+**Breakdown**:
+The start letter and every adjuster that fired, with its direction, for one side.
+
+**Verdict**:
+Accept, counter, or decline, for the side that asked, with one reason.
+_Avoid_: recommendation, advice
+
 **Before the trade**:
-Weeks 1 to N-1, for a trade on the page of week N. Every grade input ends there.
+Weeks 1 to N-1, for a proposed trade in week N. Every grade input ends there.
 
 **Trade value**:
-A player's worth on the half-PPR redraft trade value chart for the week of the trade. It shapes
-the grade and never appears on the page.
+A player's worth on the half-PPR redraft trade value chart for the week of the trade. It feeds the
+start letter and never appears on a page.
 _Avoid_: value (alone), chart value, price
 
 **Chart week**:
 The chart whose date falls in a week's trade window. A trade in week N uses the week N chart.
 
 **Unlisted**:
-A traded player with no row on the chart week's chart. He gets no trade value.
+A traded player with no row on the chart week's chart. He gets no trade value, so his side gets
+no start letter and the rubric grades from the adjusters alone.
+
+**Consolidation**:
+A trade of two or more players for one. The depth side's values must sum to a margin above the one
+player before the sides count as even.
+
+**Handcuff**:
+The backup to a roster's own starting running back. Insurance, never a player with no stats.
 
 **Position order**:
-The tie rule the writer uses at equal rank and points: RB over WR, WR over TE, TE over QB, DEF low.
+The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, DEF low.
