@@ -93,26 +93,24 @@ def _median(bundle: Bundle, teams: dict) -> dict:
     }
 
 
-def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]:
-    """One card per trade, with a side per team and the trade recap under the rows.
-    A chapter with no blurb shows the sides sentence, which is also the text of a fallback blurb."""
-    facts = bundle.sheet.facts
+def _trades(bundle: Bundle, teams: dict, headshots: dict[str, str]) -> list[dict]:
+    """One card per trade, with a side per team. Each side holds a chip per player it got and a row per pick."""
     cards = []
-    for i, trade in enumerate(bundle.data.trades, start=1):
-        key = f"trade_{i}"
-        blurb = blurbs.get(key)
+    for trade in bundle.data.trades:
         sides = []
         for rid in trade.roster_ids:
             players = []
             for pid, owner in trade.adds.items():
                 if owner != rid:
                     continue
-                # A player with no lineup line has no name in the week data, so he shows under a plain label.
-                players.append({"name": bundle.data.trade_players.get(pid, "An unlisted player")})
+                players.append({
+                    # A player with no lineup line has no name in the week data, so he shows under a plain label.
+                    "name": bundle.data.trade_players.get(pid, "An unlisted player"),
+                    "headshot": headshots.get(pid, f"../../{DEFAULT_HEADSHOT}"),
+                })
             picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
             sides.append({"team": teams[rid], "players": players, "picks": picks})
-        text = " ".join(s.text for s in blurb.sentences) if blurb else facts[f"T{i}.sides"].text
-        cards.append({"sides": sides, "blurb": text})
+        cards.append({"sides": sides})
     return cards
 
 
@@ -174,7 +172,7 @@ def build_context(
         "game_changer": {"award": game_changer, "team": teams[game_changer.roster_id].name} if game_changer else None,
         "awards": [_tile(bundle, key, teams) for key in TILE_KEYS],
         "leaders": _leaders(bundle, teams),
-        "trades": _trades(bundle, blurbs, teams),
+        "trades": _trades(bundle, teams, headshots),
         "matchups": matchups,
         "median": _median(bundle, teams),
         "table": [{"standing": s, "team": teams[s.roster_id]} for s in data.table],
@@ -220,33 +218,37 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
     return paths
 
 
-def _headshot_url(line: PlayerLine) -> str:
+def _headshot_url(player_id: str, is_def: bool) -> str:
     """The Sleeper CDN URL for a player's headshot.
     A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
-    if line.position == "DEF":
-        return f"https://sleepercdn.com/images/team_logos/nfl/{line.player_id.lower()}.png"
-    return f"https://sleepercdn.com/content/nfl/players/{line.player_id}.jpg"
+    if is_def:
+        return f"https://sleepercdn.com/images/team_logos/nfl/{player_id.lower()}.png"
+    return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg"
 
 
 def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[str, str]:
-    """Save the headshot of each player on the Game Changer hero, the award tiles, and the leader rows.
+    """Save the headshot of each player on the Game Changer hero, the award tiles, the leader rows, and the trade cards.
     A failed download falls back to the default silhouette."""
     data = bundle.data
     lines = [a.line for a in data.awards if a.key == "game_changer" or a.key in TILE_KEYS]
     lines += [lead.line for lead in data.leaders]
+    players = [(line.player_id, line.position == "DEF") for line in lines]
+    # A trade holds player IDs and no lineup lines. A Sleeper player ID is a number and a DEF ID is
+    # the team abbreviation, so the form of the ID tells a DEF apart.
+    players += [(pid, not pid.isdigit()) for trade in data.trades for pid in trade.adds]
     paths = {}
-    for line in lines:
-        # A player can hold an award and a leader row, so each player is fetched once.
-        if line.player_id in paths:
+    for player_id, is_def in players:
+        # A player can hold an award, a leader row, and a trade chip, so each player is fetched once.
+        if player_id in paths:
             continue
-        paths[line.player_id] = f"../../{DEFAULT_HEADSHOT}"
-        content = fetch_bytes(_headshot_url(line))
+        paths[player_id] = f"../../{DEFAULT_HEADSHOT}"
+        content = fetch_bytes(_headshot_url(player_id, is_def))
         if content is None:
             continue
         # The CDN serves PNG bytes, even under the .jpg name of a player URL.
         headshot_dir.mkdir(parents=True, exist_ok=True)
-        (headshot_dir / f"{line.player_id}.png").write_bytes(content)
-        paths[line.player_id] = f"headshots/{line.player_id}.png"
+        (headshot_dir / f"{player_id}.png").write_bytes(content)
+        paths[player_id] = f"headshots/{player_id}.png"
     return paths
 
 

@@ -11,7 +11,6 @@ from cornerstone.parse import parse_week
 from cornerstone.render import build_context, render_index, render_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
-from cornerstone.writer import template_blurb
 
 
 def _bundle(d):
@@ -163,26 +162,6 @@ def test_trades_section_order_and_cards(tbundle, tmp_path):
     assert "Bhayshul Tuten" in html
 
 
-def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    for key in [k for k in blurbs if k.startswith("trade_")]:
-        del blurbs[key]
-    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
-    assert html.count('class="trade"') == 6 and "No grade" not in html
-    for n in range(1, 7):
-        assert tbundle.sheet.facts[f"T{n}.sides"].text in _card(html, n)
-
-
-def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    for ch in (c for c in tbundle.sheet.chapters if c.key.startswith("trade_")):
-        blurbs[ch.key] = template_blurb(ch, tbundle.sheet)
-    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
-    assert "No grade" not in html
-    for n in range(1, 7):
-        assert tbundle.sheet.facts[f"T{n}.sides"].text in _card(html, n)
-
-
 def test_trades_have_no_opinion_note(tbundle, tmp_path):
     html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
     assert 'id="trades"' in html
@@ -217,17 +196,14 @@ def _card(html, n):
     return _section(html).split('class="trade"')[n]
 
 
-def test_trade_cards_show_the_recap_with_no_grade_and_no_toggle(tbundle, tmp_path):
+def test_trade_cards_show_no_recap_no_grade_and_no_toggle(tbundle, tmp_path):
     html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
     s = _section(html)
-    assert s.count('class="side"') == 12
+    assert s.count('class="col"') == 12
     assert 'class="grade' not in s and "No grade" not in s
     assert "<button" not in s and "recap-btn" not in s and "the grade" not in s
     assert 'class="body"' not in s and "aria-expanded" not in s
-    card = _card(html, 5)
-    assert '<p class="blurb">Blurb for trade_5.</p>' in card
-    # The recap sits under the player rows.
-    assert card.index("</ul>") < card.index("Blurb for trade_5.")
+    assert 'class="blurb' not in s and "Blurb for trade_" not in s
 
 
 def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_dir, tmp_path):
@@ -237,25 +213,9 @@ def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_di
     for n, trade in enumerate(tbundle.data.trades, start=1):
         card = _card(html, n)
         for pid in trade.adds:
-            assert f"<li><span>{names[pid]}</span></li>" in card
+            assert f"<b>{names[pid]}</b>" in card
     assert "An unlisted player" not in _section(html)
     assert "ppg" not in _section(html)
-
-
-def test_fallback_card_shows_the_sides_sentence_as_the_recap(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    blurbs["trade_5"] = template_blurb(next(c for c in tbundle.sheet.chapters if c.key == "trade_5"), tbundle.sheet)
-    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
-    assert "No grade" not in card
-    assert f'<p class="blurb">{tbundle.sheet.facts["T5.sides"].text}</p>' in card
-
-
-def test_card_without_a_blurb_holds_the_sides_text(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    del blurbs["trade_5"]
-    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
-    assert "No grade" not in card
-    assert f'<p class="blurb">{tbundle.sheet.facts["T5.sides"].text}</p>' in card
 
 
 def test_app_js_toggles_matchup_rows_only(tbundle, tmp_path):
@@ -407,3 +367,59 @@ def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
     for pid in lines.keys() - {failed.player_id}:
         assert f'src="headshots/{pid}.png"' in html
     assert (tmp_path / "static" / "headshot-default.svg").exists()
+
+
+def test_trade_context_gives_each_player_a_name_and_a_headshot(tbundle):
+    headshots = {"12507": "headshots/12507.png"}
+    ctx = build_context(tbundle, _blurbs(tbundle), {}, headshots)
+    sides = {side["team"].roster_id: side for side in ctx["trades"][0]["sides"]}
+    hampton = next(p for p in sides[12]["players"] if p["name"] == "Omarion Hampton")
+    assert hampton == {"name": "Omarion Hampton", "headshot": "headshots/12507.png"}
+    montgomery = next(p for p in sides[4]["players"] if p["name"] == "David Montgomery")
+    # A player with no saved headshot gets the default silhouette.
+    assert montgomery == {"name": "David Montgomery", "headshot": "../../static/headshot-default.svg"}
+
+
+def test_headshots_of_traded_players_are_fetched_with_the_silhouette_on_a_failed_fetch(tbundle, tmp_path):
+    failed = "12533"
+    urls = []
+
+    def fetch(url):
+        urls.append(url)
+        return None if url.endswith(f"/{failed}.jpg") else PNG_BYTES
+
+    page = render_week(tbundle, _blurbs(tbundle), tmp_path, fetch)
+    traded = {pid for trade in tbundle.data.trades for pid in trade.adds}
+    for pid in traded:
+        assert f"https://sleepercdn.com/content/nfl/players/{pid}.jpg" in urls
+    card = _card(page.read_text(), 1)
+    assert 'src="headshots/12507.png"' in card
+    assert f'src="headshots/{failed}.png"' not in card
+    assert 'src="../../static/headshot-default.svg"' in card
+
+
+def test_two_side_card_has_two_columns_one_for_tag_and_a_chip_per_player(tbundle, tmp_path):
+    card = _card(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text(), 1)
+    assert card.count('class="col"') == 2
+    assert card.count('class="for"') == 1
+    assert card.count('<span class="gets">Gets</span>') == 2
+    assert card.count('<li class="chip">') == 4
+    # A chip is the headshot and the name, with no points line.
+    assert '<b>Omarion Hampton</b></li>' in card
+    assert 'pts' not in card and 'bench' not in card
+
+
+def test_three_side_card_wraps_with_no_for_tag_and_shows_a_pick_row(tbundle, tmp_path):
+    from cornerstone.models import DraftPick, Trade
+    first = tbundle.data.trades[0]
+    a, b = first.roster_ids
+    c = next(rid for rid in tbundle.data.teams if rid not in (a, b))
+    trade = Trade(transaction_id="x", created=first.created, roster_ids=[a, b, c],
+                  adds={"12507": a, "12533": b, "4046": c}, drops={"12507": b, "12533": c, "4046": a},
+                  draft_picks=[DraftPick(season="2027", round=2, roster_id=c, previous_owner_id=c, owner_id=a)])
+    bundle = tbundle.model_copy(update={"data": tbundle.data.model_copy(update={"trades": [trade]})})
+    card = _card(render_week(bundle, _blurbs(bundle), tmp_path, _fake_png).read_text(), 1)
+    assert card.count('class="col"') == 3
+    assert 'class="for"' not in card and 'class="swap pair"' not in card
+    assert '<li class="pick">2027 round 2 pick</li>' in card
+    assert '<b>Patrick Mahomes</b></li>' in card

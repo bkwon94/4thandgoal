@@ -84,17 +84,22 @@
   <section class="chap" id="trades">
     <div class="lbl">Trades</div>
     {% for t in trades %}
+    {# Two sides face each other across a FOR tag. Three or four sides have no single "other side", so they wrap with no tag. #}
+    {% set pair = t.sides|length == 2 %}
     <div class="trade">
-      {% for side in t.sides %}
-      <div class="side">
-        <div class="top">{{ tm(side.team) }}</div>
-        <ul class="got">
-          {% for p in side.players %}<li><span>{{ p.name }}</span></li>{% endfor %}
-          {% for pick in side.picks %}<li><span>{{ pick }}</span></li>{% endfor %}
-        </ul>
+      <div class="swap{{ ' pair' if pair }}">
+        {% for side in t.sides %}
+        {% if pair and loop.last %}<div class="for"><span>For</span></div>{% endif %}
+        <div class="col">
+          <div class="hd">{{ av(side.team) }}<span>{{ side.team.name }}</span></div>
+          <span class="gets">Gets</span>
+          <ul class="got">
+            {% for p in side.players %}<li class="chip"><img class="headshot" src="{{ p.headshot }}" alt="" loading="lazy"><b>{{ p.name }}</b></li>{% endfor %}
+            {% for pick in side.picks %}<li class="pick">{{ pick }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-      <p class="blurb">{{ t.blurb }}</p>
     </div>
     {% endfor %}
   </section>
