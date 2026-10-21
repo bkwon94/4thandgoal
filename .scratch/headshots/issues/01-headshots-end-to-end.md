@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A headshot URL comes from the player ID. A DEF line maps to the team logo URL with a lowercase abbreviation.
 - [ ] The render step fetches every headshot on the tiles, the rows, and the hero, once per player, through the same `fetch_bytes` hook as the avatars, and saves each as `headshots/{player_id}.png` in the week directory.
