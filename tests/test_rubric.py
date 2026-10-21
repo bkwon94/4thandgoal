@@ -169,7 +169,7 @@ def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_st
 
 # Week 6 standings: rosters 3, 5, 6, 9, 2, and 1 hold the six playoff spots, and roster 1 has 6 wins.
 # Roster 4 has 1 win, more than two games out, so it is a seller. Rosters 7, 8, 10, 11, and 12 are in the middle.
-WICKS, JACOBS = "9486", "5850"
+WICKS, JACOBS, SMITH_NJIGBA = "9486", "5850", "9488"
 
 
 def test_a_team_in_the_middle_gets_no_standing_step(snap):
@@ -224,9 +224,10 @@ def test_a_seller_steps_up_when_it_gets_the_best_player_in_the_trade(snap):
 
 
 def test_a_seller_steps_down_when_it_gives_the_best_player_for_a_lineup_gain_now(snap):
-    # Cook at 19.70 takes an RB spot on roster 4 for Collins at 14.93, a gain of 5.52.
-    snap = _with_values(snap, {COOK: 20.0})
-    fourth, _ = grade(_trade(4, [COLLINS], 5, [COOK]), snap)
+    # Smith-Njigba takes Collins's WR spot on roster 4, a gain of 5.11 over weeks 3 to 6 and 6.99 over weeks 2 to 5.
+    # At 20.0 he is worth less than Collins at 46.5.
+    snap = _with_values(snap, {SMITH_NJIGBA: 20.0})
+    fourth, _ = grade(_trade(4, [COLLINS], 3, [SMITH_NJIGBA]), snap)
     standing = _adjuster(fourth, "standing")
     assert standing.step == -1
     assert standing.reason == (
