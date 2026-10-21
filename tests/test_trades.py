@@ -20,6 +20,13 @@ from cornerstone.verifier import code_check
 ET = ZoneInfo("America/New_York")
 
 
+def _week(fixture_raw_dir, fixture_history_root, week):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
+                           default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1))
+
+
 def _six(fixture_raw_dir, fixture_history_root, until):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
@@ -31,14 +38,14 @@ def test_default_cutoff_week_6():
     assert default_cutoff(date(2026, 9, 9), 6) == datetime(2026, 10, 13, 8, 0, tzinfo=ET)
 
 
-def test_window_holds_the_six_week_6_trades(fixture_raw_dir, fixture_history_root):
-    t = _six(fixture_raw_dir, fixture_history_root, datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    assert [x.roster_ids for x in t] == [[4, 12], [7, 12], [4, 7], [6, 7], [11, 12], [7, 8]]
+def test_week_6_window_holds_the_five_trades_before_the_cutoff(fixture_raw_dir, fixture_history_root):
+    t = _week(fixture_raw_dir, fixture_history_root, 6)
+    assert [x.roster_ids for x in t] == [[4, 12], [7, 12], [4, 7], [6, 7], [11, 12]]
 
 
-def test_window_end_drops_the_tuesday_trade(fixture_raw_dir, fixture_history_root):
-    t = _six(fixture_raw_dir, fixture_history_root, datetime(2026, 10, 20, 8, 0, tzinfo=ET))
-    assert len(t) == 5 and t[-1].roster_ids == [11, 12]
+def test_week_7_window_holds_the_tuesday_trade(fixture_raw_dir, fixture_history_root):
+    t = _week(fixture_raw_dir, fixture_history_root, 7)
+    assert [x.roster_ids for x in t] == [[7, 8]]
 
 
 def test_late_trade(fixture_raw_dir, fixture_history_root):

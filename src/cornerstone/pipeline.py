@@ -21,7 +21,7 @@ from cornerstone.parse import parse_trades, parse_week
 from cornerstone.render import _download_bytes, render_index, render_week
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
-from cornerstone.trades import default_cutoff, previous_fetch_time, trades_for_week
+from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.writer import ClaudeCall
 
@@ -87,10 +87,10 @@ def _load_history_or_none(root: Path, raw: dict[str, object], week: int) -> Hist
 
 def _window_trades(
     repo: Path, season: int, week: int, raw: dict[str, object], season_start: date, history: History | None,
-    until: datetime,
 ) -> list[Trade]:
-    # The window starts at the fetch of the build before. Without it, the Tuesday cut-off stands in.
-    after = previous_fetch_time(repo, season, week) or default_cutoff(season_start, week)
+    # The window is the calendar span between two Tuesday cutoffs, so build time plays no part.
+    after = default_cutoff(season_start, week)
+    until = default_cutoff(season_start, week + 1)
     # The fresh copy of week N-1 holds the trades made after its build. The history copy does not.
     fresh = read_prev_transactions(week_dir(repo, season, week) / "raw")
     if fresh is not None:
@@ -222,7 +222,7 @@ def make_bundle(
     if until is None:
         log.warning("no fetch time for week %d: window ends at the build start", week)
         until = started
-    trades = _window_trades(repo, season, week, raw, parsed.season_start, history, until)
+    trades = _window_trades(repo, season, week, raw, parsed.season_start, history)
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     chart_week = _chart_for_week(parsed, week, chart)
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, chart=chart_week)

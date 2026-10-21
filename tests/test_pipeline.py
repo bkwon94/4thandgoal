@@ -294,17 +294,6 @@ def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_h
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
 
 
-def test_window_starts_at_the_fetch_before(tmp_path, fixture_raw_dir, fixture_history_root):
-    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    previous = week_dir(repo, 2026, 5)
-    previous.mkdir(parents=True)
-    record = BuildRecord(started=datetime(2026, 10, 16, 18, 0, tzinfo=ET), sources={},
-                         fetched=datetime(2026, 10, 16, 18, 0, tzinfo=ET))
-    (previous / "verify.json").write_text(VerifyFile(build=record, chapters={}).model_dump_json())
-    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    assert [x.roster_ids for x in bundle.data.trades] == [[11, 12], [7, 8]]
-
-
 def test_window_without_a_fetch_time_ends_at_the_raw_fetch(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
     # The week 6 raw files were fetched before 11:55 on Tuesday, when the late trade of rosters 7 and 8 was made.
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
@@ -387,13 +376,13 @@ def test_window_reads_the_fresh_transactions_of_the_week_before(tmp_path, fixtur
     (week_dir(repo, 2026, 6) / "raw" / "transactions_prev.json").write_text(json.dumps(_late_week_5_trade(repo)))
     bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert [t.transaction_id for t in bundle.data.trades].count("late-week-5") == 1
-    assert len(bundle.data.trades) == 7
+    assert len(bundle.data.trades) == 6
 
 
 def test_window_without_fresh_transactions_reads_the_history_copy(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    assert len(bundle.data.trades) == 6
+    assert len(bundle.data.trades) == 5
     assert "no fresh transactions for week 5" in caplog.text
 
 
@@ -434,11 +423,9 @@ def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir,
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text('{"transactions": "not a ti')
     (week_dir(repo, 2026, 6) / "verify.json").write_text('{"chapters": {')
-    week_dir(repo, 2026, 5).mkdir(parents=True)
-    (week_dir(repo, 2026, 5) / "verify.json").write_text("{")
     page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     assert page.exists()
-    for name in ("fetched.json", "week-06/verify.json", "week-05/verify.json"):
+    for name in ("fetched.json", "week-06/verify.json"):
         assert name in caplog.text
 
 
