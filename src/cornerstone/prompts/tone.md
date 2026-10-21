@@ -25,7 +25,7 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 
 - When an `.upset` fact is in the chapter, cite it and say it was an upset.
 - When a `.move.` fact or `W.adds` is in the chapter, cite it and call out the recent add and its points.
-- The word "lucky" is allowed for a recent add that beat its projection.
+- Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection.
 - The humor never comes from a player's real-life situation.
 - When an `.inj.` fact is in the chapter, cite it and name the designation.
 - In Next Week, when both teams in a matchup are below the cut, say so by name and record.

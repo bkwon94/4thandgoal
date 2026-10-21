@@ -33,7 +33,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **trade value**: the half-PPR redraft trade value from the chart for the week of the trade. It shapes the grade and never appears on the page.
 - **trade grade**: an opinion from the fact sheet, A to F, with the reason.
 - **upset**: the winner ranked below the loser in the standings before this week. Use it only in a sentence that cites a fact with `.upset` in its ID.
-- **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`.
+- **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`. Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection.
 - **injury status**: the Sleeper designation for a player as of the Tuesday after the games. It says nothing about the player's status at kickoff. Use it only in a sentence that cites a fact with `.inj.` in its ID or the fact `W.injured`.
 - **injury history**: the weekly NFL report status from nflverse, per week.
 - **pre-game status**: the final NFL report before the game, from nflverse. A roast of a manager who started a player listed Out or Doubtful before the game cites this fact.
