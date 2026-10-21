@@ -1323,26 +1323,6 @@
         "matchup_id": 6,
         "reason": "Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over.",
         "skipped": []
-      },
-      {
-        "key": "butterfingers",
-        "line": {
-          "player_id": "12501",
-          "name": "Matthew Golden",
-          "position": "WR",
-          "nfl_team": "GB",
-          "points": 19.4,
-          "projection": 13.14,
-          "season_avg": null,
-          "started": true,
-          "slot": "FLEX",
-          "injury_status": null,
-          "injury_body_part": null
-        },
-        "roster_id": 6,
-        "matchup_id": 4,
-        "reason": "Matthew Golden dropped 3 passes, tied for the most of any started player this week, worth about 14.2 points by the drop value method.",
-        "skipped": []
       }
     ],
     "pick": {
@@ -1805,13 +1785,13 @@
         "of": 15
       },
       {
-        "player_id": "1466",
+        "player_id": "10236",
         "position": "TE",
         "rank": 8,
         "of": 15
       },
       {
-        "player_id": "10236",
+        "player_id": "1466",
         "position": "TE",
         "rank": 9,
         "of": 15
@@ -2189,13 +2169,13 @@
         "of": 12
       },
       {
-        "player_id": "NE",
+        "player_id": "CAR",
         "position": "DEF",
         "rank": 7,
         "of": 12
       },
       {
-        "player_id": "CAR",
+        "player_id": "NE",
         "position": "DEF",
         "rank": 8,
         "of": 12
@@ -2223,6 +2203,293 @@
         "position": "DEF",
         "rank": 12,
         "of": 12
+      }
+    ],
+    "leaders": [
+      {
+        "line": {
+          "player_id": "7523",
+          "name": "Trevor Lawrence",
+          "position": "QB",
+          "nfl_team": "JAX",
+          "points": 28.34,
+          "projection": 18.39,
+          "season_avg": null,
+          "started": true,
+          "slot": "QB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "QB",
+        "rank": 1,
+        "of": 12,
+        "roster_id": 12
+      },
+      {
+        "line": {
+          "player_id": "12545",
+          "name": "Tyler Shough",
+          "position": "QB",
+          "nfl_team": "NO",
+          "points": 26.96,
+          "projection": 17.06,
+          "season_avg": null,
+          "started": true,
+          "slot": "QB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "QB",
+        "rank": 2,
+        "of": 12,
+        "roster_id": 6
+      },
+      {
+        "line": {
+          "player_id": "11564",
+          "name": "Drake Maye",
+          "position": "QB",
+          "nfl_team": "NE",
+          "points": 23.8,
+          "projection": 20.48,
+          "season_avg": null,
+          "started": true,
+          "slot": "QB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "QB",
+        "rank": 3,
+        "of": 12,
+        "roster_id": 9
+      },
+      {
+        "line": {
+          "player_id": "8151",
+          "name": "Kenneth Walker",
+          "position": "RB",
+          "nfl_team": "KC",
+          "points": 26.9,
+          "projection": 20.81,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "RB",
+        "rank": 1,
+        "of": 31,
+        "roster_id": 6
+      },
+      {
+        "line": {
+          "player_id": "4034",
+          "name": "Christian McCaffrey",
+          "position": "RB",
+          "nfl_team": "SF",
+          "points": 26.2,
+          "projection": 18.76,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "RB",
+        "rank": 2,
+        "of": 31,
+        "roster_id": 3
+      },
+      {
+        "line": {
+          "player_id": "8138",
+          "name": "James Cook",
+          "position": "RB",
+          "nfl_team": "BUF",
+          "points": 22.8,
+          "projection": 16.36,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "RB",
+        "rank": 3,
+        "of": 31,
+        "roster_id": 5
+      },
+      {
+        "line": {
+          "player_id": "10213",
+          "name": "Tre Tucker",
+          "position": "WR",
+          "nfl_team": "LV",
+          "points": 24.2,
+          "projection": 7.58,
+          "season_avg": null,
+          "started": true,
+          "slot": "WR",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "WR",
+        "rank": 1,
+        "of": 38,
+        "roster_id": 2
+      },
+      {
+        "line": {
+          "player_id": "11632",
+          "name": "Malik Nabers",
+          "position": "WR",
+          "nfl_team": "NYG",
+          "points": 22.5,
+          "projection": 12.11,
+          "season_avg": null,
+          "started": true,
+          "slot": "WR",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "WR",
+        "rank": 2,
+        "of": 38,
+        "roster_id": 8
+      },
+      {
+        "line": {
+          "player_id": "13274",
+          "name": "Germie Bernard",
+          "position": "WR",
+          "nfl_team": "PIT",
+          "points": 20.2,
+          "projection": 8.13,
+          "season_avg": null,
+          "started": true,
+          "slot": "WR",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "WR",
+        "rank": 3,
+        "of": 38,
+        "roster_id": 10
+      },
+      {
+        "line": {
+          "player_id": "8131",
+          "name": "Isaiah Likely",
+          "position": "TE",
+          "nfl_team": "NYG",
+          "points": 20.9,
+          "projection": 11.06,
+          "season_avg": null,
+          "started": true,
+          "slot": "TE",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "TE",
+        "rank": 1,
+        "of": 15,
+        "roster_id": 9
+      },
+      {
+        "line": {
+          "player_id": "12517",
+          "name": "Colston Loveland",
+          "position": "TE",
+          "nfl_team": "CHI",
+          "points": 15.5,
+          "projection": 7.55,
+          "season_avg": null,
+          "started": true,
+          "slot": "TE",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "TE",
+        "rank": 2,
+        "of": 15,
+        "roster_id": 2
+      },
+      {
+        "line": {
+          "player_id": "4217",
+          "name": "George Kittle",
+          "position": "TE",
+          "nfl_team": "SF",
+          "points": 15.4,
+          "projection": 12.38,
+          "season_avg": null,
+          "started": true,
+          "slot": "TE",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "TE",
+        "rank": 3,
+        "of": 15,
+        "roster_id": 5
+      },
+      {
+        "line": {
+          "player_id": "PIT",
+          "name": "Pittsburgh Steelers",
+          "position": "DEF",
+          "nfl_team": "PIT",
+          "points": 15.35,
+          "projection": 8.08,
+          "season_avg": null,
+          "started": true,
+          "slot": "DEF",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "DEF",
+        "rank": 1,
+        "of": 12,
+        "roster_id": 8
+      },
+      {
+        "line": {
+          "player_id": "KC",
+          "name": "Kansas City Chiefs",
+          "position": "DEF",
+          "nfl_team": "KC",
+          "points": 14.15,
+          "projection": 9.01,
+          "season_avg": null,
+          "started": true,
+          "slot": "DEF",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "DEF",
+        "rank": 2,
+        "of": 12,
+        "roster_id": 4
+      },
+      {
+        "line": {
+          "player_id": "DEN",
+          "name": "Denver Broncos",
+          "position": "DEF",
+          "nfl_team": "DEN",
+          "points": 13.35,
+          "projection": 6.53,
+          "season_avg": null,
+          "started": true,
+          "slot": "DEF",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "position": "DEF",
+        "rank": 3,
+        "of": 12,
+        "roster_id": 3
       }
     ],
     "trades": [
@@ -6197,20 +6464,6 @@
           "Tre Tucker"
         ]
       },
-      "AW.butterfingers": {
-        "id": "AW.butterfingers",
-        "text": "Butterfingers: Matthew Golden (WR, GB), Bo Girds. Matthew Golden dropped 3 passes, tied for the most of any started player this week, worth about 14.2 points by the drop value method.",
-        "numbers": [
-          "3",
-          "14.2"
-        ],
-        "teams": [
-          "Bo Girds"
-        ],
-        "players": [
-          "Matthew Golden"
-        ]
-      },
       "AW.game_changer.news": {
         "id": "AW.game_changer.news",
         "text": "Latest news on Germie Bernard: Pittsburgh Steelers wide receiver Germie Bernard continued his rapid emergence in Sunday's 26-19 overtime victory over the Tampa Bay Buccaneers, setting a franchise rookie record with 11 receptions for 87 yards and his first career touchdown. The 22-year-old caught the game-winning six-yard score",
@@ -6887,25 +7140,11 @@
           "Trey McBride"
         ]
       },
-      "RANK.1466": {
-        "id": "RANK.1466",
-        "text": "Travis Kelce ranked 8 of 15 among started TEs this week, for Lil Fridge.",
-        "numbers": [
-          "8",
-          "15"
-        ],
-        "teams": [
-          "Lil Fridge"
-        ],
-        "players": [
-          "Travis Kelce"
-        ]
-      },
       "RANK.10236": {
         "id": "RANK.10236",
-        "text": "Dalton Kincaid ranked 9 of 15 among started TEs this week, for Amon-Ra Dawg Your Team.",
+        "text": "Dalton Kincaid ranked 8 of 15 among started TEs this week, for Amon-Ra Dawg Your Team.",
         "numbers": [
-          "9",
+          "8",
           "15"
         ],
         "teams": [
@@ -6913,6 +7152,20 @@
         ],
         "players": [
           "Dalton Kincaid"
+        ]
+      },
+      "RANK.1466": {
+        "id": "RANK.1466",
+        "text": "Travis Kelce ranked 9 of 15 among started TEs this week, for Lil Fridge.",
+        "numbers": [
+          "9",
+          "15"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Travis Kelce"
         ]
       },
       "RANK.9480": {
@@ -7783,25 +8036,11 @@
           "Baltimore Ravens"
         ]
       },
-      "RANK.NE": {
-        "id": "RANK.NE",
-        "text": "New England Patriots ranked 7 of 12 among started DEFs this week, for Amon-Ra Dawg Your Team.",
-        "numbers": [
-          "7",
-          "12"
-        ],
-        "teams": [
-          "Amon-Ra Dawg Your Team"
-        ],
-        "players": [
-          "New England Patriots"
-        ]
-      },
       "RANK.CAR": {
         "id": "RANK.CAR",
-        "text": "Carolina Panthers ranked 8 of 12 among started DEFs this week, for To Infinity and Bijan.",
+        "text": "Carolina Panthers ranked 7 of 12 among started DEFs this week, for To Infinity and Bijan.",
         "numbers": [
-          "8",
+          "7",
           "12"
         ],
         "teams": [
@@ -7809,6 +8048,20 @@
         ],
         "players": [
           "Carolina Panthers"
+        ]
+      },
+      "RANK.NE": {
+        "id": "RANK.NE",
+        "text": "New England Patriots ranked 8 of 12 among started DEFs this week, for Amon-Ra Dawg Your Team.",
+        "numbers": [
+          "8",
+          "12"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "New England Patriots"
         ]
       },
       "RANK.SF": {
@@ -7865,6 +8118,231 @@
         ],
         "players": [
           "Jacksonville Jaguars"
+        ]
+      },
+      "LEAD.QB.1": {
+        "id": "LEAD.QB.1",
+        "text": "Trevor Lawrence (QB, JAX) scored 28.34 for Amon-Ra Dawg Your Team, 1st of 12 among started QBs this week.",
+        "numbers": [
+          "28.34",
+          "1",
+          "12"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Trevor Lawrence"
+        ]
+      },
+      "LEAD.QB.2": {
+        "id": "LEAD.QB.2",
+        "text": "Tyler Shough (QB, NO) scored 26.96 for Bo Girds, 2nd of 12 among started QBs this week.",
+        "numbers": [
+          "26.96",
+          "2",
+          "12"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Tyler Shough"
+        ]
+      },
+      "LEAD.QB.3": {
+        "id": "LEAD.QB.3",
+        "text": "Drake Maye (QB, NE) scored 23.8 for Maye d'force B with U, 3rd of 12 among started QBs this week.",
+        "numbers": [
+          "23.8",
+          "3",
+          "12"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Drake Maye"
+        ]
+      },
+      "LEAD.RB.1": {
+        "id": "LEAD.RB.1",
+        "text": "Kenneth Walker (RB, KC) scored 26.9 for Bo Girds, 1st of 31 among started RBs this week.",
+        "numbers": [
+          "26.9",
+          "1",
+          "31"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Kenneth Walker"
+        ]
+      },
+      "LEAD.RB.2": {
+        "id": "LEAD.RB.2",
+        "text": "Christian McCaffrey (RB, SF) scored 26.2 for Lil Fridge, 2nd of 31 among started RBs this week.",
+        "numbers": [
+          "26.2",
+          "2",
+          "31"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Christian McCaffrey"
+        ]
+      },
+      "LEAD.RB.3": {
+        "id": "LEAD.RB.3",
+        "text": "James Cook (RB, BUF) scored 22.8 for London Cooking, 3rd of 31 among started RBs this week.",
+        "numbers": [
+          "22.8",
+          "3",
+          "31"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": [
+          "James Cook"
+        ]
+      },
+      "LEAD.WR.1": {
+        "id": "LEAD.WR.1",
+        "text": "Tre Tucker (WR, LV) scored 24.2 for All You Need Is Love, 1st of 38 among started WRs this week.",
+        "numbers": [
+          "24.2",
+          "1",
+          "38"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Tre Tucker"
+        ]
+      },
+      "LEAD.WR.2": {
+        "id": "LEAD.WR.2",
+        "text": "Malik Nabers (WR, NYG) scored 22.5 for Return of T Mac, 2nd of 38 among started WRs this week.",
+        "numbers": [
+          "22.5",
+          "2",
+          "38"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
+      "LEAD.WR.3": {
+        "id": "LEAD.WR.3",
+        "text": "Germie Bernard (WR, PIT) scored 20.2 for behold the lamb, 3rd of 38 among started WRs this week.",
+        "numbers": [
+          "20.2",
+          "3",
+          "38"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Germie Bernard"
+        ]
+      },
+      "LEAD.TE.1": {
+        "id": "LEAD.TE.1",
+        "text": "Isaiah Likely (TE, NYG) scored 20.9 for Maye d'force B with U, 1st of 15 among started TEs this week.",
+        "numbers": [
+          "20.9",
+          "1",
+          "15"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Isaiah Likely"
+        ]
+      },
+      "LEAD.TE.2": {
+        "id": "LEAD.TE.2",
+        "text": "Colston Loveland (TE, CHI) scored 15.5 for All You Need Is Love, 2nd of 15 among started TEs this week.",
+        "numbers": [
+          "15.5",
+          "2",
+          "15"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Colston Loveland"
+        ]
+      },
+      "LEAD.TE.3": {
+        "id": "LEAD.TE.3",
+        "text": "George Kittle (TE, SF) scored 15.4 for London Cooking, 3rd of 15 among started TEs this week.",
+        "numbers": [
+          "15.4",
+          "3",
+          "15"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": [
+          "George Kittle"
+        ]
+      },
+      "LEAD.DEF.1": {
+        "id": "LEAD.DEF.1",
+        "text": "Pittsburgh Steelers (DEF, PIT) scored 15.35 for Return of T Mac, 1st of 12 among started DEFs this week.",
+        "numbers": [
+          "15.35",
+          "1",
+          "12"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Pittsburgh Steelers"
+        ]
+      },
+      "LEAD.DEF.2": {
+        "id": "LEAD.DEF.2",
+        "text": "Kansas City Chiefs (DEF, KC) scored 14.15 for Pukancun on 3, 2nd of 12 among started DEFs this week.",
+        "numbers": [
+          "14.15",
+          "2",
+          "12"
+        ],
+        "teams": [
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Kansas City Chiefs"
+        ]
+      },
+      "LEAD.DEF.3": {
+        "id": "LEAD.DEF.3",
+        "text": "Denver Broncos (DEF, DEN) scored 13.35 for Lil Fridge, 3rd of 12 among started DEFs this week.",
+        "numbers": [
+          "13.35",
+          "3",
+          "12"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Denver Broncos"
         ]
       },
       "SOS.3": {
@@ -13459,7 +13937,6 @@
           "AW.mvb",
           "AW.underperformer",
           "AW.overachiever",
-          "AW.butterfingers",
           "AW.game_changer.news",
           "W.adds",
           "W.injured",
@@ -13467,7 +13944,6 @@
           "RANK.7523",
           "RANK.9509",
           "RANK.10213",
-          "RANK.12501",
           "M1.result",
           "M2.result",
           "M3.result",
@@ -13477,8 +13953,6 @@
           "P.13274.trend",
           "P.7523.trend",
           "W.drops",
-          "D.12501",
-          "D.12501.value",
           "D.10213",
           "D.10213.value"
         ],
@@ -13673,6 +14147,61 @@
           "Jameson Williams",
           "Puka Nacua",
           "Kansas City Chiefs"
+        ],
+        "min_sentences": 2,
+        "max_sentences": 4,
+        "grade_keys": []
+      },
+      {
+        "key": "position_leaders",
+        "title": "Position Leaders",
+        "fact_ids": [
+          "LEAD.QB.1",
+          "LEAD.QB.2",
+          "LEAD.QB.3",
+          "LEAD.RB.1",
+          "LEAD.RB.2",
+          "LEAD.RB.3",
+          "LEAD.WR.1",
+          "LEAD.WR.2",
+          "LEAD.WR.3",
+          "LEAD.TE.1",
+          "LEAD.TE.2",
+          "LEAD.TE.3",
+          "LEAD.DEF.1",
+          "LEAD.DEF.2",
+          "LEAD.DEF.3"
+        ],
+        "scope_teams": [
+          "Brock ‘N’ Roll",
+          "All You Need Is Love",
+          "Lil Fridge",
+          "Pukancun on 3",
+          "London Cooking",
+          "Bo Girds",
+          "To Infinity and Bijan",
+          "Return of T Mac",
+          "Maye d'force B with U",
+          "behold the lamb",
+          "Unsolicited Dak Picks",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "scope_players": [
+          "Trevor Lawrence",
+          "Tyler Shough",
+          "Drake Maye",
+          "Kenneth Walker",
+          "Christian McCaffrey",
+          "James Cook",
+          "Tre Tucker",
+          "Malik Nabers",
+          "Germie Bernard",
+          "Isaiah Likely",
+          "Colston Loveland",
+          "George Kittle",
+          "Pittsburgh Steelers",
+          "Kansas City Chiefs",
+          "Denver Broncos"
         ],
         "min_sentences": 2,
         "max_sentences": 4,

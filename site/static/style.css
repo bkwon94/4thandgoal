@@ -31,10 +31,11 @@ a { color:var(--red); }
 .pt, .hero-p, .pp, .tile .sub, .kpi .v, .stars b, .mu .hd, .chart .r, .st, .rec, .week .dates, .wk .dates { font-variant-numeric:tabular-nums; }
 
 .avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
+.headshot { border-radius:50%; object-fit:cover; flex:none; }
 .who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
 
 .mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }
-.brand { display:flex; align-items:center; gap:var(--sp-3); }
+.brand { display:flex; align-items:center; gap:var(--sp-3); color:inherit; text-decoration:none; }
 .logo { width:30px; height:30px; border-radius:50%; flex:none; }
 .bar { width:1px; height:28px; background:var(--muted); }
 .brand .t { font-weight:700; letter-spacing:var(--track-wide); text-transform:uppercase; font-size:var(--fs-meta); line-height:var(--lh-tight); }
@@ -71,14 +72,49 @@ a { color:var(--red); }
 .hero-p { font-weight:900; font-size:var(--fs-score); line-height:var(--lh-stat); margin:0 0 var(--sp-1); }
 .hero-p small { font-weight:600; font-size:var(--fs-meta); color:var(--on-dark-muted); margin-left:var(--sp-2); }
 .hero-p.pts { color:var(--red-lt); margin-bottom:var(--sp-3); }
+/* The stage spans the card edge to edge. The cutout bleeds off the right and bottom edges, so the player reads as part of the card, not a sticker on it. */
+/* The image and the text share one grid cell. The image sets the stage height, and the text starts right under the label. */
+.stage { position:relative; display:grid; margin:calc(var(--sp-5) * -1) calc(var(--gutter) * -1) var(--sp-4); overflow:hidden; }
+/* The red glow sits behind the head, so the cutout lifts off the black card. */
+.stage::before { content:""; position:absolute; z-index:0; right:-10%; top:0; width:90%; height:90%; background:radial-gradient(closest-side, color-mix(in srgb, var(--red) 45%, transparent), transparent); }
+/* The left-to-right gradient darkens the face under the text, so the name and points stay legible. The bottom fade melts the chest crop into the card. */
+.stage::after { content:""; position:absolute; z-index:2; inset:0; background:linear-gradient(to right, var(--blk) 0%, color-mix(in srgb, var(--blk) 85%, transparent) 30%, transparent 62%), linear-gradient(to top, var(--blk) 0%, transparent 30%); }
+.stage .headshot { grid-area:1 / 1; position:relative; z-index:1; align-self:end; justify-self:end; display:block; width:100%; height:auto; margin-right:-28%; border-radius:0; }
+/* The name wraps inside 60 percent of the card, so a long name never runs under the face. */
+.stage-text { grid-area:1 / 1; position:relative; z-index:3; max-width:60%; padding:var(--sp-5) var(--gutter) var(--sp-4); }
+.stage-text .hero-p { margin:0; }
+.stage-text .hero-p small { display:block; margin:var(--sp-1) 0 var(--sp-2); }
+.stage-text .hero-p.pts { font-size:calc(var(--fs-headline) * 1.8); line-height:.9; letter-spacing:-.03em; }
+.stage-text .proj { color:var(--on-dark-muted); font-size:var(--fs-meta); font-weight:600; margin-top:var(--sp-1); }
 
 .tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); }
 .tile { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 /* The MVB title takes two lines at phone width. Every tile title keeps two lines, so names and numbers align across a row. */
 .tile .lbl { margin-bottom:var(--sp-1); min-height:calc(2em * var(--lh-tight)); }
+/* The headshot has no background, so the cutout sits on the card grey. */
+.tile .headshot { display:block; width:calc(var(--sp-5) * 2); height:calc(var(--sp-5) * 2); margin-bottom:var(--sp-2); }
 .tile .n { font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
 .tile .pp { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); margin-top:var(--sp-1); }
 .tile .sub { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
+
+/* The boards stack, one position per card, so a row never wraps at phone width. */
+/* minmax(0,1fr) caps the column at the section width. A one-line row has a wide min-content size, and an auto column grows past the gutter to fit it. */
+.boards { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--sp-2); }
+.board { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
+.board .lbl { margin-bottom:var(--sp-1); }
+.board ol { list-style:none; margin:0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.board .empty { margin:0; color:var(--muted); font-size:var(--fs-meta); }
+/* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left and truncates, so the points never leave the row. */
+.board .row { display:flex; align-items:baseline; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
+.board .row + .row { border-top:1px solid var(--rule); }
+.board .rk { flex:none; color:var(--muted); font-size:var(--fs-meta); font-weight:700; }
+.board .pl { flex:0 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.board .pl small { color:var(--muted); font-size:var(--fs-meta); }
+/* The row headshot stays near the text height, so the row keeps one line and about the height of a plain text row. */
+.board .pl .headshot { display:inline-block; width:var(--sp-5); height:var(--sp-5); margin-right:var(--sp-2); vertical-align:middle; }
+.board .tm { flex:1 1 0; min-width:0; color:var(--muted); font-size:var(--fs-meta); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* The points are the stat a reader scans for, so they take the body size and the heaviest weight in the row. */
+.board .pts { flex:none; font-size:var(--fs-body); font-weight:800; }
 
 .mu { border-bottom:1px solid var(--rule); }
 .mu:last-of-type { border-bottom:none; }
@@ -195,6 +231,16 @@ a { color:var(--red); }
   :root { color-scheme:light; }
   body { background:var(--wht); color:var(--ink); }
 }
-/* The five-tile grid has one tile in a half-empty last row. It spans the row so it does not look lost. */
-.tiles .tile:last-child:nth-child(odd) { grid-column:1 / -1; }
-.tile .pp small { font-size:var(--fs-meta); font-weight:700; color:var(--muted); }
+
+/* A wide screen gets a two-column grid, so the section does not run five cards long. The fifth board spans the row so it does not look lost.
+   A half-width card is too narrow for one line, so the fantasy team drops under the player and the points stay on the right. */
+@media (min-width: 768px) {
+  .boards { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .boards .board:last-child:nth-child(odd) { grid-column:1 / -1; }
+  .board .row { display:grid; grid-template-columns:auto minmax(0,1fr) auto; column-gap:var(--sp-2); row-gap:var(--sp-0); }
+  .board .pl { grid-column:2; grid-row:1; }
+  .board .tm { grid-column:2; grid-row:2; }
+  .board .pts { grid-column:3; grid-row:1; }
+  /* The spanned board is as wide as a phone board, so its rows keep the one-line layout. */
+  .boards .board:last-child:nth-child(odd) .row { display:flex; }
+}
