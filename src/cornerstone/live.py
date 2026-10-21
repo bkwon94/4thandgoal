@@ -10,7 +10,7 @@ from pathlib import Path
 import httpx
 
 from cornerstone.chart import chart_values
-from cornerstone.history import fetch_history, history_root
+from cornerstone.history import fetch_history, history_root, returns_path
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, cache_path, download, http_get, is_fresh,
@@ -19,7 +19,7 @@ from cornerstone.parse import parse_week
 from cornerstone.pipeline import LEAGUE_ID, nflverse_cache_dir
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week
-from cornerstone.snapshot import Snapshot, build_snapshot
+from cornerstone.snapshot import Snapshot, build_snapshot, load_returns
 from cornerstone.trades import default_cutoff
 
 logger = logging.getLogger(__name__)
@@ -87,4 +87,5 @@ def live_snapshot(
     # The chart is the one of the trade window, which can be a week ahead of the last scored week.
     chart = read_chart(repo, week.season_start, trade_week, week_lines(week))
     slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)
-    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week)
+    returns = load_returns(returns_path(repo, season))
+    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns)

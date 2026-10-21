@@ -97,8 +97,9 @@ def test_the_returns_file_gives_the_return_week_and_sleeper_gives_the_injury_sta
 
 def test_a_season_with_no_returns_file_has_no_return_weeks_and_names_it_as_missing(
         fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
-    raw_dir = tmp_path / "2026" / "week-06" / "raw"
-    shutil.copytree(fixture_raw_dir, raw_dir)
-    snap = load_snapshot(raw_dir, fixture_history_root, chart_week6)
+    # The returns file sits beside the history, so a history root with no sibling file has none.
+    history_root = tmp_path / "2026" / "history"
+    shutil.copytree(fixture_history_root, history_root)
+    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6)
     assert snap.returns == {}
     assert snap.missing[-1] == "returns"

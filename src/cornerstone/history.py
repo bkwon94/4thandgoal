@@ -27,6 +27,11 @@ def history_root(repo: Path, season: int) -> Path:
     return repo / "data" / str(season) / "history"
 
 
+def returns_path(repo: Path, season: int) -> Path:
+    """The hand-kept returns file of the season: the return week by player id, beside the history."""
+    return repo / "data" / str(season) / "returns.json"
+
+
 def history_dir(root: Path, week: int) -> Path:
     return root / f"week-{week:02d}"
 

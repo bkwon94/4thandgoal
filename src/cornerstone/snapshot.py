@@ -88,11 +88,6 @@ class Snapshot(BaseModel):
     stale: list[str] = []
 
 
-def returns_path(raw_dir: Path) -> Path:
-    """The returns file of the season, data/<season>/returns.json, two levels above the raw directory."""
-    return raw_dir.parent.parent / "returns.json"
-
-
 def load_returns(path: Path) -> dict[str, int] | None:
     """The return week by player id, or None when the season has no returns file."""
     if not path.exists():
@@ -106,16 +101,19 @@ def load_snapshot(
 
     Without `slow`, the slow sources stay None and all of them are named as missing.
     """
-    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir))
+    # The returns file sits beside the history, so the history root locates it.
+    returns = load_returns(history_root.parent / "returns.json")
+    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir), returns=returns)
 
 
 def build_snapshot(
         raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
-        trade_week: int | None = None) -> Snapshot:
+        trade_week: int | None = None, returns: dict[str, int] | None = None) -> Snapshot:
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
+    `returns` is the hand-kept return week by player id. None means the season has no returns file.
     """
     week = parse_week(raw)
     stale = list(stale or [])
@@ -148,7 +146,6 @@ def build_snapshot(
     }
     # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
     slow_missing = list(SLOW_SOURCES) if slow is None else [*slow.missing, *UNLOADED_SOURCES]
-    returns = load_returns(returns_path(raw_dir))
     missing = ([] if chart is not None else ["chart"]) + slow_missing + ([] if returns is not None else ["returns"])
     return Snapshot(
         season=week.season,
