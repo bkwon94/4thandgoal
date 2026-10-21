@@ -27,6 +27,12 @@ The Claude call that turns one chapter and its facts into a blurb.
 **Verifier**:
 The code check and the Claude check that reject a blurb with an uncited number or claim.
 
+### The page
+
+**Position leader**:
+One of the three started players with the most points at one position this week, league wide.
+_Avoid_: top scorer (that is the award and the per-team matchup fact)
+
 ### Trades
 
 **Trade**:
