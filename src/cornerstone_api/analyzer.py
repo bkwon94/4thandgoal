@@ -51,6 +51,8 @@ def teams(request: Request, season: int) -> dict:
             "roster_id": roster_id,
             "team": snapshot.teams[roster_id].name,
             "manager": snapshot.teams[roster_id].owner,
+            # The form shows the avatar next to the team name.
+            "avatar": snapshot.teams[roster_id].avatar_url,
             "players": [_player(snapshot, pid) for pid in players],
         }
         for roster_id, players in sorted(snapshot.rosters.items())

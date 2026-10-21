@@ -138,6 +138,10 @@ def test_teams_lists_each_roster_with_its_players_for_the_form(settings, sources
     assert len(body["teams"]) == 12
     four = _team(body, 4)
     assert four["team"] and four["manager"]
+    # Roster 4's user has no metadata avatar, so the fixture gives the thumb URL.
+    assert four["avatar"] == (
+        "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204"
+    )
     nico = next(p for p in four["players"] if p["player_id"] == "7569")
     assert nico == {"player_id": "7569", "name": "Nico Collins", "position": "WR", "nfl_team": "HOU",
                     "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg"}
