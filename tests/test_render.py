@@ -262,3 +262,12 @@ def test_card_without_a_blurb_holds_the_sides_text(tbundle, tmp_path):
 def test_app_js_toggles_trade_cards(tbundle, tmp_path):
     render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
     assert ".trade" in (tmp_path / "static" / "app.js").read_text()
+
+
+def test_next_week_card_puts_each_team_on_its_own_row(hbundle, tmp_path):
+    html = render_week(hbundle, {}, tmp_path, fetch_bytes=lambda url: None).read_text()
+    card = html[html.index('class="nx"'):]
+    card = card[:card.index("</div>\n    </div>")]
+    assert card.count('class="side"') == 2 and card.count('class="vs"') == 1
+    # The record carries no parentheses, so it reads as a column on the right of the card.
+    assert "(" not in card.split('class="rec"')[1].split("</span>")[0]

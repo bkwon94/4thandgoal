@@ -132,7 +132,11 @@
     <div class="lbl">Next Week · Week {{ week + 1 }}</div>
     {% for n in next %}
     <div class="nx">
-      <div class="m">{{ tm(n.a) }} <span class="rec">({{ n.a.wins }}-{{ n.a.losses }})</span> vs {{ tm(n.b) }} <span class="rec">({{ n.b.wins }}-{{ n.b.losses }})</span></div>
+      <div class="m">
+        <div class="side">{{ tm(n.a) }}<span class="rec">{{ n.a.wins }}-{{ n.a.losses }}</span></div>
+        <div class="vs">vs</div>
+        <div class="side">{{ tm(n.b) }}<span class="rec">{{ n.b.wins }}-{{ n.b.losses }}</span></div>
+      </div>
       {% if n.must_watch %}<div><span class="tag">Must Watch</span></div>{% endif %}
       {% if n.must_watch and n.reason %}<div class="b">{{ n.reason }}</div>{% endif %}
     </div>
