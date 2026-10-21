@@ -230,6 +230,8 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
     assert any(f.startswith("public/static/") for f in files)
     assert "public/index.html" in files
     assert not (site_repo / "2026").exists()
+    assert not (site_repo / "index.html").exists()
+    assert not (site_repo / "static").exists()
     assert _git(repo, "log", "-1", "--format=%s").strip() == "Week 6 report"
 
 
