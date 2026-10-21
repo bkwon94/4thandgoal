@@ -87,15 +87,14 @@
     <div class="trade">
       {% for side in t.sides %}
       <div class="side">
-        <div class="top">{{ tm(side.team) }}{% if side.grade %}<span class="grade">{{ side.grade }}</span>{% else %}<span class="grade none">No grade</span>{% endif %}</div>
+        <div class="top">{{ tm(side.team) }}</div>
         <ul class="got">
           {% for p in side.players %}<li><span>{{ p.name }}</span></li>{% endfor %}
           {% for pick in side.picks %}<li><span>{{ pick }}</span></li>{% endfor %}
         </ul>
       </div>
       {% endfor %}
-      <button class="cta recap-btn" type="button" aria-expanded="false"><span class="open-label">Read the grade</span><span class="close-label">Hide the grade</span><span class="chev"></span></button>
-      <div class="body"><div class="inner"><p class="blurb">{{ t.blurb }}</p></div></div>
+      <p class="blurb">{{ t.blurb }}</p>
     </div>
     {% endfor %}
   </section>

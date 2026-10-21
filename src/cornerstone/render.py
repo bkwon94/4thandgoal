@@ -94,7 +94,8 @@ def _median(bundle: Bundle, teams: dict) -> dict:
 
 
 def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]:
-    """One card per trade, with a side per team. A trade recap has no grade, so a side has none."""
+    """One card per trade, with a side per team and the trade recap under the rows.
+    A chapter with no blurb shows the sides sentence, which is also the text of a fallback blurb."""
     facts = bundle.sheet.facts
     cards = []
     for i, trade in enumerate(bundle.data.trades, start=1):
@@ -109,8 +110,7 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
                 # A player with no lineup line has no name in the week data, so he shows under a plain label.
                 players.append({"name": bundle.data.trade_players.get(pid, "An unlisted player")})
             picks = [f"{p.season} round {p.round} pick" for p in trade.draft_picks if p.owner_id == rid]
-            sides.append({"team": teams[rid], "grade": None,
-                          "players": players, "picks": picks})
+            sides.append({"team": teams[rid], "players": players, "picks": picks})
         text = " ".join(s.text for s in blurb.sentences) if blurb else facts[f"T{i}.sides"].text
         cards.append({"sides": sides, "blurb": text})
     return cards

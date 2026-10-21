@@ -168,7 +168,9 @@ def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
     for key in [k for k in blurbs if k.startswith("trade_")]:
         del blurbs[key]
     html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
-    assert html.count('class="trade"') == 6 and html.count("No grade") == 12
+    assert html.count('class="trade"') == 6 and "No grade" not in html
+    for n in range(1, 7):
+        assert tbundle.sheet.facts[f"T{n}.sides"].text in _card(html, n)
 
 
 def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
@@ -176,7 +178,9 @@ def test_trades_render_with_the_template_blurb(tbundle, tmp_path):
     for ch in (c for c in tbundle.sheet.chapters if c.key.startswith("trade_")):
         blurbs[ch.key] = template_blurb(ch, tbundle.sheet)
     html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
-    assert html.count("No grade") == 12
+    assert "No grade" not in html
+    for n in range(1, 7):
+        assert tbundle.sheet.facts[f"T{n}.sides"].text in _card(html, n)
 
 
 def test_trades_have_no_opinion_note(tbundle, tmp_path):
@@ -213,12 +217,17 @@ def _card(html, n):
     return _section(html).split('class="trade"')[n]
 
 
-def test_trade_cards_have_a_button_and_a_panel(tbundle, tmp_path):
+def test_trade_cards_show_the_recap_with_no_grade_and_no_toggle(tbundle, tmp_path):
     html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
     s = _section(html)
-    assert s.count("Read the grade") == 6 and s.count("Hide the grade") == 6
-    assert s.count('aria-expanded="false"') == 6 and s.count('class="body"') == 6
-    assert "Blurb for trade_5." in _card(html, 5)
+    assert s.count('class="side"') == 12
+    assert 'class="grade' not in s and "No grade" not in s
+    assert "<button" not in s and "recap-btn" not in s and "the grade" not in s
+    assert 'class="body"' not in s and "aria-expanded" not in s
+    card = _card(html, 5)
+    assert '<p class="blurb">Blurb for trade_5.</p>' in card
+    # The recap sits under the player rows.
+    assert card.index("</ul>") < card.index("Blurb for trade_5.")
 
 
 def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_dir, tmp_path):
@@ -233,24 +242,31 @@ def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_di
     assert "ppg" not in _section(html)
 
 
-def test_fallback_card_shows_no_grade_and_the_template(tbundle, tmp_path):
+def test_fallback_card_shows_the_sides_sentence_as_the_recap(tbundle, tmp_path):
     blurbs = _blurbs(tbundle)
     blurbs["trade_5"] = template_blurb(next(c for c in tbundle.sheet.chapters if c.key == "trade_5"), tbundle.sheet)
     card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
-    assert card.count("No grade") == 2
-    assert tbundle.sheet.facts["T5.sides"].text in card
+    assert "No grade" not in card
+    assert f'<p class="blurb">{tbundle.sheet.facts["T5.sides"].text}</p>' in card
 
 
 def test_card_without_a_blurb_holds_the_sides_text(tbundle, tmp_path):
     blurbs = _blurbs(tbundle)
     del blurbs["trade_5"]
     card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
-    assert card.count("No grade") == 2 and tbundle.sheet.facts["T5.sides"].text in card
+    assert "No grade" not in card
+    assert f'<p class="blurb">{tbundle.sheet.facts["T5.sides"].text}</p>' in card
 
 
-def test_app_js_toggles_trade_cards(tbundle, tmp_path):
+def test_app_js_toggles_matchup_rows_only(tbundle, tmp_path):
     render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png)
-    assert ".trade" in (tmp_path / "static" / "app.js").read_text()
+    js = (tmp_path / "static" / "app.js").read_text()
+    assert ".recap-btn" in js and ".mu" in js and ".trade" not in js
+
+
+def test_build_context_trade_sides_carry_no_grade(tbundle):
+    ctx = build_context(tbundle, _blurbs(tbundle), {}, {})
+    assert all("grade" not in side for card in ctx["trades"] for side in card["sides"])
 
 
 def test_next_week_card_puts_each_team_on_its_own_row(hbundle, tmp_path):
