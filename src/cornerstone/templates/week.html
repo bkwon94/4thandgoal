@@ -40,8 +40,8 @@
         <div class="sub">Projections unavailable this week</div>
         {% else %}
         <div class="n">{{ t.player }}</div>
-        <div class="pp">{{ t.points|num }}{% if t.drops is not none %} <small>{{ 'drop' if t.drops == 1 else 'drops' }}</small>{% endif %}</div>
-        <div class="sub">{% if t.projection is not none %}proj {{ t.projection|num }} · {% endif %}{% if t.drop_value is not none %}~{{ t.drop_value|num }} pts est. · {% endif %}{{ t.team }}</div>
+        <div class="pp">{{ t.points|num }}</div>
+        <div class="sub">{% if t.projection is not none %}proj {{ t.projection|num }} · {% endif %}{{ t.team }}</div>
         {% endif %}
       </div>
       {% endfor %}
@@ -94,11 +94,6 @@
       </div></div>
     </div>
     {% endfor %}
-    {% if drop_source == "nflverse" %}
-    <p class="blurb note">Drop value is an estimate: one reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone.</p>
-    {% elif drop_source == "sleeper" %}
-    <p class="blurb note">Drops are a count only this week, from Sleeper. No value was estimated.</p>
-    {% endif %}
   </section>
 
   <section class="chap">

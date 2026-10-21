@@ -40,7 +40,6 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **drop**: a pass the FTN charting flags as a drop. With nflverse down, the count is Sleeper's `rec_drop`.
 - **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone.
 - **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game.
-- **Butterfingers**: the started player with the most drops, across all teams.
 
 ## Banned words
 

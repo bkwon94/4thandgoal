@@ -338,7 +338,7 @@ def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir):
 def test_nflverse_down_still_builds(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _down_nflverse})
-    assert "count only this week" in page.read_text()
+    assert page.exists() and "count only this week" not in page.read_text()
 
 
 def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixture_raw_dir):

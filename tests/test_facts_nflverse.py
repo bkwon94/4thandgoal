@@ -1,10 +1,9 @@
 """
-Tests for the drop value, the drop lines, the drop facts, and the Butterfingers award.
+Tests for the drop value, the drop lines and the drop facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
-from cornerstone.facts_league import awards
 from cornerstone.facts_nflverse import drop_lines, drop_value
-from cornerstone.models import DropLine, NflverseWeek
+from cornerstone.models import NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
@@ -46,9 +45,10 @@ def test_drop_facts_are_in_their_chapters(dbundle):
     assert "M4.dropswing" in chapters["recap_4"].fact_ids
 
 
-def test_butterfingers(dbundle):
-    a = next(x for x in dbundle.data.awards if x.key == "butterfingers")
-    assert a.line.name == "Matthew Golden" and "14.2" in dbundle.sheet.facts["AW.butterfingers"].text
+def test_drops_are_not_an_award(dbundle):
+    assert [a.key for a in dbundle.data.awards] == [
+        "game_changer", "top_scorer", "mvb", "underperformer", "overachiever"]
+    assert "D.12501" in dbundle.sheet.facts and "M4.dropswing" in dbundle.sheet.facts
 
 
 def test_drops_degrade_to_sleeper_count(tbundle):
@@ -76,34 +76,12 @@ def test_no_drops_gives_source_none(fixture_raw_dir):
     bundle = build_bundle(wk, news=lambda pid: [])
     assert bundle.data.drop_source == "none" and bundle.data.drops == []
     assert "W.drops" not in bundle.sheet.facts
-    assert not any(a.key == "butterfingers" for a in bundle.data.awards)
 
 
 def test_nfl_none_equals_drops_none(fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
     down = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None)
     assert drop_lines(wk, None) == drop_lines(wk, down)
-
-
-def test_butterfingers_reason_says_tied_on_a_tie(dbundle):
-    assert "tied for the most of any started player" in dbundle.sheet.facts["AW.butterfingers"].text
-
-
-def test_butterfingers_reason_after_a_skip(hbundle, fixture_raw_dir):
-    # The top scorer holds an earlier award, so the next line wins with fewer drops.
-    wk = parse_week(load_raw(fixture_raw_dir))
-    top = next(a for a in hbundle.data.awards if a.key == "top_scorer")
-    other = next(l for m in wk.matchups for s in (m.a, m.b) for l in s.lines
-                 if l.started and l.player_id != top.line.player_id)
-    where = {l.player_id: (s.roster_id, m.matchup_id)
-             for m in wk.matchups for s in (m.a, m.b) for l in s.lines}
-    lines = [DropLine(player_id=p, roster_id=where[p][0], matchup_id=where[p][1],
-                      drops=n, targets=None, value=None, end_zone=None)
-             for p, n in ((top.line.player_id, 5), (other.player_id, 2))]
-    award = next(a for a in awards(wk, hbundle.data.matchups, lines) if a.key == "butterfingers")
-    assert award.line.player_id == other.player_id and award.skipped == [top.line.name]
-    assert award.reason == (f"{other.name} dropped 2 passes, "
-                            "the most among started players with no other award this week.")
 
 
 def test_pregame_fact(dbundle):
@@ -149,11 +127,6 @@ def test_one_drop_is_one_pass(fixture_raw_dir):
     f = build_bundle(week, news=lambda pid: []).sheet.facts
     assert f[f"D.{line.player_id}"].text == f"{line.name} dropped 1 pass this week."
     assert f["W.drops"].text == f"Most drops this week: {line.name} ({wk.teams[side.roster_id].name}), 1 drop."
-    one = [DropLine(player_id=line.player_id, roster_id=side.roster_id, matchup_id=wk.matchups[0].matchup_id,
-                    drops=1, targets=None, value=None, end_zone=None)]
-    award = next(a for a in awards(week, build_bundle(week, news=lambda pid: []).data.matchups, one)
-                 if a.key == "butterfingers")
-    assert award.reason.startswith(f"{line.name} dropped 1 pass, ")
 
 
 def test_missing_yardline_is_not_the_end_zone(fixture_raw_dir):

@@ -9,7 +9,6 @@ from decimal import Decimal
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
-    DropLine,
     History,
     MatchupFacts,
     NextMatchup,
@@ -254,7 +253,7 @@ def _located_lines(week: Week) -> list[tuple[PlayerLine, int, int]]:
     ]
 
 
-def awards(week: Week, mfacts: list[MatchupFacts], drops: list[DropLine] | None = None) -> list[Award]:
+def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
     located = _located_lines(week)
     started = [x for x in located if x[0].started]
     projections_up = any(x[0].projection is not None for x in started)
@@ -331,13 +330,6 @@ def awards(week: Week, mfacts: list[MatchupFacts], drops: list[DropLine] | None 
             ],
         ))
 
-    # Butterfingers ranks last, so every other award keeps its winner. Drop lines are started only.
-    by_player = {x[0].player_id: x for x in started}
-    rankings.append((
-        "butterfingers",
-        [(by_player[d.player_id], _butterfingers_reason(by_player[d.player_id][0], d, drops)) for d in drops or []],
-    ))
-
     picked: set[str] = set()
     out = []
     for key, ranked in rankings:
@@ -352,22 +344,6 @@ def awards(week: Week, mfacts: list[MatchupFacts], drops: list[DropLine] | None 
             )
             break
     return out
-
-
-def _butterfingers_reason(line: PlayerLine, d: DropLine, drops: list[DropLine]) -> str:
-    # The words follow the real rank, so a skip or a tie never makes the text false.
-    most = max(x.drops for x in drops)
-    if d.drops < most:
-        rank = "the most among started players with no other award this week"
-    elif sum(x.drops == most for x in drops) > 1:
-        rank = "tied for the most of any started player this week"
-    else:
-        rank = "the most of any started player this week"
-    reason = f"{line.name} dropped {d.drops} {'pass' if d.drops == 1 else 'passes'}, {rank}"
-    # With nflverse down there is no value, so the clause after "week" goes.
-    if d.value is None:
-        return reason + "."
-    return f"{reason}, worth about {r2(d.value)} points by the drop value method."
 
 
 def _game_changer_reason(loc, f: MatchupFacts, projections_up: bool) -> str:

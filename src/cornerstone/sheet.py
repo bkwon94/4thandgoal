@@ -61,7 +61,6 @@ AWARD_TITLES = {
     "mvb": "MVB",
     "underperformer": "Underperformer",
     "overachiever": "Overachiever",
-    "butterfingers": "Butterfingers",
 }
 # (min, max) sentences per chapter, from the spec.
 SENTENCE_RANGES = {
@@ -164,7 +163,7 @@ class Context:
         self.nfl = nfl
         self.chart = chart
         self.nfl_up = nfl is not None and nfl.drops is not None
-        self.awards = awards(week, self.mfacts, self.drops)
+        self.awards = awards(week, self.mfacts)
         self.next = next_week(week, self.table)
         self.season_history = season_history(week, history)
         self.ranks = position_ranks(week)

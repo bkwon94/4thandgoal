@@ -194,7 +194,7 @@ class Standing(BaseModel):
 
 
 class Award(BaseModel):
-    key: Literal["game_changer", "top_scorer", "mvb", "underperformer", "overachiever", "butterfingers"]
+    key: Literal["game_changer", "top_scorer", "mvb", "underperformer", "overachiever"]
     line: PlayerLine
     roster_id: int
     matchup_id: int

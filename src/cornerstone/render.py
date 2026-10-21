@@ -20,7 +20,7 @@ STATIC_DIR = PACKAGE_DIR / "static"
 DEFAULT_AVATAR = "static/avatar-default.svg"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
-TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever", "butterfingers")
+TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 SUMMARY_META = re.compile(r'<meta name="cornerstone-summary" content="([^"]*)">')
 
 _env = Environment(loader=FileSystemLoader(PACKAGE_DIR / "templates"), autoescape=True)
@@ -59,12 +59,8 @@ def _tile(bundle: Bundle, key: str, teams: dict) -> dict:
     projection = award.line.projection if key in ("underperformer", "overachiever") else None
     tile = {
         "title": title, "missing": False, "player": award.line.name, "points": award.line.points,
-        "team": teams[award.roster_id].name, "projection": projection, "drops": None, "drop_value": None,
+        "team": teams[award.roster_id].name, "projection": projection,
     }
-    if key == "butterfingers":
-        # The big number is the drop count. The value is None when only Sleeper gave the count.
-        drop = next(d for d in bundle.data.drops if d.player_id == award.line.player_id)
-        tile.update(points=drop.drops, drops=drop.drops, drop_value=drop.value)
     return tile
 
 
@@ -148,9 +144,7 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
         "pick": {"reason": data.pick.reason, "sides": pick_sides},
         "motw": pick_facts,
         "game_changer": {"award": game_changer, "team": teams[game_changer.roster_id].name} if game_changer else None,
-        # No drops means no Butterfingers award, and an empty tile would only confuse the reader.
-        "awards": [t for t in (_tile(bundle, key, teams) for key in TILE_KEYS)
-                   if not (t["missing"] and t["title"] == AWARD_TITLES["butterfingers"])],
+        "awards": [_tile(bundle, key, teams) for key in TILE_KEYS],
         "trades": _trades(bundle, blurbs, teams),
         "matchups": matchups,
         "median": _median(bundle, teams),
@@ -159,7 +153,6 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
             {"a": teams[n.a], "b": teams[n.b], "must_watch": n.must_watch, "reason": n.reason}
             for n in data.next
         ],
-        "drop_source": data.drop_source,
         "blurbs": text,
         "avatars": avatars,
         "summary": f"Week {data.week} · {data.dates} · {pick_sides[0]['team'].name} vs {pick_sides[1]['team'].name}",
