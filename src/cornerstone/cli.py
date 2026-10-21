@@ -29,7 +29,7 @@ from cornerstone.rubric import ProposedTrade, TradeSide, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.trades import EASTERN
-from cornerstone.writer import claude_call
+from cornerstone.writer import analyzer_call, claude_call
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -180,7 +180,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         result = grade(trade, snapshot)
         choice = verdict(trade, result)
     else:
-        analysis = analyze(trade, snapshot, call=claude_call)
+        analysis = analyze(trade, snapshot, call=analyzer_call)
         result, choice = analysis.breakdowns, analysis.code_verdict
     stamps = snapshot.as_of
     chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"

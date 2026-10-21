@@ -174,6 +174,32 @@ fly logs --app cpcfantasy-api
 
 Add `--no-tail` to get only the logs in the buffer. A failed fetch logs a warning with the source and the error.
 
+## The prompt cache
+
+Every Claude call with a system prompt marks that prompt as a cache prefix. The chart read has no system
+prompt, so it has no cache. The prompt files hold no date, week, or trade fact, so the prefix is the same
+bytes on every call of one kind.
+
+| Call | Lifetime | Why |
+| --- | --- | --- |
+| Analyzer, in the API and in `cornerstone analyze` | 1 hour | Trade requests come minutes apart. |
+| Writer and verifier, in the weekly build | 5 minutes, the default | The build runs its calls back to back. |
+
+The prices for Opus 5.5 are multiples of the input price:
+
+- A five-minute cache write costs 1.25x.
+- A one-hour cache write costs 2x.
+- A cache read costs 0.05x.
+
+Each call logs one info line with the kind and the three usage counts:
+
+```text
+INFO cornerstone.writer: AnalysisOut call: cache_creation_input_tokens=0 cache_read_input_tokens=4935 input_tokens=1949
+```
+
+A repeat call inside the lifetime shows `cache_read_input_tokens` above zero. A zero there on a repeat means
+a changed prefix, or a prefix under the minimum size of the model.
+
 ## Update the returns file
 
 1. Edit `data/<season>/returns.json`.

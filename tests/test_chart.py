@@ -357,7 +357,14 @@ def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
     class Messages:
         def parse(self, **kwargs):
             sent.update(kwargs)
-            return type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed"})()
+            usage = type("Usage", (), {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 1,
+            })
+            return type("Response", (), {
+                "stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage,
+            })()
 
     monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
     assert claude_read([b"one", b"two"], ChartRead) == "parsed"
