@@ -45,5 +45,5 @@ SHARE_WEEKS = 2
 # Injury: a player the side gets who is out now, or who was on the injury report in many weeks, is a step down.
 # The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
 INJURY_WEEKS = 3
-# A player who is out now and due back within this many weeks after the last completed week is a near return.
+# A player who is out now is a near return when his return week is no later than the trade week plus this count.
 RETURN_WINDOW_WEEKS = 2

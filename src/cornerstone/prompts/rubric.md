@@ -79,8 +79,9 @@ playoff spot. Every other team is in the middle and gets no step.
 - A seller gets one step down when it gives that player for a lineup gain now.
 
 A return week comes from the returns file, `data/<season>/returns.json`, which the commissioner
-keeps. It holds the week each injured or suspended player returns. A player who is out, on IR, or
-suspended, and who has no row in the file, counts as not back by week `RETURN_BY_WEEK`.
+keeps. It holds the week each injured or suspended player returns. A player with a status of Out, IR,
+or one of the suspension and PUP statuses, and with no row in the file, counts as not back by
+week `RETURN_BY_WEEK`.
 
 ## Trend and usage
 
@@ -92,24 +93,30 @@ Every other share is flat. A player with too few weeks of data counts as flat.
 - The players the side gets are down and the players it gives are up: one step down.
 - Shares that point both ways are mixed: no step. A player with one share up and one share down
   makes the trade mixed.
-- When every share is flat, red-zone use breaks the tie. Red-zone use is the red-zone targets and
+- When every share is flat, red-zone use decides. Red-zone use is the red-zone targets and
   rushes over the season. More red-zone use in the players the side gets is one step up. More in the
   players it gives is one step down. Equal use is no step.
 
-A handcuff's use does not count on either side, and the reason says so.
+A handcuff on either side is left out of the comparison, and the reason says so. A player whose
+return week on file is later than the last completed week is out now, so he has no use to
+compare. He is left out on both sides too, and the reason says that he is due back.
 
 ## Injury
 
 A player the side gets is an injury risk in two cases:
 
-- He is out now, on IR, or suspended, and the returns file has him back no sooner than
-  `RETURN_WINDOW_WEEKS` weeks after the last completed week.
+- He is out now, and he has no return week on file, or his return week is later than the trade
+  week plus `RETURN_WINDOW_WEEKS`.
 - He was on the injury report in `INJURY_WEEKS` or more weeks this season. Only the weeks
   before the trade count.
 
-One such player is one step down. The adjuster never fires for a player the standing adjuster
-credited as a return bet. When the injury report is not available, only the first case runs, and
-the reason says so.
+Out means a status of Out, IR, or one of the suspension and PUP statuses. This is the same set
+that the standing adjuster uses.
+
+Two or more such players are still one step down. The adjuster never fires for a player the
+standing adjuster credits as a return bet. When the injury report is not available, only the
+first case runs, and the reason says so. A player with no entry in the id map gets no count of
+report weeks, and the reason names him.
 
 ## Handcuff
 
@@ -118,11 +125,13 @@ when the first on that chart is on the side's roster after the trade. He is insu
 team's own starter.
 
 - He counts as zero in the start letter sums.
-- Roster fit cannot step down for a lineup loss in a trade that gets him.
-- Trend and usage leaves his use out.
+- Roster fit cannot step down for a side that gets a handcuff. This block is broad: any lineup
+  loss in that trade does not count.
+- Trend and usage leaves a handcuff on either side out of the comparison.
 
-The handcuff adjuster itself gives no step. It names the handcuff. When the depth chart is not
-available, no player is a handcuff, and the reason says that no handcuff check ran.
+The handcuff adjuster itself gives no step. It names the handcuff. When the depth chart or the id
+map is not available, no player is a handcuff, and the reason names the missing source. A running
+back with no entry in the id map gets no handcuff check, and the reason names him.
 
 ## What the breakdown never holds
 

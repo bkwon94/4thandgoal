@@ -1,6 +1,5 @@
 """
-Loads the slow sources of the snapshot: the NFL schedules, the depth charts, the id map, the points allowed,
-and the injury report.
+Loads the slow sources of the snapshot: the schedules, the depth charts, the id map, the points allowed, and injuries.
 A source that is not there is None and goes in `missing`, so the build never stops on one.
 """
 import csv

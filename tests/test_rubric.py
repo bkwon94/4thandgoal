@@ -353,7 +353,7 @@ def test_red_zone_use_breaks_the_tie_when_every_share_is_flat(snap):
     first, ninth = grade(_trade(1, [HARVEY], 9, [KAMARA]), snap)
     assert _adjuster(first, "trend and usage").step == 1
     assert _adjuster(first, "trend and usage").reason == (
-        "The snap and target shares hold steady, and the players it gets have more red-zone use.")
+        "The snap and target shares are flat, and the players it gets have more red-zone use.")
     assert _adjuster(ninth, "trend and usage").step == -1
 
 
@@ -366,10 +366,28 @@ def test_injury_steps_down_for_a_player_out_now_with_no_near_return(snap):
 
 
 def test_injury_gives_no_step_for_a_player_due_back_within_the_return_window(snap):
-    # Stats run through week 5, so a return in week 7 is near.
+    # The trade week is 6, so a return in week 7 is near.
     snap = snap.model_copy(update={"returns": {SAQUON: 7}})
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "injury").step == 0
+
+
+@pytest.mark.parametrize("week, step", [(8, 0), (9, -1)])
+def test_the_return_window_counts_from_the_trade_week(snap, week, step):
+    # The trade week is 6 and stats run through week 5. A return in week 8 is near, and a return in week 9 is not.
+    # Roster 7 is in the middle of the standings, so no return bet credit hides the injury step.
+    snap = snap.model_copy(update={"returns": {SAQUON: week}})
+    seventh, _ = grade(_trade(7, [B_ROBINSON], 10, [SAQUON]), snap)
+    assert _adjuster(seventh, "injury").step == step
+
+
+# Deebo Samuel on roster 10 is Out and has no row in the returns file, as Saquon Barkley.
+DEEBO = "5872"
+
+
+def test_injury_steps_down_once_when_two_players_it_gets_qualify(snap):
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON, DEEBO]), snap)
+    assert _adjuster(third, "injury").step == -1
 
 
 # Chris Olave on roster 2 is on the injury report in weeks 2 and 6, and in week 5 with no status.
@@ -429,7 +447,8 @@ def test_a_handcuff_with_a_chart_row_counts_as_zero_in_the_sums(slow_snap):
     handcuff = _adjuster(twelfth, "handcuff")
     assert handcuff.step == 0
     assert handcuff.reason == "Keaton Mitchell backs up the team's own starter, so he counts as insurance."
-    assert _adjuster(eleventh, "handcuff").reason == "No player it gets is a handcuff."
+    # The id map fixture lacks Pollard, so the reason of roster 11 also names him.
+    assert _adjuster(eleventh, "handcuff").reason.startswith("No player it gets is a handcuff.")
 
 
 def test_a_handcuff_with_no_chart_row_keeps_the_start_letter(slow_snap):
@@ -476,9 +495,26 @@ def test_trend_never_steps_down_because_of_a_handcuff(snap, slow_snap):
 
 
 def test_with_no_depth_chart_the_handcuff_check_does_not_run_and_the_breakdown_says_so(slow_snap):
-    for snap in (slow_snap.model_copy(update={"depth_charts": None}), slow_snap.model_copy(update={"id_map": None})):
+    for snap, source in ((slow_snap.model_copy(update={"depth_charts": None}), "depth chart"),
+                         (slow_snap.model_copy(update={"id_map": None}), "id map")):
         twelfth, _ = grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)
         assert _letters(grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)) == ["C", "C"]
         handcuff = _adjuster(twelfth, "handcuff")
         assert handcuff.step == 0
-        assert handcuff.reason == "The depth chart is not available, so no handcuff check ran."
+        assert handcuff.reason == f"The {source} is not available, so no handcuff check ran."
+
+
+def test_a_player_not_in_the_id_map_gets_no_report_count_and_no_handcuff_check(slow_snap):
+    # The id map fixture lacks Mitchell, so roster 12 gets a player with no gsis_id.
+    twelfth, _ = grade(_trade(12, [POLLARD], 11, [MITCHELL]), slow_snap)
+    injury, handcuff = _adjuster(twelfth, "injury"), _adjuster(twelfth, "handcuff")
+    assert injury.step == 0
+    assert injury.reason.endswith("Keaton Mitchell is not in the id map, so no report count ran for him.")
+    assert handcuff.step == 0
+    assert handcuff.reason.endswith("Keaton Mitchell is not in the id map, so no handcuff check ran for him.")
+
+
+def test_trend_leaves_out_a_player_who_is_due_back(snap):
+    # Jacobs is suspended through week 5 and due back in week 7, so he has no use to compare on either side.
+    for side in grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), _before_the_jacobs_trade(snap)):
+        assert _adjuster(side, "trend and usage").reason.endswith("Josh Jacobs is due back, so his use does not count.")
