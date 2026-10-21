@@ -1,6 +1,7 @@
 """
 The analyzer route group: the teams for the trade form, and the analyze route that grades a proposed trade.
 Both routes build the live snapshot through the sources on the app state, so a test swaps every fetch.
+The teams route keeps its answer per season in memory for a short window, so the form fills at once.
 """
 from collections.abc import Callable
 
@@ -29,10 +30,10 @@ GRADE_LIMIT_DETAIL = {
 Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
 
 
-def _snapshot(request: Request, season: int, *, with_chart: bool = True) -> Snapshot:
+def _snapshot(request: Request, season: int) -> Snapshot:
     """The live snapshot for `season`. A season that Sleeper is not in is a bad input, so it is 422."""
     with season_in_progress(season):
-        return request.app.state.sources.snapshot(request.app.state.settings.repo, season, with_chart=with_chart)
+        return request.app.state.sources.snapshot(request.app.state.settings.repo, season)
 
 
 def _player(snapshot: Snapshot, player_id: str) -> dict:
@@ -50,8 +51,15 @@ def _player(snapshot: Snapshot, player_id: str) -> dict:
 @router.get("/teams")
 def teams(request: Request, season: int) -> dict:
     """Each roster of the league with its team name, its manager, and its players, for the trade form."""
-    # The form needs the rosters and not the chart, so the route skips the chart read.
-    snapshot = _snapshot(request, season, with_chart=False)
+    return request.app.state.teams_cache.get_or_build(season, lambda: _teams(request, season))
+
+
+def _teams(request: Request, season: int) -> dict:
+    """The teams answer built from a live Sleeper fetch."""
+    # The form needs the rosters and not the chart or the slow sources, so the route skips their refresh and the
+    # history save. The daily cron and the start-up refresh keep the slow sources fresh.
+    with season_in_progress(season):
+        snapshot = request.app.state.sources.rosters_snapshot(request.app.state.settings.repo, season)
     return {"teams": [
         {
             "roster_id": roster_id,
@@ -125,6 +133,8 @@ def analyze(request: Request, trade: ProposedTrade) -> dict:
     try:
         check_trade(trade, snapshot)
     except TradeInputError as error:
+        # The form showed a roster that Sleeper no longer has, so the next teams request builds from Sleeper again.
+        request.app.state.teams_cache.clear(trade.season)
         # The id lets the form mark the player who is no longer on the giving roster.
         raise HTTPException(status_code=422, detail={"message": str(error), "player_id": error.player_id})
     if snapshot.chart is None:

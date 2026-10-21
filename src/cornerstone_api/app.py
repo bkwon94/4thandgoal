@@ -3,21 +3,26 @@ The app factory of the Cornerstone API: CORS, the passphrase check, the rate lim
 The service needs CORNERSTONE_PASSPHRASE, and ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
 CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
+On start, the real app refreshes the slow sources in a background thread, so the first request finds them on disk.
 """
 import hmac
+import logging
+import threading
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
-from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE
+from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE, TEAMS_CACHE_SECONDS
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api.cache import ResultCache
+from cornerstone_api.cache import ResultCache, TeamsCache
 from cornerstone_api.ratelimit import GradeLimiter, RateLimiter, client_address
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
+
+logger = logging.getLogger(__name__)
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
 # The file of the daily grade counts, in the result cache dir.
@@ -48,14 +53,31 @@ def _guard(request: Request) -> None:
         raise _Unauthorized()
 
 
+def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
+    """Refresh the slow sources of the season that Sleeper is in, with the normal max age.
+
+    The normal max age keeps a fresh file, so the refresh fetches only the old files again.
+    It runs in a background thread at start. Any error logs a warning and never raises, so the app keeps running.
+    The log names only the error type, as the chart read does, so it never holds a key.
+    """
+    try:
+        sources.refresh_current_season(settings.repo)
+    except Exception as error:
+        logger.warning("The start-up refresh of the slow sources failed (%s)", type(error).__name__)
+
+
 def create_app(
         settings: Settings, sources: Sources | None = None,
-        analyzer: analyzer_routes.Analyzer | None = None) -> FastAPI:
-    """The app for these settings. Tests give fixture-backed sources and an analyzer. The defaults are the real ones."""
+        analyzer: analyzer_routes.Analyzer | None = None, *, refresh_on_start: bool = False) -> FastAPI:
+    """The app for these settings. Tests give fixture-backed sources and an analyzer. The defaults are the real ones.
+
+    With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
+    """
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
     app.state.sources = sources or Sources()
     app.state.cache = ResultCache(settings.result_cache_dir)
+    app.state.teams_cache = TeamsCache(TEAMS_CACHE_SECONDS)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
     # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
     app.state.grade_limiter = GradeLimiter(
@@ -87,9 +109,17 @@ def create_app(
         """The liveness check. It needs no passphrase and reads no data."""
         return {"status": "ok"}
 
+    # A deploy or a fresh volume pays the downloads here and not in the first request.
+    # The thread is a daemon, so it never holds up a stop of the app.
+    app.state.refresh_thread = None
+    if refresh_on_start:
+        app.state.refresh_thread = threading.Thread(
+            target=refresh_sources_on_start, args=(settings, app.state.sources), name="start-up-refresh", daemon=True)
+        app.state.refresh_thread.start()
+
     return app
 
 
 def app_from_env() -> FastAPI:
     """The app with the settings from the environment. The uvicorn factory flag calls it."""
-    return create_app(Settings.from_env())
+    return create_app(Settings.from_env(), refresh_on_start=True)

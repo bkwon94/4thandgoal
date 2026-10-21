@@ -1,4 +1,4 @@
-# The Fly.io config of the Cornerstone API: one small machine in the New York area that stops when idle.
+# The Fly.io config of the Cornerstone API: one small machine in the New York area that always runs.
 # Secrets (ANTHROPIC_API_KEY, CORNERSTONE_PASSPHRASE) never go here. Set them with `fly secrets set`.
 
 app = "cpcfantasy-api"
@@ -16,10 +16,11 @@ primary_region = "ewr"
 [http_service]
   internal_port = 8080
   force_https = true
-  # The machine stops when no request comes, so an idle month costs cents. A request starts it again.
+  # One machine always runs, so no request waits for a cold start. The runbook gives the cost.
+  # Auto stop and start are on, so Fly stops any second machine a deploy makes.
   auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
   [[http_service.checks]]
     method = "GET"

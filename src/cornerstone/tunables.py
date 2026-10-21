@@ -74,3 +74,7 @@ GRADES_PER_MINUTE = 5
 # The analyze route: the count of grades one client address may get in one calendar day in Eastern time.
 # It caps the Claude bill from one browser over a day, and the count lives on the volume so a deploy keeps it.
 GRADES_PER_DAY = 20
+
+# The teams route: the seconds it answers one season from memory before it builds the teams again.
+# Each build fetches Sleeper, so the trade form fills at once. A trade or a waiver claim shows within this window.
+TEAMS_CACHE_SECONDS = 300

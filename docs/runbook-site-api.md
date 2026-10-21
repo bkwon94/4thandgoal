@@ -4,10 +4,27 @@ This runbook tells you how to deploy, check, and run the Cornerstone API at `api
 
 ## What runs where
 
-The API is one FastAPI app in one Docker image on Fly.io, app `cpcfantasy-api`, region `ewr`. The machine
-stops when no request comes, and the next request starts it again. A GitHub Actions cron calls `POST /refresh`
-every day at 10:00 UTC, so the slow sources and the chart are fresh before the managers wake. The cron never
-deploys. You deploy by hand from this runbook.
+The API is one FastAPI app in one Docker image on Fly.io, app `cpcfantasy-api`, region `ewr`. One machine
+always runs, because `fly.toml` sets `min_machines_running = 1`. So no request waits for a cold start. A GitHub
+Actions cron calls `POST /refresh` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
+managers wake. The cron never deploys. You deploy by hand from this runbook.
+
+The cost of the machine: one `shared-cpu-1x` machine with 1 GB costs $6.70 per month at the Fly list price for
+`ewr`. The price is for a 30-day month, and Fly bills by the second. The 1 GB volume adds $0.15 per month. The
+prices come from `https://docs.fly.io/about/pricing` on 2026-10-21.
+
+Two parts keep the trade form fast:
+
+- The teams cache. `GET /teams` keeps its answer per season in memory for `TEAMS_CACHE_SECONDS`, 300 seconds,
+  in `src/cornerstone/tunables.py`. Past the window it builds again. The build fetches only Sleeper. It reads
+  the slow sources from the volume as they are, so it never waits on a download. The cache lives in the process,
+  so a restart or a deploy empties it. When `POST /analyze` answers `422` for a player who is not on the giving
+  roster, the route clears the teams of that season, so the next form shows the current rosters.
+- The start-up refresh. When the app starts, a background thread refreshes the slow sources of the season that
+  Sleeper is in. It uses the normal max age of one day, so it fetches only the files older than a day. A fresh
+  volume or a deploy pays the downloads there and not in the first request. The start-up refresh can read the
+  chart with Claude once per chart week, as the cron does. A failure logs the warning
+  `The start-up refresh of the slow sources failed` and the app keeps running.
 
 The data layout:
 
@@ -132,8 +149,8 @@ Run each command from the repo root. Each step takes about one minute, except th
     - Analyze answers `200` in under about 20 seconds. Take the player ids from the teams answer. Record the time
       in the comments of ticket 09.
 
-    The first request after a stop starts the machine, so it is slower. The first request of a new chart week also
-    reads the chart with Claude.
+    The first request after a deploy can be slower, because the start-up refresh may still run. The first request of
+    a new chart week also reads the chart with Claude.
 
 11. Set up the GitHub secret for the cron. See the last section.
 
