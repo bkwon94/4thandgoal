@@ -149,17 +149,17 @@ def test_read_drops_keeps_a_missing_yardline_as_none(fixture_nflverse_dir, tmp_p
     assert [p.yardline_100 for p in d["00-0040667"]] == [43.0, None, 51.0]
 
 
-def test_read_schedules_gives_the_bye_week_and_the_late_opponents(fixture_nflverse_dir):
+def test_read_schedules_gives_the_bye_week_and_the_playoff_opponents(fixture_nflverse_dir):
     schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
     assert schedules["SF"].bye_week == 8
-    assert schedules["SF"].late_opponents == {15: "LAC", 16: "KC", 17: "PHI"}
+    assert schedules["SF"].playoff_opponents == {15: "LAC", 16: "KC", 17: "PHI"}
     assert schedules["BAL"].bye_week == 13
 
 
 def test_read_schedules_names_the_rams_as_sleeper_does(fixture_nflverse_dir):
     schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
     assert "LAR" in schedules and "LA" not in schedules
-    assert schedules["SF"].late_opponents != {} and schedules["ARI"].late_opponents[17] in schedules
+    assert schedules["SF"].playoff_opponents != {} and schedules["ARI"].playoff_opponents[17] in schedules
 
 
 def test_read_schedules_without_the_season_is_none(fixture_nflverse_dir):
@@ -181,6 +181,16 @@ def test_read_depth_charts_uses_only_the_latest_snapshot(tmp_path):
         "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,11,1\n"
         "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,12,1\n")
     assert read_depth_charts(path) == {"SF": {"RB": ["00-2", "00-3"]}}
+
+
+def test_read_depth_charts_skips_a_row_with_a_bad_rank(tmp_path):
+    path = tmp_path / "depth_charts_2026.csv"
+    path.write_text(
+        "dt,team,player_name,gsis_id,pos_abb,pos_slot,pos_rank\n"
+        "2026-10-21T12:00:00Z,SF,Starter,00-1,RB,11,1\n"
+        "2026-10-21T12:00:00Z,SF,Bad Row,00-9,RB,11,NA\n"
+        "2026-10-21T12:00:00Z,SF,Backup,00-2,RB,11,2\n")
+    assert read_depth_charts(path) == {"SF": {"RB": ["00-1", "00-2"]}}
 
 
 def test_read_depth_charts_without_a_row_is_none(tmp_path):

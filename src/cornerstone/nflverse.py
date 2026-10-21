@@ -85,15 +85,25 @@ NFLVERSE_TEAM = {"LAR": "LA"}
 SLEEPER_TEAM = {nflverse: sleeper for sleeper, nflverse in NFLVERSE_TEAM.items()}
 
 # The weeks of the fantasy playoffs, when a team schedule decides a title.
-LATE_WEEKS = (15, 16, 17)
+PLAYOFF_WEEKS = (15, 16, 17)
 REGULAR_SEASON_WEEKS = range(1, 19)
-DEPTH_POSITIONS = ("QB", "RB", "WR", "TE")
+SKILL_POSITIONS = ("QB", "RB", "WR", "TE")
 
 
 class TeamSchedule(BaseModel):
     bye_week: int | None
-    # Week to the Sleeper code of the opponent, for the weeks of LATE_WEEKS with a game.
-    late_opponents: dict[int, str]
+    # Week to the Sleeper code of the opponent, for the weeks of PLAYOFF_WEEKS with a game.
+    playoff_opponents: dict[int, str]
+
+
+def _sleeper_team(code: str) -> str:
+    return SLEEPER_TEAM.get(code, code)
+
+
+def _bye_week(played: set[int]) -> int | None:
+    # A team with a game in every week but one has that week off. A short file has no bye, not a wrong one.
+    off = set(REGULAR_SEASON_WEEKS) - played
+    return next(iter(off)) if len(off) == 1 else None
 
 
 def _yardline(text: str) -> float | None:
@@ -159,25 +169,24 @@ def read_injuries(path: Path, week: int) -> dict[str, dict[int, str]] | None:
 def read_schedules(path: Path, season: int) -> dict[str, TeamSchedule] | None:
     """The bye week and the opponents of weeks 15 to 17 by Sleeper team code. None when no game of the season.
 
-    The file holds every season, so the rows are filtered by season. Only regular-season games count.
+    The file holds every season, so the reader filters the rows by season. Only regular-season games count.
     """
     weeks: dict[str, set[int]] = {}
-    late: dict[str, dict[int, str]] = {}
+    playoff: dict[str, dict[int, str]] = {}
     for row in _rows(path):
         if row["season"] != str(season) or row["game_type"] != "REG":
             continue
         week = int(row["week"])
-        away, home = (SLEEPER_TEAM.get(row[side], row[side]) for side in ("away_team", "home_team"))
+        away, home = (_sleeper_team(row[side]) for side in ("away_team", "home_team"))
         for team, opponent in ((away, home), (home, away)):
             weeks.setdefault(team, set()).add(week)
-            if week in LATE_WEEKS:
-                late.setdefault(team, {})[week] = opponent
+            if week in PLAYOFF_WEEKS:
+                playoff.setdefault(team, {})[week] = opponent
     if not weeks:
         return None
-    # A team with a game in every week but one has that week off. A short file has no bye, not a wrong one.
     return {team: TeamSchedule(
-                bye_week=next(iter(off)) if len(off := set(REGULAR_SEASON_WEEKS) - played) == 1 else None,
-                late_opponents=late.get(team, {}))
+                bye_week=_bye_week(played),
+                playoff_opponents=playoff.get(team, {}))
             for team, played in weeks.items()}
 
 
@@ -191,7 +200,9 @@ def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
     latest = ""
     rows: list[dict[str, str]] = []
     for row in _rows(path):
-        if row["pos_abb"] not in DEPTH_POSITIONS or not row["gsis_id"] or row["dt"] < latest:
+        # A row with a pos_rank such as NA has no place in the order, so it is skipped and the rest stay.
+        if (row["pos_abb"] not in SKILL_POSITIONS or not row["gsis_id"] or not row["pos_rank"].isdigit()
+                or row["dt"] < latest):
             continue
         if row["dt"] > latest:
             latest, rows = row["dt"], []
@@ -231,7 +242,8 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
 
     pbp, ftn = get(PBP_URL), get(FTN_URL)
     # These two only fill the cache. The slow source loader reads them, and a failure shows there as a missing source.
-    get(SCHEDULES_URL), get(DEPTH_CHARTS_URL)
+    get(SCHEDULES_URL)
+    get(DEPTH_CHARTS_URL)
     injuries_path, ffids_path = get(INJURIES_URL), get(FFIDS_URL)
     drops = read_drops(pbp, ftn, week, teams) if pbp and ftn else None
     injuries = read_injuries(injuries_path, week) if injuries_path else None

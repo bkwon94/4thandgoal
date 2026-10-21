@@ -1,6 +1,6 @@
 """
-Loads the three slow sources of the snapshot: the NFL schedules, the depth charts, and the points allowed.
-A source that is not there is None and is named in `missing`, so the build never stops on one.
+Loads the slow sources of the snapshot: the NFL schedules, the depth charts, the id map, and the points allowed.
+A source that is not there is None and goes in `missing`, so the build never stops on one.
 """
 import csv
 import logging
@@ -9,7 +9,8 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from cornerstone.nflverse import (
-    DEPTH_CHARTS_URL, SCHEDULES_URL, TeamSchedule, cache_path, read_depth_charts, read_schedules,
+    DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, TeamSchedule, cache_path, read_depth_charts, read_id_map,
+    read_schedules,
 )
 from cornerstone.points_allowed import PositionAllowed, points_allowed
 
@@ -17,10 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 class SlowSources(BaseModel):
-    # Each field is keyed by the Sleeper code of the NFL team, or of the defense for points allowed.
+    """The slow sources of one snapshot. The depth chart lists gsis_ids, and `id_map` joins them to Sleeper ids."""
+    # The Sleeper code of the NFL team keys each field, or the code of the defense for points allowed.
     schedules: dict[str, TeamSchedule] | None = None
-    # Team to position to the ordered gsis_ids, which the id map joins to Sleeper players.
+    # Team to position to the ordered gsis_ids. Sleeper rosters hold Sleeper ids, so `id_map` joins the two.
     depth_charts: dict[str, dict[str, list[str]]] | None = None
+    # Sleeper id to gsis_id.
+    id_map: dict[str, str] | None = None
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     missing: list[str] = []
 
@@ -42,9 +46,11 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     """
     schedules_path = cache_path(cache_dir, SCHEDULES_URL, season)
     depth_path = cache_path(cache_dir, DEPTH_CHARTS_URL, season)
+    ffids_path = cache_path(cache_dir, FFIDS_URL, season)
     sources = {
         "schedules": _read("schedules", read_schedules, schedules_path, season) if schedules_path.exists() else None,
         "depth_charts": _read("depth_charts", read_depth_charts, depth_path) if depth_path.exists() else None,
+        "id_map": _read("id_map", read_id_map, ffids_path) if ffids_path.exists() else None,
         "points_allowed": _read("points_allowed", points_allowed, history_root, week - 1),
     }
     return SlowSources(**sources, missing=[name for name, source in sources.items() if source is None])
