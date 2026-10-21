@@ -1,6 +1,9 @@
 # Trade recap: a fixed trade window and no grade on the weekly page
 
-Status: ready-for-agent
+Status: done
+Amended 2026-10-21 by ticket 05: the trade recap chapter was removed after it shipped. The trades
+section is the swap strip cards only, with no prose, no points, and no writer call. The page footer
+is gone. The window change and the grade removal stand.
 Date: 2026-10-21
 Amends: `design/specs/2026-10-20-history-trades-drops-design.md` (the window),
 `design/specs/2026-10-20-trade-grade-v2-design.md` and `.scratch/trade-grade-v3/PRD.md` (the grade)
