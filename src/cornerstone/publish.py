@@ -46,10 +46,12 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
 
     # Copy only this week and the static files. A built but unpublished week must stay off
     # the public site, so the home page is rendered again from the weeks in the site repo.
+    # The site repo is a Next.js app, and its static export serves public/ at the root.
+    site_dir = site_repo / "public"
     week_path = Path(str(season)) / f"week-{week:02d}"
-    shutil.copytree(repo / "site" / week_path, site_repo / week_path, dirs_exist_ok=True)
-    shutil.copytree(repo / "site" / "static", site_repo / "static", dirs_exist_ok=True)
-    render_index(site_repo)
+    shutil.copytree(repo / "site" / week_path, site_dir / week_path, dirs_exist_ok=True)
+    shutil.copytree(repo / "site" / "static", site_dir / "static", dirs_exist_ok=True)
+    render_index(site_dir)
     _git(site_repo, "add", "-A")
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:

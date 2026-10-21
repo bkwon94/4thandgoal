@@ -225,8 +225,11 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
 
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "2026/week-06/index.html" in files
+    assert "public/2026/week-06/index.html" in files
     assert not any(f.startswith("src/") for f in files)
+    assert any(f.startswith("public/static/") for f in files)
+    assert "public/index.html" in files
+    assert not (site_repo / "2026").exists()
     assert _git(repo, "log", "-1", "--format=%s").strip() == "Week 6 report"
 
 
@@ -244,9 +247,9 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
 
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "2026/week-06/index.html" in files
-    assert not any(f.startswith("2026/week-07/") for f in files)
-    home = (site_repo / "index.html").read_text()
+    assert "public/2026/week-06/index.html" in files
+    assert not any(f.startswith("public/2026/week-07/") for f in files)
+    home = (site_repo / "public" / "index.html").read_text()
     assert "week-06/" in home and "week-07/" not in home
 
 
