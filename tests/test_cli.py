@@ -239,9 +239,26 @@ def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
     assert out.count("Start letter: C") == 2
     assert "(asked)" in out
     assert "Chart week 6" in out
+    # The repo has no nflverse cache. The points allowed come from the history, so they are present.
+    assert "Sources missing: schedules, depth charts, id map." in out
     # The trade values 46.5, 31.5, and 27.5, their sum, and the ratio never print.
     for number in ("46.5", "31.5", "27.5", "59", "47.2", "1.0"):
         assert number not in out
+
+
+def test_analyze_names_the_sources_it_has_from_the_cache(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    import shutil
+
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
+
+    assert code == 0
+    assert "Sources: schedules, depth charts, points allowed.\n" in capsys.readouterr().out
 
 
 def test_analyze_names_a_player_not_on_the_giving_roster(

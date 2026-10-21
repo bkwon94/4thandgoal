@@ -11,13 +11,19 @@ from pydantic import BaseModel
 from cornerstone.facts_league import standings
 from cornerstone.history import load_history
 from cornerstone.models import ChartValues, History, Standing, Team
+from cornerstone.nflverse import TeamSchedule
+from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import player_name, parse_week
+from cornerstone.slow_sources import SlowSources
 from cornerstone.sleeper import load_raw, read_fetch_time
 
 logger = logging.getLogger(__name__)
 
-# The sources the snapshot does not load. Each one is None and its name is in Snapshot.missing.
-SLOW_SOURCES = ("usage", "injuries", "schedules", "depth_charts", "points_allowed")
+# The sources the snapshot lacks without a SlowSources. The first four use the names of load_slow_sources.
+# Each one is None and its name is in Snapshot.missing. Usage and injuries have no loader yet.
+SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "usage", "injuries")
+# The sources that no SlowSources fills, so they stay missing in every case.
+UNLOADED_SOURCES = ("usage", "injuries")
 
 
 class SnapshotPlayer(BaseModel):
@@ -61,17 +67,23 @@ class Snapshot(BaseModel):
     # The injury report status, by player id and week.
     injuries: dict[str, dict[int, str]] | None = None
     # The opponent of each NFL team, by team and week. A bye week has no entry.
-    schedules: dict[str, dict[int, str]] | None = None
-    # The player ids in depth order, by NFL team and position.
+    schedules: dict[str, TeamSchedule] | None = None
+    # The gsis_ids in depth order, by NFL team and position. The id map joins them to Sleeper ids.
     depth_charts: dict[str, dict[str, list[str]]] | None = None
+    # Sleeper id to gsis_id.
+    id_map: dict[str, str] | None = None
     # The points each defense allows to a position, by NFL team and position.
-    points_allowed: dict[str, dict[str, float]] | None = None
+    points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The names of the sources the snapshot lacks, so the breakdown can say what it could not use.
     missing: list[str] = []
 
 
-def load_snapshot(raw_dir: Path, history_root: Path, chart: ChartValues | None) -> Snapshot:
-    """The snapshot of the saved week in raw_dir. It reads only files, so it never calls the network."""
+def load_snapshot(
+        raw_dir: Path, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None) -> Snapshot:
+    """The snapshot of the saved week in raw_dir. It reads only files, so it never calls the network.
+
+    Without `slow`, the slow sources stay None and all of them are named as missing.
+    """
     raw = load_raw(raw_dir)
     week = parse_week(raw)
     history = load_history(history_root, raw, week.week)
@@ -87,7 +99,9 @@ def load_snapshot(raw_dir: Path, history_root: Path, chart: ChartValues | None) 
         for pids in rosters.values() for pid in pids
         for entry in [entries.get(pid) or {}]
     }
-    missing = ([] if chart is not None else ["chart"]) + list(SLOW_SOURCES)
+    # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
+    slow_missing = list(SLOW_SOURCES) if slow is None else [*slow.missing, *UNLOADED_SOURCES]
+    missing = ([] if chart is not None else ["chart"]) + slow_missing
     return Snapshot(
         season=week.season,
         week=week.week,
@@ -103,5 +117,9 @@ def load_snapshot(raw_dir: Path, history_root: Path, chart: ChartValues | None) 
             stats_through=week.last_scored_week,
             rosters_fetched=read_fetch_time(raw_dir),
         ),
+        schedules=slow.schedules if slow else None,
+        depth_charts=slow.depth_charts if slow else None,
+        id_map=slow.id_map if slow else None,
+        points_allowed=slow.points_allowed if slow else None,
         missing=missing,
     )

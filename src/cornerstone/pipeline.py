@@ -101,9 +101,14 @@ def _window_trades(
     return trades_for_week(parse_trades(raw["transactions"]), last.trades if last else [], after, until)
 
 
+def nflverse_cache_dir(repo: Path) -> Path:
+    """The one nflverse cache directory. The fetch fills it and the analyze command reads it."""
+    return repo / "data" / "cache" / "nflverse"
+
+
 def fetch_nflverse(repo: Path) -> NflverseFetcher:
     """Bind the one nflverse cache directory to the fetch. Tests patch this name with a fixture-backed fetcher."""
-    cache_dir = repo / "data" / "cache" / "nflverse"
+    cache_dir = nflverse_cache_dir(repo)
 
     def fetch(season: int, week: int, player_ids: list[str], players: dict, teams: set[str]) -> NflverseWeek:
         return nflverse_week(season, week, player_ids, players, cache_dir, teams)

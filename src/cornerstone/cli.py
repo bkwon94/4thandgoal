@@ -15,11 +15,12 @@ from cornerstone.history import history_root
 from cornerstone.models import ChartValues, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
-    BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
+    BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
+from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.writer import claude_call
 
@@ -91,6 +92,20 @@ def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name if pid in snapshot.players else pid for pid in pids)
 
 
+# The plain name of each slow source that the as-of line shows, in print order.
+_SOURCE_NAMES = {
+    "schedules": "schedules", "depth_charts": "depth charts", "points_allowed": "points allowed", "id_map": "id map",
+}
+
+
+def _sources_line(snapshot: Snapshot) -> str:
+    """One line that names the slow sources the grade has, or the ones it lacks."""
+    missing = [name for key, name in _SOURCE_NAMES.items() if key in snapshot.missing]
+    if not missing:
+        return "Sources: schedules, depth charts, points allowed."
+    return f"Sources missing: {', '.join(missing)}."
+
+
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     """Grade the proposed trade from the saved snapshot and print the breakdown of each side."""
     if len(args.side) != 2:
@@ -108,7 +123,10 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         chart = ChartValues.model_validate_json(args.chart.read_text(encoding="utf-8"))
     else:
         chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
-    snapshot = load_snapshot(raw_dir, history_root(repo, args.season), chart)
+    history = history_root(repo, args.season)
+    # The analyze command never fetches. A cache that the build did not fill gives missing sources.
+    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history)
+    snapshot = load_snapshot(raw_dir, history, chart, slow)
     try:
         trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
     except ValidationError as err:
@@ -122,6 +140,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
     print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
           f"Rosters fetched {fetched}.")
+    print(_sources_line(snapshot))
     for side, other, breakdown in ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1])):
         asked = " (asked)" if side.roster_id == trade.asker else ""
         print()

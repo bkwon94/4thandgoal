@@ -2,6 +2,9 @@
 Tests for the snapshot the trade analyzer grades from.
 They build it from the recorded week 6 data and the week 6 trade values, with no network.
 """
+import shutil
+
+from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import load_snapshot
 
 
@@ -34,7 +37,23 @@ def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_hi
     assert snap.schedules is None
     assert snap.depth_charts is None
     assert snap.points_allowed is None
-    assert snap.missing == ["usage", "injuries", "schedules", "depth_charts", "points_allowed"]
+    assert snap.id_map is None
+    assert snap.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "usage", "injuries"]
+
+
+def test_slow_sources_fill_the_snapshot_and_only_usage_and_injuries_stay_missing(
+        fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
+    cache = tmp_path / "nflverse"
+    cache.mkdir()
+    for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv"):
+        shutil.copy(fixture_nflverse_dir / name, cache / name)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
+    assert snap.schedules == slow.schedules and snap.schedules
+    assert snap.depth_charts == slow.depth_charts and snap.depth_charts
+    assert snap.id_map == slow.id_map and snap.id_map
+    assert snap.points_allowed == slow.points_allowed and snap.points_allowed
+    assert snap.missing == ["usage", "injuries"]
 
 
 def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history_root):
