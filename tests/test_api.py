@@ -4,12 +4,15 @@ The Sleeper fetch, the slow-source fetchers, the chart read, and the Claude call
 """
 import dataclasses
 import functools
+import itertools
 import json
+import math
 import os
 import re
 import shutil
 import time
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -21,7 +24,8 @@ from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
 from cornerstone.nflverse import DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.rubric import LETTERS, grade, verdict
 from cornerstone.sleeper import load_raw
-from cornerstone_api.app import create_app
+from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
+from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 
@@ -358,6 +362,169 @@ def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
     other = client.get("/teams", params={"season": 2026}, headers={**HEADERS, "Fly-Client-IP": "203.0.113.2"})
     assert over.status_code == 429
     assert other.status_code == 200
+
+
+class MovingClock:
+    """An aware datetime in Eastern time that a test moves on, for the minute window and the day of the grades."""
+
+    def __init__(self, now):
+        self.now = now
+
+    def __call__(self):
+        return self.now
+
+    def advance(self, **delta):
+        self.now += timedelta(**delta)
+
+
+def _graded_client(settings, sources, clock, analyzer):
+    """A client whose grade limit and general limit both read the moving clock."""
+    client = _client(settings, sources, analyzer)
+    client.app.state.grade_limiter.clock = clock
+    # The general limit reads the same clock, so a test can make more than its 10 requests in one real minute.
+    client.app.state.limiter.clock = lambda: clock().timestamp()
+    return client
+
+
+def _uncached():
+    """An analyzer whose result falls back. A fallback is not cached, so each repeat is a new grade."""
+    return StubAnalyzer(claude_letters=["A", "C"])
+
+
+def test_the_sixth_grade_in_a_minute_is_429_with_the_minute_text(settings, sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
+    for _ in range(GRADES_PER_MINUTE):
+        assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    response = client.post("/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Too many grades this minute. Try again later."}
+    assert 1 <= int(response.headers["Retry-After"]) <= 60
+    # The teams route keeps the general limit, so the form still loads.
+    assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
+
+
+def test_the_twenty_first_grade_in_a_day_is_429_across_a_restart(settings, sources):
+    from cornerstone.tunables import GRADES_PER_DAY
+
+    clock = MovingClock(NOW)
+    first = _graded_client(settings, sources, clock, _uncached())
+    for _ in range(GRADES_PER_DAY):
+        # Past the minute window each time, so only the day limit can stop a grade.
+        clock.advance(seconds=61)
+        assert first.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    clock.advance(seconds=61)
+    restarted = _graded_client(settings, sources, clock, _uncached())
+    response = restarted.post("/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Too many grades today. Try again tomorrow."}
+    retry_after = int(response.headers["Retry-After"])
+    assert 1 <= retry_after <= 86400
+    midnight = datetime(2026, 10, 20, 0, 0, tzinfo=ET)
+    assert retry_after == math.ceil((midnight - clock()).total_seconds())
+    # The next calendar day in Eastern time starts at zero.
+    clock.now = midnight
+    assert restarted.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+
+
+def test_the_count_file_holds_only_today(settings, sources):
+    clock = MovingClock(NOW)
+    client = _graded_client(settings, sources, clock, _uncached())
+    client.post("/analyze", json=TRADE, headers=HEADERS)
+    clock.advance(days=1)
+    client.post("/analyze", json=TRADE, headers={**HEADERS, "Fly-Client-IP": "203.0.113.9"})
+    path = settings.result_cache_dir / GRADE_COUNTS_FILE
+    assert json.loads(path.read_text()) == {"day": "2026-10-20", "counts": {"203.0.113.9": 1}}
+
+
+def test_a_malformed_count_file_starts_at_zero(settings, sources):
+    path = settings.result_cache_dir / GRADE_COUNTS_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("{not json")
+    client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert json.loads(path.read_text())["counts"] == {"testclient": 1}
+
+
+def test_a_cached_repeat_does_not_count_as_a_grade(settings, sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    analyzer = StubAnalyzer()
+    client = _graded_client(settings, sources, MovingClock(NOW), analyzer)
+    for _ in range(GRADES_PER_MINUTE + 1):
+        assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert analyzer.calls == 1
+
+
+def test_each_fly_client_address_has_its_own_grade_limit(settings, sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
+    one = {**HEADERS, "Fly-Client-IP": "203.0.113.1"}
+    for _ in range(GRADES_PER_MINUTE):
+        client.post("/analyze", json=TRADE, headers=one)
+    over = client.post("/analyze", json=TRADE, headers=one)
+    other = client.post("/analyze", json=TRADE, headers={**HEADERS, "Fly-Client-IP": "203.0.113.2"})
+    assert over.status_code == 429
+    assert other.status_code == 200
+
+
+def test_grades_at_once_on_many_threads_never_pass_the_day_limit(tmp_path):
+    from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
+
+    # Each read of the clock is 61 seconds on, so only the day limit can stop a grade.
+    ticks = itertools.count()
+    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, tmp_path / GRADE_COUNTS_FILE,
+                           clock=lambda: NOW + timedelta(seconds=61 * next(ticks)))
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda _: limiter.hit("203.0.113.1"), range(GRADES_PER_DAY + 5)))
+    assert results.count(None) == GRADES_PER_DAY
+    assert [r.window for r in results if r is not None] == ["day"] * 5
+    assert json.loads((tmp_path / GRADE_COUNTS_FILE).read_text())["counts"] == {"203.0.113.1": GRADES_PER_DAY}
+
+
+def test_the_seconds_to_midnight_count_the_extra_hour_when_the_clocks_go_back():
+    # On 2026-11-01 the clocks go back at 2:00, so 00:30 to midnight is 24.5 real hours.
+    assert seconds_to_midnight(datetime(2026, 11, 1, 0, 30, tzinfo=ET)) == 88200
+
+
+def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(settings, sources, monkeypatch, caplog):
+    from cornerstone.tunables import GRADES_PER_DAY
+
+    def full_volume(src, dst):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr("cornerstone_api.ratelimit.os.replace", full_volume)
+    clock = MovingClock(NOW)
+    client = _graded_client(settings, sources, clock, _uncached())
+    for _ in range(GRADES_PER_DAY):
+        clock.advance(seconds=61)
+        assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    clock.advance(seconds=61)
+    response = client.post("/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Too many grades today. Try again tomorrow."}
+    assert "not writable" in caplog.text
+    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+
+
+def test_a_bad_trade_or_a_week_with_no_chart_does_not_count_as_a_grade(settings, sources, fixture_raw_dir):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    # Garrett Wilson is on roster 12, not roster 4.
+    bad = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
+    no_chart = Sources(
+        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
+        fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
+        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
+    bad_client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
+    no_chart_client = _graded_client(settings, no_chart, MovingClock(NOW), _uncached())
+    for _ in range(GRADES_PER_MINUTE + 1):
+        assert bad_client.post("/analyze", json=bad, headers=HEADERS).status_code == 422
+        assert no_chart_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 503
+    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+    assert bad_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
 
 @pytest.mark.parametrize("origin", ["https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000"])

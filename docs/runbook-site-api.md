@@ -42,6 +42,13 @@ The settings:
 The rate limit counts each client address. On Fly every request comes through the proxy, so the app reads the
 address from the `Fly-Client-IP` header.
 
+The analyze route also has a grade limit. Each client address gets 5 grades per minute and 20 per day.
+The day is a calendar day in Eastern time. A cached repeat of the same trade makes no Claude call, so it does not
+count. The daily counts live in `/data/cache/results/grade-counts.json` on the volume, so a deploy keeps them.
+The file holds only today. To clear the counts, delete the file. Past a limit the route answers `429` with a
+`Retry-After` to the end of the minute or to midnight Eastern. The values are `GRADES_PER_MINUTE` and
+`GRADES_PER_DAY` in `src/cornerstone/tunables.py`.
+
 ## First deploy
 
 Run each command from the repo root. Each step takes about one minute, except the deploy.

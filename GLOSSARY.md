@@ -73,6 +73,11 @@ The analyzer's letter, A to F, for one side of a proposed trade, formed by the r
 page shows no grade.
 _Avoid_: score, rating
 
+**Grade limit**:
+The cap on analyze calls that reach Claude, per client address: 5 per minute and 20 per day.
+A cached repeat does not count.
+_Avoid_: quota, rate limit (alone)
+
 **Start letter**:
 The letter the chart ratio gives one side before any adjuster.
 _Avoid_: anchor, base grade

@@ -67,3 +67,10 @@ DECLINE_AT_OR_BELOW = "D"
 # The API service: the count of requests one client address may make in a fixed one-minute window.
 # Past it the route answers 429, so one browser cannot loop the API and run up the Claude bill.
 RATE_LIMIT_PER_MINUTE = 10
+
+# The analyze route: the count of grades one client address may get in a fixed one-minute window.
+# Each grade that misses the result cache is a Claude call, so this caps the Claude bill from one browser.
+GRADES_PER_MINUTE = 5
+# The analyze route: the count of grades one client address may get in one calendar day in Eastern time.
+# It caps the Claude bill from one browser over a day, and the count lives on the volume so a deploy keeps it.
+GRADES_PER_DAY = 20
