@@ -17,7 +17,7 @@ from cornerstone.history import fetch_history, history_dir, history_root, load_h
 from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult, Week
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.render import _download_bytes, render_index, render_week
+from cornerstone.render import _download_bytes, render_page_json, render_week
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -263,13 +263,20 @@ def run_build(
 
     site_dir = repo / "site"
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
-    render_index(site_dir)
     # The page is built by now, so a history problem only logs a warning.
     try:
         save_week_to_history(raw_dir, history_dir(history_root(repo, season), week))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
     return page
+
+
+def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
+    """Read the saved facts and blurbs of a week."""
+    directory = week_dir(repo, season, week)
+    bundle = read_bundle(directory / "facts.json")
+    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
+    return bundle, blurbs
 
 
 def run_rewrite(
@@ -285,13 +292,12 @@ def run_rewrite(
     # The news and nflverse arguments keep the signature the same as run_build.
     # A rewrite reads the saved facts, so it needs neither news nor a fetch.
     directory = week_dir(repo, season, week)
-    bundle = read_bundle(directory / "facts.json")
+    bundle, blurbs = _load_saved_week(repo, season, week)
     chosen = next((c for c in bundle.sheet.chapters if c.key == chapter), None)
     if chosen is None:
         keys = ", ".join(c.key for c in bundle.sheet.chapters)
         raise ValueError(f"Unknown chapter '{chapter}'. Valid chapters: {keys}")
 
-    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
     verify = read_verify(directory / "verify.json")
     blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, call)
     _log_chapter(chapter, blurbs[chapter])
@@ -299,8 +305,13 @@ def run_rewrite(
 
     site_dir = repo / "site"
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
-    render_index(site_dir)
     return page
+
+
+def run_page_json(repo: Path, season: int, week: int) -> Path:
+    """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
+    bundle, blurbs = _load_saved_week(repo, season, week)
+    return render_page_json(bundle, blurbs, repo / "site")
 
 
 def run_history(repo: Path, season: int, through: int, force: bool = False) -> list[int]:
@@ -308,11 +319,10 @@ def run_history(repo: Path, season: int, through: int, force: bool = False) -> l
 
 
 def preview(page: Path) -> None:
-    """Open the page and show a notification. A missing tool only logs a warning."""
+    """Show a notification that the week is built. A missing tool only logs a warning."""
     week = page.parent.name.removeprefix("week-").lstrip("0")
     script = f'display notification "Week {week} is ready to review" with title "Cornerstone Weekly"'
-    for command in (["open", str(page)], ["osascript", "-e", script]):
-        try:
-            subprocess.run(command, check=False, capture_output=True)
-        except OSError as err:
-            log.warning("preview step %s failed: %s", command[0], err)
+    try:
+        subprocess.run(["osascript", "-e", script], check=False, capture_output=True)
+    except OSError as err:
+        log.warning("preview step osascript failed: %s", err)

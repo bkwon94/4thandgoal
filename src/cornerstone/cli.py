@@ -1,6 +1,7 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, history, chart, and analyze subcommands.
+It defines the build, publish, rewrite, page-json, history, chart, and analyze
+subcommands.
 """
 import argparse
 import logging
@@ -19,10 +20,11 @@ from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
-    BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
+    BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_page_json,
+    run_rewrite, week_dir,
 )
 from cornerstone.sleeper import fetch_state, load_raw
-from cornerstone.publish import PublishError, run_publish
+from cornerstone.publish import PublishError, run_publish, site_page_url
 from cornerstone.rubric import ProposedTrade, TradeSide, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
@@ -48,6 +50,10 @@ def build_parser() -> argparse.ArgumentParser:
     rewrite.add_argument("--week", type=int)
     rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
+
+    page_json = sub.add_parser("page-json", help="write page.json for a saved week")
+    page_json.add_argument("--week", type=int)
+    page_json.add_argument("--season", type=int)
 
     history = sub.add_parser("history", help="fetch and cache past weeks")
     history.add_argument("--season", type=int)
@@ -280,12 +286,16 @@ def main(argv: list[str] | None = None) -> int:
             )
             page = run_build(repo, season, week, claude_call, fetch=fetch)
             print(page)
+            print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
         elif args.command == "chart":
             return run_chart(repo, season, week)
+        elif args.command == "page-json":
+            print(run_page_json(repo, season, week))
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, claude_call)
             print(page)
+            print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
         else:
             answer = input(f"Publish week {week} to GitHub Pages? [y/N] ")

@@ -5,7 +5,7 @@ Claude is **Truckasaurus Tina**. Brian is **Homie B-Rex**.
 ## Purpose
 
 This tool builds a weekly report page for the Cornerstone fantasy football league. It reads
-league data from Sleeper. It writes the chapters of the report and renders a static site.
+league data from Sleeper. It writes the chapters of the report and writes the page data. The site repo renders the pages.
 
 ## Pipeline
 
@@ -13,8 +13,8 @@ league data from Sleeper. It writes the chapters of the report and renders a sta
 2. Cache the raw data under `data/cache/`.
 3. Compute the stats for each chapter.
 4. Write the chapter text with the Anthropic API.
-5. Render the pages with Jinja2 into `site/`.
-6. Publish the built site to the public site repo.
+5. Write `page.json` and the images into `site/`.
+6. Publish the week folder to the public site repo.
 
 ## Publish rule
 
