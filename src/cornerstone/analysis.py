@@ -186,6 +186,20 @@ def _accepted(out: AnalysisOut, breakdowns: tuple[Breakdown, Breakdown], code_ve
                     verdict_differs=chosen.choice != code_verdict.choice, fallback=False)
 
 
+def _fallback(breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict) -> Analysis:
+    """The code's letters and verdict with "Analysis unavailable" per side. The shape lives here once."""
+    sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
+                               analysis=UNAVAILABLE, cited=[]) for b in breakdowns)
+    return Analysis(breakdowns=breakdowns, code_verdict=code_verdict, sides=sides, verdict=code_verdict,
+                    verdict_differs=False, fallback=True)
+
+
+def code_only(trade: ProposedTrade, snapshot: Snapshot) -> Analysis:
+    """The fallback for a trade with no Claude call. The API uses it when a test or a caller wants no call."""
+    breakdowns = grade(trade, snapshot)
+    return _fallback(breakdowns, verdict(trade, breakdowns))
+
+
 def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = claude_call) -> Analysis:
     """Grade the trade, then ask Claude for the final letters, the analysis, and the verdict.
 
@@ -212,7 +226,4 @@ def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = claude_
             feedback = str(err)
             continue
         return _accepted(out, breakdowns, code_verdict)
-    fallback = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
-                                  analysis=UNAVAILABLE, cited=[]) for b in breakdowns)
-    return Analysis(breakdowns=breakdowns, code_verdict=code_verdict, sides=fallback, verdict=code_verdict,
-                    verdict_differs=False, fallback=True)
+    return _fallback(breakdowns, code_verdict)

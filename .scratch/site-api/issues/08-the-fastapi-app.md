@@ -14,7 +14,7 @@
 - [x] CORS allows the production site origin and localhost.
 - [x] The result document holds the proposed trade echoed with names and headshots, per side the start letter, each adjuster with its step and reason, the final letter, and the analysis, the verdict with its reason, and the as-of stamps. No chart value, sum, ratio, or chart name.
 - [x] A fixture response document is checked in under the test fixtures directory. The route test asserts the live route's output has the fixture's shape.
-- [x] The Sleeper fetch, the slow-source fetchers, and the Claude call are patched to callables in the route tests.
+- [x] The Sleeper fetch and the slow-source fetchers are patched to callables in the route tests. The analyzer is injected: a stub, or the real analyzer with a fake Claude callable.
 - [x] Route tests: a good request returns the document in the fixture's shape; a wrong passphrase is 401; a missing passphrase is 401; a player not on the giving roster is 422 with the id; a repeat is a cache hit with one Claude call total; the rate limit returns 429; a Claude letter two steps off falls back; health needs no passphrase.
 - [x] The weekly build and the Tuesday job do not change.
 - [x] `uv run pytest -q` passes with no failed test.
@@ -25,3 +25,4 @@
 - The `/teams` route needs a `season` query parameter.
 - The passphrase header is `X-League-Passphrase`.
 - Ticket 09 copies the response fixture, so it reads these three fields from the fixture.
+- The Claude analyzer is connected: the default analyzer is `cornerstone.analysis.analyze`, and the service needs `ANTHROPIC_API_KEY`.

@@ -2,11 +2,11 @@
 Tests for the FastAPI app at the analyze route seam, through the FastAPI test client.
 The Sleeper fetch, the slow-source fetchers, the chart read, and the Claude call are fixture-backed callables.
 """
+import functools
 import json
 import os
 import re
 import shutil
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -14,7 +14,8 @@ from zoneinfo import ZoneInfo
 import pytest
 from fastapi.testclient import TestClient
 
-from cornerstone.rubric import LETTERS, Breakdown, grade, verdict
+from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
+from cornerstone.rubric import LETTERS, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone_api.app import create_app
 from cornerstone_api.settings import Settings
@@ -64,28 +65,6 @@ def settings(repo):
     return Settings(passphrase=PASSPHRASE, repo=repo, result_cache_dir=repo / "results")
 
 
-@dataclass
-class StubSide:
-    final_letter: str
-    reason: str | None
-    analysis: str
-
-
-@dataclass
-class StubVerdict:
-    choice: str
-    reason: str
-    differs: bool
-
-
-@dataclass
-class StubAnalysis:
-    breakdowns: tuple[Breakdown, Breakdown]
-    sides: tuple[StubSide, StubSide]
-    verdict: StubVerdict
-    fallback: bool
-
-
 class StubAnalyzer:
     """The Claude call as a plain function: the code's grade and verdict, plus a fixed analysis text.
 
@@ -100,16 +79,33 @@ class StubAnalyzer:
     def __call__(self, trade, snapshot):
         self.calls += 1
         breakdowns = grade(trade, snapshot)
-        code = verdict(trade, breakdowns)
         letters = self.claude_letters or [b.final_letter for b in breakdowns]
         far = any(abs(LETTERS.index(l) - LETTERS.index(b.final_letter)) > 1 for l, b in zip(letters, breakdowns))
         if far:
-            sides = tuple(StubSide(b.final_letter, None, "Analysis unavailable") for b in breakdowns)
-        else:
-            sides = tuple(StubSide(l, None if l == b.final_letter else "Claude reads it one step off.",
-                                   "Nico Collins leads the trade in points per game.")
-                          for l, b in zip(letters, breakdowns))
-        return StubAnalysis(breakdowns, sides, StubVerdict(code.choice, code.reason, False), fallback=far)
+            return code_only(trade, snapshot)
+        code = verdict(trade, breakdowns)
+        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=l,
+                                   reason=None if l == b.final_letter else "Claude reads it one step off.",
+                                   analysis="Nico Collins leads the trade in points per game.", cited=[])
+                      for l, b in zip(letters, breakdowns))
+        return Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=code,
+                        verdict_differs=False, fallback=False)
+
+
+class FakeClaude:
+    """The Claude call as a callable with no network: the code's letters, one cited fact per side, fixed text."""
+
+    TEXT = "Nico Collins is the best player in the trade. His role is large. The trade changes his roster."
+
+    def __call__(self, system, user, output_model):
+        fact = re.findall(r"^- (\d+\.\w+|\d+\.\w+\.\w+): ", user, re.MULTILINE)
+        cited = [fid for fid in fact if not fid.endswith(".value")][:1]
+        letters = re.findall(r"^Final letter: (\w)", user, re.MULTILINE)
+        sides = [{"roster_id": roster_id, "final_letter": letter, "reason": None, "analysis": self.TEXT,
+                  "cited": cited}
+                 for roster_id, letter in zip((4, 12), letters)]
+        return output_model.model_validate(
+            {"sides": sides, "verdict": {"choice": "accept", "reason": "The trade is fair for both sides."}})
 
 
 # Nico Collins for Dalton Kincaid and Garrett Wilson, asked by roster 4.
@@ -227,6 +223,13 @@ def test_a_claude_letter_one_step_off_stands_with_its_reason(settings, sources):
     assert doc["fallback"] is False
     assert doc["sides"][0]["final_letter"] == "B"
     assert doc["sides"][0]["final_reason"] == "Claude reads it one step off."
+
+
+def test_the_real_analyzer_with_a_fake_claude_gives_the_document_with_its_text(settings, sources):
+    analyzer = functools.partial(analyze, call=FakeClaude())
+    doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
+    assert doc["fallback"] is False
+    assert [side["analysis"] for side in doc["sides"]] == [FakeClaude.TEXT] * 2
 
 
 def _at(fixture_raw_dir, chart, fetched):

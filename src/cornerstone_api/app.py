@@ -1,5 +1,7 @@
 """
 The app factory of the Cornerstone API: CORS, the passphrase check, the rate limit, and the route groups.
+The service needs CORNERSTONE_PASSPHRASE, and ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
+CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 """
 import hmac
@@ -8,6 +10,7 @@ from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from cornerstone.analysis import analyze
 from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api.cache import ResultCache
@@ -59,8 +62,8 @@ def create_app(
     app.state.sources = sources or Sources()
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
-    # The default grades with no Claude call. A caller gives the Claude-backed analyzer.
-    app.state.analyzer = analyzer or analyzer_routes.code_only_analysis
+    # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
+    app.state.analyzer = analyzer or analyze
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(

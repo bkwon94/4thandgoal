@@ -3,13 +3,12 @@ The analyzer route group: the teams for the trade form, and the analyze route th
 Both routes build the live snapshot through the sources on the app state, so a test swaps every fetch.
 """
 from collections.abc import Callable
-from dataclasses import dataclass
-from typing import Protocol
 
 from fastapi import APIRouter, HTTPException, Request
 
+from cornerstone.analysis import Analysis
 from cornerstone.render import headshot_url, is_def
-from cornerstone.rubric import Breakdown, ProposedTrade, TradeInputError, check_trade, grade, verdict
+from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key
 
@@ -17,66 +16,10 @@ router = APIRouter()
 
 # The answer when the week has no chart. A grade with no trade value would mislead, so the route gives none.
 NO_CHART_DETAIL = "The trade value chart for this week is not available."
-ANALYSIS_UNAVAILABLE = "Analysis unavailable"
-
-
-class SideAnalysisLike(Protocol):
-    """Claude's read of one side: the final letter, the reason when it differs from the code's, and the analysis."""
-
-    final_letter: str
-    reason: str | None
-    analysis: str
-
-
-class VerdictLike(Protocol):
-    """The verdict for the asker, with its reason, and whether it differs from the code's default."""
-
-    choice: str
-    reason: str
-    differs: bool
-
-
-class AnalysisLike(Protocol):
-    """What the analyze route reads from the analyzer. The sides run in the order of the trade's sides."""
-
-    breakdowns: tuple[Breakdown, Breakdown]
-    sides: tuple[SideAnalysisLike, SideAnalysisLike]
-    verdict: VerdictLike
-    fallback: bool
 
 
 # The grade plus the Claude call: a proposed trade and its snapshot in, the analysis out.
-Analyzer = Callable[[ProposedTrade, Snapshot], AnalysisLike]
-
-
-@dataclass(frozen=True)
-class _CodeSide:
-    final_letter: str
-    reason: str | None
-    analysis: str
-
-
-@dataclass(frozen=True)
-class _CodeVerdict:
-    choice: str
-    reason: str
-    differs: bool
-
-
-@dataclass(frozen=True)
-class _CodeAnalysis:
-    breakdowns: tuple[Breakdown, Breakdown]
-    sides: tuple[_CodeSide, _CodeSide]
-    verdict: _CodeVerdict
-    fallback: bool
-
-
-def code_only_analysis(trade: ProposedTrade, snapshot: Snapshot) -> AnalysisLike:
-    """The code's letters and verdict with no Claude call, in the shape of the fallback after a failed call."""
-    breakdowns = grade(trade, snapshot)
-    choice = verdict(trade, breakdowns)
-    sides = tuple(_CodeSide(b.final_letter, None, ANALYSIS_UNAVAILABLE) for b in breakdowns)
-    return _CodeAnalysis(breakdowns, sides, _CodeVerdict(choice.choice, choice.reason, False), fallback=True)
+Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
 
 
 def _snapshot(request: Request, season: int) -> Snapshot:
@@ -124,7 +67,7 @@ def _as_of(snapshot: Snapshot) -> dict:
     }
 
 
-def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: AnalysisLike) -> dict:
+def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
     """The result the site renders. It holds letters, steps, and reasons, and never a trade value, sum, or ratio."""
     a, b = trade.sides
     echoed = [
@@ -158,7 +101,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "for_roster": trade.asker,
             "choice": analysis.verdict.choice,
             "reason": analysis.verdict.reason,
-            "differs": analysis.verdict.differs,
+            "differs": analysis.verdict_differs,
         },
         "as_of": _as_of(snapshot),
         "fallback": analysis.fallback,
