@@ -8,7 +8,7 @@
 
 - [ ] The bundle builder takes an optional chart values input beside the nflverse week. Without it, the sheet is the v2 sheet.
 - [ ] A chart values model holds the chart week, the chart date, and a map from player id to value.
-- [ ] `T{n}.{pid}.value` reads "{name}'s trade value was {v} before the trade." with one recorded number.
+- [ ] `T{n}.{pid}.value` reads "{name}'s trade value was {v} in the week of the trade." with one recorded number.
 - [ ] `T{n}.{rid}.value` reads "{team} gave {x} and got {y} in trade value." The sums cover listed players only.
 - [ ] A traded player with no value gets no player value fact, and the side fact adds ", with {name} unlisted" for each such player.
 - [ ] A trade with draft picks adds "; the pick is not valued" or "; the picks are not valued" to the side fact.
