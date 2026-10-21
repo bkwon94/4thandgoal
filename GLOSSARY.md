@@ -33,6 +33,11 @@ The code check and the Claude check that reject a blurb with an uncited number o
 One of the three started players with the most points at one position this week, league wide.
 _Avoid_: top scorer (that is the award and the per-team matchup fact)
 
+**Headshot**:
+The portrait of a player from the Sleeper image CDN, or the NFL team logo for a DEF. Fetched at
+build time; a missing one shows the default silhouette.
+_Avoid_: photo, avatar (that is the team image)
+
 ### Trades
 
 **Trade**:
