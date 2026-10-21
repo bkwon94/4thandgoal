@@ -226,6 +226,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "public/2026/week-06/index.html" in files
+    assert "public/2026/week-06/page.json" in files
     assert not any(f.startswith("src/") for f in files)
     assert any(f.startswith("public/static/") for f in files)
     assert "public/index.html" in files
@@ -452,3 +453,27 @@ def test_a_failed_save_keeps_the_fetched_extract(tmp_path, fixture_raw_dir, capl
     assert record.sources["nflverse_pbp"] is True and bundle.data.drop_source == "nflverse"
     assert not _nflverse_path(repo).exists()
     assert "nflverse.json" in caplog.text
+
+
+def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fixture_raw_dir, monkeypatch):
+    from cornerstone import cli
+
+    def no_claude(*args, **kwargs):
+        raise AssertionError("page-json must not call the writer")
+
+    repo = tmp_path / "source"
+    repo.mkdir()
+    (repo / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page_json = repo / "site" / "2026" / "week-06" / "page.json"
+    page_json.unlink()
+    monkeypatch.setattr(cli, "claude_call", no_claude)
+    monkeypatch.chdir(repo)
+
+    assert cli.main(["page-json", "--season", "2026", "--week", "6"]) == 0
+
+    data = json.loads(page_json.read_text(encoding="utf-8"))
+    assert data["schema_version"] == 1
+    assert data["week"] == 6
+    assert len(data["matchups"]) == 6

@@ -17,7 +17,9 @@ from cornerstone.history import fetch_history, history_dir, history_root, load_h
 from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult, Week
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.render import _download_bytes, render_index, render_week
+from cornerstone.render import (
+    _download_bytes, render_index, render_page_json, render_week,
+)
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -301,6 +303,14 @@ def run_rewrite(
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     render_index(site_dir)
     return page
+
+
+def run_page_json(repo: Path, season: int, week: int) -> Path:
+    """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
+    directory = week_dir(repo, season, week)
+    bundle = read_bundle(directory / "facts.json")
+    blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
+    return render_page_json(bundle, blurbs, repo / "site")
 
 
 def run_history(repo: Path, season: int, through: int, force: bool = False) -> list[int]:
