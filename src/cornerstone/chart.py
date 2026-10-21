@@ -49,7 +49,7 @@ CHART_PROMPT = (
 # week. An older chart is not a stand-in for the week: the market moved.
 STAND_IN_WEEKS = 2
 
-# The real sheet has about 180 rows. A read with far fewer missed part of the image.
+# The real sheet has about 130 rows. A read with far fewer missed part of the image.
 MIN_ROWS = 100
 
 _SUFFIXES = {"jr", "sr", "ii", "iii", "iv"}
@@ -220,6 +220,14 @@ def _saved_read(path: Path) -> ChartRead | None:
         return None
 
 
+def _current_saved_read(charts: Path, week: int) -> ChartRead | None:
+    """The saved read of the week, unless a hand-placed PNG is newer than it. A newer PNG wins and is read again."""
+    json_path, png = _json_path(charts, week), _png_path(charts, week)
+    if png.exists() and json_path.exists() and png.stat().st_mtime > json_path.stat().st_mtime:
+        return None
+    return _saved_read(json_path)
+
+
 def _json_path(charts: Path, week: int) -> Path:
     return charts / f"week-{week:02d}.json"
 
@@ -255,14 +263,14 @@ def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str]
     """
     charts = chart_dir(repo)
     chart_week = week
-    parsed = _saved_read(_json_path(charts, week))
+    parsed = _current_saved_read(charts, week)
     fresh = False
     if parsed is None:
         png = fetch_chart(season_start, week, charts, fetch)
         if png is None:
             return None
         chart_week = int(png.stem.removeprefix("week-"))
-        parsed = _saved_read(_json_path(charts, chart_week))
+        parsed = _current_saved_read(charts, chart_week)
         if parsed is None:
             parsed = _read_png(png, read)
             if parsed is None:

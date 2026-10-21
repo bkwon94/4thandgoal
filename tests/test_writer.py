@@ -175,7 +175,8 @@ def test_writer_rule_18_orders_the_positions_and_hides_the_values(tbundle):
     system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
     assert ("At equal rank and points, an RB outweighs a WR, a WR outweighs a TE, "
             "and a TE outweighs a QB. A DEF carries little trade value.") in system
-    assert ("Weigh the two sides with the `.value` facts. Never write a trade value, "
+    assert ("Weigh the two sides with the `.value` facts. An unlisted player has no trade value on the sheet, "
+            "not a trade value of 0: weigh him from his other facts. Never write a trade value, "
             "a trade value sum, the chart, or a tier in a sentence.") in system
     assert "kicker" not in system.lower()
 

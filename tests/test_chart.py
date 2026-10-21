@@ -279,6 +279,22 @@ def test_a_hand_placed_png_is_read_not_fetched(tmp_path):
     assert load_chart(tmp_path, SEASON_START, 6, _down, reader) == (6, reader.result)
 
 
+def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
+    import os
+    charts = chart_dir(tmp_path)
+    charts.mkdir(parents=True)
+    png, saved = charts / "week-06.png", charts / "week-06.json"
+    png.write_bytes(_png(1500))
+    first = _Reader(_padded((50.0, "A", "RB")))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, first) == (6, first.result)
+    # A later PNG drop, by hand, must beat the saved read of the old image.
+    os.utime(saved, (1_000_000, 1_000_000))
+    png.write_bytes(_png(1500))
+    second = _Reader(_padded((60.0, "A", "RB")))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, second) == (6, second.result)
+    assert second.calls == 1
+
+
 def test_a_parsed_json_that_is_not_utf_8_is_read_again_from_the_image(tmp_path):
     chart_dir(tmp_path).mkdir(parents=True)
     (chart_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
