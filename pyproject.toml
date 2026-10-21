@@ -9,10 +9,12 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "anthropic>=1.15.0",
+    "fastapi>=0.158.0",
     "httpx>=0.28.1",
     "jinja2>=3.1.6",
     "pillow>=13.0.0",
     "pydantic>=2.14.1",
+    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]
@@ -30,3 +32,7 @@ dev = [
 [tool.pytest.ini_options]
 markers = ["live: calls a real external API"]
 addopts = "-m 'not live'"
+
+[tool.uv.build-backend]
+# The pipeline and the API app are two packages under src, so the wheel holds both.
+module-name = ["cornerstone", "cornerstone_api"]
