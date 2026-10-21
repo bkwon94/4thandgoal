@@ -146,6 +146,35 @@ def test_teams_lists_each_roster_with_its_players_for_the_form(settings, sources
     assert chiefs["headshot"] == "https://sleepercdn.com/images/team_logos/nfl/kc.png"
 
 
+class RaisingChart:
+    """A chart read that counts its calls and raises TypeError, as the Anthropic client does with no API key."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def __call__(self, repo, season_start, week, lines):
+        self.calls += 1
+        raise TypeError("no api key")
+
+
+def test_teams_skips_the_chart_read(settings, sources):
+    chart = RaisingChart()
+    response = _client(settings, dataclasses.replace(sources, read_chart=chart)).get(
+        "/teams", params={"season": 2026}, headers=HEADERS)
+    assert response.status_code == 200
+    assert chart.calls == 0
+
+
+def test_a_chart_read_that_raises_makes_analyze_503(settings, sources):
+    analyzer = StubAnalyzer()
+    chart = RaisingChart()
+    response = _client(settings, dataclasses.replace(sources, read_chart=chart), analyzer).post(
+        "/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 503
+    assert chart.calls == 1
+    assert analyzer.calls == 0
+
+
 def test_a_wrong_passphrase_is_401_with_no_body(settings, sources):
     response = _client(settings, sources).get("/teams", params={"season": 2026},
                                               headers={"X-League-Passphrase": "wrong"})
@@ -419,32 +448,44 @@ def test_settings_from_the_environment_need_a_passphrase(monkeypatch, tmp_path):
     assert "https://cpcfantasy.com" in settings.allowed_origins
 
 
-def test_a_refresh_on_a_fresh_cache_refreshes_nothing(settings, sources):
-    response = _client(settings, sources).post("/refresh", params={"season": 2026}, headers=HEADERS)
+# Every source that the refresh fetches, in the order of the refresh.
+ALL_SOURCES = ["schedules", "depth charts", "id map", "injuries"]
+
+
+def _fixture_fetch(fixture_nflverse_dir, asked):
+    """A fetch that records each URL and gives the fixture file of the same name."""
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / url.rsplit("/", 1)[-1]).read_bytes()
+    return fetch
+
+
+def test_a_refresh_fetches_every_source_even_on_a_fresh_cache(settings, sources, fixture_nflverse_dir):
+    asked = []
+    refreshing = dataclasses.replace(sources, fetch_nflverse=_fixture_fetch(fixture_nflverse_dir, asked))
+    response = _client(settings, refreshing).post("/refresh", params={"season": 2026}, headers=HEADERS)
     assert response.status_code == 200
-    assert response.json() == {"refreshed": [], "stale": []}
+    assert response.json() == {"refreshed": ALL_SOURCES, "stale": []}
+    assert len(asked) == len(ALL_SOURCES)
 
 
-def _aged(repo, url):
-    """Make the cached file of `url` two days old, so the refresh fetches it again."""
+def _aged(repo, url, seconds=2 * 24 * 60 * 60):
+    """Make the cached file of `url` older by `seconds`. The default is two days."""
     path = cache_path(repo / "data" / "cache" / "nflverse", url, 2026)
-    old = time.time() - 2 * 24 * 60 * 60
+    old = time.time() - seconds
     os.utime(path, (old, old))
     return path
 
 
-def test_a_refresh_fetches_a_source_older_than_a_day(settings, sources, fixture_nflverse_dir):
-    path = _aged(settings.repo, SCHEDULES_URL)
+def test_a_refresh_fetches_a_source_one_hour_old(settings, sources, fixture_nflverse_dir):
+    # The cron can start late, so a file 23 hours old must still refresh at 06:00.
+    path = _aged(settings.repo, SCHEDULES_URL, 60 * 60)
     asked = []
-
-    def fetch(url):
-        asked.append(url)
-        return (fixture_nflverse_dir / path.name).read_bytes()
-
-    refreshing = dataclasses.replace(sources, fetch_nflverse=fetch)
+    refreshing = dataclasses.replace(sources, fetch_nflverse=_fixture_fetch(fixture_nflverse_dir, asked))
     response = _client(settings, refreshing).post("/refresh", params={"season": 2026}, headers=HEADERS)
-    assert response.json() == {"refreshed": ["schedules"], "stale": []}
-    assert asked == [SCHEDULES_URL]
+    assert "schedules" in response.json()["refreshed"]
+    assert SCHEDULES_URL in asked
+    assert time.time() - path.stat().st_mtime < 60
 
 
 def test_a_failed_refresh_fetch_is_stale_and_keeps_the_old_cache(settings, sources):
@@ -460,10 +501,21 @@ def test_a_failed_refresh_fetch_is_stale_and_keeps_the_old_cache(settings, sourc
     assert path.read_bytes() == before
 
 
-def test_a_refresh_with_no_chart_for_the_week_lists_the_chart_as_stale(settings, sources):
-    no_chart = dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: None)
+def test_a_refresh_with_no_chart_for_the_week_lists_the_chart_as_stale(settings, sources, fixture_nflverse_dir):
+    no_chart = dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: None,
+                                   fetch_nflverse=_fixture_fetch(fixture_nflverse_dir, []))
     response = _client(settings, no_chart).post("/refresh", params={"season": 2026}, headers=HEADERS)
-    assert response.json() == {"refreshed": [], "stale": ["chart"]}
+    assert response.json() == {"refreshed": ALL_SOURCES, "stale": ["chart"]}
+
+
+def test_a_refresh_with_a_chart_read_that_raises_lists_the_chart_once(settings, sources, fixture_nflverse_dir):
+    def read_chart(repo, season_start, week, lines):
+        raise TypeError("no api key")
+
+    raising = dataclasses.replace(sources, read_chart=read_chart,
+                                  fetch_nflverse=_fixture_fetch(fixture_nflverse_dir, []))
+    response = _client(settings, raising).post("/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.json() == {"refreshed": ALL_SOURCES, "stale": ["chart"]}
 
 
 def test_a_refresh_needs_the_passphrase(settings, sources):

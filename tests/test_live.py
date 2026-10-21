@@ -13,7 +13,7 @@ import pytest
 
 from cornerstone.history import save_week_to_history
 from cornerstone.live import live_snapshot
-from cornerstone.nflverse import DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, cache_path
+from cornerstone.nflverse import DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, SCHEDULES_URL, cache_path
 from cornerstone.sleeper import load_raw
 
 ET = ZoneInfo("America/New_York")
@@ -218,3 +218,44 @@ def test_on_the_tuesday_a_failed_history_write_marks_history_stale_and_the_snaps
                          read_chart=ChartRecorder(chart_week6))
     assert "history" in snap.stale
     assert snap.week == 7
+
+
+def test_an_injuries_file_older_than_a_day_refreshes_before_the_snapshot(live_repo, sleeper, fixture_nflverse_dir):
+    path = _age(live_repo, INJURIES_URL, 2 * DAY)
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / path.name).read_bytes()
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=fetch, read_chart=ChartRecorder(None))
+    assert asked == [INJURIES_URL.format(season=2026)]
+    assert time.time() - path.stat().st_mtime < DAY
+    assert snap.stale == []
+
+
+def test_the_live_path_keeps_a_file_one_hour_old(live_repo, sleeper, chart_week6):
+    _age(live_repo, SCHEDULES_URL, 60 * 60)
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.stale == []
+
+
+def test_no_chart_reader_skips_the_chart_and_notes_no_stale_chart(live_repo, sleeper):
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=None)
+    assert snap.chart is None
+    assert "chart" not in snap.stale
+
+
+def test_a_chart_read_that_raises_gives_no_chart_and_notes_it_stale(live_repo, sleeper):
+    def read_chart(repo, season_start, week, lines):
+        # The Anthropic client raises TypeError when the API key is absent.
+        raise TypeError("no api key")
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=read_chart)
+    assert snap.chart is None
+    assert "chart" in snap.stale

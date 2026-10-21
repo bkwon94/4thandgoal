@@ -40,3 +40,9 @@ Claude key and the passphrase are Fly secrets. The Sleeper league id stays the p
 the code, so that box stays open for Brian to accept or reject. The fixture copy in the site repo is
 byte-identical by `cmp`. What remains for Brian: the first deploy from the runbook, the certificate and the DNS
 record, the GitHub secret, the three checks, and the timing of one real trade in these comments.
+
+**Review fixes, 2026-10-21.** `/teams` skips the chart, the refresh route forces the fetch, and the injuries file
+refreshes daily. A chart read that raises now gives no chart and notes the chart as stale, so the service stays up.
+
+**League id.** The Sleeper league id stays a public constant until Brian decides. If he accepts that, the PRD
+line that names the league id as a secret needs a change.

@@ -46,7 +46,7 @@ address from the `Fly-Client-IP` header.
 
 Run each command from the repo root. Each step takes about one minute, except the deploy.
 
-1. Log in. Expect `bkwon94@gmail.com`.
+1. Check the login. Expect `bkwon94@gmail.com`. If it differs, run `fly auth login`.
 
    ```sh
    fly auth whoami
@@ -70,7 +70,9 @@ Run each command from the repo root. Each step takes about one minute, except th
    ```
 
 4. Set the secrets. Do not put the real values in a file or in the shell history.
-   A leading space keeps the command out of the zsh history when `HIST_IGNORE_SPACE` is set.
+   Type one space before `fly`, so the shell keeps the line out of history.
+   The shell does this only when `HIST_IGNORE_SPACE` is set.
+   `--stage` stores the secrets with no restart, and the next deploy gives them to the machine.
 
    ```sh
     fly secrets set --app cpcfantasy-api --stage ANTHROPIC_API_KEY=<the key> CORNERSTONE_PASSPHRASE=<the passphrase>
@@ -88,30 +90,45 @@ Run each command from the repo root. Each step takes about one minute, except th
    fly certs add api.cpcfantasy.com --app cpcfantasy-api
    ```
 
-7. Add the DNS record that the command gives at the DNS host of `cpcfantasy.com`. That is a `CNAME` from `api`
-   to `cpcfantasy-api.fly.dev`, or the `A` and `AAAA` records. Then wait until `fly certs show
-   api.cpcfantasy.com` shows the certificate as issued. This can take about 10 minutes.
+7. Brian adds the DNS record that the command gives, at the DNS host of `cpcfantasy.com`. That is a `CNAME`
+   from `api` to `cpcfantasy-api.fly.dev`, or the `A` and `AAAA` records.
 
-8. Do the three checks. Use the real passphrase in place of `<the passphrase>`.
+   DNS host: ____
+
+8. Wait until the certificate shows as issued. This can take about 10 minutes.
 
    ```sh
-   curl -s https://api.cpcfantasy.com/health
-   curl -s -H 'X-League-Passphrase: <the passphrase>' 'https://api.cpcfantasy.com/teams?season=2026' | head -c 300
-   curl -s -o /dev/null -w '%{http_code} %{time_total}s\n' -X POST \
-     -H 'X-League-Passphrase: <the passphrase>' -H 'Content-Type: application/json' \
-     -d '{"season": 2026, "sides": [{"roster_id": 4, "gives": ["<player id>"]}, {"roster_id": 12, "gives": ["<player id>"]}], "asker": 4}' \
-     https://api.cpcfantasy.com/analyze
+   fly certs show api.cpcfantasy.com --app cpcfantasy-api
    ```
 
-   - Health answers `{"status":"ok"}` with no passphrase.
-   - Teams answers with the 12 teams.
-   - Analyze answers `200` in under about 20 seconds. Take the player ids from the teams answer. Record the time
-     in the comments of ticket 09.
+9. Call the refresh route once, and wait for the answer. Then the timed trade in the next step does not pay
+   for the first downloads. The first refresh on a new volume takes a few minutes.
 
-   The first request after a stop starts the machine, so it is slower. The first request of a new chart week also
-   reads the chart with Claude.
+   ```sh
+   curl --fail -s --max-time 600 -X POST -H 'X-League-Passphrase: <the passphrase>' \
+     'https://api.cpcfantasy.com/refresh?season=2026'
+   ```
 
-9. Set up the GitHub secret for the cron. See the last section.
+10. Do the three checks. Use the real passphrase in place of `<the passphrase>`.
+
+    ```sh
+    curl -s https://api.cpcfantasy.com/health
+    curl -s -H 'X-League-Passphrase: <the passphrase>' 'https://api.cpcfantasy.com/teams?season=2026' | head -c 300
+    curl -s -o /dev/null -w '%{http_code} %{time_total}s\n' -X POST \
+      -H 'X-League-Passphrase: <the passphrase>' -H 'Content-Type: application/json' \
+      -d '{"season": 2026, "sides": [{"roster_id": 4, "gives": ["<player id>"]}, {"roster_id": 12, "gives": ["<player id>"]}], "asker": 4}' \
+      https://api.cpcfantasy.com/analyze
+    ```
+
+    - Health answers `{"status":"ok"}` with no passphrase.
+    - Teams answers with the 12 teams.
+    - Analyze answers `200` in under about 20 seconds. Take the player ids from the teams answer. Record the time
+      in the comments of ticket 09.
+
+    The first request after a stop starts the machine, so it is slower. The first request of a new chart week also
+    reads the chart with Claude.
+
+11. Set up the GitHub secret for the cron. See the last section.
 
 ## Rotate the passphrase
 
@@ -138,11 +155,14 @@ Use one of the two ways:
     'https://api.cpcfantasy.com/refresh?season=2026'
   ```
 
+The route fetches every nflverse file again, whatever its age. The cron can start late, so a file 23 hours old
+must still refresh. The live path of a request fetches only a file older than a day.
+
 The answer is `{"refreshed": [...], "stale": [...]}`:
 
 - `refreshed` lists the nflverse sources that the run fetched again and the history weeks that it saved.
 - `stale` lists each source that is still older than a day, `history` when the history fetch failed, and
-  `chart` when the trade window week has no good chart.
+  `chart` when the trade window week has no good chart or the chart read failed.
 
 A failed fetch keeps the old cache in place. A stale source is not an error, so the route still answers `200`.
 
@@ -170,8 +190,7 @@ The cron reads the passphrase from the repository secret `CORNERSTONE_PASSPHRASE
    gh secret set CORNERSTONE_PASSPHRASE --repo bkwon94/cornerstone-fantasy-sleeper-weekly-report
    ```
 
-2. Push the branch with `.github/workflows/refresh.yml` to the default branch. GitHub runs a schedule only from
-   the default branch.
+2. Merge the branch into `main`. GitHub runs a schedule only from the default branch.
 3. Run the workflow once by hand from the Actions tab. Check that it is green.
 
 The season is the workflow variable `CORNERSTONE_SEASON`, with `2026` as the default in the file. At the start
@@ -180,5 +199,7 @@ of a new season, change the default in the file, or set the repository variable:
 ```sh
 gh variable set CORNERSTONE_SEASON --body 2027 --repo bkwon94/cornerstone-fantasy-sleeper-weekly-report
 ```
+
+In the off-season, the refresh route answers `422` and the daily job fails until the season variable changes.
 
 The cron runs at 10:00 UTC. That is 06:00 Eastern in daylight time, and 05:00 Eastern in standard time.

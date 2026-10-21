@@ -1,3 +1,5 @@
+# The files that stay out of the Cornerstone API image.
+# The image keeps the source, the lock files, the deploy script, and the tracked data as the seed.
 .venv
 .git
 site/

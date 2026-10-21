@@ -4,9 +4,10 @@ name: Daily refresh
 
 on:
   schedule:
-    # 10:00 UTC is 06:00 EDT, from September to early November, and 05:00 EST after that. The refresh needs one run
-    # a day before the managers wake, so one line that runs an hour early in winter is simpler than two lines that
-    # run twice on some days. GitHub can start a scheduled run some minutes late.
+    # 10:00 UTC is 06:00 EDT, from September to early November, and 05:00 EST after that.
+    # The refresh needs one run a day before the managers wake.
+    # One line that runs an hour early in winter is simpler than two lines that run twice on some days.
+    # GitHub can start a scheduled run some minutes late.
     - cron: "0 10 * * *"
   workflow_dispatch:
 

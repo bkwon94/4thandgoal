@@ -23,8 +23,8 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
-# The tracked data is the seed. /app/data is a link to the volume, so every path helper joins data/ to the
-# repo root /app and lands on the volume, with no change to the code.
+# The tracked data is the seed. /app/data is a link to the volume.
+# Every path helper joins data/ to the repo root /app, so it lands on the volume with no change to the code.
 COPY data/ ./seed/data/
 RUN ln -s /data /app/data
 

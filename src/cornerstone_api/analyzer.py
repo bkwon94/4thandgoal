@@ -11,6 +11,7 @@ from cornerstone.render import headshot_url, is_def
 from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key
+from cornerstone_api.errors import season_in_progress
 
 router = APIRouter()
 
@@ -22,12 +23,10 @@ NO_CHART_DETAIL = "The trade value chart for this week is not available."
 Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
 
 
-def _snapshot(request: Request, season: int) -> Snapshot:
+def _snapshot(request: Request, season: int, *, with_chart: bool = True) -> Snapshot:
     """The live snapshot for `season`. A season that Sleeper is not in is a bad input, so it is 422."""
-    try:
-        return request.app.state.sources.snapshot(request.app.state.settings.repo, season)
-    except ValueError:
-        raise HTTPException(status_code=422, detail=f"The season {season} is not in progress.")
+    with season_in_progress(season):
+        return request.app.state.sources.snapshot(request.app.state.settings.repo, season, with_chart=with_chart)
 
 
 def _player(snapshot: Snapshot, player_id: str) -> dict:
@@ -45,7 +44,8 @@ def _player(snapshot: Snapshot, player_id: str) -> dict:
 @router.get("/teams")
 def teams(request: Request, season: int) -> dict:
     """Each roster of the league with its team name, its manager, and its players, for the trade form."""
-    snapshot = _snapshot(request, season)
+    # The form needs the rosters and not the chart, so the route skips the chart read.
+    snapshot = _snapshot(request, season, with_chart=False)
     return {"teams": [
         {
             "roster_id": roster_id,

@@ -1,6 +1,7 @@
 #!/bin/sh
 # The start script of the Cornerstone API container: it seeds the /data volume from the image, then runs the server.
 # The first boot copies all the tracked data. Every boot copies the hand-kept returns files again, so a deploy updates them.
+# pipefail is absent: /bin/sh is POSIX sh, which may not have it, and the script has no pipe.
 set -eu
 
 SEED=/app/seed/data
