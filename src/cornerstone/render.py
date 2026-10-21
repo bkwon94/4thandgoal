@@ -220,13 +220,13 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
     return paths
 
 
-def _is_def(player_id: str) -> bool:
+def is_def(player_id: str) -> bool:
     """Whether a player ID is a DEF.
     Sleeper gives a DEF the team abbreviation as its player ID, and a player a numeric ID."""
     return not player_id.isdigit()
 
 
-def _headshot_url(player_id: str, is_def: bool) -> str:
+def headshot_url(player_id: str, is_def: bool) -> str:
     """The Sleeper CDN URL for a player's headshot.
     A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
     if is_def:
@@ -240,16 +240,16 @@ def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callabl
     data = bundle.data
     lines = [a.line for a in data.awards if a.key == "game_changer" or a.key in TILE_KEYS]
     lines += [lead.line for lead in data.leaders]
-    players = [(line.player_id, _is_def(line.player_id)) for line in lines]
+    players = [(line.player_id, is_def(line.player_id)) for line in lines]
     # A trade holds player IDs and no lineup lines, so the ID alone tells a DEF apart.
-    players += [(pid, _is_def(pid)) for trade in data.trades for pid in trade.adds]
+    players += [(pid, is_def(pid)) for trade in data.trades for pid in trade.adds]
     paths = {}
-    for player_id, is_def in players:
+    for player_id, is_defense in players:
         # A player can hold an award, a leader row, and a trade chip, so each player is fetched once.
         if player_id in paths:
             continue
         paths[player_id] = DEFAULT_HEADSHOT_PATH
-        content = fetch_bytes(_headshot_url(player_id, is_def))
+        content = fetch_bytes(headshot_url(player_id, is_defense))
         if content is None:
             continue
         # The CDN serves PNG bytes, even under the .jpg name of a player URL.

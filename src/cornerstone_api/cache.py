@@ -1,5 +1,5 @@
 """
-The result cache of the analyze route: one JSON file per proposed trade and data as-of stamps.
+The result cache of the analyze route: one JSON file per proposed trade and the data it was graded on.
 A repeat of the same trade on the same data reads the file and makes no Claude call.
 """
 import hashlib
@@ -7,16 +7,25 @@ import json
 from pathlib import Path
 
 from cornerstone.rubric import ProposedTrade
-from cornerstone.snapshot import AsOf
+from cornerstone.snapshot import Snapshot
 
 
-def cache_key(trade: ProposedTrade, as_of: AsOf) -> str:
-    """The hash of the trade and the stamps of the data it was graded on.
+def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
+    """The hash of the trade and the content of the snapshot that the grade reads.
 
-    The rosters fetch time changes on every request, so the key rounds it down to the hour.
-    Without the rounding no repeat would ever hit. A roster change inside the hour is the cost of that.
+    The key holds a hash of both rosters and of both records, not the fetch time. The fetch time changes on
+    every request, so it would never hit. A roster change on Sleeper changes the hash, so a stale grade never serves.
     """
-    fetched = as_of.rosters_fetched
+    as_of = snapshot.as_of
+    roster_ids = [side.roster_id for side in trade.sides]
+    standings = {standing.roster_id: standing for standing in snapshot.standings}
+    content = {
+        roster_id: {
+            "players": sorted(snapshot.rosters[roster_id]),
+            "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
+        }
+        for roster_id in roster_ids
+    }
     parts = {
         "season": trade.season,
         # The sides keep their order, because the document lists the sides in the order of the request.
@@ -24,7 +33,7 @@ def cache_key(trade: ProposedTrade, as_of: AsOf) -> str:
         "asker": trade.asker,
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
-        "rosters_hour": fetched.replace(minute=0, second=0, microsecond=0).isoformat() if fetched else None,
+        "content": hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest(),
     }
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
 

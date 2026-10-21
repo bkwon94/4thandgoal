@@ -240,7 +240,7 @@ def _at(fixture_raw_dir, chart, fetched):
 def test_a_repeat_is_a_cache_hit_with_one_claude_call(settings, fixture_raw_dir, chart_week6):
     analyzer = StubAnalyzer()
     first = _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer)
-    # The rosters fetch time moves on every request, but a repeat in the same hour is the same trade.
+    # The rosters fetch time moves on every request, but a repeat on unchanged rosters is the same trade.
     later = _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED.replace(minute=55)), analyzer)
     swapped = {**TRADE, "sides": [TRADE["sides"][0], {"roster_id": 12, "gives": ["8146", "10236"]}]}
     one = first.post("/analyze", json=TRADE, headers=HEADERS).json()
@@ -257,10 +257,29 @@ def test_the_cache_survives_a_restart(settings, sources):
     assert restarted.calls == 0
 
 
-def test_a_new_hour_of_rosters_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
+def test_a_repeat_an_hour_later_on_unchanged_rosters_is_a_cache_hit(settings, fixture_raw_dir, chart_week6):
     analyzer = StubAnalyzer()
     _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post("/analyze", json=TRADE, headers=HEADERS)
     _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED.replace(hour=10)), analyzer).post(
+        "/analyze", json=TRADE, headers=HEADERS)
+    assert analyzer.calls == 1
+
+
+def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
+    """Sources whose Sleeper data drops one player, who is not in the trade, from a roster."""
+    raw = load_raw(fixture_raw_dir)
+    roster = next(r for r in raw["rosters"] if r["roster_id"] == roster_id)
+    roster["players"] = roster["players"][:-1]
+    return Sources(
+        fetch_sleeper=lambda league_id, players_cache: (raw, FETCHED),
+        fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
+        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW)
+
+
+def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
+    analyzer = StubAnalyzer()
+    _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    _client(settings, _without_a_bench_player(fixture_raw_dir, chart_week6, 12), analyzer).post(
         "/analyze", json=TRADE, headers=HEADERS)
     _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post(
         "/analyze", json={**TRADE, "asker": 12}, headers=HEADERS)
@@ -288,6 +307,19 @@ def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sourc
     assert client.get("/health").status_code == 200
 
 
+def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
+    from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
+
+    client = _client(settings, sources)
+    # Behind the Fly proxy every request shares one peer address, so the header tells the clients apart.
+    for _ in range(RATE_LIMIT_PER_MINUTE):
+        client.get("/teams", params={"season": 2026}, headers={**HEADERS, "Fly-Client-IP": "203.0.113.1"})
+    over = client.get("/teams", params={"season": 2026}, headers={**HEADERS, "Fly-Client-IP": "203.0.113.1"})
+    other = client.get("/teams", params={"season": 2026}, headers={**HEADERS, "Fly-Client-IP": "203.0.113.2"})
+    assert over.status_code == 429
+    assert other.status_code == 200
+
+
 @pytest.mark.parametrize("origin", ["https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000"])
 def test_cors_allows_the_site_and_localhost(settings, sources, origin):
     response = _client(settings, sources).options("/analyze", headers={
@@ -312,11 +344,24 @@ def _shape(value):
     return None
 
 
+def _same_shape(actual, expected):
+    """Whether `actual` has the shape of `expected`. An empty list in `expected` matches any list."""
+    if isinstance(expected, dict):
+        return (isinstance(actual, dict) and actual.keys() == expected.keys()
+                and all(_same_shape(actual[key], expected[key]) for key in expected))
+    if isinstance(expected, list):
+        if not isinstance(actual, list):
+            return False
+        return not expected or all(_same_shape(item, expected[0]) for item in actual)
+    return not isinstance(actual, (dict, list))
+
+
 def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sources):
     doc = _client(settings, sources, StubAnalyzer(claude_letters=["B", "C"])).post(
         "/analyze", json=TRADE, headers=HEADERS).json()
     fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
-    assert _shape(doc) == _shape(fixture)
+    # The fixture's empty lists, such as stale, match any list, because a live run may fill them.
+    assert _same_shape(doc, _shape(fixture))
     # Every item of a list has the shape of the fixture's first item, so no side or adjuster drops a key.
     for side in doc["sides"]:
         assert _shape(side) == _shape(fixture["sides"][0])
@@ -362,5 +407,6 @@ def test_settings_from_the_environment_need_a_passphrase(monkeypatch, tmp_path):
     monkeypatch.setenv("CORNERSTONE_REPO", str(tmp_path))
     settings = Settings.from_env()
     assert settings.passphrase == "secret"
+    assert "secret" not in repr(settings)
     assert settings.result_cache_dir == tmp_path.resolve() / "data" / "cache" / "results"
     assert "https://cpcfantasy.com" in settings.allowed_origins

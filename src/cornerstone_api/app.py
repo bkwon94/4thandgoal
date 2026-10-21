@@ -30,11 +30,18 @@ class _RateLimited(Exception):
         self.retry_after = retry_after
 
 
+def _client_address(request: Request) -> str:
+    """The address of the client. On Fly every request comes from the proxy, so the proxy sets Fly-Client-IP."""
+    forwarded = request.headers.get("Fly-Client-IP")
+    if forwarded:
+        return forwarded
+    return request.client.host if request.client else "unknown"
+
+
 def _guard(request: Request) -> None:
     """Stop a request past the rate limit or without the league passphrase. Every route group except health runs it."""
     # The count comes before the passphrase check, so wrong guesses count against the limit too.
-    address = request.client.host if request.client else "unknown"
-    retry_after = request.app.state.limiter.hit(address)
+    retry_after = request.app.state.limiter.hit(_client_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
     given = request.headers.get(PASSPHRASE_HEADER, "")
@@ -52,8 +59,7 @@ def create_app(
     app.state.sources = sources or Sources()
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
-    # The analyzer injection point. The default is the code-only analysis. cornerstone.analysis.analyze,
-    # the grade plus the Claude call, connects here as the default.
+    # The default grades with no Claude call. A caller gives the Claude-backed analyzer.
     app.state.analyzer = analyzer or analyzer_routes.code_only_analysis
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
@@ -76,6 +82,7 @@ def create_app(
 
     @app.get("/health")
     def health() -> dict[str, str]:
+        """The liveness check. It needs no passphrase and reads no data."""
         return {"status": "ok"}
 
     return app

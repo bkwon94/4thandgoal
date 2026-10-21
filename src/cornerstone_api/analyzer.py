@@ -8,7 +8,7 @@ from typing import Protocol
 
 from fastapi import APIRouter, HTTPException, Request
 
-from cornerstone.render import _headshot_url
+from cornerstone.render import headshot_url, is_def
 from cornerstone.rubric import Breakdown, ProposedTrade, TradeInputError, check_trade, grade, verdict
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key
@@ -95,7 +95,7 @@ def _player(snapshot: Snapshot, player_id: str) -> dict:
         "name": player.name,
         "position": player.position,
         "nfl_team": player.nfl_team,
-        "headshot": _headshot_url(player_id, player.position == "DEF"),
+        "headshot": headshot_url(player_id, is_def(player_id)),
     }
 
 
@@ -115,6 +115,7 @@ def teams(request: Request, season: int) -> dict:
 
 
 def _as_of(snapshot: Snapshot) -> dict:
+    """The as-of stamps of the snapshot as the document shows them."""
     stamps = snapshot.as_of
     return {
         "chart_week": stamps.chart_week,
@@ -178,7 +179,7 @@ def analyze(request: Request, trade: ProposedTrade) -> dict:
     if snapshot.chart is None:
         raise HTTPException(status_code=503, detail=NO_CHART_DETAIL)
     cache = request.app.state.cache
-    key = cache_key(trade, snapshot.as_of)
+    key = cache_key(trade, snapshot)
     cached = cache.get(key)
     if cached is not None:
         return cached

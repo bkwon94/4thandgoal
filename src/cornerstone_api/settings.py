@@ -3,7 +3,7 @@ The settings of the API app: the passphrase, the repo, the result cache director
 Settings.from_env reads them from the environment, so the deploy sets them as secrets and variables.
 """
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 # The production league site and the two local dev servers of the site repo.
@@ -15,7 +15,8 @@ class Settings:
     """What the app reads from its environment."""
 
     # The one shared league passphrase. Every route except health needs it.
-    passphrase: str
+    # Kept out of the repr, so a log or a traceback never shows it.
+    passphrase: str = field(repr=False)
     # The repo root that holds data/, where the live snapshot reads and writes its caches.
     repo: Path
     # The directory of the result cache. It sits on the data volume, so a cached result survives a restart.

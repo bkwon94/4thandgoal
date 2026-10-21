@@ -18,3 +18,10 @@
 - [x] Route tests: a good request returns the document in the fixture's shape; a wrong passphrase is 401; a missing passphrase is 401; a player not on the giving roster is 422 with the id; a repeat is a cache hit with one Claude call total; the rate limit returns 429; a Claude letter two steps off falls back; health needs no passphrase.
 - [x] The weekly build and the Tuesday job do not change.
 - [x] `uv run pytest -q` passes with no failed test.
+
+## Comments
+
+- The result document carries three fields the PRD did not list: `lean` per adjuster, `final_reason` per side, and `verdict.differs`.
+- The `/teams` route needs a `season` query parameter.
+- The passphrase header is `X-League-Passphrase`.
+- Ticket 09 copies the response fixture, so it reads these three fields from the fixture.
