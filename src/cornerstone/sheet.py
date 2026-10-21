@@ -130,7 +130,7 @@ class Nums:
         return out
 
 
-def _fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> Fact:
+def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> Fact:
     return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
@@ -201,8 +201,8 @@ def week_facts(c: Context) -> list[Fact]:
     n2 = Nums()
     publish = f"The report was published on {n2.text(date.today().strftime('%a %b %-d, %Y'))}."
     return [
-        _fact("W.week", week_text, n, [], []),
-        _fact("W.publish", publish, n2, [], []),
+        fact("W.week", week_text, n, [], []),
+        fact("W.publish", publish, n2, [], []),
     ]
 
 
@@ -223,7 +223,7 @@ def recent_add_facts(c: Context) -> list[Fact]:
     ]
     text = "The top recent adds who started: " + "; ".join(parts) + "."
     teams = sorted({c.team(mv.roster_id) for _, mv in top})
-    return [_fact("W.adds", text, n, teams, [line.name for line, _ in top])]
+    return [fact("W.adds", text, n, teams, [line.name for line, _ in top])]
 
 
 def injured_facts(c: Context) -> list[Fact]:
@@ -238,7 +238,7 @@ def injured_facts(c: Context) -> list[Fact]:
     parts = [f"{line.name} ({team}, {line.injury_status})" for line, team in found]
     text = "Now on the injury report after this week's games: " + "; ".join(parts) + "."
     teams = sorted({team for _, team in found})
-    return [_fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
+    return [fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
 
 
 def standings_facts(c: Context) -> list[Fact]:
@@ -255,14 +255,14 @@ def standings_facts(c: Context) -> list[Fact]:
             f"and {n(s.points_for)} points for, {cut} the playoff spots, "
             f"{n(gap)} {games} {side} the cut."
         )
-        out.append(_fact(f"S.{s.rank}", text, n, [team], []))
+        out.append(fact(f"S.{s.rank}", text, n, [team], []))
     return out
 
 
 def median_facts_sheet(c: Context) -> list[Fact]:
     m = c.median
     n = Nums()
-    out = [_fact("MED.value", f"The league median this week was {n(m.median)}.", n, [], [])]
+    out = [fact("MED.value", f"The league median this week was {n(m.median)}.", n, [], [])]
     # Gaps use the exact median, as median_facts does, so a rounded median never shifts a gap.
     ordered = sorted(c.scores.values(), reverse=True)
     exact = (Decimal(str(ordered[5])) + Decimal(str(ordered[6]))) / 2
@@ -272,14 +272,14 @@ def median_facts_sheet(c: Context) -> list[Fact]:
             gap = r2(abs(float(Decimal(str(c.scores[rid])) - exact)))
             team = c.team(rid)
             text = f"{team} scored {n(c.scores[rid])}, {n(gap)} {word} the median."
-            out.append(_fact(f"MED.{kind}.{rid}", text, n, [team], []))
+            out.append(fact(f"MED.{kind}.{rid}", text, n, [team], []))
     n = Nums()
     (up_id, up_gap), (down_id, down_gap) = m.closest_above, m.closest_below
     text = (
         f"{c.team(up_id)} cleared the median by {n(up_gap)}. "
         f"{c.team(down_id)} missed it by {n(down_gap)}."
     )
-    out.append(_fact("MED.closest", text, n, [c.team(up_id), c.team(down_id)], []))
+    out.append(fact("MED.closest", text, n, [c.team(up_id), c.team(down_id)], []))
     return out
 
 
@@ -305,12 +305,12 @@ def _result_facts(c, f, m) -> list[Fact]:
         w, l = c.team(f.winner), c.team(f.loser)
         text = f"{w} beat {l} {n(f.score_w)} to {n(f.score_l)}, a margin of {n(f.margin)}."
         teams = [w, l]
-    out = [_fact(f"{mid}.result", text, n, teams, [])]
+    out = [fact(f"{mid}.result", text, n, teams, [])]
     for rid, line in f.top_scorer.items():
         n = Nums()
         team = c.team(rid)
         text = f"{c.who(line)} was the top scorer for {team} with {n(line.points)}."
-        out.append(_fact(f"{mid}.top.{rid}", text, n, [team], [line.name]))
+        out.append(fact(f"{mid}.top.{rid}", text, n, [team], [line.name]))
     return out
 
 
@@ -323,7 +323,7 @@ def _line_facts(c, f, m) -> list[Fact]:
                 continue
             n = Nums()
             text = f"{c.who(line)} started for {team} and {c.against_projection(line, n)}."
-            out.append(_fact(f"M{f.matchup_id}.starter.{side.roster_id}.{line.player_id}", text, n, [team], [line.name]))
+            out.append(fact(f"M{f.matchup_id}.starter.{side.roster_id}.{line.player_id}", text, n, [team], [line.name]))
     return out
 
 
@@ -339,12 +339,12 @@ def _story_facts(c, f) -> list[Fact]:
             f"{line.name} ({team}) is a margin driver: {n(line.points)} on a {n(line.projection)} "
             f"projection, a gap of {n(gap)} against a margin of {n(f.margin)}."
         )
-        out.append(_fact(f"{mid}.driver.{line.player_id}", text, n, [team], [line.name]))
+        out.append(fact(f"{mid}.driver.{line.player_id}", text, n, [team], [line.name]))
     for line in f.swing:
         n = Nums()
         team = c.team(f.winner)
         text = f"{line.name} is a swing player for {team}: {n(line.points)} exceeded the margin of {n(f.margin)}."
-        out.append(_fact(f"{mid}.swing.{line.player_id}", text, n, [team], [line.name]))
+        out.append(fact(f"{mid}.swing.{line.player_id}", text, n, [team], [line.name]))
     for bench, starter in f.bench_regret:
         n = Nums()
         team = c.team(f.loser)
@@ -352,7 +352,7 @@ def _story_facts(c, f) -> list[Fact]:
             f"{team} left {bench.name} ({n(bench.points)}) on the bench behind "
             f"{starter.name} ({n(starter.points)}); the swap would have flipped the result."
         )
-        out.append(_fact(f"{mid}.regret.{bench.player_id}", text, n, [team], [bench.name, starter.name]))
+        out.append(fact(f"{mid}.regret.{bench.player_id}", text, n, [team], [bench.name, starter.name]))
     for mv in f.recent_moves:
         n = Nums()
         line = c.lines[mv.player_id]
@@ -362,7 +362,7 @@ def _story_facts(c, f) -> list[Fact]:
             f"{MOVE_WORDS[mv.kind]} in week {n(mv.week)} "
             f"and {c.against_projection(line, n)}."
         )
-        out.append(_fact(f"{mid}.move.{mv.player_id}", text, n, [team], [line.name]))
+        out.append(fact(f"{mid}.move.{mv.player_id}", text, n, [team], [line.name]))
     return out
 
 
@@ -383,7 +383,7 @@ def _injury_facts(c, f, m) -> list[Fact]:
                 f"{line.name} is now {status} on Sleeper as of the Tuesday after this week's games. "
                 "The status may have come from this game."
             )
-            out.append(_fact(f"M{f.matchup_id}.inj.{line.player_id}", text, Nums(), [team], [line.name]))
+            out.append(fact(f"M{f.matchup_id}.inj.{line.player_id}", text, Nums(), [team], [line.name]))
     return out
 
 
@@ -397,14 +397,14 @@ def _context_facts(c, f, m) -> list[Fact]:
             f"This was an upset: {w} was {n.ord(c.before[f.winner])} before this week "
             f"and {l} was {n.ord(c.before[f.loser])}."
         )
-        out.append(_fact(f"{mid}.upset", text, n, [w, l], []))
+        out.append(fact(f"{mid}.upset", text, n, [w, l], []))
     n = Nums()
     parts = []
     for rid in (m.a.roster_id, m.b.roster_id):
         s = c.by_rank[rid]
         parts.append(f"{c.team(rid)} is now {n.record(s.wins, s.losses)} ({n.ord(s.rank)}).")
     teams = [c.team(m.a.roster_id), c.team(m.b.roster_id)]
-    out.append(_fact(f"{mid}.records", " ".join(parts), n, teams, []))
+    out.append(fact(f"{mid}.records", " ".join(parts), n, teams, []))
     return out
 
 
@@ -416,7 +416,7 @@ def award_facts(c: Context) -> list[Fact]:
         text = f"{AWARD_TITLES[aw.key]}: {c.who(aw.line)}, {team}. {n.text(aw.reason)}"
         if aw.skipped:
             text += f" Skipped: {', '.join(aw.skipped)}."
-        out.append(_fact(f"AW.{aw.key}", text, n, [team], [aw.line.name, *aw.skipped]))
+        out.append(fact(f"AW.{aw.key}", text, n, [team], [aw.line.name, *aw.skipped]))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
     if gc:
         out += _news_facts(c, gc)
@@ -437,7 +437,7 @@ def _news_facts(c: Context, gc) -> list[Fact]:
         return []
     n = Nums()
     text = f"Latest news on {gc.line.name}: {n.text(_cut_at_word(description, NEWS_MAX_CHARS))}"
-    return [_fact("AW.game_changer.news", text, n, [], [gc.line.name])]
+    return [fact("AW.game_changer.news", text, n, [], [gc.line.name])]
 
 
 def _cut_at_word(text: str, limit: int) -> str:
@@ -453,7 +453,7 @@ def pick_facts(c: Context) -> list[Fact]:
     m = next(m for m in c.week.matchups if m.matchup_id == c.pick.matchup_id)
     a, b = c.team(m.a.roster_id), c.team(m.b.roster_id)
     text = f"Matchup of the Week is {a} vs {b}, chosen for {c.pick.reason}."
-    return [_fact("PICK", text, Nums(), [a, b], [])]
+    return [fact("PICK", text, Nums(), [a, b], [])]
 
 
 def next_facts(c: Context) -> list[Fact]:
@@ -467,7 +467,7 @@ def next_facts(c: Context) -> list[Fact]:
         )
         if nx.must_watch:
             text += f" Must Watch: {n.text(nx.reason)}."
-        out.append(_fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
+        out.append(fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
     return out
 
 
@@ -479,7 +479,7 @@ def rank_facts(c: Context) -> list[Fact]:
         line = c.lines[r.player_id]
         team = c.team(c.line_owner[r.player_id])
         text = f"{line.name} ranked {n(r.rank)} of {n(r.of)} among started {r.position}s this week, for {team}."
-        out.append(_fact(f"RANK.{r.player_id}", text, n, [team], [line.name]))
+        out.append(fact(f"RANK.{r.player_id}", text, n, [team], [line.name]))
     return out
 
 
@@ -493,7 +493,7 @@ def leader_facts(c: Context) -> list[Fact]:
             f"{c.who(line)} scored {n(line.points)} for {team}, "
             f"{n.ord(lead.rank)} of {n(lead.of)} among started {lead.position}s this week."
         )
-        out.append(_fact(f"LEAD.{lead.position}.{lead.rank}", text, n, [team], [line.name]))
+        out.append(fact(f"LEAD.{lead.position}.{lead.rank}", text, n, [team], [line.name]))
     return out
 
 
@@ -509,7 +509,7 @@ def strength_facts(c: Context) -> list[Fact]:
             f"{team}'s opponent next week has a win rate of {n(s.schedule_strength)}, "
             f"ranked {n(s.strength_rank)} of {n(12)}, toughest first."
         )
-        out.append(_fact(f"SOS.{s.roster_id}", text, n, [team], []))
+        out.append(fact(f"SOS.{s.roster_id}", text, n, [team], []))
     return out
 
 
@@ -527,7 +527,7 @@ def history_facts(c: Context) -> list[Fact]:
         if abs(h.streak) >= 2:
             n = Nums()
             verb = "won" if h.streak > 0 else "lost"
-            out.append(_fact(f"H.{rid}.streak", f"{team} has {verb} {n(abs(h.streak))} straight.", n, [team], []))
+            out.append(fact(f"H.{rid}.streak", f"{team} has {verb} {n(abs(h.streak))} straight.", n, [team], []))
         if h.trend is not None and r2(h.trend) != r2(h.average):
             n = Nums()
             side = "up" if h.trend > h.average else "down"
@@ -535,15 +535,15 @@ def history_facts(c: Context) -> list[Fact]:
                 f"{team} has scored {n(h.trend)} per week over the last {n(TREND_WEEKS)} weeks, "
                 f"{side} from a season average of {n(h.average)}."
             )
-            out.append(_fact(f"H.{rid}.trend", text, n, [team], []))
+            out.append(fact(f"H.{rid}.trend", text, n, [team], []))
         # Week 1 has no earlier week, so no score there is a high or a low.
         if c.week.week > 1 and (h.new_high or h.new_low):
             n = Nums()
             kind = "high" if h.new_high else "low"
             text = f"{team}'s {n(c.scores[rid])} this week is a season {kind}."
-            out.append(_fact(f"H.{rid}.high", text, n, [team], []))
+            out.append(fact(f"H.{rid}.high", text, n, [team], []))
         n = Nums()
-        out.append(_fact(f"H.{rid}.avg", f"{team} averages {n(h.average)} per week this season.", n, [team], []))
+        out.append(fact(f"H.{rid}.avg", f"{team} averages {n(h.average)} per week this season.", n, [team], []))
     return out
 
 
@@ -563,7 +563,7 @@ def player_trend_facts(c: Context) -> list[Fact]:
         if not line.started or beaten is None:
             continue
         n = Nums()
-        out.append(_fact(f"P.{pid}.trend", _trend_text(line.name, beaten, n), n, [], [line.name]))
+        out.append(fact(f"P.{pid}.trend", _trend_text(line.name, beaten, n), n, [], [line.name]))
     return out
 
 
@@ -611,7 +611,7 @@ def _sides_fact(c: Context, i: int, trade: Trade) -> Fact:
         clauses = [f"{c.team(r)} got {_join(_items(c, trade, r, True, n))}" for r in ids]
         text = f"In a {n(len(ids))}-team trade, {'; '.join(clauses)}."
     players = [c.lines[pid].name for pid in trade.adds if pid in c.lines]
-    return _fact(f"T{i}.sides", text, n, [c.team(r) for r in ids], players)
+    return fact(f"T{i}.sides", text, n, [c.team(r) for r in ids], players)
 
 
 def _pregame_text(c: Context, pid: str) -> str | None:
@@ -648,7 +648,7 @@ def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fac
     beaten = player_trend(c.history, pid, through=through) if c.history is not None else None
     if beaten is not None:
         text += " " + _trend_text(line.name, beaten, n)
-    return _fact(f"T{i}.{rid}.{verb}.{pid}", text, n, [team], [line.name])
+    return fact(f"T{i}.{rid}.{verb}.{pid}", text, n, [team], [line.name])
 
 
 def _team_fact(c: Context, i: int, rid: int) -> Fact | None:
@@ -660,7 +660,7 @@ def _team_fact(c: Context, i: int, rid: int) -> Fact | None:
     team = c.team(rid)
     wins, losses, _ = season_records(c.history, through)[rid]
     text = f"{team} was {n.record(wins, losses)}, {n.ord(c.before[rid])} of {n(12)}, before the trade."
-    return _fact(f"T{i}.{rid}.team", text, n, [team], [])
+    return fact(f"T{i}.{rid}.team", text, n, [team], [])
 
 
 def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
@@ -674,7 +674,7 @@ def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
         f"{team} has {_join(depth)} after the trade and "
         f"{n(spots)} open roster {'spot' if spots == 1 else 'spots'}."
     )
-    return _fact(f"T{i}.{rid}.need", text, n, [team], [])
+    return fact(f"T{i}.{rid}.need", text, n, [team], [])
 
 
 def _impact_fact(c: Context, i: int, trade: Trade, rid: int, pid: str) -> Fact | None:
@@ -688,7 +688,7 @@ def _impact_fact(c: Context, i: int, trade: Trade, rid: int, pid: str) -> Fact |
     team = c.team(owner)
     where = "for" if line.started else "on the bench for"
     text = f"{line.name} scored {n(line.points)} this week {where} {team}."
-    return _fact(f"T{i}.{rid}.impact.{pid}", text, n, [team], [line.name])
+    return fact(f"T{i}.{rid}.impact.{pid}", text, n, [team], [line.name])
 
 
 def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
@@ -731,7 +731,7 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
             "not enough to change the result."
         )
     teams = [team, *(c.team(r) for r in others)] if len(others) == 1 else [team]
-    return _fact(f"T{i}.{rid}.swing", text, n, teams, [l.name for l in (*got_started, *gave_started)])
+    return fact(f"T{i}.{rid}.swing", text, n, teams, [l.name for l in (*got_started, *gave_started)])
 
 
 def _share_fact(c: Context, i: int, pid: str, kind: str, share: UsageShare | None) -> Fact | None:
@@ -749,7 +749,7 @@ def _share_fact(c: Context, i: int, pid: str, kind: str, share: UsageShare | Non
             f"{name}'s {label} was {n(share.percent)} percent over the last {n(2)} weeks before the trade, "
             f"{share.direction} from the {n(2)} weeks before that."
         )
-    return _fact(f"T{i}.{pid}.{kind}", text, n, [], [name])
+    return fact(f"T{i}.{pid}.{kind}", text, n, [], [name])
 
 
 def _redzone_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
@@ -764,7 +764,7 @@ def _redzone_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
         f"{name} had {n(targets)} red-zone {'target' if targets == 1 else 'targets'} and "
         f"{n(carries)} red-zone {'carry' if carries == 1 else 'carries'} this season before the trade."
     )
-    return _fact(f"T{i}.{pid}.redzone", text, n, [], [name])
+    return fact(f"T{i}.{pid}.redzone", text, n, [], [name])
 
 
 def _injury_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
@@ -784,7 +784,7 @@ def _injury_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
         )
     else:
         text = f"{name} was on the NFL injury report in {count} this season before the trade."
-    return _fact(f"T{i}.{pid}.injury", text, n, [], [name])
+    return fact(f"T{i}.{pid}.injury", text, n, [], [name])
 
 
 def _usage_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
@@ -820,7 +820,7 @@ def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
         n = Nums()
         name = c.lines[pid].name
         text = f"{name}'s trade value was {n(values[pid])} in the week of the trade."
-        out.append(_fact(f"T{i}.{pid}.value", text, n, [], [name]))
+        out.append(fact(f"T{i}.{pid}.value", text, n, [], [name]))
     unlisted = [c.lines[pid].name for pid in moved if pid not in values]
     for rid in trade.roster_ids:
         n = Nums()
@@ -838,14 +838,14 @@ def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
             text += "; the pick is not valued." if len(trade.draft_picks) == 1 else "; the picks are not valued."
         else:
             text += "."
-        out.append(_fact(f"T{i}.{rid}.value", text, n, [team], unlisted))
+        out.append(fact(f"T{i}.{rid}.value", text, n, [team], unlisted))
     return out
 
 
 def _late_fact(c: Context, i: int, trade: Trade) -> Fact:
     """A late trade came after the lineups locked, so the points of its players went to the old rosters."""
     text = "The trade came after the lineups locked, so the lineups show the rosters from before it."
-    return _fact(f"T{i}.late", text, Nums(), [c.team(r) for r in trade.roster_ids], [])
+    return fact(f"T{i}.late", text, Nums(), [c.team(r) for r in trade.roster_ids], [])
 
 
 def trade_facts(c: Context) -> list[Fact]:
@@ -899,14 +899,14 @@ def _drop_fact(c: Context, d: DropLine) -> list[Fact]:
         text = f"{line.name} dropped {_passes(d.drops, n)} this week."
     else:
         text = f"{line.name} dropped {n(d.drops)} of {n(d.targets)} targets this week."
-    out = [_fact(f"D.{d.player_id}", text, n, [team], [line.name])]
+    out = [fact(f"D.{d.player_id}", text, n, [team], [line.name])]
     if d.value is not None:
         n = Nums()
         text = (
             f"{line.name}'s drops were worth about {n(d.value)} points by the drop value method, "
             f"with {n(d.end_zone)} in the end zone."
         )
-        out.append(_fact(f"D.{d.player_id}.value", text, n, [team], [line.name]))
+        out.append(fact(f"D.{d.player_id}.value", text, n, [team], [line.name]))
     return out
 
 
@@ -926,7 +926,7 @@ def _dropswing_facts(c: Context) -> list[Fact]:
             f"{team}'s starters dropped {_passes(sum(d.drops for d in lost), n)} worth about "
             f"{n(float(value))}, at least the margin of {n(f.margin)}."
         )
-        out.append(_fact(f"M{f.matchup_id}.dropswing", text, n, [team], [c.lines[d.player_id].name for d in lost]))
+        out.append(fact(f"M{f.matchup_id}.dropswing", text, n, [team], [c.lines[d.player_id].name for d in lost]))
     return out
 
 
@@ -940,7 +940,7 @@ def drop_facts(c: Context) -> list[Fact]:
             f"{c.lines[d.player_id].name} ({c.team(d.roster_id)}), {n(d.drops)} {'drop' if d.drops == 1 else 'drops'}"
             for d in top
         ]
-        out.append(_fact("W.drops", "Most drops this week: " + "; ".join(parts) + ".", n,
+        out.append(fact("W.drops", "Most drops this week: " + "; ".join(parts) + ".", n,
                          [c.team(d.roster_id) for d in top], [c.lines[d.player_id].name for d in top]))
     return out
 
@@ -966,7 +966,7 @@ def injury_facts_nfl(c: Context) -> list[Fact]:
         team = [c.team(c.line_owner[pid])]
         pregame = _pregame_text(c, pid)
         if pregame is not None:
-            out.append(_fact(f"I.{pid}.pregame", pregame, Nums(), team, [line.name]))
+            out.append(fact(f"I.{pid}.pregame", pregame, Nums(), team, [line.name]))
         n = Nums()
         if week in weeks:
             text = f"{line.name} has been on the NFL injury report {_weeks(sum(w <= week for w in weeks), n)}."
@@ -976,7 +976,7 @@ def injury_facts_nfl(c: Context) -> list[Fact]:
             text = f"{line.name} was on the NFL injury report in {earlier} this season and plays this week."
         else:
             continue
-        out.append(_fact(f"I.{pid}.history", text, n, team, [line.name]))
+        out.append(fact(f"I.{pid}.history", text, n, team, [line.name]))
     return out
 
 

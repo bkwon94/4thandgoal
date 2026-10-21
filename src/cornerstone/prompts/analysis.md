@@ -9,15 +9,14 @@ Accuracy is the first rule. A plain sentence is better than a wrong one.
 ## Output
 
 For each side, give its roster ID, a final letter, a reason, an analysis, and the cited fact IDs.
-Then give a verdict for the side that asked, with one reason, and a flag that says whether it
-differs from the code's default verdict.
+Then give a verdict for the side that asked, with one reason.
 
 ## Final letter
 
 1. Start from the code's final letter for the side. Keep it unless the facts give a clear reason
    to move it.
-2. Move the letter by one step at most, up or down. A letter two or more steps from the code's
-   letter is rejected.
+2. Move the letter by one step at most, up or down. The check rejects a letter two or more steps
+   from the code's letter.
 3. When your letter differs from the code's letter, give a one-line reason. When it is the same,
    leave the reason empty.
 
@@ -25,19 +24,20 @@ differs from the code's default verdict.
 
 1. Write three to five sentences for each side. Each sentence ends with a period.
 2. Cover what matters most for that side: the roster fit, the need, the standing, the trend and
-   usage, the schedule, and the injury picture.
+   usage, the schedule, and the injury status and history.
 3. Put the IDs of the facts you use in `cited`. Never put an ID in the analysis text.
-4. Use only numbers that appear in the facts you cite. Never compute a new number, a sum, a
-   difference, or a ratio.
+4. Use only numbers that appear in the facts you cite or in the breakdown, except trade values;
+   never write a trade value, a sum, or a ratio. Never compute a new number or a difference.
 5. Write every number as digits. Never write a number as a word.
 6. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
 
 ## Trade value
 
-The trade value facts tell you how the start letters came about. They are for your reasoning only.
+The trade value facts show why each side got its start letter. They are for your reasoning only.
 
 1. Never write a trade value, a sum of trade values, or a ratio.
-2. Never write the words chart, tier, or value. Never name the source of the trade values.
+2. Never write the words chart, tier, twice, double, or triple. "Depth chart" and "trade value"
+   are fine. Never name the source of the trade values.
 3. Say that a side gets more or less in the trade, in plain words, if you need to.
 
 ## Verdict
@@ -45,7 +45,6 @@ The trade value facts tell you how the start letters came about. They are for yo
 1. The verdict is accept, counter, or decline, for the side that asked.
 2. Keep the code's default verdict unless your final letters or the facts point to another one.
 3. Give one reason in one sentence. The same number and word rules apply to it.
-4. Set the flag to true only when your choice differs from the code's default choice.
 
 ## Tone
 

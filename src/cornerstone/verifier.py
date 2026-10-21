@@ -49,8 +49,23 @@ def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:
     return {normalize_number(n) for fid in fids for n in sheet.facts[fid].numbers}
 
 
-def _whole_word(word: str, text: str) -> bool:
+def whole_word(word: str, text: str) -> bool:
     return re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text, re.IGNORECASE) is not None
+
+
+def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list[str]:
+    """The number rule on prose with the names removed: each digit and each number word must come from the cited facts."""
+    failures = [
+        f"number {token} is not in the cited facts"
+        for token in NUMBER_TOKEN.findall(bare)
+        if normalize_number(token) not in cited_numbers
+    ]
+    failures += [
+        f"number word '{word}' is not in the cited facts"
+        for word in NUMBER_WORDS
+        if whole_word(word, bare) and not whole_word(word, cited_text)
+    ]
+    return failures
 
 
 def _banned_words() -> list[str]:
@@ -103,17 +118,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
 
         # Digits inside a name ("Pukancun on 3") are not numbers.
         bare = remove_names(sentence.text, scope_names)
-        for token in NUMBER_TOKEN.findall(bare):
-            number = normalize_number(token)
-            if number not in cited and number not in always_allowed:
-                failures.append(
-                    f"[{i}] number {token} is not in the cited facts {', '.join(sentence.fact_ids)}"
-                )
-
         cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
-        for word in NUMBER_WORDS:
-            if _whole_word(word, bare) and not _whole_word(word, cited_text):
-                failures.append(f"[{i}] number word '{word}' is not in the cited facts")
+        ids = ", ".join(sentence.fact_ids)
+        for message in number_failures(bare, cited | always_allowed, cited_text):
+            # A digit failure names the cited IDs, so the rewrite sees the facts that the check used.
+            suffix = "" if message.startswith("number word") else f" {ids}"
+            failures.append(f"[{i}] {message}{suffix}")
 
         # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
         if "[" in sentence.text:
@@ -126,17 +136,17 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for player in sorted(league_players - set(chapter.scope_players)):
             last = _last_name(player)
             # A last name shared with an in-scope player is ambiguous, so it passes.
-            if player in bare or (last and last not in in_scope_last and _whole_word(last, bare)):
+            if player in bare or (last and last not in in_scope_last and whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")
 
         # Names are stripped first: a team called "Lucky Lambs" is not the word "lucky".
         for word in banned:
-            if _whole_word(word, bare):
+            if whole_word(word, bare):
                 failures.append(f"[{i}] banned word '{word}'")
 
         for words, markers in GATED_WORDS:
             for word in words:
-                if _whole_word(word, bare) and not any(
+                if whole_word(word, bare) and not any(
                     m in fid for fid in sentence.fact_ids for m in markers
                 ):
                     needs = " or ".join(markers)

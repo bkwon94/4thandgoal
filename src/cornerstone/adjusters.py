@@ -44,6 +44,10 @@ class Adjuster(BaseModel):
     lean: Lean | None = None
 
 
+# The analyze output and the analysis prompt name an adjuster's step in words.
+STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
+
+
 def _join(names: list[str]) -> str:
     return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
 

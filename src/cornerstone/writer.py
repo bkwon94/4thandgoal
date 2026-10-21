@@ -58,14 +58,14 @@ def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseMo
     return parse_call(user, output_model, system)
 
 
-def _load_prompt(name: str) -> str:
+def load_prompt(name: str) -> str:
     return resources.files("cornerstone.prompts").joinpath(name).read_text(encoding="utf-8").strip()
 
 
 def build_writer_prompt(
     chapter: Chapter, sheet: FactSheet, feedback: str | None
 ) -> tuple[str, str]:
-    system = "\n\n".join(_load_prompt(name) for name in PROMPT_FILES)
+    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
     lines = [
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",

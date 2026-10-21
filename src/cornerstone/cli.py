@@ -11,6 +11,7 @@ from pathlib import Path
 import httpx
 from pydantic import ValidationError
 
+from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
 from cornerstone.history import history_root
@@ -149,10 +150,6 @@ def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         return None
 
 
-# The analyze output names an adjuster's step in words.
-_STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
-
-
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdown of each side and the verdict.
 
@@ -198,7 +195,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         print(f"  Reason: {breakdown.reason}")
         for adjuster in breakdown.adjusters:
             # The schedule never moves a letter, so its line shows the lean in place of a step.
-            words = adjuster.lean if adjuster.lean is not None else _STEP_WORDS[adjuster.step]
+            words = adjuster.lean if adjuster.lean is not None else STEP_WORDS[adjuster.step]
             print(f"  {adjuster.name.capitalize()}: {words}. {adjuster.reason}")
         if analysis is None:
             print(f"  Final letter: {breakdown.final_letter}")

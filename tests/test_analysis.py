@@ -2,11 +2,13 @@
 Tests for the Claude call of the trade analyzer: the fact sheet, the checks, the retry, and the fallback.
 They feed the Josh Jacobs trade and the week 6 snapshot to analyze, with a fake in place of Claude.
 """
+import logging
 import re
 import shutil
 
 import pytest
 
+from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
 from cornerstone.rubric import ProposedTrade, TradeSide
 from cornerstone.slow_sources import load_slow_sources
@@ -63,11 +65,11 @@ def _side(roster_id, letter="C", reason=None, analysis=None, cited=None):
     }
 
 
-def _response(eleven=None, twelve=None, choice="accept", differs=False):
+def _response(eleven=None, twelve=None, choice="accept"):
     """A response that passes every check, with the given changes. Both code letters are C, and the code accepts."""
     return lambda facts: {
         "sides": [eleven or _side(11), twelve or _side(12)],
-        "verdict": {"choice": choice, "reason": "The trade is fair for both sides.", "differs": differs},
+        "verdict": {"choice": choice, "reason": "The trade is fair for both sides."},
     }
 
 
@@ -145,6 +147,7 @@ def test_a_retry_that_passes_stands(trade, snap):
     "Garrett Wilson scored 14.2 points per game before the trade. The side gives 30.5. He is a starter.",
     # The chart name and its words, with no number.
     "Garrett Wilson scored 14.2 points per game before the trade. His chart tier is high. He is a starter.",
+    "Garrett Wilson scored 14.2 points per game before the trade. Peaked in High Skool likes him. He starts.",
 ])
 def test_a_chart_value_sum_or_word_in_the_prose_fails(trade, snap, analysis):
     bad = _response(eleven=_side(11, analysis=analysis, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
@@ -159,7 +162,76 @@ def test_a_number_not_in_a_cited_fact_fails(trade, snap):
     bad = _response(eleven=_side(11, cited=[f"{WILSON}.targets"]))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
-    assert "number 14.2 is not in a cited fact" in fake.calls[1][1]
+    assert "number 14.2 is not in the cited facts" in fake.calls[1][1]
+
+
+@pytest.mark.parametrize("sentence", [
+    "He tops the depth chart.",
+    "The side gets more trade value.",
+])
+def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sentence):
+    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    assert not analyze(trade, snap, call=fake).fallback
+    assert len(fake.calls) == 1
+
+
+@pytest.mark.parametrize("sentence, word", [
+    ("Bhayshul Tuten is a tier two back.", "tier"),
+    ("He gives twice the production.", "twice"),
+    ("He gives double the production.", "double"),
+    ("He ranks high on the PIHS list.", "pihs"),
+])
+def test_a_banned_word_fails(trade, snap, sentence, word):
+    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"the word '{word}' is not allowed" in fake.calls[1][1]
+
+
+def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
+    real_grade = analysis.grade
+
+    def grade_with_a_digit(trade, snapshot):
+        first, second = real_grade(trade, snapshot)
+        return first, second.model_copy(update={"reason": "The side gets 41 snaps a game."})
+
+    monkeypatch.setattr(analysis, "grade", grade_with_a_digit)
+    text = "Garrett Wilson scored 14.2 points per game before the trade. He takes 41 snaps a game. He starts."
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    assert not analyze(trade, snap, call=fake).fallback
+    assert len(fake.calls) == 1
+
+
+def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
+    text = "Garrett Wilson is worth 27.5 to this roster. His target share went up. He is a starter."
+    bad = _response(eleven=_side(11, analysis=text, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
+    fake = FakeClaude(bad, bad)
+    with caplog.at_level(logging.WARNING, logger="cornerstone.analysis"):
+        assert analyze(trade, snap, call=fake).fallback
+    # The retry feedback to Claude keeps the full failure text.
+    assert "number 27.5 is not in the cited facts" in fake.calls[1][1]
+    records = [r.getMessage() for r in caplog.records if r.name == "cornerstone.analysis"]
+    assert len(records) == 2
+    for message in records:
+        assert "failed" in message
+        assert not re.search(r"\d", message.split("failed", 1)[1])
+
+
+@pytest.mark.parametrize("analysis_text", [
+    # The period in a name ends no sentence.
+    "Amon-Ra St. Brown is not in the trade. Garrett Wilson starts. His target share went up. "
+    "He moves to a new roster. He is a starter.",
+    # The period in a decimal ends no sentence.
+    "Garrett Wilson scored 14.2 points per game before the trade. He starts. His target share went up. "
+    "He moves to a new roster. He is a starter.",
+])
+def test_a_period_in_a_name_or_a_decimal_ends_no_sentence(trade, snap, analysis_text):
+    # Five sentences pass. A miscount gives six, which fails.
+    assert "Amon-Ra St. Brown" in {p.name for p in snap.players.values()}
+    fake = FakeClaude(_response(eleven=_side(11, analysis=analysis_text)))
+    assert not analyze(trade, snap, call=fake).fallback
 
 
 @pytest.mark.parametrize("analysis", [
@@ -184,15 +256,27 @@ def test_a_letter_that_differs_with_no_reason_fails(trade, snap):
 
 
 def test_the_verdict_flag_is_set_when_it_differs_from_the_code(trade, snap):
-    result = analyze(trade, snap, call=FakeClaude(_response(choice="counter", differs=True)))
+    result = analyze(trade, snap, call=FakeClaude(_response(choice="counter")))
     assert not result.fallback
     assert result.verdict.choice == "counter" and result.code_verdict.choice == "accept"
     assert result.verdict_differs
 
 
-def test_the_code_sets_the_verdict_flag_whatever_claude_says(trade, snap):
-    result = analyze(trade, snap, call=FakeClaude(_response(choice="accept", differs=True)))
-    assert not result.verdict_differs
+def test_the_code_sets_the_verdict_flag_so_claude_gives_no_flag(trade, snap):
+    assert "differs" not in AnalysisOut.model_json_schema()["$defs"]["VerdictOut"]["properties"]
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    assert "flag" not in fake.calls[0][0]
+
+
+def test_the_number_rule_bans_a_trade_value_a_sum_and_a_ratio(trade, snap):
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    # The prompt wraps its lines, so the check reads it as one line.
+    system = " ".join(fake.calls[0][0].split())
+    assert "except trade values; never write a trade value, a sum, or a ratio" in system
+    for phrase in ("is rejected", "injury picture", "came about"):
+        assert phrase not in system
 
 
 def test_an_empty_response_or_a_refusal_falls_back(trade, snap):

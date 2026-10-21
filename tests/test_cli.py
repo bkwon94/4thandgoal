@@ -435,7 +435,7 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
         return AnalysisOut.model_validate({
             "sides": [{**side, "roster_id": 11, "final_letter": "D", "reason": "Jacobs has not played."},
                       {**side, "roster_id": 12}],
-            "verdict": {"choice": "counter", "reason": "Ask for one more starter.", "differs": True},
+            "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
         })
 
     monkeypatch.setattr(cli, "claude_call", fake_claude)
