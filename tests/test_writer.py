@@ -6,7 +6,7 @@ import re
 
 import pytest
 
-from cornerstone.models import Grade, Sentence, TradesWriterOut, WriterOut
+from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
@@ -132,33 +132,42 @@ def _trades(tbundle):
     return next(c for c in tbundle.sheet.chapters if c.key == "trade_5")
 
 
-def test_trades_prompt_lists_grade_keys(tbundle):
+def test_trade_recap_brief_has_no_grade_keys(tbundle):
     _, user = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert "Grade keys: T5.11, T5.12" in user
+    assert "Grade" not in user and "T5.11," not in user
+    assert user.splitlines()[:2] == ["Chapter: Unsolicited Dak Picks and Amon-Ra Dawg Your Team", "Write 1 to 3 sentences."]
 
 
-def test_write_blurb_maps_grades(tbundle):
+def test_trade_recap_blurb_has_no_grades(tbundle):
     def call(system, user, model):
-        assert model is TradesWriterOut
-        return model(sentences=[Sentence(text="x.", fact_ids=["T5.sides"])],
-                     grades=[Grade(key="T5.12", letter="A")])
-    assert write_blurb(_trades(tbundle), tbundle.sheet, call).grades == {"T5.12": "A"}
+        assert model is WriterOut
+        return model(sentences=[Sentence(text="x.", fact_ids=["T5.sides"])])
+    blurb = write_blurb(_trades(tbundle), tbundle.sheet, call)
+    assert "grades" not in blurb.model_dump()
+
+
+def test_a_saved_blurb_with_a_grades_map_still_parses():
+    text = '{"chapter": "trade_5", "sentences": [], "attempt": 1, "fallback": false, "grades": {"T5.12": "A"}}'
+    blurb = Blurb.model_validate_json(text)
+    assert blurb.chapter == "trade_5" and "grades" not in blurb.model_dump()
 
 
 def test_trades_template_lists_the_sides(tbundle):
     b = template_blurb(_trades(tbundle), tbundle.sheet)
     assert [s.fact_ids for s in b.sentences] == [["T5.sides"]]
-    assert b.grades == {}
 
 
-def test_writer_rules_18_and_19(tbundle):
+def test_writer_rule_18_is_the_trade_recap(tbundle):
     system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert "18. In a trade chapter, grade each side on value at the moment of the trade" in system
-    assert "Never let `impact` or `swing` facts move a grade." in system
-    assert ("19. In a trade chapter, write the grade reasons first. Then at most one sentence on how "
-            "the trade played out this week, from the `impact` or `swing` facts.") in system
+    assert ("18. In a trade recap, say who moved first. Then say how the week went for each side, "
+            "from the `impact` and `swing` facts.") in system
+    assert "Humor is allowed within the tone rules." in system
+    assert "Give no grade, no letter, and no verdict on the trade as a whole." in system
+    assert ("Say the trade decided or cost a game only in a sentence that cites a `swing` fact "
+            "whose gap is at least the margin, as rule 6 says.") in system
+    assert "grade each side" not in system and "Grade keys" not in system and "`.value`" not in system
     assert "With more than two trades" not in system and "In the Trades chapter" not in system
-    assert "20. Never put a number on a draft pick." in system
+    assert "19. Never put a number on a draft pick." in system
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
@@ -168,17 +177,7 @@ def test_trade_template_finds_the_sides_fact(tbundle):
     b = template_blurb(shuffled, tbundle.sheet)
     assert [s.fact_ids for s in b.sentences] == [["T6.sides"]]
     assert b.sentences[0].text == tbundle.sheet.facts["T6.sides"].text
-    assert b.fallback and b.grades == {}
-
-
-def test_writer_rule_18_orders_the_positions_and_hides_the_values(tbundle):
-    system, _ = build_writer_prompt(_trades(tbundle), tbundle.sheet, None)
-    assert ("At equal rank and points, an RB outweighs a WR, a WR outweighs a TE, "
-            "and a TE outweighs a QB. A DEF carries little trade value.") in system
-    assert ("Weigh the two sides with the `.value` facts. An unlisted player has no trade value on the sheet, "
-            "not a trade value of 0: weigh him from his other facts. Never write a trade value, "
-            "a trade value sum, the chart, or a tier in a sentence.") in system
-    assert "kicker" not in system.lower()
+    assert b.fallback
 
 
 def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed"):

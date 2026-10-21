@@ -160,15 +160,7 @@ def test_trades_section_order_and_cards(tbundle, tmp_path):
     assert html.index('id="trades"') > html.index(">Awards<")
     assert html.index('id="trades"') < html.index(">All Matchups<")
     assert html.count('class="trade"') == 6
-    assert "Bhayshul Tuten" in html and "11.8" in html
-
-
-def test_grade_letter_and_no_grade(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    blurbs["trade_5"].grades = {"T5.12": "A"}
-    html = render_week(tbundle, blurbs, tmp_path, _fake_png).read_text()
-    assert '<span class="grade">A</span>' in html
-    assert html.count("No grade") == 11
+    assert "Bhayshul Tuten" in html
 
 
 def test_trades_render_without_a_trades_blurb(tbundle, tmp_path):
@@ -229,18 +221,16 @@ def test_trade_cards_have_a_button_and_a_panel(tbundle, tmp_path):
     assert "Blurb for trade_5." in _card(html, 5)
 
 
-def test_grade_shows_outside_the_panel(tbundle, tmp_path):
-    blurbs = _blurbs(tbundle)
-    blurbs["trade_5"].grades = {"T5.11": "C", "T5.12": "A"}
-    card = _card(render_week(tbundle, blurbs, tmp_path, _fake_png).read_text(), 5)
-    assert card.index('<span class="grade">A</span>') < card.index('class="body"')
-
-
-def test_card_shows_ppg_not_this_week(tbundle, tmp_path):
-    s = _section(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text())
-    assert '11.8 <span class="ppg">ppg</span>' in s
-    assert "22.7" not in s
-    assert "<li><span>Josh Jacobs</span></li>" in s
+def test_card_names_every_traded_player_and_shows_no_ppg(tbundle, fixture_raw_dir, tmp_path):
+    week = parse_week(load_raw(fixture_raw_dir))
+    names = {l.player_id: l.name for m in week.matchups for side in (m.a, m.b) for l in side.lines}
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    for n, trade in enumerate(tbundle.data.trades, start=1):
+        card = _card(html, n)
+        for pid in trade.adds:
+            assert f"<li><span>{names[pid]}</span></li>" in card
+    assert "An unlisted player" not in _section(html)
+    assert "ppg" not in _section(html)
 
 
 def test_fallback_card_shows_no_grade_and_the_template(tbundle, tmp_path):

@@ -72,7 +72,7 @@ SENTENCE_RANGES = {
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
-    "trade": (3, 5),
+    "trade": (1, 3),
 }
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
@@ -838,10 +838,38 @@ def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
     return out
 
 
+def _late_fact(c: Context, i: int, trade: Trade) -> Fact:
+    """A late trade came after the lineups locked, so the points of its players went to the old rosters."""
+    text = "The trade came after the lineups locked, so the lineups show the rosters from before it."
+    return _fact(f"T{i}.late", text, Nums(), [c.team(r) for r in trade.roster_ids], [])
+
+
 def trade_facts(c: Context) -> list[Fact]:
+    """The trade recap facts: the sides, the impact of each player got, and the swing or the late fact."""
     out = []
     for i, trade in enumerate(c.trades, start=1):
         out.append(_sides_fact(c, i, trade))
+        for rid in trade.roster_ids:
+            got = [pid for pid in _moved(trade, rid, True) if pid in c.lines]
+            out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
+        # A late trade happened after the lineups locked, so the lineup shows the roster from before it.
+        if is_late(trade, c.week):
+            out.append(_late_fact(c, i, trade))
+            continue
+        for rid in trade.roster_ids:
+            swing = _swing_fact(c, i, trade, rid)
+            if swing is not None:
+                out.append(swing)
+    return out
+
+
+def grade_input_facts(c: Context) -> list[Fact]:
+    """The grade inputs of each trade. The trade analyzer uses them; the weekly sheet does not.
+
+    They are the got and gave profiles, the team record, the usage, injury, and value facts, and the need.
+    """
+    out = []
+    for i, trade in enumerate(c.trades, start=1):
         for rid in trade.roster_ids:
             got = [pid for pid in _moved(trade, rid, True) if pid in c.lines]
             out += [_player_trade_fact(c, i, rid, pid, "got") for pid in got]
@@ -849,7 +877,6 @@ def trade_facts(c: Context) -> list[Fact]:
             team = _team_fact(c, i, rid)
             if team is not None:
                 out.append(team)
-            out += [f for f in (_impact_fact(c, i, trade, rid, pid) for pid in got) if f is not None]
         out += _usage_facts(c, i, trade)
         # The chart is for the week of the trade, so late trades keep their value facts.
         out += _value_facts(c, i, trade)
@@ -858,9 +885,6 @@ def trade_facts(c: Context) -> list[Fact]:
             continue
         for rid in trade.roster_ids:
             out.append(_need_fact(c, i, trade, rid))
-            swing = _swing_fact(c, i, trade, rid)
-            if swing is not None:
-                out.append(swing)
     return out
 
 
@@ -994,7 +1018,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             for l in s.lines if l.started
         ]
 
-    def make(key, title, ids, rosters, rng, grade_keys=(), extra_players=(), players=None) -> Chapter:
+    def make(key, title, ids, rosters, rng, extra_players=(), players=None) -> Chapter:
         return Chapter(
             key=key,
             title=title,
@@ -1003,7 +1027,6 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             scope_players=_dedupe([*(players_of(rosters) if players is None else players), *extra_players]),
             min_sentences=SENTENCE_RANGES[rng][0],
             max_sentences=SENTENCE_RANGES[rng][1],
-            grade_keys=list(grade_keys),
         )
 
     def drop_ids(keep) -> list[str]:
@@ -1063,7 +1086,6 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         out.append(make(
             f"trade_{n}", _join([c.team(r) for r in trade.roster_ids]),
             _trade_ids(facts, n), trade.roster_ids, "trade",
-            grade_keys=[f"T{n}.{r}" for r in trade.roster_ids],
             # A player who moves on in a later trade has his line on another roster.
             # The facts of this trade still name him, so he stays in scope.
             extra_players=[c.lines[p].name for p in (*trade.adds, *trade.drops) if p in c.lines],
@@ -1089,9 +1111,8 @@ def build_bundle(
     history: History | None = None,
     trades: list[Trade] | None = None,
     nfl: NflverseWeek | None = None,
-    chart: ChartValues | None = None,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl, chart)
+    c = Context(week, news, history, trades, nfl)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
@@ -1115,6 +1136,7 @@ def build_bundle(
         ranks=c.ranks,
         leaders=c.leaders,
         trades=trades if trades is not None else [],
+        trade_players={pid: c.lines[pid].name for t in c.trades for pid in t.adds if pid in c.lines},
         drops=c.drops,
         drop_source=("nflverse" if c.nfl_up else "sleeper") if c.drops else "none",
     )

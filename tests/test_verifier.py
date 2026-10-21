@@ -372,44 +372,6 @@ def test_swing_against_the_result_opens_no_gate(tbundle):
     assert any("'cost' needs" in m for m in failures)
 
 
-def _graded(tbundle, **overrides):
-    ch = _ch(tbundle.sheet, "trade_5")
-    grades = {k: "C" for k in ch.grade_keys} | overrides
-    blurb = Blurb(chapter="trade_5", attempt=1, fallback=False, grades=grades,
-                  sentences=[Sentence(text=tbundle.sheet.facts[f].text, fact_ids=[f])
-                             for f in ch.fact_ids if f.endswith(".sides")])
-    return blurb, ch
-
-
-def _grade_failures(tbundle, **overrides):
-    blurb, ch = _graded(tbundle, **overrides)
-    return [f for f in code_check(blurb, ch, tbundle.sheet) if "grade" in f]
-
-
-def test_missing_grade_fails(tbundle):
-    blurb, ch = _graded(tbundle)
-    del blurb.grades["T5.12"]
-    assert "[0] grade for T5.12 is missing" in code_check(blurb, ch, tbundle.sheet)
-
-
-def test_extra_grade_fails(tbundle):
-    assert _grade_failures(tbundle, **{"T9.1": "C"}) == ["[0] grade for T9.1 is not a trade side"]
-
-
-def test_grade_from_another_trade_fails(tbundle):
-    assert _grade_failures(tbundle, **{"T1.4": "C"}) == ["[0] grade for T1.4 is not a trade side"]
-
-
-def test_plus_grade_fails(tbundle):
-    assert _grade_failures(tbundle, **{"T5.12": "B+"}) == [
-        "[0] grade T5.12 is 'B+'; use one letter A, B, C, D, or F"
-    ]
-
-
-def test_full_grades_pass(tbundle):
-    assert _grade_failures(tbundle) == []
-
-
 def test_dropswing_passes_the_cost_gate(dbundle):
     sheet = dbundle.sheet
     ch = _ch(sheet, "recap_4")
@@ -422,49 +384,3 @@ def test_drop_value_alone_fails_the_cost_gate(dbundle):
     ch = _ch(sheet, "recap_4")
     b = _blurb("recap_4", _s("The drops cost Bo Girds the game.", "D.12501.value"))
     assert any("'cost' needs" in m for m in code_check(b, ch, sheet))
-
-
-def _value_failures(bundle, text, fact_ids):
-    chapter = next(c for c in bundle.sheet.chapters if c.key == "trade_1")
-    blurb = _blurb("trade_1", _s(text, *fact_ids))
-    return [m for m in code_check(blurb, chapter, bundle.sheet) if "trade value" in m]
-
-
-def test_trade_value_number_fails_when_it_cites_the_value_fact(vbundle):
-    failures = _value_failures(vbundle, "Hampton was worth 68.5 here.", ["T1.12507.value"])
-    assert failures == ["[0] number 68.5 is a trade value and may not appear"]
-
-
-def test_trade_value_number_fails_when_it_cites_nothing(vbundle):
-    assert _value_failures(vbundle, "Hampton was worth 68.5 here.", [])
-
-
-def test_trade_value_number_compares_after_normalizing(vbundle):
-    # 24 is the trade value of Croskey-Merritt. The sheet writes it without ".0".
-    assert _value_failures(vbundle, "He was worth 24.0 here.", ["T1.4.got.12533"])
-
-
-def test_trade_value_number_passes_when_a_cited_fact_holds_it_too(vbundle):
-    # The same number is a points-per-game figure in a cited got fact, so it is no leak.
-    facts = vbundle.sheet.facts
-    got = facts["T1.4.got.5892"]
-    facts["T1.4.got.5892"] = got.model_copy(update={"numbers": [*got.numbers, "68.5"]})
-    assert not _value_failures(vbundle, "He scored 68.5 per game.", ["T1.4.got.5892"])
-
-
-def test_value_number_is_not_checked_outside_a_trade_chapter(vbundle):
-    sheet = vbundle.sheet
-    chapter = next(c for c in sheet.chapters if not c.key.startswith("trade_"))
-    blurb = _blurb(chapter.key, _s("A score of 68.5 is odd.", chapter.fact_ids[0]))
-    assert not [m for m in code_check(blurb, chapter, sheet) if "trade value" in m]
-
-
-def test_a_trade_value_that_equals_the_week_number_passes(vbundle):
-    # A week number is always allowed. A chart row at 6.0 must not bar "week 6" from a trade chapter.
-    ch = next(c for c in vbundle.sheet.chapters if c.key == "trade_1")
-    facts = dict(vbundle.sheet.facts)
-    fid = next(f for f in ch.fact_ids if f.startswith("T1.") and f.endswith(".value") and f.count(".") == 2)
-    facts[fid] = facts[fid].model_copy(update={"numbers": [*facts[fid].numbers, "6"]})
-    sheet = vbundle.sheet.model_copy(update={"facts": facts})
-    blurb = _blurb("trade_1", Sentence(text="The deal looks better by week 6.", fact_ids=["T1.sides"]))
-    assert not [f for f in code_check(blurb, ch, sheet) if "trade value" in f]

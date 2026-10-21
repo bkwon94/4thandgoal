@@ -16,6 +16,5 @@ Mark a sentence `supported: true` only when every claim in it follows from the c
 - A cause or consequence claim (because, thanks to, cost, sank, decided) is unsupported unless a chapter fact states that cause.
 - A comparison, rank, or record that the chapter facts do not state is unsupported.
 - A joke, a sarcastic aside, or an opinion that adds no factual claim does not make a sentence unsupported. "The trade is going great" after a true score is attitude, not a claim. Judge the facts in the sentence, not the tone.
-- A trade grade is an opinion. A letter grade and the judgment behind it make no factual claim. Every number in the reason still needs a chapter fact.
 
 Return one verdict per sentence, in order, with the same `index` as the sentence number. Give a one-line reason for every verdict, supported or not.

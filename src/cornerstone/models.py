@@ -275,8 +275,6 @@ class Chapter(BaseModel):
     scope_players: list[str]
     min_sentences: int
     max_sentences: int
-    # Keys such as "T1.4" that the writer grades. Only a trade chapter sets them.
-    grade_keys: list[str] = []
 
 
 class WeekData(BaseModel):
@@ -296,6 +294,8 @@ class WeekData(BaseModel):
     # An old bundle has no leaders field.
     leaders: list[PositionLeader] = []
     trades: list[Trade] = []
+    # The name of each traded player with a lineup line, by player ID. The trade card reads it.
+    trade_players: dict[str, str] = {}
     drops: list[DropLine] = []
     drop_source: Literal["nflverse", "sleeper", "none"] = "none"
 
@@ -320,25 +320,12 @@ class Blurb(BaseModel):
     sentences: list[Sentence]
     attempt: int
     fallback: bool
-    # Keyed by T{n}.{rid}: one roster can make several trades in a week.
-    grades: dict[str, str] = {}
 
 
 class WriterOut(BaseModel):
     """The structured output of one writer call."""
 
     sentences: list[Sentence]
-
-
-class Grade(BaseModel):
-    key: str
-    letter: str
-
-
-class TradesWriterOut(WriterOut):
-    """A trade chapter output. A list keeps the structured output schema to fixed keys."""
-
-    grades: list[Grade] = []
 
 
 class Verdict(BaseModel):
@@ -364,6 +351,7 @@ class BuildRecord(BaseModel):
     """When a build started and which data sources it had. A false source was missing or incomplete."""
 
     started: datetime
+    # An older record may also hold a "chart" key. The weekly build reads no chart.
     sources: dict[str, bool]
     # The fetch time of this week's transactions.json. It is the end of the trade window.
     fetched: datetime | None = None
@@ -386,6 +374,7 @@ class DropPlay(BaseModel):
 
 class NflverseWeek(BaseModel):
     # sources says which of the four files gave data, so a chapter can say what it lacks.
+    # An older record may also hold a "chart" key. The weekly build reads no chart.
     sources: dict[str, bool]
     gsis: dict[str, str]
     # None means the source gave no data for the week. An empty dict means no player matched.

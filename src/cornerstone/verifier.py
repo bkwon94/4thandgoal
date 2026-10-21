@@ -34,7 +34,6 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
-GRADE_LETTERS = {"A", "B", "C", "D", "F"}
 NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
@@ -52,11 +51,6 @@ def _normalize(number: str) -> str:
 
 def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:
     return {_normalize(n) for fid in fids for n in sheet.facts[fid].numbers}
-
-
-def _is_trade_value(fid: str) -> bool:
-    # Only the T facts carry a trade value; MED.value and D.*.value are other values.
-    return fid.startswith("T") and fid.endswith(".value")
 
 
 def _whole_word(word: str, text: str) -> bool:
@@ -118,11 +112,6 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     in_scope_last = {_last_name(p) for p in chapter.scope_players}
     banned = _banned_words()
     always_allowed = _week_numbers(sheet)
-    # A trade value or a trade value sum must never reach the page, so a trade chapter bars these numbers.
-    trade_value_numbers = (
-        _numbers([fid for fid in chapter.fact_ids if _is_trade_value(fid) and fid in sheet.facts], sheet)
-        if chapter.key.startswith("trade_") else set()
-    )
 
     for i, sentence in enumerate(blurb.sentences):
         valid_ids = []
@@ -132,8 +121,6 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
             else:
                 failures.append(f"[{i}] fact ID {fid} is not in this chapter")
         cited = _numbers(valid_ids, sheet)
-        # A number that a cited fact other than a trade value holds too is no leak. A points figure is one.
-        cited_not_trade_value = _numbers([fid for fid in valid_ids if not _is_trade_value(fid)], sheet)
 
         # Digits inside a name ("Pukancun on 3") are not numbers.
         bare = _remove_names(sentence.text, scope_names)
@@ -143,9 +130,6 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 failures.append(
                     f"[{i}] number {token} is not in the cited facts {', '.join(sentence.fact_ids)}"
                 )
-            # A week number is always allowed, so a trade value that equals one is no leak either.
-            if number in trade_value_numbers and number not in cited_not_trade_value and number not in always_allowed:
-                failures.append(f"[{i}] number {token} is a trade value and may not appear")
 
         cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
         for word in NUMBER_WORDS:
@@ -184,19 +168,6 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         failures.append(
             f"[0] {count} sentences; the range is {chapter.min_sentences} to {chapter.max_sentences}"
         )
-    if chapter.grade_keys:
-        failures += _grade_failures(blurb, chapter)
-    return failures
-
-
-def _grade_failures(blurb: Blurb, chapter: Chapter) -> list[str]:
-    failures = [f"[0] grade for {k} is missing" for k in chapter.grade_keys if k not in blurb.grades]
-    failures += [f"[0] grade for {k} is not a trade side" for k in blurb.grades if k not in chapter.grade_keys]
-    failures += [
-        f"[0] grade {k} is '{v}'; use one letter A, B, C, D, or F"
-        for k, v in blurb.grades.items()
-        if k in chapter.grade_keys and v not in GRADE_LETTERS
-    ]
     return failures
 
 

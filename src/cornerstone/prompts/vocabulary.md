@@ -22,17 +22,11 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **season high**: a team's highest weekly total this season.
 - **season low**: a team's lowest weekly total this season.
 - **season average**: a team's points for divided by the weeks played this season.
-- **roster need**: depth at the traded positions and open spots, as of this week's lineup.
 - **points per game**: half-PPR points over the weeks with a scored game, weeks 1 to N-1.
 - **position rank by season points**: among every player at the position in Sleeper's weekly stats, weeks 1 to N-1.
-- **trade impact**: what the traded players scored in the week of the trade. It never feeds the grade.
-- **snap share**: offensive snaps over the team's offensive snaps. The fact gives the share over the last 2 weeks before the trade, against the 2 weeks before those. Up or down means a change of 5 percentage points or more; else flat.
-- **target share**: targets over the targets of every player on his NFL team in Sleeper's stats. Sleeper's stats cover QB, RB, WR, TE, K, and DEF. Same weeks and same up or down rule as snap share.
-- **red-zone use**: targets and carries inside the 20.
-- **injury before the trade**: the nflverse report through week N-1. The week N pre-game report is after the trade and never feeds the grade.
+- **trade impact**: what the traded players scored in the week of the trade.
 - **trade swing**: the points of the traded players who started this week, counted for starters only: what a team got and started against what it gave that the other side started. The gap counts only when it points the same way as the result: the winner gained at least the margin, or the loser gave away at least the margin. Only when the fact says the gap is above or equal to the margin may the writer say the trade decided or cost the game.
-- **trade value**: the half-PPR redraft trade value from the chart for the week of the trade. It shapes the grade and never appears on the page.
-- **trade grade**: an opinion from the fact sheet, A to F, with the reason.
+- **late trade**: a trade made after the lineups locked, so the lineups show the rosters from before it. The points of its players went to their old rosters. Use it only in a sentence that cites the `.late` fact of the trade.
 - **upset**: the winner ranked below the loser in the standings before this week. Use it only in a sentence that cites a fact with `.upset` in its ID.
 - **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`. Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection.
 - **injury status**: the Sleeper designation for a player as of the Tuesday after the games. It says nothing about the player's status at kickoff. Use it only in a sentence that cites a fact with `.inj.` in its ID or the fact `W.injured`.
