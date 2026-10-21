@@ -16,3 +16,19 @@
 - [ ] The response fixture is copied into the site repo's fixtures. The copy is byte-identical to this repo's fixture.
 - [ ] A short runbook in the docs directory: how to deploy, how to rotate the passphrase, how to force a refresh, and how to read the logs.
 - [ ] `uv run pytest -q` passes with no failed test.
+
+## Comments
+
+**Cost check, 2026-10-21.** Fly.io: one shared-cpu-1x machine with 1 GB costs $6.70 a month if it runs all
+month. With auto-stop, a stopped machine bills only its root file system at $0.15 per GB a month, and a 1 GB
+volume costs $0.15 a month. At about 6,000 CPU-seconds a month the total is about $0.30 to $0.40. Source:
+docs.fly.io/about/pricing. Cloud Run: the free tier covers this volume, so compute costs $0; a Cloud Storage
+bucket mount gives the disk at about $0.02 per GB a month; Cloud Scheduler is free for three jobs. The Google
+pricing pages did not load for the check, so those figures come from a search summary. Decision: Fly stands.
+The gap is under $1 a month, and a Fly volume is a real disk, which the result cache needs. A bucket mount is
+not a full POSIX disk.
+
+**Daily job.** A stopped Fly machine cannot run an in-process scheduler, so the 06:00 Eastern job cannot live
+inside the service alone. The day-old check on the first request, from ticket 06, already refreshes a stale
+source. For the deploy ticket: add a refresh route behind the passphrase, and call it at 06:00 Eastern from a
+GitHub Actions cron. That is a ping, not a deploy, so it stays inside the PRD's scope.
