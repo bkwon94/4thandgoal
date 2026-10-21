@@ -2,6 +2,7 @@
      The macros keep the avatar and team markup the same in every chapter. -->
 {% extends "base.html" %}
 {% macro av(team) %}<img class="avatar" src="{{ avatars[team.roster_id] }}" alt="">{% endmacro %}
+{% macro hs(player_id, lazy=false) %}<img class="headshot" src="{{ headshots[player_id] }}" alt=""{{ ' loading="lazy"'|safe if lazy }}>{% endmacro %}
 {% macro tm(team) %}<span class="who">{{ av(team) }}<span>{{ team.name }}</span></span>{% endmacro %}
 {% block title %}Cornerstone League Weekly · Week {{ week }}{% endblock %}
 {% block meta %}<meta name="cornerstone-summary" content="{{ summary }}">{% endblock %}
@@ -24,7 +25,7 @@
   {% set gc = game_changer.award.line %}
   <section class="chap dark">
     <div class="lbl">Game Changer</div>
-    <div class="hero-p">{{ gc.name }} <small>{{ gc.position }}{% if gc.nfl_team %} · {{ gc.nfl_team }}{% endif %} · {{ game_changer.team }}</small></div>
+    <div class="hero-p">{{ hs(gc.player_id) }}{{ gc.name }} <small>{{ gc.position }}{% if gc.nfl_team %} · {{ gc.nfl_team }}{% endif %} · {{ game_changer.team }}</small></div>
     <div class="hero-p pts">{{ gc.points|num }}{% if gc.projection is not none %} <small>projected {{ gc.projection|num }}</small>{% endif %}</div>
     <p class="blurb">{{ blurbs.game_changer }}</p>
   </section>
@@ -39,6 +40,7 @@
         {% if t.missing %}
         <div class="sub">Projections unavailable this week</div>
         {% else %}
+        {{ hs(t.player_id) }}
         <div class="n">{{ t.player }}</div>
         <div class="pp">{{ t.points|num }}</div>
         <div class="sub">{% if t.projection is not none %}proj {{ t.projection|num }} · {% endif %}{{ t.team }}</div>
@@ -59,7 +61,7 @@
         {% if b.rows %}
         <ol>
           {% for r in b.rows %}
-          <li class="row"><span class="rk">{{ r.rank }}</span><span class="pl"><b>{{ r.player }}</b>{% if r.nfl_team %} <small>{{ r.nfl_team }}</small>{% endif %}</span><span class="tm">{{ r.team }}</span><span class="pts">{{ r.points|num }}</span></li>
+          <li class="row"><span class="rk">{{ r.rank }}</span><span class="pl">{{ hs(r.player_id, lazy=true) }}<b>{{ r.player }}</b>{% if r.nfl_team %} <small>{{ r.nfl_team }}</small>{% endif %}</span><span class="tm">{{ r.team }}</span><span class="pts">{{ r.points|num }}</span></li>
           {% endfor %}
         </ol>
         {% else %}

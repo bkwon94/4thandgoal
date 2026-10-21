@@ -19,6 +19,7 @@ from cornerstone.sheet import AWARD_TITLES, fmt
 PACKAGE_DIR = Path(__file__).parent
 STATIC_DIR = PACKAGE_DIR / "static"
 DEFAULT_AVATAR = "static/avatar-default.svg"
+DEFAULT_HEADSHOT = "static/headshot-default.svg"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
@@ -59,7 +60,8 @@ def _tile(bundle: Bundle, key: str, teams: dict) -> dict:
         return {"title": title, "missing": True}
     projection = award.line.projection if key in ("underperformer", "overachiever") else None
     tile = {
-        "title": title, "missing": False, "player": award.line.name, "points": award.line.points,
+        "title": title, "missing": False, "player": award.line.name, "player_id": award.line.player_id,
+        "points": award.line.points,
         "team": teams[award.roster_id].name, "projection": projection,
     }
     return tile
@@ -126,6 +128,7 @@ def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
         boards[lead.position]["rows"].append({
             "rank": lead.rank,
             "player": lead.line.name,
+            "player_id": lead.line.player_id,
             "nfl_team": lead.line.nfl_team,
             "points": lead.line.points,
             "team": teams[lead.roster_id].name,
@@ -133,7 +136,9 @@ def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
     return list(boards.values())
 
 
-def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str]) -> dict:
+def build_context(
+    bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str], headshots: dict[str, str] | None = None,
+) -> dict:
     """Turn the bundle into the values the templates read."""
     data = bundle.data
     teams = data.teams
@@ -172,6 +177,7 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
         ],
         "blurbs": text,
         "avatars": avatars,
+        "headshots": headshots or {},
         "summary": f"Week {data.week} · {data.dates} · {pick_sides[0]['team'].name} vs {pick_sides[1]['team'].name}",
         "root": "../../",
     }
@@ -203,6 +209,36 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
     return paths
 
 
+def _headshot_url(line: PlayerLine) -> str:
+    """The Sleeper CDN URL for a player's headshot.
+    A DEF has no portrait, and its player ID is the team abbreviation, so it maps to the team logo."""
+    if line.position == "DEF":
+        return f"https://sleepercdn.com/images/team_logos/nfl/{line.player_id.lower()}.png"
+    return f"https://sleepercdn.com/content/nfl/players/{line.player_id}.jpg"
+
+
+def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[str, str]:
+    """Save the headshot of each player on the Game Changer hero, the award tiles, and the leader rows.
+    A failed download falls back to the default silhouette."""
+    data = bundle.data
+    lines = [a.line for a in data.awards if a.key == "game_changer" or a.key in TILE_KEYS]
+    lines += [lead.line for lead in data.leaders]
+    paths = {}
+    for line in lines:
+        # A player can hold an award and a leader row, so each player is fetched once.
+        if line.player_id in paths:
+            continue
+        paths[line.player_id] = f"../../{DEFAULT_HEADSHOT}"
+        content = fetch_bytes(_headshot_url(line))
+        if content is None:
+            continue
+        # The CDN serves PNG bytes, even under the .jpg name of a player URL.
+        headshot_dir.mkdir(parents=True, exist_ok=True)
+        (headshot_dir / f"{line.player_id}.png").write_bytes(content)
+        paths[line.player_id] = f"headshots/{line.player_id}.png"
+    return paths
+
+
 def _copy_static(site_dir: Path) -> None:
     shutil.copytree(STATIC_DIR, site_dir / "static", dirs_exist_ok=True)
 
@@ -217,8 +253,9 @@ def render_week(
     week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
     week_dir.mkdir(parents=True, exist_ok=True)
     avatars = _download_avatars(bundle, week_dir / "avatars", fetch_bytes)
+    headshots = _download_headshots(bundle, week_dir / "headshots", fetch_bytes)
     page = week_dir / "index.html"
-    page.write_text(_env.get_template("week.html").render(build_context(bundle, blurbs, avatars)))
+    page.write_text(_env.get_template("week.html").render(build_context(bundle, blurbs, avatars, headshots)))
     _copy_static(site_dir)
     return page
 

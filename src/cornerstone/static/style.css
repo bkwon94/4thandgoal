@@ -31,6 +31,7 @@ a { color:var(--red); }
 .pt, .hero-p, .pp, .tile .sub, .kpi .v, .stars b, .mu .hd, .chart .r, .st, .rec, .week .dates, .wk .dates { font-variant-numeric:tabular-nums; }
 
 .avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
+.headshot { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
 .who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
 
 .mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }

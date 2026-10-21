@@ -286,7 +286,7 @@ def test_build_context_has_five_leader_boards(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
     boards = build_context(b, _blurbs(b), {})["leaders"]
     assert [x["position"] for x in boards] == ["QB", "RB", "WR", "TE", "DEF"]
-    assert boards[1]["rows"][0] == {"rank": 1, "player": "Kenneth Walker", "nfl_team": "KC",
+    assert boards[1]["rows"][0] == {"rank": 1, "player": "Kenneth Walker", "player_id": "8151", "nfl_team": "KC",
                                     "points": 26.9, "team": "Bo Girds"}
 
 
@@ -324,3 +324,73 @@ def test_position_leaders_blurb_renders_under_the_boards(fixture_raw_dir, tmp_pa
     html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
     section = _leaders_section(html)
     assert section.index("Blurb for position_leaders.") > section.rindex('class="board"')
+
+
+def _headshot_players(b):
+    """The player lines on the Game Changer hero, the award tiles, and the leader rows."""
+    awards = [a.line for a in b.data.awards if a.key in ("game_changer", "top_scorer", "mvb",
+                                                          "underperformer", "overachiever")]
+    return awards + [lead.line for lead in b.data.leaders]
+
+
+def _game_changer_section(html):
+    section = html[html.index(">Game Changer<"):]
+    return section[:section.index("</section>")]
+
+
+def test_headshots_show_on_the_hero_the_tiles_and_the_rows(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    headshots = {line.player_id: f"headshots/{line.player_id}.png" for line in _headshot_players(b)}
+    ctx = build_context(b, _blurbs(b), {}, headshots)
+    assert ctx["headshots"] == headshots
+    assert ctx["game_changer"]["award"].line.player_id in headshots
+    for t in ctx["awards"]:
+        assert t["missing"] or t["player_id"] in headshots
+    for board in ctx["leaders"]:
+        for r in board["rows"]:
+            assert r["player_id"] in headshots
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert _game_changer_section(html).count('class="headshot"') == 1
+    tiles = re.findall(r'<div class="tile">(.*?)<div class="sub">', html, re.S)
+    assert len(tiles) == 4 and all('class="headshot"' in t for t in tiles)
+    rows = re.findall(r'<li class="row">(.*?)</li>', _leaders_section(html), re.S)
+    assert len(rows) == 15 and all('class="headshot"' in r and 'loading="lazy"' in r for r in rows)
+
+
+def test_headshots_are_fetched_once_per_player_and_saved_next_to_the_page(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    urls = []
+
+    def fetch(url):
+        urls.append(url)
+        return PNG_BYTES
+
+    page = render_week(b, _blurbs(b), tmp_path, fetch)
+    headshot_urls = [u for u in urls if "sleepercdn.com/content/nfl/players/" in u
+                     or "sleepercdn.com/images/team_logos/nfl/" in u]
+    lines = {line.player_id: line for line in _headshot_players(b)}
+    assert len(headshot_urls) == len(set(headshot_urls)) == len(lines)
+    wr = next(l for l in lines.values() if l.position == "WR")
+    assert f"https://sleepercdn.com/content/nfl/players/{wr.player_id}.jpg" in headshot_urls
+    defense = next(l for l in lines.values() if l.position == "DEF")
+    assert f"https://sleepercdn.com/images/team_logos/nfl/{defense.player_id.lower()}.png" in headshot_urls
+    assert defense.player_id != defense.player_id.lower()
+    html = page.read_text()
+    for pid in lines:
+        assert (page.parent / "headshots" / f"{pid}.png").read_bytes() == PNG_BYTES
+        assert f'src="headshots/{pid}.png"' in html
+
+
+def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    lines = {line.player_id: line for line in _headshot_players(b)}
+    failed = next(l for l in lines.values() if l.position == "WR")
+    failed_url = f"https://sleepercdn.com/content/nfl/players/{failed.player_id}.jpg"
+    page = render_week(b, _blurbs(b), tmp_path, lambda url: None if url == failed_url else PNG_BYTES)
+    html = page.read_text()
+    assert f'src="headshots/{failed.player_id}.png"' not in html
+    assert '<img class="headshot" src="../../static/headshot-default.svg"' in html
+    assert not (page.parent / "headshots" / f"{failed.player_id}.png").exists()
+    for pid in lines.keys() - {failed.player_id}:
+        assert f'src="headshots/{pid}.png"' in html
+    assert (tmp_path / "static" / "headshot-default.svg").exists()
