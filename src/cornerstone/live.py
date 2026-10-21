@@ -88,8 +88,15 @@ def live_snapshot(
     # On the Tuesday after the cutoff, Sleeper still shows week N-1, and only this raw data holds it.
     # The points allowed read the history on disk, so week N-1 goes there before the slow sources load.
     # The weekly build saves the same week later and overwrites these files with the same data.
-    if week.week == trade_week - 1:
-        save_raw_to_history(raw, history_dir(root, week.week))
+    # A Sleeper outage gives empty stats, so an empty week is not saved over a good saved copy.
+    # A failed write must not stop the request, so the snapshot builds and notes the history as stale.
+    if week.week == trade_week - 1 and raw["stats"]:
+        try:
+            save_raw_to_history(raw, history_dir(root, week.week))
+        except OSError as error:
+            logger.warning("Week %d not saved to history (%s), so the saved weeks stand", week.week, error)
+            if "history" not in stale:
+                stale.append("history")
     # The chart is the one of the trade window, which can be a week ahead of the last scored week.
     chart = read_chart(repo, week.season_start, trade_week, week_lines(week))
     slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)

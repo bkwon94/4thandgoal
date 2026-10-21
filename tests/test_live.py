@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 
+from cornerstone.history import save_week_to_history
 from cornerstone.live import live_snapshot
 from cornerstone.nflverse import DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, cache_path
 from cornerstone.sleeper import load_raw
@@ -188,3 +189,32 @@ def test_on_the_tuesday_before_the_roll_the_raw_week_is_saved_so_points_allowed_
     assert snap.points_allowed is not None
     assert "points_allowed" not in snap.missing
     assert (saved / "stats.json").exists()
+
+
+def test_on_the_tuesday_an_empty_stats_raw_week_leaves_a_good_saved_week_untouched(
+        live_repo, fixture_raw_dir, chart_week6):
+    # A Sleeper outage gives an empty stats list. The saved copy of week 6 must stay as it is.
+    saved = live_repo / "data" / "2026" / "history" / "week-06"
+    save_week_to_history(fixture_raw_dir, saved)
+    before = (saved / "stats.json").read_bytes()
+
+    def outage(league_id, players_cache):
+        raw = load_raw(fixture_raw_dir)
+        raw["stats"] = []
+        return raw, FETCHED
+
+    live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=outage,
+                  fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                  read_chart=ChartRecorder(chart_week6))
+    assert (saved / "stats.json").read_bytes() == before
+
+
+def test_on_the_tuesday_a_failed_history_write_marks_history_stale_and_the_snapshot_still_builds(
+        live_repo, sleeper, chart_week6):
+    # A file where the week 6 directory goes makes the write fail with an OSError.
+    (live_repo / "data" / "2026" / "history" / "week-06").write_text("", encoding="utf-8")
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert "history" in snap.stale
+    assert snap.week == 7
