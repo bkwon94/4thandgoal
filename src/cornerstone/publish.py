@@ -1,6 +1,7 @@
 """
 Publish a built week to the public site repo.
-It commits the source repo, copies the site, then commits and pushes the site repo.
+It commits the source repo and copies the week folder.
+Then it commits and pushes the site repo.
 """
 import shutil
 import subprocess
@@ -8,6 +9,11 @@ from pathlib import Path
 
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://cpcfantasy.com/"
+
+
+def site_page_url(season: int, week: int) -> str:
+    """The public URL of one week's page."""
+    return f"{SITE_URL}{season}/week-{week:02d}/"
 
 
 class PublishError(Exception):
@@ -41,8 +47,9 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     _git(repo, "add", "site", "data")
     _commit_if_staged(repo, f"Week {week} report", "site", "data")
 
-    # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must stay off
-    # the public site. The site repo is a Next.js app. It renders the pages and the home page from these folders.
+    # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
+    # stay off the public site. The site repo is a Next.js app. It renders the pages and the home
+    # page from these folders.
     public_dir = site_repo / "public"
     week_path = Path(str(season)) / f"week-{week:02d}"
     shutil.copytree(
@@ -52,4 +59,4 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:
         _git(site_repo, "push")
-    return SITE_URL + f"{season}/week-{week:02d}/"
+    return site_page_url(season, week)

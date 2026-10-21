@@ -15,9 +15,10 @@ from cornerstone.facts_league import LEADER_POSITIONS
 from cornerstone.models import Blurb, Bundle, MatchupFacts
 from cornerstone.sheet import AWARD_TITLES
 
-DEFAULT_AVATAR = "static/avatar-default.svg"
-DEFAULT_HEADSHOT = "static/headshot-default.svg"
+DEFAULT_AVATAR = "images/avatar-default.svg"
+DEFAULT_HEADSHOT = "images/headshot-default.svg"
 # The week folder sits two folders below the site root, so it reaches the default silhouette with this path.
+DEFAULT_AVATAR_PATH = f"../../{DEFAULT_AVATAR}"
 DEFAULT_HEADSHOT_PATH = f"../../{DEFAULT_HEADSHOT}"
 AVATAR_TIMEOUT = 10
 # The order of the four tiles on the page.
@@ -26,6 +27,7 @@ TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 PAGE_SCHEMA_VERSION = 2
 
 log = logging.getLogger(__name__)
+
 
 def _sides(f: MatchupFacts, teams: dict) -> list[dict]:
     """The two sides of a matchup, winner first. A tie has neither flag set and keeps the roster order.
@@ -178,7 +180,7 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
     """Save each avatar. A missing or failed download falls back to the default image."""
     paths = {}
     for rid, team in bundle.data.teams.items():
-        paths[rid] = f"../../{DEFAULT_AVATAR}"
+        paths[rid] = DEFAULT_AVATAR_PATH
         if team.avatar_url is None:
             continue
         content = fetch_bytes(team.avatar_url)
@@ -240,7 +242,7 @@ def _saved_avatars(bundle: Bundle, week_dir: Path) -> dict[int, str]:
     paths = {}
     for rid in bundle.data.teams:
         saved = next((week_dir / "avatars").glob(f"{rid}.*"), None)
-        paths[rid] = f"avatars/{saved.name}" if saved else f"../../{DEFAULT_AVATAR}"
+        paths[rid] = f"avatars/{saved.name}" if saved else DEFAULT_AVATAR_PATH
     return paths
 
 
@@ -271,7 +273,7 @@ def _write_page_json(context: dict, week_dir: Path) -> Path:
 
 
 def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -> Path:
-    """Write page.json for a week that a past build saved. It fetches nothing and keeps the page and images."""
+    """Write page.json for a week that a past build saved. It fetches nothing and keeps the images."""
     week_dir = _week_dir(site_dir, bundle)
     context = build_context(bundle, blurbs, _saved_avatars(bundle, week_dir), _saved_headshots(bundle, week_dir))
     return _write_page_json(context, week_dir)

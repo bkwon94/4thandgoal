@@ -25,11 +25,11 @@ the JSON, including the home page.
 
 The build writes `site/<season>/week-NN/page.json` with the images beside it. The file holds the
 render context and a `schema_version` key. The image paths in it are relative to the week folder.
-The default avatar and headshot paths point to `static/` at the site root, and the site repo serves
+The default avatar and headshot paths point to `images/` under `public/`, and the site repo serves
 those files.
 
 `cornerstone publish` copies the whole week folder to `public/<season>/week-NN/` in the site
-repo. It copies no `static/` folder and writes no `index.html`. The site repo reads `summary` from
+repo. It copies no `images/` folder and writes no `index.html`. The site repo reads `summary` from
 each `page.json` to list the weeks on the home page.
 
 To write the file for a saved week, run `cornerstone page-json --season <S> --week <W>`. The

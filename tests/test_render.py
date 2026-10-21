@@ -74,14 +74,14 @@ def test_missing_avatar_uses_default(fixture_raw_dir, tmp_path):
     for t in b.data.teams.values():
         t.avatar_url = None
     page = render_week(b, _blurbs(b), tmp_path, _fake_png)
-    assert set(_page(page)["avatars"].values()) == {"../../static/avatar-default.svg"}
+    assert set(_page(page)["avatars"].values()) == {"../../images/avatar-default.svg"}
     assert not (page.parent / "avatars").exists()
 
 
 def test_failed_download_uses_default(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     page = render_week(b, _blurbs(b), tmp_path, _no_bytes)
-    assert set(_page(page)["avatars"].values()) == {"../../static/avatar-default.svg"}
+    assert set(_page(page)["avatars"].values()) == {"../../images/avatar-default.svg"}
     assert not list((page.parent / "avatars").glob("*"))
 
 
@@ -257,7 +257,7 @@ def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
     failed_url = f"https://sleepercdn.com/content/nfl/players/{failed.player_id}.jpg"
     page = render_week(b, _blurbs(b), tmp_path, lambda url: None if url == failed_url else PNG_BYTES)
     saved = _page(page)["headshots"]
-    assert saved[failed.player_id] == "../../static/headshot-default.svg"
+    assert saved[failed.player_id] == "../../images/headshot-default.svg"
     assert not (page.parent / "headshots" / f"{failed.player_id}.png").exists()
     for pid in lines.keys() - {failed.player_id}:
         assert saved[pid] == f"headshots/{pid}.png"
@@ -271,7 +271,7 @@ def test_trade_context_gives_each_player_a_name_and_a_headshot(tbundle):
     assert hampton == {"name": "Omarion Hampton", "headshot": "headshots/12507.png"}
     montgomery = next(p for p in sides[4]["players"] if p["name"] == "David Montgomery")
     # A player with no saved headshot gets the default silhouette.
-    assert montgomery == {"name": "David Montgomery", "headshot": "../../static/headshot-default.svg"}
+    assert montgomery == {"name": "David Montgomery", "headshot": "../../images/headshot-default.svg"}
 
 
 def test_headshots_of_traded_players_are_fetched_with_the_silhouette_on_a_failed_fetch(tbundle, tmp_path):
@@ -289,7 +289,7 @@ def test_headshots_of_traded_players_are_fetched_with_the_silhouette_on_a_failed
     players = [p for side in _page(page)["trades"][0]["sides"] for p in side["players"]]
     assert "headshots/12507.png" in {p["headshot"] for p in players}
     assert f"headshots/{failed}.png" not in {p["headshot"] for p in players}
-    assert "../../static/headshot-default.svg" in {p["headshot"] for p in players}
+    assert "../../images/headshot-default.svg" in {p["headshot"] for p in players}
 
 
 def test_two_side_card_has_two_sides_and_a_player_for_each_chip(tbundle, tmp_path):
