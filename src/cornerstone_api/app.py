@@ -1,5 +1,5 @@
 """
-The app factory of the Cornerstone API: CORS, the passphrase check, the rate limit, and the route groups.
+The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the route groups.
 The service needs CORNERSTONE_PASSPHRASE, and ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
 CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
@@ -11,15 +11,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
-from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
+from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.cache import ResultCache
-from cornerstone_api.ratelimit import RateLimiter
+from cornerstone_api.ratelimit import GradeLimiter, RateLimiter, client_address
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
+# The file of the daily grade counts, in the result cache dir.
+GRADE_COUNTS_FILE = "grade-counts.json"
 
 
 class _Unauthorized(Exception):
@@ -34,18 +36,10 @@ class _RateLimited(Exception):
         self.retry_after = retry_after
 
 
-def _client_address(request: Request) -> str:
-    """The address of the client. On Fly every request comes from the proxy, so the proxy sets Fly-Client-IP."""
-    forwarded = request.headers.get("Fly-Client-IP")
-    if forwarded:
-        return forwarded
-    return request.client.host if request.client else "unknown"
-
-
 def _guard(request: Request) -> None:
     """Stop a request past the rate limit or without the league passphrase. Every route group except health runs it."""
     # The count comes before the passphrase check, so wrong guesses count against the limit too.
-    retry_after = request.app.state.limiter.hit(_client_address(request))
+    retry_after = request.app.state.limiter.hit(client_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
     given = request.headers.get(PASSPHRASE_HEADER, "")
@@ -63,6 +57,9 @@ def create_app(
     app.state.sources = sources or Sources()
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
+    # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
+    app.state.grade_limiter = GradeLimiter(
+        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
 

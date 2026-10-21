@@ -12,11 +12,17 @@ from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key
 from cornerstone_api.errors import season_in_progress
+from cornerstone_api.ratelimit import client_address
 
 router = APIRouter()
 
 # The answer when the week has no chart. A grade with no trade value would mislead, so the route gives none.
 NO_CHART_DETAIL = "The trade value chart for this week is not available."
+# One 429 body for each full window.
+GRADE_LIMIT_DETAIL = {
+    "minute": "Too many grades this minute. Try again later.",
+    "day": "Too many grades today. Try again tomorrow.",
+}
 
 
 # The grade plus the Claude call: a proposed trade and its snapshot in, the analysis out.
@@ -128,6 +134,11 @@ def analyze(request: Request, trade: ProposedTrade) -> dict:
     cached = cache.get(key)
     if cached is not None:
         return cached
+    # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
+    limited = request.app.state.grade_limiter.hit(client_address(request))
+    if limited is not None:
+        raise HTTPException(status_code=429, detail=GRADE_LIMIT_DETAIL[limited.window],
+                            headers={"Retry-After": str(limited.retry_after)})
     analysis = request.app.state.analyzer(trade, snapshot)
     document = result_document(trade, snapshot, analysis)
     # A fallback is not stored, so the next request of the same trade tries the Claude call again.
