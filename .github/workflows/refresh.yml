@@ -1,0 +1,29 @@
+# The daily refresh of the Cornerstone API: a cron ping to POST /refresh at about 06:00 Eastern.
+# A stopped Fly machine cannot run a scheduler, so this ping starts it and runs the refresh. It never deploys.
+name: Daily refresh
+
+on:
+  schedule:
+    # 10:00 UTC is 06:00 EDT, from September to early November, and 05:00 EST after that. The refresh needs one run
+    # a day before the managers wake, so one line that runs an hour early in winter is simpler than two lines that
+    # run twice on some days. GitHub can start a scheduled run some minutes late.
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+env:
+  # Change this once a year, at the start of the season. A repository variable of the same name overrides it.
+  CORNERSTONE_SEASON: ${{ vars.CORNERSTONE_SEASON || '2026' }}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call the refresh route
+        env:
+          PASSPHRASE: ${{ secrets.CORNERSTONE_PASSPHRASE }}
+        # --fail makes a 401 or a 5xx fail the job, so a broken refresh shows in the Actions tab.
+        run: |
+          curl --fail --silent --show-error --max-time 300 -X POST \
+            -H "X-League-Passphrase: ${PASSPHRASE}" \
+            "https://api.cpcfantasy.com/refresh?season=${CORNERSTONE_SEASON}"

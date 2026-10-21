@@ -2,19 +2,23 @@
 Tests for the FastAPI app at the analyze route seam, through the FastAPI test client.
 The Sleeper fetch, the slow-source fetchers, the chart read, and the Claude call are fixture-backed callables.
 """
+import dataclasses
 import functools
 import json
 import os
 import re
 import shutil
+import time
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
 from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
+from cornerstone.nflverse import DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.rubric import LETTERS, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone_api.app import create_app
@@ -413,3 +417,56 @@ def test_settings_from_the_environment_need_a_passphrase(monkeypatch, tmp_path):
     assert "secret" not in repr(settings)
     assert settings.result_cache_dir == tmp_path.resolve() / "data" / "cache" / "results"
     assert "https://cpcfantasy.com" in settings.allowed_origins
+
+
+def test_a_refresh_on_a_fresh_cache_refreshes_nothing(settings, sources):
+    response = _client(settings, sources).post("/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.status_code == 200
+    assert response.json() == {"refreshed": [], "stale": []}
+
+
+def _aged(repo, url):
+    """Make the cached file of `url` two days old, so the refresh fetches it again."""
+    path = cache_path(repo / "data" / "cache" / "nflverse", url, 2026)
+    old = time.time() - 2 * 24 * 60 * 60
+    os.utime(path, (old, old))
+    return path
+
+
+def test_a_refresh_fetches_a_source_older_than_a_day(settings, sources, fixture_nflverse_dir):
+    path = _aged(settings.repo, SCHEDULES_URL)
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / path.name).read_bytes()
+
+    refreshing = dataclasses.replace(sources, fetch_nflverse=fetch)
+    response = _client(settings, refreshing).post("/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.json() == {"refreshed": ["schedules"], "stale": []}
+    assert asked == [SCHEDULES_URL]
+
+
+def test_a_failed_refresh_fetch_is_stale_and_keeps_the_old_cache(settings, sources):
+    path = _aged(settings.repo, DEPTH_CHARTS_URL)
+    before = path.read_bytes()
+
+    def fetch(url):
+        raise httpx.ConnectError("down")
+
+    failing = dataclasses.replace(sources, fetch_nflverse=fetch)
+    response = _client(settings, failing).post("/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.json() == {"refreshed": [], "stale": ["depth charts"]}
+    assert path.read_bytes() == before
+
+
+def test_a_refresh_with_no_chart_for_the_week_lists_the_chart_as_stale(settings, sources):
+    no_chart = dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: None)
+    response = _client(settings, no_chart).post("/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.json() == {"refreshed": [], "stale": ["chart"]}
+
+
+def test_a_refresh_needs_the_passphrase(settings, sources):
+    response = _client(settings, sources).post("/refresh", params={"season": 2026})
+    assert response.status_code == 401
+    assert response.content == b""

@@ -5,6 +5,7 @@ On the Tuesday after the cutoff, it saves the week before the trade week into th
 """
 import logging
 from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
@@ -12,7 +13,7 @@ import httpx
 
 from cornerstone.chart import chart_values
 from cornerstone.history import fetch_history, history_dir, history_root, returns_path, save_raw_to_history
-from cornerstone.models import ChartValues, PlayerLine, week_lines
+from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, SCHEDULES_URL, cache_path, download, http_get, is_fresh,
 )
@@ -45,17 +46,75 @@ def window_week(season_start: date, now: datetime) -> int:
 
 
 def _refresh(
-        cache_dir: Path, season: int, fetch: Callable[[str], bytes]) -> list[str]:
-    """Refresh each source whose cache is older than a day. Return the names of those still not fresh."""
-    stale = []
+        cache_dir: Path, season: int, fetch: Callable[[str], bytes]) -> tuple[list[str], list[str]]:
+    """Refresh each source whose cache is older than a day. Return the names refreshed and the names still not fresh."""
+    refreshed, stale = [], []
     for name, url in REFRESHED_SOURCES:
         path = cache_path(cache_dir, url, season)
-        # download keeps a fresh file, and on a failure it keeps the stale one, so the old cache stays in place.
         # The age is of the file on disk, so it uses the clock of the disk and not the `now` of the request.
+        was_fresh = is_fresh(path)
+        # download keeps a fresh file, and on a failure it keeps the stale one, so the old cache stays in place.
         kept = download(url.format(season=season), path, fetch=fetch)
         if kept is None or not is_fresh(path):
             stale.append(name)
-    return stale
+        elif not was_fresh:
+            refreshed.append(name)
+    return refreshed, stale
+
+
+@dataclass(frozen=True)
+class Refresh:
+    """What one refresh of the slow sources did, and the chart of the trade window that it read."""
+
+    # The sources that the run fetched again, and the history weeks that it saved.
+    refreshed: list[str]
+    # The sources that are still older than a day, or the history when its fetch failed.
+    stale: list[str]
+    trade_week: int
+    # None when the trade window week has no good chart.
+    chart: ChartValues | None
+
+
+def fetch_live_week(
+        repo: Path, season: int, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+    """The raw Sleeper data now, its fetch time, and its parsed week.
+
+    Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
+    """
+    raw, fetched = fetch_sleeper(LEAGUE_ID, repo / "data" / "cache" / "players.json")
+    state = raw["state"]
+    if int(state["season"]) != season:
+        raise ValueError(f"Sleeper is in season {state['season']}, not {season}. Use --week to read a saved week.")
+    return raw, fetched, parse_week(raw)
+
+
+def refresh_sources(
+        repo: Path, season: int, now: datetime, week: Week, *,
+        fetch_nflverse: Callable[[str], bytes] = http_get,
+        fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
+        read_chart: ChartReader = chart_values) -> Refresh:
+    """Refresh the day-old nflverse sources, the history weeks not yet saved, and the chart of the trade window.
+
+    The live snapshot and the refresh route both call it, so the daily job and a request refresh the same way.
+    A failed fetch logs and leaves the old cache in place.
+    """
+    # The trade week is the chart week of the trade window, not Sleeper's display_week.
+    # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
+    trade_week = window_week(week.season_start, now)
+    refreshed, stale = _refresh(nflverse_cache_dir(repo), season, fetch_nflverse)
+    # Past weeks never change, so the fetch gets only a week that is not saved. A failure leaves a gap that the facts skip.
+    # The inputs end at the week before the trade week. The raw data of this run gives its own week, so no fetch does.
+    try:
+        saved = fetch_history(LEAGUE_ID, season, min(trade_week, week.week) - 1, history_root(repo, season),
+                              fetch=fetch_history_week)
+        refreshed.extend(f"history week {saved_week}" for saved_week in saved)
+    except httpx.HTTPError as error:
+        logger.warning("History refresh failed (%s), so the saved weeks stand", error)
+        stale.append("history")
+    # The chart is the one of the trade window, which can be a week ahead of the last scored week.
+    # The chart read caches its result per week, so a refresh before the first request saves that request the read.
+    chart = read_chart(repo, week.season_start, trade_week, week_lines(week))
+    return Refresh(refreshed=refreshed, stale=stale, trade_week=trade_week, chart=chart)
 
 
 def live_snapshot(
@@ -68,23 +127,12 @@ def live_snapshot(
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
     """
-    raw, fetched = fetch_sleeper(LEAGUE_ID, repo / "data" / "cache" / "players.json")
-    state = raw["state"]
-    if int(state["season"]) != season:
-        raise ValueError(f"Sleeper is in season {state['season']}, not {season}. Use --week to read a saved week.")
-    week = parse_week(raw)
-    # The trade week is the chart week of the trade window, not Sleeper's display_week.
-    # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
-    trade_week = window_week(week.season_start, now)
-    stale = _refresh(nflverse_cache_dir(repo), season, fetch_nflverse)
+    raw, fetched, week = fetch_live_week(repo, season, fetch_sleeper)
+    refresh = refresh_sources(repo, season, now, week, fetch_nflverse=fetch_nflverse,
+                              fetch_history_week=fetch_history_week, read_chart=read_chart)
+    trade_week = refresh.trade_week
+    stale = list(refresh.stale)
     root = history_root(repo, season)
-    # Past weeks never change, so the fetch gets only a week that is not saved. A failure leaves a gap that the facts skip.
-    # The inputs end at the week before the trade week. The raw data of this run gives its own week, so no fetch does.
-    try:
-        fetch_history(LEAGUE_ID, season, min(trade_week, week.week) - 1, root, fetch=fetch_history_week)
-    except httpx.HTTPError as error:
-        logger.warning("History refresh failed (%s), so the saved weeks stand", error)
-        stale.append("history")
     # On the Tuesday after the cutoff, Sleeper still shows week N-1, and only this raw data holds it.
     # The points allowed read the history on disk, so week N-1 goes there before the slow sources load.
     # The weekly build saves the same week later and overwrites these files with the same data.
@@ -97,8 +145,6 @@ def live_snapshot(
             logger.warning("Week %d not saved to history (%s), so the saved weeks stand", week.week, error)
             if "history" not in stale:
                 stale.append("history")
-    # The chart is the one of the trade window, which can be a week ahead of the last scored week.
-    chart = read_chart(repo, week.season_start, trade_week, week_lines(week))
     slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)
     returns = load_returns(returns_path(repo, season))
-    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns)
+    return build_snapshot(raw, root, refresh.chart, slow, fetched, stale, trade_week=trade_week, returns=returns)

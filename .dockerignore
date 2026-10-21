@@ -1,0 +1,10 @@
+.venv
+.git
+site/
+tests/
+.scratch/
+.handoff/
+data/cache/
+__pycache__/
+.superpowers/
+.tmp/

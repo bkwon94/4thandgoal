@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from cornerstone.chart import chart_values
-from cornerstone.live import ChartReader, SleeperFetcher, live_snapshot
+from cornerstone.live import ChartReader, Refresh, SleeperFetcher, fetch_live_week, live_snapshot, refresh_sources
 from cornerstone.nflverse import http_get
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week
 from cornerstone.snapshot import Snapshot
@@ -36,4 +36,13 @@ class Sources:
             repo, season, now=self.clock(),
             fetch_sleeper=self.fetch_sleeper, fetch_nflverse=self.fetch_nflverse,
             fetch_history_week=self.fetch_history_week, read_chart=self.read_chart,
+        )
+
+    def refresh(self, repo: Path, season: int) -> Refresh:
+        """Refresh the slow sources and the chart now, as the live snapshot does. It raises ValueError as snapshot does."""
+        _, _, week = fetch_live_week(repo, season, self.fetch_sleeper)
+        return refresh_sources(
+            repo, season, self.clock(), week,
+            fetch_nflverse=self.fetch_nflverse, fetch_history_week=self.fetch_history_week,
+            read_chart=self.read_chart,
         )

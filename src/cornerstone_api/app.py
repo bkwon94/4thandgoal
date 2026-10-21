@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 from cornerstone.analysis import analyze
 from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
 from cornerstone_api import analyzer as analyzer_routes
+from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.cache import ResultCache
 from cornerstone_api.ratelimit import RateLimiter
 from cornerstone_api.settings import Settings
@@ -82,6 +83,7 @@ def create_app(
                             headers={"Retry-After": str(exc.retry_after)})
 
     app.include_router(analyzer_routes.router, dependencies=[Depends(_guard)])
+    app.include_router(refresh_routes.router, dependencies=[Depends(_guard)])
 
     @app.get("/health")
     def health() -> dict[str, str]:
