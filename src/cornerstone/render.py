@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 import httpx
 from jinja2 import Environment, FileSystemLoader
 
+from cornerstone.facts_league import LEADER_POSITIONS
 from cornerstone.models import Blurb, Bundle, MatchupFacts, PlayerLine
 from cornerstone.sheet import AWARD_TITLES, fmt
 
@@ -119,18 +120,17 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
 
 def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
     """One board per position, in lineup order, each with its leaders from first to third."""
-    boards = []
+    # All five boards show, even when no one started at a position.
+    boards = {position: {"position": position, "rows": []} for position in LEADER_POSITIONS}
     for lead in bundle.data.leaders:
-        if not boards or boards[-1]["position"] != lead.position:
-            boards.append({"position": lead.position, "rows": []})
-        boards[-1]["rows"].append({
+        boards[lead.position]["rows"].append({
             "rank": lead.rank,
             "player": lead.line.name,
             "nfl_team": lead.line.nfl_team,
             "points": lead.line.points,
             "team": teams[lead.roster_id].name,
         })
-    return boards
+    return list(boards.values())
 
 
 def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str]) -> dict:

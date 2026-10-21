@@ -1,5 +1,5 @@
 """
-League-wide facts: standings, awards, Matchup of the Week, next week, and position ranks.
+League-wide facts: standings, awards, Matchup of the Week, next week, position ranks, and position leaders.
 Every number comes from code, and every derived number is exact to two decimals.
 """
 import logging
@@ -362,17 +362,27 @@ def _game_changer_reason(loc, f: MatchupFacts, projections_up: bool) -> str:
     )
 
 
-def position_ranks(week: Week) -> list[PositionRank]:
-    groups: dict[str, list[PlayerLine]] = defaultdict(list)
-    for line, _, _ in _located_lines(week):
+def _started_by_position(week: Week) -> dict[str, list[tuple[PlayerLine, int]]]:
+    """Started lines with their roster ids, grouped by position, best first.
+
+    The name breaks a tie, so the order is stable from one build to the next.
+    The ranks and the leaders both read this one order, so they never disagree.
+    """
+    groups: dict[str, list[tuple[PlayerLine, int]]] = defaultdict(list)
+    for line, roster_id, _ in _located_lines(week):
         if line.started:
-            groups[line.position].append(line)
+            groups[line.position].append((line, roster_id))
+    for entries in groups.values():
+        entries.sort(key=lambda x: (-x[0].points, x[0].name))
+    return groups
+
+
+def position_ranks(week: Week) -> list[PositionRank]:
     out = []
-    for position, lines in groups.items():
-        ordered = sorted(lines, key=lambda l: l.points, reverse=True)
+    for position, ordered in _started_by_position(week).items():
         out.extend(
             PositionRank(player_id=l.player_id, position=position, rank=i + 1, of=len(ordered))
-            for i, l in enumerate(ordered)
+            for i, (l, _) in enumerate(ordered)
         )
     return out
 
@@ -381,17 +391,11 @@ LEADER_POSITIONS = ("QB", "RB", "WR", "TE", "DEF")
 
 
 def position_leaders(week: Week) -> list[PositionLeader]:
-    """The top three started lines at each position, in lineup order.
-
-    The name breaks a tie, so the board is stable from one build to the next.
-    """
-    groups: dict[str, list[tuple[PlayerLine, int]]] = defaultdict(list)
-    for line, roster_id, _ in _located_lines(week):
-        if line.started:
-            groups[line.position].append((line, roster_id))
+    """The top three started lines at each position, in lineup order."""
+    groups = _started_by_position(week)
     out = []
     for position in LEADER_POSITIONS:
-        ordered = sorted(groups[position], key=lambda x: (-x[0].points, x[0].name))
+        ordered = groups[position]
         out.extend(
             PositionLeader(line=l, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
             for i, (l, rid) in enumerate(ordered[:3])

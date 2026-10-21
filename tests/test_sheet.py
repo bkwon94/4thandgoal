@@ -296,9 +296,27 @@ def test_position_leaders_chapter_sits_after_awards_and_before_trades(request, n
     assert len(ch.fact_ids) == 15
     assert (ch.min_sentences, ch.max_sentences) == (2, 4)
     assert set(ch.scope_teams) == {t.name for t in b.data.teams.values()}
-    assert {l.line.name for l in b.data.leaders} <= set(ch.scope_players)
+    assert {l.line.name for l in b.data.leaders} == set(ch.scope_players)
     assert keys.index("position_leaders") == keys.index("awards") + 1
     trades = [i for i, k in enumerate(keys) if k.startswith("trade_")]
     assert all(i > keys.index("position_leaders") for i in trades)
     if name == "tbundle":
         assert trades
+
+
+def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    # Every started RB scores the same, so the name alone orders them.
+    for m in week.matchups:
+        for side in (m.a, m.b):
+            for line in side.lines:
+                if line.started and line.position == "RB":
+                    line.points = 10.0
+    b = build_bundle(week, news=lambda pid: [])
+    rank_of = {r.player_id: r.rank for r in b.data.ranks}
+    leads = [l for l in b.data.leaders if l.position == "RB"]
+    assert len(leads) == 3
+    for lead in leads:
+        assert rank_of[lead.line.player_id] == lead.rank
+        assert f"RANK.{lead.line.player_id}" in b.sheet.facts
+        assert f"LEAD.RB.{lead.rank}" in b.sheet.facts

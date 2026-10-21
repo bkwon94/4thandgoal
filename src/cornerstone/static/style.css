@@ -86,6 +86,7 @@ a { color:var(--red); }
 .board { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 .board .lbl { margin-bottom:var(--sp-1); }
 .board ol { list-style:none; margin:0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.board .empty { margin:0; color:var(--muted); font-size:var(--fs-meta); }
 /* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left and truncates, so the points never leave the row. */
 .board .row { display:flex; align-items:baseline; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
 .board .row + .row { border-top:1px solid var(--rule); }
@@ -211,9 +212,6 @@ a { color:var(--red); }
   :root { color-scheme:light; }
   body { background:var(--wht); color:var(--ink); }
 }
-/* The five-tile grid has one tile in a half-empty last row. It spans the row so it does not look lost. */
-.tiles .tile:last-child:nth-child(odd) { grid-column:1 / -1; }
-.tile .pp small { font-size:var(--fs-meta); font-weight:700; color:var(--muted); }
 
 /* A wide screen gets a two-column grid, so the section does not run five cards long. The fifth board spans the row so it does not look lost.
    A half-width card is too narrow for one line, so the fantasy team drops under the player and the points stay on the right. */

@@ -994,13 +994,13 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             for l in s.lines if l.started
         ]
 
-    def make(key, title, ids, rosters, rng, grade_keys=(), extra_players=()) -> Chapter:
+    def make(key, title, ids, rosters, rng, grade_keys=(), extra_players=(), players=None) -> Chapter:
         return Chapter(
             key=key,
             title=title,
             fact_ids=_dedupe([i for i in ids if i in facts]),
             scope_teams=[c.team(r) for r in rosters],
-            scope_players=_dedupe([*players_of(rosters), *extra_players]),
+            scope_players=_dedupe([*(players_of(rosters) if players is None else players), *extra_players]),
             min_sentences=SENTENCE_RANGES[rng][0],
             max_sentences=SENTENCE_RANGES[rng][1],
             grade_keys=list(grade_keys),
@@ -1048,6 +1048,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         "position_leaders", "Position Leaders",
         _with_prefix(facts, "LEAD."),
         all_rosters, "position_leaders",
+        players=[l.line.name for l in c.leaders],
     ))
     for mid, pair in roster_ids.items():
         title = " vs ".join(c.team(r) for r in pair)

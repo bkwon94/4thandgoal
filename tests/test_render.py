@@ -290,6 +290,16 @@ def test_build_context_has_five_leader_boards(fixture_raw_dir):
                                     "points": 26.9, "team": "Bo Girds"}
 
 
+def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    b.data.leaders = [l for l in b.data.leaders if l.position != "DEF"]
+    boards = build_context(b, _blurbs(b), {})["leaders"]
+    assert len(boards) == 5
+    assert boards[-1] == {"position": "DEF", "rows": []}
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert html.count("No starters this week") == 1
+
+
 def test_position_leaders_section_shows_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
@@ -302,6 +312,11 @@ def test_position_leaders_section_shows_five_boards_and_fifteen_rows(fixture_raw
     row = re.search(r'<li class="row">(.*?)</li>', section.split("RB", 1)[1], re.S).group(1)
     for s in ("1", "Kenneth Walker", "KC", "26.9", "Bo Girds"):
         assert s in row
+
+
+def test_position_leaders_section_sits_before_trades(tbundle, tmp_path):
+    html = render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png).read_text()
+    assert html.index('id="leaders"') < html.index('id="trades"')
 
 
 def test_position_leaders_blurb_renders_under_the_boards(fixture_raw_dir, tmp_path):

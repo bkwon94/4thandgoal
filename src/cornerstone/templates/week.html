@@ -56,11 +56,15 @@
       {% for b in leaders %}
       <div class="board">
         <div class="lbl">{{ b.position }}</div>
+        {% if b.rows %}
         <ol>
           {% for r in b.rows %}
           <li class="row"><span class="rk">{{ r.rank }}</span><span class="pl"><b>{{ r.player }}</b>{% if r.nfl_team %} <small>{{ r.nfl_team }}</small>{% endif %}</span><span class="tm">{{ r.team }}</span><span class="pts">{{ r.points|num }}</span></li>
           {% endfor %}
         </ol>
+        {% else %}
+        <p class="empty">No starters this week</p>
+        {% endif %}
       </div>
       {% endfor %}
     </div>

@@ -293,7 +293,7 @@ class WeekData(BaseModel):
     next: list[NextMatchup]
     history: list[SeasonHistory]
     ranks: list[PositionRank]
-    # The default lets a bundle written before the leaders existed still load.
+    # An old bundle has no leaders field.
     leaders: list[PositionLeader] = []
     trades: list[Trade] = []
     drops: list[DropLine] = []
