@@ -124,7 +124,7 @@ def fetch_chart(repo: Path) -> ChartFetcher:
 
 
 def _chart_for_week(parsed: Week, week: int, chart: ChartFetcher | None) -> ChartValues | None:
-    """The chart values of the week, or None. A chart problem never stops a build."""
+    """The trade values of the week, or None. A chart problem never stops a build."""
     if chart is None:
         return None
     lines = list({l.player_id: l for m in parsed.matchups for side in (m.a, m.b) for l in side.lines}.values())

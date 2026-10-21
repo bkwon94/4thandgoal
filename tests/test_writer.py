@@ -178,3 +178,37 @@ def test_writer_rule_18_orders_the_positions_and_hides_the_values(tbundle):
     assert ("Weigh the two sides with the `.value` facts. Never write a trade value, "
             "a trade value sum, the chart, or a tier in a sentence.") in system
     assert "kicker" not in system.lower()
+
+
+def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed"):
+    sent = {}
+
+    class Messages:
+        def parse(self, **kwargs):
+            sent.update(kwargs)
+            return type("Response", (), {"stop_reason": stop_reason, "parsed_output": parsed_output})()
+
+    monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
+    return sent
+
+
+def test_claude_call_sends_the_system_and_the_user_text_through_parse_call(monkeypatch):
+    from cornerstone.writer import claude_call
+
+    sent = _fake_client(monkeypatch)
+    assert claude_call("system text", "user text", WriterOut) == "parsed"
+    assert sent["system"] == "system text"
+    assert sent["messages"] == [{"role": "user", "content": "user text"}]
+    assert sent["output_format"] is WriterOut
+    assert sent["output_config"] == {"effort": "high"}
+
+
+def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output(monkeypatch):
+    from cornerstone.writer import RefusalError, WriterError, parse_call
+
+    _fake_client(monkeypatch, stop_reason="refusal", parsed_output=None)
+    with pytest.raises(RefusalError):
+        parse_call("user text", WriterOut)
+    _fake_client(monkeypatch, parsed_output=None)
+    with pytest.raises(WriterError):
+        parse_call("user text", WriterOut)

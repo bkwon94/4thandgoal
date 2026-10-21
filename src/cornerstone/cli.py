@@ -4,13 +4,13 @@ It defines the build, publish, rewrite, history, and chart subcommands.
 """
 import argparse
 import logging
+from datetime import date
 from pathlib import Path
 
 import httpx
 
 
-from cornerstone.chart import guard_results, load_chart, match_chart
-from cornerstone.models import ChartRead
+from cornerstone.chart import check_chart, match_chart
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
     BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_rewrite, week_dir,
@@ -52,28 +52,37 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run_chart(repo: Path, season: int, week: int) -> int:
-    """Print the parsed chart, the guard results, and the match against the saved raw data of the week."""
-    if not has_raw(repo, season, week):
-        print(f"No raw data is saved for week {week}. Build the week first.")
-        return 2
-    raw = load_raw(week_dir(repo, season, week) / "raw")
-    league = parse_week(raw)
-    loaded = load_chart(repo, league.season_start, week)
-    if loaded is None:
+    """Print the parsed chart, every guard, and the match against the saved raw data of the week."""
+    raw = load_raw(week_dir(repo, season, week) / "raw") if has_raw(repo, season, week) else None
+    if raw is not None:
+        league = parse_week(raw)
+        season_start = league.season_start
+    else:
+        # Sleeper state, as in resolve_week, gives the start date of the season in progress only.
+        state = fetch_state()
+        if int(state["season"]) != season:
+            print(f"No raw data is saved for week {week} of {season}. Build the week first.")
+            return 2
+        season_start = date.fromisoformat(state["season_start_date"])
+    check = check_chart(repo, season_start, week)
+    if check is None:
         print(f"Week {week} has no chart. The log says why.")
         return 1
-    chart_week, parsed = loaded
-    print(f"Chart week {chart_week}, dated {parsed.date}")
-    for row in parsed.rows:
+    print(f"Chart week {check.week}, dated {check.chart.date}")
+    for row in check.chart.rows:
         print(f"{row.value}  {row.name}  {row.position}")
-    # A saved read passed the guards when it was saved. Showing them again lets a person see each one.
-    prior = repo / "data" / "cache" / "charts" / f"week-{chart_week - 1:02d}.json"
-    prior_rows = len(ChartRead.model_validate_json(prior.read_text(encoding="utf-8")).rows) if prior.exists() else None
-    for name, ok in guard_results(parsed, chart_week, prior_rows).items():
+    # A saved read passed the guards before the save. A second print of them lets a person see each one.
+    for name, ok in check.guards.items():
         print(f"{name}: {'pass' if ok else 'FAIL'}")
+    if not all(check.guards.values()):
+        print("A guard failed, so no trade values were made.")
+        return 1
+    if raw is None:
+        print(f"No raw data for week {week}, so no player match.")
+        return 0
     lines = {l.player_id: l for m in league.matchups for side in (m.a, m.b) for l in side.lines}
-    values = match_chart(parsed, lines.values()).values
-    print(f"Matched {len(values)} of {len(parsed.rows)} chart rows")
+    values = match_chart(check.chart, lines.values()).values
+    print(f"Matched {len(values)} of {len(check.chart.rows)} chart rows")
     traded = {pid for t in parse_trades(raw["transactions"]) for pid in t.adds}
     unmatched = sorted(lines[pid].name if pid in lines else pid for pid in traded - values.keys())
     if unmatched:

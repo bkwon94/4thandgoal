@@ -4,15 +4,14 @@ They fake the fetch and the read, so no test uses the network or Claude.
 """
 import io
 import json
-import os
-from datetime import date, datetime, timedelta, timezone
+from datetime import date
 
 import httpx
 import pytest
 from PIL import Image
 
 from cornerstone.chart import (
-    CHART_PROMPT, MEDIA_URL, STRIP_HEIGHT, STRIP_OVERLAP, chart_dir, chart_values, claude_read, cut_strips,
+    CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_dir, chart_values, claude_read, cut_strips,
     fetch_chart, guard_results, load_chart, match_chart, read_chart,
 )
 from cornerstone.writer import WriterError
@@ -45,8 +44,19 @@ def test_match_needs_the_same_position():
     assert match_chart(read, [_line("1", "Josh Allen", "LB")]).values == {}
 
 
+def _letters(i):
+    # The name key drops digits, so each made-up name spells its number in letters to stay unique.
+    return "".join(chr(ord("a") + int(d)) for d in str(i))
+
+
 def _rows(n, start=60.0):
-    return [(start - i * 0.5, f"Player {i}", "RB") for i in range(n)]
+    return [(start - i * 0.5, f"Player {_letters(i)}", "RB") for i in range(n)]
+
+
+def _padded(*rows):
+    """A read of the rows plus 100 more at the last value, so it passes the guard of at least 100 rows."""
+    last = rows[-1][0]
+    return _read(*rows, *((last, f"Pad {_letters(i)}", "TE") for i in range(100)))
 
 
 def _failed(read, week=6, prior_rows=None):
@@ -54,34 +64,40 @@ def _failed(read, week=6, prior_rows=None):
 
 
 def test_guards_pass_a_good_read():
-    assert _failed(_read(*_rows(20)), prior_rows=20) == []
+    assert _failed(_read(*_rows(100)), prior_rows=100) == []
 
 
 def test_guard_header_week():
-    assert _failed(_read(*_rows(3)), week=7) == ["header week"]
+    assert _failed(_read(*_rows(100)), week=7) == ["header week"]
 
 
-def test_guard_values_never_rise():
-    assert _failed(_read((10.0, "A", "RB"), (10.5, "B", "WR"))) == ["values never rise"]
+def test_guard_trade_values_never_rise():
+    assert _failed(_padded((10.0, "A", "RB"), (10.5, "B", "WR"))) == ["trade values never rise"]
 
 
-def test_guard_equal_values_in_a_row_pass():
-    assert _failed(_read((10.0, "A", "RB"), (10.0, "B", "WR"))) == []
+def test_guard_equal_trade_values_in_a_row_pass():
+    assert _failed(_padded((10.0, "A", "RB"), (10.0, "B", "WR"))) == []
 
 
-def test_guard_values_are_half_points_from_0_to_100():
+def test_guard_trade_values_are_half_points_from_0_to_100():
     for bad in (100.5, 10.25, -1.0):
-        assert _failed(_read((bad, "A", "RB"))) == ["values are half points from 0 to 100"]
+        assert _failed(_padded((bad, "A", "RB"))) == ["trade values are half points from 0 to 100"]
 
 
 def test_guard_positions():
-    assert _failed(_read((10.0, "A", "K"))) == ["positions are RB, WR, TE, or QB"]
+    assert _failed(_padded((10.0, "A", "K"))) == ["positions are RB, WR, TE, or QB"]
 
 
 def test_guard_row_count_within_10_percent_of_prior_week():
-    assert _failed(_read(*_rows(90)), prior_rows=100) == []
-    assert _failed(_read(*_rows(89)), prior_rows=100) == ["row count within 10 percent of the prior week"]
-    assert _failed(_read(*_rows(111)), prior_rows=100) == ["row count within 10 percent of the prior week"]
+    assert _failed(_read(*_rows(135, 100.0)), prior_rows=150) == []
+    assert _failed(_read(*_rows(134, 100.0)), prior_rows=150) == ["row count within 10 percent of the prior week"]
+    assert _failed(_read(*_rows(166, 100.0)), prior_rows=150) == ["row count within 10 percent of the prior week"]
+
+
+def test_guard_at_least_100_rows():
+    assert _failed(_read()) == ["at least 100 rows"]
+    assert _failed(_read(*_rows(99))) == ["at least 100 rows"]
+    assert _failed(_read(*_rows(100))) == []
 
 
 def _png(height, width=40):
@@ -111,8 +127,19 @@ def test_read_sends_every_strip_in_order_and_drops_the_overlap_rows():
     assert [r.name for r in parsed.rows] == ["A", "B", "C"]
 
 
+def test_overlap_rows_that_differ_fail_the_guard():
+    read = lambda strips, output_model: _padded((50.0, "DJ Moore", "WR"), (49.0, "D.J. Moore", "WR"))
+    assert _failed(read_chart(_png(2500), read)) == ["overlap rows agree"]
+
+
+def test_overlap_rows_that_agree_dedupe_and_pass():
+    read = lambda strips, output_model: _padded((50.0, "DJ Moore", "WR"), (50.0, "D.J. Moore", "WR"))
+    parsed = read_chart(_png(2500), read)
+    assert [r.name for r in parsed.rows[:2]] == ["DJ Moore", "Pad a"]
+    assert _failed(parsed) == []
+
+
 SEASON_START = date(2026, 9, 9)
-NOW = datetime(2026, 10, 20, 12, 0, tzinfo=timezone.utc)
 
 
 def _url(chart_date):
@@ -128,7 +155,7 @@ def _site(*chart_dates):
         calls.append(url)
         if url == MEDIA_URL:
             return json.dumps(listing).encode()
-        return b"png of " + url.rsplit("_", 1)[1].encode()
+        return PNG_SIGNATURE + b"png of " + url.rsplit("_", 1)[1].encode()
 
     fetch.calls = calls
     return fetch
@@ -140,50 +167,67 @@ def _down(url):
 
 def test_fetch_picks_the_file_in_the_week_window(tmp_path):
     fetch = _site("20261006", "20261013", "20261020")
-    path = fetch_chart(SEASON_START, 6, tmp_path, fetch, NOW)
+    path = fetch_chart(SEASON_START, 6, tmp_path, fetch)
     assert path == tmp_path / "week-06.png"
-    assert path.read_bytes() == b"png of 20261013.png"
-    path = fetch_chart(SEASON_START, 7, tmp_path, fetch, NOW)
-    assert path.read_bytes() == b"png of 20261020.png"
+    assert path.read_bytes() == PNG_SIGNATURE + b"png of 20261013.png"
+    path = fetch_chart(SEASON_START, 7, tmp_path, fetch)
+    assert path.read_bytes() == PNG_SIGNATURE + b"png of 20261020.png"
+
+def test_a_fetched_body_that_is_not_a_png_is_a_failed_fetch(tmp_path, caplog):
+    listing = _site("20261013")
+    fetch = lambda url: listing(url) if url == MEDIA_URL else b"<html>Not found</html>"
+    assert fetch_chart(SEASON_START, 6, tmp_path, fetch) is None
+    assert not (tmp_path / "week-06.png").exists()
+    assert "is not a PNG" in caplog.text
+
 
 
 def test_fetch_finds_no_file_for_a_week_the_site_lacks(tmp_path):
-    assert fetch_chart(SEASON_START, 8, tmp_path, _site("20261013", "20261020"), NOW) is None
+    assert fetch_chart(SEASON_START, 8, tmp_path, _site("20261013", "20261020")) is None
 
 
 def test_a_hand_placed_png_wins_and_nothing_is_fetched(tmp_path):
     (tmp_path / "week-06.png").write_bytes(b"by hand")
     fetch = _site("20261013")
-    assert fetch_chart(SEASON_START, 6, tmp_path, fetch, NOW).read_bytes() == b"by hand"
+    assert fetch_chart(SEASON_START, 6, tmp_path, fetch).read_bytes() == b"by hand"
     assert fetch.calls == []
 
 
-def _aged(path, days):
-    path.write_bytes(b"old")
-    stamp = (NOW - timedelta(days=days)).timestamp()
-    os.utime(path, (stamp, stamp))
+def _cached(charts, *weeks):
+    for week in weeks:
+        (charts / f"week-{week:02d}.png").write_bytes(b"old")
 
 
-def test_an_outage_uses_the_newest_png_of_14_days_or_less(tmp_path):
-    _aged(tmp_path / "week-04.png", 14)
-    _aged(tmp_path / "week-05.png", 7)
-    assert fetch_chart(SEASON_START, 6, tmp_path, _down, NOW) == tmp_path / "week-05.png"
+def test_an_outage_uses_the_week_before(tmp_path):
+    _cached(tmp_path, 6)
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down) == tmp_path / "week-06.png"
 
 
-def test_an_outage_ignores_a_png_older_than_14_days(tmp_path):
-    _aged(tmp_path / "week-05.png", 15)
-    assert fetch_chart(SEASON_START, 6, tmp_path, _down, NOW) is None
+def test_an_outage_ignores_a_chart_three_weeks_old(tmp_path):
+    _cached(tmp_path, 4)
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down) is None
+
+
+def test_an_outage_never_uses_a_later_week(tmp_path):
+    _cached(tmp_path, 8)
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down) is None
+
+
+def test_an_outage_uses_the_newest_of_the_two_weeks_before(tmp_path, caplog):
+    _cached(tmp_path, 5, 6)
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down) == tmp_path / "week-06.png"
+    assert "week 6 stands in for week 7" in caplog.text
 
 
 def test_a_failed_file_fetch_falls_back_too(tmp_path):
-    _aged(tmp_path / "week-05.png", 3)
+    _cached(tmp_path, 5)
     listing = _site("20261013")
     fetch = lambda url: listing(url) if url == MEDIA_URL else _down(url)
-    assert fetch_chart(SEASON_START, 6, tmp_path, fetch, NOW) == tmp_path / "week-05.png"
+    assert fetch_chart(SEASON_START, 6, tmp_path, fetch) == tmp_path / "week-05.png"
 
 
 def test_an_outage_with_no_cache_gives_none(tmp_path):
-    assert fetch_chart(SEASON_START, 6, tmp_path, _down, NOW) is None
+    assert fetch_chart(SEASON_START, 6, tmp_path, _down) is None
 
 
 def _site_with_png(chart_date, height=1500):
@@ -209,9 +253,9 @@ class _Reader:
 
 def test_chart_values_fetch_read_match_and_cache(tmp_path):
     fetch = _site_with_png("20261013")
-    reader = _Reader(_read((50.0, "Ja'Marr Chase", "WR"), (40.0, "Kenneth Walker", "RB")))
+    reader = _Reader(_padded((50.0, "Ja'Marr Chase", "WR"), (40.0, "Kenneth Walker", "RB")))
     lines = [_line("1", "Ja'Marr Chase", "WR"), _line("2", "Kenneth Walker III", "RB")]
-    values = chart_values(tmp_path, SEASON_START, 6, lines, fetch, reader, NOW)
+    values = chart_values(tmp_path, SEASON_START, 6, lines, fetch, reader)
     assert values.values == {"1": 50.0, "2": 40.0}
     assert (chart_dir(tmp_path) / "week-06.png").exists()
     assert ChartRead.model_validate_json((chart_dir(tmp_path) / "week-06.json").read_text()) == reader.result
@@ -219,10 +263,10 @@ def test_chart_values_fetch_read_match_and_cache(tmp_path):
 
 def test_a_parsed_json_is_reused_with_no_fetch_and_no_read(tmp_path):
     fetch = _site_with_png("20261013")
-    reader = _Reader(_read((50.0, "Ja'Marr Chase", "WR")))
-    chart_values(tmp_path, SEASON_START, 6, [], fetch, reader, NOW)
+    reader = _Reader(_padded((50.0, "Ja'Marr Chase", "WR")))
+    chart_values(tmp_path, SEASON_START, 6, [], fetch, reader)
     fetch.calls.clear()
-    values = chart_values(tmp_path, SEASON_START, 6, [_line("9", "Ja'Marr Chase", "WR")], _down, _Reader(None), NOW)
+    values = chart_values(tmp_path, SEASON_START, 6, [_line("9", "Ja'Marr Chase", "WR")], _down, _Reader(None))
     assert values.values == {"9": 50.0}
     assert reader.calls == 1
     assert fetch.calls == []
@@ -231,48 +275,64 @@ def test_a_parsed_json_is_reused_with_no_fetch_and_no_read(tmp_path):
 def test_a_hand_placed_png_is_read_not_fetched(tmp_path):
     chart_dir(tmp_path).mkdir(parents=True)
     (chart_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
-    reader = _Reader(_read((50.0, "A", "RB")))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, reader, NOW) == (6, reader.result)
+    reader = _Reader(_padded((50.0, "A", "RB")))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, reader) == (6, reader.result)
+
+
+def test_a_parsed_json_that_is_not_utf_8_is_read_again_from_the_image(tmp_path):
+    chart_dir(tmp_path).mkdir(parents=True)
+    (chart_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
+    (chart_dir(tmp_path) / "week-06.json").write_bytes(b"\xff\xfe not utf-8")
+    reader = _Reader(_padded((50.0, "A", "RB")))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, reader) == (6, reader.result)
+    assert reader.calls == 1
+
+
+def test_a_hand_placed_file_with_html_inside_gives_no_trade_values_and_does_not_raise(tmp_path, caplog):
+    chart_dir(tmp_path).mkdir(parents=True)
+    (chart_dir(tmp_path) / "week-06.png").write_bytes(b"<html>Not found</html>")
+    assert load_chart(tmp_path, SEASON_START, 6, _down, _Reader(None)) is None
+    assert "does not open as an image" in caplog.text
 
 
 def test_a_failed_guard_keeps_the_png_writes_no_json_and_names_the_guard(tmp_path, caplog):
     fetch = _site_with_png("20261013")
     bad = _Reader(_read((10.0, "A", "RB"), (20.0, "B", "RB")))
-    assert chart_values(tmp_path, SEASON_START, 6, [_line("1", "A", "RB")], fetch, bad, NOW) is None
+    assert chart_values(tmp_path, SEASON_START, 6, [_line("1", "A", "RB")], fetch, bad) is None
     assert (chart_dir(tmp_path) / "week-06.png").exists()
     assert not (chart_dir(tmp_path) / "week-06.json").exists()
-    assert "values never rise" in caplog.text
+    assert "trade values never rise" in caplog.text
 
 
-def test_a_failed_header_week_guard_gives_no_values(tmp_path):
+def test_a_failed_header_week_guard_gives_no_trade_values(tmp_path):
     wrong_week = _Reader(_read((50.0, "A", "RB")).model_copy(update={"week": 5}))
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), wrong_week, NOW) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), wrong_week) is None
 
 
 def test_the_row_count_guard_uses_the_parsed_prior_week(tmp_path):
     chart_dir(tmp_path).mkdir(parents=True)
-    prior = _read(*_rows(100)).model_copy(update={"week": 5})
+    prior = _read(*_rows(200)).model_copy(update={"week": 5})
     (chart_dir(tmp_path) / "week-05.json").write_text(prior.model_dump_json())
-    short = _Reader(_read(*_rows(50)))
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), short, NOW) is None
+    short = _Reader(_read(*_rows(150, 100.0)))
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), short) is None
 
 
-def test_a_failed_read_gives_no_values_and_does_not_raise(tmp_path):
+def test_a_failed_read_gives_no_trade_values_and_does_not_raise(tmp_path):
     def broken(strips, output_model):
         raise WriterError("no parsed output")
 
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), broken, NOW) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), broken) is None
 
 
-def test_no_chart_and_no_cache_gives_no_values(tmp_path):
-    assert chart_values(tmp_path, SEASON_START, 6, [], _down, _Reader(None), NOW) is None
+def test_no_chart_and_no_cache_gives_no_trade_values(tmp_path):
+    assert chart_values(tmp_path, SEASON_START, 6, [], _down, _Reader(None)) is None
 
 
 def test_an_outage_reads_the_stand_in_as_its_own_week(tmp_path):
     chart_dir(tmp_path).mkdir(parents=True)
     (chart_dir(tmp_path) / "week-05.png").write_bytes(_png(1500))
-    stand_in = _Reader(_read((50.0, "A", "RB")).model_copy(update={"week": 5}))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, stand_in, datetime.now(timezone.utc)) == (5, stand_in.result)
+    stand_in = _Reader(_padded((50.0, "A", "RB")).model_copy(update={"week": 5}))
+    assert load_chart(tmp_path, SEASON_START, 6, _down, stand_in) == (5, stand_in.result)
 
 
 def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
@@ -283,13 +343,15 @@ def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
             sent.update(kwargs)
             return type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed"})()
 
-    monkeypatch.setattr("cornerstone.chart._get_client", lambda: type("Client", (), {"messages": Messages()})())
+    monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
     assert claude_read([b"one", b"two"], ChartRead) == "parsed"
     content = sent["messages"][0]["content"]
     assert [block["type"] for block in content] == ["image", "image", "text"]
     assert content[0]["source"] == {"type": "base64", "media_type": "image/png", "data": "b25l"}
     assert content[2]["text"] == CHART_PROMPT
     assert sent["output_format"] is ChartRead
+    assert sent["output_config"] == {"effort": "high"}
+    assert "system" not in sent
 
 
 @pytest.mark.live

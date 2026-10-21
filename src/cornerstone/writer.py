@@ -35,20 +35,27 @@ def _get_client() -> anthropic.Anthropic:
     return _client
 
 
-def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
+def parse_call(content: str | list[dict], output_model: type[BaseModel], system: str | None = None) -> BaseModel:
+    """One user message to Claude, parsed into the output model. Every Claude call in the tool goes through here."""
+    # The chart read has no system prompt, so the argument goes out only when there is one.
+    extra = {"system": system} if system is not None else {}
     response = _get_client().messages.parse(
         model=MODEL,
         max_tokens=16000,
-        system=system,
-        messages=[{"role": "user", "content": user}],
+        messages=[{"role": "user", "content": content}],
         output_format=output_model,
         output_config={"effort": "high"},
+        **extra,
     )
     if response.stop_reason == "refusal":
         raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
     if response.parsed_output is None:
         raise WriterError(f"Claude gave no parsed output for {output_model.__name__}.")
     return response.parsed_output
+
+
+def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
+    return parse_call(user, output_model, system)
 
 
 def _load_prompt(name: str) -> str:
