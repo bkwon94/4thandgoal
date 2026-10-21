@@ -32,6 +32,7 @@ a { color:var(--red); }
 
 .avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
 .headshot { width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none; background:var(--gry); }
+/* The headshot sizes double at each step on the --sp-5 unit, so the hero, the tile, and the row read as one scale. */
 .who { display:inline-flex; align-items:center; gap:var(--sp-2); vertical-align:middle; }
 
 .mast { background:var(--blk); color:var(--on-dark); padding:var(--sp-5) var(--gutter) var(--sp-4); }
@@ -72,11 +73,15 @@ a { color:var(--red); }
 .hero-p { font-weight:900; font-size:var(--fs-score); line-height:var(--lh-stat); margin:0 0 var(--sp-1); }
 .hero-p small { font-weight:600; font-size:var(--fs-meta); color:var(--on-dark-muted); margin-left:var(--sp-2); }
 .hero-p.pts { color:var(--red-lt); margin-bottom:var(--sp-3); }
+/* The portrait sits above the name, so a long name and its meta line keep the full width at phone size. */
+.hero-p .headshot { display:block; width:calc(var(--sp-5) * 4); height:calc(var(--sp-5) * 4); margin-bottom:var(--sp-3); }
 
 .tiles { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); }
 .tile { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
 /* The MVB title takes two lines at phone width. Every tile title keeps two lines, so names and numbers align across a row. */
 .tile .lbl { margin-bottom:var(--sp-1); min-height:calc(2em * var(--lh-tight)); }
+/* The card is the same gray as the default disc, so a white disc keeps the round crop visible, like a team avatar. */
+.tile .headshot { display:block; width:calc(var(--sp-5) * 2); height:calc(var(--sp-5) * 2); margin-bottom:var(--sp-2); background:var(--wht); }
 .tile .n { font-weight:800; font-size:var(--fs-body); line-height:var(--lh-tight); }
 .tile .pp { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); margin-top:var(--sp-1); }
 .tile .sub { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
@@ -94,6 +99,8 @@ a { color:var(--red); }
 .board .rk { flex:none; color:var(--muted); font-size:var(--fs-meta); font-weight:700; }
 .board .pl { flex:0 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .board .pl small { color:var(--muted); font-size:var(--fs-meta); }
+/* The row headshot stays near the text height, so the row keeps one line and about the height of a plain text row. */
+.board .pl .headshot { display:inline-block; width:var(--sp-5); height:var(--sp-5); margin-right:var(--sp-2); vertical-align:middle; background:var(--wht); }
 .board .tm { flex:1 1 0; min-width:0; color:var(--muted); font-size:var(--fs-meta); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 /* The points are the stat a reader scans for, so they take the body size and the heaviest weight in the row. */
 .board .pts { flex:none; font-size:var(--fs-body); font-weight:800; }
