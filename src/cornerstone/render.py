@@ -117,6 +117,22 @@ def _trades(bundle: Bundle, blurbs: dict[str, Blurb], teams: dict) -> list[dict]
     return cards
 
 
+def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
+    """One board per position, in lineup order, each with its leaders from first to third."""
+    boards = []
+    for lead in bundle.data.leaders:
+        if not boards or boards[-1]["position"] != lead.position:
+            boards.append({"position": lead.position, "rows": []})
+        boards[-1]["rows"].append({
+            "rank": lead.rank,
+            "player": lead.line.name,
+            "nfl_team": lead.line.nfl_team,
+            "points": lead.line.points,
+            "team": teams[lead.roster_id].name,
+        })
+    return boards
+
+
 def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, str]) -> dict:
     """Turn the bundle into the values the templates read."""
     data = bundle.data
@@ -145,6 +161,7 @@ def build_context(bundle: Bundle, blurbs: dict[str, Blurb], avatars: dict[int, s
         "motw": pick_facts,
         "game_changer": {"award": game_changer, "team": teams[game_changer.roster_id].name} if game_changer else None,
         "awards": [_tile(bundle, key, teams) for key in TILE_KEYS],
+        "leaders": _leaders(bundle, teams),
         "trades": _trades(bundle, blurbs, teams),
         "matchups": matchups,
         "median": _median(bundle, teams),

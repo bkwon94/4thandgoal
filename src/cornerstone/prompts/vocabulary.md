@@ -15,6 +15,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 - **Must Watch**: a top one or two matchup next week, chosen from records and standings only.
 - **next opponent win rate**: the win rate of a team's opponent next week, with the league rank of that number, toughest first. It covers next week only, not the rest of the season.
 - **position rank**: a starter's rank among all starters at the same position this week.
+- **position leader**: one of the three started players with the most points at one position this week, league wide.
 - **streak**: head-to-head results only, the median game excluded.
 - **team trend**: the last 3 weeks against the season average.
 - **player trend**: against projection over the last 3 weeks.

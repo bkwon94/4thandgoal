@@ -248,6 +248,16 @@ class PositionRank(BaseModel):
     of: int
 
 
+class PositionLeader(BaseModel):
+    """One of the three started players with the most points at one position, league wide."""
+    line: PlayerLine
+    position: str
+    rank: int
+    # The count of started players at the position, so a row can say "1st of 31".
+    of: int
+    roster_id: int
+
+
 class Fact(BaseModel):
     id: str
     text: str
@@ -283,6 +293,8 @@ class WeekData(BaseModel):
     next: list[NextMatchup]
     history: list[SeasonHistory]
     ranks: list[PositionRank]
+    # The default lets a bundle written before the leaders existed still load.
+    leaders: list[PositionLeader] = []
     trades: list[Trade] = []
     drops: list[DropLine] = []
     drop_source: Literal["nflverse", "sleeper", "none"] = "none"

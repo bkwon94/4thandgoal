@@ -14,6 +14,7 @@ from cornerstone.models import (
     NextMatchup,
     Pick,
     PlayerLine,
+    PositionLeader,
     PositionRank,
     SeasonHistory,
     Standing,
@@ -372,6 +373,28 @@ def position_ranks(week: Week) -> list[PositionRank]:
         out.extend(
             PositionRank(player_id=l.player_id, position=position, rank=i + 1, of=len(ordered))
             for i, l in enumerate(ordered)
+        )
+    return out
+
+
+LEADER_POSITIONS = ("QB", "RB", "WR", "TE", "DEF")
+
+
+def position_leaders(week: Week) -> list[PositionLeader]:
+    """The top three started lines at each position, in lineup order.
+
+    The name breaks a tie, so the board is stable from one build to the next.
+    """
+    groups: dict[str, list[tuple[PlayerLine, int]]] = defaultdict(list)
+    for line, roster_id, _ in _located_lines(week):
+        if line.started:
+            groups[line.position].append((line, roster_id))
+    out = []
+    for position in LEADER_POSITIONS:
+        ordered = sorted(groups[position], key=lambda x: (-x[0].points, x[0].name))
+        out.extend(
+            PositionLeader(line=l, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
+            for i, (l, rid) in enumerate(ordered[:3])
         )
     return out
 

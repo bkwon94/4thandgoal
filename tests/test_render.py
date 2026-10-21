@@ -275,3 +275,37 @@ def test_index_brand_links_to_season_index(fixture_raw_dir, tmp_path):
     render_week(b, _blurbs(b), tmp_path, _fake_png)
     idx = render_index(tmp_path).read_text()
     assert '<a class="brand" href="./">' in idx
+
+
+def _leaders_section(html):
+    section = html[html.index('id="leaders"'):]
+    return section[:section.index("</section>")]
+
+
+def test_build_context_has_five_leader_boards(fixture_raw_dir):
+    b = _bundle(fixture_raw_dir)
+    boards = build_context(b, _blurbs(b), {})["leaders"]
+    assert [x["position"] for x in boards] == ["QB", "RB", "WR", "TE", "DEF"]
+    assert boards[1]["rows"][0] == {"rank": 1, "player": "Kenneth Walker", "nfl_team": "KC",
+                                    "points": 26.9, "team": "Bo Girds"}
+
+
+def test_position_leaders_section_shows_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    assert "Position Leaders" in html
+    # The section sits after Awards and before the next chapter.
+    assert html.index(">Awards<") < html.index('id="leaders"') < html.index("The Median Game")
+    section = _leaders_section(html)
+    assert section.count('class="board"') == 5
+    assert section.count('class="row"') == 15
+    row = re.search(r'<li class="row">(.*?)</li>', section.split("RB", 1)[1], re.S).group(1)
+    for s in ("1", "Kenneth Walker", "KC", "26.9", "Bo Girds"):
+        assert s in row
+
+
+def test_position_leaders_blurb_renders_under_the_boards(fixture_raw_dir, tmp_path):
+    b = _bundle(fixture_raw_dir)
+    html = render_week(b, _blurbs(b), tmp_path, _fake_png).read_text()
+    section = _leaders_section(html)
+    assert section.index("Blurb for position_leaders.") > section.rindex('class="board"')

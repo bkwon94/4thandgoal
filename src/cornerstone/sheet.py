@@ -15,6 +15,7 @@ from cornerstone.facts_league import (
     awards,
     matchup_of_the_week,
     next_week,
+    position_leaders,
     position_ranks,
     ranks_before,
     season_history,
@@ -67,6 +68,7 @@ SENTENCE_RANGES = {
     "motw": (4, 6),
     "game_changer": (3, 5),
     "awards": (2, 4),
+    "position_leaders": (2, 4),
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
@@ -167,6 +169,7 @@ class Context:
         self.next = next_week(week, self.table)
         self.season_history = season_history(week, history)
         self.ranks = position_ranks(week)
+        self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
         self.line_owner = {
             l.player_id: s.roster_id
@@ -478,6 +481,20 @@ def rank_facts(c: Context) -> list[Fact]:
         team = c.team(c.line_owner[r.player_id])
         text = f"{line.name} ranked {n(r.rank)} of {n(r.of)} among started {r.position}s this week, for {team}."
         out.append(_fact(f"RANK.{r.player_id}", text, n, [team], [line.name]))
+    return out
+
+
+def leader_facts(c: Context) -> list[Fact]:
+    out = []
+    for lead in c.leaders:
+        n = Nums()
+        line = lead.line
+        team = c.team(lead.roster_id)
+        text = (
+            f"{c.who(line)} scored {n(line.points)} for {team}, "
+            f"{n.ord(lead.rank)} of {n(lead.of)} among started {lead.position}s this week."
+        )
+        out.append(_fact(f"LEAD.{lead.position}.{lead.rank}", text, n, [team], [line.name]))
     return out
 
 
@@ -1027,6 +1044,11 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         + injury_ids([a.line.player_id for a in c.awards]),
         all_rosters, "awards",
     ))
+    out.append(make(
+        "position_leaders", "Position Leaders",
+        _with_prefix(facts, "LEAD."),
+        all_rosters, "position_leaders",
+    ))
     for mid, pair in roster_ids.items():
         title = " vs ".join(c.team(r) for r in pair)
         out.append(make(
@@ -1072,7 +1094,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
-        rank_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
+        rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c), trade_facts(c),
         drop_facts(c), injury_facts_nfl(c),
     )
     facts = {f.id: f for family in families for f in family}
@@ -1090,6 +1112,7 @@ def build_bundle(
         next=c.next,
         history=c.season_history,
         ranks=c.ranks,
+        leaders=c.leaders,
         trades=trades if trades is not None else [],
         drops=c.drops,
         drop_source=("nflverse" if c.nfl_up else "sleeper") if c.drops else "none",

@@ -255,3 +255,50 @@ def test_no_player_trend_facts_without_history(bundle):
 def test_week_five_add_is_a_recent_add(hbundle, bundle):
     assert "week 5" in hbundle.sheet.facts["M4.move.13274"].text  # Germie Bernard, waiver
     assert "M4.move.13274" not in bundle.sheet.facts
+
+
+def test_position_leaders_are_the_top_three_started_at_each_position(bundle):
+    leaders = bundle.data.leaders
+    positions = [l.position for l in leaders]
+    assert positions == [p for p in ("QB", "RB", "WR", "TE", "DEF") for _ in range(3)]
+    for p in ("QB", "RB", "WR", "TE", "DEF"):
+        board = [l for l in leaders if l.position == p]
+        assert [l.rank for l in board] == [1, 2, 3]
+        assert all(a.line.points >= b.line.points for a, b in zip(board, board[1:]))
+    assert all(l.line.started for l in leaders)
+    rbs = [(l.line.name, l.of, bundle.data.teams[l.roster_id].name) for l in leaders if l.position == "RB"]
+    assert rbs == [
+        ("Kenneth Walker", 31, "Bo Girds"),
+        ("Christian McCaffrey", 31, "Lil Fridge"),
+        ("James Cook", 31, "London Cooking"),
+    ]
+    assert [l.line.name for l in leaders if l.position == "DEF"] == [
+        "Pittsburgh Steelers", "Kansas City Chiefs", "Denver Broncos",
+    ]
+
+
+def test_leader_fact_names_the_player_team_and_numbers(bundle):
+    f = bundle.sheet.facts["LEAD.RB.1"]
+    assert "Kenneth Walker (RB, KC)" in f.text and "Bo Girds" in f.text
+    assert "26.9" in f.text and "1st of 31" in f.text
+    assert {"26.9", "1", "31"} <= set(f.numbers)
+    assert f.teams == ["Bo Girds"] and f.players == ["Kenneth Walker"]
+    assert len([fid for fid in bundle.sheet.facts if fid.startswith("LEAD.")]) == 15
+
+
+@pytest.mark.parametrize("name", ["bundle", "tbundle"])
+def test_position_leaders_chapter_sits_after_awards_and_before_trades(request, name):
+    b = request.getfixturevalue(name)
+    keys = [c.key for c in b.sheet.chapters]
+    ch = b.sheet.chapters[keys.index("position_leaders")]
+    assert ch.title == "Position Leaders"
+    assert ch.fact_ids and all(fid.startswith("LEAD.") for fid in ch.fact_ids)
+    assert len(ch.fact_ids) == 15
+    assert (ch.min_sentences, ch.max_sentences) == (2, 4)
+    assert set(ch.scope_teams) == {t.name for t in b.data.teams.values()}
+    assert {l.line.name for l in b.data.leaders} <= set(ch.scope_players)
+    assert keys.index("position_leaders") == keys.index("awards") + 1
+    trades = [i for i, k in enumerate(keys) if k.startswith("trade_")]
+    assert all(i > keys.index("position_leaders") for i in trades)
+    if name == "tbundle":
+        assert trades

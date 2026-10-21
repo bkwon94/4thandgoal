@@ -49,6 +49,25 @@
     <p class="blurb gap">{{ blurbs.awards }}</p>
   </section>
 
+  {% if leaders %}
+  <section class="chap" id="leaders">
+    <div class="lbl">Position Leaders</div>
+    <div class="boards">
+      {% for b in leaders %}
+      <div class="board">
+        <div class="lbl">{{ b.position }}</div>
+        <ol>
+          {% for r in b.rows %}
+          <li class="row"><span class="rk">{{ r.rank }}</span><span class="pl"><b>{{ r.player }}</b>{% if r.nfl_team %} <small>{{ r.nfl_team }}</small>{% endif %}<small class="tm">{{ r.team }}</small></span><span class="pts">{{ r.points|num }}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="blurb gap">{{ blurbs.position_leaders }}</p>
+  </section>
+  {% endif %}
+
   {% if trades %}
   <section class="chap" id="trades">
     <div class="lbl">Trades</div>

@@ -80,6 +80,18 @@ a { color:var(--red); }
 .tile .pp { font-size:var(--fs-stat); font-weight:900; line-height:var(--lh-stat); margin-top:var(--sp-1); }
 .tile .sub { font-size:var(--fs-meta); color:var(--muted); margin-top:var(--sp-1); }
 
+/* The boards stack, one position per card, so a row never wraps at phone width. */
+.boards { display:grid; gap:var(--sp-2); }
+.board { background:var(--gry); border-radius:var(--r-card); padding:var(--sp-3); }
+.board .lbl { margin-bottom:var(--sp-1); }
+.board ol { list-style:none; margin:0; padding:0; font-size:var(--fs-row); line-height:var(--lh-tight); }
+.board .row { display:flex; align-items:baseline; gap:var(--sp-2); padding:var(--sp-1) 0; font-variant-numeric:tabular-nums; }
+.board .rk { flex:none; color:var(--muted); font-weight:700; }
+.board .pl { flex:1; min-width:0; }
+.board .pl small { color:var(--muted); font-size:var(--fs-meta); }
+.board .pl .tm { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.board .pts { flex:none; font-weight:800; }
+
 .mu { border-bottom:1px solid var(--rule); }
 .mu:last-of-type { border-bottom:none; }
 /* minmax(0,1fr) keeps both columns equal, even when one name has a long word. */
