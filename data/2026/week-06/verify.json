@@ -58,27 +58,27 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "AW.game_changer and M4.move.13274 confirm the Game Changer label, the waiver add and 20.2 on 8.13; 'lucky' cites a .move. fact and 20.2 is more than twice 8.13."
+            "reason": "Bernard scored 20.2 on an 8.13 projection, is a recent add, and is named Game Changer for behold the lamb."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "M4.upset says Bo Girds was 2nd before the week, and M4.result gives a loss by 5.34."
+            "reason": "M4.swing.13274 makes Bernard a swing player (20.2 over a 5.34 margin), so the 'without X' phrasing is allowed."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "M4.swing.13274 makes Bernard a swing player, and his 12.07 gap is the largest among the listed margin drivers."
+            "reason": "M4.upset states behold the lamb was 11th and Bo Girds 2nd, and that it was an upset."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "M4.starter.10.6786 gives CeeDee Lamb at 5.51 under projection for behold the lamb; the namesake remark is a joke, not a factual claim."
+            "reason": "Bernard was a week-5 waiver add and scored 20.2, more than twice his 8.13 projection, so 'lucky' fits. The trend fact shows 3 of the last 3 weeks over projection."
           },
           {
             "index": 4,
             "supported": true,
-            "reason": "P.13274.trend says Bernard beat projection in 3 of the last 3 weeks."
+            "reason": "CeeDee Lamb started for behold the lamb and scored 11.5, 5.51 under his projection."
           }
         ],
         "passed": true
@@ -121,22 +121,22 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "LEAD.QB.1 states Lawrence scored 28.34 for Amon-Ra Dawg Your Team, 1st of 12 started QBs."
+            "reason": "Drake Maye 3rd of 12 QBs for Maye d'force B with U; Likely 20.9, 1st of 15 TEs, per LEAD.QB.3 and LEAD.TE.1."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "LEAD.RB.1 shows Walker scored 26.9 for Bo Girds, 1st among started RBs. LEAD.QB.2 shows Shough at 26.96, 2nd behind Lawrence."
+            "reason": "Tucker 24.2, 1st of 38 WRs, and Loveland 2nd of 15 TEs, both for All You Need Is Love."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "LEAD.WR.1 shows Tucker 1st among WRs at 24.2 and LEAD.TE.2 shows Loveland 2nd among TEs, both for All You Need Is Love; the name line is a joke."
+            "reason": "Reaction with no factual claim."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "LEAD.QB.3 shows Maye 3rd among QBs and LEAD.TE.1 shows Likely 1st among TEs with 20.9, both for Maye d'force B with U."
+            "reason": "Walker 26.9, 1st of 31 RBs, for Bo Girds; Shough 2nd of 12 QBs, also for Bo Girds."
           }
         ],
         "passed": true
@@ -198,17 +198,17 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "Margin 9.51 matches M3.result, and Likely is a margin driver at TE with 20.9, so calling him a decider is allowed."
+            "reason": "The score matches M3.result, and Isaiah Likely is a tight end and a margin driver on the winning side, so 'won it' fits."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "Tuten and Wilson are both recent adds by trade for the losing side, with 22.7 and 6.4 as the facts state."
+            "reason": "Tuten and Garrett Wilson are both trade adds in week 6 with 22.7 and 6.4 points; 'dogged its own team' is a team-name pun, not a factual claim."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "Both players are listed Questionable per the cited injury facts."
+            "reason": "Kincaid is a week 6 trade add, and both Kincaid and Waddle are listed Questionable per the cited injury facts."
           }
         ],
         "passed": true
@@ -222,17 +222,17 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "M4.result gives the score and M4.upset confirms the upset."
+            "reason": "M4.dropswing gives 7 drops worth about 17.8 against the 5.34 margin, which meets the drop swing rule for saying the drops cost the game."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "M4.move.13274 confirms a week-5 waiver add scoring 20.2 on 8.13, and M4.driver.13274 makes him a margin driver, so 'decided' is allowed."
+            "reason": "This is a reaction with no factual claim."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "M4.dropswing gives the losing side 7 drops worth about 17.8, at least the 5.34 margin, so it is a drop swing and saying the drops cost the game is allowed."
+            "reason": "Bernard is a recent add per M4.move.13274, and his 20.2 is at least twice his 8.13 projection, so 'lucky' is allowed. He is a margin driver on the winning side, so 'won it' fits. M4.upset confirms 11th place and the upset."
           }
         ],
         "passed": true
@@ -323,12 +323,12 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "NX.3v8 names Lil Fridge vs Return of T Mac as a Must Watch. H.8.streak gives Return of T Mac 3 straight wins, and SOS.8 gives a 0.83 next opponent win rate ranked 1 of 12, the toughest."
+            "reason": "NX.3v8 names this matchup a Must Watch, H.8.streak gives Return of T Mac a 3-game win streak, and SOS.8 ranks their opponent's win rate (0.83) 1st of 12, the hardest draw next week."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "NX.4v7 sets the matchup. S.12 gives Pukancun on 3 at 1-11, 5 games below the cut, and S.11 gives To Infinity and Bijan at 4-8, 2 games below the cut."
+            "reason": "NX.4v7 gives the matchup and records, and S.11 and S.12 place both teams below the cut, at 11th and 12th."
           }
         ],
         "passed": true
@@ -337,37 +337,46 @@
     "rankings": [
       {
         "chapter": "rankings",
+        "code_failures": [
+          "[11] player Jeremiyah Love is not on a team in this chapter",
+          "[11] player Jordan Love is not on a team in this chapter"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "rankings",
         "code_failures": [],
         "verdicts": [
           {
             "index": 0,
             "supported": true,
-            "reason": "PR.3 gives 1st in the power rankings and S.1 gives the 10-2 record."
+            "reason": "PR.3 and S.1 give 1st place, a 10-2 record and 4 games above the cut."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "H.3.trend gives 113.91 per week over the last 3 weeks, down from 123.28."
+            "reason": "H.3.trend gives 113.91 over the last 3 weeks, down from a 123.28 season average."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "PR.5 gives 2nd with no move and H.5.streak gives 4 straight wins."
+            "reason": "H.5.streak gives 4 straight wins and S.2 gives the 9-3 record; PR.5 shows no move."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "S.2 gives a 9-3 record and 3 games above the cut."
+            "reason": "H.5.trend gives 122.9 over the last 3 weeks, up from the season average."
           },
           {
             "index": 4,
             "supported": true,
-            "reason": "PR.6 gives 3rd with no move and H.6.streak gives 2 straight losses."
+            "reason": "S.3 gives 8-4, H.6.streak gives 2 straight losses, and PR.6 shows no move."
           },
           {
             "index": 5,
             "supported": true,
-            "reason": "S.3 gives an 8-4 record and 2 games above the cut."
+            "reason": "PR.6 gives 2nd in scoring; the panic remark is opinion."
           },
           {
             "index": 6,
@@ -377,87 +386,87 @@
           {
             "index": 7,
             "supported": true,
-            "reason": "H.9.streak gives 2 straight wins and S.4 gives 1 game above the cut."
+            "reason": "S.4 gives 7-5 and 1 game above the cut."
           },
           {
             "index": 8,
             "supported": true,
-            "reason": "PR.8 gives 5th, up 3 places, and 1st in form."
+            "reason": "PR.8 gives up 3 places to 5th and 1st in form."
           },
           {
             "index": 9,
             "supported": true,
-            "reason": "H.8.trend gives 128.82 over the last 3 weeks against a season average of 103.16."
+            "reason": "H.8.streak gives 3 straight wins; S.7 gives 6-6 and out of the playoff spots."
           },
           {
             "index": 10,
             "supported": true,
-            "reason": "PR.2 gives 6th, down 1 place."
+            "reason": "PR.2 gives down 1 place to 6th."
           },
           {
             "index": 11,
             "supported": true,
-            "reason": "H.2.trend gives 97.48 per week over the last 3 weeks, down from 101.95."
+            "reason": "H.2.trend gives 97.48, down; S.5 gives 1 game above the cut."
           },
           {
             "index": 12,
             "supported": true,
-            "reason": "PR.1 gives 7th, down 3 places."
+            "reason": "PR.1 gives down 3 places; S.6 gives 6-6 and 0 games at the cut."
           },
           {
             "index": 13,
             "supported": true,
-            "reason": "S.6 gives a 6-6 record and 0 games at the cut."
+            "reason": "PR.1 gives 8th in form; H.1.trend gives 111.81, down."
           },
           {
             "index": 14,
             "supported": true,
-            "reason": "PR.10 gives 8th, up 3 places."
+            "reason": "PR.10 gives up 3 places to 8th."
           },
           {
             "index": 15,
             "supported": true,
-            "reason": "S.8 gives a 6-6 record, out of the playoff spots, 0 games at the cut."
+            "reason": "S.8 gives 6-6 and 0 games at the cut; PR.10 gives 10th in scoring."
           },
           {
             "index": 16,
             "supported": true,
-            "reason": "PR.12 gives 9th, up 1 place, and H.12.streak gives 2 straight losses."
+            "reason": "PR.12 gives up 1 place; H.12.streak gives 2 straight losses."
           },
           {
             "index": 17,
             "supported": true,
-            "reason": "S.9 gives a 4-8 record and 2 games below the cut."
+            "reason": "S.9 gives 4-8 and 2 games below the cut."
           },
           {
             "index": 18,
             "supported": true,
-            "reason": "PR.11 gives 10th, down 3 places, and 12th in form, last among the 12 teams."
+            "reason": "PR.11 gives down 3 places to 10th and 12th in form, the last of 12 teams."
           },
           {
             "index": 19,
             "supported": true,
-            "reason": "H.11.streak gives 3 straight losses and H.11.trend gives 92.05 per week."
+            "reason": "H.11.streak gives 3 straight losses; H.11.trend gives 92.05."
           },
           {
             "index": 20,
             "supported": true,
-            "reason": "PR.7 gives 11th, down 2 places; 'the other way' is phrasing."
+            "reason": "PR.7 gives down 2 places to 11th."
           },
           {
             "index": 21,
             "supported": true,
-            "reason": "H.7.trend gives 77.06 over the last 3 weeks, down from 90.65."
+            "reason": "H.7.trend gives 77.06; the infinity line is a joke."
           },
           {
             "index": 22,
             "supported": true,
-            "reason": "PR.4 gives 12th (last) and S.12 gives 1-11, 5 games below the cut."
+            "reason": "PR.4 gives 12th, the last of 12; S.12 gives 1-11."
           },
           {
             "index": 23,
             "supported": true,
-            "reason": "A reaction with no factual claim."
+            "reason": "H.4.trend gives 93.93, up; S.12 gives 5 games below the cut."
           }
         ],
         "passed": true

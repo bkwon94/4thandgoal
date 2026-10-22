@@ -229,7 +229,7 @@
           "movement": -2,
           "components": {
             "standing": 3,
-            "form": 3,
+            "form": 4,
             "schedule_played": 5,
             "scoring": 3
           },
@@ -244,7 +244,7 @@
           "movement": -1,
           "components": {
             "standing": 4,
-            "form": 5,
+            "form": 3,
             "schedule_played": 6,
             "scoring": 4
           },
@@ -259,9 +259,9 @@
           "movement": 1,
           "components": {
             "standing": 5,
-            "form": 4,
+            "form": 6,
             "schedule_played": 7,
-            "scoring": 8
+            "scoring": 5
           },
           "blurb": []
         },
@@ -274,9 +274,9 @@
           "movement": -1,
           "components": {
             "standing": 7,
-            "form": 7,
+            "form": 9,
             "schedule_played": 2,
-            "scoring": 9
+            "scoring": 6
           },
           "blurb": []
         },
@@ -289,7 +289,7 @@
           "movement": 4,
           "components": {
             "standing": 8,
-            "form": 8,
+            "form": 7,
             "schedule_played": 1,
             "scoring": 10
           },
@@ -304,9 +304,9 @@
           "movement": 2,
           "components": {
             "standing": 6,
-            "form": 6,
+            "form": 5,
             "schedule_played": 12,
-            "scoring": 6
+            "scoring": 8
           },
           "blurb": []
         },
@@ -319,9 +319,9 @@
           "movement": 0,
           "components": {
             "standing": 9,
-            "form": 9,
+            "form": 8,
             "schedule_played": 8,
-            "scoring": 5
+            "scoring": 7
           },
           "blurb": []
         },
@@ -336,7 +336,7 @@
             "standing": 10,
             "form": 10,
             "schedule_played": 3,
-            "scoring": 7
+            "scoring": 9
           },
           "blurb": []
         },
@@ -414,7 +414,7 @@
           "movement": -1,
           "components": {
             "standing": 3,
-            "form": 3,
+            "form": 6,
             "schedule_played": 10,
             "scoring": 2
           },
@@ -429,9 +429,9 @@
           "movement": 0,
           "components": {
             "standing": 4,
-            "form": 6,
+            "form": 4,
             "schedule_played": 9,
-            "scoring": 3
+            "scoring": 4
           },
           "blurb": []
         },
@@ -444,24 +444,9 @@
           "movement": 3,
           "components": {
             "standing": 5,
-            "form": 4,
+            "form": 3,
             "schedule_played": 5,
             "scoring": 7
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 9,
-          "name": "Maye d'force B with U",
-          "wins": 3,
-          "losses": 3,
-          "rank": 6,
-          "movement": -3,
-          "components": {
-            "standing": 7,
-            "form": 5,
-            "schedule_played": 4,
-            "scoring": 5
           },
           "blurb": []
         },
@@ -470,13 +455,28 @@
           "name": "London Cooking",
           "wins": 3,
           "losses": 3,
-          "rank": 7,
-          "movement": 2,
+          "rank": 6,
+          "movement": 3,
           "components": {
             "standing": 6,
-            "form": 7,
+            "form": 5,
             "schedule_played": 11,
-            "scoring": 4
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 3,
+          "losses": 3,
+          "rank": 7,
+          "movement": -4,
+          "components": {
+            "standing": 7,
+            "form": 8,
+            "schedule_played": 4,
+            "scoring": 3
           },
           "blurb": []
         },
@@ -489,7 +489,7 @@
           "movement": -1,
           "components": {
             "standing": 8,
-            "form": 8,
+            "form": 9,
             "schedule_played": 1,
             "scoring": 10
           },
@@ -504,9 +504,9 @@
           "movement": 1,
           "components": {
             "standing": 9,
-            "form": 9,
+            "form": 7,
             "schedule_played": 6,
-            "scoring": 8
+            "scoring": 9
           },
           "blurb": []
         },
@@ -521,7 +521,7 @@
             "standing": 10,
             "form": 10,
             "schedule_played": 8,
-            "scoring": 9
+            "scoring": 8
           },
           "blurb": []
         },
@@ -561,27 +561,12 @@
       "week": 4,
       "rows": [
         {
-          "roster_id": 3,
-          "name": "Lil Fridge",
-          "wins": 6,
-          "losses": 2,
-          "rank": 1,
-          "movement": 0,
-          "components": {
-            "standing": 2,
-            "form": 4,
-            "schedule_played": 1,
-            "scoring": 3
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 6,
           "losses": 2,
-          "rank": 2,
-          "movement": 1,
+          "rank": 1,
+          "movement": 2,
           "components": {
             "standing": 1,
             "form": 3,
@@ -591,17 +576,32 @@
           "blurb": []
         },
         {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 6,
+          "losses": 2,
+          "rank": 2,
+          "movement": -1,
+          "components": {
+            "standing": 2,
+            "form": 5,
+            "schedule_played": 1,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 5,
           "name": "London Cooking",
           "wins": 5,
           "losses": 3,
           "rank": 3,
-          "movement": 4,
+          "movement": 3,
           "components": {
             "standing": 4,
             "form": 1,
             "schedule_played": 10,
-            "scoring": 2
+            "scoring": 3
           },
           "blurb": []
         },
@@ -614,9 +614,9 @@
           "movement": -2,
           "components": {
             "standing": 3,
-            "form": 2,
+            "form": 6,
             "schedule_played": 4,
-            "scoring": 6
+            "scoring": 5
           },
           "blurb": []
         },
@@ -629,24 +629,9 @@
           "movement": 4,
           "components": {
             "standing": 6,
-            "form": 5,
+            "form": 2,
             "schedule_played": 6,
-            "scoring": 5
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 11,
-          "name": "Unsolicited Dak Picks",
-          "wins": 4,
-          "losses": 4,
-          "rank": 6,
-          "movement": -1,
-          "components": {
-            "standing": 7,
-            "form": 6,
-            "schedule_played": 5,
-            "scoring": 7
+            "scoring": 8
           },
           "blurb": []
         },
@@ -655,12 +640,27 @@
           "name": "Amon-Ra Dawg Your Team",
           "wins": 4,
           "losses": 4,
-          "rank": 7,
-          "movement": 3,
+          "rank": 6,
+          "movement": 4,
           "components": {
             "standing": 8,
             "form": 8,
             "schedule_played": 2,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 4,
+          "rank": 7,
+          "movement": -2,
+          "components": {
+            "standing": 7,
+            "form": 7,
+            "schedule_played": 5,
             "scoring": 9
           },
           "blurb": []
@@ -676,7 +676,7 @@
             "standing": 5,
             "form": 10,
             "schedule_played": 7,
-            "scoring": 4
+            "scoring": 6
           },
           "blurb": []
         },
@@ -689,7 +689,7 @@
           "movement": -1,
           "components": {
             "standing": 9,
-            "form": 7,
+            "form": 4,
             "schedule_played": 11,
             "scoring": 10
           },
@@ -701,12 +701,12 @@
           "wins": 3,
           "losses": 5,
           "rank": 10,
-          "movement": -4,
+          "movement": -3,
           "components": {
             "standing": 10,
             "form": 11,
             "schedule_played": 8,
-            "scoring": 8
+            "scoring": 4
           },
           "blurb": []
         },
@@ -751,12 +751,12 @@
           "wins": 8,
           "losses": 2,
           "rank": 1,
-          "movement": 0,
+          "movement": 1,
           "components": {
             "standing": 1,
             "form": 3,
             "schedule_played": 1,
-            "scoring": 3
+            "scoring": 1
           },
           "blurb": []
         },
@@ -771,7 +771,7 @@
             "standing": 3,
             "form": 1,
             "schedule_played": 11,
-            "scoring": 2
+            "scoring": 4
           },
           "blurb": []
         },
@@ -781,12 +781,12 @@
           "wins": 7,
           "losses": 3,
           "rank": 3,
-          "movement": -1,
+          "movement": -2,
           "components": {
             "standing": 2,
-            "form": 6,
+            "form": 5,
             "schedule_played": 5,
-            "scoring": 1
+            "scoring": 2
           },
           "blurb": []
         },
@@ -799,24 +799,9 @@
           "movement": 4,
           "components": {
             "standing": 4,
-            "form": 7,
-            "schedule_played": 6,
-            "scoring": 4
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 2,
-          "name": "All You Need Is Love",
-          "wins": 6,
-          "losses": 4,
-          "rank": 5,
-          "movement": -1,
-          "components": {
-            "standing": 5,
             "form": 4,
-            "schedule_played": 4,
-            "scoring": 6
+            "schedule_played": 6,
+            "scoring": 5
           },
           "blurb": []
         },
@@ -825,28 +810,28 @@
           "name": "Maye d'force B with U",
           "wins": 5,
           "losses": 5,
-          "rank": 6,
-          "movement": 4,
+          "rank": 5,
+          "movement": 5,
           "components": {
             "standing": 6,
-            "form": 10,
+            "form": 7,
             "schedule_played": 7,
-            "scoring": 5
+            "scoring": 3
           },
           "blurb": []
         },
         {
-          "roster_id": 11,
-          "name": "Unsolicited Dak Picks",
-          "wins": 4,
-          "losses": 6,
-          "rank": 7,
-          "movement": -1,
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 6,
+          "losses": 4,
+          "rank": 6,
+          "movement": -2,
           "components": {
-            "standing": 7,
+            "standing": 5,
             "form": 8,
-            "schedule_played": 9,
-            "scoring": 7
+            "schedule_played": 4,
+            "scoring": 6
           },
           "blurb": []
         },
@@ -855,27 +840,12 @@
           "name": "Return of T Mac",
           "wins": 4,
           "losses": 6,
-          "rank": 8,
-          "movement": 3,
+          "rank": 7,
+          "movement": 4,
           "components": {
             "standing": 9,
             "form": 2,
             "schedule_played": 10,
-            "scoring": 8
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 7,
-          "name": "To Infinity and Bijan",
-          "wins": 4,
-          "losses": 6,
-          "rank": 9,
-          "movement": -4,
-          "components": {
-            "standing": 10,
-            "form": 5,
-            "schedule_played": 2,
             "scoring": 9
           },
           "blurb": []
@@ -885,12 +855,42 @@
           "name": "Amon-Ra Dawg Your Team",
           "wins": 4,
           "losses": 6,
-          "rank": 10,
-          "movement": -3,
+          "rank": 8,
+          "movement": -2,
           "components": {
             "standing": 8,
             "form": 9,
             "schedule_played": 3,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 6,
+          "rank": 9,
+          "movement": -2,
+          "components": {
+            "standing": 7,
+            "form": 11,
+            "schedule_played": 9,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 4,
+          "losses": 6,
+          "rank": 10,
+          "movement": -5,
+          "components": {
+            "standing": 10,
+            "form": 6,
+            "schedule_played": 2,
             "scoring": 10
           },
           "blurb": []
@@ -904,7 +904,7 @@
           "movement": -2,
           "components": {
             "standing": 11,
-            "form": 11,
+            "form": 10,
             "schedule_played": 8,
             "scoring": 11
           },
@@ -945,14 +945,14 @@
           },
           "blurb": [
             {
-              "text": "Lil Fridge holds 1st in the power rankings at 10-2.",
+              "text": "Lil Fridge holds the top spot at 10-2, 4 games clear of the cut.",
               "fact_ids": [
                 "PR.3",
                 "S.1"
               ]
             },
             {
-              "text": "The form has dipped, though, at 113.91 per week over the last 3 weeks.",
+              "text": "Scoring has dipped to 113.91 a week lately, under the 123.28 season average.",
               "fact_ids": [
                 "H.3.trend"
               ]
@@ -970,20 +970,21 @@
             "standing": 2,
             "form": 2,
             "schedule_played": 12,
-            "scoring": 3
+            "scoring": 2
           },
           "blurb": [
             {
-              "text": "London Cooking stays 2nd and has won 4 straight.",
+              "text": "London Cooking has won 4 straight to hold at 9-3.",
               "fact_ids": [
                 "PR.5",
+                "S.2",
                 "H.5.streak"
               ]
             },
             {
-              "text": "At 9-3, they sit 3 games above the cut.",
+              "text": "The last 3 weeks ran at 122.9 a week, above the season average.",
               "fact_ids": [
-                "S.2"
+                "H.5.trend"
               ]
             }
           ]
@@ -999,20 +1000,21 @@
             "standing": 3,
             "form": 5,
             "schedule_played": 4,
-            "scoring": 2
+            "scoring": 3
           },
           "blurb": [
             {
-              "text": "Bo Girds holds 3rd despite losing 2 straight.",
+              "text": "Bo Girds holds at 8-4 despite 2 straight losses.",
               "fact_ids": [
                 "PR.6",
+                "S.3",
                 "H.6.streak"
               ]
             },
             {
-              "text": "At 8-4, they still sit 2 games above the cut.",
+              "text": "They still rank 2nd in scoring, so the panic can wait.",
               "fact_ids": [
-                "S.3"
+                "PR.6"
               ]
             }
           ]
@@ -1023,7 +1025,7 @@
           "wins": 7,
           "losses": 5,
           "rank": 4,
-          "movement": 2,
+          "movement": 1,
           "components": {
             "standing": 4,
             "form": 4,
@@ -1032,15 +1034,14 @@
           },
           "blurb": [
             {
-              "text": "Maye d'force B with U climbs 2 places to 4th.",
+              "text": "Maye d'force B with U climbs 2 spots to 4th.",
               "fact_ids": [
                 "PR.9"
               ]
             },
             {
-              "text": "They have won 2 straight and sit 1 game above the cut.",
+              "text": "At 7-5, they sit just 1 game above the cut.",
               "fact_ids": [
-                "H.9.streak",
                 "S.4"
               ]
             }
@@ -1052,24 +1053,25 @@
           "wins": 6,
           "losses": 6,
           "rank": 5,
-          "movement": 3,
+          "movement": 2,
           "components": {
             "standing": 7,
             "form": 1,
             "schedule_played": 8,
-            "scoring": 6
+            "scoring": 7
           },
           "blurb": [
             {
-              "text": "Return of T Mac jumps 3 places to 5th on the top form in the league.",
+              "text": "Return of T Mac jumps 3 places to 5th with the top form in the league.",
               "fact_ids": [
                 "PR.8"
               ]
             },
             {
-              "text": "They have averaged 128.82 lately, against a season average of 103.16.",
+              "text": "A 3-game win streak, and they're still on the outside at 6-6.",
               "fact_ids": [
-                "H.8.trend"
+                "H.8.streak",
+                "S.7"
               ]
             }
           ]
@@ -1080,52 +1082,25 @@
           "wins": 7,
           "losses": 5,
           "rank": 6,
-          "movement": -1,
+          "movement": 0,
           "components": {
             "standing": 5,
-            "form": 6,
+            "form": 8,
             "schedule_played": 6,
-            "scoring": 7
+            "scoring": 6
           },
           "blurb": [
             {
-              "text": "All You Need Is Love slips 1 place to 6th.",
+              "text": "All You Need Is Love slides 1 spot to 6th.",
               "fact_ids": [
                 "PR.2"
               ]
             },
             {
-              "text": "The scoring has gone cold, down to 97.48 per week over the last 3 weeks.",
+              "text": "Scoring has dipped to 97.48 a week, and 1 game above the cut is all the cushion left.",
               "fact_ids": [
-                "H.2.trend"
-              ]
-            }
-          ]
-        },
-        {
-          "roster_id": 1,
-          "name": "Brock ‘N’ Roll",
-          "wins": 6,
-          "losses": 6,
-          "rank": 7,
-          "movement": -3,
-          "components": {
-            "standing": 6,
-            "form": 8,
-            "schedule_played": 11,
-            "scoring": 5
-          },
-          "blurb": [
-            {
-              "text": "Brock ‘N’ Roll tumbles 3 places to 7th.",
-              "fact_ids": [
-                "PR.1"
-              ]
-            },
-            {
-              "text": "At 6-6, they are sitting right on the cut line.",
-              "fact_ids": [
-                "S.6"
+                "H.2.trend",
+                "S.5"
               ]
             }
           ]
@@ -1135,25 +1110,56 @@
           "name": "behold the lamb",
           "wins": 6,
           "losses": 6,
-          "rank": 8,
-          "movement": 3,
+          "rank": 7,
+          "movement": 4,
           "components": {
             "standing": 8,
-            "form": 7,
+            "form": 6,
             "schedule_played": 2,
-            "scoring": 10
+            "scoring": 9
           },
           "blurb": [
             {
-              "text": "behold the lamb rises 3 places to 8th.",
+              "text": "behold the lamb climbs 3 places to 8th.",
               "fact_ids": [
                 "PR.10"
               ]
             },
             {
-              "text": "At 6-6, they sit right at the cut, just outside the playoff spots.",
+              "text": "They're 6-6 and right at the cut while ranking 10th in scoring.",
               "fact_ids": [
-                "S.8"
+                "S.8",
+                "PR.10"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 6,
+          "losses": 6,
+          "rank": 8,
+          "movement": -4,
+          "components": {
+            "standing": 6,
+            "form": 7,
+            "schedule_played": 11,
+            "scoring": 5
+          },
+          "blurb": [
+            {
+              "text": "Brock ‘N’ Roll drops 3 places and sits right at the cut at 6-6.",
+              "fact_ids": [
+                "PR.1",
+                "S.6"
+              ]
+            },
+            {
+              "text": "Form ranks 8th, and the last 3 weeks dipped to 111.81 a week.",
+              "fact_ids": [
+                "PR.1",
+                "H.1.trend"
               ]
             }
           ]
@@ -1164,7 +1170,7 @@
           "wins": 4,
           "losses": 8,
           "rank": 9,
-          "movement": 1,
+          "movement": -1,
           "components": {
             "standing": 9,
             "form": 9,
@@ -1173,14 +1179,14 @@
           },
           "blurb": [
             {
-              "text": "Amon-Ra Dawg Your Team moves up to 9th despite losing 2 straight.",
+              "text": "Amon-Ra Dawg Your Team moves up a spot despite 2 straight losses.",
               "fact_ids": [
                 "PR.12",
                 "H.12.streak"
               ]
             },
             {
-              "text": "At 4-8, they are 2 games below the cut.",
+              "text": "At 4-8, they're 2 games below the cut.",
               "fact_ids": [
                 "S.9"
               ]
@@ -1193,22 +1199,22 @@
           "wins": 4,
           "losses": 8,
           "rank": 10,
-          "movement": -3,
+          "movement": -1,
           "components": {
             "standing": 10,
             "form": 12,
             "schedule_played": 7,
-            "scoring": 9
+            "scoring": 10
           },
           "blurb": [
             {
-              "text": "Unsolicited Dak Picks drops 3 places to 10th with the worst form in the league.",
+              "text": "Unsolicited Dak Picks falls 3 places to 10th with the worst form in the league.",
               "fact_ids": [
                 "PR.11"
               ]
             },
             {
-              "text": "They have lost 3 straight while scoring 92.05 per week lately.",
+              "text": "Losers of 3 straight, they've averaged 92.05 a week lately.",
               "fact_ids": [
                 "H.11.streak",
                 "H.11.trend"
@@ -1222,22 +1228,22 @@
           "wins": 4,
           "losses": 8,
           "rank": 11,
-          "movement": -2,
+          "movement": -1,
           "components": {
             "standing": 11,
-            "form": 11,
+            "form": 10,
             "schedule_played": 9,
             "scoring": 11
           },
           "blurb": [
             {
-              "text": "To Infinity and Bijan is headed the other way, down 2 places to 11th.",
+              "text": "To Infinity and Bijan drops 2 places to 11th.",
               "fact_ids": [
                 "PR.7"
               ]
             },
             {
-              "text": "They have averaged 77.06 lately, down from a season average of 90.65.",
+              "text": "The last 3 weeks averaged 77.06, about as far from infinity as it gets.",
               "fact_ids": [
                 "H.7.trend"
               ]
@@ -1253,21 +1259,24 @@
           "movement": 0,
           "components": {
             "standing": 12,
-            "form": 10,
+            "form": 11,
             "schedule_played": 10,
             "scoring": 12
           },
           "blurb": [
             {
-              "text": "Pukancun on 3 holds last place at 1-11, 5 games below the cut.",
+              "text": "Pukancun on 3 stays dead last at 1-11.",
               "fact_ids": [
                 "PR.4",
                 "S.12"
               ]
             },
             {
-              "text": "Some things never change.",
-              "fact_ids": []
+              "text": "Scoring is up to 93.93 a week lately, with the cut still 5 games away.",
+              "fact_ids": [
+                "H.4.trend",
+                "S.12"
+              ]
             }
           ]
         }
