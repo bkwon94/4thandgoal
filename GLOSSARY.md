@@ -108,6 +108,9 @@ _Avoid_: best player, top player
 Accept, counter, or decline, for the side that asked, with one reason.
 _Avoid_: recommendation, advice
 
+**Side shape**:
+The exact two sides, in roster order, each once, that an analysis response must hold.
+
 **Before the trade**:
 Weeks 1 to N-1, for a proposed trade in week N. Every grade input ends there.
 

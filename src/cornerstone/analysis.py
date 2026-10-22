@@ -16,7 +16,7 @@ from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
-    normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
+    NAME_SUFFIXES, normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
 )
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, analyzer_call, load_prompt
 
@@ -57,7 +57,10 @@ class VerdictOut(BaseModel):
 
 
 class AnalysisOut(BaseModel):
-    """The structured output of the Claude call."""
+    """The structured output of the Claude call: exactly 2 sides, one per roster in the trade, then the verdict.
+
+    The sides come in the order of the user message, and no side repeats.
+    """
 
     sides: list[SideAnalysis]
     verdict: VerdictOut
@@ -78,6 +81,11 @@ class Analysis(BaseModel):
 
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name for pid in pids)
+
+
+def _side_shape(breakdowns: tuple[Breakdown, Breakdown]) -> str:
+    """The one shape of the sides that the check accepts, in words, with both roster IDs."""
+    return f"exactly 2 sides: roster {breakdowns[0].roster_id} first, then roster {breakdowns[1].roster_id}, each once"
 
 
 def build_analysis_prompt(
@@ -106,12 +114,28 @@ def build_analysis_prompt(
         *(f"- {fid}: {fact.text}" for fid, fact in facts.items()),
     ]
     if feedback is not None:
-        lines += ["", "Feedback from the last attempt:", feedback]
+        # A failure names one side, so without this line Claude can send that side alone or twice.
+        lines += ["", "Feedback from the last attempt:", feedback,
+                  f"Give the whole response again with {_side_shape(breakdowns)}, and the verdict."]
     return system, "\n".join(lines)
+
+
+# A period after a title or "vs" ends no sentence. A period after a name suffix before a lowercase word ends
+# no sentence. A period in a run of initials such as "A.J." ends no sentence.
+# Claude writes the short form "St. Brown". The code removes the full name first, so the short form stays.
+# A lone capital still ends a sentence, because "the grade is a B." is a real end.
+_TITLES = ("St", "Mr", "Dr", "vs")
+# NAME_SUFFIXES in the verifier is the one list of name suffixes. Only a suffix with a period matters here.
+_DOTTED_SUFFIXES = sorted(suffix.removesuffix(".") for suffix in NAME_SUFFIXES if suffix.endswith("."))
+# The titles and suffixes match in any case. The word after a suffix must be lowercase, so that part has no flag.
+_NOT_AN_END = re.compile(
+    rf"(?<!\w)(?:(?i:{'|'.join(_TITLES)})|(?i:{'|'.join(_DOTTED_SUFFIXES)})(?=\.\s+[a-z])|(?:[A-Z]\.)+[A-Z])\."
+)
 
 
 def _sentences(text: str) -> int:
     # A period inside a decimal is not followed by a space, so it ends no sentence.
+    text = _NOT_AN_END.sub(lambda match: match.group()[:-1], text)
     return len(re.findall(r"[.!?]+(?=\s|$)", text.strip()))
 
 
@@ -143,7 +167,8 @@ def check_response(
     failures = []
     by_roster = {s.roster_id: s for s in out.sides}
     if sorted(by_roster) != sorted(b.roster_id for b in breakdowns) or len(out.sides) != 2:
-        return [f"the sides must be rosters {breakdowns[0].roster_id} and {breakdowns[1].roster_id}, once each"]
+        got_rosters = ", ".join(str(s.roster_id) for s in out.sides) or "none"
+        return [f"the response must have {_side_shape(breakdowns)}; it had rosters {got_rosters}"]
     names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
     breakdown_text = _breakdown_text(breakdowns)
     trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]

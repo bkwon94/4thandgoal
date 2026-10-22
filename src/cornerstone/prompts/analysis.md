@@ -8,6 +8,9 @@ Accuracy is the first rule. A plain sentence is better than a wrong one.
 
 ## Output
 
+Give exactly 2 sides, one for each roster, in the order of the user message. Never repeat a
+side. Never leave a side out. On a retry, give the whole response again, with both sides.
+
 For each side, give its roster ID, a final letter, a reason, an analysis, and the cited fact IDs.
 Then give a verdict for the side that asked, with one reason.
 
@@ -29,8 +32,10 @@ Then give a verdict for the side that asked, with one reason.
 4. Use only numbers that appear in the facts you cite or in the breakdown, except trade values;
    never write a trade value, a sum, or a ratio. Never compute a new number or a difference.
 5. Write every number as digits. Never write a number as a word.
-6. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
-7. Name each team in the trade at most once in a side's analysis. After that, write "this side",
+6. Never count the players, starters, or weeks in the trade yourself, as in "two starters" or
+   "the three players". That count is a new number. Name the players instead.
+7. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
+8. Name each team in the trade at most once in a side's analysis. After that, write "this side",
    "they", or the player names.
 
 ## Trade value

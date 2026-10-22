@@ -230,6 +230,12 @@ def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
     # The period in a decimal ends no sentence.
     "Garrett Wilson scored 14.2 points per game before the trade. He starts. His target share went up. "
     "He moves to a new roster. He is a starter.",
+    # Claude writes the short form of a name, a suffix, and "vs." with a decimal in the same analysis.
+    "St. Brown is not in the trade, and Garrett Wilson scored 14.2 points per game. Harrison Jr. lost snaps. "
+    "Garrett Wilson vs. Devaughn Vele is close. St. Brown stays put. He is a starter.",
+    # A run of initials ends no sentence, in a full name and in a form the snapshot does not hold.
+    "Garrett Wilson starts. A.J. Brown is not in the trade. D.J. Moore is not in it either. "
+    "His target share went up. He is a starter.",
 ])
 def test_a_period_in_a_name_or_a_decimal_ends_no_sentence(trade, snap, analysis_text):
     # Five sentences pass. A miscount gives six, which fails.
@@ -299,6 +305,32 @@ def test_no_chart_value_reaches_the_result(trade, snap):
     for number in ("27.5", "11.5", "55.0", "30.5", "66.5"):
         assert number not in text
     assert "chart" not in text.lower() and "tier" not in text.lower()
+
+
+def _three_sides(facts):
+    """A response with three sides: roster 11, roster 12, then roster 11 again."""
+    good = _response()(facts)
+    return {**good, "sides": [*good["sides"], good["sides"][0]]}
+
+
+def test_a_repeated_side_fails_and_the_retry_names_the_exact_side_shape(trade, snap):
+    fake = FakeClaude(_three_sides, _response())
+    result = analyze(trade, snap, call=fake)
+    assert not result.fallback
+    assert len(fake.calls) == 2
+    retry = fake.calls[1][1]
+    assert "it had rosters 11, 12, 11" in retry
+    assert "exactly 2 sides: roster 11 first, then roster 12, each once" in retry
+
+
+def test_every_retry_names_the_side_shape_with_both_roster_ids(trade, snap):
+    # A sentence count failure on one side must not lead Claude to send that side alone.
+    six_sentences = "One. Two. Three. Four. Five. Six."
+    fake = FakeClaude(_response(twelve=_side(12, analysis=six_sentences)), _response())
+    assert not analyze(trade, snap, call=fake).fallback
+    retry = fake.calls[1][1]
+    assert "roster 12: the analysis has 6 sentences" in retry
+    assert "Give the whole response again with exactly 2 sides: roster 11 first, then roster 12, each once" in retry
 
 
 def test_a_side_analysis_that_names_its_team_twice_fails(trade, snap):
