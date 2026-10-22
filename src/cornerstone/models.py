@@ -131,6 +131,8 @@ class UsageShare(BaseModel):
     weeks: int
     # None when the player has fewer than 4 share weeks, because two windows need 4.
     direction: Literal["up", "down", "flat"] | None
+    # The scored weeks with share data behind the percent. A week with no team snaps or targets is not in it.
+    weeks_used: list[int]
 
 
 class History(BaseModel):

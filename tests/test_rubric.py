@@ -7,7 +7,9 @@ import shutil
 
 import pytest
 
-from cornerstone.adjusters import _byes_left
+from conftest import strip_trend_numbers
+
+from cornerstone.adjusters import TREND, _byes_left
 from cornerstone.rubric import Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
@@ -126,7 +128,9 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
         for side in grade(trade, snap):
             assert set(side.model_dump()) == {"roster_id", "start_letter", "reason", "adjusters", "final_letter"}
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
-            for reason in [side.reason, *(a.reason for a in side.adjusters)]:
+            # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
+            for reason in [side.reason, *(strip_trend_numbers(a.reason) if a.name == TREND else a.reason
+                                          for a in side.adjusters)]:
                 assert not re.search(r"\d", reason)
                 # The trade value chart never shows. The NFL depth chart is a plain source, so its name may.
                 assert not re.search(r"ratio|sum|peaked|(?<!depth )chart", reason, re.IGNORECASE)
@@ -341,17 +345,65 @@ def test_trend_steps_up_for_the_side_that_gets_the_rising_player_and_down_for_th
     first, fourth = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
     assert _adjuster(first, "trend and usage").step == 1
     assert _adjuster(first, "trend and usage").reason == (
-        "The players it gets gain snap or target share, and the players it gives lose it.")
+        "The players it gets gain snap or target share, and the players it gives lose it. "
+        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5. "
+        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5.")
     assert _adjuster(fourth, "trend and usage").step == -1
     assert _adjuster(fourth, "trend and usage").reason == (
-        "The players it gets lose snap or target share, and the players it gives gain it.")
+        "The players it gets lose snap or target share, and the players it gives gain it. "
+        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5. "
+        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5.")
 
 
 def test_trend_gives_no_step_when_the_shares_point_both_ways(snap):
     # Roster 4 gets Watson, who is down, and Rice, who is down in snap share and up in target share.
     _, fourth = grade(_trade(1, [WATSON, RICE], 4, [ODUNZE]), snap)
     assert _adjuster(fourth, "trend and usage").step == 0
-    assert _adjuster(fourth, "trend and usage").reason == "The snap and target shares point both ways."
+    # Rice played no game in week 5, so his shares cover weeks 3 and 4.
+    assert _adjuster(fourth, "trend and usage").reason == (
+        "The snap and target shares point both ways. "
+        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5. "
+        "Rice: snap share 41%, down, target share 31%, up, over weeks 3 and 4. "
+        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5.")
+
+
+# Roster 2 gives Ja'Marr Chase and Jeremiyah Love, each down in both shares through week 5.
+# Roster 6 gives Malik Washington, flat in snap share and up in target share.
+CHASE, LOVE, M_WASHINGTON = "7564", "13287", "11610"
+
+
+def test_trend_reason_gives_the_moved_shares_of_each_player_in_the_chase_trade(snap):
+    _, sixth = grade(_trade(2, [CHASE, LOVE], 6, [M_WASHINGTON]), snap)
+    trend = _adjuster(sixth, "trend and usage")
+    assert trend.step == -1
+    # Washington's snap share is flat, so his sentence names only the target share.
+    assert trend.reason == (
+        "The players it gets lose snap or target share, and the players it gives gain it. "
+        "Chase: snap share 52%, down, target share 19%, down, over weeks 4 and 5. "
+        "Love: snap share 47%, down, target share 3%, down, over weeks 4 and 5. "
+        "Washington: target share 65%, up, over weeks 4 and 5.")
+
+
+def test_trend_reason_gives_the_weeks_after_each_share_when_the_two_shares_have_different_weeks(snap):
+    # With no team snaps in week 5, Chase's snap share covers weeks 3 and 4, and his target share weeks 4 and 5.
+    week5 = snap.stats.weeks[5]
+    stats = {**week5.stats, CHASE: {**week5.stats[CHASE], "tm_off_snp": 0.0}}
+    weeks = {**snap.stats.weeks, 5: week5.model_copy(update={"stats": stats})}
+    snap = snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
+    _, sixth = grade(_trade(2, [CHASE], 6, [M_WASHINGTON]), snap)
+    assert _adjuster(sixth, "trend and usage").reason == (
+        "The players it gets lose snap or target share, and the players it gives gain it. "
+        "Chase: snap share 54% (weeks 3 and 4), down, target share 19% (weeks 4 and 5), down. "
+        "Washington: target share 65%, up, over weeks 4 and 5.")
+
+
+def test_trend_reason_gives_no_sentence_to_a_player_with_flat_shares(snap):
+    # Harvey's shares are flat, so only Watson and Odunze get a sentence.
+    _, fourth = grade(_trade(1, [WATSON, HARVEY], 4, [ODUNZE]), snap)
+    reason = _adjuster(fourth, "trend and usage").reason
+    assert "Watson: snap share 74%, down" in reason
+    assert "Odunze: snap share 93%, up" in reason
+    assert "Harvey" not in reason
 
 
 # Both shares are flat through week 5 for RJ Harvey on roster 1, with 3 red-zone touches,

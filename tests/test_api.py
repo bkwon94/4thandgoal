@@ -20,6 +20,9 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
+from conftest import strip_trend_numbers
+
+from cornerstone.adjusters import TREND
 from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.rubric import LETTERS, grade, verdict
@@ -711,6 +714,9 @@ DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 def _digits_outside_ids(value, key=None):
     """The numbers and the strings with digits under any key that may not hold them."""
     if isinstance(value, dict):
+        if value.get("name") == TREND:
+            # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
+            value = {**value, "reason": strip_trend_numbers(value["reason"])}
         return [found for k, item in value.items() for found in _digits_outside_ids(item, k)]
     if isinstance(value, list):
         return [found for item in value for found in _digits_outside_ids(item, key)]

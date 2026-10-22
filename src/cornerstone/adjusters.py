@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import BaseModel
 
 from cornerstone.history import player_points, red_zone, snap_share, target_share
+from cornerstone.names import last_name
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -318,6 +319,47 @@ def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
     return {share.direction for share in shares if share is not None and share.direction in ("up", "down")}
 
 
+def _short_names(snapshot: Snapshot, players: list[str]) -> dict[str, str]:
+    """The last name of each player, or the full name when the last name is short or not alphabetic, or when two
+    players share it.
+    """
+    full = {pid: snapshot.players[pid].name for pid in players}
+    last = {pid: last_name(name) for pid, name in full.items()}
+    shared = {name for name in last.values() if list(last.values()).count(name) > 1}
+    return {pid: last[pid] if last[pid] is not None and last[pid] not in shared else full[pid] for pid in players}
+
+
+def _weeks_text(weeks: list[int]) -> str:
+    """The weeks as a list, such as "weeks 4 and 5", so a bye between them never reads as a third week."""
+    return "week " + str(weeks[0]) if len(weeks) == 1 else "weeks " + _join([str(week) for week in weeks])
+
+
+def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
+    """One sentence per player with a snap or target share that moved: the percent and direction of each moved share.
+
+    The reader cannot check a bare direction, so each sentence gives the numbers and the weeks behind each percent.
+    When the two moved shares of a player have the same weeks, the weeks come once at the end of his sentence.
+    When they differ, the weeks come after each percent.
+    """
+    through = snapshot.as_of.stats_through
+    names = _short_names(snapshot, players)
+    sentences = []
+    for pid in players:
+        moved = [(kind, share) for kind, share in (("snap share", snap_share(snapshot.stats, pid, through)),
+                                                   ("target share", target_share(snapshot.stats, pid, through)))
+                 if share is not None and share.direction in ("up", "down")]
+        if not moved:
+            continue
+        if len({tuple(share.weeks_used) for _, share in moved}) == 1:
+            shares = ", ".join(f"{kind} {share.percent}%, {share.direction}" for kind, share in moved)
+            sentences.append(f"{names[pid]}: {shares}, over {_weeks_text(moved[0][1].weeks_used)}.")
+        else:
+            shares = ", ".join(f"{kind} {share.percent}% ({_weeks_text(share.weeks_used)}), {share.direction}"
+                               for kind, share in moved)
+            sentences.append(f"{names[pid]}: {shares}.")
+    return sentences
+
+
 def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
     """The red-zone targets and rushes of the players, summed over the season through the last completed week."""
     through = snapshot.as_of.stats_through
@@ -356,23 +398,23 @@ def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
 
 def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster:
     got, gave = _directions(snapshot, gets), _directions(snapshot, gives)
+    if not got and not gave:
+        # Every share is flat, so red-zone use decides.
+        got_rz, gave_rz = _red_zone_touches(snapshot, gets), _red_zone_touches(snapshot, gives)
+        lead = "The snap and target shares are flat"
+        if got_rz > gave_rz:
+            return Adjuster(name=TREND, step=1, reason=f"{lead}, and the players it gets have more red-zone use.")
+        if got_rz < gave_rz:
+            return Adjuster(name=TREND, step=-1, reason=f"{lead}, and the players it gives have more red-zone use.")
+        return Adjuster(name=TREND, step=0, reason=f"{lead}, and the red-zone use is even.")
     # A player with one share up and one share down puts both in his side's set, so his trade is mixed.
-    if got <= {"up"} and gave <= {"down"} and (got or gave):
-        return Adjuster(name=TREND, step=1,
-                        reason="The players it gets gain snap or target share, and the players it gives lose it.")
-    if got <= {"down"} and gave <= {"up"} and (got or gave):
-        return Adjuster(name=TREND, step=-1,
-                        reason="The players it gets lose snap or target share, and the players it gives gain it.")
-    if got or gave:
-        return Adjuster(name=TREND, step=0, reason="The snap and target shares point both ways.")
-    # Every share is flat, so red-zone use decides.
-    got_rz, gave_rz = _red_zone_touches(snapshot, gets), _red_zone_touches(snapshot, gives)
-    lead = "The snap and target shares are flat"
-    if got_rz > gave_rz:
-        return Adjuster(name=TREND, step=1, reason=f"{lead}, and the players it gets have more red-zone use.")
-    if got_rz < gave_rz:
-        return Adjuster(name=TREND, step=-1, reason=f"{lead}, and the players it gives have more red-zone use.")
-    return Adjuster(name=TREND, step=0, reason=f"{lead}, and the red-zone use is even.")
+    if got <= {"up"} and gave <= {"down"}:
+        step, lead = 1, "The players it gets gain snap or target share, and the players it gives lose it."
+    elif got <= {"down"} and gave <= {"up"}:
+        step, lead = -1, "The players it gets lose snap or target share, and the players it gives gain it."
+    else:
+        step, lead = 0, "The snap and target shares point both ways."
+    return Adjuster(name=TREND, step=step, reason=" ".join([lead, *_share_sentences(snapshot, gets + gives)]))
 
 
 def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
