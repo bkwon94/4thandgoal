@@ -1036,7 +1036,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Lil Fridge beat Brock ‘N’ Roll by 38.48, with recent add Denver Broncos chipping in 13.35 off the free agent pile. Brock ‘N’ Roll went to the same pile and came back with recent adds Tampa Bay Buccaneers and Dallas Goedert, who scored 9.65 and 9.1, so the free agent pile plays favorites. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR."
+      "recap": "Lil Fridge put Brock ‘N’ Roll in cold storage 126.79 to 88.31, and at least the namesake Brock Purdy led the losers in scoring. Recent adds Dallas Goedert and the Buccaneers defense barely beat projection for the losers, while the Broncos defense, a recent add for the winners, posted 13.35 on a 6.53 projection. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR."
     },
     {
       "id": 2,
@@ -1099,7 +1099,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Return of T Mac beat Unsolicited Dak Picks by 38.82 in an upset, and the losers' 81.47 was a season low. Recent add Carnell Tate scored 16 for Return of T Mac, while Unsolicited Dak Picks got 5.5 from recent add Kimani Vidal. The Dak in Unsolicited Dak Picks scored 13.02, and A.J. Brown, now listed Questionable, added 3.2."
+      "recap": "In an upset, Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47. Carnell Tate, a recent add by trade, posted 16, while fellow trade pickup Jaylen Warren managed 8.8. On the other side, that 81.47 is a season low, and A.J. Brown, who scored 3.2, is now listed Questionable."
     },
     {
       "id": 3,
@@ -1162,7 +1162,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Maye d'force B with U won by 9.51 despite Jaylen Waddle, now listed Questionable, putting up 4.4, and without Isaiah Likely, that is a loss. The trade haul for Amon-Ra Dawg Your Team delivered recent add Garrett Wilson at 6.4 and recent add Dalton Kincaid, now listed Questionable, at 7.3. At 4-8 and 2 games below the cut, Amon-Ra Dawg Your Team is mostly dogging its own team."
+      "recap": "Maye d'force B with U handled Amon-Ra Dawg Your Team by 9.51, and Isaiah Likely was a decider with 20.9 at tight end. On the losing side, recent add Bhayshul Tuten posted 22.7 while fellow trade pickup Garrett Wilson answered with 6.4. Jaylen Waddle and Dalton Kincaid are now listed Questionable."
     },
     {
       "id": 4,
@@ -1225,7 +1225,7 @@
         }
       ],
       "is_pick": true,
-      "recap": "behold the lamb beat Bo Girds by 5.34, an upset from a team that sat 11th before the week. Lucky recent add Germie Bernard was a decider with 20.2 points on a projection of 8.13. Bo Girds's starters dropped passes worth about 17.8, so the drops cost the game, and recent add Indianapolis Colts chipped in -0.85 for good measure."
+      "recap": "In an upset, behold the lamb took down Bo Girds 114.95 to 109.61. Germie Bernard, a recent add off waivers, put up 20.2 on a 8.13 projection and decided it. The losing starters dropped 7 passes worth about 17.8, and those drops cost them the game."
     },
     {
       "id": 5,
@@ -1288,7 +1288,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "London Cooking won by 66.4, and To Infinity and Bijan got 6.3 from Bijan. The trade desk at To Infinity and Bijan delivered recent adds Rhamondre Stevenson at 3.6 and Harold Fannin at 1.4. Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, and recent add Terry McLaurin is now listed Out with a knee designation, so the trades are going great."
+      "recap": "London Cooking won by 66.4, and the Bijan that To Infinity and Bijan is named after scored 6.3. The trade for Patrick Mahomes, a recent add, returned 11.48, and somehow that was still this side's top score. Ladd McConkey and Terry McLaurin, also recent adds by trade, are now listed Out."
     },
     {
       "id": 6,
@@ -1351,7 +1351,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Tre Tucker decided this one, clearing his projection by 16.62 in a game All You Need Is Love won by 12.95. Pukancun on 3 traded for recent add Cam Skattebo, got 0 from him, and fell to 1-11. Pukancun on 3 now sits 5 games below the cut, and recent add MarShawn Lloyd chipped in 1 toward closing it."
+      "recap": "All You Need Is Love beat Pukancun on 3 97.02 to 84.07, and Tre Tucker, their Top Scorer, was the decider. The 1-11 losers traded for Cam Skattebo as a recent add, and he scored 0. Brutal trade."
     }
   ],
   "median": {
@@ -1991,18 +1991,19 @@
     }
   ],
   "blurbs": {
-    "motw": "behold the lamb beat Bo Girds by 5.34, and it was an upset: the lamb was 11th before the week. Recent add Germie Bernard scored 20.2 on a 8.13 projection, a lucky waiver pickup and the biggest decider on the field. Bo Girds's starters dropped 7 passes worth about 17.8, so the drops cost the game. Matthew Golden's drops alone were worth about 14.2. Bo Girds also started recent add Indianapolis Colts, a free agent pickup that scored -0.85. Bo Girds has now lost 2 straight, while behold the lamb sits at 6-6, right at the cut.",
-    "game_changer": "Germie Bernard is the Game Changer, a recent add who scored 20.2 for behold the lamb. He beat his projection by 12.07, which makes him a margin driver and the decider in a 5.34-point win over Bo Girds. It was an upset: behold the lamb sat 11th before the week and Bo Girds sat 2nd. Without Bernard, that is a loss, which is a lot to hang on a lucky waiver pickup from week 5. The team is named behold the lamb, and CeeDee Lamb finished 5.51 under projection; the beholding went to Bernard.",
-    "awards": "Game Changer goes to behold the lamb's Germie Bernard, a recent add who scored 20.2 in a 5.34-point win, which is lucky and also the entire point of waivers. Underperformer is Bijan Robinson at 6.3, a branding problem for a team called To Infinity and Bijan. Top Scorer Trevor Lawrence put up 28.34 for Amon-Ra Dawg Your Team, which lost anyway. MVB Jayden Daniels scored 21 on the London Cooking bench, and London Cooking still won by 66.4.",
-    "position_leaders": "Trevor Lawrence led all started QBs at 28.34 for Amon-Ra Dawg Your Team, a team named after somebody else. Bo Girds put Kenneth Walker 1st among started RBs and Tyler Shough 2nd among started QBs, which is a lot of position leader for one roster. Maye d'force B with U got the advertised Drake Maye at 3rd among QBs, then got Isaiah Likely at 1st among TEs as a bonus nobody put in the name. All You Need Is Love had Tre Tucker 1st at WR and Colston Loveland 2nd at TE, so the name checks out.",
-    "recap_1": "Lil Fridge beat Brock ‘N’ Roll by 38.48, with recent add Denver Broncos chipping in 13.35 off the free agent pile. Brock ‘N’ Roll went to the same pile and came back with recent adds Tampa Bay Buccaneers and Dallas Goedert, who scored 9.65 and 9.1, so the free agent pile plays favorites. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR.",
-    "recap_2": "Return of T Mac beat Unsolicited Dak Picks by 38.82 in an upset, and the losers' 81.47 was a season low. Recent add Carnell Tate scored 16 for Return of T Mac, while Unsolicited Dak Picks got 5.5 from recent add Kimani Vidal. The Dak in Unsolicited Dak Picks scored 13.02, and A.J. Brown, now listed Questionable, added 3.2.",
-    "recap_3": "Maye d'force B with U won by 9.51 despite Jaylen Waddle, now listed Questionable, putting up 4.4, and without Isaiah Likely, that is a loss. The trade haul for Amon-Ra Dawg Your Team delivered recent add Garrett Wilson at 6.4 and recent add Dalton Kincaid, now listed Questionable, at 7.3. At 4-8 and 2 games below the cut, Amon-Ra Dawg Your Team is mostly dogging its own team.",
-    "recap_4": "behold the lamb beat Bo Girds by 5.34, an upset from a team that sat 11th before the week. Lucky recent add Germie Bernard was a decider with 20.2 points on a projection of 8.13. Bo Girds's starters dropped passes worth about 17.8, so the drops cost the game, and recent add Indianapolis Colts chipped in -0.85 for good measure.",
-    "recap_5": "London Cooking won by 66.4, and To Infinity and Bijan got 6.3 from Bijan. The trade desk at To Infinity and Bijan delivered recent adds Rhamondre Stevenson at 3.6 and Harold Fannin at 1.4. Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, and recent add Terry McLaurin is now listed Out with a knee designation, so the trades are going great.",
-    "recap_6": "Tre Tucker decided this one, clearing his projection by 16.62 in a game All You Need Is Love won by 12.95. Pukancun on 3 traded for recent add Cam Skattebo, got 0 from him, and fell to 1-11. Pukancun on 3 now sits 5 games below the cut, and recent add MarShawn Lloyd chipped in 1 toward closing it.",
-    "median": "Lil Fridge cleared the median by 19.97, which is what a 10-2 team is supposed to do. To Infinity and Bijan posted a season low of 46.08, less a median game than a rumor of one. Unsolicited Dak Picks also hit a season low at 81.47, and at 4-8 nobody is soliciting. Bo Girds and Amon-Ra Dawg Your Team landed 2.79 on opposite sides of the line, so only one of them got dogged.",
-    "next_week": "The Must Watch is Lil Fridge at 10-2 against Return of T Mac, whose 3-game streak now runs into the toughest next opponent win rate in the league. Further down, Pukancun on 3 at 1-11 and To Infinity and Bijan at 4-8, both below the cut, meet in a showdown of the awful."
+    "motw": "In an upset, behold the lamb took down Bo Girds 114.95 to 109.61. Lucky waiver pickup Germie Bernard, a recent add, posted 20.2 and decided it, and without him, that is a loss. The losing starters dropped 7 passes worth about 17.8, and those drops cost them the game. Matthew Golden dropped 3 of his targets, worth about 14.2 on his own. The Indianapolis Colts defense, another recent add on the losing side, finished at -0.85. Rough pickup.",
+    "game_changer": "Germie Bernard is the Game Changer: a recent add off waivers, he scored 20.2 on an 8.13 projection, the lucky claim of the week. In an upset, Bo Girds sat 2nd before the week and still lost by 5.34. Without Bernard, that is a loss, and his 12.07 over projection is the biggest gap of any decider in the game. Meanwhile the namesake of behold the lamb, CeeDee Lamb, finished 5.51 under projection. Bernard has now beaten projection in 3 straight weeks.",
+    "awards": "To Infinity and Bijan got 6.3 from Bijan Robinson, the Underperformer at 16.78 under projection. Germie Bernard, a lucky recent add off waivers, put up 20.2 on a 8.13 projection to take Game Changer for behold the lamb. Trevor Lawrence was Top Scorer at 28.34, and Amon-Ra Dawg Your Team still lost. London Cooking left Jayden Daniels and his 21 on the bench for MVB and won by 66.4 anyway.",
+    "position_leaders": "Trevor Lawrence led every started quarterback with 28.34 for Amon-Ra Dawg Your Team. Bo Girds got 26.9 from Kenneth Walker to top all running backs, and Tyler Shough sat right behind Lawrence at 26.96. All You Need Is Love lived up to the name, with Tre Tucker leading the receivers at 24.2 and Colston Loveland coming in as the runner-up tight end. Maye d'force B with U had Drake Maye in the top 3 at quarterback and Isaiah Likely leading all tight ends with 20.9.",
+    "recap_1": "Lil Fridge put Brock ‘N’ Roll in cold storage 126.79 to 88.31, and at least the namesake Brock Purdy led the losers in scoring. Recent adds Dallas Goedert and the Buccaneers defense barely beat projection for the losers, while the Broncos defense, a recent add for the winners, posted 13.35 on a 6.53 projection. Davante Adams and Mike Evans are now listed Out, and Romeo Doubs is now listed IR.",
+    "recap_2": "In an upset, Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47. Carnell Tate, a recent add by trade, posted 16, while fellow trade pickup Jaylen Warren managed 8.8. On the other side, that 81.47 is a season low, and A.J. Brown, who scored 3.2, is now listed Questionable.",
+    "recap_3": "Maye d'force B with U handled Amon-Ra Dawg Your Team by 9.51, and Isaiah Likely was a decider with 20.9 at tight end. On the losing side, recent add Bhayshul Tuten posted 22.7 while fellow trade pickup Garrett Wilson answered with 6.4. Jaylen Waddle and Dalton Kincaid are now listed Questionable.",
+    "recap_4": "In an upset, behold the lamb took down Bo Girds 114.95 to 109.61. Germie Bernard, a recent add off waivers, put up 20.2 on a 8.13 projection and decided it. The losing starters dropped 7 passes worth about 17.8, and those drops cost them the game.",
+    "recap_5": "London Cooking won by 66.4, and the Bijan that To Infinity and Bijan is named after scored 6.3. The trade for Patrick Mahomes, a recent add, returned 11.48, and somehow that was still this side's top score. Ladd McConkey and Terry McLaurin, also recent adds by trade, are now listed Out.",
+    "recap_6": "All You Need Is Love beat Pukancun on 3 97.02 to 84.07, and Tre Tucker, their Top Scorer, was the decider. The 1-11 losers traded for Cam Skattebo as a recent add, and he scored 0. Brutal trade.",
+    "median": "The median landed at 106.83, and To Infinity and Bijan finished 60.75 under it. That 46.08 is a season low, from a side already 2 games below the cut. That one stings. Amon-Ra Dawg Your Team came up 2.79 short, the exact gap Bo Girds cleared it by.",
+    "next_week": "Must Watch is Lil Fridge against Return of T Mac, who has won 3 straight and now draws the toughest next opponent in the league at a 0.83 win rate. Down in the basement, it's a showdown of the awful: Pukancun on 3 at 1-11 plays To Infinity and Bijan at 4-8, both below the cut.",
+    "rankings": "Lil Fridge holds the top spot at 10-2, 4 games above the cut. The team trend is cooling, though: 113.91 a week lately against a season average of 123.28. London Cooking stays 2nd and has won 4 straight. That 9-3 record sits 3 games above the cut. Bo Girds holds 3rd despite losing 2 straight. They're still 2nd in scoring with 723.15 points for. Maye d'force B with U climbs 2 places to 4th. They've won 2 straight and sit 1 game above the cut. Return of T Mac jumps 3 places to 5th, with the league's top form. They've won 3 straight and are scoring 128.82 a week lately. All You Need Is Love slips to 6th, and lately it needs points: 97.48 a week. Brock ‘N’ Roll drops 3 places to 7th. They're 6-6 and right at the cut, clinging to a playoff spot. behold the lamb climbs 3 places to 8th. At 6-6 they're right at the cut, just on the wrong side of it. Amon-Ra Dawg Your Team climbs to 9th while losing 2 straight. At 4-8 they're 2 games below the cut. Unsolicited Dak Picks falls 3 places to 10th and sits dead last in form. They've lost 3 straight, scoring 92.05 a week lately. To Infinity and Bijan drops 2 places to 11th, and the infinity part is heading the wrong way: 77.06 a week lately. Rough stretch. Pukancun on 3 stays last at 1-11, 5 games below the cut. Lately they're up to 93.93 a week, well over the season average of 82.23."
   },
   "avatars": {
     "1": "avatars/1.jpg",

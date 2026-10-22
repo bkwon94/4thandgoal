@@ -1,0 +1,1277 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "weeks": [
+    {
+      "week": 1,
+      "rows": [
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 2,
+          "losses": 0,
+          "rank": 1,
+          "movement": null,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 7,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 2,
+          "losses": 0,
+          "rank": 2,
+          "movement": null,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 8,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 2,
+          "losses": 0,
+          "rank": 3,
+          "movement": null,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 9,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 2,
+          "losses": 0,
+          "rank": 4,
+          "movement": null,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 10,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 2,
+          "losses": 0,
+          "rank": 5,
+          "movement": null,
+          "components": {
+            "standing": 5,
+            "form": 5,
+            "schedule_played": 11,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 2,
+          "losses": 0,
+          "rank": 6,
+          "movement": null,
+          "components": {
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 0,
+          "losses": 2,
+          "rank": 7,
+          "movement": null,
+          "components": {
+            "standing": 7,
+            "form": 7,
+            "schedule_played": 1,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 0,
+          "losses": 2,
+          "rank": 8,
+          "movement": null,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 3,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 0,
+          "losses": 2,
+          "rank": 9,
+          "movement": null,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 4,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 0,
+          "losses": 2,
+          "rank": 10,
+          "movement": null,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 5,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 0,
+          "losses": 2,
+          "rank": 11,
+          "movement": null,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 2,
+            "scoring": 12
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 0,
+          "losses": 2,
+          "rank": 12,
+          "movement": null,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 6,
+            "scoring": 11
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "rows": [
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 4,
+          "losses": 0,
+          "rank": 1,
+          "movement": 3,
+          "components": {
+            "standing": 1,
+            "form": 2,
+            "schedule_played": 10,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 4,
+          "losses": 0,
+          "rank": 2,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 1,
+            "schedule_played": 11,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 3,
+          "losses": 1,
+          "rank": 3,
+          "movement": -2,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 5,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 3,
+          "losses": 1,
+          "rank": 4,
+          "movement": -1,
+          "components": {
+            "standing": 4,
+            "form": 5,
+            "schedule_played": 6,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 3,
+          "losses": 1,
+          "rank": 5,
+          "movement": 1,
+          "components": {
+            "standing": 5,
+            "form": 4,
+            "schedule_played": 7,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 2,
+          "losses": 2,
+          "rank": 6,
+          "movement": -1,
+          "components": {
+            "standing": 7,
+            "form": 7,
+            "schedule_played": 2,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 2,
+          "losses": 2,
+          "rank": 7,
+          "movement": 4,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 1,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 2,
+          "losses": 2,
+          "rank": 8,
+          "movement": 2,
+          "components": {
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 12,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 1,
+          "losses": 3,
+          "rank": 9,
+          "movement": 0,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 8,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 0,
+          "losses": 4,
+          "rank": 10,
+          "movement": -3,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 3,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 0,
+          "losses": 4,
+          "rank": 11,
+          "movement": -3,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 9,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 0,
+          "losses": 4,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 4,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "rows": [
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 6,
+          "losses": 0,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 1,
+            "schedule_played": 2,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 5,
+          "losses": 1,
+          "rank": 2,
+          "movement": 3,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 3,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 4,
+          "losses": 2,
+          "rank": 3,
+          "movement": -1,
+          "components": {
+            "standing": 3,
+            "form": 3,
+            "schedule_played": 10,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 4,
+          "losses": 2,
+          "rank": 4,
+          "movement": 0,
+          "components": {
+            "standing": 4,
+            "form": 6,
+            "schedule_played": 9,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 2,
+          "rank": 5,
+          "movement": 3,
+          "components": {
+            "standing": 5,
+            "form": 4,
+            "schedule_played": 5,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 3,
+          "losses": 3,
+          "rank": 6,
+          "movement": -3,
+          "components": {
+            "standing": 7,
+            "form": 5,
+            "schedule_played": 4,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 3,
+          "losses": 3,
+          "rank": 7,
+          "movement": 2,
+          "components": {
+            "standing": 6,
+            "form": 7,
+            "schedule_played": 11,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 3,
+          "losses": 3,
+          "rank": 8,
+          "movement": -1,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 1,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 2,
+          "losses": 4,
+          "rank": 9,
+          "movement": 1,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 6,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 2,
+          "losses": 4,
+          "rank": 10,
+          "movement": -4,
+          "components": {
+            "standing": 10,
+            "form": 10,
+            "schedule_played": 8,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 0,
+          "losses": 6,
+          "rank": 11,
+          "movement": 0,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 12,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 0,
+          "losses": 6,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 7,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "rows": [
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 6,
+          "losses": 2,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 4,
+            "schedule_played": 1,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 6,
+          "losses": 2,
+          "rank": 2,
+          "movement": 1,
+          "components": {
+            "standing": 1,
+            "form": 3,
+            "schedule_played": 3,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 5,
+          "losses": 3,
+          "rank": 3,
+          "movement": 4,
+          "components": {
+            "standing": 4,
+            "form": 1,
+            "schedule_played": 10,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 6,
+          "losses": 2,
+          "rank": 4,
+          "movement": -2,
+          "components": {
+            "standing": 3,
+            "form": 2,
+            "schedule_played": 4,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 4,
+          "losses": 4,
+          "rank": 5,
+          "movement": 4,
+          "components": {
+            "standing": 6,
+            "form": 5,
+            "schedule_played": 6,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 4,
+          "rank": 6,
+          "movement": -1,
+          "components": {
+            "standing": 7,
+            "form": 6,
+            "schedule_played": 5,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 4,
+          "losses": 4,
+          "rank": 7,
+          "movement": 3,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 2,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 4,
+          "losses": 4,
+          "rank": 8,
+          "movement": -4,
+          "components": {
+            "standing": 5,
+            "form": 10,
+            "schedule_played": 7,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 4,
+          "losses": 4,
+          "rank": 9,
+          "movement": -1,
+          "components": {
+            "standing": 9,
+            "form": 7,
+            "schedule_played": 11,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 3,
+          "losses": 5,
+          "rank": 10,
+          "movement": -4,
+          "components": {
+            "standing": 10,
+            "form": 11,
+            "schedule_played": 8,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 2,
+          "losses": 6,
+          "rank": 11,
+          "movement": 0,
+          "components": {
+            "standing": 11,
+            "form": 9,
+            "schedule_played": 12,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 0,
+          "losses": 8,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 9,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "rows": [
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 8,
+          "losses": 2,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 3,
+            "schedule_played": 1,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 7,
+          "losses": 3,
+          "rank": 2,
+          "movement": 1,
+          "components": {
+            "standing": 3,
+            "form": 1,
+            "schedule_played": 11,
+            "scoring": 2
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 7,
+          "losses": 3,
+          "rank": 3,
+          "movement": -1,
+          "components": {
+            "standing": 2,
+            "form": 6,
+            "schedule_played": 5,
+            "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 6,
+          "losses": 4,
+          "rank": 4,
+          "movement": 4,
+          "components": {
+            "standing": 4,
+            "form": 7,
+            "schedule_played": 6,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 6,
+          "losses": 4,
+          "rank": 5,
+          "movement": -1,
+          "components": {
+            "standing": 5,
+            "form": 4,
+            "schedule_played": 4,
+            "scoring": 6
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 5,
+          "losses": 5,
+          "rank": 6,
+          "movement": 4,
+          "components": {
+            "standing": 6,
+            "form": 10,
+            "schedule_played": 7,
+            "scoring": 5
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 6,
+          "rank": 7,
+          "movement": -1,
+          "components": {
+            "standing": 7,
+            "form": 8,
+            "schedule_played": 9,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 4,
+          "losses": 6,
+          "rank": 8,
+          "movement": 3,
+          "components": {
+            "standing": 9,
+            "form": 2,
+            "schedule_played": 10,
+            "scoring": 8
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 4,
+          "losses": 6,
+          "rank": 9,
+          "movement": -4,
+          "components": {
+            "standing": 10,
+            "form": 5,
+            "schedule_played": 2,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 4,
+          "losses": 6,
+          "rank": 10,
+          "movement": -3,
+          "components": {
+            "standing": 8,
+            "form": 9,
+            "schedule_played": 3,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 4,
+          "losses": 6,
+          "rank": 11,
+          "movement": -2,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 8,
+            "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 1,
+          "losses": 9,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 12,
+            "scoring": 12
+          },
+          "blurb": []
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "rows": [
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 10,
+          "losses": 2,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 1,
+            "form": 3,
+            "schedule_played": 1,
+            "scoring": 1
+          },
+          "blurb": [
+            {
+              "text": "Lil Fridge holds 1st in the power rankings at 10-2.",
+              "fact_ids": [
+                "PR.3",
+                "S.1"
+              ]
+            },
+            {
+              "text": "The form has dipped, though, at 113.91 per week over the last 3 weeks.",
+              "fact_ids": [
+                "H.3.trend"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 9,
+          "losses": 3,
+          "rank": 2,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 12,
+            "scoring": 3
+          },
+          "blurb": [
+            {
+              "text": "London Cooking stays 2nd and has won 4 straight.",
+              "fact_ids": [
+                "PR.5",
+                "H.5.streak"
+              ]
+            },
+            {
+              "text": "At 9-3, they sit 3 games above the cut.",
+              "fact_ids": [
+                "S.2"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 8,
+          "losses": 4,
+          "rank": 3,
+          "movement": 0,
+          "components": {
+            "standing": 3,
+            "form": 5,
+            "schedule_played": 4,
+            "scoring": 2
+          },
+          "blurb": [
+            {
+              "text": "Bo Girds holds 3rd despite losing 2 straight.",
+              "fact_ids": [
+                "PR.6",
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "At 8-4, they still sit 2 games above the cut.",
+              "fact_ids": [
+                "S.3"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 7,
+          "losses": 5,
+          "rank": 4,
+          "movement": 2,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 5,
+            "scoring": 4
+          },
+          "blurb": [
+            {
+              "text": "Maye d'force B with U climbs 2 places to 4th.",
+              "fact_ids": [
+                "PR.9"
+              ]
+            },
+            {
+              "text": "They have won 2 straight and sit 1 game above the cut.",
+              "fact_ids": [
+                "H.9.streak",
+                "S.4"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 6,
+          "losses": 6,
+          "rank": 5,
+          "movement": 3,
+          "components": {
+            "standing": 7,
+            "form": 1,
+            "schedule_played": 8,
+            "scoring": 6
+          },
+          "blurb": [
+            {
+              "text": "Return of T Mac jumps 3 places to 5th on the top form in the league.",
+              "fact_ids": [
+                "PR.8"
+              ]
+            },
+            {
+              "text": "They have averaged 128.82 lately, against a season average of 103.16.",
+              "fact_ids": [
+                "H.8.trend"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 7,
+          "losses": 5,
+          "rank": 6,
+          "movement": -1,
+          "components": {
+            "standing": 5,
+            "form": 6,
+            "schedule_played": 6,
+            "scoring": 7
+          },
+          "blurb": [
+            {
+              "text": "All You Need Is Love slips 1 place to 6th.",
+              "fact_ids": [
+                "PR.2"
+              ]
+            },
+            {
+              "text": "The scoring has gone cold, down to 97.48 per week over the last 3 weeks.",
+              "fact_ids": [
+                "H.2.trend"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 1,
+          "name": "Brock ‘N’ Roll",
+          "wins": 6,
+          "losses": 6,
+          "rank": 7,
+          "movement": -3,
+          "components": {
+            "standing": 6,
+            "form": 8,
+            "schedule_played": 11,
+            "scoring": 5
+          },
+          "blurb": [
+            {
+              "text": "Brock ‘N’ Roll tumbles 3 places to 7th.",
+              "fact_ids": [
+                "PR.1"
+              ]
+            },
+            {
+              "text": "At 6-6, they are sitting right on the cut line.",
+              "fact_ids": [
+                "S.6"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 6,
+          "losses": 6,
+          "rank": 8,
+          "movement": 3,
+          "components": {
+            "standing": 8,
+            "form": 7,
+            "schedule_played": 2,
+            "scoring": 10
+          },
+          "blurb": [
+            {
+              "text": "behold the lamb rises 3 places to 8th.",
+              "fact_ids": [
+                "PR.10"
+              ]
+            },
+            {
+              "text": "At 6-6, they sit right at the cut, just outside the playoff spots.",
+              "fact_ids": [
+                "S.8"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 4,
+          "losses": 8,
+          "rank": 9,
+          "movement": 1,
+          "components": {
+            "standing": 9,
+            "form": 9,
+            "schedule_played": 3,
+            "scoring": 8
+          },
+          "blurb": [
+            {
+              "text": "Amon-Ra Dawg Your Team moves up to 9th despite losing 2 straight.",
+              "fact_ids": [
+                "PR.12",
+                "H.12.streak"
+              ]
+            },
+            {
+              "text": "At 4-8, they are 2 games below the cut.",
+              "fact_ids": [
+                "S.9"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 8,
+          "rank": 10,
+          "movement": -3,
+          "components": {
+            "standing": 10,
+            "form": 12,
+            "schedule_played": 7,
+            "scoring": 9
+          },
+          "blurb": [
+            {
+              "text": "Unsolicited Dak Picks drops 3 places to 10th with the worst form in the league.",
+              "fact_ids": [
+                "PR.11"
+              ]
+            },
+            {
+              "text": "They have lost 3 straight while scoring 92.05 per week lately.",
+              "fact_ids": [
+                "H.11.streak",
+                "H.11.trend"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
+          "wins": 4,
+          "losses": 8,
+          "rank": 11,
+          "movement": -2,
+          "components": {
+            "standing": 11,
+            "form": 11,
+            "schedule_played": 9,
+            "scoring": 11
+          },
+          "blurb": [
+            {
+              "text": "To Infinity and Bijan is headed the other way, down 2 places to 11th.",
+              "fact_ids": [
+                "PR.7"
+              ]
+            },
+            {
+              "text": "They have averaged 77.06 lately, down from a season average of 90.65.",
+              "fact_ids": [
+                "H.7.trend"
+              ]
+            }
+          ]
+        },
+        {
+          "roster_id": 4,
+          "name": "Pukancun on 3",
+          "wins": 1,
+          "losses": 11,
+          "rank": 12,
+          "movement": 0,
+          "components": {
+            "standing": 12,
+            "form": 10,
+            "schedule_played": 10,
+            "scoring": 12
+          },
+          "blurb": [
+            {
+              "text": "Pukancun on 3 holds last place at 1-11, 5 games below the cut.",
+              "fact_ids": [
+                "PR.4",
+                "S.12"
+              ]
+            },
+            {
+              "text": "Some things never change.",
+              "fact_ids": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
