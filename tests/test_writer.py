@@ -441,6 +441,6 @@ def test_rankings_rule_asks_for_its_own_openers_numberless_rows_and_no_form(fixt
     assert rule.startswith("The Power rankings chapter uses the no-number line below in place of rule 15.")
     assert "Never start the first sentences of 2 teams with the same 3 words." in rule
     assert "At least 4 teams get a sentence with no number." in rule
-    assert '"form" is a component name. Write "the last 3 weeks" in its place.' in rule
+    assert '"form" is a component name. Write "results over the last 3 weeks" in its place.' in rule
     # Rule 15 is the no-number rule that rule 22 replaces for the rankings chapter.
     assert "At least one sentence per blurb carries no number." in system.split("\n15. ", 1)[1].split("\n16. ", 1)[0]

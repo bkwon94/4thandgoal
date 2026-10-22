@@ -79,19 +79,19 @@ SENTENCE_RANGES = {
     "rankings": (12, 24),
 }
 RANKINGS_CHAPTER = "rankings"
+# The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
+# reading it as scoring, which the .trend fact covers.
 COMPONENT_WORDS = {
-    "standing": "standing", "form": f"the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
+    "standing": "standing", "form": f"results over the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
     "scoring": "scoring",
 }
 # The phrase for a team with the wins of the last playoff spot, keyed by its place against that spot.
-# A team below it fills in its spots below the last playoff spot as a word, such as "two spots".
+# A team below it fills in its spots below the last playoff spot as a digit, such as "2 spots".
 CUT_PHRASES = {
     "above": "level with the last playoff spot",
     "at": "in the last playoff spot",
     "below": "{spots} outside the playoff spots",
 }
-# The verifier lets a number word through only when a cited fact holds it, so the fact spells the spots out.
-SPOT_WORDS = ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven")
 # The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
 # repeated team name: the 12-team chapters, such as awards and median, name many teams, and "they" is
 # unclear there.
@@ -307,15 +307,14 @@ def injured_facts(c: Context) -> list[Fact]:
     return [fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
 
 
-def cut_phrase(rank: int, last_spot: int) -> str:
+def cut_phrase(rank: int, last_spot: int, n: Nums) -> str:
     """The fixed phrase for a team with the wins of the last playoff spot, from its rank."""
     if rank < last_spot:
         return CUT_PHRASES["above"]
     if rank == last_spot:
         return CUT_PHRASES["at"]
     distance = rank - last_spot
-    word = SPOT_WORDS[distance - 1]
-    spots = f"{word} spot" if distance == 1 else f"{word} spots"
+    spots = f"{n(distance)} spot" if distance == 1 else f"{n(distance)} spots"
     return CUT_PHRASES["below"].format(spots=spots)
 
 
@@ -332,7 +331,7 @@ def standings_facts(c: Context) -> list[Fact]:
         # "0 games at the cut" lets the writer say "still on the outside" for one tied team and "right at the cut"
         # for the next, and a reader sees a contradiction. One fixed phrase per spot keeps every chapter on one wording.
         if s.games_from_cut == 0:
-            place = cut_phrase(s.rank, last_spot)
+            place = cut_phrase(s.rank, last_spot, n)
         else:
             place = f"{cut} the playoff spots, {n(gap)} {games} {side} the cut"
         text = (

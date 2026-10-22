@@ -28,4 +28,4 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 22. The Power rankings chapter uses the no-number line below in place of rule 15.
     - Never start the first sentences of 2 teams with the same 3 words.
     - At least 4 teams get a sentence with no number.
-    - "form" is a component name. Write "the last 3 weeks" in its place.
+    - "form" is a component name. Write "results over the last 3 weeks" in its place.

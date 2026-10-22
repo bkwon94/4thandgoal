@@ -93,7 +93,7 @@ with case and edge punctuation ignored.
 **The cut**:
 The last playoff spot. A standing fact for a team with the wins of that spot ends in one fixed
 phrase: "in the last playoff spot" for the team in it, "level with the last playoff spot" for a
-tied team above it, and "one spot outside the playoff spots" or "two spots outside the playoff
+tied team above it, and "1 spot outside the playoff spots" or "2 spots outside the playoff
 spots", and so on, for a tied team below it.
 
 ### Trades
