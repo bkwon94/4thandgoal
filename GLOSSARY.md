@@ -21,6 +21,20 @@ _Avoid_: section, blurb (a blurb is the written output, a chapter is the brief)
 **Blurb**:
 The sentences the writer wrote for one chapter, each with the fact IDs it cites.
 
+**Reaction sentence**:
+One sentence per blurb that reacts to the sentence before it and cites no fact ID. It has no digit,
+no team or player name, and fewer than 8 words, and it counts in the sentence range.
+The last-name match is case-sensitive, so "that hurts" passes when Jalen Hurts is in scope.
+_Avoid_: aside, uncited sentence
+
+**Banned word**:
+A word on the "Banned words" line of the vocabulary file. The code check fails a sentence that
+has one, after the names are removed.
+
+**Banned phrase**:
+A phrase on the "Banned phrases" line of the vocabulary file. The code check fails it the same way
+as a banned word, matched as whole words.
+
 **Writer**:
 The Claude call that turns one chapter and its facts into a blurb.
 

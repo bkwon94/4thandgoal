@@ -45,7 +45,7 @@ def test_system_prompt_has_all_three_files(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert "Top Scorer" in system and "upset" in system and "recent add" in system
-    assert "Dry, specific" in system and "fact ID" in system
+    assert "league group chat" in system and "fact ID" in system
 
 
 def test_feedback_block_appears_only_with_feedback(fixture_raw_dir):
@@ -107,7 +107,7 @@ def test_live_write_median(fixture_raw_dir):
     b = write_blurb(ch, sheet, claude_call)
     for s in b.sentences:
         print(f"{s.text}  {s.fact_ids}")
-    assert 2 <= len(b.sentences) <= 4 and all(s.fact_ids for s in b.sentences)
+    assert 2 <= len(b.sentences) <= 4 and [s.fact_ids for s in b.sentences].count([]) <= 1
 
 
 def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
@@ -127,6 +127,65 @@ def test_writer_rule_6_gates_decided_on_a_driver_only(fixture_raw_dir):
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert '6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.' in system
     assert "T{n}.{rid}.swing" not in system
+
+
+def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "1. Cite one or more fact IDs for every sentence, except one reaction sentence per blurb." in system
+    assert "The reaction sentence has no citation and an empty `fact_ids`." in system
+    assert "no digit, no team name, no player name, and fewer than 8 words" in system
+    assert "Put it after the sentence it reacts to." in system
+
+
+def test_verifier_prompt_supports_a_reaction_sentence():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    assert "- A sentence with no fact IDs and no claim is supported." in text
+
+
+def test_tone_has_the_banned_patterns(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
+    for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
+                    '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
+        assert pattern in section, pattern
+    assert "At most one sentence per blurb may end in a ', which' clause. Never use it as the joke." in section
+
+
+def test_tone_gives_each_banned_pattern_an_example(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
+    lines = [line for line in section.splitlines() if line.startswith("- ")]
+    for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
+                    '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
+        line = next(line for line in lines if pattern in line)
+        # The example is a quoted sentence after the pattern name, not the name alone.
+        assert re.search(r'"[^"]+\."', line.split(pattern, 1)[1]), pattern
+
+
+def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    tone = system.split("# Tone", 1)[1].strip()
+    voice = "The voice is the league group chat: a member who watched every game and types like a person."
+    assert tone.startswith(voice)
+    assert "Short sentences, varied length, contractions allowed. No chill. Roast freely." in tone
+    assert "Deadpan allowed, not required." in tone
+    assert "two jokes" not in system
+    assert "No filler sentence. Every sentence states a fact or reacts to the one before it." in system
+
+
+def test_writer_rule_4_lets_a_plain_phrase_stand_for_a_stat(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "4. When you name a stat, use its vocabulary term. You need not name the stat." in system
+    assert "A plain phrase that the cited fact supports is fine" in system
+    assert "Use only the vocabulary terms." not in system
+    assert "15. In a sentence that makes a claim, lead with the claim." in system
 
 
 def test_a_saved_blurb_with_a_grades_map_still_parses():

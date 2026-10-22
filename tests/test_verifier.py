@@ -109,11 +109,116 @@ def test_banned_word_fails(fixture_raw_dir):
     assert any("clutch" in m for m in code_check(b, ch, sheet))
 
 
+def test_banned_phrase_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("That is a lot to hang on.", ch.fact_ids[0]), _s("They won.", "M4.result"))
+    assert "[0] banned phrase 'a lot to hang on'" in code_check(b, ch, sheet)
+
+
+def test_two_which_tails_fail(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb(
+        "median",
+        _s("The median was 106.83, which set the bar.", "MED.value"),
+        _s("It rose, which is the bar.", "MED.value"),
+    )
+    assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"]
+
+
+def test_which_tail_ignores_case_and_space(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    for text in ["It rose,which is the bar.", "It rose, Which is the bar."]:
+        b = _blurb("median", _s("The median was 106.83, which set the bar.", "MED.value"), _s(text, "MED.value"))
+        assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"], text
+
+
+def test_whichever_is_not_a_which_tail(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb(
+        "median",
+        _s("The median was 106.83, which set the bar.", "MED.value"),
+        _s("It rose, whichever way you look.", "MED.value"),
+    )
+    assert code_check(b, ch, sheet) == []
+
+
+def test_banned_phrase_inside_a_team_name_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    # Names are removed before the check, so a team named for a banned phrase is not the phrase.
+    base = _ch(sheet, "recap_4")
+    ch = base.model_copy(update={"scope_teams": [*base.scope_teams, "A Lot To Hang On"]})
+    b = _blurb("recap_4", _s("A Lot To Hang On played.", "M4.result"), _s("They won.", "M4.result"))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_one_which_tail_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83, which set the bar.", "MED.value"), _s("It rose.", "MED.value"))
+    assert code_check(b, ch, sheet) == []
+
+
 def test_sentence_count_out_of_range_fails(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("The median was 106.83.", "MED.value"))
     assert any("sentences" in m for m in code_check(b, ch, sheet))
+
+
+def test_one_reaction_sentence_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Rough week."))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_second_reaction_sentence_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Rough week."), _s("Brutal."))
+    assert code_check(b, ch, sheet) == ["[2] a second reaction sentence; a blurb may hold one, so cite a fact"]
+
+
+def test_reaction_sentence_with_a_digit_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Down 40 again."))
+    failures = code_check(b, ch, sheet)
+    assert any(m.startswith("[1] a reaction sentence has a digit") for m in failures)
+    # A reaction sentence cites no IDs, so no message ends in an empty ID list.
+    assert "[1] number 40 is not in the cited facts" in failures
+    assert not any(m.endswith(" ") for m in failures)
+
+
+def test_reaction_sentence_past_the_range_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    cited = [_s("The median was 106.83.", "MED.value")] * ch.max_sentences
+    b = _blurb("median", *cited, _s("Rough week."))
+    count = ch.max_sentences + 1
+    range_failure = f"[0] {count} sentences; the range is {ch.min_sentences} to {ch.max_sentences}"
+    assert code_check(b, ch, sheet) == [range_failure]
+
+
+def test_reaction_sentence_with_a_scope_name_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    for text, name in [("Poor behold the lamb.", "behold the lamb"), ("Corum, again.", "Corum")]:
+        b = _blurb("recap_4", _s("behold the lamb lost.", "M4.result"), _s(text))
+        assert f"[1] a reaction sentence names {name}; cite a fact or drop the name" in code_check(b, ch, sheet)
+
+
+def test_reaction_sentence_of_eight_words_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Nobody saw that coming, not even the league."))
+    assert any(m.startswith("[1] a reaction sentence has 8 or more words") for m in code_check(b, ch, sheet))
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Nobody saw that coming, not even them."))
+    assert code_check(b, ch, sheet) == []
 
 
 def test_unknown_fact_id_fails(fixture_raw_dir):
@@ -250,6 +355,24 @@ def test_feedback_reaches_second_attempt(fixture_raw_dir):
     assert "Sentence 0: bad claim" in users[1]
 
 
+def test_second_reaction_gets_feedback_and_passes_with_one(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(3)])
+        users.append(user)
+        last = _s("Brutal.") if len(users) == 1 else _s("It set the bar.", "MED.value")
+        return WriterOut(sentences=[_s("The median was 106.83.", "MED.value"), _s("Rough week."), last])
+
+    blurb, results = write_and_verify(ch, sheet, fake)
+    assert not blurb.fallback and blurb.attempt == 2 and len(results) == 2
+    assert "[2] a second reaction sentence" in users[1]
+    assert [s.fact_ids for s in blurb.sentences].count([]) == 1
+
+
 def test_verifier_error_falls_back(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
@@ -337,6 +460,15 @@ def test_vocabulary_has_the_history_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("streak", "team trend", "season high", "season low", "season average"):
         assert f"**{term}**" in text
+
+
+def test_vocabulary_has_the_banned_phrases_line():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    line = "Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say."
+    assert "## Banned phrases\n\n" + line in text
+    assert text.index("## Banned words") < text.index("## Banned phrases")
 
 
 def test_dropswing_passes_the_cost_gate(dbundle):
