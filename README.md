@@ -10,6 +10,14 @@ data comes from Sleeper. The public site is at https://cpcfantasy.com/
 - `cornerstone rewrite --chapter <key>` rewrites one chapter.
 - `cornerstone page-json` writes `page.json` for a saved week.
 
+## Makefile
+
+The `Makefile` holds the common tasks. Run `make help` to list them. A weekly run uses three targets:
+
+1. `make build WEEK=<W>` builds the week.
+2. `make publish WEEK=<W>` copies the week to the site repo and pushes it.
+3. `make push` pushes `main`. It stops if the branch is not `main` or the tree is not clean.
+
 ## Tuesday runbook
 
 1. At 8:00 the launchd job builds the week and shows a notification. The job is `com.briankwon.cornerstone-weekly`. Its log is `~/Library/Logs/cornerstone-weekly/build.log`.
