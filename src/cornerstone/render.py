@@ -282,9 +282,37 @@ def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -
     return _write_page_json(context, week_dir)
 
 
-def render_rankings(history: History, season: int, teams: dict[int, Team], site_dir: Path) -> Path:
+def _saved_rankings_blurbs(path: Path) -> dict[tuple[int, int], list[dict]]:
+    """The blurb sentences of each week and roster in the last season file. An unreadable file gives none."""
+    if not path.exists():
+        return {}
+    # A bad last file must not stop the new one. Its past blurbs are lost, and the ranks are rebuilt.
+    try:
+        body = json.loads(path.read_text(encoding="utf-8"))
+        return {(w["week"], row["roster_id"]): row["blurb"] for w in body["weeks"] for row in w["rows"]}
+    except (OSError, ValueError, KeyError, TypeError) as err:
+        log.warning("%s is unreadable, so past weeks lose their blurbs: %s", path, err)
+        return {}
+
+
+def render_rankings(
+    history: History, season: int, teams: dict[int, Team], site_dir: Path,
+    current: int | None = None, blurb: Blurb | None = None,
+) -> Path:
     """Write rankings.json for the season from every week from 1 to the history week. Rows are in rank order.
-    The file holds ranks only: a reader sees "9th hardest schedule", and no one argues over a decimal."""
+    The file holds ranks only: a reader sees "9th hardest schedule", and no one argues over a decimal.
+    Week `current` gets the sentences of `blurb` by roster tag. The writer runs for one week only, so every
+    other week keeps the blurb it has in the last file, or an empty list."""
+    season_dir = site_dir / str(season)
+    out = season_dir / "rankings.json"
+    saved = _saved_rankings_blurbs(out)
+    # Each sentence keeps its fact IDs, as the site type asks. The roster tag only picks the row.
+    fresh: dict[int, list[dict]] = {}
+    for sentence in blurb.sentences if blurb is not None else []:
+        if sentence.roster_id is not None:
+            fresh.setdefault(sentence.roster_id, []).append(
+                {"text": sentence.text, "fact_ids": list(sentence.fact_ids)},
+            )
     weeks = []
     for week, rows in power_rankings(history, history.week).items():
         # The record of each week is the record as of that week, not as of the current one.
@@ -298,14 +326,15 @@ def render_rankings(history: History, season: int, teams: dict[int, Team], site_
                 "rank": row.power_rank,
                 "movement": row.movement,
                 "components": row.ranks,
-                "blurb": [],
+                "blurb": (
+                    fresh.get(row.roster_id, []) if week == current and blurb is not None
+                    else saved.get((week, row.roster_id), [])
+                ),
             }
             for row in rows
         ]})
     body = {"schema_version": RANKINGS_SCHEMA_VERSION, "season": season, "weeks": weeks}
-    season_dir = site_dir / str(season)
     season_dir.mkdir(parents=True, exist_ok=True)
-    out = season_dir / "rankings.json"
     out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
 

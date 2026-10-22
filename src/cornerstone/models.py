@@ -332,6 +332,9 @@ class Bundle(BaseModel):
 class Sentence(BaseModel):
     text: str
     fact_ids: list[str]
+    # The roster tag: the team the sentence is about. Only the rankings chapter sets it, so the season
+    # file can put each sentence in its team's row.
+    roster_id: int | None = None
 
 
 class Blurb(BaseModel):

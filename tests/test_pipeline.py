@@ -140,8 +140,10 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
     built = _rankings(repo).read_text(encoding="utf-8")
     data = json.loads(built)
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    # The plain fake gives the rankings chapter no roster tags, so it falls back. The fallback leaves the
+    # blurbs empty on purpose, so both files match.
     # The rankings command writes the same file from the same saved history.
-    assert run_rankings(repo, 2026, 6).read_text(encoding="utf-8") == built
+    assert run_rankings(repo, 2026, 6, _fake).read_text(encoding="utf-8") == built
 
 
 def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
@@ -171,17 +173,100 @@ def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw
     run_page_json(repo, 2026, 6)
     # The page-json command leaves the season file alone.
     assert not _rankings(repo).exists()
-    out = run_rankings(repo, 2026, 6)
+    out = run_rankings(repo, 2026, 6, _fake)
     data = json.loads(out.read_text(encoding="utf-8"))
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    # The plain fake falls back on the rankings chapter. The fallback leaves the blurbs empty on purpose.
     assert all(row["blurb"] == [] for w in data["weeks"] for row in w["rows"])
+
+
+class _RankingsWriter:
+    """A fake Claude that writes one tagged sentence per PR fact, and counts the writer calls."""
+
+    def __init__(self):
+        self.writer_calls = 0
+
+    def __call__(self, system, user, model):
+        if model.__name__ == "VerifyOut":
+            count = len(re.findall(r"^\d+\. ", user, re.M))
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(count)])
+        self.writer_calls += 1
+        found = re.findall(r"^- (PR\.(\d+)): (.*)$", user, re.M)
+        return model(sentences=[Sentence(text=text, fact_ids=[fid], roster_id=int(rid)) for fid, rid, text in found])
+
+
+def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    # A saved week with no rankings chapter has no PR facts.
+    facts = week_dir(repo, 2026, 6) / "facts.json"
+    bundle = read_bundle(facts)
+    bundle.sheet.facts = {fid: f for fid, f in bundle.sheet.facts.items() if not fid.startswith("PR.")}
+    bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != "rankings"]
+    facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
+
+    call = _RankingsWriter()
+    data = json.loads(run_rankings(repo, 2026, 6, call).read_text(encoding="utf-8"))
+    assert call.writer_calls == 1
+    week6 = next(w for w in data["weeks"] if w["week"] == 6)
+    assert all(len(row["blurb"]) == 1 for row in week6["rows"])
+    assert all(row["blurb"] == [] for w in data["weeks"] if w["week"] != 6 for row in w["rows"])
+    blurbs = json.loads((week_dir(repo, 2026, 6) / "blurbs.json").read_text(encoding="utf-8"))
+    assert blurbs["rankings"]["fallback"] is False
+    assert "rankings" in read_verify(week_dir(repo, 2026, 6) / "verify.json").chapters
+    # The saved facts take in the PR facts the blurb cites.
+    assert "rankings" in [c.key for c in read_bundle(facts).sheet.chapters]
+
+
+def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+
+    def call(system, user, model):
+        # The rankings chapter gets tagged sentences. Every other chapter gets the plain fake.
+        fake = _RankingsWriter() if "Chapter: Power rankings" in user else _fake
+        return fake(system, user, model)
+
+    run_build(repo, 2026, 6, call, fetch=False, **OFFLINE)
+    data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
+    week6 = next(w for w in data["weeks"] if w["week"] == 6)
+    assert all(len(row["blurb"]) == 1 for row in week6["rows"])
+
+
+def _week6_blurbs(repo):
+    data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
+    return {row["roster_id"]: row["blurb"] for w in data["weeks"] if w["week"] == 6 for row in w["rows"]}
+
+
+def test_a_fallback_rankings_blurb_keeps_the_saved_blurbs(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_rankings(repo, 2026, 6, _RankingsWriter())
+    saved = _week6_blurbs(repo)
+    assert all(len(b) == 1 for b in saved.values())
+    # The plain fake gives no roster tags, so the blurb falls back and must not wipe the saved blurbs.
+    run_rankings(repo, 2026, 6, _fake)
+    blurbs = json.loads((week_dir(repo, 2026, 6) / "blurbs.json").read_text(encoding="utf-8"))
+    assert blurbs["rankings"]["fallback"] is True
+    assert _week6_blurbs(repo) == saved
+
+
+def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    # The plain fake falls back, so the build leaves the blurbs empty.
+    assert all(b == [] for b in _week6_blurbs(repo).values())
+    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **OFFLINE)
+    blurbs = _week6_blurbs(repo)
+    assert len(blurbs) == 12
+    for rid, sentences in blurbs.items():
+        assert [s["fact_ids"] for s in sentences] == [[f"PR.{rid}"]]
 
 
 def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     with pytest.raises(BuildStopped, match="history"):
-        run_rankings(repo, 2026, 6)
+        run_rankings(repo, 2026, 6, _fake)
 
 
 def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog):

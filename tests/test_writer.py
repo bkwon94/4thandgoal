@@ -138,6 +138,18 @@ def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
     assert "Put it after the sentence it reacts to." in system
 
 
+def test_writer_rule_21_tags_each_rankings_sentence_with_its_team(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert ("21. In the Power rankings chapter, tag every sentence with its team: "
+            "set `roster_id` to the number in the team's `PR.` fact ID.") in system
+    assert "Give every team 1 or 2 sentences." in system
+    assert "Cite the team's `PR.` fact in its first sentence." in system
+    assert "Write the teams in power rank order, from 1st to 12th." in system
+    assert "A reaction sentence also gets the tag of its team and counts toward that team's 2." in system
+    assert "Other chapters leave `roster_id` empty." in system
+
+
 def test_verifier_prompt_supports_a_reaction_sentence():
     from importlib import resources
 

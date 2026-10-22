@@ -2,6 +2,7 @@
 Tests for the verifier: the code check, the prompt, and the retry loop.
 Every test injects a fake call, so none of them reach the Claude API.
 """
+from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
@@ -535,3 +536,84 @@ def test_twelve_team_chapter_skips_the_repeat_check(fixture_raw_dir):
     ch = _ch(sheet, "next_week")
     b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"), _s("Lil Fridge plays next.", "S.1"))
     assert not any("is named" in m for m in code_check(b, ch, sheet))
+
+
+def _rankings(raw_dir, history_root):
+    raw = load_raw(raw_dir)
+    sheet = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(history_root, raw, week=6)).sheet
+    return sheet, _ch(sheet, "rankings")
+
+
+def _tagged(text, rid, *ids):
+    return Sentence(text=text, fact_ids=list(ids), roster_id=rid)
+
+
+def _good_rankings(sheet, ch):
+    """One sentence per team in rank order: the team's PR fact, tagged with its roster."""
+    rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.")]
+    return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}") for rid in rids]
+
+
+def _standing_id(sheet, ch, rid):
+    """The ID of the standing fact of a roster in the rankings chapter."""
+    team = sheet.facts[f"PR.{rid}"].teams
+    return next(fid for fid in ch.fact_ids if fid.startswith("S.") and sheet.facts[fid].teams == team)
+
+
+def test_a_good_rankings_blurb_passes(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    assert code_check(_blurb("rankings", *_good_rankings(sheet, ch)), ch, sheet) == []
+
+
+def test_a_rankings_sentence_with_no_roster_tag_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    sentences.insert(1, _s("Rough week."))
+    assert "[1] the sentence has no roster tag; set roster_id to the team it is about" in code_check(
+        _blurb("rankings", *sentences), ch, sheet)
+
+
+def test_a_team_with_no_rankings_sentence_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    last = sentences.pop()
+    sentences.append(_tagged("Rough week.", sentences[0].roster_id))
+    team = sheet.facts[f"PR.{last.roster_id}"].teams[0]
+    assert f"[0] team {team} has no sentence; give every team 1 or 2 sentences" in code_check(
+        _blurb("rankings", *sentences), ch, sheet)
+
+
+def test_a_team_with_three_rankings_sentences_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    rid = sentences[0].roster_id
+    standing = _standing_id(sheet, ch, rid)
+    sentences[1:1] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    team = sheet.facts[f"PR.{rid}"].teams[0]
+    assert f"[2] team {team} has 3 sentences; give every team 1 or 2" in code_check(
+        _blurb("rankings", *sentences), ch, sheet)
+
+
+def test_a_tagged_reaction_counts_toward_the_two(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    sentences.insert(1, _tagged("Rough week.", sentences[0].roster_id))
+    assert code_check(_blurb("rankings", *sentences), ch, sheet) == []
+
+
+def test_a_first_rankings_sentence_without_the_pr_fact_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    rid = sentences[3].roster_id
+    standing = _standing_id(sheet, ch, rid)
+    sentences[3] = _tagged(sheet.facts[standing].text, rid, standing)
+    team = sheet.facts[f"PR.{rid}"].teams[0]
+    assert f"[3] the first sentence about team {team} must cite PR.{rid}" in code_check(
+        _blurb("rankings", *sentences), ch, sheet)
+
+
+def test_other_chapters_pass_with_no_roster_tag(fixture_raw_dir, fixture_history_root):
+    sheet, _ = _rankings(fixture_raw_dir, fixture_history_root)
+    ch = _ch(sheet, "next_week")
+    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"))
+    assert code_check(b, ch, sheet) == []
