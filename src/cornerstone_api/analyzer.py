@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 from cornerstone.adjusters import Adjuster, Lean
 from cornerstone.analysis import Analysis
 from cornerstone.render import headshot_url, is_def
-from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade
+from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade, fairness
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key
 from cornerstone_api.errors import season_in_progress
@@ -101,7 +101,7 @@ def _factor_lean(adjuster: Adjuster) -> Lean:
 
 
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, then the analysis, the chart lean, and the factors per side.
+    """The result the site renders: a decision first, the fairness, then the analysis, chart lean, and factors per side.
 
     It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
     """
@@ -127,6 +127,9 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
         }
         for breakdown, side in zip(analysis.breakdowns, analysis.sides)
     ]
+    # The fairness reads the letters that stand after the Claude call, the same letters the verdict that stands
+    # comes with. The document drops the letters, so this function builds the block and a stored document cannot.
+    fairness_result = fairness(analysis.standing_letters, analysis.breakdowns)
     return {
         "trade": {"asker": trade.asker, "sides": echoed},
         "decision": {
@@ -135,6 +138,8 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "reason": analysis.verdict.reason,
             "differs": analysis.verdict_differs,
         },
+        # The fairness is for both sides, after the decision, so the asker's own answer stays the lead.
+        "fairness": fairness_result.model_dump(mode="json"),
         "sides": sides,
         "as_of": _as_of(snapshot),
         "fallback": analysis.fallback,

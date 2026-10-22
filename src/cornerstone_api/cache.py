@@ -16,7 +16,9 @@ from cornerstone.snapshot import Snapshot
 
 # The shape of the stored result document. A change of shape bumps it, so the key changes and a result stored on
 # the volume in an old shape never serves again.
-DOCUMENT_VERSION = 2
+# A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
+# block to it later, and only a new key keeps a document in the old shape from a hit.
+DOCUMENT_VERSION = 3
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:

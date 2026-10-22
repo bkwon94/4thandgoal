@@ -82,6 +82,12 @@ class Analysis(BaseModel):
     # True when the call failed twice, so the code's letters and verdict stand.
     fallback: bool
 
+    @property
+    def standing_letters(self) -> tuple[Letter, Letter]:
+        """The final letters that stand, in the order of the trade's sides."""
+        # Claude can move a letter one step, and the verdict and the fairness must read the same letters.
+        return (self.sides[0].final_letter, self.sides[1].final_letter)
+
 
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name for pid in pids)

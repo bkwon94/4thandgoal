@@ -1,5 +1,5 @@
 """
-The trade analyzer rubric in code: the proposed trade, its input check, the grade of each side, and the verdict.
+The trade analyzer rubric in code: the proposed trade, its input check, each side's grade, the verdict, and fairness.
 The grade gives each side a start letter, runs the adjusters in ADJUSTERS, and clamps their sum into a final letter.
 """
 from decimal import Decimal
@@ -12,7 +12,8 @@ from cornerstone.adjusters import (
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    ACCEPT_AT_OR_ABOVE, CLAMP_STEPS, CONSOLIDATION_MARGIN, DECLINE_AT_OR_BELOW, START_LETTER_BANDS,
+    ACCEPT_AT_OR_ABOVE, CLAMP_STEPS, CONSOLIDATION_MARGIN, DECLINE_AT_OR_BELOW, LOPSIDED_AT_OR_BELOW,
+    START_LETTER_BANDS, WIN_WIN_AT_OR_ABOVE,
 )
 
 # The breakdown per side holds no trade value, sum, or ratio.
@@ -95,6 +96,26 @@ class Verdict(BaseModel):
 
     choice: Literal["accept", "counter", "decline"]
     reason: str
+
+
+class FairnessSide(BaseModel):
+    """One side of the fairness: the roster and the one reason that says what it gains."""
+
+    roster_id: int
+    reason: str
+
+
+class Fairness(BaseModel):
+    """Whether the trade is good for both sides, fair, or lopsided, with one reason per side.
+
+    It is for both sides, not only the asker, so a manager knows if the other side will take the trade.
+    """
+
+    state: Literal["win_win", "fair", "lopsided"]
+    # None when no side gives more, so a win-win or a fair trade names no loser.
+    gives_more: int | None
+    # In the order of the trade's sides, so the block lines up with the sides of the document.
+    sides: tuple[FairnessSide, FairnessSide]
 
 
 def check_trade(trade: ProposedTrade, snapshot: Snapshot) -> None:
@@ -242,3 +263,25 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Ve
         return Verdict(choice="accept",
                        reason=f"{sides}, but the schedule leans for the asking side, so the trade is worth it.")
     return Verdict(choice="counter", reason=f"{sides}, so ask for more.")
+
+
+def _gain_reason(breakdown: Breakdown) -> str:
+    """The reason of the first adjuster with a step up, in rubric order, else the reason of the start letter."""
+    # A step up is what a side gains past the trade values, so it is the reason the side would take the trade.
+    return next((a.reason for a in breakdown.adjusters if a.step > 0), breakdown.reason)
+
+
+def fairness(letters: tuple[Letter, Letter], breakdowns: tuple[Breakdown, Breakdown]) -> Fairness:
+    """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call."""
+    sides = list(zip(letters, breakdowns))
+    if all(_at_or_above(letter, WIN_WIN_AT_OR_ABOVE) for letter, _ in sides):
+        state, gives_more = "win_win", None
+    elif any(_at_or_below(letter, LOPSIDED_AT_OR_BELOW) for letter, _ in sides):
+        state = "lopsided"
+        # The lower final letter gives more, then the lower start letter. max keeps the first side at a full tie.
+        _, giver = max(sides, key=lambda side: (LETTERS.index(side[0]), LETTERS.index(side[1].start_letter)))
+        gives_more = giver.roster_id
+    else:
+        state, gives_more = "fair", None
+    return Fairness(state=state, gives_more=gives_more,
+                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_gain_reason(b)) for _, b in sides))

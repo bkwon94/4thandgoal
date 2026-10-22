@@ -10,7 +10,9 @@ import pytest
 from conftest import strip_trend_numbers
 
 from cornerstone.adjusters import TREND, _byes_left
-from cornerstone.rubric import Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, grade, verdict
+from cornerstone.rubric import (
+    Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
+)
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_snapshot
@@ -748,6 +750,82 @@ def test_the_schedule_never_turns_a_clear_accept_or_a_decline(asker, lean, choic
 def test_the_verdict_reads_the_asker_side_whichever_side_it_is():
     trade = _trade(4, [CROSKEY], 12, [KINCAID], asker=12)
     assert verdict(trade, (_graded(4, "A"), _graded(12, "F"))).choice == "decline"
+
+
+# The adjusters in rubric order before the schedule, which never steps.
+STEPPED = ("roster fit", "standing", "trend and usage", "injury", "handcuff")
+
+
+def _sided(roster_id: int, final: str, start: str | None = None, steps: tuple[int, ...] = ()) -> Breakdown:
+    """A breakdown with a start letter, the steps of the adjusters in rubric order, and a final letter.
+
+    Each reason names its side and its adjuster, so a test sees which reason the fairness rule took.
+    """
+    adjusters = [Adjuster(name=name, step=step, reason=f"Side {roster_id} {name}.")
+                 for name, step in zip(STEPPED, steps)]
+    adjusters.append(Adjuster(name="schedule", step=0, lean="even", reason="The schedule is even."))
+    return Breakdown(roster_id=roster_id, start_letter=start or final, reason=f"Side {roster_id} start.",
+                     adjusters=adjusters, final_letter=final)
+
+
+def _fairness_for(first: Breakdown, second: Breakdown, letters: tuple[str, str] | None = None):
+    """The fairness of a trade between roster 4 and roster 12. The letters default to the breakdowns' final letters."""
+    letters = letters or (first.final_letter, second.final_letter)
+    return fairness(letters, (first, second))
+
+
+@pytest.mark.parametrize("first, second", [("B", "B"), ("A", "B"), ("B", "A")])
+def test_fairness_is_win_win_when_both_sides_are_at_b_or_better(first, second):
+    result = _fairness_for(_sided(4, first), _sided(12, second))
+    assert result.state == "win_win"
+    assert result.gives_more is None
+
+
+def test_fairness_is_fair_when_both_sides_are_at_c():
+    result = _fairness_for(_sided(4, "C"), _sided(12, "C"))
+    assert result.state == "fair"
+    assert result.gives_more is None
+
+
+@pytest.mark.parametrize("first, second, gives_more", [("C", "D", 12), ("D", "C", 4), ("A", "F", 12), ("F", "A", 4)])
+def test_fairness_is_lopsided_when_either_side_is_at_d_or_worse_and_names_the_lower_side(first, second, gives_more):
+    result = _fairness_for(_sided(4, first), _sided(12, second))
+    assert result.state == "lopsided"
+    assert result.gives_more == gives_more
+
+
+def test_at_equal_letters_the_side_with_the_lower_start_letter_gives_more():
+    result = _fairness_for(_sided(4, "D", start="C", steps=(-1,)), _sided(12, "D", start="F", steps=(1,)))
+    assert result.state == "lopsided"
+    assert result.gives_more == 12
+
+
+def test_at_equal_letters_and_equal_starts_the_first_side_gives_more():
+    result = _fairness_for(_sided(4, "F"), _sided(12, "F"))
+    assert result.gives_more == 4
+
+
+def test_the_reason_of_a_side_is_its_first_adjuster_with_a_step_up_in_rubric_order():
+    # Standing steps down before trend steps up, and injury steps up after trend.
+    result = _fairness_for(_sided(4, "B", start="C", steps=(0, -1, 1, 1)), _sided(12, "B", start="C", steps=(1,)))
+    assert [(side.roster_id, side.reason) for side in result.sides] == [
+        (4, "Side 4 trend and usage."), (12, "Side 12 roster fit.")]
+
+
+def test_a_side_with_no_step_up_gets_the_reason_of_its_start_letter():
+    result = _fairness_for(_sided(4, "D", start="C", steps=(0, -1)), _sided(12, "C", steps=(1, -1)))
+    assert [side.reason for side in result.sides] == ["Side 4 start.", "Side 12 roster fit."]
+
+
+def test_the_sides_come_in_the_order_of_the_inputs():
+    result = fairness(("C", "C"), (_sided(12, "C"), _sided(4, "C")))
+    assert [side.roster_id for side in result.sides] == [12, 4]
+
+
+def test_fairness_reads_the_letters_it_gets_and_not_the_breakdown_final_letters():
+    # Claude may move a final letter one step, and that letter stands, so the rule reads it.
+    result = _fairness_for(_sided(4, "C"), _sided(12, "C"), letters=("B", "B"))
+    assert result.state == "win_win"
 
 
 # The six real week 6 trades, newest first, as in the transactions file: (roster a, a gives, roster b, b gives, asker).

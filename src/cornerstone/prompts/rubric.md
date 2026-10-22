@@ -175,6 +175,19 @@ Schedule turns only a letter between the two bands. A schedule for the asker tur
 an accept. A schedule against the asker turns that accept into a counter. Schedule never turns an
 accept at `ACCEPT_AT_OR_ABOVE` or better, and never turns a decline.
 
+## Fairness
+
+The fairness is for both sides, not only the side that asked. It reads the final letter of each
+side and gives one of three states.
+
+- Both letters are `WIN_WIN_AT_OR_ABOVE` or better: win-win, good for both.
+- Either letter is `LOPSIDED_AT_OR_BELOW` or worse: lopsided. The side with the lower letter gives
+  more. At equal letters, the side with the lower start letter gives more.
+- Any other pair of letters: fair.
+
+Each side gets one reason: the reason of its first adjuster with a step up, in rubric order. A
+side with no step up gets the reason of its start letter.
+
 ## What the breakdown never holds
 
 The breakdown and every text made from it hold no trade value, no sum, no ratio, no chart name,
