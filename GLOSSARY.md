@@ -40,6 +40,9 @@ The Claude call that turns one chapter and its facts into a blurb.
 
 **Verifier**:
 The code check and the Claude check that reject a blurb with an uncited number or claim.
+The code check does not match the last name of an out-of-scope player when that name is a word of
+a scope team name. So a bare "London" passes when London Cooking is in scope.
+The full name "Drake London" still fails.
 
 ### The page
 
