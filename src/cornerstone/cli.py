@@ -1,6 +1,6 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, page-json, rankings, history, chart, and analyze
+It defines the build, publish, rewrite, page-json, rankings, history, chart, analyze, and find
 subcommands.
 """
 import argparse
@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
+from cornerstone.finder import find_win_wins
 from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
@@ -83,6 +84,20 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("--chart", type=Path,
                          help="a trade values JSON file; the default is the chart of the trade window week")
     analyze.add_argument("--no-claude", action="store_true", help="skip the Claude call and print the breakdown only")
+
+    # The finder loads its snapshot the way analyze does, so it takes the same --week and --chart.
+    find = sub.add_parser(
+        "find", help="list the top trades between two rosters that are good for both",
+        description="Grade every one-for-one and two-for-one swap between two rosters and print the top three "
+                    "that are good for both. Without --week, the command fetches the league from Sleeper now. "
+                    "With --week, it reads the saved data of that week. It makes no Claude call. "
+                    "Example: --week 6 --asker 4 --partner 5")
+    find.add_argument("--season", type=int, required=True)
+    find.add_argument("--week", type=int, help="read the saved data of this week; without it, fetch the league now")
+    find.add_argument("--asker", type=int, required=True, help="the roster id of the side that asks")
+    find.add_argument("--partner", type=int, required=True, help="the roster id of the partner team")
+    find.add_argument("--chart", type=Path,
+                      help="a trade values JSON file; the default is the chart of the trade window week")
 
     return parser
 
@@ -173,6 +188,19 @@ def _fairness_lines(snapshot: Snapshot, fairness_result: Fairness) -> list[str]:
     return [f"Fairness: {words}", *reasons]
 
 
+def _print_as_of(snapshot: Snapshot) -> None:
+    """Print the as-of line, the sources line, and any failed refresh, so a manager knows the data week."""
+    # Analyze and find both print these lines, so the two commands show the stamps the same way.
+    stamps = snapshot.as_of
+    chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
+    fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
+    print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
+          f"Rosters fetched {fetched}.")
+    print(_sources_line(snapshot))
+    if snapshot.stale:
+        print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
+
+
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
@@ -199,14 +227,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     else:
         analysis = analyze(trade, snapshot, call=analyzer_call)
         result, choice = analysis.breakdowns, analysis.code_verdict
-    stamps = snapshot.as_of
-    chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
-    fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
-    print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
-          f"Rosters fetched {fetched}.")
-    print(_sources_line(snapshot))
-    if snapshot.stale:
-        print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
+    _print_as_of(snapshot)
     for index, (side, other, breakdown) in enumerate(
             ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1]))):
         asked = " (asked)" if side.roster_id == trade.asker else ""
@@ -239,6 +260,39 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     letters = analysis.standing_letters if analysis is not None else (result[0].final_letter, result[1].final_letter)
     for line in _fairness_lines(snapshot, fairness(letters, result)):
         print(line)
+    return 0
+
+
+# The line the finder prints when it finds no win-win. The finder document of ticket 04 reuses this line.
+NO_WIN_WIN = "No swap between these rosters is good for both."
+
+
+def run_find(repo: Path, args: argparse.Namespace) -> int:
+    """Print the top win-win trades between the asker and the partner, each with its sides and its fairness."""
+    # A plain line for the same roster twice, before the snapshot loads, so no load runs for nothing.
+    if args.asker == args.partner:
+        print("Give two different rosters for --asker and --partner.")
+        return 2
+    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    if snapshot is None:
+        return 2
+    for roster_id in (args.asker, args.partner):
+        if roster_id not in snapshot.rosters:
+            print(f"Roster {roster_id} is not in the league.")
+            return 2
+    found = find_win_wins(args.asker, args.partner, snapshot)
+    _print_as_of(snapshot)
+    print()
+    if not found:
+        print(NO_WIN_WIN)
+        return 0
+    for number, item in enumerate(found, start=1):
+        mine, theirs = item.trade.sides
+        print(f"{number}. {snapshot.teams[mine.roster_id].name} gives: {_names(snapshot, mine.gives)}")
+        print(f"   {snapshot.teams[theirs.roster_id].name} gives: {_names(snapshot, theirs.gives)}")
+        # The same fairness lines as analyze, so a trade reads the same in both commands.
+        for line in _fairness_lines(snapshot, item.fairness):
+            print(line)
     return 0
 
 
@@ -298,6 +352,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "analyze":
             # Analyze skips resolve_week. Without --week it reads Sleeper itself, and with --week it reads disk.
             return run_analyze(repo, args)
+        if args.command == "find":
+            # Find skips resolve_week for the same reason as analyze.
+            return run_find(repo, args)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)
         if args.command == "build":

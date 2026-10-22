@@ -192,17 +192,28 @@ def trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
     """
     if not _has_depth_chart(snapshot):
         return []
-    id_map = snapshot.id_map
     found = []
     for giver, getter in (trade.sides, trade.sides[::-1]):
-        after = {id_map[pid] for pid in _roster_after(snapshot, getter.roster_id, getter.gives, giver.gives)
-                 if pid in id_map}
-        for pid in giver.gives:
-            player = snapshot.players[pid]
-            chart = _rb_chart(snapshot, player.nfl_team)
-            if player.position == "RB" and id_map.get(pid) in chart[1:] and chart[0] in after:
-                found.append(pid)
+        after = _roster_after(snapshot, getter.roster_id, getter.gives, giver.gives)
+        found.extend(pid for pid in giver.gives if _backs_up_a_starter(snapshot, pid, after))
     return found
+
+
+def is_handcuff(snapshot: Snapshot, player_id: str, roster_id: int) -> bool:
+    """True when the player backs up a starting running back on the roster as it is now, so he is a handcuff there."""
+    return _backs_up_a_starter(snapshot, player_id, snapshot.rosters[roster_id])
+
+
+def _backs_up_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -> bool:
+    """The one handcuff test: the player is second or lower on his RB depth chart, and the first is on the roster."""
+    if not _has_depth_chart(snapshot):
+        return False
+    id_map = snapshot.id_map
+    player = snapshot.players[player_id]
+    chart = _rb_chart(snapshot, player.nfl_team)
+    if player.position != "RB" or id_map.get(player_id) not in chart[1:]:
+        return False
+    return chart[0] in {id_map[pid] for pid in roster if pid in id_map}
 
 
 # The name of each adjuster. The breakdown shows it, so each string lives here only.

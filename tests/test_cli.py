@@ -2,6 +2,7 @@
 Tests for the cornerstone command line.
 They run the real console script.
 """
+import json
 import subprocess
 from pathlib import Path
 
@@ -474,3 +475,63 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert ("\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
             "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
+
+
+def _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch):
+    """The analyze repo with the nflverse cache and the returns file, as the find command reads them."""
+    import shutil
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+
+
+# The fixture chart lists 25 players, mostly stars, so no pair of the week 6 snapshot has a win-win on it.
+# These rows add a running back of roster 2 and a quarterback and a receiver of roster 3, at their recent points
+# per game, so rosters 2 and 3 have one win-win.
+FIND_ROWS = {"12527": 11.0, "11560": 8.0, "5947": 7.0}
+
+
+def _chart_with_rows(tmp_path) -> str:
+    """A copy of the fixture chart with the FIND_ROWS rows, as a file the --chart flag reads."""
+    chart = json.loads(Path(CHART_FIXTURE).read_text(encoding="utf-8"))
+    chart["values"] = {**chart["values"], **FIND_ROWS}
+    path = tmp_path / "chart-with-rows.json"
+    path.write_text(json.dumps(chart), encoding="utf-8")
+    return str(path)
+
+
+def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
+    code = cli.main(["find", "--season", "2026", "--week", "6", "--chart", _chart_with_rows(tmp_path),
+                     "--asker", "2", "--partner", "3"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
+    # Rosters 2 and 3 have one win-win with these rows: roster 2 gives one player for two.
+    assert out.endswith(
+        "\n1. All You Need Is Love gives: Ashton Jeanty\n"
+        "   Lil Fridge gives: Caleb Williams, Jakobi Meyers\n"
+        "Fairness: Good for both\n"
+        "  All You Need Is Love: The players it gets gain snap or target share, and the players it gives lose it. "
+        "Jeanty: snap share 61%, down, over weeks 4 and 5.\n"
+        "  Lil Fridge: The best lineup gains after the trade.\n")
+    assert "\n2. " not in out
+
+
+def test_find_prints_one_line_when_no_swap_is_good_for_both(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
+    code = cli.main(["find", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--asker", "1", "--partner", "3"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert out.endswith("\nNo swap between these rosters is good for both.\n")
+    assert "Fairness:" not in out

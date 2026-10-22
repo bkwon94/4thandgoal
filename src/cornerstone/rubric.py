@@ -155,6 +155,17 @@ def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
     return {**snapshot.chart.values, **{pid: 0.0 for pid in handcuffs}}
 
 
+def unlisted_players(snapshot: Snapshot, players: list[str], handcuffs: list[str] | None = None) -> list[str]:
+    """The players with no trade value on the week's chart. A handcuff in the trade counts as listed, at zero.
+
+    A trade with an unlisted player starts both sides at C. With no chart, every player is unlisted.
+    """
+    if snapshot.chart is None:
+        return list(players)
+    values = _trade_values(snapshot, handcuffs or [])
+    return [pid for pid in players if pid not in values]
+
+
 def _start_letters(
     trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str],
 ) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
@@ -163,7 +174,7 @@ def _start_letters(
     if snapshot.chart is None:
         return _both_at_c(NO_CHART_REASON)
     values = _trade_values(snapshot, handcuffs)
-    unlisted = [pid for side in trade.sides for pid in side.gives if pid not in values]
+    unlisted = unlisted_players(snapshot, [pid for side in trade.sides for pid in side.gives], handcuffs)
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
                   + " no trade value, so the chart gives neither side an edge.")
