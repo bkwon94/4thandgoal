@@ -11,12 +11,13 @@ from pydantic import BaseModel, ValidationError
 
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.models import Fact
+from cornerstone.names import NAME_SUFFIXES
 from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdict, grade, verdict
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
-    NAME_SUFFIXES, normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
+    normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
 )
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, analyzer_call, load_prompt
 
@@ -125,7 +126,7 @@ def build_analysis_prompt(
 # Claude writes the short form "St. Brown". The code removes the full name first, so the short form stays.
 # A lone capital still ends a sentence, because "the grade is a B." is a real end.
 _TITLES = ("St", "Mr", "Dr", "vs")
-# NAME_SUFFIXES in the verifier is the one list of name suffixes. Only a suffix with a period matters here.
+# NAME_SUFFIXES in the names module is the one list of name suffixes. Only a suffix with a period matters here.
 _DOTTED_SUFFIXES = sorted(suffix.removesuffix(".") for suffix in NAME_SUFFIXES if suffix.endswith("."))
 # The titles and suffixes match in any case. The word after a suffix must be lowercase, so that part has no flag.
 _NOT_AN_END = re.compile(

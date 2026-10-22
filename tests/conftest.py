@@ -2,6 +2,7 @@
 Shared pytest fixtures for the Cornerstone Weekly tests.
 They give tests the path to the recorded Sleeper data.
 """
+import re
 import shutil
 from datetime import date, datetime
 from pathlib import Path
@@ -18,6 +19,14 @@ from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, trades_for_week
 
 ET = ZoneInfo("America/New_York")
+
+# The trend reason gives share percents and the weeks behind them, such as "52%" and "weeks 4 and 5".
+_TREND_NUMBERS = re.compile(r"\b\d+%|\bweeks? \d+(?:(?:, | and )\d+)*")
+
+
+def strip_trend_numbers(reason: str) -> str:
+    """The trend reason with its share percents and share weeks removed, so a check can find any other number."""
+    return _TREND_NUMBERS.sub("", reason)
 
 
 @pytest.fixture

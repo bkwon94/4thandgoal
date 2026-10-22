@@ -17,6 +17,7 @@ from cornerstone.models import (
     VerifyOut,
     VerifyResult,
 )
+from cornerstone.names import last_name
 from cornerstone.sheet import NUMBER_TOKEN, two_team_chapter
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
 
@@ -30,7 +31,6 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
-NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
 NUMBER_WORDS = [
@@ -122,13 +122,6 @@ def repeat_failure(where: str, team: str, count: int) -> str:
             "then write 'this side', 'they', or the player names")
 
 
-def _last_name(full: str) -> str | None:
-    parts = [p for p in full.split() if p.lower() not in NAME_SUFFIXES]
-    last = parts[-1] if parts else ""
-    # Skip short names and odd entries such as "96 (?)": they cause false matches.
-    return last if len(last) > 3 and last.isalpha() else None
-
-
 def _week_numbers(sheet: FactSheet) -> set[str]:
     week = sheet.facts.get("W.week")
     if week is None:
@@ -143,7 +136,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     league_teams = {t for f in sheet.facts.values() for t in f.teams}
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
-    in_scope_last = {_last_name(p) for p in chapter.scope_players}
+    in_scope_last = {last_name(p) for p in chapter.scope_players}
     banned = _banned_words()
     always_allowed = _week_numbers(sheet)
 
@@ -174,7 +167,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 failures.append(f"[{i}] team {team} is not in this chapter")
 
         for player in sorted(league_players - set(chapter.scope_players)):
-            last = _last_name(player)
+            last = last_name(player)
             # A last name shared with an in-scope player is ambiguous, so it passes.
             if player in bare or (last and last not in in_scope_last and whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")

@@ -118,8 +118,8 @@ def test_golden_profile_through_week_5(fixture_history_root, fixture_raw_dir):
     h = _h(fixture_history_root, fixture_raw_dir)
     assert points_per_game(h, "12501", 5) == (13.3, 5)
     assert season_rank(h, "12501", 5) == (11, 90)
-    assert snap_share(h, "12501", 5) == UsageShare(percent=83, weeks=2, direction="flat")
-    assert target_share(h, "12501", 5) == UsageShare(percent=32, weeks=2, direction="flat")
+    assert snap_share(h, "12501", 5) == UsageShare(percent=83, weeks=2, direction="flat", weeks_used=[4, 5])
+    assert target_share(h, "12501", 5) == UsageShare(percent=32, weeks=2, direction="flat", weeks_used=[4, 5])
     assert red_zone(h, "12501", 5) == (7, 0)
     assert player_trend(h, "12501", through=5) == 3
 
@@ -136,8 +136,8 @@ def test_tuten_profile_ignores_week_6(fixture_history_root, fixture_raw_dir):
     h = _h(fixture_history_root, fixture_raw_dir)
     assert points_per_game(h, "12490", 5) == (11.8, 5)
     assert season_rank(h, "12490", 5) == (16, 77)
-    assert snap_share(h, "12490", 5) == UsageShare(percent=64, weeks=2, direction="up")
-    assert target_share(h, "12490", 5) == UsageShare(percent=11, weeks=2, direction="flat")
+    assert snap_share(h, "12490", 5) == UsageShare(percent=64, weeks=2, direction="up", weeks_used=[4, 5])
+    assert target_share(h, "12490", 5) == UsageShare(percent=11, weeks=2, direction="flat", weeks_used=[4, 5])
     assert red_zone(h, "12490", 5) == (1, 12)
     assert player_trend(h, "12490", through=5) == 1
 
@@ -145,7 +145,7 @@ def test_tuten_profile_ignores_week_6(fixture_history_root, fixture_raw_dir):
 def test_fewer_than_4_weeks_has_no_direction(fixture_history_root, fixture_raw_dir):
     h = _h(fixture_history_root, fixture_raw_dir)
     assert points_per_game(h, "7569", 5) == (17.7, 3)
-    assert snap_share(h, "7569", 5) == UsageShare(percent=71, weeks=3, direction=None)
+    assert snap_share(h, "7569", 5) == UsageShare(percent=71, weeks=3, direction=None, weeks_used=[1, 4, 5])
 
 
 def test_no_scored_game(fixture_history_root, fixture_raw_dir):

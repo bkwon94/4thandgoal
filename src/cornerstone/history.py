@@ -199,23 +199,21 @@ def _usage_share(
     """The share of the player in the last SHARE_WEEKS scored weeks, and its direction against the SHARE_WEEKS before."""
     if not stats_complete(history, through):
         return None
-    weeks = [
-        history.weeks[w] for w in scored_weeks(history, player_id, through)
-        if denominator(history.weeks[w]) > 0
-    ]
+    weeks = [w for w in scored_weeks(history, player_id, through) if denominator(history.weeks[w]) > 0]
     if not weeks:
         return None
 
-    def pct(ws: list[PastWeek]) -> float:
-        return 100 * sum(numerator(w) for w in ws) / sum(denominator(w) for w in ws)
+    def pct(ws: list[int]) -> float:
+        return 100 * sum(numerator(history.weeks[w]) for w in ws) / sum(denominator(history.weeks[w]) for w in ws)
 
     if len(weeks) < SHARE_DIRECTION_WEEKS:
-        return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None)
+        return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None, weeks_used=weeks)
     recent, prior = weeks[-SHARE_WEEKS:], weeks[-SHARE_DIRECTION_WEEKS:-SHARE_WEEKS]
     return UsageShare(
         percent=int(_round_half_up(pct(recent))),
         weeks=SHARE_WEEKS,
         direction=share_direction(pct(recent), pct(prior)),
+        weeks_used=recent,
     )
 
 
