@@ -26,6 +26,14 @@ One sentence per blurb with no fact ID, no digit, no name, and fewer than 8 word
 the sentence before it. It counts in the sentence range.
 _Avoid_: aside, uncited sentence
 
+**Banned word**:
+A word on the "Banned words" line of the vocabulary file. The code check fails a sentence that
+has one, after the names are removed.
+
+**Banned phrase**:
+A phrase on the "Banned phrases" line of the vocabulary file. The code check fails it the same way
+as a banned word, matched as whole words.
+
 **Writer**:
 The Claude call that turns one chapter and its facts into a blurb.
 

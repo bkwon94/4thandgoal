@@ -75,9 +75,10 @@ def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list
     return failures
 
 
-def _banned_words() -> list[str]:
+def _banned(heading: str) -> list[str]:
+    """The comma list on the line after a vocabulary heading, such as "## Banned words"."""
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
-    line = text.split("## Banned words", 1)[1].strip().splitlines()[0]
+    line = text.split(heading, 1)[1].strip().splitlines()[0]
     return [w.strip().rstrip(".") for w in line.split(":", 1)[1].split(",")]
 
 
@@ -154,7 +155,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
     in_scope_last = {last_name(p) for p in chapter.scope_players}
-    banned = _banned_words()
+    banned = _banned("## Banned words")
+    banned_phrases = _banned("## Banned phrases")
     always_allowed = _week_numbers(sheet)
     reactions = 0
 
@@ -201,6 +203,9 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for word in banned:
             if whole_word(word, bare):
                 failures.append(f"[{i}] banned word '{word}'")
+        for phrase in banned_phrases:
+            if whole_word(phrase, bare):
+                failures.append(f"[{i}] banned phrase '{phrase}'")
 
         for words, markers in GATED_WORDS:
             for word in words:
@@ -214,6 +219,11 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     if two_team_chapter(chapter.key):
         for i, team, mentions in repeated_teams([s.text for s in blurb.sentences], chapter.scope_teams):
             failures.append(repeat_failure(f"[{i}] the blurb", team, mentions))
+
+    # The ", which" tail is the stock joke shape, so a blurb gets one.
+    tails = [i for i, s in enumerate(blurb.sentences) if ", which" in s.text]
+    if len(tails) > 1:
+        failures.append(f"[{tails[1]}] {len(tails)} sentences have a ', which' tail; a blurb may hold one")
 
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:

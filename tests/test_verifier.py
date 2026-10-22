@@ -109,6 +109,31 @@ def test_banned_word_fails(fixture_raw_dir):
     assert any("clutch" in m for m in code_check(b, ch, sheet))
 
 
+def test_banned_phrase_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("That is a lot to hang on.", ch.fact_ids[0]), _s("They won.", "M4.result"))
+    assert "[0] banned phrase 'a lot to hang on'" in code_check(b, ch, sheet)
+
+
+def test_two_which_tails_fail(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb(
+        "median",
+        _s("The median was 106.83, which set the bar.", "MED.value"),
+        _s("It rose, which is the bar.", "MED.value"),
+    )
+    assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"]
+
+
+def test_one_which_tail_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83, which set the bar.", "MED.value"), _s("It rose.", "MED.value"))
+    assert code_check(b, ch, sheet) == []
+
+
 def test_sentence_count_out_of_range_fails(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
@@ -393,6 +418,15 @@ def test_vocabulary_has_the_history_terms():
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("streak", "team trend", "season high", "season low", "season average"):
         assert f"**{term}**" in text
+
+
+def test_vocabulary_has_the_banned_phrases_line():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    line = "Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say."
+    assert "## Banned phrases\n\n" + line in text
+    assert text.index("## Banned words") < text.index("## Banned phrases")
 
 
 def test_dropswing_passes_the_cost_gate(dbundle):

@@ -145,6 +145,16 @@ def test_verifier_prompt_supports_a_reaction_sentence():
     assert "- A sentence with no fact IDs and no claim is supported." in text
 
 
+def test_tone_has_the_banned_patterns(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
+    for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
+                    '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
+        assert pattern in section, pattern
+    assert 'At most one sentence per blurb may hold a ", which" clause.' in section
+
+
 def test_a_saved_blurb_with_a_grades_map_still_parses():
     text = '{"chapter": "trade_5", "sentences": [], "attempt": 1, "fallback": false, "grades": {"T5.12": "A"}}'
     blurb = Blurb.model_validate_json(text)

@@ -21,6 +21,17 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 - Roast bad teams harder. A record below .500 is an invitation. Two bad teams in one matchup is a showdown of the awful; say so.
 - Give context where a fact supports it: the standings gap, the cut line, the rank before the week, the next opponent's record.
 
+## Banned patterns
+
+Each pattern below is a stock joke shape. Never write one. Each example is the shape to avoid.
+
+- The ", which is X" tail as the joke. "The cut is 5 games away, which is a lot." At most one sentence per blurb may hold a ", which" clause.
+- The flip from "not the problem" to "one of the problems". "Bijan was not the problem. Bijan was one of the problems."
+- "the entire point". "A waiver add scored 20, the entire point of waivers."
+- "a lot to hang on". "The playoff hopes rest on a kicker. That is a lot to hang on."
+- "a polite way to say". "Sixth place is a polite way to say average."
+- A sentence that explains the joke it just made. "The team is named after Bijan, and Bijan scored 6.3. That is the irony."
+
 ## Rules
 
 - When an `.upset` fact is in the chapter, cite it and say it was an upset.

@@ -36,3 +36,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 ## Banned words
 
 Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked.
+
+## Banned phrases
+
+Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say.
