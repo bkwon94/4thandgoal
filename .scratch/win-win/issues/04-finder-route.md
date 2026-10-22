@@ -6,7 +6,7 @@
 
 **Blocked by:** 03 — Finder function and command.
 
-**Status:** ready-for-human
+**Status:** done
 
 - [x] The route takes `asker` and `partner` roster ids, with the passphrase check of the analyze route.
 - [x] A finder call counts one grade. The sixth in a minute is 429, with a test. A cached repeat does not count, with a test.
@@ -15,7 +15,7 @@
 - [x] The finder document shape, with the as-of stamps and the empty-list line. The fixture `tests/fixtures/api/find-response.json` is checked in.
 - [x] The runbook names the route and the cache.
 - [x] `make test` passes. `make lint` stays at 123 or lower.
-- [ ] Deploy needs Brian's `fly deploy`.
+- [x] Deploy needs Brian's `fly deploy`.
 
 ## Comments
 
