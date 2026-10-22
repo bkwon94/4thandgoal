@@ -248,6 +248,18 @@ class SeasonHistory(BaseModel):
     streak: int = 0
 
 
+class PowerRow(BaseModel):
+    """One team in the power rankings of one week."""
+    roster_id: int
+    power_rank: int
+    # Last week's power rank minus this week's, so positive is up. None in week 1.
+    movement: int | None
+    power_score: float
+    # Keyed by component: standing, form, schedule_played, scoring. Each value is 0 to 1, each rank 1 to 12.
+    values: dict[str, float]
+    ranks: dict[str, int]
+
+
 class PositionRank(BaseModel):
     player_id: str
     position: str
