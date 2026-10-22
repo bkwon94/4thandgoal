@@ -87,6 +87,83 @@ def test_form_counts_only_the_last_three_weeks():
             == _row(power_rankings(lost_week_one, 4)[4], 1).values["form"])
 
 
+# Rosters 5 to 12 score these each week, so the median sits among them.
+_FILLERS = dict(zip(range(5, 13), [100.0, 101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]))
+
+
+def test_median_wins_extend_the_form_streak():
+    # Over the 3 weeks, both rosters go 4-2 with the median game and 22-11 in all-play.
+    # Roster 1 loses both games in week 1, then wins four in a row: a form streak of 4.
+    # Roster 3 wins the head-to-head game in weeks 2 and 3 but loses the median in week 2: a form streak of 2.
+    h = _built([
+        _FILLERS | {1: 95.0, 2: 96.0, 3: 110.0, 4: 111.0},
+        _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0},
+        _FILLERS | {1: 111.0, 2: 95.0, 3: 110.0, 4: 94.0},
+    ])
+    rows = power_rankings(h, 3)[3]
+    assert _row(rows, 1).values["form"] > _row(rows, 3).values["form"]
+    assert _row(rows, 1).ranks["form"] < _row(rows, 3).ranks["form"]
+
+
+def test_form_record_counts_the_median_game():
+    # Both histories give roster 1 the same head-to-head wins, the same all-play record, and the same
+    # form streak of -2 from week 3. Only the median games of weeks 1 and 2 differ: 2-0 against 1-1.
+    week_three = _FILLERS | {1: 90.0, 2: 99.0, 3: 98.0, 4: 97.0}
+    # All-play 6-5 in weeks 1 and 2: above the median both weeks.
+    six_and_six = _built([
+        _FILLERS | {1: 102.5, 2: 90.0, 3: 91.0, 4: 92.0},
+        _FILLERS | {1: 102.5, 2: 90.0, 3: 91.0, 4: 92.0},
+        week_three,
+    ])
+    # All-play 1-10 then 11-0: above the median in week 2 only.
+    one_and_eleven = _built([
+        _FILLERS | {1: 91.5, 2: 90.0, 3: 98.0, 4: 99.0},
+        _FILLERS | {1: 120.0, 2: 90.0, 3: 91.0, 4: 92.0},
+        week_three,
+    ])
+    assert (_row(power_rankings(six_and_six, 3)[3], 1).values["form"]
+            > _row(power_rankings(one_and_eleven, 3)[3], 1).values["form"])
+
+
+def test_form_streak_breaks_on_a_tie():
+    # Roster 1 wins both games in weeks 1 and 3. In week 2 it ties roster 2, then wins the median game.
+    # The median game is the newer game of its week, so the streak is 3 and stops at the tie.
+    # A streak that ran through the tie would be 5.
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    h = _built([win, win | {2: 110.0}, win])
+    # Roster 1 goes 5-0 with the median game and 32-0 in all-play, with ties as neither.
+    streak = (3 + 6) / 12
+    assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((streak + 1 + 1) / 3)
+
+
+def test_a_losing_form_streak_scores_below_an_even_record():
+    # Roster 1 wins both games in week 1. In week 2 it wins head to head but loses the median game.
+    # In week 3 it loses both games. The form streak is -3 and the record is an even 3-3.
+    # A streak clamped at 0 would score 0.5, the same as the even record.
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    h = _built([win, win | {1: 99.0}, win | {1: 90.0}])
+    # All-play: 11-0, then 3-8, then 0-11.
+    streak = (-3 + 6) / 12
+    assert streak < 0.5
+    assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((streak + 0.5 + 14 / 33) / 3)
+
+
+def test_form_streak_is_zero_when_the_newest_game_is_a_tie():
+    # Roster 1 wins both games in weeks 1 and 2. In week 3 it wins head to head, then ties the median:
+    # rosters 1 and 4 are the 6th and 7th scores. The streak is 0. A streak that skipped the tie would be 4.
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    h = _built([win, win, win | {1: 102.5, 4: 102.5}])
+    # The record is 5-0 with the tie as neither. All-play: 11-0, 11-0, then 5-5 with one tie.
+    assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((0.5 + 1 + 27 / 32) / 3)
+
+
+def test_margin_splits_equal_points_for_and_all_play():
+    # Rosters 1 and 3 score the same, so points for and all-play are equal. Roster 1 wins by 40, roster 3 by 1.
+    h = _built([_FILLERS | {1: 120.0, 2: 80.0, 3: 120.0, 4: 119.0}])
+    rows = power_rankings(h, 1)[1]
+    assert _row(rows, 1).values["scoring"] > _row(rows, 3).values["scoring"]
+
+
 def test_all_play_record_splits_equal_points_for():
     # Rosters 1 and 3 both score 200 points for. Every other team scores 90 each week.
     # Roster 1 goes 11-0 then 0-11 in all-play. Roster 3 goes 10-1 then 11-0.

@@ -337,8 +337,8 @@ def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
 
 def test_power_rank_fact_reads_plainly(hbundle):
     assert hbundle.sheet.facts["PR.1"].text == (
-        "Brock ‘N’ Roll is 7th in the power rankings, down 3 places from last week: "
-        "6th in standing, 8th in form, 11th in schedule played, 5th in scoring."
+        "Brock ‘N’ Roll is 8th in the power rankings, down 4 places from last week: "
+        "6th in standing, 7th in form, 11th in schedule played, 5th in scoring."
     )
 
 

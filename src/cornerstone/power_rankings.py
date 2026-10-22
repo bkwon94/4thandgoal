@@ -2,7 +2,9 @@
 Power rankings: a rank per team per week from four components, standing, form, schedule played, and scoring.
 Pure code over the saved history. No trade value and no chart enter the formula.
 """
-from cornerstone.facts_league import TREND_WEEKS, head_to_head, season_records, standings_order
+from decimal import Decimal
+
+from cornerstone.facts_league import TREND_WEEKS, head_to_head, season_records, standings_order, week_median
 from cornerstone.models import History, PastWeek, PowerRow
 from cornerstone.tunables import POWER_WEIGHTS
 
@@ -11,6 +13,8 @@ QUALITY_TOP = 4
 # The neutral half of a rate with no game behind it,
 # so the formula does not punish a team for a schedule it did not choose.
 NEUTRAL = 0.5
+# The longest form streak: two games a week over the form window. The scale runs from minus this to plus this.
+STREAK_CAP = 2 * TREND_WEEKS
 
 
 def power_rankings(history: History, through: int) -> dict[int, list[PowerRow]]:
@@ -85,11 +89,42 @@ def _head_to_head_record(weeks: list[PastWeek], roster_id: int) -> tuple[int, in
     return results.count(1), results.count(-1)
 
 
+def _week_games(week: PastWeek, roster_id: int) -> list[int]:
+    """The results of one week's games, oldest first: the head-to-head game, then the median game.
+
+    1 is a win, -1 a loss, 0 a tie. A bye week has the median game only.
+    """
+    games = []
+    game = head_to_head(week, roster_id)
+    if game is not None:
+        games.append(game[1])
+    # Decimal, as season_records settles it, so a float never flips a game at the median.
+    mine, median = Decimal(str(week.scores[roster_id])), week_median(week)
+    games.append((mine > median) - (mine < median))
+    return games
+
+
+def _form_streak(games: list[int]) -> int:
+    """Wins (positive) or losses (negative) in a row, newest game back, with the median game counted.
+
+    The median game is the newer game of its week, since it settles after every head-to-head game.
+    """
+    run = 0
+    for result in reversed(games):
+        if result == 0 or (run and result != (1 if run > 0 else -1)):
+            break
+        run += result
+    return run
+
+
 def _form(recent: list[PastWeek], rosters: list[int]) -> dict[int, float]:
-    """Half the head-to-head win rate, half the all-play win rate, over the recent weeks."""
+    """A third each over the recent weeks: the form streak, the record with the median game, the all-play rate."""
     out = {}
     for rid in rosters:
-        out[rid] = _rate(*_head_to_head_record(recent, rid)) / 2 + _all_play_rate(recent, rid) / 2
+        games = [result for week in recent for result in _week_games(week, rid)]
+        streak = _scaled(_form_streak(games), -STREAK_CAP, STREAK_CAP)
+        record = _rate(games.count(1), games.count(-1))
+        out[rid] = (streak + record + _all_play_rate(recent, rid)) / 3
     return out
 
 
@@ -109,11 +144,30 @@ def _schedule_played(weeks: list[PastWeek], standing: list[int]) -> dict[int, fl
     return out
 
 
+def _mean_margin(weeks: list[PastWeek], roster_id: int) -> float:
+    """The mean head-to-head margin per game, points for minus points against. No game gives 0."""
+    margins = []
+    for week in weeks:
+        game = head_to_head(week, roster_id)
+        if game is not None:
+            margins.append(week.scores[roster_id] - week.scores[game[0]])
+    return sum(margins) / len(margins) if margins else 0.0
+
+
 def _scoring(weeks: list[PastWeek], records: dict[int, tuple[int, int, float]]) -> dict[int, float]:
-    """Half the points for scaled from the bottom team to the top, half the season all-play win rate."""
+    """A third the points for, a third the season all-play win rate, a third the mean margin.
+
+    Points for and margin are each scaled from the bottom team to the top.
+    """
     points = {rid: record[2] for rid, record in records.items()}
     low, high = min(points.values()), max(points.values())
+    margin = {rid: _mean_margin(weeks, rid) for rid in records}
+    margin_low, margin_high = min(margin.values()), max(margin.values())
     out = {}
     for rid in records:
-        out[rid] = _scaled(points[rid], low, high) / 2 + _all_play_rate(weeks, rid) / 2
+        out[rid] = (
+            _scaled(points[rid], low, high)
+            + _all_play_rate(weeks, rid)
+            + _scaled(margin[rid], margin_low, margin_high)
+        ) / 3
     return out

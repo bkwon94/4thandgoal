@@ -61,9 +61,7 @@ def season_records(history: History, through: int) -> dict[int, tuple[int, int, 
 
     for number in range(1, through + 1):
         scores = {rid: Decimal(str(p)) for rid, p in history.weeks[number].scores.items()}
-        ordered = sorted(scores.values(), reverse=True)
-        # The same median as median_facts: the mean of the 6th and 7th scores.
-        median = (ordered[5] + ordered[6]) / 2
+        median = week_median(history.weeks[number])
         for a, b in history.weeks[number].pairs:
             settle(a, scores[a], scores[b])
             settle(b, scores[b], scores[a])
@@ -471,6 +469,13 @@ def _streak(history: History, roster_id: int, through: int) -> int:
             break
         run += result
     return run
+
+
+def week_median(week: PastWeek) -> Decimal:
+    """The exact median score of one week, the line of the median game."""
+    ordered = sorted((Decimal(str(p)) for p in week.scores.values()), reverse=True)
+    # The same median as median_facts: the mean of the 6th and 7th scores.
+    return (ordered[5] + ordered[6]) / 2
 
 
 def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
