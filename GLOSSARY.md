@@ -68,6 +68,11 @@ opponent win rate, which covers next week only.
 **All-play record**:
 Wins and losses as if a team played every other team that week.
 
+**Form streak**:
+Wins or losses in a row over the last 3 weeks, newest game back, with the median game counted. The
+median game is the newer game of its week. A tie ends it. It feeds the form component only.
+_Avoid_: streak (alone). The streak fact on the page is head to head only.
+
 **Quality win**:
 A head-to-head win against a team in the top 4 of the standings of that week.
 
