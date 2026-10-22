@@ -38,6 +38,28 @@ The portrait of a player from the Sleeper image CDN, or the NFL team logo for a 
 build time; a missing one shows the default silhouette.
 _Avoid_: photo, avatar (that is the team image)
 
+### Power rankings
+
+**Power rank**:
+The place from 1 to 12 by power score, for one week.
+
+**Power score**:
+The weighted mean of the four components, with the weights in `POWER_WEIGHTS`.
+
+**Component**:
+One of standing, form, schedule played, scoring. Each has a rank of 1 to 12.
+_Avoid_: schedule strength (for schedule played). Schedule played is distinct from the next
+opponent win rate, which covers next week only.
+
+**All-play record**:
+Wins and losses as if a team played every other team that week.
+
+**Quality win**:
+A head-to-head win against a team in the top 4 of the standings of that week.
+
+**Movement**:
+Last week's power rank minus this week's. Positive is up.
+
 ### Trades
 
 **Trade**:

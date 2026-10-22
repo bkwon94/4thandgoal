@@ -1,5 +1,5 @@
 """
-The tunable table: every number the trade analyzer rubric names, each with its name and its reason.
+The tunable table: every number of the trade analyzer rubric and the power rankings, each with its name and its reason.
 The rubric file in the prompts directory points here, so a band or a margin changes in one place.
 """
 from decimal import Decimal
@@ -78,3 +78,7 @@ GRADES_PER_DAY = 20
 # The teams route: the seconds it answers one season from memory before it builds the teams again.
 # Each build fetches Sleeper, so the trade form fills at once. A trade or a waiver claim shows within this window.
 TEAMS_CACHE_SECONDS = 300
+
+# The power score is the weighted mean of the four components, keyed by component.
+# The weights are equal so the rank is one line to explain.
+POWER_WEIGHTS = {"standing": 0.25, "form": 0.25, "schedule_played": 0.25, "scoring": 0.25}

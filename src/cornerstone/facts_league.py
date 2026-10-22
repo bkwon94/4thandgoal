@@ -12,6 +12,7 @@ from cornerstone.models import (
     History,
     MatchupFacts,
     NextMatchup,
+    PastWeek,
     Pick,
     PlayerLine,
     PositionLeader,
@@ -72,6 +73,14 @@ def season_records(history: History, through: int) -> dict[int, tuple[int, int, 
     return {rid: (wins[rid], losses[rid], r2(float(points[rid]))) for rid in points}
 
 
+def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
+    """The roster IDs in standings order: most wins first, then most points for.
+
+    The standings and the power rankings both use this order, so the two cannot drift.
+    """
+    return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+
+
 def standings(week: Week, history: History | None = None) -> list[Standing]:
     if history is not None and history.complete():
         records = season_records(history, week.week)
@@ -81,7 +90,7 @@ def standings(week: Week, history: History | None = None) -> list[Standing]:
         records = {
             t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
         }
-    ordered = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+    ordered = standings_order(records)
     cut_wins = records[ordered[PLAYOFF_SPOTS - 1]][0]
     strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
     # Rank the highest strength first. A team with no next matchup has no rank.
@@ -454,15 +463,25 @@ def _streak(history: History, roster_id: int, through: int) -> int:
     """Wins (positive) or losses (negative) in a row, newest week back. Head-to-head only."""
     run = 0
     for number in range(through, 0, -1):
-        week = history.weeks[number]
-        opponent = next(
-            (b if a == roster_id else a for a, b in week.pairs if roster_id in (a, b)), None
-        )
-        if opponent is None:
+        game = head_to_head(history.weeks[number], roster_id)
+        if game is None:
             continue
-        mine, theirs = week.scores[roster_id], week.scores[opponent]
-        result = (mine > theirs) - (mine < theirs)
+        _, result = game
         if result == 0 or (run and result != (1 if run > 0 else -1)):
             break
         run += result
     return run
+
+
+def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
+    """The opponent and the result of one head-to-head game: 1 a win, -1 a loss, 0 a tie.
+
+    None when the roster has no pair that week, such as a bye. The median game is not in it.
+    """
+    opponent = next(
+        (b if a == roster_id else a for a, b in week.pairs if roster_id in (a, b)), None
+    )
+    if opponent is None:
+        return None
+    mine, theirs = week.scores[roster_id], week.scores[opponent]
+    return opponent, (mine > theirs) - (mine < theirs)
