@@ -38,6 +38,10 @@ NUMBER_WORDS = [
     "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
     "nineteen", "twenty", "dozen",
 ]
+# A reaction sentence cites no fact, so it must be too short to hide a claim.
+REACTION_WORD_LIMIT = 8
+# The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
+WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
 
 
 def normalize_number(number: str) -> str:
@@ -73,9 +77,10 @@ def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list
     return failures
 
 
-def _banned_words() -> list[str]:
+def _banned(heading: str) -> list[str]:
+    """The comma list on the line after a vocabulary heading, such as "## Banned words"."""
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
-    line = text.split("## Banned words", 1)[1].strip().splitlines()[0]
+    line = text.split(heading, 1)[1].strip().splitlines()[0]
     return [w.strip().rstrip(".") for w in line.split(":", 1)[1].split(",")]
 
 
@@ -130,6 +135,21 @@ def _week_numbers(sheet: FactSheet) -> set[str]:
     return {str(number), str(number + 1)}
 
 
+def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -> list[str]:
+    """The limits on a reaction sentence: no digit, no scope name, and fewer than 8 words."""
+    failures = []
+    if re.search(r"\d", text):
+        failures.append("a reaction sentence has a digit; cite a fact or drop the number")
+    named = [n for n in scope_names if whole_word(n, text)]
+    # A last name alone counts only with its capital, so "that hurts" is not Jalen Hurts.
+    named += sorted(last for last in scope_last if last and re.search(_whole_pattern(last), text))
+    if named:
+        failures.append(f"a reaction sentence names {named[0]}; cite a fact or drop the name")
+    if len(text.split()) >= REACTION_WORD_LIMIT:
+        failures.append(f"a reaction sentence has {REACTION_WORD_LIMIT} or more words; keep it short or cite a fact")
+    return failures
+
+
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
@@ -137,10 +157,19 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
     in_scope_last = {last_name(p) for p in chapter.scope_players}
-    banned = _banned_words()
+    banned = _banned("## Banned words")
+    banned_phrases = _banned("## Banned phrases")
     always_allowed = _week_numbers(sheet)
+    reactions = 0
 
     for i, sentence in enumerate(blurb.sentences):
+        # A sentence with no fact IDs is the one reaction a blurb may hold.
+        if not sentence.fact_ids:
+            reactions += 1
+            if reactions > 1:
+                failures.append(f"[{i}] a second reaction sentence; a blurb may hold one, so cite a fact")
+            failures += [f"[{i}] {m}" for m in reaction_failures(sentence.text, scope_names, in_scope_last)]
+
         valid_ids = []
         for fid in sentence.fact_ids:
             if fid in sheet.facts and fid in in_chapter:
@@ -155,7 +184,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         ids = ", ".join(sentence.fact_ids)
         for message in number_failures(bare, cited | always_allowed, cited_text):
             # A digit failure names the cited IDs, so the rewrite sees the facts that the check used.
-            suffix = "" if message.startswith("number word") else f" {ids}"
+            # A reaction sentence cites no IDs, so it gets no suffix.
+            suffix = "" if message.startswith("number word") or not ids else f" {ids}"
             failures.append(f"[{i}] {message}{suffix}")
 
         # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
@@ -176,6 +206,9 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for word in banned:
             if whole_word(word, bare):
                 failures.append(f"[{i}] banned word '{word}'")
+        for phrase in banned_phrases:
+            if whole_word(phrase, bare):
+                failures.append(f"[{i}] banned phrase '{phrase}'")
 
         for words, markers in GATED_WORDS:
             for word in words:
@@ -189,6 +222,11 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     if two_team_chapter(chapter.key):
         for i, team, mentions in repeated_teams([s.text for s in blurb.sentences], chapter.scope_teams):
             failures.append(repeat_failure(f"[{i}] the blurb", team, mentions))
+
+    # The ", which" tail is the stock joke shape, so a blurb gets one.
+    tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
+    if len(tails) > 1:
+        failures.append(f"[{tails[1]}] {len(tails)} sentences have a ', which' tail; a blurb may hold one")
 
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:

@@ -1,6 +1,6 @@
 # Vocabulary
 
-These are the only stat terms you may use. Each term means exactly what its line says. Do not use a loose word for a defined stat.
+These terms define the stats. Each term means exactly what its line says. When you name a stat, use its term. A plain phrase that the cited fact supports is fine. Never use a word that names a different stat.
 
 - **Top Scorer**: the starter with the most points. League-wide, it is the starter with the most points on any team.
 - **MVB**: the bench player with the most points, across all teams.
@@ -36,3 +36,7 @@ These are the only stat terms you may use. Each term means exactly what its line
 ## Banned words
 
 Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked.
+
+## Banned phrases
+
+Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say.
