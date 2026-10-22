@@ -68,6 +68,20 @@
     "reason": "The other side does better, so ask for more.",
     "differs": false
   },
+  "fairness": {
+    "state": "fair",
+    "gives_more": null,
+    "sides": [
+      {
+        "roster_id": 4,
+        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      {
+        "roster_id": 12,
+        "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+      }
+    ]
+  },
   "sides": [
     {
       "roster_id": 4,

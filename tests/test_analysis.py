@@ -302,6 +302,15 @@ def test_the_number_rule_bans_a_trade_value_a_sum_and_a_ratio(trade, snap):
         assert phrase not in system
 
 
+def test_the_letter_rules_guard_the_fairness_state(trade, snap):
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    # The prompt wraps its lines, so the check reads it as one line.
+    system = " ".join(fake.calls[0][0].split())
+    assert ("The fairness state is a code rule on the letters that stand. Never move a letter to change it, "
+            "and never write win-win, lopsided, or fair about the trade.") in system
+
+
 def test_an_empty_response_or_a_refusal_falls_back(trade, snap):
     from cornerstone.writer import RefusalError
 

@@ -22,6 +22,8 @@ Then give a verdict for the side that asked, with one reason.
    from the code's letter.
 3. When your letter differs from the code's letter, give a one-line reason. When it is the same,
    leave the reason empty.
+4. The fairness state is a code rule on the letters that stand. Never move a letter to change it,
+   and never write win-win, lopsided, or fair about the trade.
 
 ## Analysis
 

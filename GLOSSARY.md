@@ -175,6 +175,17 @@ _Avoid_: call, recommendation
 The decision as the page shows it: yes, no, or not as is. It maps from the verdict choice: accept
 to yes, decline to no, counter to not as is. Use "choice" in code and "answer" on the page.
 
+**Fairness**:
+Whether a proposed trade is good for both sides, with one reason per side. It reads the final
+letters that stand and has three states: good for both, fair, and lopsided. The rubric file sets
+the bounds of each state. A lopsided trade names the side that gives more.
+_Avoid_: balance, even trade
+
+**Good for both**:
+The page word for the win-win state of the fairness. Use "win_win" in code and "good for both" on
+the page.
+_Avoid_: win-win on the page
+
 **Factor**:
 The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
 _Avoid_: criterion (alone)

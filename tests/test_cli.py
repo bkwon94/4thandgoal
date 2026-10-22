@@ -300,9 +300,12 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     assert out.count("  Schedule: even. ") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
+    # The fairness line follows the verdict, then one reason per side in the order of the sides.
     assert out.endswith(
-        "\nVerdict for Amon-Ra Dawg Your Team: decline. "
-        "The trade costs the asking side too much.\n")
+        "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
+        "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
+        "  Unsolicited Dak Picks: It gets far more trade value than it gives.\n"
+        "  Amon-Ra Dawg Your Team: The best lineup gains after the trade.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out
@@ -451,8 +454,9 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     assert out.count("  Analysis: Garrett Wilson scored 14.2 points per game before the trade.") == 2
     assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: C")
             < out.index("Analysis: "))
-    assert out.endswith("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
-                        "(differs from the rubric's default)\n")
+    # The fairness reads Claude's letters, C and D, so the trade is still lopsided.
+    assert ("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
+            "(differs from the rubric's default)\nFairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
 
 
 def test_analyze_with_claude_says_when_the_call_fell_back(
@@ -468,6 +472,5 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     assert out.count("  Analysis: Analysis unavailable\n") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
-    assert out.endswith(
-        "\nVerdict for Amon-Ra Dawg Your Team: decline. "
-        "The trade costs the asking side too much.\n")
+    assert ("\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
+            "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out

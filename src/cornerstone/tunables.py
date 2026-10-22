@@ -64,6 +64,12 @@ ACCEPT_AT_OR_ABOVE = "B"
 # final letter is no better, and counters when it is better. The schedule lean can turn that middle result.
 DECLINE_AT_OR_BELOW = "D"
 
+# The fairness of a trade reads the final letter of both sides, so it says whether the other side will take it.
+# The lowest final letter of both sides that makes a win-win. At B a side gets more than it gives, so both win.
+WIN_WIN_AT_OR_ABOVE = "B"
+# The highest final letter of either side that makes a trade lopsided. At D a side gives more than it gets.
+LOPSIDED_AT_OR_BELOW = "D"
+
 # The API service: the count of requests one client address may make in a fixed one-minute window.
 # Past it the route answers 429, so one browser cannot loop the API and run up the Claude bill.
 RATE_LIMIT_PER_MINUTE = 10

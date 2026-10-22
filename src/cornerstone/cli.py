@@ -25,7 +25,7 @@ from cornerstone.pipeline import (
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
-from cornerstone.rubric import ProposedTrade, TradeSide, grade, verdict
+from cornerstone.rubric import Fairness, ProposedTrade, TradeSide, fairness, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.trades import EASTERN
@@ -160,8 +160,21 @@ def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         return None
 
 
+# The page words of the fairness states. The lopsided line adds the team that gives more.
+FAIRNESS_WORDS = {"win_win": "Good for both", "fair": "Fair", "lopsided": "Lopsided"}
+
+
+def _fairness_lines(snapshot: Snapshot, fairness_result: Fairness) -> list[str]:
+    """The fairness line in page words, then one reason per side, as the site shows them."""
+    words = FAIRNESS_WORDS[fairness_result.state]
+    if fairness_result.gives_more is not None:
+        words += f": {snapshot.teams[fairness_result.gives_more].name} gives more."
+    reasons = (f"  {snapshot.teams[side.roster_id].name}: {side.reason}" for side in fairness_result.sides)
+    return [f"Fairness: {words}", *reasons]
+
+
 def run_analyze(repo: Path, args: argparse.Namespace) -> int:
-    """Grade the proposed trade from the live or saved snapshot. Print the breakdown of each side and the verdict.
+    """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
     Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
     """
@@ -222,6 +235,10 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         choice = analysis.verdict
     flag = " (differs from the rubric's default)" if analysis is not None and analysis.verdict_differs else ""
     print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}{flag}")
+    # The fairness reads the letters that stand: Claude's when the call ran, the rubric's without it.
+    letters = analysis.standing_letters if analysis is not None else (result[0].final_letter, result[1].final_letter)
+    for line in _fairness_lines(snapshot, fairness(letters, result)):
+        print(line)
     return 0
 
 

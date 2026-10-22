@@ -34,7 +34,7 @@ rarely and means something when it does.
 6. As a manager, I want one reason per side under the fairness line, so that I see what each side gains.
 7. As a manager, I want the reason to come from the factors already shown, so that it matches the breakdown.
 8. As a manager, I want my decision to stay the lead of the page, so that my own answer comes first.
-9. As a manager, I want the fairness line on a cached result too, so that an old result reads the same.
+9. As a manager, I want an old result graded again after the fairness line ships, so that every result I open has it.
 10. As a manager, I want the fairness line with no new wait, so that the result is as fast as today.
 11. As a manager, I want the fairness line to use plain words, so that I never see a letter grade.
 12. As a manager, I want to pick a partner team, so that the finder looks at one roster I can trade with.
@@ -61,7 +61,8 @@ rarely and means something when it does.
 ### Phase 1: the fairness line
 
 - Fairness is a code rule beside the verdict rule, in the rubric module. It reads the two final
-  letters and the adjusters of each breakdown. It never calls Claude.
+  letters that stand after the Claude call, the same letters the verdict reads, and the adjusters
+  of each breakdown. It never calls Claude.
 - Three states: `win_win` when both final letters are at or above `WIN_WIN_AT_OR_ABOVE`, which is
   B; `lopsided` when either final letter is at or below `LOPSIDED_AT_OR_BELOW`, which is D; `fair`
   for the rest. Both bounds live in the tunable table. The rubric file names them and never repeats
@@ -72,13 +73,14 @@ rarely and means something when it does.
   side with the lower start letter gives more.
 - The fairness text holds no letter, no trade value, no sum, no ratio, and no chart name. The
   existing prose rules on the breakdown cover it, since it reuses breakdown reasons.
-- The response document gains a `fairness` block: the state, and per side the roster id and the
-  reason. The block is computed at response time from the sides in the document, so a cached
-  document gets it too. The result cache key does not change.
+- The response document gains a `fairness` block: the state, `gives_more` for the side that gives
+  more, and per side the roster id and the reason. `DOCUMENT_VERSION` bumps, so an old cached document never serves without the block.
 - The page shows the fairness line under the decision block and above the swap card. Page words:
   "Good for both", "Fair", "Lopsided". The lopsided line reads "Lopsided: <team> gives more." The
   two reasons sit under the line, one per side, with the asker's side first.
-- The Claude analysis prompt does not change in phase 1. The verdict rule does not change.
+- The rubric file gains a Fairness section, and the analysis rules gain one guard line. So the
+  prompt changes once, and the prompt cache rebuilds once. There is no new Claude call. The verdict
+  rule does not change.
 - Glossary entries: **Fairness** for the code term and the three states; **Good for both** as the
   page word for `win_win`. Use "fairness" in code and on the page as the block title.
 
@@ -115,8 +117,8 @@ rarely and means something when it does.
 - Phase 1 document: the fixture response document gains the block and stays byte-identical with the
   site's copy. The site's result component test renders the three states. Prior art: the fixture
   shape test and the analyze-result component tests.
-- Phase 1 cache: a cached document without the block gets it at response time. Prior art: the
-  result cache tests.
+- Phase 1 cache: `DOCUMENT_VERSION` bumps, and a test checks that the cache key changes when the
+  version changes. Prior art: the result cache tests.
 - Phase 2 seam: the finder function. Two fixture rosters and the week 6 snapshot in, a ranked list
   out. Cases: a pair with three or more win-wins returns three; a pair with one returns one; a pair
   with none returns the empty list; a handcuff never appears; a two-for-one appears in both
@@ -124,7 +126,8 @@ rarely and means something when it does.
   trades.
 - Phase 2 route: the limit counts one grade, the cache hit is free, and the Claude failure falls
   back to the code reasons. Prior art: the grade limits tests and the analysis fallback tests.
-- Prompt text tests do not apply in phase 1. In phase 2, one test pins the finder prompt lines.
+- In phase 1, one prompt text test pins the guard line in the analysis rules. In phase 2, one test
+  pins the finder prompt lines.
 
 ## Out of Scope
 

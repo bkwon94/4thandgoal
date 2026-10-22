@@ -23,13 +23,16 @@ from fastapi.testclient import TestClient
 from conftest import strip_trend_numbers
 
 from cornerstone.adjusters import TREND
-from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
+from cornerstone.analysis import (
+    Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
+)
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
+from cornerstone_api.cache import cache_key
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
@@ -344,7 +347,7 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
                                "reason": "The other side does better, so ask for more.", "differs": False}
     # The document leads with the decision, and no letter or step reaches it.
-    assert list(doc)[:3] == ["trade", "decision", "sides"]
+    assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
     assert doc["as_of"] == {"chart_week": 6, "stats_through": 5, "rosters_fetched": "2026-10-19T09:30:00-04:00"}
@@ -461,6 +464,54 @@ def test_a_result_cached_under_another_document_version_never_serves(settings, s
     monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", 2)
     _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS)
     assert analyzer.calls == 2
+
+
+def test_the_document_has_the_fairness_block_after_the_decision(settings, sources):
+    doc = _document(settings, sources)
+    block = doc["fairness"]
+    assert list(block) == ["state", "gives_more", "sides"]
+    assert [list(side) for side in block["sides"]] == [["roster_id", "reason"]] * 2
+    assert [side["roster_id"] for side in block["sides"]] == [4, 12]
+    assert block["state"] in ("win_win", "fair", "lopsided")
+
+
+@pytest.mark.parametrize("letters, state, gives_more", [(["B", "B"], "win_win", None), (["D", "B"], "lopsided", 4)])
+def test_the_fairness_block_reads_the_letters_that_stand_after_the_claude_call(settings, sources, letters, state,
+                                                                               gives_more):
+    # Claude can move a final letter one step. That letter stands, so the fairness block reads it.
+    doc = _client(settings, sources, StubAnalyzer(claude_letters=letters)).post(
+        "/analyze", json=TRADE, headers=HEADERS).json()
+    assert doc["fallback"] is False
+    assert doc["fairness"]["state"] == state
+    assert doc["fairness"]["gives_more"] == gives_more
+
+
+def test_the_fairness_text_passes_the_prose_checks_of_the_analysis(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    breakdowns = grade(trade, snapshot)
+    names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
+    breakdown_text = _breakdown_text(breakdowns)
+    # Each step up in turn, so the block takes the reason of every adjuster and of the start letter once.
+    for index in range(6):
+        doc = _document(settings, sources, breakdowns=_steps([int(i == index) for i in range(5)], "even"))
+        for side in doc["fairness"]["sides"]:
+            text = side["reason"]
+            # The checks of the analysis: no trade value, no ratio word, no chart name, and no letter grade.
+            assert _prose_failures("fairness", text, _allowed({}, [], breakdown_text), breakdown_text, names) == []
+            assert _letter_failures("fairness", text) == []
+            assert not re.search(r"\b[A-F]\b", text)
+
+
+def test_the_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
+    import cornerstone_api.cache as cache_module
+
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    # A shape change bumps the version, so a document stored in the old shape never serves again.
+    key = cache_key(trade, snapshot)
+    monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", cache_module.DOCUMENT_VERSION + 1)
+    assert cache_key(trade, snapshot) != key
 
 
 def _strings(value):
@@ -803,7 +854,8 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 
 
 # The keys whose numbers are ids, weeks, or the stamp. No other number may appear in the document.
-NUMBER_KEYS = {"roster_id", "asker", "for_roster", "chart_week", "stats_through"}
+# The fairness block's gives_more is a roster id.
+NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
