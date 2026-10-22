@@ -17,12 +17,16 @@ from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, save_week_to_history, saved_through,
 )
 from cornerstone.models import (
-    Blurb, BuildRecord, Bundle, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
+    Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
+from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
-from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
+from cornerstone.sheet import (
+    RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rankings_chapter, read_bundle, standing_ranks,
+    write_bundle,
+)
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
@@ -40,6 +44,7 @@ NflverseFetcher = Callable[[int, int, list[str], dict, set[str]], NflverseWeek]
 NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
+HISTORY_GAP = "The history is missing a week from 1 to {week}. Run cornerstone history --through {week}."
 _VERSION_1_VERIFY = TypeAdapter(dict[str, list[VerifyResult]])
 
 
@@ -274,16 +279,22 @@ def run_build(
         log.warning("week %d not saved to history: %s", week, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
     try:
-        if _write_rankings(repo, season, week, bundle.data.teams) is None:
+        if _write_rankings(repo, season, week, bundle.data.teams, blurbs.get(RANKINGS_CHAPTER)) is None:
             log.warning("history incomplete through week %d: rankings.json not written", week)
     except (OSError, ValueError, KeyError) as err:
         log.warning("rankings.json not written for week %d: %s", week, err)
     return page
 
 
-def _write_rankings(repo: Path, season: int, week: int, teams: dict[int, Team]) -> Path | None:
+def _write_rankings(
+    repo: Path, season: int, week: int, teams: dict[int, Team], blurb: Blurb | None = None,
+) -> Path | None:
     """Write rankings.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
-    None when a week from 1 to `week` is missing."""
+    The rankings blurb goes into the rows of `week`. None when a week from 1 to `week` is missing."""
+    # A fallback blurb has no roster tags, so it would write an empty blurb for every team. With no blurb, the
+    # week keeps the blurbs of the last file.
+    if blurb is not None and blurb.fallback:
+        blurb = None
     root = history_root(repo, season)
     # The file holds every week to date. A rebuild of an older week must not cut the later weeks from it.
     through = saved_through(root, week)
@@ -293,7 +304,7 @@ def _write_rankings(repo: Path, season: int, week: int, teams: dict[int, Team]) 
         return None
     if through > week:
         log.info("rankings.json covers weeks 1 to %d, past the built week %d", through, week)
-    return render_rankings(history, season, teams, repo / "site")
+    return render_rankings(history, season, teams, repo / "site", week, blurb)
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
@@ -330,6 +341,13 @@ def run_rewrite(
 
     site_dir = repo / "site"
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
+    # The season file holds the rankings blurb, so a rewrite of the chapter must reach the file too.
+    if chapter == RANKINGS_CHAPTER:
+        try:
+            if _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter]) is None:
+                log.warning("history incomplete through week %d: rankings.json not written", week)
+        except (OSError, ValueError, KeyError) as err:
+            log.warning("rankings.json not written for week %d: %s", week, err)
     return page
 
 
@@ -339,12 +357,45 @@ def run_page_json(repo: Path, season: int, week: int) -> Path:
     return render_page_json(bundle, blurbs, repo / "site")
 
 
-def run_rankings(repo: Path, season: int, week: int) -> Path:
-    """Write rankings.json for a saved week from the saved history. It calls no writer and no network."""
-    bundle, _ = _load_saved_week(repo, season, week)
-    out = _write_rankings(repo, season, week, bundle.data.teams)
+def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
+    """The rankings chapter of a saved week, and True when the bundle had to take it in.
+
+    A saved week with no rankings chapter has no PR facts, so they come from the saved history.
+    """
+    chapter = next((c for c in bundle.sheet.chapters if c.key == RANKINGS_CHAPTER), None)
+    if chapter is not None:
+        return chapter, False
+    rows = power_rankings(history, history.week)[history.week]
+
+    def team(roster_id: int) -> str:
+        return bundle.data.teams[roster_id].name
+
+    bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
+    chapter = rankings_chapter(bundle.sheet.facts, rows, team, standing_ranks(bundle.data.table))
+    bundle.sheet.chapters.append(chapter)
+    return chapter, True
+
+
+def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
+    """Write the rankings blurb of a saved week with one writer call, then rankings.json from the saved history.
+    The writer runs for this week only. The other weeks keep the blurbs of the last file."""
+    directory = week_dir(repo, season, week)
+    bundle, blurbs = _load_saved_week(repo, season, week)
+    history = History(week=week, weeks=load_saved_weeks(history_root(repo, season), week))
+    # The check comes before the writer call, so a missing week costs no Claude call.
+    if not history.complete():
+        raise BuildStopped(HISTORY_GAP.format(week=week))
+    chapter, added = _rankings_chapter(bundle, history)
+    if added:
+        # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
+        write_bundle(bundle, directory / "facts.json")
+    verify = read_verify(directory / "verify.json")
+    blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call)
+    _log_chapter(chapter.key, blurbs[chapter.key])
+    _save_blurbs(directory, blurbs, verify)
+    out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key])
     if out is None:
-        raise BuildStopped(f"The history is missing a week from 1 to {week}. Run cornerstone history --through {week}.")
+        raise BuildStopped(HISTORY_GAP.format(week=week))
     return out
 
 

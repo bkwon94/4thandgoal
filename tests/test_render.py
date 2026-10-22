@@ -370,3 +370,38 @@ def test_rankings_file_holds_every_week_in_rank_order(fixture_raw_dir, fixture_h
             assert row["blurb"] == []
     assert all(row["movement"] is None for row in data["weeks"][0]["rows"])
     assert all(isinstance(row["movement"], int) for row in data["weeks"][1]["rows"])
+
+
+def _rankings_blurb(*tagged):
+    return Blurb(chapter="rankings", attempt=1, fallback=False,
+                 sentences=[Sentence(text=text, fact_ids=["PR.1"], roster_id=rid) for rid, text in tagged])
+
+
+def _blurbs_by_week(out):
+    data = json.loads(out.read_text(encoding="utf-8"))
+    return {w["week"]: {row["roster_id"]: row["blurb"] for row in w["rows"]} for w in data["weeks"]}
+
+
+def test_rankings_file_puts_the_blurb_in_the_current_week_and_keeps_past_weeks(
+    fixture_raw_dir, fixture_history_root, tmp_path,
+):
+    raw = load_raw(fixture_raw_dir)
+    history = load_history(fixture_history_root, raw, week=6)
+    teams = parse_week(raw).teams
+    render_rankings(history, 2026, teams, tmp_path, 5, _rankings_blurb((1, "Week 5 one."), (2, "Week 5 two.")))
+    out = render_rankings(history, 2026, teams, tmp_path, 6, _rankings_blurb(
+        (1, "First."), (2, "Second."), (1, "Again."),
+        # A sentence with no roster tag has no row to go in.
+        (None, "Lost."),
+    ))
+    blurbs = _blurbs_by_week(out)
+    # Each sentence is the shape the site reads: the text and its fact IDs, with no roster tag.
+    assert blurbs[6][1] == [{"text": "First.", "fact_ids": ["PR.1"]}, {"text": "Again.", "fact_ids": ["PR.1"]}]
+    assert blurbs[6][2] == [{"text": "Second.", "fact_ids": ["PR.1"]}]
+    assert blurbs[6][3] == []
+    # The past week keeps the blurb of the last file, and a week with no saved blurb keeps an empty list.
+    assert blurbs[5][1] == [{"text": "Week 5 one.", "fact_ids": ["PR.1"]}]
+    assert blurbs[5][2] == [{"text": "Week 5 two.", "fact_ids": ["PR.1"]}]
+    assert all(b == [] for week in (1, 2, 3, 4) for b in blurbs[week].values())
+    # A file with no blurb for the current week keeps every week's blurb as it was.
+    assert _blurbs_by_week(render_rankings(history, 2026, teams, tmp_path, 6)) == blurbs

@@ -35,6 +35,8 @@ from cornerstone.models import (
     History,
     NflverseWeek,
     PlayerLine,
+    PowerRow,
+    Standing,
     Trade,
     UsageShare,
     Week,
@@ -42,6 +44,7 @@ from cornerstone.models import (
     r2,
     sub,
 )
+from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
 from cornerstone.trades import is_late
 
@@ -72,6 +75,12 @@ SENTENCE_RANGES = {
     "recap": (2, 3),
     "median": (2, 4),
     "next_week": (1, 2),
+    # One or two sentences for each of the 12 teams.
+    "rankings": (12, 24),
+}
+RANKINGS_CHAPTER = "rankings"
+COMPONENT_WORDS = {
+    "standing": "standing", "form": "form", "schedule_played": "schedule played", "scoring": "scoring",
 }
 # The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
 # repeated team name: the 12-team chapters, such as awards and median, name many teams, and "they" is
@@ -177,6 +186,10 @@ class Context:
         self.awards = awards(week, self.mfacts)
         self.next = next_week(week, self.table)
         self.season_history = season_history(week, history)
+        # A gap in the history would shift every rank, so an incomplete history gives no power rankings.
+        self.power = (
+            power_rankings(history, week.week)[week.week] if history is not None and history.complete() else []
+        )
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
@@ -555,6 +568,61 @@ def history_facts(c: Context) -> list[Fact]:
         n = Nums()
         out.append(fact(f"H.{rid}.avg", f"{team} averages {n(h.average)} per week this season.", n, [team], []))
     return out
+
+
+def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
+    """One fact per team: the power rank, the movement, and the four component ranks, as ordinals.
+
+    It takes the rows and a name lookup, not a Context, so a saved week can get the facts from its history.
+    """
+    out = []
+    for row in rows:
+        n = Nums()
+        name = team(row.roster_id)
+        rank = n.ord(row.power_rank)
+        if row.movement is None:
+            move = "the first week of the power rankings"
+        elif row.movement == 0:
+            move = "no move from last week"
+        else:
+            places = "place" if abs(row.movement) == 1 else "places"
+            side = "up" if row.movement > 0 else "down"
+            move = f"{side} {n(abs(row.movement))} {places} from last week"
+        components = ", ".join(f"{n.ord(row.ranks[key])} in {word}" for key, word in COMPONENT_WORDS.items())
+        text = f"{name} is {rank} in the power rankings, {move}: {components}."
+        out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
+    return out
+
+
+def standing_ranks(table: list[Standing]) -> dict[int, int]:
+    """The standing rank of each roster, by roster ID. The sheet and a saved week both read it from here."""
+    return {s.roster_id: s.rank for s in table}
+
+
+def rankings_chapter(
+    facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], standing_rank: dict[int, int],
+) -> Chapter:
+    """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
+
+    The history cap does not apply here: the spec gives each of the 12 teams its own streak and trend facts.
+    """
+    ids = [
+        fid
+        for row in rows
+        for fid in (f"PR.{row.roster_id}", f"S.{standing_rank[row.roster_id]}",
+                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend")
+    ]
+    low, high = SENTENCE_RANGES[RANKINGS_CHAPTER]
+    return Chapter(
+        key=RANKINGS_CHAPTER,
+        title="Power rankings",
+        fact_ids=[fid for fid in ids if fid in facts],
+        scope_teams=[team(row.roster_id) for row in rows],
+        # No fact in the chapter names a player, so a player name in the blurb is an unsupported claim.
+        scope_players=[],
+        min_sentences=low,
+        max_sentences=high,
+    )
 
 
 def _trend_text(name: str, beaten: int, n: Nums) -> str:
@@ -1103,6 +1171,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         + _history_ids(facts, [r for nx in c.next for r in (nx.a, nx.b)], ("streak", "trend")),
         all_rosters, "next_week",
     ))
+    if c.power:
+        out.append(rankings_chapter(facts, c.power, c.team, standing_ranks(c.table)))
     return out
 
 
@@ -1118,7 +1188,7 @@ def build_bundle(
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
-        drop_facts(c), injury_facts_nfl(c),
+        drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(

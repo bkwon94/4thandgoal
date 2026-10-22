@@ -74,6 +74,10 @@ A head-to-head win against a team in the top 4 of the standings of that week.
 **Movement**:
 Last week's power rank minus this week's. Positive is up.
 
+**Roster tag**:
+The roster ID on a sentence of the rankings chapter. It names the team the sentence is about, so
+the season file puts the sentence in that team's row. Other chapters leave it empty.
+
 ### Trades
 
 **Trade**:

@@ -55,7 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     page_json.add_argument("--week", type=int)
     page_json.add_argument("--season", type=int)
 
-    rankings = sub.add_parser("rankings", help="write rankings.json for a saved week")
+    rankings = sub.add_parser("rankings", help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
     rankings.add_argument("--season", type=int)
 
@@ -297,7 +297,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "page-json":
             print(run_page_json(repo, season, week))
         elif args.command == "rankings":
-            print(run_rankings(repo, season, week))
+            print(run_rankings(repo, season, week, claude_call))
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, claude_call)
             print(page)

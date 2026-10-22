@@ -7,11 +7,13 @@ from datetime import date
 
 import pytest
 
+from cornerstone.models import PowerRow
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
     fmt,
+    power_facts,
     read_bundle,
     week_dates,
     write_bundle,
@@ -234,7 +236,10 @@ def test_high_low_and_average(hbundle):
 
 
 def test_history_facts_capped_per_chapter(hbundle):
+    # The rankings chapter gives each of the 12 teams its streak and trend facts, so the cap skips it.
     for c in hbundle.sheet.chapters:
+        if c.key == "rankings":
+            continue
         assert sum(fid.startswith(("H.", "P.")) for fid in c.fact_ids) <= 6, c.key
 
 
@@ -316,3 +321,61 @@ def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw
         assert rank_of[lead.line.player_id] == lead.rank
         assert f"RANK.{lead.line.player_id}" in b.sheet.facts
         assert f"LEAD.RB.{lead.rank}" in b.sheet.facts
+
+
+def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
+    facts = {fid: f for fid, f in hbundle.sheet.facts.items() if fid.startswith("PR.")}
+    assert sorted(facts) == sorted(f"PR.{rid}" for rid in hbundle.data.teams)
+    for fid, f in facts.items():
+        rid = int(fid.split(".")[1])
+        assert f.teams == [hbundle.data.teams[rid].name]
+        for ordinal in re.findall(r"(\d+)(?:st|nd|rd|th)", f.text):
+            assert ordinal in f.numbers
+        assert len(re.findall(r"\d+(?:st|nd|rd|th)", f.text)) == 5
+
+
+def test_power_rank_fact_reads_plainly(hbundle):
+    assert hbundle.sheet.facts["PR.1"].text == (
+        "Brock ‘N’ Roll is 7th in the power rankings, down 3 places from last week: "
+        "6th in standing, 8th in form, 11th in schedule played, 5th in scoring."
+    )
+
+
+def test_power_rank_fact_in_week_one_says_first_week():
+    row = PowerRow(roster_id=3, power_rank=2, movement=None, power_score=0.6,
+                   values={}, ranks={"standing": 1, "form": 4, "schedule_played": 7, "scoring": 3})
+    [f] = power_facts([row], lambda rid: "Bo Girds")
+    assert f.text == ("Bo Girds is 2nd in the power rankings, the first week of the power rankings: "
+                      "1st in standing, 4th in form, 7th in schedule played, 3rd in scoring.")
+    assert f.numbers == ["2", "1", "4", "7", "3"]
+
+
+def test_power_rank_fact_with_no_movement_says_no_move():
+    row = PowerRow(roster_id=3, power_rank=4, movement=0, power_score=0.5,
+                   values={}, ranks={"standing": 2, "form": 5, "schedule_played": 9, "scoring": 6})
+    [f] = power_facts([row], lambda rid: "Bo Girds")
+    assert f.text == ("Bo Girds is 4th in the power rankings, no move from last week: "
+                      "2nd in standing, 5th in form, 9th in schedule played, 6th in scoring.")
+
+
+def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
+    facts = hbundle.sheet.facts
+    assert ch.title == "Power rankings"
+    assert (ch.min_sentences, ch.max_sentences) == (12, 24)
+    assert sorted(ch.scope_teams) == sorted(t.name for t in hbundle.data.teams.values())
+    rank = {s.roster_id: s.rank for s in hbundle.data.table}
+    for rid in hbundle.data.teams:
+        expected = [f"PR.{rid}", f"S.{rank[rid]}", f"H.{rid}.streak", f"H.{rid}.trend"]
+        assert [fid for fid in expected if fid in facts] == [fid for fid in expected if fid in ch.fact_ids]
+        assert f"PR.{rid}" in ch.fact_ids and f"S.{rank[rid]}" in ch.fact_ids
+    assert any(fid.endswith(".streak") for fid in ch.fact_ids)
+    assert any(fid.endswith(".trend") for fid in ch.fact_ids)
+    # The chapter lists the teams in power rank order.
+    ranks = [int(re.search(r"is (\d+)", facts[fid].text).group(1)) for fid in ch.fact_ids if fid.startswith("PR.")]
+    assert ranks == list(range(1, 13))
+
+
+def test_no_rankings_without_history(bundle):
+    assert not any(fid.startswith("PR.") for fid in bundle.sheet.facts)
+    assert "rankings" not in [c.key for c in bundle.sheet.chapters]

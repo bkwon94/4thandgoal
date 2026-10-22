@@ -18,7 +18,7 @@ from cornerstone.models import (
     VerifyResult,
 )
 from cornerstone.names import last_name
-from cornerstone.sheet import NUMBER_TOKEN, two_team_chapter
+from cornerstone.sheet import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
@@ -150,6 +150,32 @@ def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -
     return failures
 
 
+def roster_tag_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
+    """The roster tag rules of the rankings chapter: every sentence tagged, 1 or 2 sentences per team,
+    and the team's first sentence cites its PR fact. A tagged reaction sentence counts toward the 2."""
+    teams = {int(fid.split(".")[1]): sheet.facts[fid].teams[0] for fid in chapter.fact_ids if fid.startswith("PR.")}
+    by_team: dict[int, list[int]] = {rid: [] for rid in teams}
+    failures = []
+    for i, sentence in enumerate(blurb.sentences):
+        if sentence.roster_id is None:
+            failures.append(f"[{i}] the sentence has no roster tag; set roster_id to the team it is about")
+        elif sentence.roster_id not in teams:
+            failures.append(f"[{i}] roster tag {sentence.roster_id} is not a team in this chapter")
+        else:
+            by_team[sentence.roster_id].append(i)
+    for rid, name in teams.items():
+        indexes = by_team[rid]
+        if not indexes:
+            # A missing team has no sentence to point at, so the message points at the first, as the count check does.
+            failures.append(f"[0] team {name} has no sentence; give every team 1 or 2 sentences")
+            continue
+        if len(indexes) > 2:
+            failures.append(f"[{indexes[2]}] team {name} has {len(indexes)} sentences; give every team 1 or 2")
+        if f"PR.{rid}" not in blurb.sentences[indexes[0]].fact_ids:
+            failures.append(f"[{indexes[0]}] the first sentence about team {name} must cite PR.{rid}")
+    return failures
+
+
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
@@ -222,6 +248,9 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     if two_team_chapter(chapter.key):
         for i, team, mentions in repeated_teams([s.text for s in blurb.sentences], chapter.scope_teams):
             failures.append(repeat_failure(f"[{i}] the blurb", team, mentions))
+
+    if chapter.key == RANKINGS_CHAPTER:
+        failures += roster_tag_failures(blurb, chapter, sheet)
 
     # The ", which" tail is the stock joke shape, so a blurb gets one.
     tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
