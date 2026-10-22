@@ -369,3 +369,40 @@ def test_a_side_analysis_that_names_the_other_trade_team_twice_fails(trade, snap
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
     assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
+
+
+@pytest.mark.parametrize("sentence, failure", [
+    ("This side grades B after the trade.", "'grades B' names a letter grade"),
+    ("The trade moves this side to a grade C.", "'grade C' names a letter grade"),
+    ("Its Letter stays the same.", "the word 'Letter' is not allowed"),
+    ("This side graded B before the trade.", "'graded B' names a letter grade"),
+    ("This side earns an A grade.", "'an A' names a letter grade"),
+    ("This side is C-level after the trade.", "'C-level' names a letter grade"),
+])
+def test_a_letter_grade_in_a_side_analysis_fails(trade, snap, sentence, failure):
+    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 analysis: {failure}" in fake.calls[1][1]
+
+
+@pytest.mark.parametrize("reason, failure", [
+    ("The asking side grades D, so decline.", "'grades D' names a letter grade"),
+    ("The final letter is too low, so decline.", "the word 'letter' is not allowed"),
+])
+def test_a_letter_grade_in_the_verdict_reason_fails(trade, snap, reason, failure):
+    def bad(facts):
+        response = _response()(facts)
+        response["verdict"]["reason"] = reason
+        return response
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"verdict reason: {failure}" in fake.calls[1][1]
+
+
+def test_a_side_that_does_well_in_plain_words_passes(trade, snap):
+    text = ("Garrett Wilson scored 14.2 points per game before the trade. This side does well in the trade. "
+            "He is a starter.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    assert not analyze(trade, snap, call=fake).fallback

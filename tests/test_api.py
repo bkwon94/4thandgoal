@@ -25,9 +25,11 @@ from conftest import strip_trend_numbers
 from cornerstone.adjusters import TREND
 from cornerstone.analysis import Analysis, SideAnalysis, analyze, code_only
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
-from cornerstone.rubric import LETTERS, grade, verdict
+from cornerstone.render import is_def
+from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
+from cornerstone_api.analyzer import result_document
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
@@ -335,12 +337,16 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert [p["name"] for p in four["gets"]] == ["Dalton Kincaid", "Garrett Wilson"]
     assert twelve["gets"][0]["headshot"] == "https://sleepercdn.com/content/nfl/players/7569.jpg"
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
-    assert [side["start_letter"] for side in doc["sides"]] == ["C", "C"]
-    names = [a["name"] for a in doc["sides"][0]["adjusters"]]
+    assert [side["chart"]["lean"] for side in doc["sides"]] == ["even", "even"]
+    names = [f["name"] for f in doc["sides"][0]["factors"]]
     assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 6
     assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
-    assert doc["verdict"]["for_roster"] == 4
-    assert doc["verdict"]["choice"] in ("accept", "counter", "decline") and doc["verdict"]["reason"]
+    assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
+                               "reason": "The other side does better, so ask for more.", "differs": False}
+    # The document leads with the decision, and no letter or step reaches it.
+    assert list(doc)[:3] == ["trade", "decision", "sides"]
+    assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
+    assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
     assert doc["as_of"] == {"chart_week": 6, "stats_through": 5, "rosters_fetched": "2026-10-19T09:30:00-04:00"}
     assert doc["fallback"] is False
 
@@ -381,18 +387,109 @@ def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, 
     analyzer = StubAnalyzer(claude_letters=["A", "C"])
     doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
     assert doc["fallback"] is True
-    # The code's final letters stand: C for roster 4, and B for roster 12 after its adjusters.
-    assert [side["final_letter"] for side in doc["sides"]] == ["C", "B"]
+    # The code's letters and verdict stand, with no analysis.
     assert [side["analysis"] for side in doc["sides"]] == ["Analysis unavailable"] * 2
-    assert [side["final_reason"] for side in doc["sides"]] == [None, None]
+    assert doc["decision"]["differs"] is False
 
 
-def test_a_claude_letter_one_step_off_stands_with_its_reason(settings, sources):
+def test_a_claude_letter_one_step_off_stands(settings, sources):
     doc = _client(settings, sources, StubAnalyzer(claude_letters=["B", "C"])).post(
         "/analyze", json=TRADE, headers=HEADERS).json()
     assert doc["fallback"] is False
-    assert doc["sides"][0]["final_letter"] == "B"
-    assert doc["sides"][0]["final_reason"] == "Claude reads it one step off."
+    assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
+
+
+def _document(settings, sources, breakdowns=None, choice=None):
+    """The result document of TRADE from a built analysis, with the breakdowns and the verdict choice changed."""
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    breakdowns = breakdowns(grade(trade, snapshot)) if breakdowns else grade(trade, snapshot)
+    code = verdict(trade, breakdowns)
+    stands = code if choice is None else code.model_copy(update={"choice": choice})
+    sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
+                               analysis="Nico Collins leads the trade in points per game.", cited=[])
+                  for b in breakdowns)
+    analysis = Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=stands,
+                        verdict_differs=stands.choice != code.choice, fallback=False)
+    return result_document(trade, snapshot, analysis)
+
+
+@pytest.mark.parametrize("choice, answer", [("accept", "yes"), ("decline", "no"), ("counter", "not_as_is")])
+def test_the_answer_maps_from_the_verdict_choice(settings, sources, choice, answer):
+    doc = _document(settings, sources, choice=choice)
+    assert doc["decision"]["answer"] == answer
+    # The code's default for this trade is a counter, so any other choice differs from it.
+    assert doc["decision"]["differs"] is (choice != "counter")
+
+
+@pytest.mark.parametrize("letter, lean", [("A", "more"), ("B", "more"), ("C", "even"), ("D", "less"), ("F", "less")])
+def test_the_chart_lean_maps_from_the_start_letter(settings, sources, letter, lean):
+    doc = _document(settings, sources,
+                    breakdowns=lambda bs: tuple(b.model_copy(update={"start_letter": letter}) for b in bs))
+    assert [side["chart"]["lean"] for side in doc["sides"]] == [lean, lean]
+    # The chart reason is the band reason as the code wrote it.
+    assert doc["sides"][0]["chart"]["reason"].startswith("The trade value it gets and the trade value it gives")
+
+
+def _steps(steps, schedule_lean):
+    """Breakdowns with the steps of the first five adjusters of each side and the lean of the schedule set."""
+    def rework(breakdowns):
+        reworked = []
+        for b in breakdowns:
+            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:5], steps)]
+            adjusters.append(b.adjusters[5].model_copy(update={"lean": schedule_lean}))
+            reworked.append(b.model_copy(update={"adjusters": adjusters}))
+        return tuple(reworked)
+    return rework
+
+
+@pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
+def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
+    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, -1], schedule_lean))
+    factors = doc["sides"][0]["factors"]
+    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "handcuff",
+                                            "schedule"]
+    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "against", schedule_lean]
+
+
+def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
+    import cornerstone_api.cache as cache_module
+
+    analyzer = StubAnalyzer()
+    monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", 1)
+    _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", 2)
+    _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    assert analyzer.calls == 2
+
+
+def _strings(value):
+    """Every string in a document, at any depth."""
+    if isinstance(value, dict):
+        return [found for item in value.values() for found in _strings(item)]
+    if isinstance(value, list):
+        return [found for item in value for found in _strings(item)]
+    return [value] if isinstance(value, str) else []
+
+
+def test_a_trade_with_an_unlisted_player_leans_even_with_no_letter(settings, sources):
+    snapshot = sources.snapshot(settings.repo, 2026)
+    unlisted = next(pid for pid in snapshot.rosters[12] if pid not in snapshot.chart.values and not is_def(pid))
+    trade = {**TRADE, "sides": [TRADE["sides"][0], {"roster_id": 12, "gives": [unlisted]}]}
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=trade, headers=HEADERS).json()
+    for side in doc["sides"]:
+        assert side["chart"]["lean"] == "even"
+        assert "no trade value, so the chart gives neither side an edge." in side["chart"]["reason"]
+        assert not re.search(r"\b[A-F]\b", side["chart"]["reason"])
+        assert "letter" not in side["chart"]["reason"].lower()
+
+
+def test_the_fixture_document_names_no_letter():
+    fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
+    # A letter grade on its own, as in "C", or the word "letter". Neither may reach the document.
+    found = [text for text in _strings(fixture)
+             if re.search(r"\b[A-F]\b", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
+    assert found == []
 
 
 def test_the_real_analyzer_with_a_fake_claude_gives_the_document_with_its_text(settings, sources):
@@ -701,12 +798,12 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
     # Every item of a list has the shape of the fixture's first item, so no side or adjuster drops a key.
     for side in doc["sides"]:
         assert _shape(side) == _shape(fixture["sides"][0])
-        for adjuster in side["adjusters"]:
-            assert _shape(adjuster) == _shape(fixture["sides"][0]["adjusters"][0])
+        for factor in side["factors"]:
+            assert _shape(factor) == _shape(fixture["sides"][0]["factors"][0])
 
 
-# The keys whose numbers are ids, weeks, steps, or the stamp. No other number may appear in the document.
-NUMBER_KEYS = {"roster_id", "asker", "for_roster", "step", "chart_week", "stats_through"}
+# The keys whose numbers are ids, weeks, or the stamp. No other number may appear in the document.
+NUMBER_KEYS = {"roster_id", "asker", "for_roster", "chart_week", "stats_through"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -727,7 +824,7 @@ def _digits_outside_ids(value, key=None):
     return [] if key in DIGIT_STRING_KEYS or not re.search(r"\d", value) else [(key, value)]
 
 
-def test_the_document_has_no_number_outside_ids_weeks_steps_and_the_stamp(settings, sources):
+def test_the_document_has_no_number_outside_ids_weeks_and_the_stamp(settings, sources):
     doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
     assert _digits_outside_ids(doc) == []
 

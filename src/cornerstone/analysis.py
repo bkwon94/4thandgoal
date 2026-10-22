@@ -33,6 +33,9 @@ MIN_SENTENCES, MAX_SENTENCES = 3, 5
 BANNED_WORDS = ["tier", "tiers", "peaked", "skool", "pihs", "peakedinhighskool", "twice", "double", "triple"]
 # "chart" is banned too, except in "depth chart", which the breakdown reasons use.
 CHART_WORD = re.compile(r"(?<!\w)(?<!depth )charts?(?!\w)", re.IGNORECASE)
+# The document gives a decision, not letters, so no letter grade reaches the prose a manager reads.
+LETTER_GRADE = re.compile(r"\b(?:grades?|graded|grade of|an?) [A-F]\b|\b[A-F]-(?:level|grade)\b")
+LETTER_WORD = re.compile(r"\bletters?\b", re.IGNORECASE)
 # A failure can quote a trade value, so the log line masks every number. Claude still gets the full text.
 _ANY_NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
@@ -150,6 +153,13 @@ def _prose_failures(label: str, text: str, allowed: set[str], allowed_text: str,
     return failures
 
 
+def _letter_failures(label: str, text: str) -> list[str]:
+    """The letter rule on one piece of prose: no letter grade and no word "letter"."""
+    failures = [f"{label}: '{match.group()}' names a letter grade" for match in LETTER_GRADE.finditer(text)]
+    failures += [f"{label}: the word '{match.group()}' is not allowed" for match in LETTER_WORD.finditer(text)]
+    return failures
+
+
 def _breakdown_text(breakdowns: tuple[Breakdown, Breakdown]) -> str:
     """The reasons of both breakdowns. The prompt shows them, so their numbers may appear in the prose."""
     return " ".join(reason for b in breakdowns for reason in (b.reason, *(a.reason for a in b.adjusters)))
@@ -194,6 +204,7 @@ def check_response(
         allowed = _allowed(facts, cited, breakdown_text)
         allowed_text = " ".join([*(facts[fid].text for fid in cited), breakdown_text])
         failures += _prose_failures(f"{label} analysis", side.analysis, allowed, allowed_text, names)
+        failures += _letter_failures(f"{label} analysis", side.analysis)
         # The analysis names each team in the trade once, then says "this side", "they", or the player names.
         failures += [repeat_failure(f"{label} analysis", team, mentions) for team in trade_teams
                      if (mentions := team_mentions(team, side.analysis)) > 1]
@@ -203,6 +214,7 @@ def check_response(
     every = [fid for s in out.sides for fid in s.cited if fid in facts]
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
                                 " ".join([*(facts[fid].text for fid in every), breakdown_text]), names)
+    failures += _letter_failures("verdict reason", out.verdict.reason)
     return failures
 
 

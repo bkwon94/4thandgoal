@@ -4,9 +4,11 @@ Both routes build the live snapshot through the sources on the app state, so a t
 The teams route keeps its answer per season in memory for a short window, so the form fills at once.
 """
 from collections.abc import Callable
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 
+from cornerstone.adjusters import Adjuster, Lean
 from cornerstone.analysis import Analysis
 from cornerstone.render import headshot_url, is_def
 from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade
@@ -83,8 +85,26 @@ def _as_of(snapshot: Snapshot) -> dict:
     }
 
 
+# The decision a manager acts on, from the verdict choice of the rubric.
+Answer = Literal["yes", "no", "not_as_is"]
+ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_as_is"}
+# The chart lean of a side, from its start letter. No letter reaches the document.
+ChartLean = Literal["more", "even", "less"]
+CHART_LEANS: dict[str, ChartLean] = {"A": "more", "B": "more", "C": "even", "D": "less", "F": "less"}
+
+
+def _factor_lean(adjuster: Adjuster) -> Lean:
+    """The lean of one adjuster. The schedule never steps, so it keeps its own lean."""
+    if adjuster.lean is not None:
+        return adjuster.lean
+    return "for" if adjuster.step > 0 else "against" if adjuster.step < 0 else "even"
+
+
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders. It holds letters, steps, and reasons, and never a trade value, sum, or ratio."""
+    """The result the site renders: a decision first, then the analysis, the chart lean, and the factors per side.
+
+    It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
+    """
     a, b = trade.sides
     echoed = [
         {
@@ -98,27 +118,24 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
     sides = [
         {
             "roster_id": breakdown.roster_id,
-            "start_letter": breakdown.start_letter,
-            "reason": breakdown.reason,
-            "adjusters": [
-                {"name": adj.name, "step": adj.step, "lean": adj.lean, "reason": adj.reason}
+            "analysis": side.analysis,
+            "chart": {"lean": CHART_LEANS[breakdown.start_letter], "reason": breakdown.reason},
+            "factors": [
+                {"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
                 for adj in breakdown.adjusters
             ],
-            "final_letter": side.final_letter,
-            "final_reason": side.reason,
-            "analysis": side.analysis,
         }
         for breakdown, side in zip(analysis.breakdowns, analysis.sides)
     ]
     return {
         "trade": {"asker": trade.asker, "sides": echoed},
-        "sides": sides,
-        "verdict": {
+        "decision": {
             "for_roster": trade.asker,
-            "choice": analysis.verdict.choice,
+            "answer": ANSWERS[analysis.verdict.choice],
             "reason": analysis.verdict.reason,
             "differs": analysis.verdict_differs,
         },
+        "sides": sides,
         "as_of": _as_of(snapshot),
         "fallback": analysis.fallback,
         "missing": list(snapshot.missing),

@@ -33,7 +33,7 @@ CONSOLIDATION_REASON = (
     "The trade is one player for two or more, so the side with more players needs a margin "
     "before the sides count as even."
 )
-NO_CHART_REASON = "The week has no trade values, so both sides start at C."
+NO_CHART_REASON = "The week has no trade values, so the chart gives neither side an edge."
 
 
 class TradeInputError(ValueError):
@@ -145,7 +145,7 @@ def _start_letters(
     unlisted = [pid for side in trade.sides for pid in side.gives if pid not in values]
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
-                  + " no trade value, so neither side gets a start letter and both start at C.")
+                  + " no trade value, so the chart gives neither side an edge.")
         return _both_at_c(reason)
     # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
     sum_a = sum((Decimal(str(values[pid])) for pid in a.gives), Decimal(0))
@@ -220,19 +220,25 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Ve
     other = next(b for b in breakdowns if b.roster_id != trade.asker)
     mine, theirs = asker.final_letter, other.final_letter
     lean = asker.lean
+    # The reasons reach the result document, which gives a decision, so they name no letter.
     if _at_or_above(mine, ACCEPT_AT_OR_ABOVE):
-        return Verdict(choice="accept", reason=f"The asking side grades {mine}, so the trade favors it.")
+        return Verdict(choice="accept", reason="The trade favors the asking side.")
     if _at_or_below(mine, DECLINE_AT_OR_BELOW):
-        return Verdict(choice="decline", reason=f"The asking side grades {mine}, so the trade costs it too much.")
+        return Verdict(choice="decline", reason="The trade costs the asking side too much.")
     # The letters between the two bands accept only when the other side does no better than the asker.
-    grades = f"The asking side grades {mine} and the other side grades {theirs}"
+    if mine == theirs:
+        sides = "The two sides are about even"
+    elif _at_or_above(mine, theirs):
+        sides = "The asking side does better"
+    else:
+        sides = "The other side does better"
     if _at_or_above(mine, theirs):
         # Schedule is the tie break between fair and not quite fair. It never turns a clear letter.
         if lean == "against":
             return Verdict(choice="counter",
-                           reason=f"{grades}, but the schedule leans against the asking side, so ask for more.")
-        return Verdict(choice="accept", reason=f"{grades}, so the trade is fair.")
+                           reason=f"{sides}, but the schedule leans against the asking side, so ask for more.")
+        return Verdict(choice="accept", reason=f"{sides}, so the trade is fair.")
     if lean == "for":
         return Verdict(choice="accept",
-                       reason=f"{grades}, but the schedule leans for the asking side, so the trade is worth it.")
-    return Verdict(choice="counter", reason=f"{grades}, so ask for more.")
+                       reason=f"{sides}, but the schedule leans for the asking side, so the trade is worth it.")
+    return Verdict(choice="counter", reason=f"{sides}, so ask for more.")

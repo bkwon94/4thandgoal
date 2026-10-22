@@ -62,106 +62,94 @@
       }
     ]
   },
+  "decision": {
+    "for_roster": 4,
+    "answer": "not_as_is",
+    "reason": "The other side does better, so ask for more.",
+    "differs": false
+  },
   "sides": [
     {
       "roster_id": 4,
-      "start_letter": "C",
-      "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even.",
-      "adjusters": [
+      "analysis": "Nico Collins leads the trade in points per game.",
+      "chart": {
+        "lean": "even",
+        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      "factors": [
         {
           "name": "roster fit",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "Not every player it gets starts."
         },
         {
           "name": "standing",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "The team is out of the playoff race, and the trade is no bet on the future."
         },
         {
           "name": "trend and usage",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "The snap and target shares point both ways."
         },
         {
           "name": "injury",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Garrett Wilson are not in the id map, so no report count ran for them."
         },
         {
           "name": "handcuff",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "No player it gets is a handcuff."
         },
         {
           "name": "schedule",
-          "step": 0,
           "lean": "against",
           "reason": "The players it gets have more byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans against this side."
         }
-      ],
-      "final_letter": "B",
-      "final_reason": "Claude reads it one step off.",
-      "analysis": "Nico Collins leads the trade in points per game."
+      ]
     },
     {
       "roster_id": 12,
-      "start_letter": "C",
-      "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even.",
-      "adjusters": [
+      "analysis": "Nico Collins leads the trade in points per game.",
+      "chart": {
+        "lean": "even",
+        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      "factors": [
         {
           "name": "roster fit",
-          "step": 1,
-          "lean": null,
+          "lean": "for",
           "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
         },
         {
           "name": "standing",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "The team is neither in a playoff spot nor out of the race."
         },
         {
           "name": "trend and usage",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "The snap and target shares point both ways."
         },
         {
           "name": "injury",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
         },
         {
           "name": "handcuff",
-          "step": 0,
-          "lean": null,
+          "lean": "even",
           "reason": "No player it gets is a handcuff."
         },
         {
           "name": "schedule",
-          "step": 0,
           "lean": "for",
           "reason": "The players it gets have fewer byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans for this side."
         }
-      ],
-      "final_letter": "C",
-      "final_reason": "Claude reads it one step off.",
-      "analysis": "Nico Collins leads the trade in points per game."
+      ]
     }
   ],
-  "verdict": {
-    "for_roster": 4,
-    "choice": "counter",
-    "reason": "The asking side grades C and the other side grades B, so ask for more.",
-    "differs": false
-  },
   "as_of": {
     "chart_week": 6,
     "stats_through": 5,
