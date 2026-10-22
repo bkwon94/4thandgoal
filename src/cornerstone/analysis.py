@@ -15,7 +15,9 @@ from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdic
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
-from cornerstone.verifier import normalize_number, number_failures, remove_names, whole_word
+from cornerstone.verifier import (
+    normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
+)
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, analyzer_call, load_prompt
 
 log = logging.getLogger(__name__)
@@ -162,6 +164,7 @@ def check_response(
         return [f"the response must have {side_shape(breakdowns)}; it had rosters {had}"]
     names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
     breakdown_text = _breakdown_text(breakdowns)
+    trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]
     for breakdown in breakdowns:
         side = by_roster[breakdown.roster_id]
         label = f"roster {side.roster_id}"
@@ -183,6 +186,9 @@ def check_response(
         allowed = _allowed(facts, cited, breakdown_text)
         allowed_text = " ".join([*(facts[fid].text for fid in cited), breakdown_text])
         failures += _prose_failures(f"{label} analysis", side.analysis, allowed, allowed_text, names)
+        # The analysis names each team in the trade once, then says "this side", "they", or the player names.
+        failures += [repeat_failure(f"{label} analysis", team, mentions) for team in trade_teams
+                     if (mentions := team_mentions(team, side.analysis)) > 1]
         if side.reason:
             failures += _prose_failures(f"{label} reason", side.reason, allowed, allowed_text, names)
     # The verdict reason cites no fact of its own, so any fact the two analyses cite may back its numbers.

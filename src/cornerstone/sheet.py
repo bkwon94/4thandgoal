@@ -73,6 +73,16 @@ SENTENCE_RANGES = {
     "median": (2, 4),
     "next_week": (1, 2),
 }
+# The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
+# repeated team name: the 12-team chapters, such as awards and median, name many teams, and "they" is
+# unclear there.
+TWO_TEAM_CHAPTERS = ("motw", "game_changer")
+
+
+def two_team_chapter(key: str) -> bool:
+    return key in TWO_TEAM_CHAPTERS or key.startswith("recap_")
+
+
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")

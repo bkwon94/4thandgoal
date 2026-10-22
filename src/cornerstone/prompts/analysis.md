@@ -35,6 +35,8 @@ Then give a verdict for the side that asked, with one reason.
 6. Never count the players, starters, or weeks in the trade yourself, as in "two starters" or
    "the three players". That count is a new number. Name the players instead.
 7. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
+8. Name each team in the trade at most once in a side's analysis. After that, write "this side",
+   "they", or the player names.
 
 ## Trade value
 

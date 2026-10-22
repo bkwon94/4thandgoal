@@ -328,3 +328,28 @@ def test_every_retry_names_the_side_shape_with_both_roster_ids(trade, snap):
     retry = fake.calls[1][1]
     assert "roster 12: the analysis has 6 sentences" in retry
     assert "Give the whole response again with exactly 2 sides: roster 11 first, then roster 12, each once" in retry
+
+
+def test_a_side_analysis_that_names_its_team_twice_fails(trade, snap):
+    team = snap.teams[11].name
+    text = f"{team} gets Garrett Wilson. {team} needs a receiver. His target share went up."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
+
+
+def test_a_side_analysis_that_names_each_team_once_passes(trade, snap):
+    text = (f"{snap.teams[11].name} gets Garrett Wilson. {snap.teams[12].name} gives him up. "
+            "His target share went up.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    assert not analyze(trade, snap, call=fake).fallback
+
+
+def test_a_side_analysis_that_names_the_other_trade_team_twice_fails(trade, snap):
+    team = snap.teams[12].name
+    text = f"{team} gives up Garrett Wilson. {team} gets Bhayshul Tuten back. His target share went up."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
