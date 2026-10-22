@@ -23,3 +23,4 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 17. Never state a count of players, adds, or teams, such as "2 recent adds". No fact holds that count. Name them instead.
 18. Never put a number on a draft pick.
 19. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.
+20. Name each team at most once per blurb. After that, write "this side", "they", or the player names. Save the one mention for the punchline when the name invites it.

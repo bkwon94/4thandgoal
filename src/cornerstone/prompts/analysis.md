@@ -30,6 +30,8 @@ Then give a verdict for the side that asked, with one reason.
    never write a trade value, a sum, or a ratio. Never compute a new number or a difference.
 5. Write every number as digits. Never write a number as a word.
 6. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
+7. Name each team in the trade at most once in a side's analysis. After that, write "this side",
+   "they", or the player names.
 
 ## Trade value
 
