@@ -6,7 +6,7 @@
 
 **Blocked by:** 01 — Fairness rule and document block.
 
-**Status:** in-progress
+**Status:** done
 
 - [x] The finder function in a new module, one level above the grade function. Tests on the week 6 snapshot with two fixture rosters: a pair with three or more win-wins returns three; a pair with one returns one; a pair with none returns the empty list.
 - [x] A handcuff never appears, with a test. An out player with no return week never appears, with a test. An unlisted player never appears, with a test. A kicker and a defense never appear, with a test.
