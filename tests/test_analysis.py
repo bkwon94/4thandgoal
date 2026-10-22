@@ -299,3 +299,28 @@ def test_no_chart_value_reaches_the_result(trade, snap):
     for number in ("27.5", "11.5", "55.0", "30.5", "66.5"):
         assert number not in text
     assert "chart" not in text.lower() and "tier" not in text.lower()
+
+
+def test_a_side_analysis_that_names_its_team_twice_fails(trade, snap):
+    team = snap.teams[11].name
+    text = f"{team} gets Garrett Wilson. {team} needs a receiver. His target share went up."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
+
+
+def test_a_side_analysis_that_names_each_team_once_passes(trade, snap):
+    text = (f"{snap.teams[11].name} gets Garrett Wilson. {snap.teams[12].name} gives him up. "
+            "His target share went up.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    assert not analyze(trade, snap, call=fake).fallback
+
+
+def test_a_side_analysis_that_names_the_other_trade_team_twice_fails(trade, snap):
+    team = snap.teams[12].name
+    text = f"{team} gives up Garrett Wilson. {team} gets Bhayshul Tuten back. His target share went up."
+    bad = _response(eleven=_side(11, analysis=text))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]

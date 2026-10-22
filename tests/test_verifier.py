@@ -351,3 +351,55 @@ def test_drop_value_alone_fails_the_cost_gate(dbundle):
     ch = _ch(sheet, "recap_4")
     b = _blurb("recap_4", _s("The drops cost Bo Girds the game.", "D.12501.value"))
     assert any("'cost' needs" in m for m in code_check(b, ch, sheet))
+
+
+
+def test_team_named_twice_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("behold the lamb won.", "M4.result"), _s("behold the lamb again.", "M4.result"))
+    line = ("[1] the blurb: team behold the lamb is named 2 times; name it once, "
+            "then write 'this side', 'they', or the player names")
+    assert line in code_check(b, ch, sheet)
+
+
+def test_team_named_once_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("behold the lamb won.", "M4.result"), _s("They won again.", "M4.result"))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_second_team_named_once_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("behold the lamb played.", "M4.result"), _s("Bo Girds played.", "M4.result"))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_capital_second_mention_of_team_counts(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("They beat behold the lamb.", "M4.result"), _s("Behold the lamb lost.", "M4.result"))
+    assert any(m.startswith("[1] the blurb: team behold the lamb is named 2 times") for m in code_check(b, ch, sheet))
+
+
+def test_part_of_team_name_does_not_count(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("behold the lamb won.", "M4.result"), _s("The lamb ate.", "M4.result"))
+    assert not any("is named" in m for m in code_check(b, ch, sheet))
+
+
+def test_team_name_with_punctuation_named_twice_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_1")
+    b = _blurb("recap_1", _s("Brock ‘N’ Roll won.", "M1.result"), _s("Brock ‘N’ Roll again.", "M1.result"))
+    assert any(m.startswith("[1] the blurb: team Brock ‘N’ Roll is named 2 times") for m in code_check(b, ch, sheet))
+
+
+def test_twelve_team_chapter_skips_the_repeat_check(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "next_week")
+    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"), _s("Lil Fridge plays next.", "S.1"))
+    assert not any("is named" in m for m in code_check(b, ch, sheet))

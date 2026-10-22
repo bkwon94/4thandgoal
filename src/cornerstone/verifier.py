@@ -17,7 +17,7 @@ from cornerstone.models import (
     VerifyOut,
     VerifyResult,
 )
-from cornerstone.sheet import NUMBER_TOKEN
+from cornerstone.sheet import NUMBER_TOKEN, two_team_chapter
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
@@ -49,8 +49,13 @@ def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:
     return {normalize_number(n) for fid in fids for n in sheet.facts[fid].numbers}
 
 
+def _whole_pattern(word: str) -> str:
+    """The regex for a word or a phrase as a whole, with no word character on either side."""
+    return rf"(?<!\w){re.escape(word)}(?!\w)"
+
+
 def whole_word(word: str, text: str) -> bool:
-    return re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text, re.IGNORECASE) is not None
+    return re.search(_whole_pattern(word), text, re.IGNORECASE) is not None
 
 
 def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list[str]:
@@ -78,8 +83,43 @@ def remove_names(text: str, names: list[str]) -> str:
     # Longest first, so "Tre Tucker" goes before any shorter name inside it. Whole words only,
     # so an odd name such as "0" does not remove the digit from "100".
     for name in sorted(names, key=len, reverse=True):
-        text = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", " ", text)
+        text = re.sub(_whole_pattern(name), " ", text)
     return text
+
+
+def team_mentions(team: str, text: str) -> int:
+    """The whole-phrase mentions of a team name, in any case.
+
+    A name that is also a common phrase, such as "behold the lamb", counts only as the full phrase.
+    A capital at the start of a sentence still counts.
+    """
+    return len(re.findall(_whole_pattern(team), text, re.IGNORECASE))
+
+
+def repeated_teams(texts: list[str], teams: list[str]) -> list[tuple[int, str, int]]:
+    """Each team named more than once across the texts.
+
+    Each item is the index of the text with the second mention, the team, and the count.
+    The prose names a team once, so a second mention is a failure.
+    """
+    found = []
+    for team in sorted(set(teams)):
+        counts = [team_mentions(team, text) for text in texts]
+        total = sum(counts)
+        if total > 1:
+            running = 0
+            for i, count in enumerate(counts):
+                running += count
+                if running > 1:
+                    found.append((i, team, total))
+                    break
+    return found
+
+
+def repeat_failure(where: str, team: str, count: int) -> str:
+    """The failure line for a team named more than once. The blurb check and the analysis check share it."""
+    return (f"{where}: team {team} is named {count} times; name it once, "
+            "then write 'this side', 'they', or the player names")
 
 
 def _last_name(full: str) -> str | None:
@@ -151,6 +191,11 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 ):
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")
+
+    # The 12-team chapters name many teams, so only a chapter about one or two teams gets this check.
+    if two_team_chapter(chapter.key):
+        for i, team, mentions in repeated_teams([s.text for s in blurb.sentences], chapter.scope_teams):
+            failures.append(repeat_failure(f"[{i}] the blurb", team, mentions))
 
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:
