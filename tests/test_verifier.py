@@ -11,6 +11,7 @@ from cornerstone.verifier import (
     build_verifier_prompt,
     claude_verify,
     code_check,
+    opener_failures,
     verify_blurb,
     write_and_verify,
 )
@@ -144,6 +145,21 @@ def test_which_tail_ignores_case_and_space(fixture_raw_dir):
     for text in ["It rose,which is the bar.", "It rose, Which is the bar."]:
         b = _blurb("median", _s("The median was 106.83, which set the bar.", "MED.value"), _s(text, "MED.value"))
         assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"], text
+
+
+def test_the_and_thats_closer_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    for text in ["The median was 106.83, and that's the bar.", "The median was 106.83, and that’s the bar."]:
+        b = _blurb("median", _s(text, "MED.value"), _s("It rose.", "MED.value"))
+        assert code_check(b, ch, sheet) == ["[0] the sentence ends in \", and that's X\"; that closer is banned"], text
+
+
+def test_and_thats_outside_the_closer_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("And that's the bar, for now.", "MED.value"))
+    assert code_check(b, ch, sheet) == []
 
 
 def test_whichever_is_not_a_which_tail(fixture_raw_dir):
@@ -734,3 +750,48 @@ def test_last_name_outside_team_names_still_fails(fixture_raw_dir):
     ch = _ch(sheet, "recap_4")
     b = _blurb("recap_4", _s("Hurts had 3 touchdowns.", "M4.result"), _s("They won.", "M4.result"))
     assert any("player Jalen Hurts is not on a team in this chapter" in m for m in code_check(b, ch, sheet))
+
+
+def test_two_rankings_teams_with_the_same_opener_fail(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    for i in (2, 5):
+        rid = sentences[i].roster_id
+        sentences[i] = _tagged("Despite 2 straight losses, this side holds.", rid, f"PR.{rid}")
+    first = sheet.facts[f"PR.{sentences[2].roster_id}"].teams[0]
+    second = sheet.facts[f"PR.{sentences[5].roster_id}"].teams[0]
+    assert (f"[5] team {second} opens with 'despite 2 straight', as team {first} does; give each team its own opener"
+            in code_check(_blurb("rankings", *sentences), ch, sheet))
+
+
+def test_a_second_sentence_may_share_an_opener(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    # Only the first sentence of a team is its opener, so a later sentence with the same words passes.
+    sentences.insert(1, _tagged(sentences[1].text, sentences[0].roster_id, f"PR.{sentences[0].roster_id}"))
+    assert not any("opens with" in m for m in code_check(_blurb("rankings", *sentences), ch, sheet))
+
+
+def test_a_failed_opener_keeps_the_second_sentence_of_its_team_out(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    # Team 2 fails on its opener. Its second sentence is not an opener, so team 9 may open on the same words.
+    b = _blurb(
+        "rankings",
+        _tagged("Scoring has dipped to 600.", 5, "PR.5"),
+        _tagged("Scoring has dipped too.", 2, "PR.2"),
+        _tagged("Despite 2 straight losses, they hold.", 2, "PR.2"),
+        _tagged("Despite 2 straight wins, they climb.", 9, "PR.9"),
+    )
+    failures = opener_failures(b, ch, sheet)
+    assert len(failures) == 1
+    assert failures[0].startswith("[1] ")
+
+
+def test_an_opener_ignores_curly_quotes_and_question_marks(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    b = _blurb(
+        "rankings",
+        _tagged("“Scoring has dipped.”", 5, "PR.5"),
+        _tagged("Scoring has? dipped too.", 2, "PR.2"),
+    )
+    assert [m[:4] for m in opener_failures(b, ch, sheet)] == ["[1] "]

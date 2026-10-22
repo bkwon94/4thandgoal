@@ -4,6 +4,7 @@ A failed blurb is rewritten once with feedback, then replaced by a template sent
 """
 import logging
 import re
+import string
 from importlib import resources
 
 import anthropic
@@ -42,6 +43,12 @@ NUMBER_WORDS = [
 REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
 WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
+# Each chapter is one call, so a page-wide cap on this closer cannot hold. The closer is banned outright.
+AND_THATS_TAIL = re.compile(r",\s*and that(?:'|’)?s\b[^,]*$", re.I)
+# Two rankings teams whose first sentences share this many opening words read as one stock row.
+OPENER_WORDS = 3
+# The writer uses curly quotes and dashes, so the plain ASCII set alone misses them.
+OPENER_PUNCTUATION = string.punctuation + "“”‘’—"
 # A blurb this long needs one sentence with no number, so the prose does not read as a stat sheet.
 NUMBERLESS_MIN_SENTENCES = 3
 # A number that is read with a vowel sound: 8, 8.13, 80 to 89, 800, 11, 18, 11-1.
@@ -204,6 +211,34 @@ def roster_tag_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> lis
     return failures
 
 
+def opener_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
+    """No two teams in the rankings chapter open on the same first 3 words.
+
+    The chapter is one call, so the writer sees all twelve rows, yet it still repeats a stock opener such as
+    "Scoring has dipped to". Only the first sentence of each team counts as its opener.
+    """
+    teams = {int(fid.split(".")[1]): sheet.facts[fid].teams[0] for fid in chapter.fact_ids if fid.startswith("PR.")}
+    seen: dict[tuple[str, ...], int] = {}
+    # A team whose opener fails never enters `seen`, so a separate set keeps its later sentences out.
+    opened: set[int] = set()
+    failures = []
+    for i, sentence in enumerate(blurb.sentences):
+        rid = sentence.roster_id
+        if rid not in teams or rid in opened:
+            continue
+        opened.add(rid)
+        # Case and edge punctuation do not make an opener different: "Despite 2," matches "despite 2".
+        words = tuple(w.strip(OPENER_PUNCTUATION) for w in sentence.text.lower().split()[:OPENER_WORDS])
+        if words in seen:
+            failures.append(
+                f"[{i}] team {teams[rid]} opens with '{' '.join(words)}', as team {teams[seen[words]]} does;"
+                " give each team its own opener"
+            )
+        else:
+            seen[words] = rid
+    return failures
+
+
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
@@ -287,11 +322,16 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
 
     if chapter.key == RANKINGS_CHAPTER:
         failures += roster_tag_failures(blurb, chapter, sheet)
+        failures += opener_failures(blurb, chapter, sheet)
 
     # The ", which" tail is the stock joke shape, so a blurb gets one.
     tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
     if len(tails) > 1:
         failures.append(f"[{tails[1]}] {len(tails)} sentences have a ', which' tail; a blurb may hold one")
+
+    for i, sentence in enumerate(blurb.sentences):
+        if AND_THATS_TAIL.search(sentence.text):
+            failures.append(f"[{i}] the sentence ends in \", and that's X\"; that closer is banned")
 
     # The rankings chapter is twelve short team rows, and each row opens on a rank, so it skips the mix.
     if chapter.key != RANKINGS_CHAPTER:

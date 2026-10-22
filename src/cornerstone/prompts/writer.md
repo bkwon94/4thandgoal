@@ -24,4 +24,8 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 18. Never put a number on a draft pick.
 19. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.
 20. Name each team at most once per blurb. After that, write "this side", "they", or the player names. Save the one mention for the punchline when the name invites it.
-21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 or 2 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 2. Other chapters leave `roster_id` empty. The Power rankings chapter is exempt from the no-number sentence rule.
+21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 or 2 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 2. Other chapters leave `roster_id` empty.
+22. The Power rankings chapter uses the no-number line below in place of rule 15.
+    - Never start the first sentences of 2 teams with the same 3 words.
+    - At least 4 teams get a sentence with no number.
+    - "form" is a component name. Write "the last 3 weeks" in its place.

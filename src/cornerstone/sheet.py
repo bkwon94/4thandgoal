@@ -80,8 +80,18 @@ SENTENCE_RANGES = {
 }
 RANKINGS_CHAPTER = "rankings"
 COMPONENT_WORDS = {
-    "standing": "standing", "form": "form", "schedule_played": "schedule played", "scoring": "scoring",
+    "standing": "standing", "form": f"the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
+    "scoring": "scoring",
 }
+# The phrase for a team with the wins of the last playoff spot, keyed by its place against that spot.
+# A team below it fills in its spots below the last playoff spot as a word, such as "two spots".
+CUT_PHRASES = {
+    "above": "level with the last playoff spot",
+    "at": "in the last playoff spot",
+    "below": "{spots} outside the playoff spots",
+}
+# The verifier lets a number word through only when a cited fact holds it, so the fact spells the spots out.
+SPOT_WORDS = ("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven")
 # The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
 # repeated team name: the 12-team chapters, such as awards and median, name many teams, and "they" is
 # unclear there.
@@ -101,6 +111,28 @@ def is_motw_recap(chapter: Chapter, sheet: FactSheet) -> bool:
     motw = next((c for c in sheet.chapters if c.key == "motw"), None)
     return (motw is not None and chapter.key.startswith("recap_")
             and set(chapter.scope_teams) == set(motw.scope_teams))
+
+
+def is_game_changer_in_motw(sheet: FactSheet) -> bool:
+    """True when the Game Changer plays for a team of the Matchup of the Week.
+
+    The AW.game_changer fact names the team, so the check works on a saved sheet with no rebuild.
+    """
+    motw = next((c for c in sheet.chapters if c.key == "motw"), None)
+    changer = sheet.facts.get("AW.game_changer")
+    return motw is not None and changer is not None and bool(set(changer.teams) & set(motw.scope_teams))
+
+
+def repeats_motw_headline(chapter: Chapter, sheet: FactSheet) -> bool:
+    """True for the Matchup of the Week recap, and for game changer and awards when the Game Changer plays in it.
+
+    The game changer or awards chapter then names the same game, so the writer repeats lines such as
+    "without X, that is a loss".
+    Outside the Matchup of the Week, the note would name a chapter that never told this game.
+    """
+    if is_motw_recap(chapter, sheet):
+        return True
+    return chapter.key in ("game_changer", "awards") and is_game_changer_in_motw(sheet)
 
 
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
@@ -275,8 +307,21 @@ def injured_facts(c: Context) -> list[Fact]:
     return [fact("W.injured", text, Nums(), teams, [line.name for line, _ in found])]
 
 
+def cut_phrase(rank: int, last_spot: int) -> str:
+    """The fixed phrase for a team with the wins of the last playoff spot, from its rank."""
+    if rank < last_spot:
+        return CUT_PHRASES["above"]
+    if rank == last_spot:
+        return CUT_PHRASES["at"]
+    distance = rank - last_spot
+    word = SPOT_WORDS[distance - 1]
+    spots = f"{word} spot" if distance == 1 else f"{word} spots"
+    return CUT_PHRASES["below"].format(spots=spots)
+
+
 def standings_facts(c: Context) -> list[Fact]:
     out = []
+    last_spot = max((s.rank for s in c.table if s.in_playoffs), default=0)
     for s in c.table:
         n = Nums()
         cut = "in" if s.in_playoffs else "out of"
@@ -284,10 +329,15 @@ def standings_facts(c: Context) -> list[Fact]:
         team = c.team(s.roster_id)
         gap = abs(s.games_from_cut)
         games = "game" if gap == 1 else "games"
+        # "0 games at the cut" lets the writer say "still on the outside" for one tied team and "right at the cut"
+        # for the next, and a reader sees a contradiction. One fixed phrase per spot keeps every chapter on one wording.
+        if s.games_from_cut == 0:
+            place = cut_phrase(s.rank, last_spot)
+        else:
+            place = f"{cut} the playoff spots, {n(gap)} {games} {side} the cut"
         text = (
             f"{team} is {n.ord(s.rank)} with a {n.record(s.wins, s.losses)} record "
-            f"and {n(s.points_for)} points for, {cut} the playoff spots, "
-            f"{n(gap)} {games} {side} the cut."
+            f"and {n(s.points_for)} points for, {place}."
         )
         out.append(fact(f"S.{s.rank}", text, n, [team], []))
     return out
@@ -599,7 +649,10 @@ def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
             places = "place" if abs(row.movement) == 1 else "places"
             side = "up" if row.movement > 0 else "down"
             move = f"{side} {n(abs(row.movement))} {places} from last week"
-        components = ", ".join(f"{n.ord(row.ranks[key])} in {word}" for key, word in COMPONENT_WORDS.items())
+        # A component word may hold a number, such as the 3 of "the last 3 weeks", so Nums records it too.
+        components = ", ".join(
+            f"{n.ord(row.ranks[key])} in {n.text(word)}" for key, word in COMPONENT_WORDS.items()
+        )
         text = f"{name} is {rank} in the power rankings, {move}: {components}."
         out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
     return out
