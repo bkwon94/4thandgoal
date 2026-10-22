@@ -107,7 +107,10 @@ def check_trade(trade: ProposedTrade, snapshot: Snapshot) -> None:
             raise TradeInputError(f"Roster {side.roster_id} is not in the league")
         for pid in side.gives:
             if pid not in roster:
-                raise TradeInputError(f"Player {pid} is not on roster {side.roster_id}", player_id=pid)
+                # A player who left the league is not in snapshot.players, so the id stands in for the name.
+                player = snapshot.players.get(pid)
+                name = player.name if player else pid
+                raise TradeInputError(f"{name} is no longer on {snapshot.teams[side.roster_id].name}.", player_id=pid)
 
 
 def _letter(got: Decimal, gave: Decimal) -> Letter:
