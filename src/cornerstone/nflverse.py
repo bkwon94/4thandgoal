@@ -5,8 +5,6 @@ A failure of any source never stops a build, so each read returns None for missi
 import csv
 import gzip
 import logging
-import os
-import tempfile
 import time
 from collections.abc import Callable, Collection
 from pathlib import Path
@@ -14,6 +12,7 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel
 
+from cornerstone.files import write_bytes_atomic
 from cornerstone.models import DropPlay, NflverseWeek
 
 logger = logging.getLogger(__name__)
@@ -57,16 +56,7 @@ def download(url: str, path: Path, max_age_seconds: int = CACHE_MAX_AGE_SECONDS,
         logger.warning("Download of %s failed (%s) and no cache exists", url, error)
         return None
     path.parent.mkdir(parents=True, exist_ok=True)
-    # Write to a temp file in the same directory, then replace, so a stopped write never
-    # leaves a half file in the cache.
-    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
-    try:
-        with os.fdopen(fd, "wb") as f:
-            f.write(body)
-        os.replace(tmp, path)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    write_bytes_atomic(path, body)
     return path
 
 
