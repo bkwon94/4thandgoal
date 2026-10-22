@@ -55,7 +55,10 @@ class VerdictOut(BaseModel):
 
 
 class AnalysisOut(BaseModel):
-    """The structured output of the Claude call."""
+    """The structured output of the Claude call: exactly 2 sides, one per roster in the trade, then the verdict.
+
+    The sides come in the order of the user message, and no side repeats.
+    """
 
     sides: list[SideAnalysis]
     verdict: VerdictOut
@@ -76,6 +79,11 @@ class Analysis(BaseModel):
 
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name for pid in pids)
+
+
+def side_shape(breakdowns: tuple[Breakdown, Breakdown]) -> str:
+    """The one shape of the sides that the check accepts, in words, with both roster IDs."""
+    return f"exactly 2 sides: roster {breakdowns[0].roster_id} first, then roster {breakdowns[1].roster_id}, each once"
 
 
 def build_analysis_prompt(
@@ -104,12 +112,21 @@ def build_analysis_prompt(
         *(f"- {fid}: {fact.text}" for fid, fact in facts.items()),
     ]
     if feedback is not None:
-        lines += ["", "Feedback from the last attempt:", feedback]
+        # A failure names one side, so without this line Claude can send that side alone or twice.
+        lines += ["", "Feedback from the last attempt:", feedback,
+                  f"Give the whole response again with {side_shape(breakdowns)}, and the verdict."]
     return system, "\n".join(lines)
+
+
+# A period after a title, after a name suffix before a lowercase word, after "vs", or in a run of initials
+# ends no sentence. Claude writes "St. Brown" for Amon-Ra St. Brown, and the full name alone is removed first.
+# A lone capital is left out on purpose: "the grade is a B." ends a sentence.
+_NOT_AN_END = re.compile(r"(?<!\w)(?:St|Mr|Dr|vs|Vs|(?:Jr|Sr)(?=\.\s+[a-z])|(?:[A-Z]\.)+[A-Z])\.")
 
 
 def _sentences(text: str) -> int:
     # A period inside a decimal is not followed by a space, so it ends no sentence.
+    text = _NOT_AN_END.sub(lambda match: match.group()[:-1], text)
     return len(re.findall(r"[.!?]+(?=\s|$)", text.strip()))
 
 
@@ -141,7 +158,8 @@ def check_response(
     failures = []
     by_roster = {s.roster_id: s for s in out.sides}
     if sorted(by_roster) != sorted(b.roster_id for b in breakdowns) or len(out.sides) != 2:
-        return [f"the sides must be rosters {breakdowns[0].roster_id} and {breakdowns[1].roster_id}, once each"]
+        had = ", ".join(str(s.roster_id) for s in out.sides) or "none"
+        return [f"the response must have {side_shape(breakdowns)}; it had rosters {had}"]
     names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
     breakdown_text = _breakdown_text(breakdowns)
     for breakdown in breakdowns:
