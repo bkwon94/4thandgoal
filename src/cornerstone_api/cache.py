@@ -14,6 +14,11 @@ from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
 
 
+# The shape of the stored result document. A change of shape bumps it, so the key changes and a result stored on
+# the volume in an old shape never serves again.
+DOCUMENT_VERSION = 2
+
+
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
     """The hash of the trade and the content of the snapshot that the grade reads.
 
@@ -31,6 +36,7 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         for roster_id in roster_ids
     }
     parts = {
+        "document_version": DOCUMENT_VERSION,
         "season": trade.season,
         # The sides keep their order, because the document lists the sides in the order of the request.
         "sides": [[side.roster_id, sorted(side.gives)] for side in trade.sides],

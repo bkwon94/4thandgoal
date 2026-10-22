@@ -639,35 +639,37 @@ def _verdict_for(asker_final: str, other_final: str, lean: str = "even") -> Verd
 @pytest.mark.parametrize("asker, other", [("A", "A"), ("B", "A"), ("B", "F")])
 def test_the_verdict_accepts_at_b_or_better(asker, other):
     assert _verdict_for(asker, other).choice == "accept"
-    assert _verdict_for(asker, other).reason == f"The asking side grades {asker}, so the trade favors it."
+    assert _verdict_for(asker, other).reason == "The trade favors the asking side."
 
 
-@pytest.mark.parametrize("other", ["C", "D", "F"])
-def test_the_verdict_accepts_at_c_when_the_other_side_is_at_c_or_worse(other):
+@pytest.mark.parametrize("other, sides", [
+    ("C", "The two sides are about even"), ("D", "The asking side does better"), ("F", "The asking side does better"),
+])
+def test_the_verdict_accepts_at_c_when_the_other_side_is_at_c_or_worse(other, sides):
     result = _verdict_for("C", other)
     assert result.choice == "accept"
-    assert result.reason == f"The asking side grades C and the other side grades {other}, so the trade is fair."
+    assert result.reason == f"{sides}, so the trade is fair."
 
 
 @pytest.mark.parametrize("asker, other", [("D", "F"), ("F", "F"), ("D", "A")])
 def test_the_verdict_declines_at_d_or_worse(asker, other):
     result = _verdict_for(asker, other)
     assert result.choice == "decline"
-    assert result.reason == f"The asking side grades {asker}, so the trade costs it too much."
+    assert result.reason == "The trade costs the asking side too much."
 
 
 @pytest.mark.parametrize("other", ["A", "B"])
 def test_the_verdict_counters_at_c_when_the_other_side_does_better(other):
     result = _verdict_for("C", other)
     assert result.choice == "counter"
-    assert result.reason == f"The asking side grades C and the other side grades {other}, so ask for more."
+    assert result.reason == "The other side does better, so ask for more."
 
 
 def test_a_schedule_for_the_asker_turns_a_counter_into_an_accept():
     result = _verdict_for("C", "B", lean="for")
     assert result.choice == "accept"
     assert result.reason == (
-        "The asking side grades C and the other side grades B, but the schedule leans for the asking side, "
+        "The other side does better, but the schedule leans for the asking side, "
         "so the trade is worth it.")
 
 
@@ -675,8 +677,15 @@ def test_a_schedule_against_the_asker_turns_an_accept_at_c_into_a_counter():
     result = _verdict_for("C", "D", lean="against")
     assert result.choice == "counter"
     assert result.reason == (
-        "The asking side grades C and the other side grades D, but the schedule leans against the asking side, "
+        "The asking side does better, but the schedule leans against the asking side, "
         "so ask for more.")
+
+
+def test_a_schedule_against_the_asker_at_even_letters_turns_an_accept_into_a_counter():
+    result = _verdict_for("C", "C", lean="against")
+    assert result.choice == "counter"
+    assert result.reason == (
+        "The two sides are about even, but the schedule leans against the asking side, so ask for more.")
 
 
 @pytest.mark.parametrize("asker, lean, choice", [("B", "against", "accept"), ("D", "for", "decline")])

@@ -108,6 +108,27 @@ _Avoid_: best player, top player
 Accept, counter, or decline, for the side that asked, with one reason.
 _Avoid_: recommendation, advice
 
+**Decision**:
+The page word for the verdict. The result document leads with it. Use "verdict" in code and
+"decision" on the page.
+_Avoid_: call, recommendation
+
+**Answer**:
+The decision as the page shows it: yes, no, or not as is. It maps from the verdict choice: accept
+to yes, decline to no, counter to not as is. Use "choice" in code and "answer" on the page.
+
+**Factor**:
+The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
+_Avoid_: criterion (alone)
+
+**Chart lean**:
+More, even, or less: how the trade values lean for one side. It maps from the start letter: A and
+B to more, C to even, D and F to less. Use "start letter" in code and "chart lean" on the page.
+
+**Factor lean**:
+For, against, or even, for one factor. It maps from the sign of the adjuster's step, or from the
+schedule lean for the schedule adjuster. Use "step" in code and "factor lean" on the page.
+
 **Side shape**:
 The exact two sides, in roster order, each once, that an analysis response must hold.
 

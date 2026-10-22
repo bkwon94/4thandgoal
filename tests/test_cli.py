@@ -302,7 +302,7 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. "
-        "The asking side grades D, so the trade costs it too much.\n")
+        "The trade costs the asking side too much.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out
@@ -470,4 +470,4 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. "
-        "The asking side grades D, so the trade costs it too much.\n")
+        "The trade costs the asking side too much.\n")
