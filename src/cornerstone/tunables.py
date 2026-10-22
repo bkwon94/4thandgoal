@@ -85,6 +85,10 @@ GRADES_PER_DAY = 20
 # Each build fetches Sleeper, so the trade form fills at once. A trade or a waiver claim shows within this window.
 TEAMS_CACHE_SECONDS = 300
 
+# The finder: the count of win-win trades it returns at most for one pair of rosters.
+# A short list is one a manager reads, and three trades with no shared player each stand as a real choice.
+FINDER_TOP = 3
+
 # The power score is the weighted mean of the four components, keyed by component.
 # The weights are equal so the rank is one line to explain.
 POWER_WEIGHTS = {"standing": 0.25, "form": 0.25, "schedule_played": 0.25, "scoring": 0.25}

@@ -92,10 +92,14 @@ rarely and means something when it does.
   sits one level above it.
 - Candidates: every one-for-one swap, and every two-for-one swap in both directions. No three-player
   sides. A handcuff on either roster is never a candidate. A player who is out now with no return
-  week on file is never a candidate. A kicker and a defense are never candidates.
-- Rank: the sum of the adjuster steps up on both sides, highest first. Ties break by the higher of
-  the two lower final letters, then by the smaller gap between the two sides' final letters, then by
-  the asker's letter. The list holds three at most.
+  week on file is never a candidate. An unlisted player, with no row on the chart week's chart, is
+  never a candidate: a trade with him starts both sides at C by rule, not by the chart. The chart
+  lists no kicker and no defense, so they are always unlisted and never candidates.
+- Rank: the net sum of the adjuster steps on both sides, up and down, highest first. Ties break by
+  the higher of the two lower final letters, then by the smaller gap between the two sides' final
+  letters, then by the asker's letter.
+- The three trades share no player. The finder walks the ranked list and keeps a trade only when
+  none of its players is in a trade it kept before. It stops at three.
 - The finder is a new route with the same passphrase, the same minute and day limits, and a cache
   keyed by the pair of rosters and the chart week. A finder call counts as one grade. One Claude
   call writes the three reasons in one response, with the same prose checks as the analysis. When

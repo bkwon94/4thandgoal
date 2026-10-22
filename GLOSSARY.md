@@ -186,6 +186,15 @@ The page word for the win-win state of the fairness. Use "win_win" in code and "
 the page.
 _Avoid_: win-win on the page
 
+**Finder**:
+The code that grades every one-for-one and two-for-one trade between the asker's roster and one
+partner roster, and returns the top three that are good for both. The rank is the net sum of the
+adjuster steps on both sides, then the higher of the two lower final letters, then the smaller gap
+between the two final letters, then the asker's letter. The three trades share no player. A handcuff,
+a player out with no return week, and an unlisted player are never in a trade. The chart lists no
+kicker and no defense, so they are always unlisted.
+_Avoid_: suggested trades, counters (a counter changes one trade for one side)
+
 **Factor**:
 The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
 _Avoid_: criterion (alone)
