@@ -3,7 +3,7 @@
     "season": 2026,
     "week": 6,
     "dates": "Oct 15 – Oct 19, 2026",
-    "publish_date": "Wed Oct 21, 2026",
+    "publish_date": "Thu Oct 22, 2026",
     "teams": {
       "1": {
         "roster_id": 1,
@@ -2795,9 +2795,9 @@
       },
       "W.publish": {
         "id": "W.publish",
-        "text": "The report was published on Wed Oct 21, 2026.",
+        "text": "The report was published on Thu Oct 22, 2026.",
         "numbers": [
-          "21",
+          "22",
           "2026"
         ],
         "teams": [],
@@ -2858,12 +2858,12 @@
         "id": "S.1",
         "text": "Lil Fridge is 1st with a 10-2 record and 739.67 points for, in the playoff spots, 4 games above the cut.",
         "numbers": [
+          "4",
           "1",
           "10",
           "2",
           "10-2",
-          "739.67",
-          "4"
+          "739.67"
         ],
         "teams": [
           "Lil Fridge"
@@ -2874,12 +2874,12 @@
         "id": "S.2",
         "text": "London Cooking is 2nd with a 9-3 record and 721.96 points for, in the playoff spots, 3 games above the cut.",
         "numbers": [
+          "3",
           "2",
           "9",
           "3",
           "9-3",
-          "721.96",
-          "3"
+          "721.96"
         ],
         "teams": [
           "London Cooking"
@@ -2890,12 +2890,12 @@
         "id": "S.3",
         "text": "Bo Girds is 3rd with a 8-4 record and 723.15 points for, in the playoff spots, 2 games above the cut.",
         "numbers": [
+          "2",
           "3",
           "8",
           "4",
           "8-4",
-          "723.15",
-          "2"
+          "723.15"
         ],
         "teams": [
           "Bo Girds"
@@ -2906,12 +2906,12 @@
         "id": "S.4",
         "text": "Maye d'force B with U is 4th with a 7-5 record and 698.3 points for, in the playoff spots, 1 game above the cut.",
         "numbers": [
+          "1",
           "4",
           "7",
           "5",
           "7-5",
-          "698.3",
-          "1"
+          "698.3"
         ],
         "teams": [
           "Maye d'force B with U"
@@ -2922,12 +2922,12 @@
         "id": "S.5",
         "text": "All You Need Is Love is 5th with a 7-5 record and 611.71 points for, in the playoff spots, 1 game above the cut.",
         "numbers": [
+          "1",
           "5",
           "7",
           "5",
           "7-5",
-          "611.71",
-          "1"
+          "611.71"
         ],
         "teams": [
           "All You Need Is Love"
@@ -2936,14 +2936,13 @@
       },
       "S.6": {
         "id": "S.6",
-        "text": "Brock ‘N’ Roll is 6th with a 6-6 record and 685.01 points for, in the playoff spots, 0 games at the cut.",
+        "text": "Brock ‘N’ Roll is 6th with a 6-6 record and 685.01 points for, in the last playoff spot.",
         "numbers": [
           "6",
           "6",
           "6",
           "6-6",
-          "685.01",
-          "0"
+          "685.01"
         ],
         "teams": [
           "Brock ‘N’ Roll"
@@ -2952,14 +2951,14 @@
       },
       "S.7": {
         "id": "S.7",
-        "text": "Return of T Mac is 7th with a 6-6 record and 618.97 points for, out of the playoff spots, 0 games at the cut.",
+        "text": "Return of T Mac is 7th with a 6-6 record and 618.97 points for, 1 spot outside the playoff spots.",
         "numbers": [
+          "1",
           "7",
           "6",
           "6",
           "6-6",
-          "618.97",
-          "0"
+          "618.97"
         ],
         "teams": [
           "Return of T Mac"
@@ -2968,14 +2967,14 @@
       },
       "S.8": {
         "id": "S.8",
-        "text": "behold the lamb is 8th with a 6-6 record and 588.01 points for, out of the playoff spots, 0 games at the cut.",
+        "text": "behold the lamb is 8th with a 6-6 record and 588.01 points for, 2 spots outside the playoff spots.",
         "numbers": [
+          "2",
           "8",
           "6",
           "6",
           "6-6",
-          "588.01",
-          "0"
+          "588.01"
         ],
         "teams": [
           "behold the lamb"
@@ -2986,12 +2985,12 @@
         "id": "S.9",
         "text": "Amon-Ra Dawg Your Team is 9th with a 4-8 record and 603.75 points for, out of the playoff spots, 2 games below the cut.",
         "numbers": [
+          "2",
           "9",
           "4",
           "8",
           "4-8",
-          "603.75",
-          "2"
+          "603.75"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -3002,12 +3001,12 @@
         "id": "S.10",
         "text": "Unsolicited Dak Picks is 10th with a 4-8 record and 594.91 points for, out of the playoff spots, 2 games below the cut.",
         "numbers": [
+          "2",
           "10",
           "4",
           "8",
           "4-8",
-          "594.91",
-          "2"
+          "594.91"
         ],
         "teams": [
           "Unsolicited Dak Picks"
@@ -3018,12 +3017,12 @@
         "id": "S.11",
         "text": "To Infinity and Bijan is 11th with a 4-8 record and 543.88 points for, out of the playoff spots, 2 games below the cut.",
         "numbers": [
+          "2",
           "11",
           "4",
           "8",
           "4-8",
-          "543.88",
-          "2"
+          "543.88"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -3034,12 +3033,12 @@
         "id": "S.12",
         "text": "Pukancun on 3 is 12th with a 1-11 record and 493.39 points for, out of the playoff spots, 5 games below the cut.",
         "numbers": [
+          "5",
           "12",
           "1",
           "11",
           "1-11",
-          "493.39",
-          "5"
+          "493.39"
         ],
         "teams": [
           "Pukancun on 3"
@@ -6458,14 +6457,12 @@
       },
       "AW.game_changer.news": {
         "id": "AW.game_changer.news",
-        "text": "Latest news on Germie Bernard: Pittsburgh Steelers wide receiver Germie Bernard continued his rapid emergence in Sunday's 26-19 overtime victory over the Tampa Bay Buccaneers, setting a franchise rookie record with 11 receptions for 87 yards and his first career touchdown. The 22-year-old caught the game-winning six-yard score",
+        "text": "Latest news on Germie Bernard: With multiple injuries in the Pittsburgh Steelers' wide receiver room, rookie wide receiver Germie Bernard has stepped up over the past two weeks, and he should continue to play a significant role for the foreseeable future. Bernard saw 12 targets in a 26-19 overtime victory against the Tampa Bay",
         "numbers": [
+          "12",
           "26-19",
           "26",
-          "19",
-          "11",
-          "87",
-          "22"
+          "19"
         ],
         "teams": [],
         "players": [
@@ -10677,10 +10674,11 @@
       },
       "PR.3": {
         "id": "PR.3",
-        "text": "Lil Fridge is 1st in the power rankings, no move from last week: 1st in standing, 3rd in form, 1st in schedule played, 1st in scoring.",
+        "text": "Lil Fridge is 1st in the power rankings, no move from last week: 1st in standing, 3rd in results over the last 3 weeks, 1st in schedule played, 1st in scoring.",
         "numbers": [
           "1",
           "1",
+          "3",
           "3",
           "1",
           "1"
@@ -10692,13 +10690,14 @@
       },
       "PR.5": {
         "id": "PR.5",
-        "text": "London Cooking is 2nd in the power rankings, no move from last week: 2nd in standing, 2nd in form, 12th in schedule played, 3rd in scoring.",
+        "text": "London Cooking is 2nd in the power rankings, no move from last week: 2nd in standing, 2nd in results over the last 3 weeks, 12th in schedule played, 2nd in scoring.",
         "numbers": [
           "2",
           "2",
           "2",
+          "3",
           "12",
-          "3"
+          "2"
         ],
         "teams": [
           "London Cooking"
@@ -10707,13 +10706,14 @@
       },
       "PR.6": {
         "id": "PR.6",
-        "text": "Bo Girds is 3rd in the power rankings, no move from last week: 3rd in standing, 5th in form, 4th in schedule played, 2nd in scoring.",
+        "text": "Bo Girds is 3rd in the power rankings, no move from last week: 3rd in standing, 5th in results over the last 3 weeks, 4th in schedule played, 3rd in scoring.",
         "numbers": [
           "3",
           "3",
           "5",
+          "3",
           "4",
-          "2"
+          "3"
         ],
         "teams": [
           "Bo Girds"
@@ -10722,12 +10722,13 @@
       },
       "PR.9": {
         "id": "PR.9",
-        "text": "Maye d'force B with U is 4th in the power rankings, up 2 places from last week: 4th in standing, 4th in form, 5th in schedule played, 4th in scoring.",
+        "text": "Maye d'force B with U is 4th in the power rankings, up 1 place from last week: 4th in standing, 4th in results over the last 3 weeks, 5th in schedule played, 4th in scoring.",
         "numbers": [
           "4",
-          "2",
+          "1",
           "4",
           "4",
+          "3",
           "5",
           "4"
         ],
@@ -10738,14 +10739,15 @@
       },
       "PR.8": {
         "id": "PR.8",
-        "text": "Return of T Mac is 5th in the power rankings, up 3 places from last week: 7th in standing, 1st in form, 8th in schedule played, 6th in scoring.",
+        "text": "Return of T Mac is 5th in the power rankings, up 2 places from last week: 7th in standing, 1st in results over the last 3 weeks, 8th in schedule played, 7th in scoring.",
         "numbers": [
           "5",
-          "3",
+          "2",
           "7",
           "1",
+          "3",
           "8",
-          "6"
+          "7"
         ],
         "teams": [
           "Return of T Mac"
@@ -10754,28 +10756,46 @@
       },
       "PR.2": {
         "id": "PR.2",
-        "text": "All You Need Is Love is 6th in the power rankings, down 1 place from last week: 5th in standing, 6th in form, 6th in schedule played, 7th in scoring.",
+        "text": "All You Need Is Love is 6th in the power rankings, no move from last week: 5th in standing, 8th in results over the last 3 weeks, 6th in schedule played, 6th in scoring.",
         "numbers": [
           "6",
-          "1",
           "5",
+          "8",
+          "3",
           "6",
-          "6",
-          "7"
+          "6"
         ],
         "teams": [
           "All You Need Is Love"
         ],
         "players": []
       },
-      "PR.1": {
-        "id": "PR.1",
-        "text": "Brock ‘N’ Roll is 7th in the power rankings, down 3 places from last week: 6th in standing, 8th in form, 11th in schedule played, 5th in scoring.",
+      "PR.10": {
+        "id": "PR.10",
+        "text": "behold the lamb is 7th in the power rankings, up 4 places from last week: 8th in standing, 6th in results over the last 3 weeks, 2nd in schedule played, 9th in scoring.",
         "numbers": [
           "7",
-          "3",
-          "6",
+          "4",
           "8",
+          "6",
+          "3",
+          "2",
+          "9"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "PR.1": {
+        "id": "PR.1",
+        "text": "Brock ‘N’ Roll is 8th in the power rankings, down 4 places from last week: 6th in standing, 7th in results over the last 3 weeks, 11th in schedule played, 5th in scoring.",
+        "numbers": [
+          "8",
+          "4",
+          "6",
+          "7",
+          "3",
           "11",
           "5"
         ],
@@ -10784,30 +10804,15 @@
         ],
         "players": []
       },
-      "PR.10": {
-        "id": "PR.10",
-        "text": "behold the lamb is 8th in the power rankings, up 3 places from last week: 8th in standing, 7th in form, 2nd in schedule played, 10th in scoring.",
-        "numbers": [
-          "8",
-          "3",
-          "8",
-          "7",
-          "2",
-          "10"
-        ],
-        "teams": [
-          "behold the lamb"
-        ],
-        "players": []
-      },
       "PR.12": {
         "id": "PR.12",
-        "text": "Amon-Ra Dawg Your Team is 9th in the power rankings, up 1 place from last week: 9th in standing, 9th in form, 3rd in schedule played, 8th in scoring.",
+        "text": "Amon-Ra Dawg Your Team is 9th in the power rankings, down 1 place from last week: 9th in standing, 9th in results over the last 3 weeks, 3rd in schedule played, 8th in scoring.",
         "numbers": [
           "9",
           "1",
           "9",
           "9",
+          "3",
           "3",
           "8"
         ],
@@ -10818,14 +10823,15 @@
       },
       "PR.11": {
         "id": "PR.11",
-        "text": "Unsolicited Dak Picks is 10th in the power rankings, down 3 places from last week: 10th in standing, 12th in form, 7th in schedule played, 9th in scoring.",
+        "text": "Unsolicited Dak Picks is 10th in the power rankings, down 1 place from last week: 10th in standing, 12th in results over the last 3 weeks, 7th in schedule played, 10th in scoring.",
         "numbers": [
           "10",
-          "3",
+          "1",
           "10",
           "12",
+          "3",
           "7",
-          "9"
+          "10"
         ],
         "teams": [
           "Unsolicited Dak Picks"
@@ -10834,12 +10840,13 @@
       },
       "PR.7": {
         "id": "PR.7",
-        "text": "To Infinity and Bijan is 11th in the power rankings, down 2 places from last week: 11th in standing, 11th in form, 9th in schedule played, 11th in scoring.",
+        "text": "To Infinity and Bijan is 11th in the power rankings, down 1 place from last week: 11th in standing, 10th in results over the last 3 weeks, 9th in schedule played, 11th in scoring.",
         "numbers": [
           "11",
-          "2",
+          "1",
           "11",
-          "11",
+          "10",
+          "3",
           "9",
           "11"
         ],
@@ -10850,11 +10857,12 @@
       },
       "PR.4": {
         "id": "PR.4",
-        "text": "Pukancun on 3 is 12th in the power rankings, no move from last week: 12th in standing, 10th in form, 10th in schedule played, 12th in scoring.",
+        "text": "Pukancun on 3 is 12th in the power rankings, no move from last week: 12th in standing, 11th in results over the last 3 weeks, 10th in schedule played, 12th in scoring.",
         "numbers": [
           "12",
           "12",
-          "10",
+          "11",
+          "3",
           "10",
           "12"
         ],
@@ -12442,12 +12450,12 @@
           "PR.2",
           "S.5",
           "H.2.trend",
-          "PR.1",
-          "S.6",
-          "H.1.trend",
           "PR.10",
           "S.8",
           "H.10.trend",
+          "PR.1",
+          "S.6",
+          "H.1.trend",
           "PR.12",
           "S.9",
           "H.12.streak",
@@ -12471,8 +12479,8 @@
           "Maye d'force B with U",
           "Return of T Mac",
           "All You Need Is Love",
-          "Brock ‘N’ Roll",
           "behold the lamb",
+          "Brock ‘N’ Roll",
           "Amon-Ra Dawg Your Team",
           "Unsolicited Dak Picks",
           "To Infinity and Bijan",
