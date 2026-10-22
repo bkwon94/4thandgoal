@@ -6,7 +6,7 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** in-progress
+**Status:** done
 
 - [x] `WIN_WIN_AT_OR_ABOVE = "B"` and `LOPSIDED_AT_OR_BELOW = "D"` in the tunable table, with the reason. The rubric file has a Fairness section that names them.
 - [x] A fairness function beside the verdict rule: the letters that stand and the two breakdowns in, a state, `gives_more`, and a reason per side out. Tests with fixture breakdowns: both B; A and B; both C; C and D; A and F; equal letters with different starts; a side with no step up.
