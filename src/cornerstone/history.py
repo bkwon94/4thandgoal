@@ -82,6 +82,14 @@ def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
     return weeks
 
 
+def saved_through(root: Path, week: int) -> int:
+    """The last week at or after `week` such that every week from `week` to it is saved."""
+    last = week
+    while _read_week(history_dir(root, last + 1)) is not None:
+        last += 1
+    return last
+
+
 def load_history(root: Path, raw: dict[str, object], week: int) -> History:
     weeks = load_saved_weeks(root, week - 1)
     # The current week comes from the raw data of this run, not from the cache.

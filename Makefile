@@ -4,7 +4,7 @@
 SEASON ?= 2026
 
 .DEFAULT_GOAL := help
-.PHONY: need-week need-main help install test lint check build publish page-json analyze api deploy logs push
+.PHONY: need-week need-main help install test lint check build publish page-json rankings analyze api deploy logs push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -30,6 +30,9 @@ publish: need-week ## Publish a week to the site repo and push it (WEEK required
 
 page-json: need-week ## Write page.json for a saved week (WEEK required)
 	uv run cornerstone page-json --season $(SEASON) --week $(WEEK)
+
+rankings: need-week ## Write rankings.json for a saved week (WEEK required)
+	uv run cornerstone rankings --season $(SEASON) --week $(WEEK)
 
 # Example: make analyze A=4:7569 B=12:10236,8146 ASKER=4
 analyze: ## Grade a trade without the Claude call (A, B, ASKER required)

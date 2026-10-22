@@ -1,5 +1,5 @@
 """
-Tests for the page.json writer.
+Tests for the page.json and rankings.json writers.
 They build the JSON from the recorded fixture and check the values that the site reads.
 """
 import json
@@ -7,9 +7,10 @@ import json
 import pytest
 from pydantic import TypeAdapter
 
+from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence
 from cornerstone.parse import parse_week
-from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_week
+from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_rankings, render_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 
@@ -347,3 +348,25 @@ def test_page_json_holds_the_whole_context(tbundle, tmp_path):
         tbundle, _blurbs(tbundle), _saved_avatars(tbundle, page.parent), _saved_headshots(tbundle, page.parent),
     )
     assert written == {"schema_version": 2, **TypeAdapter(dict).dump_python(context, mode="json")}
+
+
+def test_rankings_file_holds_every_week_in_rank_order(fixture_raw_dir, fixture_history_root, tmp_path):
+    raw = load_raw(fixture_raw_dir)
+    history = load_history(fixture_history_root, raw, week=6)
+    teams = parse_week(raw).teams
+    out = render_rankings(history, 2026, teams, tmp_path)
+    assert out == tmp_path / "2026" / "rankings.json"
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["schema_version"] == 1
+    assert data["season"] == 2026
+    assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    for week in data["weeks"]:
+        assert len(week["rows"]) == 12
+        assert [row["rank"] for row in week["rows"]] == list(range(1, 13))
+        for row in week["rows"]:
+            assert set(row) == {"roster_id", "name", "wins", "losses", "rank", "movement", "components", "blurb"}
+            assert set(row["components"]) == {"standing", "form", "schedule_played", "scoring"}
+            assert row["name"] == teams[row["roster_id"]].name
+            assert row["blurb"] == []
+    assert all(row["movement"] is None for row in data["weeks"][0]["rows"])
+    assert all(isinstance(row["movement"], int) for row in data["weeks"][1]["rows"])
