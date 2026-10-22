@@ -138,7 +138,15 @@
     "chapter": "position_leaders",
     "sentences": [
       {
-        "text": "Maye d'force B with U got the Maye in the name to show up 3rd among quarterbacks, and Isaiah Likely topped every tight end with 20.9.",
+        "text": "Bo Girds had Kenneth Walker atop every running back at 26.9 and Tyler Shough right behind the top quarterback.",
+        "fact_ids": [
+          "LEAD.RB.1",
+          "LEAD.QB.2"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Maye d'force B with U finally lived up to the pun, with Drake Maye 3rd at quarterback and Isaiah Likely leading every tight end at 20.9.",
         "fact_ids": [
           "LEAD.QB.3",
           "LEAD.TE.1"
@@ -146,28 +154,20 @@
         "roster_id": null
       },
       {
-        "text": "All You Need Is Love also needed Tre Tucker, whose 24.2 led all receivers, plus Colston Loveland at 2nd among tight ends.",
-        "fact_ids": [
-          "LEAD.WR.1",
-          "LEAD.TE.2"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "The name checks out.",
+        "text": "The force was with them.",
         "fact_ids": [],
         "roster_id": null
       },
       {
-        "text": "Kenneth Walker led every running back with 26.9 for Bo Girds, and Tyler Shough added the 2nd-highest quarterback score.",
+        "text": "Return of T Mac got the top defense in the Steelers and Malik Nabers at 22.5, 2nd among receivers.",
         "fact_ids": [
-          "LEAD.RB.1",
-          "LEAD.QB.2"
+          "LEAD.DEF.1",
+          "LEAD.WR.2"
         ],
         "roster_id": null
       }
     ],
-    "attempt": 1,
+    "attempt": 2,
     "fallback": false
   },
   "recap_1": {

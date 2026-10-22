@@ -116,17 +116,26 @@
     "position_leaders": [
       {
         "chapter": "position_leaders",
+        "code_failures": [
+          "[1] player Jeremiyah Love is not on a team in this chapter",
+          "[1] player Jordan Love is not on a team in this chapter"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "position_leaders",
         "code_failures": [],
         "verdicts": [
           {
             "index": 0,
             "supported": true,
-            "reason": "Drake Maye 3rd of 12 QBs for Maye d'force B with U; Likely 20.9, 1st of 15 TEs, per LEAD.QB.3 and LEAD.TE.1."
+            "reason": "Walker 1st of 31 RBs at 26.9 and Shough 2nd among QBs for Bo Girds match LEAD.RB.1 and LEAD.QB.2."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "Tucker 24.2, 1st of 38 WRs, and Loveland 2nd of 15 TEs, both for All You Need Is Love."
+            "reason": "Maye 3rd QB and Likely 1st TE at 20.9 for Maye d'force B with U match the facts; the pun remark is attitude."
           },
           {
             "index": 2,
@@ -136,7 +145,7 @@
           {
             "index": 3,
             "supported": true,
-            "reason": "Walker 26.9, 1st of 31 RBs, for Bo Girds; Shough 2nd of 12 QBs, also for Bo Girds."
+            "reason": "Steelers 1st DEF and Nabers 22.5, 2nd WR for Return of T Mac match LEAD.DEF.1 and LEAD.WR.2."
           }
         ],
         "passed": true
