@@ -164,7 +164,7 @@ Claude bill to the league's use.
   6. Schedule. Byes left against byes done for the players got and gave, and the rank of the week
      15 to 17 opponents in points allowed to the position. It never moves a letter. The breakdown
      shows it as for, against, or even, and the verdict rule and the prose may use it.
-- The sum of the adjuster steps is clamped to two either way. The final letter is the start letter
+- The sum of the adjuster steps is clamped to one either way. The final letter is the start letter
   plus the sum, clamped to A through F.
 - Verdict rule, the code's default: accept when the asker's letter is B or better, or C with the
   other side at C or worse; decline when the asker's letter is D or worse; counter otherwise.

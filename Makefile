@@ -52,6 +52,7 @@ push: need-main ## Push main to origin (main branch, clean tree only)
 need-week:
 	@test -n "$(WEEK)" || { echo "Set WEEK. Example: make $(MAKECMDGOALS) WEEK=7"; exit 1; }
 
+# The tickets under .scratch are untracked by design, so the guard reads only tracked files outside it.
 need-main:
 	@test "$$(git branch --show-current)" = main || { echo "Stop: the branch is not main."; exit 1; }
-	@test -z "$$(git status --porcelain)" || { echo "Stop: the tree is not clean."; exit 1; }
+	@test -z "$$(git status --porcelain --untracked-files=no -- . ":!.scratch")" || { echo "Stop: the tree has uncommitted changes."; exit 1; }
