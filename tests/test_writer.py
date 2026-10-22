@@ -45,7 +45,7 @@ def test_system_prompt_has_all_three_files(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert "Top Scorer" in system and "upset" in system and "recent add" in system
-    assert "Dry, specific" in system and "fact ID" in system
+    assert "league group chat" in system and "fact ID" in system
 
 
 def test_feedback_block_appears_only_with_feedback(fixture_raw_dir):
@@ -153,6 +153,27 @@ def test_tone_has_the_banned_patterns(fixture_raw_dir):
                     '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
         assert pattern in section, pattern
     assert 'At most one sentence per blurb may hold a ", which" clause.' in section
+
+
+def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    tone = system.split("# Tone", 1)[1].strip()
+    voice = "The voice is the league group chat: a member who watched every game and types like a person."
+    assert tone.startswith(voice)
+    assert "Short sentences, varied length, contractions allowed. No chill. Roast freely." in tone
+    assert "Deadpan allowed, not required." in tone
+    assert "two jokes" not in system
+    assert "No filler sentence. Every sentence states a fact or reacts to the one before it." in system
+
+
+def test_writer_rule_4_lets_a_plain_phrase_stand_for_a_stat(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "4. When you name a stat, use its vocabulary term. You need not name the stat." in system
+    assert "A plain phrase that the cited fact supports is fine" in system
+    assert "Use only the vocabulary terms." not in system
+    assert "15. In a sentence that makes a claim, lead with the claim." in system
 
 
 def test_a_saved_blurb_with_a_grades_map_still_parses():

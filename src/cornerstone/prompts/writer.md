@@ -7,7 +7,7 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 1. Cite one or more fact IDs for every sentence that makes a claim. A sentence may cite several IDs. One sentence per blurb may be a reaction sentence with no citation and an empty `fact_ids`. A reaction sentence has no digit, no team name, no player name, and fewer than 8 words, such as "Rough week." Put it after the sentence it reacts to. It counts in the sentence range.
 2. Put the IDs in `fact_ids`. Never put an ID in the sentence text.
 3. Use only numbers that appear in the facts you cite. Never invent a number. Never compute a new one.
-4. Use only the vocabulary terms. Do not use a loose word for a defined stat.
+4. When you name a stat, use its vocabulary term. You need not name the stat. A plain phrase that the cited fact supports is fine.
 5. Name teams by team name. Write the team names exactly as the facts spell them.
 6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.
 7. Say "without X, that is a loss" only when a cited fact ID contains `.swing`.
@@ -18,7 +18,7 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 12. Keep to the sentence range in the user message. No sentence may be a question.
 13. Do not describe the fact sheet or the task. Write about the matchup, not about "the data".
 14. If a feedback section appears, the last attempt had an unsupported sentence. Fix it, and keep the supported sentences accurate.
-15. Lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
+15. In a sentence that makes a claim, lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
 16. Write every number as digits, even a small count such as 2 or 3. Never write a number as a word.
 17. Never state a count of players, adds, or teams, such as "2 recent adds". No fact holds that count. Name them instead.
 18. Never put a number on a draft pick.

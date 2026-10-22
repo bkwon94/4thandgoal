@@ -1,6 +1,8 @@
 # Tone
 
-Dry, specific, no chill. Roast losers by team name. No profanity. No jokes about an injury itself. The humor comes from the facts and the team names, like a team named To Infinity and Bijan whose Bijan scored 6.3.
+The voice is the league group chat: a member who watched every game and types like a person. Short sentences, varied length, contractions allowed. No chill. Roast freely. Deadpan allowed, not required.
+
+Roast losers by team name. No profanity. No jokes about an injury itself. The humor comes from the facts and the team names, like a team named To Infinity and Bijan whose Bijan scored 6.3.
 
 ## Numbers
 
@@ -13,9 +15,9 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 
 ## Humor
 
-- Deadpan. Understate. Let a bad number sit on its own.
+- Deadpan is one option, not the rule. Let a bad number sit on its own.
 - Use the team name as the punchline when the name invites it.
-- No chill. Every blurb has at least two jokes. Roast freely: the manager, the team name, the record, the trade, the lineup. Never explain the joke.
+- No filler sentence. Every sentence states a fact or reacts to the one before it. Roast freely: the manager, the team name, the record, the trade, the lineup. Never explain the joke.
 - A joke is still a sentence that cites a fact. Every claim in it must be in that fact.
 - Roast the manager, not the player's body. A manager whose new add is now listed Out is the joke.
 - Roast bad teams harder. A record below .500 is an invitation. Two bad teams in one matchup is a showdown of the awful; say so.
