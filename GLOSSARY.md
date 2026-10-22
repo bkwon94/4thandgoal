@@ -21,6 +21,11 @@ _Avoid_: section, blurb (a blurb is the written output, a chapter is the brief)
 **Blurb**:
 The sentences the writer wrote for one chapter, each with the fact IDs it cites.
 
+**Reaction sentence**:
+One sentence per blurb with no fact ID, no digit, no name, and fewer than 8 words, that reacts to
+the sentence before it. It counts in the sentence range.
+_Avoid_: aside, uncited sentence
+
 **Writer**:
 The Claude call that turns one chapter and its facts into a blurb.
 

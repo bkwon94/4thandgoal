@@ -116,6 +116,44 @@ def test_sentence_count_out_of_range_fails(fixture_raw_dir):
     assert any("sentences" in m for m in code_check(b, ch, sheet))
 
 
+def test_one_reaction_sentence_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Rough week."))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_second_reaction_sentence_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Rough week."), _s("Brutal."))
+    assert code_check(b, ch, sheet) == ["[2] a second reaction sentence; a blurb may hold one, so cite a fact"]
+
+
+def test_reaction_sentence_with_a_digit_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Down 40 again."))
+    assert any(m.startswith("[1] a reaction sentence has a digit") for m in code_check(b, ch, sheet))
+
+
+def test_reaction_sentence_with_a_scope_name_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    for text, name in [("Poor behold the lamb.", "behold the lamb"), ("Corum, again.", "Corum")]:
+        b = _blurb("recap_4", _s("behold the lamb lost.", "M4.result"), _s(text))
+        assert f"[1] a reaction sentence names {name}; cite a fact or drop the name" in code_check(b, ch, sheet)
+
+
+def test_reaction_sentence_of_eight_words_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Nobody saw that coming, not even the league."))
+    assert any(m.startswith("[1] a reaction sentence has 8 or more words") for m in code_check(b, ch, sheet))
+    b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Nobody saw that coming, not even them."))
+    assert code_check(b, ch, sheet) == []
+
+
 def test_unknown_fact_id_fails(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
@@ -248,6 +286,24 @@ def test_feedback_reaches_second_attempt(fixture_raw_dir):
     blurb, results = write_and_verify(ch, sheet, fake)
     assert not blurb.fallback and len(results) == 2
     assert "Sentence 0: bad claim" in users[1]
+
+
+def test_second_reaction_gets_feedback_and_passes_with_one(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(3)])
+        users.append(user)
+        last = _s("Brutal.") if len(users) == 1 else _s("It set the bar.", "MED.value")
+        return WriterOut(sentences=[_s("The median was 106.83.", "MED.value"), _s("Rough week."), last])
+
+    blurb, results = write_and_verify(ch, sheet, fake)
+    assert not blurb.fallback and blurb.attempt == 2 and len(results) == 2
+    assert "[2] a second reaction sentence" in users[1]
+    assert [s.fact_ids for s in blurb.sentences].count([]) == 1
 
 
 def test_verifier_error_falls_back(fixture_raw_dir):

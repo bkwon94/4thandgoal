@@ -107,7 +107,7 @@ def test_live_write_median(fixture_raw_dir):
     b = write_blurb(ch, sheet, claude_call)
     for s in b.sentences:
         print(f"{s.text}  {s.fact_ids}")
-    assert 2 <= len(b.sentences) <= 4 and all(s.fact_ids for s in b.sentences)
+    assert 2 <= len(b.sentences) <= 4 and [s.fact_ids for s in b.sentences].count([]) <= 1
 
 
 def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
@@ -127,6 +127,22 @@ def test_writer_rule_6_gates_decided_on_a_driver_only(fixture_raw_dir):
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert '6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.' in system
     assert "T{n}.{rid}.swing" not in system
+
+
+def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "1. Cite one or more fact IDs for every sentence that makes a claim." in system
+    assert "One sentence per blurb may be a reaction sentence with no citation" in system
+    assert "no digit, no team name, no player name, and fewer than 8 words" in system
+    assert "Put it after the sentence it reacts to." in system
+
+
+def test_verifier_prompt_supports_a_reaction_sentence():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    assert "- A sentence with no fact IDs and no claim is supported." in text
 
 
 def test_a_saved_blurb_with_a_grades_map_still_parses():

@@ -38,6 +38,8 @@ NUMBER_WORDS = [
     "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
     "nineteen", "twenty", "dozen",
 ]
+# A reaction sentence cites no fact, so it must be too short to hide a claim.
+REACTION_WORD_LIMIT = 8
 
 
 def normalize_number(number: str) -> str:
@@ -130,6 +132,21 @@ def _week_numbers(sheet: FactSheet) -> set[str]:
     return {str(number), str(number + 1)}
 
 
+def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -> list[str]:
+    """The limits on a reaction sentence: no digit, no scope name, and fewer than 8 words."""
+    failures = []
+    if re.search(r"\d", text):
+        failures.append("a reaction sentence has a digit; cite a fact or drop the number")
+    named = [n for n in scope_names if whole_word(n, text)]
+    # A last name alone counts only with its capital, so "that hurts" is not Jalen Hurts.
+    named += sorted(last for last in scope_last if last and re.search(_whole_pattern(last), text))
+    if named:
+        failures.append(f"a reaction sentence names {named[0]}; cite a fact or drop the name")
+    if len(text.split()) >= REACTION_WORD_LIMIT:
+        failures.append(f"a reaction sentence has {REACTION_WORD_LIMIT} or more words; keep it short or cite a fact")
+    return failures
+
+
 def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
@@ -139,8 +156,16 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     in_scope_last = {last_name(p) for p in chapter.scope_players}
     banned = _banned_words()
     always_allowed = _week_numbers(sheet)
+    reactions = 0
 
     for i, sentence in enumerate(blurb.sentences):
+        # A sentence with no fact IDs is the one reaction a blurb may hold.
+        if not sentence.fact_ids:
+            reactions += 1
+            if reactions > 1:
+                failures.append(f"[{i}] a second reaction sentence; a blurb may hold one, so cite a fact")
+            failures += [f"[{i}] {m}" for m in reaction_failures(sentence.text, scope_names, in_scope_last)]
+
         valid_ids = []
         for fid in sentence.fact_ids:
             if fid in sheet.facts and fid in in_chapter:
