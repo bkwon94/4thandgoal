@@ -51,13 +51,16 @@ These examples come from an old week. Their numbers and names never appear in a 
 
 Passed review:
 
-- "Bo Girds cleared the median by 2.79. Amon-Ra Dawg Your Team missed it by 2.79." It cites `MED.closest` and lets two equal gaps do the joke.
-- "Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, so the trade is going great." It cites the `.move.` fact, the player line, and the `.inj.` fact. The joke is the trade.
+- "Brutal pickup." It follows "The Colts defense, a recent add, finished at -0.85 and still counts as a decider." It is a reaction sentence with no fact ID. It passes because it makes no claim, has no digit and no name, and reacts to the sentence before it.
+- "Not even close." It follows "That 46.08 is a season low, posted by a side already 2 games below the cut." It is a reaction sentence with no fact ID. It passes because it makes no claim, has no digit and no name, and reacts to the sentence before it.
+- "Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, with Brock Purdy as Top Scorer." It cites `M1.result` and `M1.top.1`. The roast is the team name, and every claim in it is in the cited facts.
+- "Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out." It cites `W.injured`. It passes with no number: a sentence may carry none.
+- "In an upset, Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47." It cites `M2.result` and `M2.upset`. The one score line proves "flattened", and `M2.upset` lets it say upset.
+- "Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much." It cites `MED.closest`. The one number proves both teams sat the same gap from the median.
+- "Matthew Golden alone dropped 3, worth about 14.2." It cites `D.12501` and `D.12501.value`. The one number proves how much his drops cost.
 
 Failed review:
 
-- "A five-point game decided by a quarterback nobody wanted in August." It fails because the quarterback played for the losing team. A player on the losing side is not a decider. Only a margin driver may be called a decider.
-- "Brock 'N' Roll's best starter was a defense picked up Wednesday." It fails because "best starter" is not a stat. "Top Scorer" is a stat. Use the defined term.
-- "Lil Fridge won 128.46 to 101.62, a margin of 26.84, with McCaffrey at 26.2 on a 19.1 projection, 7.1 over." It is true and it is unreadable. Six numbers in one sentence. Pick one.
-- "McConkey cannot stay healthy." It fails because it is a claim about the player's health, and no fact states it.
-- "The manager started McConkey while he was listed Out." It fails because the status is post-game. No fact states the status at kickoff.
+- "Five-point game, and the quarterback nobody drafted decided it." It fails because the quarterback played for the losing team. A player on the losing side is not a decider. Only a margin driver may be called a decider.
+- "McConkey can't stay on the field." It fails because it is a claim about the player's health, and no fact states it.
+- "Bold move to start McConkey while he was listed Out." It fails because the `.inj.` status is from after the games. Only an `I.{pid}.pregame` fact states the status at kickoff.

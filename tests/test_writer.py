@@ -179,6 +179,26 @@ def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
     assert "No filler sentence. Every sentence states a fact or reacts to the one before it." in system
 
 
+def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Examples", 1)[1].split("\n## ", 1)[0]
+    passed = section.split("Passed review:", 1)[1].split("Failed review:", 1)[0]
+    # Brian picked these sentences from the week 6 candidates. A prompt edit that drops one fails here.
+    for sentence in (
+        '"Brutal pickup."',
+        '"Not even close."',
+        '"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
+        'with Brock Purdy as Top Scorer."',
+        '"Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out."',
+        '"In an upset, Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47."',
+        '"Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much."',
+        '"Matthew Golden alone dropped 3, worth about 14.2."',
+    ):
+        assert sentence in passed, sentence
+    assert "Their numbers and names never appear in a new blurb." in section
+
+
 def test_writer_rule_4_lets_a_plain_phrase_stand_for_a_stat(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
