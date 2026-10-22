@@ -13,11 +13,15 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
-from cornerstone.history import fetch_history, history_dir, history_root, load_history, save_week_to_history
-from cornerstone.models import Blurb, BuildRecord, Bundle, History, NflverseWeek, Trade, VerifyFile, VerifyResult, Week
+from cornerstone.history import (
+    fetch_history, history_dir, history_root, load_history, load_saved_weeks, save_week_to_history, saved_through,
+)
+from cornerstone.models import (
+    Blurb, BuildRecord, Bundle, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
+)
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
-from cornerstone.render import _download_bytes, render_page_json, render_week
+from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
 from cornerstone.sheet import build_bundle, check_week_is_buildable, read_bundle, write_bundle
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -268,7 +272,28 @@ def run_build(
         save_week_to_history(raw_dir, history_dir(history_root(repo, season), week))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
+    # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
+    try:
+        if _write_rankings(repo, season, week, bundle.data.teams) is None:
+            log.warning("history incomplete through week %d: rankings.json not written", week)
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("rankings.json not written for week %d: %s", week, err)
     return page
+
+
+def _write_rankings(repo: Path, season: int, week: int, teams: dict[int, Team]) -> Path | None:
+    """Write rankings.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
+    None when a week from 1 to `week` is missing."""
+    root = history_root(repo, season)
+    # The file holds every week to date. A rebuild of an older week must not cut the later weeks from it.
+    through = saved_through(root, week)
+    history = History(week=through, weeks=load_saved_weeks(root, through))
+    # A gap would shift every rank after it, so the file waits for a complete history.
+    if not history.complete():
+        return None
+    if through > week:
+        log.info("rankings.json covers weeks 1 to %d, past the built week %d", through, week)
+    return render_rankings(history, season, teams, repo / "site")
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
@@ -312,6 +337,15 @@ def run_page_json(repo: Path, season: int, week: int) -> Path:
     """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
     bundle, blurbs = _load_saved_week(repo, season, week)
     return render_page_json(bundle, blurbs, repo / "site")
+
+
+def run_rankings(repo: Path, season: int, week: int) -> Path:
+    """Write rankings.json for a saved week from the saved history. It calls no writer and no network."""
+    bundle, _ = _load_saved_week(repo, season, week)
+    out = _write_rankings(repo, season, week, bundle.data.teams)
+    if out is None:
+        raise BuildStopped(f"The history is missing a week from 1 to {week}. Run cornerstone history --through {week}.")
+    return out
 
 
 def run_history(repo: Path, season: int, through: int, force: bool = False) -> list[int]:

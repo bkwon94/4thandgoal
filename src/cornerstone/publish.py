@@ -1,14 +1,17 @@
 """
 Publish a built week to the public site repo.
-It commits the source repo and copies the week folder.
+It commits the source repo and copies the week folder and the season file.
 Then it commits and pushes the site repo.
 """
+import logging
 import shutil
 import subprocess
 from pathlib import Path
 
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://cpcfantasy.com/"
+
+log = logging.getLogger(__name__)
 
 
 def site_page_url(season: int, week: int) -> str:
@@ -55,6 +58,12 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     shutil.copytree(
         repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
     )
+    # The season file holds every week to date, so it goes out with the week in the same commit.
+    rankings = repo / "site" / str(season) / "rankings.json"
+    if rankings.exists():
+        shutil.copy2(rankings, public_dir / str(season) / "rankings.json")
+    else:
+        log.warning("%s missing: the publish goes out without rankings.json", rankings)
     _git(site_repo, "add", "-A")
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:

@@ -4,6 +4,7 @@ They use recorded fixtures, a fake writer, and a fake avatar downloader, so no n
 """
 import gzip
 import json
+import logging
 import os
 import re
 import shutil
@@ -19,7 +20,10 @@ from pathlib import Path
 
 from cornerstone.models import BuildRecord, NflverseWeek, Sentence, Verdict, VerifyFile, VerifyOut
 from cornerstone.nflverse import nflverse_week
-from cornerstone.pipeline import BuildStopped, make_bundle, read_verify, run_build, run_rewrite, week_dir
+from cornerstone.pipeline import (
+    BuildStopped, _write_rankings, make_bundle, read_verify, run_build, run_page_json, run_rankings, run_rewrite,
+    week_dir,
+)
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.sheet import read_bundle
 
@@ -125,6 +129,61 @@ def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir):
     assert injuries["5859"] == "Questionable"  # A.J. Brown
 
 
+def _rankings(repo):
+    return repo / "site" / "2026" / "rankings.json"
+
+
+def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert page.exists()
+    built = _rankings(repo).read_text(encoding="utf-8")
+    data = json.loads(built)
+    assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    # The rankings command writes the same file from the same saved history.
+    assert run_rankings(repo, 2026, 6).read_text(encoding="utf-8") == built
+
+
+def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    # The build saves week 6, so the history runs through week 6.
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    teams = read_bundle(week_dir(repo, 2026, 6) / "facts.json").data.teams
+    caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
+    out = _write_rankings(repo, 2026, 5, teams)
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    assert "covers weeks 1 to 6, past the built week 5" in caplog.text
+
+
+def test_incomplete_history_skips_the_rankings_file_and_the_page_builds(tmp_path, fixture_raw_dir, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert page.exists()
+    assert not _rankings(repo).exists()
+    assert "history incomplete" in caplog.text
+
+
+def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    _rankings(repo).unlink()
+    run_page_json(repo, 2026, 6)
+    # The page-json command leaves the season file alone.
+    assert not _rankings(repo).exists()
+    out = run_rankings(repo, 2026, 6)
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
+    assert all(row["blurb"] == [] for w in data["weeks"] for row in w["rows"])
+
+
+def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    with pytest.raises(BuildStopped, match="history"):
+        run_rankings(repo, 2026, 6)
+
+
 def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog):
     repo = _repo(tmp_path, fixture_raw_dir)
     # A file in place of the history directory makes the save fail.
@@ -213,11 +272,12 @@ def _init(path):
     _git(path, "config", "user.name", "Test")
 
 
-def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
+def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_root):
     repo, site_repo = tmp_path / "source", tmp_path / "site"
     _init(repo)
     _init(site_repo)
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
+    shutil.copytree(fixture_history_root, history_root(repo, 2026))
     (repo / "src").mkdir()
     (repo / "src" / "code.py").write_text("x = 1\n")
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
@@ -227,6 +287,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "public/2026/week-06/page.json" in files
+    assert "public/2026/rankings.json" in files
     assert "public/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
     assert not any(f.startswith("public/static/") for f in files)
@@ -237,7 +298,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir):
     assert _git(repo, "log", "-1", "--format=%s").strip() == "Week 6 report"
 
 
-def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeypatch):
+def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeypatch, caplog):
     repo, site_repo = tmp_path / "source", tmp_path / "site"
     _init(repo)
     _init(site_repo)
@@ -253,6 +314,10 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "public/2026/week-06/page.json" in files
     assert not any(f.startswith("public/2026/week-07/") for f in files)
+    # No history means no season file, so the publish warns and goes out without it.
+    assert "the publish goes out without rankings.json" in caplog.text
+    assert "public/2026/rankings.json" not in files
+    assert not (site_repo / "public" / "2026" / "rankings.json").exists()
 
 
 def test_publish_requires_built_page(tmp_path):

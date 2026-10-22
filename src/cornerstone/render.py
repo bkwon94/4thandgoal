@@ -1,6 +1,6 @@
 """
 Writes the page.json of a week from a bundle and its blurbs, and saves the images it names.
-The site repo reads the JSON and renders the pages.
+It also writes the season file of power rankings. The site repo reads the JSON and renders the pages.
 """
 import json
 import logging
@@ -11,8 +11,9 @@ from urllib.parse import urlparse
 import httpx
 from pydantic import TypeAdapter
 
-from cornerstone.facts_league import LEADER_POSITIONS
-from cornerstone.models import Blurb, Bundle, MatchupFacts
+from cornerstone.facts_league import LEADER_POSITIONS, season_records
+from cornerstone.models import Blurb, Bundle, History, MatchupFacts, Team
+from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet import AWARD_TITLES
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
@@ -25,6 +26,8 @@ AVATAR_TIMEOUT = 10
 TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 # Bump this when a key in page.json changes meaning or leaves. A new key does not need a bump.
 PAGE_SCHEMA_VERSION = 2
+# The season file has its own version, so a change to one file never breaks the reader of the other.
+RANKINGS_SCHEMA_VERSION = 1
 
 log = logging.getLogger(__name__)
 
@@ -277,6 +280,34 @@ def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -
     week_dir = _week_dir(site_dir, bundle)
     context = build_context(bundle, blurbs, _saved_avatars(bundle, week_dir), _saved_headshots(bundle, week_dir))
     return _write_page_json(context, week_dir)
+
+
+def render_rankings(history: History, season: int, teams: dict[int, Team], site_dir: Path) -> Path:
+    """Write rankings.json for the season from every week from 1 to the history week. Rows are in rank order.
+    The file holds ranks only: a reader sees "9th hardest schedule", and no one argues over a decimal."""
+    weeks = []
+    for week, rows in power_rankings(history, history.week).items():
+        # The record of each week is the record as of that week, not as of the current one.
+        records = season_records(history, week)
+        weeks.append({"week": week, "rows": [
+            {
+                "roster_id": row.roster_id,
+                "name": teams[row.roster_id].name,
+                "wins": records[row.roster_id][0],
+                "losses": records[row.roster_id][1],
+                "rank": row.power_rank,
+                "movement": row.movement,
+                "components": row.ranks,
+                "blurb": [],
+            }
+            for row in rows
+        ]})
+    body = {"schema_version": RANKINGS_SCHEMA_VERSION, "season": season, "weeks": weeks}
+    season_dir = site_dir / str(season)
+    season_dir.mkdir(parents=True, exist_ok=True)
+    out = season_dir / "rankings.json"
+    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    return out
 
 
 def render_week(
