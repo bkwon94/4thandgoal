@@ -351,14 +351,14 @@ def test_the_document_holds_no_trade_value_sum_or_ratio(settings, sources):
         assert f'"{word}' not in text
 
 
-def test_a_player_not_on_the_giving_roster_is_422_with_the_id(settings, sources):
+def test_a_player_not_on_the_giving_roster_is_422_with_the_names_and_the_id(settings, sources):
     analyzer = StubAnalyzer()
     # Garrett Wilson is on roster 12, not roster 4.
     trade = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
     response = _client(settings, sources, analyzer).post("/analyze", json=trade, headers=HEADERS)
     assert response.status_code == 422
     assert response.json()["detail"]["player_id"] == "8146"
-    assert "8146" in response.json()["detail"]["message"]
+    assert response.json()["detail"]["message"] == "Garrett Wilson is no longer on Pukancun on 3."
     assert analyzer.calls == 0
 
 

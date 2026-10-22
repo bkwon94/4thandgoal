@@ -317,7 +317,7 @@ def test_analyze_names_a_player_not_on_the_giving_roster(
                      "--side", "4:4034", "--side", "12:10236", "--asker", "4", "--no-claude"])
 
     assert code == 2
-    assert "4034" in capsys.readouterr().out
+    assert "Christian McCaffrey is no longer on Pukancun on 3." in capsys.readouterr().out
 
 
 def test_analyze_needs_exactly_two_sides(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):

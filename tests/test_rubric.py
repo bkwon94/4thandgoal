@@ -96,7 +96,15 @@ def test_a_given_player_not_on_the_giving_roster_is_an_input_error(snap):
     with pytest.raises(TradeInputError) as error:
         grade(_trade(4, [MCCAFFREY], 12, [KINCAID]), snap)
     assert error.value.player_id == MCCAFFREY
-    assert MCCAFFREY in str(error.value)
+    name = snap.players[MCCAFFREY].name
+    assert str(error.value) == f"{name} is no longer on {snap.teams[4].name}."
+
+
+def test_a_given_player_the_snapshot_does_not_know_is_named_by_id(snap):
+    with pytest.raises(TradeInputError) as error:
+        grade(_trade(4, ["999999"], 12, [KINCAID]), snap)
+    assert error.value.player_id == "999999"
+    assert str(error.value) == f"999999 is no longer on {snap.teams[4].name}."
 
 
 def test_a_roster_not_in_the_league_is_an_input_error(snap):
