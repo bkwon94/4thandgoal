@@ -207,6 +207,17 @@ def test_the_analyzer_call_alone_sets_the_one_hour_lifetime(monkeypatch):
     assert sent["system"][0]["cache_control"] == {"type": "ephemeral"}
 
 
+def test_the_analyzer_call_alone_runs_at_medium_effort(monkeypatch):
+    from cornerstone.analysis import AnalysisOut
+    from cornerstone.writer import analyzer_call, claude_call
+
+    sent = _fake_client(monkeypatch)
+    analyzer_call("analyzer system", "user text", AnalysisOut)
+    assert sent["output_config"] == {"effort": "medium"}
+    claude_call("writer system", "user text", WriterOut)
+    assert sent["output_config"] == {"effort": "high"}
+
+
 # The API route calls `analyze` with no `call` argument, so this default is the API's lifetime.
 def test_analyze_uses_the_analyzer_call_by_default():
     import inspect
