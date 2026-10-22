@@ -26,9 +26,9 @@ log = logging.getLogger(__name__)
 DECIDED_WORDS = ["decided", "decider", "decide"]
 # Gated words need a cited fact ID that contains one of the markers.
 GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
-    (DECIDED_WORDS, (".driver",)),
+    (DECIDED_WORDS + ["won it", "blew it"], (".driver",)),
     (["upset"], (".upset",)),
-    (["recent add", "lucky", "waiver add", "free agent add"], (".move.", "W.adds")),
+    (["recent add", "lucky", "waiver add", "free agent add", "new pickup"], (".move.", "W.adds")),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
@@ -42,6 +42,14 @@ NUMBER_WORDS = [
 REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
 WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
+# A blurb this long needs one sentence with no number, so the prose does not read as a stat sheet.
+NUMBERLESS_MIN_SENTENCES = 3
+# A number that is read with a vowel sound: 8, 8.13, 80 to 89, 800, 11, 18, 11-1.
+# 110 and 180 read "a hundred and ...", so they keep "a".
+VOWEL_SOUND_NUMBER = r"8(?:[\d,.]*\d)?|1[18](?:\.\d+)?(?![\d,])"
+A_BEFORE_VOWEL_NUMBER = re.compile(rf"(?<!\w)a\s+({VOWEL_SOUND_NUMBER})", re.IGNORECASE)
+# "an" before any number; the number then must be one read with a vowel sound.
+AN_BEFORE_NUMBER = re.compile(r"(?<!\w)an\s+(\d(?:[\d,.]*\d)?)", re.IGNORECASE)
 
 
 def normalize_number(number: str) -> str:
@@ -150,6 +158,26 @@ def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -
     return failures
 
 
+def article_failures(text: str) -> list[str]:
+    """The article rule: "an", not "a", before a number read with a vowel sound, such as "an 8.13".
+    Any other number takes "a", such as "a 9" or "a 110"."""
+    failures = [f"write 'an {number}', not 'a {number}'" for number in A_BEFORE_VOWEL_NUMBER.findall(text)]
+    failures += [
+        f"write 'a {number}', not 'an {number}'"
+        for number in AN_BEFORE_NUMBER.findall(text)
+        if not re.fullmatch(VOWEL_SOUND_NUMBER, number)
+    ]
+    return failures
+
+
+def numberless_failures(bares: list[str]) -> list[str]:
+    """A blurb of 3 or more sentences needs one sentence with no digit. The texts have the names removed."""
+    if len(bares) < NUMBERLESS_MIN_SENTENCES or not all(re.search(r"\d", b) for b in bares):
+        return []
+    indexes = ", ".join(str(i) for i in range(len(bares)))
+    return [f"[0] every sentence has a number (sentences {indexes}); write at least one sentence with no number"]
+
+
 def roster_tag_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     """The roster tag rules of the rankings chapter: every sentence tagged, 1 or 2 sentences per team,
     and the team's first sentence cites its PR fact. A tagged reaction sentence counts toward the 2."""
@@ -187,6 +215,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     banned_phrases = _banned("## Banned phrases")
     always_allowed = _week_numbers(sheet)
     reactions = 0
+    bares: list[str] = []
 
     for i, sentence in enumerate(blurb.sentences):
         # A sentence with no fact IDs is the one reaction a blurb may hold.
@@ -206,6 +235,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
 
         # Digits inside a name ("Pukancun on 3") are not numbers.
         bare = remove_names(sentence.text, scope_names)
+        bares.append(bare)
         cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
         ids = ", ".join(sentence.fact_ids)
         for message in number_failures(bare, cited | always_allowed, cited_text):
@@ -213,6 +243,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
             # A reaction sentence cites no IDs, so it gets no suffix.
             suffix = "" if message.startswith("number word") or not ids else f" {ids}"
             failures.append(f"[{i}] {message}{suffix}")
+
+        failures += [f"[{i}] {m}" for m in article_failures(sentence.text)]
 
         # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
         if "[" in sentence.text:
@@ -256,6 +288,10 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
     if len(tails) > 1:
         failures.append(f"[{tails[1]}] {len(tails)} sentences have a ', which' tail; a blurb may hold one")
+
+    # The rankings chapter is twelve short team rows, and each row opens on a rank, so it skips the mix.
+    if chapter.key != RANKINGS_CHAPTER:
+        failures += numberless_failures(bares)
 
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:

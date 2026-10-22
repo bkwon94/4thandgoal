@@ -13,6 +13,7 @@ from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
     fmt,
+    is_motw_recap,
     power_facts,
     read_bundle,
     week_dates,
@@ -379,3 +380,14 @@ def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
 def test_no_rankings_without_history(bundle):
     assert not any(fid.startswith("PR.") for fid in bundle.sheet.facts)
     assert "rankings" not in [c.key for c in bundle.sheet.chapters]
+
+
+def test_only_the_recap_of_the_matchup_of_the_week_is_the_motw_recap(bundle):
+    sheet = bundle.sheet
+    motw = next(c for c in sheet.chapters if c.key == "motw")
+    recaps = [c for c in sheet.chapters if c.key.startswith("recap_")]
+    found = [c.key for c in recaps if is_motw_recap(c, sheet)]
+    assert len(found) == 1
+    recap = next(c for c in recaps if c.key == found[0])
+    assert set(recap.scope_teams) == set(motw.scope_teams)
+    assert not is_motw_recap(motw, sheet)

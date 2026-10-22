@@ -92,6 +92,17 @@ def two_team_chapter(key: str) -> bool:
     return key in TWO_TEAM_CHAPTERS or key.startswith("recap_")
 
 
+def is_motw_recap(chapter: Chapter, sheet: FactSheet) -> bool:
+    """True for the recap of the Matchup of the Week pairing.
+
+    Both chapters hold the same matchup facts, so the writer repeats a sentence word for word.
+    The check reads the two scopes, so it works on a saved sheet with no rebuild.
+    """
+    motw = next((c for c in sheet.chapters if c.key == "motw"), None)
+    return (motw is not None and chapter.key.startswith("recap_")
+            and set(chapter.scope_teams) == set(motw.scope_teams))
+
+
 # A record such as 33-30 is one token. A leading minus belongs to a negative number.
 NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
 PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
