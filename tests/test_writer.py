@@ -10,7 +10,7 @@ from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
-from cornerstone.writer import build_writer_prompt, template_blurb, write_blurb
+from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, template_blurb, write_blurb
 
 
 def _sheet(d):
@@ -203,7 +203,7 @@ def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
         '"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
         'with Brock Purdy as Top Scorer."',
         '"Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out."',
-        '"Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47, and that\'s an upset."',
+        '"Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47 in an upset."',
         '"Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much."',
         '"Matthew Golden alone dropped 3, worth about 14.2."',
     ):
@@ -352,15 +352,17 @@ def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
     assert 'Put "upset" mid-sentence or at the end at least half the time' in section
 
 
-def test_only_the_motw_recap_gets_the_note_on_the_headline(fixture_raw_dir):
+def test_the_motw_recap_gets_the_note_on_the_headline(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    note = "Note: the Matchup of the Week chapter already told this game's headline"
     _, motw_recap = build_writer_prompt(_chapter(sheet, "recap_4"), sheet, None)
-    assert note in motw_recap
-    assert "Never repeat a sentence from that chapter." in motw_recap
+    assert MOTW_HEADLINE_NOTE in motw_recap
+
+
+def test_another_recap_and_the_motw_get_no_note_on_the_headline(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
     for key in ("recap_1", "motw"):
         _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
-        assert note not in user, key
+        assert MOTW_HEADLINE_NOTE not in user, key
 
 
 def test_tone_asks_for_one_joke_per_blurb(fixture_raw_dir):
@@ -397,3 +399,48 @@ def test_vocabulary_gives_a_plain_phrase_for_each_stat_term(fixture_raw_dir):
     # The plain phrases are examples. The gated words keep their marker rule.
     gated = {word for words, _ in GATED_WORDS for word in words}
     assert {"decider", "decided", "upset", "recent add", "lucky"} <= gated
+
+
+def test_the_game_changer_and_awards_get_the_motw_note_when_the_game_changer_is_in_it(hbundle):
+    # With the history, the Game Changer is Germie Bernard of behold the lamb, a Matchup of the Week team.
+    sheet = hbundle.sheet
+    for key in ("game_changer", "awards"):
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        assert MOTW_HEADLINE_NOTE in user, key
+    for key in ("recap_1", "median", "position_leaders", "rankings"):
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        assert MOTW_HEADLINE_NOTE not in user, key
+
+
+def test_no_motw_note_when_the_game_changer_is_outside_it(fixture_raw_dir):
+    # With no history, the Game Changer is Tre Tucker of All You Need Is Love, outside the Matchup of the Week.
+    sheet = _sheet(fixture_raw_dir)
+    assert set(_chapter(sheet, "game_changer").scope_teams) != set(_chapter(sheet, "motw").scope_teams)
+    for key in ("game_changer", "awards"):
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        assert MOTW_HEADLINE_NOTE not in user, key
+
+
+def test_tone_bans_the_and_thats_closer(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
+    assert '- The ", and that\'s X" closer.' in section
+    # The closer is banned outright, so no line allows one per page.
+    assert "per page" not in section
+    # The examples and the opener line no longer show the closer as the good shape.
+    passed = system.split("Passed review:", 1)[1].split("Failed review:", 1)[0]
+    openers = system.split("## Openers", 1)[1].split("\n## ", 1)[0]
+    assert "and that's" not in passed and "and that's" not in openers
+
+
+def test_rankings_rule_asks_for_its_own_openers_numberless_rows_and_no_form(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    rule = system.split("\n22. ", 1)[1]
+    assert rule.startswith("The Power rankings chapter uses the no-number line below in place of rule 15.")
+    assert "Never start the first sentences of 2 teams with the same 3 words." in rule
+    assert "At least 4 teams get a sentence with no number." in rule
+    assert '"form" is a component name. Write "the last 3 weeks" in its place.' in rule
+    # Rule 15 is the no-number rule that rule 22 replaces for the rankings chapter.
+    assert "At least one sentence per blurb carries no number." in system.split("\n15. ", 1)[1].split("\n16. ", 1)[0]

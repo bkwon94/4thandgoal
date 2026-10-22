@@ -10,12 +10,14 @@ import pytest
 from cornerstone.models import PowerRow
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
+    Context,
     build_bundle,
     check_week_is_buildable,
     fmt,
     is_motw_recap,
     power_facts,
     read_bundle,
+    standings_facts,
     week_dates,
     write_bundle,
 )
@@ -168,6 +170,37 @@ def test_standings_fact_says_one_game(bundle):
     one = [f for f in bundle.sheet.facts.values() if f.id.startswith("S.") and "1 game " in f.text]
     assert one, "the fixture has teams one game from the cut"
     assert not any("1 games" in f.text for f in bundle.sheet.facts.values())
+
+
+def test_a_team_level_with_the_cut_gets_one_fixed_phrase(bundle):
+    # The fixture has three 6-6 teams: 6th, 7th, and 8th.
+    facts = bundle.sheet.facts
+    assert "in the last playoff spot" in facts["S.6"].text
+    assert "one spot outside the playoff spots" in facts["S.7"].text
+    assert "two spots outside the playoff spots" in facts["S.8"].text
+    assert not any("at the cut" in facts[f"S.{rank}"].text for rank in range(1, 13))
+
+
+def test_a_team_off_the_cut_keeps_its_games_from_the_cut(bundle):
+    assert "1 game above the cut" in bundle.sheet.facts["S.5"].text
+
+
+def _standing_text(fixture_raw_dir, rank, wins, losses, games_from_cut):
+    # The fixture table with one row moved level with the last playoff spot, 6th.
+    c = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [])
+    c.table = [s.model_copy(update={"wins": wins, "losses": losses, "games_from_cut": games_from_cut})
+               if s.rank == rank else s for s in c.table]
+    return next(f.text for f in standings_facts(c) if f.id == f"S.{rank}")
+
+
+def test_a_team_3_spots_below_the_last_playoff_spot_gets_the_phrase_for_its_distance(fixture_raw_dir):
+    text = _standing_text(fixture_raw_dir, 9, 6, 6, 0)
+    assert text.endswith(", three spots outside the playoff spots.")
+
+
+def test_a_tied_team_above_the_last_playoff_spot_is_level_with_it(fixture_raw_dir):
+    text = _standing_text(fixture_raw_dir, 5, 6, 6, 0)
+    assert text.endswith(", level with the last playoff spot.")
 
 
 def test_move_facts_say_recent_add(bundle):
@@ -338,7 +371,7 @@ def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
 def test_power_rank_fact_reads_plainly(hbundle):
     assert hbundle.sheet.facts["PR.1"].text == (
         "Brock ‘N’ Roll is 8th in the power rankings, down 4 places from last week: "
-        "6th in standing, 7th in form, 11th in schedule played, 5th in scoring."
+        "6th in standing, 7th in the last 3 weeks, 11th in schedule played, 5th in scoring."
     )
 
 
@@ -347,8 +380,8 @@ def test_power_rank_fact_in_week_one_says_first_week():
                    values={}, ranks={"standing": 1, "form": 4, "schedule_played": 7, "scoring": 3})
     [f] = power_facts([row], lambda rid: "Bo Girds")
     assert f.text == ("Bo Girds is 2nd in the power rankings, the first week of the power rankings: "
-                      "1st in standing, 4th in form, 7th in schedule played, 3rd in scoring.")
-    assert f.numbers == ["2", "1", "4", "7", "3"]
+                      "1st in standing, 4th in the last 3 weeks, 7th in schedule played, 3rd in scoring.")
+    assert f.numbers == ["2", "1", "4", "3", "7", "3"]
 
 
 def test_power_rank_fact_with_no_movement_says_no_move():
@@ -356,7 +389,7 @@ def test_power_rank_fact_with_no_movement_says_no_move():
                    values={}, ranks={"standing": 2, "form": 5, "schedule_played": 9, "scoring": 6})
     [f] = power_facts([row], lambda rid: "Bo Girds")
     assert f.text == ("Bo Girds is 4th in the power rankings, no move from last week: "
-                      "2nd in standing, 5th in form, 9th in schedule played, 6th in scoring.")
+                      "2nd in standing, 5th in the last 3 weeks, 9th in schedule played, 6th in scoring.")
 
 
 def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):

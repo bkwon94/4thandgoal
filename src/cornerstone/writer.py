@@ -10,15 +10,16 @@ import anthropic
 from pydantic import BaseModel
 
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
-from cornerstone.sheet import is_motw_recap
+from cornerstone.sheet import repeats_motw_headline
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
 # The recap of the Matchup of the Week holds the same facts as that chapter. Each chapter is one call,
 # so the writer cannot see the other blurb, and this note keeps it off the same sentences.
-MOTW_RECAP_NOTE = (
-    "Note: the Matchup of the Week chapter already told this game's headline: the score, the upset, "
-    "and the player who won it. Lead with a different fact. Never repeat a sentence from that chapter."
+# The game changer and awards chapters get it too when the Game Changer plays in that matchup.
+MOTW_HEADLINE_NOTE = (
+    "Note: the Matchup of the Week chapter and its recap already told this game's headline: the score, "
+    "the upset, and the player who won it. Lead with a different fact. Never repeat a sentence from those chapters."
 )
 
 # (system, user, output_model) -> parsed output. Tests pass a fake in place of Claude.
@@ -126,8 +127,8 @@ def build_writer_prompt(
         "Facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids),
     ]
-    if is_motw_recap(chapter, sheet):
-        lines += ["", MOTW_RECAP_NOTE]
+    if repeats_motw_headline(chapter, sheet):
+        lines += ["", MOTW_HEADLINE_NOTE]
     if feedback is not None:
         lines += ["", "Feedback from the last attempt:", feedback]
     return system, "\n".join(lines)

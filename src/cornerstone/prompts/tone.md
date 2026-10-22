@@ -31,7 +31,7 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 Each chapter is written alone, so the writer cannot see how the other chapters start. A stock opener repeats across the page.
 
 - Vary the opener. Lead with a team, a player, or the result, not a stock phrase that every chapter could open with.
-- Put "upset" mid-sentence or at the end at least half the time, such as "... and that's an upset", not always "In an upset, ...".
+- Put "upset" mid-sentence or at the end at least half the time, such as "... beat them in an upset", not always "In an upset, ...".
 
 ## Banned patterns
 
@@ -43,6 +43,7 @@ Each pattern below is a stock joke shape. Never write one. Each example is the s
 - "a lot to hang on". "The playoff hopes rest on a kicker. That is a lot to hang on."
 - "a polite way to say". "Sixth place is a polite way to say average."
 - A sentence that explains the joke it just made. "The team is named after Bijan, and Bijan scored 6.3. That is the irony."
+- The ", and that's X" closer. "Return of T Mac won 120.29 to 81.47, and that's an upset."
 
 At most one sentence per blurb may end in a ', which' clause. Never use it as the joke.
 
@@ -65,7 +66,7 @@ Passed review:
 - "Not even close." It follows "That 46.08 is a season low, posted by a side already 2 games below the cut." It is a reaction sentence with no fact ID. It passes because it makes no claim, has no digit and no name, and reacts to the sentence before it.
 - "Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, with Brock Purdy as Top Scorer." It cites `M1.result` and `M1.top.1`. The roast is the team name, and every claim in it is in the cited facts.
 - "Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out." It cites `W.injured`. It passes with no number: a sentence may carry none.
-- "Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47, and that's an upset." It cites `M2.result` and `M2.upset`. The one score line proves "flattened", and `M2.upset` lets it say upset.
+- "Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47 in an upset." It cites `M2.result` and `M2.upset`. The one score line proves "flattened", and `M2.upset` lets it say upset.
 - "Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much." It cites `MED.closest`. The one number proves both teams sat the same gap from the median.
 - "Matthew Golden alone dropped 3, worth about 14.2." It cites `D.12501` and `D.12501.value`. The one number proves how much his drops cost.
 
