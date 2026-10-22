@@ -22,6 +22,10 @@ ClaudeCall = Callable[[str, str, type[BaseModel]], BaseModel]
 # runs its calls back to back.
 ANALYZER_CACHE_TTL = "1h"
 
+# The analyzer answers a waiting browser, so it trades some depth for a faster call.
+# The writer and the verifier keep the default, because the Tuesday build has no reader who waits.
+ANALYZER_EFFORT = "medium"
+
 log = logging.getLogger(__name__)
 
 _client: anthropic.Anthropic | None = None
@@ -45,12 +49,13 @@ def _get_client() -> anthropic.Anthropic:
 
 def parse_call(
     content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
-    cache_ttl: str | None = None,
+    cache_ttl: str | None = None, effort: str = "high",
 ) -> BaseModel:
     """One user message to Claude, parsed into the output model.
 
     Every Claude call in the tool goes through here. The system prompt goes out as
     one cached block. `cache_ttl` None keeps the default five-minute lifetime.
+    `effort` sets the depth of the answer.
     """
     # The chart read has no system prompt, so the argument goes out only when there is one.
     extra = {}
@@ -66,7 +71,7 @@ def parse_call(
         max_tokens=16000,
         messages=[{"role": "user", "content": content}],
         output_format=output_model,
-        output_config={"effort": "high"},
+        output_config={"effort": effort},
         **extra,
     )
     # A cache read of zero on a repeat call shows a cold or unstable prefix.
@@ -94,7 +99,9 @@ def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseMo
 
 def analyzer_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
     """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
-    return parse_call(user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL)
+    return parse_call(
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT
+    )
 
 
 def load_prompt(name: str) -> str:
