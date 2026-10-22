@@ -22,8 +22,9 @@ _Avoid_: section, blurb (a blurb is the written output, a chapter is the brief)
 The sentences the writer wrote for one chapter, each with the fact IDs it cites.
 
 **Reaction sentence**:
-One sentence per blurb with no fact ID, no digit, no name, and fewer than 8 words, that reacts to
-the sentence before it. It counts in the sentence range.
+One sentence per blurb that reacts to the sentence before it and cites no fact ID. It has no digit,
+no team or player name, and fewer than 8 words, and it counts in the sentence range.
+The last-name match is case-sensitive, so "that hurts" passes when Jalen Hurts is in scope.
 _Avoid_: aside, uncited sentence
 
 **Banned word**:

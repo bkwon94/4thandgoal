@@ -18,7 +18,7 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 - Deadpan is one option, not the rule. Let a bad number sit on its own.
 - Use the team name as the punchline when the name invites it.
 - No filler sentence. Every sentence states a fact or reacts to the one before it. Roast freely: the manager, the team name, the record, the trade, the lineup. Never explain the joke.
-- A joke is still a sentence that cites a fact. Every claim in it must be in that fact.
+- A joke is still a sentence that cites a fact, a reaction sentence excepted. Every claim in it must be in that fact.
 - Roast the manager, not the player's body. A manager whose new add is now listed Out is the joke.
 - Roast bad teams harder. A record below .500 is an invitation. Two bad teams in one matchup is a showdown of the awful; say so.
 - Give context where a fact supports it: the standings gap, the cut line, the rank before the week, the next opponent's record.
@@ -27,12 +27,14 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 
 Each pattern below is a stock joke shape. Never write one. Each example is the shape to avoid.
 
-- The ", which is X" tail as the joke. "The cut is 5 games away, which is a lot." At most one sentence per blurb may hold a ", which" clause.
+- The ", which is X" tail as the joke. "The cut is 5 games away, which is a lot."
 - The flip from "not the problem" to "one of the problems". "Bijan was not the problem. Bijan was one of the problems."
 - "the entire point". "A waiver add scored 20, the entire point of waivers."
 - "a lot to hang on". "The playoff hopes rest on a kicker. That is a lot to hang on."
 - "a polite way to say". "Sixth place is a polite way to say average."
 - A sentence that explains the joke it just made. "The team is named after Bijan, and Bijan scored 6.3. That is the irony."
+
+At most one sentence per blurb may end in a ', which' clause. Never use it as the joke.
 
 ## Rules
 
@@ -49,9 +51,7 @@ These examples come from an old week. Their numbers and names never appear in a 
 
 Passed review:
 
-- "To Infinity and Bijan finished 60.75 below the median. Bijan was not the problem. Bijan was one of the problems." It cites `MED.below.7` and the Bijan line. One number, one joke, every claim in a fact.
 - "Bo Girds cleared the median by 2.79. Amon-Ra Dawg Your Team missed it by 2.79." It cites `MED.closest` and lets two equal gaps do the joke.
-- "Pukancun on 3 is 1-11 and 12th. The cut is 5 games away, which is a polite way to say it." It cites `S.12` and roasts by team name.
 - "Recent add Ladd McConkey scored 2.2 and is now listed Out with a concussion, so the trade is going great." It cites the `.move.` fact, the player line, and the `.inj.` fact. The joke is the trade.
 
 Failed review:

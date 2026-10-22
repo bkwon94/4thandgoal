@@ -40,6 +40,8 @@ NUMBER_WORDS = [
 ]
 # A reaction sentence cites no fact, so it must be too short to hide a claim.
 REACTION_WORD_LIMIT = 8
+# The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
+WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
 
 
 def normalize_number(number: str) -> str:
@@ -182,7 +184,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         ids = ", ".join(sentence.fact_ids)
         for message in number_failures(bare, cited | always_allowed, cited_text):
             # A digit failure names the cited IDs, so the rewrite sees the facts that the check used.
-            suffix = "" if message.startswith("number word") else f" {ids}"
+            # A reaction sentence cites no IDs, so it gets no suffix.
+            suffix = "" if message.startswith("number word") or not ids else f" {ids}"
             failures.append(f"[{i}] {message}{suffix}")
 
         # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
@@ -221,7 +224,7 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
             failures.append(repeat_failure(f"[{i}] the blurb", team, mentions))
 
     # The ", which" tail is the stock joke shape, so a blurb gets one.
-    tails = [i for i, s in enumerate(blurb.sentences) if ", which" in s.text]
+    tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
     if len(tails) > 1:
         failures.append(f"[{tails[1]}] {len(tails)} sentences have a ', which' tail; a blurb may hold one")
 

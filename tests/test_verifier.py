@@ -127,6 +127,34 @@ def test_two_which_tails_fail(fixture_raw_dir):
     assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"]
 
 
+def test_which_tail_ignores_case_and_space(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    for text in ["It rose,which is the bar.", "It rose, Which is the bar."]:
+        b = _blurb("median", _s("The median was 106.83, which set the bar.", "MED.value"), _s(text, "MED.value"))
+        assert code_check(b, ch, sheet) == ["[1] 2 sentences have a ', which' tail; a blurb may hold one"], text
+
+
+def test_whichever_is_not_a_which_tail(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    b = _blurb(
+        "median",
+        _s("The median was 106.83, which set the bar.", "MED.value"),
+        _s("It rose, whichever way you look.", "MED.value"),
+    )
+    assert code_check(b, ch, sheet) == []
+
+
+def test_banned_phrase_inside_a_team_name_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    # Names are removed before the check, so a team named for a banned phrase is not the phrase.
+    base = _ch(sheet, "recap_4")
+    ch = base.model_copy(update={"scope_teams": [*base.scope_teams, "A Lot To Hang On"]})
+    b = _blurb("recap_4", _s("A Lot To Hang On played.", "M4.result"), _s("They won.", "M4.result"))
+    assert code_check(b, ch, sheet) == []
+
+
 def test_one_which_tail_passes(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
@@ -159,7 +187,21 @@ def test_reaction_sentence_with_a_digit_fails(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("The median was 106.83.", "MED.value"), _s("Down 40 again."))
-    assert any(m.startswith("[1] a reaction sentence has a digit") for m in code_check(b, ch, sheet))
+    failures = code_check(b, ch, sheet)
+    assert any(m.startswith("[1] a reaction sentence has a digit") for m in failures)
+    # A reaction sentence cites no IDs, so no message ends in an empty ID list.
+    assert "[1] number 40 is not in the cited facts" in failures
+    assert not any(m.endswith(" ") for m in failures)
+
+
+def test_reaction_sentence_past_the_range_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    cited = [_s("The median was 106.83.", "MED.value")] * ch.max_sentences
+    b = _blurb("median", *cited, _s("Rough week."))
+    count = ch.max_sentences + 1
+    range_failure = f"[0] {count} sentences; the range is {ch.min_sentences} to {ch.max_sentences}"
+    assert code_check(b, ch, sheet) == [range_failure]
 
 
 def test_reaction_sentence_with_a_scope_name_fails(fixture_raw_dir):

@@ -132,8 +132,8 @@ def test_writer_rule_6_gates_decided_on_a_driver_only(fixture_raw_dir):
 def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
-    assert "1. Cite one or more fact IDs for every sentence that makes a claim." in system
-    assert "One sentence per blurb may be a reaction sentence with no citation" in system
+    assert "1. Cite one or more fact IDs for every sentence, except one reaction sentence per blurb." in system
+    assert "The reaction sentence has no citation and an empty `fact_ids`." in system
     assert "no digit, no team name, no player name, and fewer than 8 words" in system
     assert "Put it after the sentence it reacts to." in system
 
@@ -152,7 +152,19 @@ def test_tone_has_the_banned_patterns(fixture_raw_dir):
     for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
                     '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
         assert pattern in section, pattern
-    assert 'At most one sentence per blurb may hold a ", which" clause.' in section
+    assert "At most one sentence per blurb may end in a ', which' clause. Never use it as the joke." in section
+
+
+def test_tone_gives_each_banned_pattern_an_example(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
+    lines = [line for line in section.splitlines() if line.startswith("- ")]
+    for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
+                    '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
+        line = next(line for line in lines if pattern in line)
+        # The example is a quoted sentence after the pattern name, not the name alone.
+        assert re.search(r'"[^"]+\."', line.split(pattern, 1)[1]), pattern
 
 
 def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
