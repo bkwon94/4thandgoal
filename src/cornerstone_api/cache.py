@@ -1,5 +1,5 @@
 """
-The two caches of the API. The result cache of the analyze route keeps one JSON file per graded trade and data.
+The two caches of the API. The result cache keeps one JSON file per graded trade or finder pair, and data.
 The teams cache keeps the teams answer per season in memory for a short window, so the trade form fills at once.
 """
 import hashlib
@@ -29,14 +29,6 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
     """
     as_of = snapshot.as_of
     roster_ids = [side.roster_id for side in trade.sides]
-    standings = {standing.roster_id: standing for standing in snapshot.standings}
-    content = {
-        roster_id: {
-            "players": sorted(snapshot.rosters[roster_id]),
-            "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
-        }
-        for roster_id in roster_ids
-    }
     parts = {
         "document_version": DOCUMENT_VERSION,
         "season": trade.season,
@@ -45,7 +37,41 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         "asker": trade.asker,
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
-        "content": hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest(),
+        "content": _content_hash(snapshot, roster_ids),
+    }
+    return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
+
+
+def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
+    """The hash of the players and the record of each roster. The analyze key and the find key share it."""
+    standings = {standing.roster_id: standing for standing in snapshot.standings}
+    content = {
+        roster_id: {
+            "players": sorted(snapshot.rosters[roster_id]),
+            "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
+        }
+        for roster_id in roster_ids
+    }
+    return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
+
+
+def finder_cache_key(season: int, asker: int, partner: int, snapshot: Snapshot) -> str:
+    """The hash of the ordered pair of rosters and the content of the snapshot that the finder reads.
+
+    The pair keeps its order, so the asker is part of the key. The finder puts the asker's side first in each
+    trade, and its rank breaks a tie by the asker's letter. So the document for A and B can differ from the one
+    for B and A, and one key for both orders could serve the wrong list.
+    """
+    as_of = snapshot.as_of
+    parts = {
+        "document_version": DOCUMENT_VERSION,
+        # The kind keeps a finder key apart from every analyze key in the shared directory.
+        "kind": "find",
+        "season": season,
+        "rosters": [asker, partner],
+        "chart_week": as_of.chart_week,
+        "stats_through": as_of.stats_through,
+        "content": _content_hash(snapshot, [asker, partner]),
     }
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
 

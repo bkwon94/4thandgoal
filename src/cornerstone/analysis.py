@@ -6,8 +6,7 @@ import logging
 import re
 from typing import Literal
 
-import anthropic
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.models import Fact
@@ -19,7 +18,7 @@ from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
     normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
 )
-from cornerstone.writer import ClaudeCall, RefusalError, WriterError, analyzer_call, load_prompt
+from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 
 log = logging.getLogger(__name__)
 
@@ -36,8 +35,6 @@ CHART_WORD = re.compile(r"(?<!\w)(?<!depth )charts?(?!\w)", re.IGNORECASE)
 # The document gives a decision, not letters, so no letter grade reaches the prose a manager reads.
 LETTER_GRADE = re.compile(r"\b(?:grades?|graded|grade of|an?) [A-F]\b|\b[A-F]-(?:level|grade)\b")
 LETTER_WORD = re.compile(r"\bletters?\b", re.IGNORECASE)
-# A failure can quote a trade value, so the log line masks every number. Claude still gets the full text.
-_ANY_NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
 
 class SideAnalysis(BaseModel):
@@ -98,16 +95,16 @@ def _side_shape(breakdowns: tuple[Breakdown, Breakdown]) -> str:
     return f"exactly 2 sides: roster {breakdowns[0].roster_id} first, then roster {breakdowns[1].roster_id}, each once"
 
 
-def build_analysis_prompt(
-    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict,
-    facts: dict[str, Fact], feedback: str | None,
-) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
-    lines = []
+def trade_side_lines(
+    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown],
+) -> tuple[list[str], list[str]]:
+    """The prompt lines of each side of a trade: the team, the players it gives and gets, and its breakdown."""
+    # The analysis prompt and the finder prompt both show a side this way, so Claude reads one layout.
+    blocks = []
     for side, other, breakdown in ((trade.sides[0], trade.sides[1], breakdowns[0]),
                                    (trade.sides[1], trade.sides[0], breakdowns[1])):
         asked = ", the side that asked" if side.roster_id == trade.asker else ""
-        lines += [
+        blocks.append([
             f"Side: roster {side.roster_id}, {snapshot.teams[side.roster_id].name}{asked}",
             f"Gives: {_names(snapshot, side.gives)}",
             f"Gets: {_names(snapshot, other.gives)}",
@@ -115,8 +112,18 @@ def build_analysis_prompt(
             *(f"{a.name.capitalize()}: {a.lean if a.lean is not None else STEP_WORDS[a.step]}. {a.reason}"
               for a in breakdown.adjusters),
             f"Final letter: {breakdown.final_letter}",
-            "",
-        ]
+        ])
+    return blocks[0], blocks[1]
+
+
+def build_analysis_prompt(
+    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict,
+    facts: dict[str, Fact], feedback: str | None,
+) -> tuple[str, str]:
+    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
+    lines = []
+    for block in trade_side_lines(trade, snapshot, breakdowns):
+        lines += [*block, ""]
     lines += [
         f"Code's default verdict for {snapshot.teams[trade.asker].name}: {code_verdict.choice}. {code_verdict.reason}",
         "",
@@ -177,6 +184,49 @@ def _allowed(facts: dict[str, Fact], fids: list[str], breakdown_text: str) -> se
     return cited | {normalize_number(token) for token in NUMBER_TOKEN.findall(breakdown_text)}
 
 
+def _allowed_text(facts: dict[str, Fact], fids: list[str], breakdown_text: str) -> str:
+    """The texts of the cited facts and the breakdown, where a number in the prose must appear."""
+    return " ".join([*(facts[fid].text for fid in fids), breakdown_text])
+
+
+def _names_of_everyone(snapshot: Snapshot) -> list[str]:
+    """Every team name and player name, so a digit or a period inside a name counts as neither."""
+    return [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
+
+
+def trade_prose_failures(
+    owner: str, kind: str, text: str, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown],
+    facts: dict[str, Fact], cited: list[str], sentences: tuple[int, int],
+) -> list[str]:
+    """The prose rules of the analysis on one piece of prose about a trade, such as a side's analysis.
+
+    `owner` names who wrote it, such as "roster 2", and `kind` names the prose, such as "analysis". The
+    sentence count must be in the `sentences` range. The prose cites at least one fact, every number comes
+    from a cited fact or the breakdown, and each team in the trade appears at most once.
+    """
+    label = f"{owner} {kind}"
+    names = _names_of_everyone(snapshot)
+    failures = []
+    low, high = sentences
+    count = _sentences(remove_names(text, names))
+    if not low <= count <= high:
+        need = f"it needs exactly {low}" if low == high else f"the range is {low} to {high}"
+        failures.append(f"{owner}: the {kind} has {count} sentences; {need}")
+    failures += [f"{owner}: fact ID {fid} is not in the facts" for fid in cited if fid not in facts]
+    if not cited:
+        failures.append(f"{owner}: the {kind} cites no fact")
+    known = [fid for fid in cited if fid in facts]
+    breakdown_text = _breakdown_text(breakdowns)
+    failures += _prose_failures(label, text, _allowed(facts, known, breakdown_text),
+                                _allowed_text(facts, known, breakdown_text), names)
+    failures += _letter_failures(label, text)
+    # The prose names each team in the trade once, then says "this side", "they", or the player names.
+    trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]
+    failures += [repeat_failure(label, team, mentions) for team in trade_teams
+                 if (mentions := team_mentions(team, text)) > 1]
+    return failures
+
+
 def check_response(
     out: AnalysisOut, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown], facts: dict[str, Fact],
 ) -> list[str]:
@@ -186,9 +236,8 @@ def check_response(
     if sorted(by_roster) != sorted(b.roster_id for b in breakdowns) or len(out.sides) != 2:
         got_rosters = ", ".join(str(s.roster_id) for s in out.sides) or "none"
         return [f"the response must have {_side_shape(breakdowns)}; it had rosters {got_rosters}"]
-    names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
+    names = _names_of_everyone(snapshot)
     breakdown_text = _breakdown_text(breakdowns)
-    trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]
     for breakdown in breakdowns:
         side = by_roster[breakdown.roster_id]
         label = f"roster {side.roster_id}"
@@ -198,28 +247,16 @@ def check_response(
                             f"{breakdown.final_letter}; one step is the most")
         if steps == 1 and not (side.reason or "").strip():
             failures.append(f"{label}: the final letter differs from the code's, so it needs a reason")
-        count = _sentences(remove_names(side.analysis, names))
-        if not MIN_SENTENCES <= count <= MAX_SENTENCES:
-            failures.append(f"{label}: the analysis has {count} sentences; the range is "
-                            f"{MIN_SENTENCES} to {MAX_SENTENCES}")
-        unknown = [fid for fid in side.cited if fid not in facts]
-        failures += [f"{label}: fact ID {fid} is not in the facts" for fid in unknown]
-        if not side.cited:
-            failures.append(f"{label}: the analysis cites no fact")
-        cited = [fid for fid in side.cited if fid in facts]
-        allowed = _allowed(facts, cited, breakdown_text)
-        allowed_text = " ".join([*(facts[fid].text for fid in cited), breakdown_text])
-        failures += _prose_failures(f"{label} analysis", side.analysis, allowed, allowed_text, names)
-        failures += _letter_failures(f"{label} analysis", side.analysis)
-        # The analysis names each team in the trade once, then says "this side", "they", or the player names.
-        failures += [repeat_failure(f"{label} analysis", team, mentions) for team in trade_teams
-                     if (mentions := team_mentions(team, side.analysis)) > 1]
+        failures += trade_prose_failures(label, "analysis", side.analysis, snapshot, breakdowns, facts, side.cited,
+                                         (MIN_SENTENCES, MAX_SENTENCES))
         if side.reason:
-            failures += _prose_failures(f"{label} reason", side.reason, allowed, allowed_text, names)
+            cited = [fid for fid in side.cited if fid in facts]
+            failures += _prose_failures(f"{label} reason", side.reason, _allowed(facts, cited, breakdown_text),
+                                        _allowed_text(facts, cited, breakdown_text), names)
     # The verdict reason cites no fact of its own, so any fact the two analyses cite may back its numbers.
     every = [fid for s in out.sides for fid in s.cited if fid in facts]
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
-                                " ".join([*(facts[fid].text for fid in every), breakdown_text]), names)
+                                _allowed_text(facts, every, breakdown_text), names)
     failures += _letter_failures("verdict reason", out.verdict.reason)
     return failures
 
@@ -259,21 +296,10 @@ def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = analyze
     breakdowns = grade(trade, snapshot)
     code_verdict = verdict(trade, breakdowns)
     facts = trade_fact_sheet(trade, snapshot)
-    feedback: str | None = None
-    for attempt in (1, 2):
-        system, user = build_analysis_prompt(trade, snapshot, breakdowns, code_verdict, facts, feedback)
-        try:
-            out = call(system, user, AnalysisOut)
-            # Any call, real or injected, can come back empty. That is a failed attempt.
-            if out is None:
-                raise WriterError("no parsed output for the trade analysis")
-            failures = check_response(out, snapshot, breakdowns, facts)
-            if failures:
-                raise WriterError("; ".join(failures))
-        except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
-            # A bad response is a failed attempt, not a crash of the command or the route.
-            log.warning("analysis attempt %d failed: %s", attempt, _ANY_NUMBER.sub("#", str(err)))
-            feedback = str(err)
-            continue
-        return _accepted(out, breakdowns, code_verdict)
-    return _fallback(breakdowns, code_verdict)
+    out = call_with_retry(
+        call, lambda feedback: build_analysis_prompt(trade, snapshot, breakdowns, code_verdict, facts, feedback),
+        AnalysisOut, lambda out: check_response(out, snapshot, breakdowns, facts),
+        subject="trade analysis", log_label="analysis", logger=log)
+    if out is None:
+        return _fallback(breakdowns, code_verdict)
+    return _accepted(out, breakdowns, code_verdict)

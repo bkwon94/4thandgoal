@@ -103,7 +103,7 @@ rarely and means something when it does.
 - The finder is a new route with the same passphrase, the same minute and day limits, and a cache
   keyed by the pair of rosters and the chart week. A finder call counts as one grade. One Claude
   call writes the three reasons in one response, with the same prose checks as the analysis. When
-  the call fails twice, the three trades stand with the code's fairness reasons.
+  the call fails twice, the three trades stand with an empty reason, and the fairness block stands.
 - The finder document: the two teams, the as-of stamps, and the list. Each item holds the two sides
   with player ids and names, the fairness block, and the reason. An empty list carries one line:
   no swap between these rosters is good for both.

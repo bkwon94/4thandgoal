@@ -1,19 +1,23 @@
 """
-The analyzer route group: the teams for the trade form, and the analyze route that grades a proposed trade.
-Both routes build the live snapshot through the sources on the app state, so a test swaps every fetch.
+The analyzer route group: the teams for the trade form, the analyze route that grades a proposed trade, and the
+find route that lists the top win-win trades between two rosters.
+The routes build the live snapshot through the sources on the app state, so a test swaps every fetch.
 The teams route keeps its answer per season in memory for a short window, so the form fills at once.
 """
 from collections.abc import Callable
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
 
 from cornerstone.adjusters import Adjuster, Lean
 from cornerstone.analysis import Analysis
+from cornerstone.finder import NO_WIN_WIN, FinderTrade, find_win_wins
+from cornerstone.finder_reasons import FinderReasons
 from cornerstone.render import headshot_url, is_def
 from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade, fairness
 from cornerstone.snapshot import Snapshot
-from cornerstone_api.cache import cache_key
+from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.errors import season_in_progress
 from cornerstone_api.ratelimit import client_address
 
@@ -30,6 +34,8 @@ GRADE_LIMIT_DETAIL = {
 
 # The grade plus the Claude call: a proposed trade and its snapshot in, the analysis out.
 Analyzer = Callable[[ProposedTrade, Snapshot], Analysis]
+# The Claude call of the finder sits on the app state, so a test swaps in a writer with a fake call.
+ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
 
 
 def _snapshot(request: Request, season: int) -> Snapshot:
@@ -100,13 +106,11 @@ def _factor_lean(adjuster: Adjuster) -> Lean:
     return "for" if adjuster.step > 0 else "against" if adjuster.step < 0 else "even"
 
 
-def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the analysis, chart lean, and factors per side.
-
-    It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
-    """
+def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
+    """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets."""
+    # The analyze document and the finder document share this shape, so the site renders a side one way.
     a, b = trade.sides
-    echoed = [
+    return [
         {
             "roster_id": side.roster_id,
             "team": snapshot.teams[side.roster_id].name,
@@ -115,6 +119,14 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
         }
         for side, other in ((a, b), (b, a))
     ]
+
+
+def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
+    """The result the site renders: a decision first, the fairness, then the analysis, chart lean, and factors per side.
+
+    It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
+    """
+    echoed = _echoed_sides(trade, snapshot)
     sides = [
         {
             "roster_id": breakdown.roster_id,
@@ -167,13 +179,92 @@ def analyze(request: Request, trade: ProposedTrade) -> dict:
     if cached is not None:
         return cached
     # The count comes after the cache, because a cached repeat makes no Claude call and costs nothing.
-    limited = request.app.state.grade_limiter.hit(client_address(request))
-    if limited is not None:
-        raise HTTPException(status_code=429, detail=GRADE_LIMIT_DETAIL[limited.window],
-                            headers={"Retry-After": str(limited.retry_after)})
+    _count_grade(request)
     analysis = request.app.state.analyzer(trade, snapshot)
     document = result_document(trade, snapshot, analysis)
     # A fallback is not stored, so the next request of the same trade tries the Claude call again.
     if not analysis.fallback:
+        cache.put(key, document)
+    return document
+
+
+def _count_grade(request: Request) -> None:
+    """Count one grade for the client, or stop the request with a 429 past the minute or the day limit."""
+    # The analyze route and the find route share it, so a finder call costs one grade, as a trade does.
+    limited = request.app.state.grade_limiter.hit(client_address(request))
+    if limited is not None:
+        raise HTTPException(status_code=429, detail=GRADE_LIMIT_DETAIL[limited.window],
+                            headers={"Retry-After": str(limited.retry_after)})
+
+
+class FindRequest(BaseModel):
+    """The body of the find route: the season, the roster that asks, and the partner roster."""
+
+    season: int
+    asker: int
+    partner: int
+
+
+def _team(snapshot: Snapshot, roster_id: int) -> dict:
+    """One roster of the pair as the finder document shows it: the roster id and the team name."""
+    return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
+
+
+def finder_document(pair: FindRequest, snapshot: Snapshot, found: list[FinderTrade], reasons: FinderReasons) -> dict:
+    """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
+
+    Each trade holds its sides, its fairness, and its reason. A reason is null after a fallback.
+    Each item's sides and fairness have the shape of the analyze document, so the site renders them the same way.
+    An empty list carries the line that no swap is good for both, so the page needs no words of its own.
+    """
+    trades = [
+        {
+            "sides": _echoed_sides(item.trade, snapshot),
+            "fairness": item.fairness.model_dump(mode="json"),
+            "reason": reason,
+        }
+        for item, reason in zip(found, reasons.reasons)
+    ]
+    return {
+        # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
+        "season": pair.season,
+        "trade_pair": {"asker": _team(snapshot, pair.asker), "partner": _team(snapshot, pair.partner)},
+        "trades": trades,
+        # The key is always there, so the document keeps one shape with a list and without one.
+        "empty": None if trades else NO_WIN_WIN,
+        "as_of": _as_of(snapshot),
+        "fallback": reasons.fallback,
+        "missing": list(snapshot.missing),
+        "stale": list(snapshot.stale),
+    }
+
+
+@router.post("/find")
+def find(request: Request, pair: FindRequest) -> dict:
+    """List the top win-win trades between the asker and the partner on the live snapshot, each with one reason."""
+    # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
+    if pair.asker == pair.partner:
+        raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
+    snapshot = _snapshot(request, pair.season)
+    gone = [roster_id for roster_id in (pair.asker, pair.partner) if roster_id not in snapshot.rosters]
+    if gone:
+        # The form showed a roster that Sleeper no longer has, so the next teams request builds from Sleeper again.
+        request.app.state.teams_cache.clear(pair.season)
+        # The same words as check_trade, so the form shows one message for a roster that is gone.
+        raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
+    if snapshot.chart is None:
+        raise HTTPException(status_code=503, detail=NO_CHART_DETAIL)
+    cache = request.app.state.cache
+    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot)
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+    # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
+    _count_grade(request)
+    found = find_win_wins(pair.asker, pair.partner, snapshot)
+    reasons = request.app.state.finder_reasons(found, snapshot)
+    document = finder_document(pair, snapshot, found, reasons)
+    # A fallback is not stored, so the next request of the same pair tries the Claude call again.
+    if not reasons.fallback:
         cache.put(key, document)
     return document

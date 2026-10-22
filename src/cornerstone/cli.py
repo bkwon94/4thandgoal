@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
-from cornerstone.finder import find_win_wins
+from cornerstone.finder import NO_WIN_WIN, find_win_wins
 from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
@@ -261,10 +261,6 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     for line in _fairness_lines(snapshot, fairness(letters, result)):
         print(line)
     return 0
-
-
-# The line the finder prints when it finds no win-win. The finder document of ticket 04 reuses this line.
-NO_WIN_WIN = "No swap between these rosters is good for both."
 
 
 def run_find(repo: Path, args: argparse.Namespace) -> int:

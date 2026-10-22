@@ -3,11 +3,13 @@ Asks Claude for one blurb per chapter from the fact sheet, with fact IDs on ever
 The template blurb is the safe fallback when the writer fails twice.
 """
 import logging
+import re
 from collections.abc import Callable
 from importlib import resources
+from typing import TypeVar
 
 import anthropic
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 from cornerstone.sheet import repeats_motw_headline
@@ -24,6 +26,12 @@ MOTW_HEADLINE_NOTE = (
 
 # (system, user, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ClaudeCall = Callable[[str, str, type[BaseModel]], BaseModel]
+# The output model of one retried call, so the caller gets back the type it asked for.
+Out = TypeVar("Out", bound=BaseModel)
+
+# A failure can quote a trade value, so the log line of a retried call masks every number.
+# Claude still gets the full text as feedback.
+ANY_NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
 # The analyzer prefix stays warm for an hour, because trade requests come minutes
 # apart. Every other call keeps the default five minutes, because the weekly build
@@ -110,6 +118,35 @@ def analyzer_call(system: str, user: str, output_model: type[BaseModel]) -> Base
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT
     )
+
+
+def call_with_retry(
+    call: ClaudeCall, prompt: Callable[[str | None], tuple[str, str]], output_model: type[Out],
+    check: Callable[[Out], list[str]], subject: str, log_label: str, logger: logging.Logger,
+) -> Out | None:
+    """Two attempts at one checked Claude call. The output that passes the check, or None after two failures.
+
+    The second attempt gets the failures of the first as feedback. `subject` names the output in the empty
+    output error, and `log_label` starts the log line on the caller's logger.
+    """
+    feedback: str | None = None
+    for attempt in (1, 2):
+        system, user = prompt(feedback)
+        try:
+            out = call(system, user, output_model)
+            # Any call, real or injected, can come back empty. That is a failed attempt.
+            if out is None:
+                raise WriterError(f"no parsed output for the {subject}")
+            failures = check(out)
+            if failures:
+                raise WriterError("; ".join(failures))
+        except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
+            # A bad response is a failed attempt, not a crash of the command or the route.
+            logger.warning("%s attempt %d failed: %s", log_label, attempt, ANY_NUMBER.sub("#", str(err)))
+            feedback = str(err)
+            continue
+        return out
+    return None
 
 
 def load_prompt(name: str) -> str:
