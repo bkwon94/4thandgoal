@@ -692,3 +692,45 @@ def test_an_before_8_passes(fixture_raw_dir):
     ch = _ch(sheet, "game_changer")
     b = _blurb("game_changer", _s("He beat an 8 projection.", "AW.game_changer"))
     assert not any("not 'an" in m for m in code_check(b, ch, sheet))
+
+
+def _no_love_recap_6(sheet):
+    # recap_6 has All You Need Is Love in scope. Without Jeremiyah Love, no scope player is named Love.
+    base = _ch(sheet, "recap_6")
+    return base.model_copy(update={"scope_players": [p for p in base.scope_players if p != "Jeremiyah Love"]})
+
+
+def test_team_name_word_as_a_last_name_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _no_love_recap_6(sheet)
+    b = _blurb(
+        "recap_6",
+        _s("All You Need Is Love won.", "M6.result"),
+        _s("Love was the word of the week.", "M6.result"),
+        _s("Love is apparently not enough."),
+    )
+    assert code_check(b, ch, sheet) == []
+
+
+def test_lowercase_team_name_word_as_a_last_name_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "position_leaders")
+    b = _blurb("position_leaders", _s("The lamb is lost.", ch.fact_ids[0]))
+    assert not any("player CeeDee Lamb is not on a team in this chapter" in m for m in code_check(b, ch, sheet))
+
+
+def test_full_name_still_fails_when_last_name_is_a_team_name_word(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _no_love_recap_6(sheet)
+    b = _blurb("recap_6", _s("Jordan Love sat.", "M6.result"), _s("They won.", "M6.result"))
+    assert any("player Jordan Love is not on a team in this chapter" in m for m in code_check(b, ch, sheet))
+
+
+def test_last_name_outside_team_names_still_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    # No fixture roster has Jalen Hurts, so a chapter outside recap_4 adds him to the league.
+    extra = _ch(sheet, "recap_1").model_copy(update={"key": "extra", "scope_players": ["Jalen Hurts"]})
+    sheet = sheet.model_copy(update={"chapters": [*sheet.chapters, extra]})
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("Hurts had 3 touchdowns.", "M4.result"), _s("They won.", "M4.result"))
+    assert any("player Jalen Hurts is not on a team in this chapter" in m for m in code_check(b, ch, sheet))

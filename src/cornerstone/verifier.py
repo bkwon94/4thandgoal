@@ -211,6 +211,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
     in_scope_last = {last_name(p) for p in chapter.scope_players}
+    # Lowercase, because whole_word ignores case.
+    scope_team_words = {w.lower() for t in chapter.scope_teams for w in t.split()}
     banned = _banned("## Banned words")
     banned_phrases = _banned("## Banned phrases")
     always_allowed = _week_numbers(sheet)
@@ -257,7 +259,9 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         for player in sorted(league_players - set(chapter.scope_players)):
             last = last_name(player)
             # A last name shared with an in-scope player is ambiguous, so it passes.
-            if player in bare or (last and last not in in_scope_last and whole_word(last, bare)):
+            # A word of a scope team name, such as "Love" for All You Need Is Love, is not a player match.
+            skip = not last or last in in_scope_last or last.lower() in scope_team_words
+            if player in bare or (not skip and whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")
 
         # Names are stripped first: a team called "Lucky Lambs" is not the word "lucky".
