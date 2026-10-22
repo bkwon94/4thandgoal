@@ -66,6 +66,15 @@ The file holds only today. To clear the counts, delete the file. Past a limit th
 `Retry-After` to the end of the minute or to midnight Eastern. The values are `GRADES_PER_MINUTE` and
 `GRADES_PER_DAY` in `src/cornerstone/tunables.py`.
 
+The find route `POST /find` lists the top three trades between two rosters that are good for both. The body is
+`{"season": 2026, "asker": <roster id>, "partner": <roster id>}`, and the route needs the passphrase. One finder
+call counts as one grade against the same minute and day limits as analyze. It makes one Claude call for the
+three reasons, and none when the list is empty. The result cache keeps the finder document in the same directory,
+`/data/cache/results/`. The key holds the ordered pair of rosters, the chart week, the stats week, the content
+hash of both rosters and records, and the document version. A cached repeat runs no finder,
+makes no Claude call, and does not count. The asker is part of the key, so the pair in the other order is a new
+grade. A document whose Claude call fell back is not stored, so the next request tries the call again.
+
 ## First deploy
 
 Run each command from the repo root. Each step takes about one minute, except the deploy.

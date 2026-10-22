@@ -16,6 +16,10 @@ from cornerstone.tunables import FINDER_TOP
 # The finder sits one level above the grade function and the fairness rule. It never grades a side itself,
 # so the finder and the analyzer never disagree on a trade.
 
+# The line the finder prints when it finds no win-win. The finder document reuses this line.
+# It lives here and not in the CLI, so the find command and the find route show the same words.
+NO_WIN_WIN = "No swap between these rosters is good for both."
+
 
 class FinderTrade(BaseModel):
     """One win-win trade the finder found: the proposed trade, the breakdown of each side, and the fairness."""

@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
+from cornerstone.finder_reasons import write_reasons
 from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE, TEAMS_CACHE_SECONDS
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api import refresh as refresh_routes
@@ -68,8 +69,10 @@ def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
 
 def create_app(
         settings: Settings, sources: Sources | None = None,
-        analyzer: analyzer_routes.Analyzer | None = None, *, refresh_on_start: bool = False) -> FastAPI:
-    """The app for these settings. Tests give fixture-backed sources and an analyzer. The defaults are the real ones.
+        analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
+        *, refresh_on_start: bool = False) -> FastAPI:
+    """The app for these settings. Tests give fixture-backed sources, an analyzer, and a finder reason writer.
+    The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
@@ -84,6 +87,8 @@ def create_app(
         GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
+    # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
+    app.state.finder_reasons = finder_reasons or write_reasons
 
     # The site calls the API from the browser, so only its origins and the local dev servers may read the answers.
     app.add_middleware(

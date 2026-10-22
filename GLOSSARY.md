@@ -133,7 +133,7 @@ _Avoid_: score, rating
 
 **Grade limit**:
 The cap on analyze calls that reach Claude, per client address: 5 per minute and 20 per day.
-A cached repeat does not count.
+A finder call counts one grade too. A cached repeat does not count.
 _Avoid_: quota, rate limit (alone)
 
 **Start letter**:
@@ -194,6 +194,13 @@ between the two final letters, then the asker's letter. The three trades share n
 a player out with no return week, and an unlisted player are never in a trade. The chart lists no
 kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
+
+**Finder document**:
+The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
+three trades. Each trade holds its two sides, its fairness block, and one reason that Claude writes. When the
+Claude call fails twice, each reason is empty, the fairness block stands, and the document flags the fallback.
+An empty list carries the line that no swap between these rosters is good for both.
+_Avoid_: finder result, suggestions
 
 **Factor**:
 The page word for an adjuster. Use "adjuster" in code and "factor" on the page.

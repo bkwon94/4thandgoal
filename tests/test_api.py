@@ -22,17 +22,19 @@ from fastapi.testclient import TestClient
 
 from conftest import strip_trend_numbers
 
-from cornerstone.adjusters import TREND
+from cornerstone.adjusters import TREND, recent_points_per_game
 from cornerstone.analysis import (
     Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
 )
+from cornerstone.finder import find_win_wins
+from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
-from cornerstone_api.cache import cache_key
+from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
@@ -45,6 +47,8 @@ NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
 PASSPHRASE = "cornerstone-test"
 # The response fixture shared with the site repo. The route's output must keep its shape.
 RESPONSE_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "analyze-response.json"
+# The finder response fixture shared with the site repo, with three trades.
+FIND_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "find-response.json"
 HEADERS = {"X-League-Passphrase": PASSPHRASE}
 
 
@@ -853,9 +857,9 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
             assert _shape(factor) == _shape(fixture["sides"][0]["factors"][0])
 
 
-# The keys whose numbers are ids, weeks, or the stamp. No other number may appear in the document.
+# The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
 # The fairness block's gives_more is a roster id.
-NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through"}
+NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "season"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -974,3 +978,337 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
     response = _client(settings, sources).post("/refresh", params={"season": 2026})
     assert response.status_code == 401
     assert response.content == b""
+
+
+# The find route. The fixture chart lists mostly stars, so no pair of the week 6 snapshot has a win-win on it.
+# The finder tests give chart rows to the players a test needs, and these tests do the same for rosters 2 and 3,
+# so the pair has three win-wins that share no player.
+CHART_POSITIONS = frozenset({"RB", "WR", "TE", "QB"})
+FIND = {"season": 2026, "asker": 2, "partner": 3}
+
+
+@pytest.fixture
+def find_sources(settings, sources, chart_week6):
+    """The sources with a chart row for every RB, WR, TE, and QB of rosters 2 and 3, at his recent points per game."""
+    snapshot = sources.snapshot(settings.repo, 2026)
+    rows = {pid: float(max(1, round(recent_points_per_game(snapshot, pid))))
+            for roster_id in (2, 3) for pid in snapshot.rosters[roster_id]
+            if snapshot.players[pid].position in CHART_POSITIONS and pid not in chart_week6.values}
+    chart = chart_week6.model_copy(update={"values": {**chart_week6.values, **rows}})
+    return dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: chart)
+
+
+class FakeFinderClaude:
+    """The Claude call of the finder with no network: one reason per trade in the user message.
+
+    `texts` gives the reason text of each attempt in turn. The last text repeats past the end of the list.
+    """
+
+    TEXT = "Each side fills a need at a position it starts every week."
+
+    def __init__(self, *texts):
+        self.texts = list(texts) or [self.TEXT]
+        self.calls = []
+
+    def __call__(self, system, user, output_model):
+        self.calls.append((system, user))
+        text = self.texts[min(len(self.calls), len(self.texts)) - 1]
+        numbers = [int(n) for n in re.findall(r"^Trade (\d+)$", user, re.MULTILINE)]
+        reasons = [{"trade": n, "reason": text,
+                    "cited": re.findall(rf"^- (t{n}\.[\w.]+): ", user, re.MULTILINE)[:1]} for n in numbers]
+        return output_model.model_validate({"reasons": reasons})
+
+
+def _find_client(settings, sources, fake, clock=None):
+    """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
+    client = TestClient(create_app(settings, sources=sources, analyzer=StubAnalyzer(),
+                                   finder_reasons=functools.partial(write_reasons, call=fake)))
+    if clock is not None:
+        client.app.state.grade_limiter.clock = clock
+        client.app.state.limiter.clock = lambda: clock().timestamp()
+    return client
+
+
+def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_sources):
+    fake = FakeFinderClaude()
+    response = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    assert len(fake.calls) == 1
+    assert doc["fallback"] is False
+    assert doc["empty"] is None
+    assert [team["roster_id"] for team in doc["trade_pair"].values()] == [2, 3]
+    assert len(doc["trades"]) == 3
+    for item in doc["trades"]:
+        assert item["fairness"]["state"] == "win_win"
+        assert item["reason"] == FakeFinderClaude.TEXT
+        # The asker's side comes first, as in the analyze document.
+        assert [side["roster_id"] for side in item["sides"]] == [2, 3]
+    assert doc["as_of"]["chart_week"] == 6
+
+
+def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
+    fake = FakeFinderClaude()
+    doc = _find_client(settings, sources, fake).post("/find", json=FIND, headers=HEADERS).json()
+    assert doc["trades"] == []
+    assert doc["empty"] == "No swap between these rosters is good for both."
+    assert doc["fallback"] is False
+    assert fake.calls == []
+
+
+def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):
+    fake = FakeFinderClaude()
+    client = _find_client(settings, sources, fake, MovingClock(NOW))
+    first = client.post("/find", json=FIND, headers=HEADERS).json()
+    assert first["trades"] == []
+    assert client.post("/find", json=FIND, headers=HEADERS).json() == first
+    assert fake.calls == []
+    assert json.loads((settings.result_cache_dir / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
+
+
+def test_a_find_in_a_week_with_no_chart_is_503_with_no_grade(settings, fixture_raw_dir):
+    fake = FakeFinderClaude()
+    no_chart = Sources(
+        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
+        fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
+        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
+    response = _find_client(settings, no_chart, fake).post("/find", json=FIND, headers=HEADERS)
+    assert response.status_code == 503
+    assert response.json() == {"detail": "The trade value chart for this week is not available."}
+    assert fake.calls == []
+    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+
+
+def test_find_needs_the_passphrase(settings, sources):
+    response = _find_client(settings, sources, FakeFinderClaude()).post("/find", json=FIND)
+    assert response.status_code == 401
+    assert response.content == b""
+
+
+@pytest.mark.parametrize("pair, message", [
+    ({"asker": 2, "partner": 2}, "Pick two different teams."),
+    ({"asker": 2, "partner": 99}, "Roster 99 is not in the league"),
+])
+def test_find_with_the_same_roster_twice_or_a_roster_not_in_the_league_is_422(settings, sources, pair, message):
+    response = _find_client(settings, sources, FakeFinderClaude()).post(
+        "/find", json={"season": 2026, **pair}, headers=HEADERS)
+    assert response.status_code == 422
+    assert response.json() == {"detail": {"message": message}}
+    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+
+
+def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
+    # A new partner each time, so no request is a cached repeat and each one counts as one grade.
+    for partner in range(3, 3 + GRADES_PER_MINUTE):
+        assert client.post("/find", json={**FIND, "partner": partner}, headers=HEADERS).status_code == 200
+    response = client.post("/find", json={**FIND, "partner": 3 + GRADES_PER_MINUTE}, headers=HEADERS)
+    assert response.status_code == 429
+    assert response.json() == {"detail": "Too many grades this minute. Try again later."}
+    assert 1 <= int(response.headers["Retry-After"]) <= 60
+
+
+def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
+    client.app.state.analyzer = _uncached()
+    for _ in range(GRADES_PER_MINUTE - 1):
+        assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert client.post("/find", json=FIND, headers=HEADERS).status_code == 200
+    assert client.post("/find", json={**FIND, "partner": 4}, headers=HEADERS).status_code == 429
+
+
+def test_a_cached_find_repeat_does_not_count_and_makes_no_claude_call(settings, find_sources):
+    from cornerstone.tunables import GRADES_PER_MINUTE
+
+    fake = FakeFinderClaude()
+    client = _find_client(settings, find_sources, fake, MovingClock(NOW))
+    first = client.post("/find", json=FIND, headers=HEADERS).json()
+    for _ in range(GRADES_PER_MINUTE):
+        assert client.post("/find", json=FIND, headers=HEADERS).json() == first
+    assert len(fake.calls) == 1
+    assert json.loads((settings.result_cache_dir / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
+
+
+def _with_as_of(snapshot, **update):
+    return snapshot.model_copy(update={"as_of": snapshot.as_of.model_copy(update=update)})
+
+
+def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sources):
+    snapshot = sources.snapshot(settings.repo, 2026)
+    key = finder_cache_key(2026, 2, 3, snapshot)
+    # The rosters fetch time moves on every request, so it is not in the key.
+    assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, rosters_fetched=FETCHED.replace(minute=55))) == key
+    # The asker's side comes first and the rank reads the asker's letter, so the other order is another key.
+    assert finder_cache_key(2026, 3, 2, snapshot) != key
+    assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, chart_week=7)) != key
+    # A finder key never equals the key of a trade in the shared result directory.
+    assert key != cache_key(ProposedTrade.model_validate(TRADE), snapshot)
+
+
+def test_the_find_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
+    import cornerstone_api.cache as cache_module
+
+    snapshot = sources.snapshot(settings.repo, 2026)
+    key = finder_cache_key(2026, 2, 3, snapshot)
+    monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", cache_module.DOCUMENT_VERSION + 1)
+    assert finder_cache_key(2026, 2, 3, snapshot) != key
+
+
+def test_the_other_order_of_the_pair_misses_the_cache(settings, find_sources):
+    fake = FakeFinderClaude()
+    client = _find_client(settings, find_sources, fake)
+    client.post("/find", json=FIND, headers=HEADERS)
+    swapped = client.post("/find", json={**FIND, "asker": 3, "partner": 2}, headers=HEADERS).json()
+    assert len(fake.calls) == 2
+    assert [team["roster_id"] for team in swapped["trade_pair"].values()] == [3, 2]
+    assert all(item["sides"][0]["roster_id"] == 3 for item in swapped["trades"])
+
+
+# A reason that names a letter grade. The prose checks of the analysis reject it.
+LETTER_REASON = "Each side moves up to a grade of B in this swap."
+
+
+def test_a_failed_claude_call_retries_once_then_each_reason_is_empty(settings, find_sources):
+    fake = FakeFinderClaude(LETTER_REASON)
+    client = _find_client(settings, find_sources, fake)
+    doc = client.post("/find", json=FIND, headers=HEADERS).json()
+    assert len(fake.calls) == 2
+    # The second attempt carries the failures of the first as feedback.
+    assert "Feedback from the last attempt:" in fake.calls[1][1]
+    assert doc["fallback"] is True
+    assert len(doc["trades"]) == 3
+    for item in doc["trades"]:
+        # The fairness block already holds the code's reasons, so the card shows the fairness line alone.
+        assert item["reason"] is None
+        assert all(side["reason"] for side in item["fairness"]["sides"])
+    # A fallback is not stored, so a repeat tries the Claude call again.
+    client.post("/find", json=FIND, headers=HEADERS)
+    assert len(fake.calls) == 4
+
+
+def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_sources):
+    fake = FakeFinderClaude(LETTER_REASON, FakeFinderClaude.TEXT)
+    doc = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS).json()
+    assert len(fake.calls) == 2
+    assert doc["fallback"] is False
+    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 3
+
+
+@pytest.fixture
+def found(settings, find_sources):
+    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3."""
+    snapshot = find_sources.snapshot(settings.repo, 2026)
+    return snapshot, find_win_wins(2, 3, snapshot)
+
+
+def _sheets(snapshot, items):
+    return [trade_facts(n, item, snapshot) for n, item in enumerate(items, start=1)]
+
+
+def _reasons(sheets, texts, cited=None):
+    """One reason per trade. Each cites the first fact of its own trade, unless `cited` gives the IDs for all."""
+    texts = [texts] * len(sheets) if isinstance(texts, str) else texts
+    return FinderReasonsOut.model_validate({"reasons": [
+        {"trade": n, "reason": text, "cited": list(cited) if cited is not None else [next(iter(sheet))]}
+        for n, (sheet, text) in enumerate(zip(sheets, texts), start=1)]})
+
+
+@pytest.mark.parametrize("text, rule", [
+    (LETTER_REASON, "names a letter grade"),
+    ("Each side gets the better letter in this swap.", "the word 'letter' is not allowed"),
+    ("Each side climbs the chart in this swap.", "the word 'chart' is not allowed"),
+    ("Each side gets 41 points of value in this swap.", "41"),
+    ("Each side fills a need. Both start the player at once.", "it needs exactly 1"),
+])
+def test_the_prose_checks_reject_a_reason_that_breaks_a_rule(found, text, rule):
+    snapshot, items = found
+    sheets = _sheets(snapshot, items)
+    failures = check_reasons(_reasons(sheets, text), items, snapshot, sheets)
+    assert len(failures) == len(items)
+    assert all(rule in failure for failure in failures)
+
+
+def test_a_reason_that_cites_no_fact_fails(found):
+    snapshot, items = found
+    sheets = _sheets(snapshot, items)
+    failures = check_reasons(_reasons(sheets, FakeFinderClaude.TEXT, cited=[]), items, snapshot, sheets)
+    assert failures == [f"trade {n}: the reason cites no fact" for n in range(1, len(items) + 1)]
+
+
+def test_a_reason_may_cite_only_the_facts_of_its_own_trade(found):
+    snapshot, items = found
+    sheets = _sheets(snapshot, items)
+    other = next(iter(sheets[1]))
+    failures = check_reasons(_reasons(sheets, FakeFinderClaude.TEXT, [other]), items, snapshot, sheets)
+    assert f"trade 1: fact ID {other} is not in the facts" in failures
+
+
+def test_a_response_with_a_trade_left_out_fails_the_shape(found):
+    snapshot, items = found
+    out = FinderReasonsOut.model_validate({"reasons": [{"trade": 1, "reason": FakeFinderClaude.TEXT, "cited": []}]})
+    assert check_reasons(out, items, snapshot, _sheets(snapshot, items)) == [
+        "the response must have exactly 3 reasons: trades 1, 2, 3 in order, each once; it had trades 1"]
+
+
+def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
+    fake = FakeFinderClaude()
+    _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
+    # The prompt wraps its lines, so the check reads it as one line.
+    system = " ".join(fake.calls[0][0].split())
+    for line in (
+        "Write one sentence for each trade. It ends with a period. A manager pastes it into the group chat.",
+        "Cite only the facts of that trade.",
+        "Use only numbers from the facts you cite or the breakdown of that trade.",
+        "Never write a trade value, a sum, a ratio, a new number, or a difference.",
+        "Never count the players, starters, or weeks in the trade yourself",
+        "Put at most two numbers in the reason.",
+        "Name each team in the trade at most once in the reason.",
+        "Never name a letter grade. Never write the word letter.",
+        'Never write win-win, lopsided, or fair. Write "good for both" if you need to.',
+    ):
+        assert line in system
+    # The rubric comes before the finder rules, so the adjuster names in the breakdown lines mean what it says.
+    assert system.index("# Finder rules") > 0
+
+
+def test_a_good_find_returns_the_document_in_the_fixture_shape(settings, find_sources):
+    doc = _find_client(settings, find_sources, FakeFinderClaude()).post("/find", json=FIND, headers=HEADERS).json()
+    fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
+    assert len(fixture["trades"]) == 3
+    assert _same_shape(doc, _shape(fixture))
+    # Every trade has the shape of the fixture's first, so no item drops a key.
+    for item in doc["trades"]:
+        assert _shape(item) == _shape(fixture["trades"][0])
+    # The sides and the fairness of an item have the shape of the analyze document, so the site renders them once.
+    analyze_fixture = json.loads(RESPONSE_FIXTURE.read_text(encoding="utf-8"))
+    assert _shape(fixture["trades"][0]["sides"]) == _shape(analyze_fixture["trade"]["sides"])
+    assert _shape(fixture["trades"][0]["fairness"]) == _shape(analyze_fixture["fairness"])
+    assert doc["season"] == fixture["season"] == FIND["season"]
+
+
+def test_the_find_fixture_reasons_pass_the_real_reason_checks(found):
+    # The fixture reasons are written by hand, so the real checks keep a broken rule out of the site's copy.
+    snapshot, items = found
+    fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
+    # The fixture is the run on these rosters, so its trades are the finder's trades in the same order.
+    assert [[[player["player_id"] for player in side["gives"]] for side in item["sides"]]
+            for item in fixture["trades"]] == [[side.gives for side in item.trade.sides] for item in items]
+    sheets = _sheets(snapshot, items)
+    out = _reasons(sheets, [item["reason"] for item in fixture["trades"]])
+    assert check_reasons(out, items, snapshot, sheets) == []
+
+
+def test_the_find_fixture_names_no_letter_and_no_number_outside_ids():
+    fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
+    found = [text for text in _strings(fixture)
+             if re.search(r"\b[A-F]\b", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
+    assert found == []
+    # The fairness reasons reuse the breakdown reasons, so a trend reason may give its share percents and weeks.
+    for item in fixture["trades"]:
+        for side in item["fairness"]["sides"]:
+            side["reason"] = strip_trend_numbers(side["reason"])
+    assert _digits_outside_ids(fixture) == []
