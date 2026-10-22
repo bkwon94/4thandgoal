@@ -18,10 +18,10 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 12. Keep to the sentence range in the user message. No sentence may be a question.
 13. Do not describe the fact sheet or the task. Write about the matchup, not about "the data".
 14. If a feedback section appears, the last attempt had an unsupported sentence. Fix it, and keep the supported sentences accurate.
-15. In a sentence that makes a claim, lead with the claim. Put at most two numbers in a sentence. Let some sentences carry no number.
+15. In a sentence that makes a claim, lead with the claim. Put at most two numbers in a sentence. At least one sentence per blurb carries no number.
 16. Write every number as digits, even a small count such as 2 or 3. Never write a number as a word.
 17. Never state a count of players, adds, or teams, such as "2 recent adds". No fact holds that count. Name them instead.
 18. Never put a number on a draft pick.
 19. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.
 20. Name each team at most once per blurb. After that, write "this side", "they", or the player names. Save the one mention for the punchline when the name invites it.
-21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 or 2 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 2. Other chapters leave `roster_id` empty.
+21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 or 2 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 2. Other chapters leave `roster_id` empty. The Power rankings chapter is exempt from the no-number sentence rule.

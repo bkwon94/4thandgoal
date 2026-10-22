@@ -203,7 +203,7 @@ def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
         '"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
         'with Brock Purdy as Top Scorer."',
         '"Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out."',
-        '"In an upset, Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47."',
+        '"Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47, and that\'s an upset."',
         '"Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much."',
         '"Matthew Golden alone dropped 3, worth about 14.2."',
     ):
@@ -342,3 +342,58 @@ def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(monkeypatc
     with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
         assert parse_call("user text", WriterOut, "system text") == "parsed"
     assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)
+
+
+def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    section = system.split("## Openers", 1)[1].split("\n## ", 1)[0]
+    assert "- Vary the opener." in section
+    assert 'Put "upset" mid-sentence or at the end at least half the time' in section
+
+
+def test_only_the_motw_recap_gets_the_note_on_the_headline(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    note = "Note: the Matchup of the Week chapter already told this game's headline"
+    _, motw_recap = build_writer_prompt(_chapter(sheet, "recap_4"), sheet, None)
+    assert note in motw_recap
+    assert "Never repeat a sentence from that chapter." in motw_recap
+    for key in ("recap_1", "motw"):
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        assert note not in user, key
+
+
+def test_tone_asks_for_one_joke_per_blurb(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "- Every blurb has at least one joke. A reaction sentence counts as the joke." in system
+
+
+def test_prompts_ask_for_one_sentence_with_no_number(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "- At least one sentence per blurb carries no number." in system
+    assert "Put at most two numbers in a sentence. At least one sentence per blurb carries no number." in system
+
+
+def test_tone_asks_for_an_before_a_vowel_sound_number(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert 'Write "an", not "a", before a number that starts with a vowel sound: "an 8.13 projection"' in system
+
+
+def test_vocabulary_gives_a_plain_phrase_for_each_stat_term(fixture_raw_dir):
+    from cornerstone.verifier import GATED_WORDS
+
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    lines = system.split("# Vocabulary", 1)[1].split("## Banned words", 1)[0].splitlines()
+    for term in ("margin driver", "swing player", "recent add", "next opponent win rate"):
+        line = next(line for line in lines if line.startswith(f"- **{term}**"))
+        assert re.search(r'Plain phrase[^:]*: "[^"]+"', line), term
+    driver = next(line for line in lines if line.startswith("- **margin driver**"))
+    assert 'Plain phrase for "margin driver" or "decider":' in driver
+    assert "A plain phrase needs the same cited fact as its term." in system
+    # The plain phrases are examples. The gated words keep their marker rule.
+    gated = {word for words, _ in GATED_WORDS for word in words}
+    assert {"decider", "decided", "upset", "recent add", "lucky"} <= gated

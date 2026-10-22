@@ -62,6 +62,16 @@ def test_decided_needs_driver(fixture_raw_dir):
     assert any("decided" in m for m in code_check(b, ch, sheet))
 
 
+def test_won_it_needs_driver(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    non_driver = next(f for f in ch.fact_ids if ".driver" not in f)
+    b = _blurb("recap_4", _s("Bernard won it.", non_driver))
+    assert "[0] 'won it' needs a cited .driver fact" in code_check(b, ch, sheet)
+    b = _blurb("recap_4", _s("Bernard won it.", "M4.driver.13274"))
+    assert not any("won it" in m for m in code_check(b, ch, sheet))
+
+
 def test_ordinal_matches_cited_number(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "next_week")
@@ -617,3 +627,68 @@ def test_other_chapters_pass_with_no_roster_tag(fixture_raw_dir, fixture_history
     ch = _ch(sheet, "next_week")
     b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"))
     assert code_check(b, ch, sheet) == []
+
+
+def test_a_blurb_where_every_sentence_has_a_number_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    score = sheet.facts["M4.result"].numbers[0]
+    b = _blurb("recap_4", *(_s(f"They scored {score}.", "M4.result") for _ in range(3)))
+    assert ("[0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number"
+            in code_check(b, ch, sheet))
+
+
+def test_a_blurb_with_one_sentence_with_no_number_passes_the_number_mix(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    score = sheet.facts["M4.result"].numbers[0]
+    b = _blurb("recap_4", _s(f"They scored {score}.", "M4.result"), _s(f"Then {score}.", "M4.result"),
+               _s("Rough week."))
+    assert not any("every sentence has a number" in m for m in code_check(b, ch, sheet))
+
+
+def test_a_two_sentence_blurb_with_numbers_only_passes_the_number_mix(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    score = sheet.facts["M4.result"].numbers[0]
+    b = _blurb("recap_4", *(_s(f"They scored {score}.", "M4.result") for _ in range(2)))
+    assert not any("every sentence has a number" in m for m in code_check(b, ch, sheet))
+
+
+def test_the_rankings_chapter_skips_the_number_mix(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    assert not any("every sentence has a number" in m
+                   for m in code_check(_blurb("rankings", *_good_rankings(sheet, ch)), ch, sheet))
+
+
+def test_a_before_a_number_with_a_vowel_sound_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    b = _blurb("game_changer", _s("He beat a 8.13 projection.", "AW.game_changer"))
+    assert "[0] write 'an 8.13', not 'a 8.13'" in code_check(b, ch, sheet)
+    for number in ("11", "18", "85"):
+        b = _blurb("game_changer", _s(f"He beat a {number} projection.", "AW.game_changer"))
+        assert f"[0] write 'an {number}', not 'a {number}'" in code_check(b, ch, sheet), number
+
+
+def test_the_right_article_before_a_number_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    for text in ("He beat an 8.13 projection.", "He beat a 9.1 projection.", "He beat a 110 projection."):
+        b = _blurb("game_changer", _s(text, "AW.game_changer"))
+        assert not any("write 'an" in m for m in code_check(b, ch, sheet)), text
+
+
+def test_an_before_a_number_with_no_vowel_sound_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    for number in ("9", "110"):
+        b = _blurb("game_changer", _s(f"He beat an {number} projection.", "AW.game_changer"))
+        assert f"[0] write 'a {number}', not 'an {number}'" in code_check(b, ch, sheet), number
+
+
+def test_an_before_8_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    b = _blurb("game_changer", _s("He beat an 8 projection.", "AW.game_changer"))
+    assert not any("not 'an" in m for m in code_check(b, ch, sheet))
