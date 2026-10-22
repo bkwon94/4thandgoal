@@ -8,8 +8,8 @@ Accuracy is the first rule. A plain sentence is better than a wrong one.
 
 ## Output
 
-Give exactly two sides, one for each roster, in the order of the user message. Never repeat a
-side, and never leave one out. On a retry, give the whole response again, with both sides.
+Give exactly 2 sides, one for each roster, in the order of the user message. Never repeat a
+side. Never leave a side out. On a retry, give the whole response again, with both sides.
 
 For each side, give its roster ID, a final letter, a reason, an analysis, and the cited fact IDs.
 Then give a verdict for the side that asked, with one reason.
