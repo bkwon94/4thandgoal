@@ -5,8 +5,6 @@ The file lives on the volume, so a restart keeps the day counts. The minute wind
 import json
 import logging
 import math
-import os
-import tempfile
 import threading
 import time
 from collections.abc import Callable
@@ -17,6 +15,7 @@ from typing import Literal
 
 from fastapi import Request
 
+from cornerstone.files import write_bytes_atomic
 from cornerstone.trades import EASTERN
 
 logger = logging.getLogger(__name__)
@@ -136,12 +135,4 @@ class GradeLimiter:
         """Write only today, so the file never grows past one day of addresses."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
         body = json.dumps({"day": today, "counts": counts}, sort_keys=True).encode("utf-8")
-        # A temp file then a replace, so a stopped write never leaves a half file that the next read gets.
-        fd, tmp = tempfile.mkstemp(dir=self.path.parent, suffix=".tmp")
-        try:
-            with os.fdopen(fd, "wb") as f:
-                f.write(body)
-            os.replace(tmp, self.path)
-        except BaseException:
-            Path(tmp).unlink(missing_ok=True)
-            raise
+        write_bytes_atomic(self.path, body)

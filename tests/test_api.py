@@ -621,7 +621,7 @@ def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(setti
     def full_volume(src, dst):
         raise OSError(28, "No space left on device")
 
-    monkeypatch.setattr("cornerstone_api.ratelimit.os.replace", full_volume)
+    monkeypatch.setattr("cornerstone.files.os.replace", full_volume)
     clock = MovingClock(NOW)
     client = _graded_client(settings, sources, clock, _uncached())
     for _ in range(GRADES_PER_DAY):

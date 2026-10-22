@@ -6,9 +6,7 @@ import base64
 import io
 import json
 import logging
-import os
 import re
-import tempfile
 from collections.abc import Callable, Iterable
 from datetime import date, datetime
 from pathlib import Path
@@ -19,6 +17,7 @@ import httpx
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ValidationError
 
+from cornerstone.files import write_bytes_atomic
 from cornerstone.models import ChartRead, ChartValues, PlayerLine
 from cornerstone.trades import default_cutoff
 from cornerstone.writer import RefusalError, WriterError, parse_call
@@ -116,7 +115,7 @@ def fetch_chart(season_start: date, week: int, charts: Path, fetch: Callable[[st
         logger.warning("The chart download of %s is not a PNG", url)
         return _fallback(charts, week)
     charts.mkdir(parents=True, exist_ok=True)
-    _write_bytes(path, body)
+    write_bytes_atomic(path, body)
     return path
 
 
@@ -306,19 +305,7 @@ def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str],
 
 
 def _write_json(path: Path, parsed: ChartRead) -> None:
-    _write_bytes(path, parsed.model_dump_json(indent=2).encode("utf-8"))
-
-
-def _write_bytes(path: Path, body: bytes) -> None:
-    # A temp file then a replace, so a stopped write never leaves a half file that the next run reads.
-    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
-    try:
-        with os.fdopen(fd, "wb") as f:
-            f.write(body)
-        os.replace(tmp, path)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    write_bytes_atomic(path, parsed.model_dump_json(indent=2).encode("utf-8"))
 
 
 def chart_values(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine],

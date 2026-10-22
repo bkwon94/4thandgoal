@@ -4,14 +4,14 @@ It writes one raw JSON file per endpoint and reads them back.
 """
 import json
 import logging
-import os
-import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
+
+from cornerstone.files import write_bytes_atomic
 
 logger = logging.getLogger(__name__)
 
@@ -72,16 +72,7 @@ def _players(client: httpx.Client, players_cache: Path):
             logger.warning("Players cache %s does not parse, so it is fetched again", players_cache)
     players = _get(client, f"{OFFICIAL_URL}/players/nfl")
     players_cache.parent.mkdir(parents=True, exist_ok=True)
-    # Write to a temp file in the same directory, then replace, so a stopped write never
-    # leaves a half file in the cache.
-    fd, tmp = tempfile.mkstemp(dir=players_cache.parent, suffix=".tmp")
-    os.close(fd)
-    try:
-        _write_json(Path(tmp), players)
-        os.replace(tmp, players_cache)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    write_bytes_atomic(players_cache, json.dumps(players, indent=None).encode("utf-8"))
     return players
 
 
