@@ -19,6 +19,7 @@ from cornerstone.tunables import (
 )
 
 Status = Literal["in", "out", "open"]
+ByeStatus = Literal["bye_sure", "bye_gone", "open"]
 # A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
 MAX_WINS_PER_WEEK = 2
 
@@ -78,6 +79,7 @@ def playoff_odds(
     # Sorted roster IDs, so each draw and each sort reads the rosters in one fixed order, whatever the dict order.
     rosters = sorted(records)
     status = {rid: _status(rid, records, weeks_left, playoff_spots) for rid in rosters}
+    bye_status = {rid: _bye_status(rid, records, weeks_left, bye_count) for rid in rosters}
     # The random seed derives from the season and the week, so the same inputs give the same odds.
     rng = random.Random(season * 100 + week)
     order = [remaining[w] for w in sorted(remaining)]
@@ -117,8 +119,7 @@ def playoff_odds(
         teams[rid] = TeamOdds(
             roster_id=rid,
             playoff=playoff,
-            # A bye needs a playoff spot, so the bye odds never read above the shown playoff odds.
-            bye=min(_percent(byes[rid], runs), playoff),
+            bye=_shown_bye(bye_status[rid], status[rid], byes[rid], runs, playoff),
             seed=seed if playoff >= SEED_SHOW_AT else None,
             status=status[rid],
         )
@@ -216,6 +217,30 @@ def _shown(status: Status, made: int, runs: int) -> int:
     if status == "out":
         return 0
     return min(99, max(1, _percent(made, runs)))
+
+
+def _bye_status(
+    roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, bye_count: int,
+) -> ByeStatus:
+    """Sure, gone, or open for the bye, by the same plain check on wins as the playoff status.
+
+    `bye_sure`: no roster outside the top `bye_count` by wins can reach this roster's wins with 2 wins every week left.
+    `bye_gone`: this roster cannot reach the wins of the roster in the last bye spot with 2 wins every week left.
+    """
+    # The bye spots are the top `bye_count` seeds, so the playoff check with that count is the bye check.
+    return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[_status(roster_id, records, weeks_left, bye_count)]
+
+
+def _shown_bye(bye_status: ByeStatus, status: Status, byes: int, runs: int, playoff: int) -> int:
+    """The bye odds as shown: 100 for `bye_sure`, 0 for `bye_gone` or `out`, else clamped to 1 to 99.
+
+    A bye needs a playoff spot, so the open bye odds never read above the shown playoff odds.
+    """
+    if bye_status == "bye_sure":
+        return 100
+    if bye_status == "bye_gone" or status == "out":
+        return 0
+    return min(99, max(1, _percent(byes, runs)), playoff)
 
 
 def _percent(part: int, total: int) -> int:
