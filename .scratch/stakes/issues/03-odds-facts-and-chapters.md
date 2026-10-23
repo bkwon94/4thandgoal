@@ -14,17 +14,22 @@ Spec: `.scratch/stakes/PRD.md`, "Facts and chapters".
 
 **Blocked by:** 01 — Schedule fetch, 02 — Odds engine.
 
-**Status:** ready-for-agent
+**Status:** needs-info
 
-- [ ] The facts step runs the engine once per build for the current week, from week 7 on, and the odds are in the bundle.
-- [ ] `ODDS.{roster_id}` text for `open`: "{team} makes the playoffs in about {p}% of runs, with a bye in {b}%, most often as the {s} seed." The seed clause drops when the seed is none.
-- [ ] `ODDS.` text for `in`: "{team} has clinched a playoff spot." For `out`: "{team} is out of the playoff race." Neither holds a digit.
-- [ ] `SW.{a}v{b}` text, one per Must Watch game, pair order as the `NX.` fact: "A win puts {team} at {w}%, a loss at {l}%." once per side.
-- [ ] Every digit in an odds or swing text is in the fact's numbers, so the existing bundle checks pass.
+- [x] The facts step runs the engine once per build for the current week, from week 7 on, and the odds are in the bundle.
+- [x] `ODDS.{roster_id}` text for `open`: "{team} makes the playoffs in about {p}% of runs, with a bye in {b}%, most often as the {s} seed." The seed clause drops when the seed is none.
+- [x] `ODDS.` text for `in`: "{team} has clinched a playoff spot." For `out`: "{team} is out of the playoff race." Neither holds a digit.
+- [x] `SW.{a}v{b}` text, one per Must Watch game, pair order as the `NX.` fact: "A win puts {team} at {w}%, a loss at {l}%." once per side.
+- [x] Every digit in an odds or swing text is in the fact's numbers, so the existing bundle checks pass.
 - [ ] The standings chapter lists `ODDS.` and its prompt gains the "only when it matters, never all 12" rule.
-- [ ] The next-week chapter lists `SW.`, its cap is 3 sentences, and its prompt gains the "state the swing for Must Watch" rule.
-- [ ] The rankings chapter lists `ODDS.`.
-- [ ] A rewrite reads the saved facts and does not call the engine.
-- [ ] Glossary entries: Playoff odds, Swing, Clinched, Out.
-- [ ] Tests: the week 6 fixture bundle holds 12 `ODDS.` facts and 2 `SW.` facts; the `in` and `out` texts hold no digit; one prompt text test per new rule; a week before 7 has no odds facts.
-- [ ] Ruff clean, the full suite passes.
+- [x] The next-week chapter lists `SW.`, its cap is 3 sentences, and its prompt gains the "state the swing for Must Watch" rule.
+- [x] The rankings chapter lists `ODDS.`.
+- [x] A rewrite reads the saved facts and does not call the engine.
+- [x] Glossary entries: Playoff odds, Swing, Clinched, Out.
+- [x] Tests: the week 6 fixture bundle holds 12 `ODDS.` facts and 2 `SW.` facts; the `in` and `out` texts hold no digit; one prompt text test per new rule; a week before 7 has no odds facts.
+- [x] Ruff clean, the full suite passes.
+
+**Open question:** the sheet has no standings chapter. The chapters are motw, game_changer, awards,
+position_leaders, recap_{id}, median, next_week, and rankings. The `S.` facts go to median, next_week,
+rankings, motw, and each recap. The odds rule is in `writer.md` as rule 23 and covers any chapter. A
+decision must say which chapter lists `ODDS.`, or whether a new standings chapter is needed.
