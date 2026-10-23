@@ -523,9 +523,10 @@ def test_a_flat_side_stays_near_its_odds_and_a_moving_side_keeps_its_swing():
     assert f.numbers == ["60", "84", "67"]
 
 
-def test_a_clinched_side_is_always_flat():
-    swing = Swing(a=3, b=8, a_win=100, a_loss=100, b_win=84, b_loss=67)
-    teams = {3: _team_odds(3, 100, 90, 1, "in"), 8: _team_odds(8, 75, 10, 3, "open")}
+def test_a_clinched_side_and_an_out_side_hold_no_digit():
+    swing = Swing(a=3, b=8, a_win=100, a_loss=100, b_win=0, b_loss=0)
+    teams = {3: _team_odds(3, 100, 90, 1, "in"), 8: _team_odds(8, 0, 0, None, "out")}
     names = {3: "Lil Fridge", 8: "Bo Girds"}
     [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
-    assert f.text == "Lil Fridge stays near 100% either way. A win puts Bo Girds at 84%, a loss at 67%."
+    assert f.text == "Lil Fridge is in either way. Bo Girds is out either way."
+    assert f.numbers == []

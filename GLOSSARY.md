@@ -61,7 +61,8 @@ _Avoid_: chance, probability, projection (that is a player's projected points)
 **Swing**:
 The playoff odds of both sides of one Must Watch game of next week: each side's odds after a win and
 after a loss. The `SW.` fact gives it as "A win puts X at 71%, a loss at 38%."
-A side with a gap under `SWING_FLAT`, or a side that is in or out, reads "X stays near 60% either way."
+An open side with a gap under `SWING_FLAT` reads "X stays near 60% either way." A side that is in or out
+reads "X is in either way." or "X is out either way."
 _Avoid_: swing player (that is a player who outscored the margin), leverage
 
 **Clinched**:

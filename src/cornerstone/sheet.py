@@ -616,8 +616,11 @@ def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Cal
 
     def side(rid: int, win: int, loss: int, n: Nums) -> str:
         t = odds.teams[rid]
-        # A clinched or out side cannot move, and a gap under SWING_FLAT is noise, so the side reads as flat.
-        if t.status != "open" or abs(win - loss) < SWING_FLAT:
+        # A clinched or out side cannot move, so its sentence holds no digit.
+        if t.status != "open":
+            return f"{team(rid)} is {t.status} either way."
+        # A gap under SWING_FLAT is noise, so the side reads as flat.
+        if abs(win - loss) < SWING_FLAT:
             return f"{team(rid)} stays near {n(t.playoff)}% either way."
         return f"A win puts {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
 
