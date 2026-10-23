@@ -499,3 +499,10 @@ def test_next_week_chapter_lists_the_swing_facts_in_3_sentences(hbundle):
 def test_rankings_chapter_lists_every_odds_fact(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
     assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.")} == {f"ODDS.{rid}" for rid in hbundle.data.teams}
+
+
+def test_a_week_with_no_saved_schedule_has_no_odds_facts(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    week = parse_week(raw).model_copy(update={"schedule": {}})
+    b = build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
+    assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)

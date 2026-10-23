@@ -213,9 +213,15 @@ def _odds(week: Week, history: History | None) -> OddsResult | None:
         rid: [history.weeks[n].scores[rid] for n in range(1, week.week + 1) if rid in history.weeks[n].scores]
         for rid in week.teams
     }
-    # The engine reads the first remaining week as week N+1. The last regular week has no next pairs.
-    remaining = {week.week + 1: week.next_matchups} if week.next_matchups else {}
+    # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
+    # playoff games, and the engine stops at the seeds, so they stay out.
+    remaining = {week.week + 1: week.next_matchups} if week.week < LAST_WEEK else {}
     remaining.update(week.schedule)
+    # A cached week can lack the schedule file. The engine would then end the season early and could
+    # call a team clinched or out by mistake, so the sheet gives no odds.
+    if set(remaining) != set(range(week.week + 1, LAST_WEEK + 1)):
+        logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
+        return None
     return playoff_odds(scores, season_records(history, week.week), remaining, season=week.season, week=week.week)
 
 
