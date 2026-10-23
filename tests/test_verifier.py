@@ -605,25 +605,28 @@ def test_a_team_with_no_rankings_sentence_fails(fixture_raw_dir, fixture_history
     last = sentences.pop()
     sentences.append(_tagged("Rough week.", sentences[0].roster_id))
     team = sheet.facts[f"PR.{last.roster_id}"].teams[0]
-    assert f"[0] team {team} has no sentence; give every team 1 or 2 sentences" in code_check(
+    assert f"[0] team {team} has no sentence; give every team 1 to 3 sentences" in code_check(
         _blurb("rankings", *sentences), ch, sheet)
 
 
-def test_a_team_with_three_rankings_sentences_fails(fixture_raw_dir, fixture_history_root):
+def test_a_team_with_four_rankings_sentences_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = _good_rankings(sheet, ch)
+    rid = sentences[0].roster_id
+    standing = _standing_id(sheet, ch, rid)
+    sentences[1:1] = [_tagged(sheet.facts[standing].text, rid, standing),
+                      _tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    team = sheet.facts[f"PR.{rid}"].teams[0]
+    assert f"[3] team {team} has 4 sentences; give every team 1 to 3" in code_check(
+        _blurb("rankings", *sentences), ch, sheet)
+
+
+def test_a_tagged_reaction_counts_toward_the_three(fixture_raw_dir, fixture_history_root):
     sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
     sentences = _good_rankings(sheet, ch)
     rid = sentences[0].roster_id
     standing = _standing_id(sheet, ch, rid)
     sentences[1:1] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
-    team = sheet.facts[f"PR.{rid}"].teams[0]
-    assert f"[2] team {team} has 3 sentences; give every team 1 or 2" in code_check(
-        _blurb("rankings", *sentences), ch, sheet)
-
-
-def test_a_tagged_reaction_counts_toward_the_two(fixture_raw_dir, fixture_history_root):
-    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
-    sentences = _good_rankings(sheet, ch)
-    sentences.insert(1, _tagged("Rough week.", sentences[0].roster_id))
     assert code_check(_blurb("rankings", *sentences), ch, sheet) == []
 
 
