@@ -58,12 +58,11 @@ from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
 from cornerstone.trades import is_late
-from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
+from cornerstone.tunables import LAST_REGULAR_WEEK, SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
 logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
-LAST_WEEK = 14
 # The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
 # per team are the fewest scores the engine draws from. A week before it gets no odds.
 ODDS_FROM_WEEK = 6
@@ -171,8 +170,8 @@ def week_dates(season_start: date, week: int) -> str:
 
 def check_week_is_buildable(week_target: int, last_scored: int) -> str | None:
     # Playoff comes first: a playoff week is never buildable, scored or not.
-    if week_target > LAST_WEEK:
-        return f"Week {week_target} is a playoff week. Version 1 covers weeks {FIRST_WEEK} to {LAST_WEEK}."
+    if week_target > LAST_REGULAR_WEEK:
+        return f"Week {week_target} is a playoff week. Version 1 covers weeks {FIRST_WEEK} to {LAST_REGULAR_WEEK}."
     if last_scored < week_target:
         return f"Sleeper has scored through week {last_scored}. Week {week_target} is not final."
     return None
@@ -243,11 +242,11 @@ def _odds_inputs(
     }
     # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
     # playoff games, and the engine stops at the seeds, so they stay out.
-    remaining = {week.week + 1: week.next_matchups} if week.week < LAST_WEEK else {}
+    remaining = {week.week + 1: week.next_matchups} if week.week < LAST_REGULAR_WEEK else {}
     remaining.update(week.schedule)
     # A cached week can lack the schedule file. The engine would then end the season early and could
     # call a team clinched or out by mistake, so the sheet gives no odds.
-    if set(remaining) != set(range(week.week + 1, LAST_WEEK + 1)):
+    if set(remaining) != set(range(week.week + 1, LAST_REGULAR_WEEK + 1)):
         logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
         return None
     return scores, remaining
@@ -260,12 +259,12 @@ def projected_totals(week: Week) -> dict[int, dict[int, float]]:
     with no projection that week counts 0 and a healthy bench player takes his slot.
     A roster with no projected player in a week has no total that week.
     A missing week gives the roster no shift. It does not count as a total of 0.
-    The weeks stop at LAST_WEEK. The file runs to the end of the NFL season for the waiver board, and a
-    playoff week in the totals would move the projected pace of the odds why.
+    The weeks stop at LAST_REGULAR_WEEK, because the file runs to the end of the NFL season for the waiver board.
+    A playoff week in the totals would move the projected pace of the odds why.
     """
     totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
     for w, projections in sorted(week.projections_ahead.items()):
-        if w > LAST_WEEK:
+        if w > LAST_REGULAR_WEEK:
             continue
         for rid, positions in week.rosters.items():
             if not any(pid in projections for pid in positions):

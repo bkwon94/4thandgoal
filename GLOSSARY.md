@@ -311,6 +311,16 @@ One ranked list of the waiver board, such as best adds. It holds at most `BUCKET
 at most `PER_POSITION` of one position. A player can sit in more than one bucket.
 _Avoid_: tier, group, tab (a tab is the page control that shows one bucket)
 
+**Best adds**:
+The bucket of the pool players with the best board score, at QB, RB, WR, or TE only. K and DEF stay
+in the pool but never land in it.
+_Avoid_: top adds, pickups
+
+**Budget table**:
+One row per roster with its FAAB budget left and its waiver order. The budget left is the league
+budget minus the budget the roster used.
+_Avoid_: FAAB table, bank
+
 **Board score**:
 The weighted sum of a pool player's three scores, each from 0 to 1: usage trend, environment, and
 projection, with the weights of `BOARD_WEIGHTS`. The projection score is the rest of season

@@ -4,8 +4,9 @@ Spec: `.scratch/waiver/PRD.md`.
 
 **What to build:** The Tuesday build writes `waiver.json` beside `page.json` in the week folder, and
 `cornerstone publish` ships it with the week. The file holds the schema version, the build time, one
-bucket, best adds, ranked by rest of season projection with the per-position cap, and the budget table
-with each team's budget left and waiver order. A manager who reads the file sees the top free agents
+bucket, best adds, with the per-position cap, and the budget table with each team's budget left and
+waiver order. Best adds ranks by board score, here the projection score ranked within the position, with
+rest of season projection as the tiebreak. A manager who reads the file sees the top free agents
 with a week projection and a rest of season projection, and every team's FAAB left. No usage, no price,
 no research yet. Those tickets fill the same file.
 
@@ -27,3 +28,7 @@ land here, so the next tickets only add scores.
 - [x] The engine test on the week 6 fixture checks the cap, the pool filter, the rest of season sum, and that two runs give the same file.
 - [x] The fetch test checks the projections ahead file holds an unrostered player.
 - [x] Glossary gains **Waiver pool**, **Bucket**, and **Board score**.
+
+## Comments
+
+2026-10-23: the real week 6 `projections_ahead.json` is the old filtered file, so a week 6 board shows zeros until a fresh fetch, and week 7 is the first real board.

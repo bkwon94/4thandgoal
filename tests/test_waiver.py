@@ -35,16 +35,13 @@ def test_the_pool_holds_active_free_agents_with_a_team_and_a_fantasy_position(fi
     players = {
         "80001": _player("RB"),
         "80002": _player("WR"),
-        # Sleeper gives a defense no status, so an active defense joins the pool.
-        "NYJ": {"position": "DEF", "team": "NYJ", "status": None, "active": True, "first_name": "New York",
-                "last_name": "Jets"},
         "80003": _player("RB", team=None),
         "80004": _player("WR", status="Inactive"),
         "80005": _player("LB"),
         "80006": _player("TE", status="Injured Reserve"),
     }
     per_week = {pid: 10.0 for pid in players} | {rostered: 30.0}
-    assert sorted(_best_adds(_raw(fixture_raw_dir, players, per_week))) == ["80001", "80002", "NYJ"]
+    assert sorted(_best_adds(_raw(fixture_raw_dir, players, per_week))) == ["80001", "80002"]
 
 
 def test_the_rest_of_season_projection_sums_weeks_7_to_17_with_the_bye_as_0(fixture_raw_dir):
@@ -88,3 +85,10 @@ def test_two_runs_on_the_same_raw_give_the_same_board(fixture_raw_dir):
     first = waiver_board(raw, 6, BUILT).model_dump_json()
     assert waiver_board(raw, 6, BUILT).model_dump_json() == first
     assert waiver_board(backward, 6, BUILT).model_dump_json() == first
+
+
+def test_a_top_kicker_and_a_top_defense_stay_out_of_best_adds(fixture_raw_dir):
+    # The kicker and the defense project the most points of the pool, and they still never land in best adds.
+    players = {"80001": _player("K"), "NYJ": _player("DEF", team="NYJ", status=None), "80002": _player("WR")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 30.0, "NYJ": 30.0, "80002": 5.0})
+    assert _best_adds(raw) == ["80002"]
