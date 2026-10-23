@@ -1293,7 +1293,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         ))
     out.append(make(
         "median", "The Median Game",
-        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
+        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.") + _with_prefix(facts, "ODDS.")
         + _history_ids(facts, all_rosters, ("high",)),
         all_rosters, "median",
     ))

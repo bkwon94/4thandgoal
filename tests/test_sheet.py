@@ -506,3 +506,8 @@ def test_a_week_with_no_saved_schedule_has_no_odds_facts(fixture_raw_dir, fixtur
     week = parse_week(raw).model_copy(update={"schedule": {}})
     b = build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
     assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)
+
+
+def test_median_chapter_lists_every_odds_fact(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "median")
+    assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.")} == {f"ODDS.{rid}" for rid in hbundle.data.teams}
