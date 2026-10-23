@@ -661,14 +661,13 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
     assert seen["projected"] == projected_totals(week)
 
 
-def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(monkeypatch, fixture_raw_dir,
-                                                                       fixture_history_root):
+def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     raw.pop("projections_ahead")
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
-    plain = sheet._odds(week, history)
-    monkeypatch.setattr(sheet, "projected_totals", lambda week: None)
-    assert sheet._odds(week, history) == plain
+    inputs = sheet._odds_inputs(week, history)
+    plain = sheet._odds(week, history, inputs, projected_totals(week))
+    assert sheet._odds(week, history, inputs, None) == plain
 
 
 def _why_inputs(fixture_raw_dir, fixture_history_root):
@@ -709,11 +708,12 @@ def test_the_easiest_remaining_schedule_is_rank_1(fixture_raw_dir, fixture_histo
     faced = {rid: [pace[b_ if a == rid else a] for a, b_ in pairs if rid in (a, b_)] for rid in week.teams}
     easiest = min(week.teams, key=lambda rid: (_mean(faced[rid]), rid))
     hardest = max(week.teams, key=lambda rid: (_mean(faced[rid]), rid))
-    assert b.sheet.facts[f"ODDS.{easiest}.why"].text.endswith(", with the 1st easiest remaining schedule.")
-    assert b.sheet.facts[f"ODDS.{hardest}.why"].text.endswith(", with the 12th easiest remaining schedule.")
-    ranks = sorted(int(re.search(r"(\d+)\w\w easiest", f.text).group(1))
-                   for fid, f in b.sheet.facts.items() if fid.endswith(".why") and fid.startswith("ODDS."))
-    assert ranks == list(range(1, 13))
+    assert b.sheet.facts[f"ODDS.{easiest}.why"].text.endswith(", with the easiest remaining schedule.")
+    assert b.sheet.facts[f"ODDS.{hardest}.why"].text.endswith(", with the hardest remaining schedule.")
+    ranks = sorted(int(m.group(1)) for fid, f in b.sheet.facts.items()
+                   if fid.startswith("ODDS.") and fid.endswith(".why")
+                   and (m := re.search(r"(\d+)\w\w easiest", f.text)))
+    assert ranks == list(range(2, 12))
 
 
 def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixture_history_root):
