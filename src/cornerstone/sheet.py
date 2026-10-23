@@ -1353,7 +1353,7 @@ def build_bundle(
         drops=c.drops,
         drop_source=("nflverse" if c.nfl_up else "sleeper") if c.drops else "none",
     )
-    return Bundle(data=data, sheet=FactSheet(facts=facts, chapters=chapters(c, facts)))
+    return Bundle(data=data, sheet=FactSheet(facts=facts, chapters=chapters(c, facts)), odds=c.odds)
 
 
 def write_bundle(b: Bundle, path: Path) -> None:

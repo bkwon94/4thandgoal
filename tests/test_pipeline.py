@@ -146,6 +146,18 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
     assert run_rankings(repo, 2026, 6, _fake).read_text(encoding="utf-8") == built
 
 
+
+def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
+    # The odds come from the saved facts of the build, so the file and the facts agree.
+    odds = read_bundle(week_dir(repo, 2026, 6) / "facts.json").odds
+    for row in data["weeks"][-1]["rows"]:
+        t = odds.teams[row["roster_id"]]
+        assert row["odds"] == {"playoff": t.playoff, "bye": t.bye, "seed": t.seed, "status": t.status}
+    assert all("odds" not in row for w in data["weeks"][:-1] for row in w["rows"])
+
 def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     # The build saves week 6, so the history runs through week 6.

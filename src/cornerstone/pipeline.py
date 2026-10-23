@@ -20,6 +20,7 @@ from cornerstone.models import (
     Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
 )
 from cornerstone.nflverse import nflverse_week
+from cornerstone.odds import OddsResult
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
@@ -279,7 +280,8 @@ def run_build(
         log.warning("week %d not saved to history: %s", week, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
     try:
-        if _write_rankings(repo, season, week, bundle.data.teams, blurbs.get(RANKINGS_CHAPTER)) is None:
+        rankings = _write_rankings(repo, season, week, bundle.data.teams, blurbs.get(RANKINGS_CHAPTER), bundle.odds)
+        if rankings is None:
             log.warning("history incomplete through week %d: rankings.json not written", week)
     except (OSError, ValueError, KeyError) as err:
         log.warning("rankings.json not written for week %d: %s", week, err)
@@ -288,9 +290,10 @@ def run_build(
 
 def _write_rankings(
     repo: Path, season: int, week: int, teams: dict[int, Team], blurb: Blurb | None = None,
+    odds: OddsResult | None = None,
 ) -> Path | None:
     """Write rankings.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
-    The rankings blurb goes into the rows of `week`. None when a week from 1 to `week` is missing."""
+    The rankings blurb and the `odds` go into the rows of `week`. None when a week from 1 to `week` is missing."""
     # A fallback blurb has no roster tags, so it would write an empty blurb for every team. With no blurb, the
     # week keeps the blurbs of the last file.
     if blurb is not None and blurb.fallback:
@@ -304,7 +307,7 @@ def _write_rankings(
         return None
     if through > week:
         log.info("rankings.json covers weeks 1 to %d, past the built week %d", through, week)
-    return render_rankings(history, season, teams, repo / "site", week, blurb)
+    return render_rankings(history, season, teams, repo / "site", week, blurb, odds)
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
