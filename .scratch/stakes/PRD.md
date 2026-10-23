@@ -68,7 +68,14 @@ check marks a team as clinched or out, so those two words are always true.
   the share of runs. The run count is the tunable `SIM_RUNS`, 5,000. The random seed derives from
   the season and the week, so the same inputs give the same odds.
 - Score draw: each simulated week draws one of the team's own weekly scores this season, with
-  the last `RECENT_WEEKS` (3) weeks weighted `RECENT_WEIGHT` (2) times. No fit, no league pool.
+  the last `RECENT_WEEKS` (3) weeks weighted `RECENT_WEIGHT` (1.25) times. No fit, no league pool.
+- Projection shift: the drawn score then moves toward that week's projection. The shift is
+  `PROJECTION_WEIGHT` (0.7) times the gap between the team's projected best-lineup total for that
+  week and the team's season average score. At 0 the draw is the plain past score. At 1 the draw
+  centers on the projection with the team's own spread. The projected total is the sum of the
+  Sleeper half-PPR projections over the best lineup of the current roster for that week, with the
+  existing best-lineup helper; a player with no projection that week counts 0, which covers byes
+  and injuries. Brian chose this on 2026-10-23 so the sim knows the roster for each week ahead.
 - Each simulated week plays both games. The head-to-head game settles by the pair. The median game
   settles each team against the median of the 12 drawn scores, with the existing median rule: the
   mean of the 6th and 7th scores, an exact tie is neither a win nor a loss.
@@ -92,6 +99,9 @@ check marks a team as clinched or out, so those two words are always true.
   `schedule.json` beside the other raw files. The engine reads only `matchup_id` and `roster_id`
   from it. A past week never needs it.
 - The week N+1 pairings come from the existing next-week fetch.
+- The week fetch also gains the per-player projections for weeks N+1 to 14, one call per week,
+  saved as one raw file `projections_ahead.json`, filtered to the players on any roster so the
+  file stays small. The engine reads the projected totals from it. A past week never needs it.
 
 ### Facts and chapters
 
@@ -153,7 +163,7 @@ check marks a team as clinched or out, so those two words are always true.
 
 - The rivalry line: head-to-head record and all-time margin. Brian skipped it on 2026-10-23.
 - The waiver chapter. Its own spec after this one.
-- A fit or a league-pool blend for the score draw. The tunables leave room for a later change.
+- A fit or a league-pool noise model for the score draw. The tunables leave room for a later change.
 - Odds for weeks before the engine first ran. Old rows stay without the field.
 - Odds in the matchup recap or the awards chapter.
 - A playoff bracket sim for weeks 15 to 17. The engine stops at the seeds.
