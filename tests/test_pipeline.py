@@ -25,6 +25,7 @@ from cornerstone.pipeline import (
     week_dir,
 )
 from cornerstone.publish import PublishError, run_publish
+from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.sheet import read_bundle
 
 ET = ZoneInfo("America/New_York")
@@ -144,6 +145,31 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
     # blurbs empty on purpose, so both files match.
     # The rankings command writes the same file from the same saved history.
     assert run_rankings(repo, 2026, 6, _fake).read_text(encoding="utf-8") == built
+
+
+def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
+    # The odds come from the saved facts of the build, so the file and the facts agree.
+    odds = read_bundle(week_dir(repo, 2026, 6) / "facts.json").odds
+    for row in data["weeks"][-1]["rows"]:
+        t = odds.teams[row["roster_id"]]
+        assert row["odds"] == {k: getattr(t, k) for k in RANKINGS_ODDS_KEYS}
+    assert all("odds" not in row for w in data["weeks"][:-1] for row in w["rows"])
+
+
+def test_a_rewrite_puts_the_saved_odds_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    # With no rankings file, the odds can come only from the saved facts.
+    _rankings(repo).unlink()
+    run_rewrite(repo, 2026, 6, "rankings", _fake)
+    data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
+    odds = read_bundle(week_dir(repo, 2026, 6) / "facts.json").odds
+    assert odds is not None
+    for row in data["weeks"][-1]["rows"]:
+        assert row["odds"] == {k: getattr(odds.teams[row["roster_id"]], k) for k in RANKINGS_ODDS_KEYS}
 
 
 def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
