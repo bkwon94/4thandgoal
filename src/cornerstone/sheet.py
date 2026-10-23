@@ -58,7 +58,7 @@ from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
 from cornerstone.trades import is_late
-from cornerstone.tunables import SWING_FLAT
+from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
 logger = logging.getLogger(__name__)
 
@@ -902,13 +902,39 @@ def standing_ranks(table: list[Standing]) -> dict[int, int]:
     return {s.roster_id: s.rank for s in table}
 
 
+def required_why_ids(
+    facts: dict[str, Fact], rows: list[PowerRow], table: list[Standing], odds: OddsResult | None,
+) -> list[str]:
+    """The why facts the rankings writer must cite, in power rank order.
+
+    A team that moved `WHY_MOVE_AT` or more places either way needs its rank why. A team whose record and odds
+    disagree needs its odds why: under .500 with odds at or above `WHY_ODDS_AT`, or over .500 with odds under it.
+    A team at .500 is neither under nor over. Only IDs in the facts go in.
+    """
+    record = {s.roster_id: (s.wins, s.losses) for s in table}
+    ids = []
+    for row in rows:
+        rid = row.roster_id
+        if row.movement is not None and abs(row.movement) >= WHY_MOVE_AT:
+            ids.append(f"PR.{rid}.why")
+        t = odds.teams.get(rid) if odds is not None else None
+        wins, losses = record[rid]
+        if t is not None and (
+            (wins < losses and t.playoff >= WHY_ODDS_AT) or (wins > losses and t.playoff < WHY_ODDS_AT)
+        ):
+            ids.append(f"ODDS.{rid}.why")
+    return [fid for fid in ids if fid in facts]
+
+
 def rankings_chapter(
-    facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], standing_rank: dict[int, int],
+    facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], table: list[Standing],
+    odds: OddsResult | None,
 ) -> Chapter:
     """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
 
     The history cap does not apply here: the spec gives each of the 12 teams its own streak and trend facts.
     """
+    standing_rank = standing_ranks(table)
     ids = [
         fid
         for row in rows
@@ -926,6 +952,7 @@ def rankings_chapter(
         scope_players=[],
         min_sentences=low,
         max_sentences=high,
+        required=required_why_ids(facts, rows, table, odds),
     )
 
 
@@ -1478,7 +1505,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         all_rosters, "next_week",
     ))
     if c.power:
-        out.append(rankings_chapter(facts, c.power, c.team, standing_ranks(c.table)))
+        out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds))
     return out
 
 

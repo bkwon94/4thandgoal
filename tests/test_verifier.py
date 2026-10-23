@@ -575,9 +575,14 @@ def _tagged(text, rid, *ids):
 
 
 def _good_rankings(sheet, ch):
-    """One sentence per team in rank order: the team's PR fact, tagged with its roster."""
+    """One sentence per team in rank order: the team's PR fact, tagged with its roster.
+    The sentence also cites the team's required facts, so the blurb leaves none uncited."""
     rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.") and not fid.endswith(".why")]
-    return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}") for rid in rids]
+    return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}", *_required_of(ch, rid)) for rid in rids]
+
+
+def _required_of(ch, rid):
+    return [fid for fid in ch.required if int(fid.split(".")[1]) == rid]
 
 
 def _standing_id(sheet, ch, rid):
@@ -589,6 +594,23 @@ def _standing_id(sheet, ch, rid):
 def test_a_good_rankings_blurb_passes(fixture_raw_dir, fixture_history_root):
     sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
     assert code_check(_blurb("rankings", *_good_rankings(sheet, ch)), ch, sheet) == []
+
+
+def test_a_rankings_blurb_that_leaves_a_required_fact_uncited_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    assert "ODDS.12.why" in ch.required
+    sentences = [s.model_copy(update={"fact_ids": [f for f in s.fact_ids if f != "ODDS.12.why"]})
+                 for s in _good_rankings(sheet, ch)]
+    assert "[0] required fact ODDS.12.why is not cited" in code_check(_blurb("rankings", *sentences), ch, sheet)
+
+
+def test_a_required_fact_cited_in_another_team_sentence_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    sentences = [s.model_copy(update={"fact_ids": [f for f in s.fact_ids if f != "ODDS.12.why"]})
+                 for s in _good_rankings(sheet, ch)]
+    other = next(i for i, s in enumerate(sentences) if s.roster_id != 12)
+    sentences[other].fact_ids.append("ODDS.12.why")
+    assert "[0] required fact ODDS.12.why is not cited" in code_check(_blurb("rankings", *sentences), ch, sheet)
 
 
 def test_a_rankings_sentence_with_no_roster_tag_fails(fixture_raw_dir, fixture_history_root):

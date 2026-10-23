@@ -466,8 +466,19 @@ def test_rankings_rule_cites_the_why_facts_past_the_tunable_thresholds(fixture_r
     assert f"Cite it for a team under .500 with odds at or above {WHY_ODDS_AT}%." in rule
     assert f"Cite it also for a team over .500 with odds under {WHY_ODDS_AT}%." in rule
     assert "Either why may serve any other team when it helps." in rule
+    assert "A team's odds why counts as its odds line under rule 23." in rule
     # The raised cap leaves room for a why sentence beside the team's opener.
     assert "Give every team 1 to 3 sentences." in system
+
+
+def test_writer_prompt_lists_the_required_facts_after_the_facts(hbundle):
+    sheet = hbundle.sheet
+    _, user = build_writer_prompt(_chapter(sheet, "rankings"), sheet, None)
+    facts, required = user.split("\n\nCite each of these facts in its team's sentences: ", 1)
+    assert "Facts:" in facts
+    assert sorted(required.removesuffix(".").split(", ")) == sorted(_chapter(sheet, "rankings").required)
+    _, user = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert "Cite each of these facts" not in user
 
 
 def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir):

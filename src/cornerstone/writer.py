@@ -164,6 +164,8 @@ def build_writer_prompt(
         "Facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids),
     ]
+    if chapter.required:
+        lines += ["", f"Cite each of these facts in its team's sentences: {', '.join(chapter.required)}."]
     if repeats_motw_headline(chapter, sheet):
         lines += ["", MOTW_HEADLINE_NOTE]
     if feedback is not None:

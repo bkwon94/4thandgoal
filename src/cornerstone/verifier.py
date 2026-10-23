@@ -324,6 +324,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
         failures += roster_tag_failures(blurb, chapter, sheet)
         failures += opener_failures(blurb, chapter, sheet)
 
+    # A required ID is a why of one roster, so it counts only in a sentence tagged with that roster.
+    for fid in chapter.required:
+        rid = int(fid.split(".")[1])
+        if not any(fid in s.fact_ids and s.roster_id == rid for s in blurb.sentences):
+            failures.append(f"[0] required fact {fid} is not cited")
+
     # The ", which" tail is the stock joke shape, so a blurb gets one.
     tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]
     if len(tails) > 1:

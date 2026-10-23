@@ -304,6 +304,8 @@ class Chapter(BaseModel):
     scope_players: list[str]
     min_sentences: int
     max_sentences: int
+    # The fact IDs the writer must cite. The code check fails a blurb that leaves one uncited.
+    required: list[str] = []
 
 
 class WeekData(BaseModel):
