@@ -6,7 +6,7 @@ import contextlib
 import json
 import logging
 import subprocess
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -365,12 +365,19 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
     """The rankings chapter of a saved week, and True when the bundle had to take it in.
 
     A saved week with no rankings chapter has no PR facts, so they come from the saved history.
-    A saved chapter with no rank why ids is built again, so the blurb can cite the rank why facts.
-    Week 1 of the rankings has no rank why, so its saved chapter stands.
+    A saved chapter that lacks a why family is built again, so the blurb can cite the rank why and the odds why.
+    Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
     """
     chapter = next((c for c in bundle.sheet.chapters if c.key == RANKINGS_CHAPTER), None)
-    if chapter is not None and (history.week < 2 or any(fid.endswith(".why") for fid in chapter.fact_ids)):
-        return chapter, False
+
+    def has_why(prefix: str, ids: Iterable[str]) -> bool:
+        return any(fid.startswith(prefix) and fid.endswith(".why") for fid in ids)
+
+    if chapter is not None:
+        rank_why_ok = history.week < 2 or has_why("PR.", chapter.fact_ids)
+        odds_why_ok = not has_why("ODDS.", bundle.sheet.facts) or has_why("ODDS.", chapter.fact_ids)
+        if rank_why_ok and odds_why_ok:
+            return chapter, False
     rows = power_rankings(history, history.week)[history.week]
 
     def team(roster_id: int) -> str:

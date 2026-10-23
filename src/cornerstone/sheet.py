@@ -26,7 +26,15 @@ from cornerstone.facts_league import (
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
-from cornerstone.history import player_trend, points_per_game, red_zone, season_rank, snap_share, target_share
+from cornerstone.history import (
+    _round_half_up,
+    player_trend,
+    points_per_game,
+    red_zone,
+    season_rank,
+    snap_share,
+    target_share,
+)
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -204,11 +212,28 @@ def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> 
     return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
-def _odds(week: Week, history: History | None) -> OddsResult | None:
-    """The engine's odds after this week, or None before ODDS_FROM_WEEK or without a complete history.
+def _odds(
+    week: Week, history: History | None,
+    inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
+    projected: dict[int, dict[int, float]] | None,
+) -> OddsResult | None:
+    """The engine's odds after this week, or None when `_odds_inputs` gave no inputs.
 
     The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
     """
+    if inputs is None or history is None:
+        return None
+    scores, remaining = inputs
+    return playoff_odds(
+        scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
+        projected=projected,
+    )
+
+
+def _odds_inputs(
+    week: Week, history: History | None,
+) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
+    """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
     if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
         return None
     # A roster with no score in a week, such as a bye, adds no score for that week.
@@ -225,10 +250,7 @@ def _odds(week: Week, history: History | None) -> OddsResult | None:
     if set(remaining) != set(range(week.week + 1, LAST_WEEK + 1)):
         logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
         return None
-    return playoff_odds(
-        scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
-        projected=projected_totals(week),
-    )
+    return scores, remaining
 
 
 def projected_totals(week: Week) -> dict[int, dict[int, float]]:
@@ -287,7 +309,11 @@ class Context:
         self.power = (
             power_rankings(history, week.week)[week.week] if history is not None and history.complete() else []
         )
-        self.odds = _odds(week, history)
+        # The odds and the odds why read the same inputs, so the context builds them once.
+        self.projected = projected_totals(week)
+        inputs = _odds_inputs(week, history)
+        self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
+        self.odds = _odds(week, history, inputs, self.projected)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
@@ -632,6 +658,55 @@ def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact
     return out
 
 
+def odds_why_facts(
+    odds: OddsResult | None,
+    scores: dict[int, list[float]],
+    projected: dict[int, dict[int, float]],
+    remaining: dict[int, list[tuple[int, int]]],
+    team: Callable[[int], str],
+) -> list[Fact]:
+    """One fact per team with projected totals: the projected pace, the season pace, and the remaining schedule.
+
+    The inputs are the engine's own, so the why names what drives the odds. It exists only beside the odds facts.
+    """
+    if odds is None:
+        return []
+    # The schedule rank uses the exact paces. A rounded pace would tie teams that differ by a fraction.
+    pace = {rid: sum(s) / len(s) for rid, s in scores.items() if s}
+    faced: dict[int, list[float]] = {rid: [] for rid in scores}
+    for pairs in remaining.values():
+        for a, b in pairs:
+            faced[a].append(pace[b])
+            faced[b].append(pace[a])
+    # Rank 1 is the easiest: the lowest mean pace of the opponents left. A tie goes to the lower roster ID.
+    order = sorted((rid for rid in faced if faced[rid]), key=lambda rid: (sum(faced[rid]) / len(faced[rid]), rid))
+    rank = {rid: i for i, rid in enumerate(order, 1)}
+    out = []
+    for rid in scores:
+        ahead = list(projected.get(rid, {}).values())
+        # A team with no projected totals has no projected pace, so the why has nothing to compare.
+        if not ahead or rid not in pace or rid not in rank:
+            continue
+        n = Nums()
+        name = team(rid)
+        season = int(_round_half_up(pace[rid]))
+        # A pace read aloud as "eighty" or "eleven" takes "an", so the sentence reads right at any score.
+        article = "an" if 80 <= season < 90 or season in (8, 11, 18) else "a"
+        # The two ends read as words, so "1st easiest" and "12th easiest" never appear.
+        if rank[rid] == 1:
+            schedule = "the easiest"
+        elif rank[rid] == len(order):
+            schedule = "the hardest"
+        else:
+            schedule = f"the {n.ord(rank[rid])} easiest"
+        text = (
+            f"{name} projects {n(int(_round_half_up(sum(ahead) / len(ahead))))} a week from here against "
+            f"{article} {n(season)} pace, with {schedule} remaining schedule."
+        )
+        out.append(fact(f"ODDS.{rid}.why", text, n, [name], []))
+    return out
+
+
 def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Callable[[int], str]) -> list[Fact]:
     """One fact per given next-week pair: each side's odds after a win and after a loss, in the pair order."""
     if odds is None:
@@ -838,7 +913,8 @@ def rankings_chapter(
         fid
         for row in rows
         for fid in (f"PR.{row.roster_id}", f"PR.{row.roster_id}.why", f"S.{standing_rank[row.roster_id]}",
-                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}")
+                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
+                    f"ODDS.{row.roster_id}.why")
     ]
     low, high = SENTENCE_RANGES[RANKINGS_CHAPTER]
     return Chapter(
@@ -1389,7 +1465,9 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         ))
     out.append(make(
         "median", "The Median Game",
-        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.") + _with_prefix(facts, "ODDS.")
+        # The odds why belongs to the rankings chapter alone, so the median lists only the odds.
+        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
+        + [fid for fid in _with_prefix(facts, "ODDS.") if not fid.endswith(".why")]
         + _history_ids(facts, all_rosters, ("high",)),
         all_rosters, "median",
     ))
@@ -1419,6 +1497,7 @@ def build_bundle(
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
         rank_why_facts(c.history, c.power, c.before, c.team),
         odds_facts(c.odds, c.team), swing_facts(c.odds, [(nx.a, nx.b) for nx in c.next if nx.must_watch], c.team),
+        odds_why_facts(c.odds, c.season_scores, c.projected, c.remaining, c.team),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(

@@ -264,6 +264,27 @@ def test_rankings_command_adds_the_rank_why_facts_to_an_older_saved_chapter(
     for rid in saved.data.teams:
         assert f"PR.{rid}.why" in chapter.fact_ids
         assert f"PR.{rid}.why" in saved.sheet.facts
+    # The saved facts hold no odds why, and the raw week is not read, so the chapter lists none.
+    assert not any(fid.startswith("ODDS.") and fid.endswith(".why") for fid in chapter.fact_ids)
+
+
+def test_rankings_command_lists_the_saved_odds_why_facts_in_an_older_saved_chapter(
+    tmp_path, fixture_raw_dir, fixture_history_root,
+):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    # The saved facts hold the odds why, but the saved chapter lists only the rank why.
+    facts = week_dir(repo, 2026, 6) / "facts.json"
+    bundle = read_bundle(facts)
+    for c in bundle.sheet.chapters:
+        c.fact_ids = [fid for fid in c.fact_ids if not (fid.startswith("ODDS.") and fid.endswith(".why"))]
+    facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
+
+    run_rankings(repo, 2026, 6, _fake)
+    chapter = next(c for c in read_bundle(facts).sheet.chapters if c.key == "rankings")
+    for rid in bundle.data.teams:
+        assert f"ODDS.{rid}.why" in chapter.fact_ids
+        assert f"PR.{rid}.why" in chapter.fact_ids
 
 
 def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root):
@@ -316,7 +337,8 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     saved = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     odds = {fid: f for fid, f in saved.items() if fid.startswith(("ODDS.", "SW."))}
-    assert len(odds) == 14
+    # 12 odds facts, 12 odds why facts, and 2 swing facts.
+    assert len(odds) == 26
 
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the odds engine")
