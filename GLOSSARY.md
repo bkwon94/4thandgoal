@@ -51,6 +51,30 @@ The pairs of every regular-season week after next week, weeks N+2 to 14, saved w
 data as `schedule.json`. Next week's pairs stay in the next-week fetch. The odds engine reads both.
 _Avoid_: schedule (alone; that is the schedule played component), fixtures
 
+**Playoff odds**:
+The share of the engine's runs in which a team ends in a playoff spot, as a whole percent from 1 to 99.
+A clinched team shows 100 and a team that is out shows 0. Each run plays every remaining week with
+the head-to-head game and the median game. The `ODDS.` fact also gives the bye odds and the most likely seed. Use "odds" in code and
+"Playoff %" on the page. The fact says "about" before the number.
+_Avoid_: chance, probability, projection (that is a player's projected points)
+
+**Swing**:
+The playoff odds of both sides of one Must Watch game of next week: each side's odds after a win and
+after a loss. The `SW.` fact gives it as "A win puts X at 71%, a loss at 38%."
+An open side with a gap under `SWING_FLAT` reads "X stays near 60% either way." A side that is in or out
+reads "X is in either way." or "X is out either way."
+_Avoid_: swing player (that is a player who outscored the margin), leverage
+
+**Clinched**:
+A team that is sure of a playoff spot by a plain check on wins. No team outside the playoff spots can
+reach its wins, even with 2 wins in every week left. Use "in" in code and "In" on the page.
+_Avoid_: locked, safe
+
+**Out**:
+A team that cannot reach the wins of the last playoff spot with 2 wins every week left. Use "out" in
+code and "Out" on the page.
+_Avoid_: eliminated, dead
+
 ### The page
 
 **Position leader**:

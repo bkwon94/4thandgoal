@@ -44,14 +44,19 @@ from cornerstone.models import (
     r2,
     sub,
 )
+from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
 from cornerstone.trades import is_late
+from cornerstone.tunables import SWING_FLAT
 
 logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
 LAST_WEEK = 14
+# The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
+# per team are the fewest scores the engine draws from. A week before it gets no odds.
+ODDS_FROM_WEEK = 6
 # A chapter cites at most this many facts with an ID that starts with "H." or "P.", so the writer
 # stays focused. The cap does not cover the position-rank facts.
 HISTORY_FACTS_MAX = 6
@@ -74,7 +79,8 @@ SENTENCE_RANGES = {
     "position_leaders": (2, 4),
     "recap": (2, 3),
     "median": (2, 4),
-    "next_week": (1, 2),
+    # The third sentence leaves room for the swing of the Must Watch games.
+    "next_week": (1, 3),
     # One or two sentences for each of the 12 teams.
     "rankings": (12, 24),
 }
@@ -196,6 +202,30 @@ def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> 
     return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
+def _odds(week: Week, history: History | None) -> OddsResult | None:
+    """The engine's odds after this week, or None before ODDS_FROM_WEEK or without a complete history.
+
+    The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
+    """
+    if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
+        return None
+    # A roster with no score in a week, such as a bye, adds no score for that week.
+    scores = {
+        rid: [history.weeks[n].scores[rid] for n in range(1, week.week + 1) if rid in history.weeks[n].scores]
+        for rid in week.teams
+    }
+    # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
+    # playoff games, and the engine stops at the seeds, so they stay out.
+    remaining = {week.week + 1: week.next_matchups} if week.week < LAST_WEEK else {}
+    remaining.update(week.schedule)
+    # A cached week can lack the schedule file. The engine would then end the season early and could
+    # call a team clinched or out by mistake, so the sheet gives no odds.
+    if set(remaining) != set(range(week.week + 1, LAST_WEEK + 1)):
+        logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
+        return None
+    return playoff_odds(scores, season_records(history, week.week), remaining, season=week.season, week=week.week)
+
+
 class Context:
     """Lookups shared by every fact family."""
 
@@ -233,6 +263,7 @@ class Context:
         self.power = (
             power_rankings(history, week.week)[week.week] if history is not None and history.complete() else []
         )
+        self.odds = _odds(week, history)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
@@ -554,6 +585,53 @@ def next_facts(c: Context) -> list[Fact]:
     return out
 
 
+def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact]:
+    """One fact per team: the playoff odds, the bye odds, and the most likely seed, or the clinch or the out.
+
+    The numbers are the engine's as given. The sheet computes none of them.
+    """
+    if odds is None:
+        return []
+    out = []
+    for rid, t in odds.teams.items():
+        n = Nums()
+        name = team(rid)
+        if t.status == "in":
+            text = f"{name} has clinched a playoff spot."
+        elif t.status == "out":
+            text = f"{name} is out of the playoff race."
+        else:
+            text = f"{name} makes the playoffs in about {n(t.playoff)}% of runs, with a bye in {n(t.bye)}%"
+            # The engine gives no seed below SEED_SHOW_AT, so the clause drops there.
+            text += f", most often as the {n.ord(t.seed)} seed." if t.seed is not None else "."
+        out.append(fact(f"ODDS.{rid}", text, n, [name], []))
+    return out
+
+
+def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Callable[[int], str]) -> list[Fact]:
+    """One fact per given next-week pair: each side's odds after a win and after a loss, in the pair order."""
+    if odds is None:
+        return []
+    swings = {(s.a, s.b): s for s in odds.swings}
+
+    def side(rid: int, win: int, loss: int, n: Nums) -> str:
+        t = odds.teams[rid]
+        # A clinched or out side cannot move, so its sentence holds no digit.
+        if t.status != "open":
+            return f"{team(rid)} is {t.status} either way."
+        # A gap under SWING_FLAT is noise, so the side reads as flat.
+        if abs(win - loss) < SWING_FLAT:
+            return f"{team(rid)} stays near {n(t.playoff)}% either way."
+        return f"A win puts {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
+
+    out = []
+    for a, b in pairs:
+        s = swings[(a, b)]
+        n = Nums()
+        text = f"{side(a, s.a_win, s.a_loss, n)} {side(b, s.b_win, s.b_loss, n)}"
+        out.append(fact(f"SW.{a}v{b}", text, n, [team(a), team(b)], []))
+    return out
+
 
 def rank_facts(c: Context) -> list[Fact]:
     out = []
@@ -673,7 +751,7 @@ def rankings_chapter(
         fid
         for row in rows
         for fid in (f"PR.{row.roster_id}", f"S.{standing_rank[row.roster_id]}",
-                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend")
+                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}")
     ]
     low, high = SENTENCE_RANGES[RANKINGS_CHAPTER]
     return Chapter(
@@ -1224,13 +1302,13 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         ))
     out.append(make(
         "median", "The Median Game",
-        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.")
+        _with_prefix(facts, "MED.") + _with_prefix(facts, "S.") + _with_prefix(facts, "ODDS.")
         + _history_ids(facts, all_rosters, ("high",)),
         all_rosters, "median",
     ))
     out.append(make(
         "next_week", "Next Week",
-        _with_prefix(facts, "NX.", "S.", "SOS.")
+        _with_prefix(facts, "NX.", "S.", "SOS.", "SW.")
         + _history_ids(facts, [r for nx in c.next for r in (nx.a, nx.b)], ("streak", "trend")),
         all_rosters, "next_week",
     ))
@@ -1252,6 +1330,7 @@ def build_bundle(
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
+        odds_facts(c.odds, c.team), swing_facts(c.odds, [(nx.a, nx.b) for nx in c.next if nx.must_watch], c.team),
     )
     facts = {f.id: f for family in families for f in family}
     data = WeekData(
