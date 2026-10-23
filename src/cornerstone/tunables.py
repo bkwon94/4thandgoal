@@ -1,6 +1,6 @@
 """
-The tunable table: every number of the trade analyzer rubric and the power rankings, each with its name and its reason.
-The rubric file in the prompts directory points here, so a band or a margin changes in one place.
+The tunable table: every number of the trade analyzer rubric, the power rankings, and the playoff odds engine.
+Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
 
@@ -92,3 +92,16 @@ FINDER_TOP = 3
 # The power score is the weighted mean of the four components, keyed by component.
 # The weights are equal so the rank is one line to explain.
 POWER_WEIGHTS = {"standing": 0.25, "form": 0.25, "schedule_played": 0.25, "scoring": 0.25}
+
+# The playoff odds engine: a Monte Carlo of the remaining weeks, one table per run.
+# The count of runs. At 5,000 runs one percent is 50 runs, so the sample error of an odds number is under 1 percent.
+SIM_RUNS = 5000
+# The count of latest played weeks that weigh more in the score draw, so the draw follows the current form.
+RECENT_WEEKS = 3
+# The weight of each recent week in the score draw. An older week weighs 1. At 1.25 with 6 weeks played,
+# the last 3 weeks are 56 percent of the draws; at 2 they are 67 percent, too much trust in 3 scores.
+RECENT_WEIGHT = 1.25
+# The lowest playoff odds, in percent, that show the most likely seed. Below it the seed rests on fewer than half the runs.
+SEED_SHOW_AT = 50
+# The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.
+BYE_COUNT = 2

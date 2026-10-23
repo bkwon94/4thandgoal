@@ -21,19 +21,19 @@ Spec: `.scratch/stakes/PRD.md`, "The engine". Research: `.scratch/stakes/researc
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A new module holds the engine behind one function with the inputs and outputs above.
-- [ ] Tunables `SIM_RUNS` 5000, `RECENT_WEEKS` 3, `RECENT_WEIGHT` 2, `SEED_SHOW_AT` 50 join the tunable table with a one-line "why" each.
-- [ ] The same seed gives the same odds twice. The seed derives from the season and the week.
-- [ ] Both games count: a fixture where only the median game differs gives different odds.
-- [ ] The seed order is wins, then points for, then roster id, and the bye goes to the top 2.
-- [ ] The status check: a 4-win lead with 1 week left is `in`; 5 wins back with 2 weeks left is `out`; else `open`.
-- [ ] `in` shows 100, `out` shows 0, `open` clamps to 1 to 99 after the round.
-- [ ] The most likely seed is the modal seed over the runs where the roster makes it, and is none below `SEED_SHOW_AT`.
-- [ ] The swing splits the runs by the week N+1 head-to-head result only, and gives both sides' odds per half.
-- [ ] With no weeks left the engine returns the check result and the final table, with no runs.
-- [ ] Tests on a 4-team fixture, 2 weeks played, 2 weeks left, 2 spots, 200 runs, fixed seed. No test pins real week 6 odds.
-- [ ] The odds of all rosters sum to the spots times 100 within rounding.
-- [ ] The full run of 12 teams and 8 weeks at 5,000 runs takes under 10 seconds on the fixture.
-- [ ] Ruff clean, the full suite passes.
+- [x] A new module holds the engine behind one function with the inputs and outputs above.
+- [x] Tunables `SIM_RUNS` 5000, `RECENT_WEEKS` 3, `RECENT_WEIGHT` 2, `SEED_SHOW_AT` 50 join the tunable table with a one-line "why" each.
+- [x] The same seed gives the same odds twice. The seed derives from the season and the week.
+- [x] Both games count: a fixture where only the median game differs gives different odds.
+- [x] The seed order is wins, then points for, then roster id, and the bye goes to the top 2.
+- [x] The status check: a 4-win lead with 1 week left is `in`; 5 wins back with 2 weeks left is `out`; else `open`.
+- [x] `in` shows 100, `out` shows 0, `open` clamps to 1 to 99 after the round.
+- [x] The most likely seed is the modal seed over the runs where the roster makes it, and is none below `SEED_SHOW_AT`.
+- [x] The swing splits the runs by the week N+1 head-to-head result only, and gives both sides' odds per half.
+- [x] With no weeks left the engine returns the check result and the final table, with no runs.
+- [x] Tests on a 4-team fixture, 2 weeks played, 2 weeks left, 2 spots, 200 runs, fixed seed. No test pins real week 6 odds.
+- [x] The odds of all rosters sum to the spots times 100 within rounding.
+- [x] The full run of 12 teams and 8 weeks at 5,000 runs takes under 10 seconds on the fixture.
+- [x] Ruff clean, the full suite passes.
