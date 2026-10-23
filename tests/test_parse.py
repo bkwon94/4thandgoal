@@ -111,3 +111,20 @@ def test_week_without_schedule_parses(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
     raw.pop("schedule")
     assert parse_week(raw).schedule == {}
+
+
+def test_projections_ahead_per_week(fixture_raw_dir):
+    wk = parse_week(load_raw(fixture_raw_dir))
+    assert sorted(wk.projections_ahead) == list(range(7, 15))
+    assert all(isinstance(pts, float) for week in wk.projections_ahead.values() for pts in week.values())
+
+
+def test_week_without_projections_ahead_parses(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw.pop("projections_ahead")
+    assert parse_week(raw).projections_ahead == {}
+
+
+def test_roster_positions_are_the_league_slots(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    assert parse_week(raw).roster_positions == raw["league"]["roster_positions"]

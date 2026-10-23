@@ -160,6 +160,10 @@ class Week(BaseModel):
     stats: dict[str, dict[str, float]] = {}
     # The pairs of weeks N+2 to 14, keyed by week, in the shape of next_matchups.
     schedule: dict[int, list[tuple[int, int]]] = {}
+    # The half-PPR projection of each rostered player in weeks N+1 to 14, by week and player id.
+    projections_ahead: dict[int, dict[str, float]] = {}
+    # The league's lineup slots, in Sleeper's order, such as QB, RB, RB, WR, and BN.
+    roster_positions: list[str] = []
 
 
 def week_lines(week: Week) -> list[PlayerLine]:
