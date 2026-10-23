@@ -7,7 +7,10 @@ from datetime import date
 
 import pytest
 
+from cornerstone import sheet
+from cornerstone.history import load_history
 from cornerstone.models import PowerRow
+from cornerstone.odds import OddsResult, Swing, TeamOdds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     Context,
@@ -15,9 +18,11 @@ from cornerstone.sheet import (
     check_week_is_buildable,
     fmt,
     is_motw_recap,
+    odds_facts,
     power_facts,
     read_bundle,
     standings_facts,
+    swing_facts,
     week_dates,
     write_bundle,
 )
@@ -424,3 +429,73 @@ def test_only_the_recap_of_the_matchup_of_the_week_is_the_motw_recap(bundle):
     recap = next(c for c in recaps if c.key == found[0])
     assert set(recap.scope_teams) == set(motw.scope_teams)
     assert not is_motw_recap(motw, sheet)
+
+
+def _odds(rid, playoff, bye, seed, status):
+    return TeamOdds(roster_id=rid, playoff=playoff, bye=bye, seed=seed, status=status)
+
+
+def test_twelve_odds_facts_one_per_team(hbundle):
+    ids = [fid for fid in hbundle.sheet.facts if fid.startswith("ODDS.")]
+    assert sorted(ids) == sorted(f"ODDS.{rid}" for rid in hbundle.data.teams)
+
+
+def test_one_swing_fact_per_must_watch_game_in_the_next_week_pair_order(hbundle):
+    ids = [fid for fid in hbundle.sheet.facts if fid.startswith("SW.")]
+    assert ids == [f"SW.{nx.a}v{nx.b}" for nx in hbundle.data.next if nx.must_watch]
+    assert len(ids) == 2
+
+
+def test_swing_fact_states_both_sides():
+    swing = Swing(a=3, b=8, a_win=71, a_loss=38, b_win=84, b_loss=67)
+    names = {3: "Lil Fridge", 8: "Bo Girds"}
+    [f] = swing_facts(OddsResult(teams={}, swings=[swing]), [(3, 8)], names.get)
+    assert f.id == "SW.3v8"
+    assert f.text == "A win puts Lil Fridge at 71%, a loss at 38%. A win puts Bo Girds at 84%, a loss at 67%."
+    assert f.numbers == ["71", "38", "84", "67"]
+    assert f.teams == ["Lil Fridge", "Bo Girds"]
+
+
+def test_open_odds_fact_states_the_playoff_bye_and_seed():
+    [f] = odds_facts(OddsResult(teams={3: _odds(3, 64, 12, 4, "open")}, swings=[]), lambda rid: "Bo Girds")
+    assert f.id == "ODDS.3"
+    assert f.text == "Bo Girds makes the playoffs in about 64% of runs, with a bye in 12%, most often as the 4th seed."
+    assert f.numbers == ["64", "12", "4"]
+
+
+def test_open_odds_fact_drops_the_seed_clause_with_no_seed():
+    [f] = odds_facts(OddsResult(teams={3: _odds(3, 30, 2, None, "open")}, swings=[]), lambda rid: "Bo Girds")
+    assert f.text == "Bo Girds makes the playoffs in about 30% of runs, with a bye in 2%."
+
+
+def test_clinched_and_out_odds_facts_hold_no_digit():
+    odds = OddsResult(teams={1: _odds(1, 100, 80, 1, "in"), 2: _odds(2, 0, 0, None, "out")}, swings=[])
+    names = {1: "Lil Fridge", 2: "Bo Girds"}
+    facts = {f.id: f for f in odds_facts(odds, names.get)}
+    assert facts["ODDS.1"].text == "Lil Fridge has clinched a playoff spot."
+    assert facts["ODDS.2"].text == "Bo Girds is out of the playoff race."
+    for f in facts.values():
+        assert not re.search(r"\d", f.text) and f.numbers == []
+
+
+def test_a_week_before_the_odds_week_has_no_odds_facts(monkeypatch, fixture_raw_dir, fixture_history_root):
+    monkeypatch.setattr(sheet, "ODDS_FROM_WEEK", 7)
+    raw = load_raw(fixture_raw_dir)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
+    assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)
+
+
+def test_no_odds_facts_without_history(bundle):
+    assert not any(fid.startswith(("ODDS.", "SW.")) for fid in bundle.sheet.facts)
+
+
+def test_next_week_chapter_lists_the_swing_facts_in_3_sentences(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
+    assert (ch.min_sentences, ch.max_sentences) == (1, 3)
+    assert [fid for fid in ch.fact_ids if fid.startswith("SW.")] == [
+        fid for fid in hbundle.sheet.facts if fid.startswith("SW.")]
+
+
+def test_rankings_chapter_lists_every_odds_fact(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
+    assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.")} == {f"ODDS.{rid}" for rid in hbundle.data.teams}
