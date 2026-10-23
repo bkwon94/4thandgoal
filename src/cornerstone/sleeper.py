@@ -33,7 +33,7 @@ FETCHED_FILE = "fetched.json"
 # build of week N-1 carries leg N-1, so only this fresh copy has it. load_raw ignores the file.
 PREV_TRANSACTIONS_FILE = "transactions_prev.json"
 
-# The pairings of weeks N+2 to the last regular week. matchups_next already holds week N+1.
+# The pairs of weeks N+2 to the last regular week. matchups_next already holds week N+1.
 # Past weeks never need the file, so load_raw reads it only when it exists.
 SCHEDULE_FILE = "schedule.json"
 # The regular season ends at week 14. The playoff bracket, not the round robin, decides later weeks.

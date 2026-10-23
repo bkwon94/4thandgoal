@@ -123,7 +123,7 @@ def _next_matchups(raw: dict) -> list[tuple[int, int]]:
 
 
 def _schedule(raw: dict) -> dict[int, list[tuple[int, int]]]:
-    # A cached week from before the schedule fetch has no schedule file, so it gives no weeks.
+    # A cached week can lack the schedule file, so it gives no weeks.
     return {entry["week"]: _pairs(entry["matchups"]) for entry in raw.get("schedule", [])}
 
 
