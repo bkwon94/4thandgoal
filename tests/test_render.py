@@ -9,6 +9,7 @@ from pydantic import TypeAdapter
 
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence
+from cornerstone.odds import OddsResult, TeamOdds
 from cornerstone.parse import parse_week
 from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_rankings, render_week
 from cornerstone.sheet import build_bundle
@@ -405,3 +406,48 @@ def test_rankings_file_puts_the_blurb_in_the_current_week_and_keeps_past_weeks(
     assert all(b == [] for week in (1, 2, 3, 4) for b in blurbs[week].values())
     # A file with no blurb for the current week keeps every week's blurb as it was.
     assert _blurbs_by_week(render_rankings(history, 2026, teams, tmp_path, 6)) == blurbs
+
+
+def _odds_of(teams, playoff):
+    """Odds for every roster: roster 1 clinched, roster 2 out, and the rest open with a seed at 50% or more."""
+    def one(rid):
+        status = "in" if rid == 1 else "out" if rid == 2 else "open"
+        return TeamOdds(roster_id=rid, playoff=playoff, bye=playoff // 4, seed=3 if playoff >= 50 else None,
+                        status=status)
+    return OddsResult(teams={rid: one(rid) for rid in teams}, swings=[])
+
+
+def _odds_by_week(out):
+    data = json.loads(out.read_text(encoding="utf-8"))
+    return {w["week"]: {row["roster_id"]: row.get("odds") for row in w["rows"]} for w in data["weeks"]}
+
+
+def test_rankings_file_puts_the_odds_on_the_current_week_only(fixture_raw_dir, fixture_history_root, tmp_path):
+    raw = load_raw(fixture_raw_dir)
+    history = load_history(fixture_history_root, raw, week=6)
+    teams = parse_week(raw).teams
+    out = render_rankings(history, 2026, teams, tmp_path, 6, odds=_odds_of(teams, 40))
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["schema_version"] == 1
+    week6 = {row["roster_id"]: row for row in data["weeks"][-1]["rows"]}
+    # The object is the shape the site reads: whole numbers, a seed or null, and a status.
+    assert week6[1]["odds"] == {"playoff": 40, "bye": 10, "seed": None, "status": "in"}
+    assert week6[2]["odds"]["status"] == "out"
+    assert week6[3]["odds"]["status"] == "open"
+    # A past week has no odds key at all, not a null.
+    assert all("odds" not in row for w in data["weeks"][:-1] for row in w["rows"])
+
+
+def test_rankings_file_keeps_the_saved_odds_when_a_rerun_has_none(fixture_raw_dir, fixture_history_root, tmp_path):
+    raw = load_raw(fixture_raw_dir)
+    history = load_history(fixture_history_root, raw, week=6)
+    teams = parse_week(raw).teams
+    render_rankings(history, 2026, teams, tmp_path, 5, odds=_odds_of(teams, 60))
+    out = render_rankings(history, 2026, teams, tmp_path, 6, odds=_odds_of(teams, 40))
+    odds = _odds_by_week(out)
+    # The rerun for week 6 keeps the week 5 odds of the last file, so the file never shrinks.
+    assert odds[5][3] == {"playoff": 60, "bye": 15, "seed": 3, "status": "open"}
+    assert odds[6][3] == {"playoff": 40, "bye": 10, "seed": None, "status": "open"}
+    assert all(o is None for week in (1, 2, 3, 4) for o in odds[week].values())
+    # A rerun with no odds keeps every week's odds as they were.
+    assert _odds_by_week(render_rankings(history, 2026, teams, tmp_path, 6)) == odds

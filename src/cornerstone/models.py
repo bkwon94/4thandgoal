@@ -8,6 +8,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from cornerstone.odds import OddsResult
+
 
 def r2(x: float) -> float:
     """Round half up to two decimals. Python's round() gives 2.78 for 2.785."""
@@ -333,6 +335,9 @@ class FactSheet(BaseModel):
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
+    # The engine's odds of the week, so the rankings file gets them without a second run.
+    # None before `ODDS_FROM_WEEK`, or in a facts file with no `odds` key.
+    odds: OddsResult | None = None
 
 
 class Sentence(BaseModel):
