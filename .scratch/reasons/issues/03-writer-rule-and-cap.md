@@ -11,12 +11,12 @@ Spec: `.scratch/reasons/PRD.md`, "The writer".
 
 **Blocked by:** 01 — Rank why fact, 02 — Odds why fact.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The rankings chapter lists `PR.{rid}.why` and `ODDS.{rid}.why` for every team.
-- [ ] `WHY_MOVE_AT = 2` and `WHY_ODDS_AT = 25` join the tunable table with a one-line why each.
-- [ ] The writer prompt gains the rule, under 20 words per sentence, with the two thresholds written as digits from the tunables.
-- [ ] The per-team cap is 3 sentences and the chapter range is 12 to 36.
-- [ ] Glossary entries: Rank why, Odds why, Projected pace, Season pace.
-- [ ] One prompt text test pins the rule and the cap.
-- [ ] Ruff adds no finding from the diff; the full suite passes.
+- [x] The rankings chapter lists `PR.{rid}.why` and `ODDS.{rid}.why` for every team.
+- [x] `WHY_MOVE_AT = 2` and `WHY_ODDS_AT = 25` join the tunable table with a one-line why each.
+- [x] The writer prompt gains the rule, under 20 words per sentence, with the two thresholds written as digits from the tunables.
+- [x] The per-team cap is 3 sentences and the chapter range is 12 to 36.
+- [x] Glossary entries: Rank why, Odds why, Projected pace, Season pace.
+- [x] One prompt text test pins the rule and the cap.
+- [x] Ruff adds no finding from the diff; the full suite passes.
