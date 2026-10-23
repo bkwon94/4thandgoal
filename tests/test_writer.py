@@ -444,3 +444,16 @@ def test_rankings_rule_asks_for_its_own_openers_numberless_rows_and_no_form(fixt
     assert '"form" is a component name. Write "results over the last 3 weeks" in its place.' in rule
     # Rule 15 is the no-number rule that rule 22 replaces for the rankings chapter.
     assert "At least one sentence per blurb carries no number." in system.split("\n15. ", 1)[1].split("\n16. ", 1)[0]
+
+
+def test_system_prompt_limits_the_odds_to_the_teams_where_they_matter(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    assert ("Cite the odds for a team only when they change what the reader should feel, such as a clinch, "
+            "an out, or a team near 50%. Do not list odds for all 12.") in system
+
+
+def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    assert "State the swing for the Must Watch games. Use the fact's two numbers as given." in system
