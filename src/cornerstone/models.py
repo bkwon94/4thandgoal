@@ -166,6 +166,8 @@ class Week(BaseModel):
     projections_ahead: dict[int, dict[str, float]] = {}
     # The league's lineup slots, in Sleeper's order, such as QB, RB, RB, WR, and BN.
     roster_positions: list[str] = []
+    # The position of each player on each current roster in rosters.json, by roster id and player id.
+    rosters: dict[int, dict[str, str]] = {}
 
 
 def week_lines(week: Week) -> list[PlayerLine]:

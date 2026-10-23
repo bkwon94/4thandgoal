@@ -191,7 +191,7 @@ PROJECTED = {1: {3: 60.0, 4: 60.0}, 2: {3: 140.0, 4: 140.0}, 3: {3: 70.0, 4: 150
 def test_the_odds_at_projection_weight_0_equal_the_odds_with_no_projections():
     plain = _odds()
     assert _odds(projected=PROJECTED, projection_weight=0) == plain
-    # The odds of the 4-team fixture before the engine took projections, with the same random seed.
+    # The odds of the 4-team fixture with no projections, at this seed.
     assert {rid: (t.playoff, t.bye, t.seed) for rid, t in plain.teams.items()} == {
         1: (75, 31, 2), 2: (72, 39, 1), 3: (53, 31, 1), 4: (1, 0, None)}
     assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(99, 56, 98, 37), (64, 18, 1, 1)]

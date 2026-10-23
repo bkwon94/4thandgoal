@@ -233,18 +233,17 @@ def _odds(week: Week, history: History | None) -> OddsResult | None:
 def projected_totals(week: Week) -> dict[int, dict[int, float]]:
     """The projected total of each roster's best lineup in each week ahead, by roster ID and week.
 
-    The roster is the roster of this week's matchup. The lineup picks by that week's projections, so a player
+    The roster is the current roster in rosters.json. The lineup picks by that week's projections, so a player
     with no projection that week counts 0 and a healthy bench player takes his slot.
-    A roster with no projected player in a week has no total that week. A failed fetch then gives no shift, not 0.
+    A roster with no projected player in a week has no total that week.
+    A missing week gives the roster no shift. It does not count as a total of 0.
     """
-    rosters = {side.roster_id: side.lines for m in week.matchups for side in (m.a, m.b)}
-    totals: dict[int, dict[int, float]] = {rid: {} for rid in rosters}
+    totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
     for w, projections in sorted(week.projections_ahead.items()):
-        for rid, lines in rosters.items():
-            if not any(line.player_id in projections for line in lines):
+        for rid, positions in week.rosters.items():
+            if not any(pid in projections for pid in positions):
                 continue
-            points = {line.player_id: projections.get(line.player_id, 0.0) for line in lines}
-            positions = {line.player_id: line.position for line in lines}
+            points = {pid: projections.get(pid, 0.0) for pid in positions}
             starters = pick_lineup(list(points), week.roster_positions, positions, points)
             totals[rid][w] = sum(points[pid] for pid in starters)
     return totals

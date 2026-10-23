@@ -226,10 +226,12 @@ def load_raw(raw_dir: Path) -> dict[str, object]:
     for name in RAW_FILES:
         with (raw_dir / f"{name}.json").open(encoding="utf-8") as f:
             raw[name] = json.load(f)
-    schedule = raw_dir / SCHEDULE_FILE
-    if schedule.exists():
-        raw["schedule"] = json.loads(schedule.read_text(encoding="utf-8"))
-    projections_ahead = raw_dir / PROJECTIONS_AHEAD_FILE
-    if projections_ahead.exists():
-        raw["projections_ahead"] = json.loads(projections_ahead.read_text(encoding="utf-8"))
+    _read_if_exists(raw, "schedule", raw_dir / SCHEDULE_FILE)
+    _read_if_exists(raw, "projections_ahead", raw_dir / PROJECTIONS_AHEAD_FILE)
     return raw
+
+
+def _read_if_exists(raw: dict[str, object], key: str, path: Path) -> None:
+    """Put the JSON of `path` in `raw` at `key`. A file that does not exist adds no key."""
+    if path.exists():
+        raw[key] = json.loads(path.read_text(encoding="utf-8"))

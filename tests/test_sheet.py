@@ -551,6 +551,18 @@ def test_the_projected_total_counts_0_for_a_player_with_no_projection(fixture_ra
     assert totals == {rid: ({7: 50.0} if rid == side.roster_id else {}) for rid in week.teams}
 
 
+def test_the_projected_total_reads_the_current_roster_not_the_week_lineup(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    side = week.matchups[0].a
+    dropped = side.lines[0].player_id
+    # A player added after the lock is on the roster but not in the week's lines. A dropped player is the reverse.
+    rosters = {**week.rosters, side.roster_id: {"added": "RB", **{
+        pid: pos for pid, pos in week.rosters[side.roster_id].items() if pid != dropped}}}
+    totals = projected_totals(week.model_copy(update={
+        "rosters": rosters, "projections_ahead": {7: {"added": 30.0, dropped: 20.0}}}))
+    assert totals[side.roster_id] == {7: 30.0}
+
+
 def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, fixture_raw_dir, fixture_history_root):
     seen = {}
 

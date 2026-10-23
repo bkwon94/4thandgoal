@@ -14,7 +14,8 @@ def test_load_raw_returns_every_file(fixture_raw_dir):
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
     fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
-    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {*RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead"}
+    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {
+        *RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead"}
 
 
 @pytest.mark.live

@@ -102,8 +102,7 @@ RECENT_WEEKS = 3
 # the last 3 weeks are 56 percent of the draws; at 2 they are 67 percent, too much trust in 3 scores.
 RECENT_WEIGHT = 1.25
 # The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
-# The projection knows the roster for that week, and the past scores know the team's level.
-# The roster matters more for a week not yet played.
+# Past scores know the team's level, but the projection knows that week's roster, which matters more ahead.
 PROJECTION_WEIGHT = 0.7
 # The lowest playoff odds, in percent, that show the most likely seed. Below it the seed rests on fewer than half the runs.
 SEED_SHOW_AT = 50
