@@ -294,7 +294,8 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     saved = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     odds = {fid: f for fid, f in saved.items() if fid.startswith(("ODDS.", "SW."))}
-    assert len(odds) == 14
+    # 12 odds facts, 12 odds why facts, and 2 swing facts.
+    assert len(odds) == 26
 
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the odds engine")

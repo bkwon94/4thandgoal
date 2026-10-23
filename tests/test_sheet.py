@@ -4,6 +4,7 @@ They run on the recorded week 6 data.
 """
 import re
 from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 
 import pytest
 
@@ -437,7 +438,7 @@ def _team_odds(rid, playoff, bye, seed, status):
 
 
 def test_twelve_odds_facts_one_per_team(hbundle):
-    ids = [fid for fid in hbundle.sheet.facts if fid.startswith("ODDS.")]
+    ids = [fid for fid in hbundle.sheet.facts if fid.startswith("ODDS.") and not fid.endswith(".why")]
     assert sorted(ids) == sorted(f"ODDS.{rid}" for rid in hbundle.data.teams)
 
 
@@ -500,7 +501,8 @@ def test_next_week_chapter_lists_the_swing_facts_in_3_sentences(hbundle):
 
 def test_rankings_chapter_lists_every_odds_fact(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
-    assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.")} == {f"ODDS.{rid}" for rid in hbundle.data.teams}
+    assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.") and not fid.endswith(".why")} == {
+        f"ODDS.{rid}" for rid in hbundle.data.teams}
 
 
 def test_a_week_with_no_saved_schedule_has_no_odds_facts(fixture_raw_dir, fixture_history_root):
@@ -585,3 +587,74 @@ def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(monkeypatc
     plain = sheet._odds(week, history)
     monkeypatch.setattr(sheet, "projected_totals", lambda week: None)
     assert sheet._odds(week, history) == plain
+
+
+def _why_inputs(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    return parse_week(raw), load_history(fixture_history_root, raw, week=6)
+
+
+def _mean(values):
+    return sum(values) / len(values)
+
+
+def test_one_odds_why_fact_per_team(hbundle):
+    ids = [fid for fid in hbundle.sheet.facts if fid.startswith("ODDS.") and fid.endswith(".why")]
+    assert sorted(ids) == sorted(f"ODDS.{rid}.why" for rid in hbundle.data.teams)
+
+
+def test_odds_why_paces_are_the_rounded_means_of_the_inputs(fixture_raw_dir, fixture_history_root):
+    week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
+    b = build_bundle(week, news=lambda pid: [], history=history)
+    totals = projected_totals(week)
+    for rid in week.teams:
+        played = [history.weeks[n].scores[rid] for n in range(1, 7) if rid in history.weeks[n].scores]
+        ahead = int(Decimal(str(_mean(list(totals[rid].values())))).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+        pace = int(Decimal(str(_mean(played))).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+        f = b.sheet.facts[f"ODDS.{rid}.why"]
+        article = "an" if 80 <= pace < 90 else "a"
+        assert f.text.startswith(
+            f"{week.teams[rid].name} projects {ahead} a week from here against {article} {pace} pace,")
+        assert f.teams == [week.teams[rid].name]
+
+
+def test_the_easiest_remaining_schedule_is_rank_1(fixture_raw_dir, fixture_history_root):
+    week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
+    b = build_bundle(week, news=lambda pid: [], history=history)
+    pace = {rid: _mean([history.weeks[n].scores[rid] for n in range(1, 7) if rid in history.weeks[n].scores])
+            for rid in week.teams}
+    pairs = list(week.next_matchups) + [p for w in sorted(week.schedule) for p in week.schedule[w]]
+    faced = {rid: [pace[b_ if a == rid else a] for a, b_ in pairs if rid in (a, b_)] for rid in week.teams}
+    easiest = min(week.teams, key=lambda rid: (_mean(faced[rid]), rid))
+    hardest = max(week.teams, key=lambda rid: (_mean(faced[rid]), rid))
+    assert b.sheet.facts[f"ODDS.{easiest}.why"].text.endswith(", with the 1st easiest remaining schedule.")
+    assert b.sheet.facts[f"ODDS.{hardest}.why"].text.endswith(", with the 12th easiest remaining schedule.")
+    ranks = sorted(int(re.search(r"(\d+)\w\w easiest", f.text).group(1))
+                   for fid, f in b.sheet.facts.items() if fid.endswith(".why") and fid.startswith("ODDS."))
+    assert ranks == list(range(1, 13))
+
+
+def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixture_history_root):
+    week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
+    rid = week.matchups[0].a.roster_id
+    mine = set(week.rosters[rid])
+    ahead = {w: {pid: p for pid, p in proj.items() if pid not in mine} for w, proj in week.projections_ahead.items()}
+    b = build_bundle(week.model_copy(update={"projections_ahead": ahead}), news=lambda pid: [], history=history)
+    assert f"ODDS.{rid}" in b.sheet.facts
+    assert f"ODDS.{rid}.why" not in b.sheet.facts
+    assert len([fid for fid in b.sheet.facts if fid.startswith("ODDS.") and fid.endswith(".why")]) == 11
+
+
+def test_no_odds_means_no_odds_why(monkeypatch, fixture_raw_dir, fixture_history_root):
+    monkeypatch.setattr(sheet, "ODDS_FROM_WEEK", 7)
+    week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
+    b = build_bundle(week, news=lambda pid: [], history=history)
+    assert not any(fid.endswith(".why") and fid.startswith("ODDS.") for fid in b.sheet.facts)
+
+
+def test_rankings_chapter_lists_every_odds_why_fact(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
+    assert {fid for fid in ch.fact_ids if fid.endswith(".why") and fid.startswith("ODDS.")} == {
+        f"ODDS.{rid}.why" for rid in hbundle.data.teams}
+    median = next(c for c in hbundle.sheet.chapters if c.key == "median")
+    assert not any(fid.endswith(".why") for fid in median.fact_ids)
