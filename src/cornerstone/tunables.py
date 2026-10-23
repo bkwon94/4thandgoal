@@ -110,3 +110,9 @@ SEED_SHOW_AT = 50
 BYE_COUNT = 2
 # The least gap, in points, between a side's win and loss odds that counts as a swing. A smaller gap is noise, not a stake.
 SWING_FLAT = 5
+
+# The why facts. Rule 25 of the writer prompt holds these two numbers as digits, so change rule 25 too.
+# The least move, in places either way, that makes the writer cite the rank why. A 1-place move needs no reason on the page.
+WHY_MOVE_AT = 2
+# The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
+WHY_ODDS_AT = 25

@@ -405,7 +405,7 @@ def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
     facts = hbundle.sheet.facts
     assert ch.title == "Power rankings"
-    assert (ch.min_sentences, ch.max_sentences) == (12, 24)
+    assert (ch.min_sentences, ch.max_sentences) == (12, 36)
     assert sorted(ch.scope_teams) == sorted(t.name for t in hbundle.data.teams.values())
     rank = {s.roster_id: s.rank for s in hbundle.data.table}
     for rid in hbundle.data.teams:
@@ -682,6 +682,13 @@ def _mean(values):
 def test_one_odds_why_fact_per_team(hbundle):
     ids = [fid for fid in hbundle.sheet.facts if fid.startswith("ODDS.") and fid.endswith(".why")]
     assert sorted(ids) == sorted(f"ODDS.{rid}.why" for rid in hbundle.data.teams)
+
+
+def test_rankings_chapter_requires_the_why_of_each_mover_and_of_odds_against_the_record(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
+    # Teams 1, 10, and 8 moved 2 or more places. Team 12 is 4-8 at 32%, and team 2 is 7-5 at 21%.
+    # Team 10 at 6-6 is at .500, so its odds of 26% require no odds why.
+    assert sorted(ch.required) == sorted(["PR.1.why", "PR.10.why", "PR.8.why", "ODDS.12.why", "ODDS.2.why"])
 
 
 def test_odds_why_paces_are_the_rounded_means_of_the_inputs(fixture_raw_dir, fixture_history_root):

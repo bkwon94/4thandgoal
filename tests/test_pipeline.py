@@ -207,7 +207,8 @@ def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw
 
 
 class _RankingsWriter:
-    """A fake Claude that writes one tagged sentence per PR fact, and counts the writer calls."""
+    """A fake Claude that writes one tagged sentence per PR fact, and counts the writer calls.
+    Each sentence also cites its team's required facts, so the code check passes."""
 
     def __init__(self):
         self.writer_calls = 0
@@ -218,7 +219,12 @@ class _RankingsWriter:
             return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(count)])
         self.writer_calls += 1
         found = re.findall(r"^- (PR\.(\d+)): (.*)$", user, re.M)
-        return model(sentences=[Sentence(text=text, fact_ids=[fid], roster_id=int(rid)) for fid, rid, text in found])
+        listed = re.search(r"^Cite each of these facts in its team's sentences: (.*)\.$", user, re.MULTILINE)
+        required = listed.group(1).split(", ") if listed else []
+        return model(sentences=[
+            Sentence(text=text, fact_ids=[fid, *(r for r in required if r.split(".")[1] == rid)], roster_id=int(rid))
+            for fid, rid, text in found
+        ])
 
 
 def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_raw_dir, fixture_history_root):
@@ -327,8 +333,10 @@ def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, f
     run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **OFFLINE)
     blurbs = _week6_blurbs(repo)
     assert len(blurbs) == 12
+    chapter = next(c for c in read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.chapters if c.key == "rankings")
     for rid, sentences in blurbs.items():
-        assert [s["fact_ids"] for s in sentences] == [[f"PR.{rid}"]]
+        required = [fid for fid in chapter.required if fid.split(".")[1] == str(rid)]
+        assert [s["fact_ids"] for s in sentences] == [[f"PR.{rid}", *required]]
 
 
 def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixture_raw_dir, fixture_history_root,

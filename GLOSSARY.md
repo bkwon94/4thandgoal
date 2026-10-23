@@ -113,6 +113,30 @@ A head-to-head win against a team in the top 4 of the standings of that week.
 **Movement**:
 Last week's power rank minus this week's. Positive is up.
 
+**Rank why**:
+The `PR.{rid}.why` fact. For a team that moved, it names this week's game and the component whose
+rank changed most. For a team that held, it names its best and its worst component. The writer cites
+it for every team that moved `WHY_MOVE_AT` or more places either way.
+
+**Odds why**:
+The `ODDS.{rid}.why` fact. It gives the projected pace, the season pace, and the rank of the
+remaining schedule, the inputs behind the playoff odds. The writer cites it for a team under .500
+with odds at or above `WHY_ODDS_AT` percent, and for a team over .500 with odds under it.
+
+**Required fact**:
+A fact id a chapter must cite, listed on the chapter and named in the writer prompt. The rankings
+chapter requires the rank why of every mover and the odds why of a team whose odds and record disagree.
+The code check fails a blurb that leaves one uncited by that team's sentences.
+_Avoid_: mandatory fact, forced citation
+
+**Projected pace**:
+The mean of a team's projected best-lineup totals over the weeks left, rounded to a whole point.
+_Avoid_: projection (alone).
+
+**Season pace**:
+The mean of a team's scores over the weeks played, rounded to a whole point. The rank of the
+remaining schedule reads the season pace of the opponents left.
+
 **Roster tag**:
 The roster ID on a sentence of the rankings chapter. It names the team the sentence is about, so
 the season file puts the sentence in that team's row. Other chapters leave it empty.

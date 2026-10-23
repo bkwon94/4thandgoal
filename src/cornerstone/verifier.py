@@ -186,8 +186,8 @@ def numberless_failures(bares: list[str]) -> list[str]:
 
 
 def roster_tag_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
-    """The roster tag rules of the rankings chapter: every sentence tagged, 1 or 2 sentences per team,
-    and the team's first sentence cites its PR fact. A tagged reaction sentence counts toward the 2."""
+    """The roster tag rules of the rankings chapter: every sentence tagged, 1 to 3 sentences per team,
+    and the team's first sentence cites its PR fact. A tagged reaction sentence counts toward the 3."""
     teams = {int(fid.split(".")[1]): sheet.facts[fid].teams[0] for fid in chapter.fact_ids if fid.startswith("PR.")}
     by_team: dict[int, list[int]] = {rid: [] for rid in teams}
     failures = []
@@ -202,10 +202,10 @@ def roster_tag_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> lis
         indexes = by_team[rid]
         if not indexes:
             # A missing team has no sentence to point at, so the message points at the first, as the count check does.
-            failures.append(f"[0] team {name} has no sentence; give every team 1 or 2 sentences")
+            failures.append(f"[0] team {name} has no sentence; give every team 1 to 3 sentences")
             continue
-        if len(indexes) > 2:
-            failures.append(f"[{indexes[2]}] team {name} has {len(indexes)} sentences; give every team 1 or 2")
+        if len(indexes) > 3:
+            failures.append(f"[{indexes[3]}] team {name} has {len(indexes)} sentences; give every team 1 to 3")
         if f"PR.{rid}" not in blurb.sentences[indexes[0]].fact_ids:
             failures.append(f"[{indexes[0]}] the first sentence about team {name} must cite PR.{rid}")
     return failures
@@ -323,6 +323,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     if chapter.key == RANKINGS_CHAPTER:
         failures += roster_tag_failures(blurb, chapter, sheet)
         failures += opener_failures(blurb, chapter, sheet)
+
+    # A required ID is a why of one roster, so it counts only in a sentence tagged with that roster.
+    for fid in chapter.required:
+        rid = int(fid.split(".")[1])
+        if not any(fid in s.fact_ids and s.roster_id == rid for s in blurb.sentences):
+            failures.append(f"[0] required fact {fid} is not cited")
 
     # The ", which" tail is the stock joke shape, so a blurb gets one.
     tails = [i for i, s in enumerate(blurb.sentences) if WHICH_TAIL.search(s.text)]

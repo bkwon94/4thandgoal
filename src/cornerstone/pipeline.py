@@ -27,7 +27,7 @@ from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
-    standing_ranks, write_bundle,
+    required_why_ids, write_bundle,
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -369,6 +369,7 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
     Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
     """
     chapter = next((c for c in bundle.sheet.chapters if c.key == RANKINGS_CHAPTER), None)
+    rows = power_rankings(history, history.week)[history.week]
 
     def has_why(prefix: str, ids: Iterable[str]) -> bool:
         return any(fid.startswith(prefix) and fid.endswith(".why") for fid in ids)
@@ -377,8 +378,9 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
         rank_why_ok = history.week < 2 or has_why("PR.", chapter.fact_ids)
         odds_why_ok = not has_why("ODDS.", bundle.sheet.facts) or has_why("ODDS.", chapter.fact_ids)
         if rank_why_ok and odds_why_ok:
+            # A saved chapter can predate the required list, so the list comes from the rows each time.
+            chapter.required = required_why_ids(bundle.sheet.facts, rows, bundle.data.table, bundle.odds)
             return chapter, False
-    rows = power_rankings(history, history.week)[history.week]
 
     def team(roster_id: int) -> str:
         return bundle.data.teams[roster_id].name
@@ -391,7 +393,7 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
     )
     bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
     bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
-    built = rankings_chapter(bundle.sheet.facts, rows, team, standing_ranks(bundle.data.table))
+    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds)
     bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
     return built, True
 
