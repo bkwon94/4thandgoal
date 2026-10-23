@@ -260,9 +260,13 @@ def projected_totals(week: Week) -> dict[int, dict[int, float]]:
     with no projection that week counts 0 and a healthy bench player takes his slot.
     A roster with no projected player in a week has no total that week.
     A missing week gives the roster no shift. It does not count as a total of 0.
+    The weeks stop at LAST_WEEK. The file runs to the end of the NFL season for the waiver board, and a
+    playoff week in the totals would move the projected pace of the odds why.
     """
     totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
     for w, projections in sorted(week.projections_ahead.items()):
+        if w > LAST_WEEK:
+            continue
         for rid, positions in week.rosters.items():
             if not any(pid in projections for pid in positions):
                 continue

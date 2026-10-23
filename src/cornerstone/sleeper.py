@@ -36,11 +36,14 @@ PREV_TRANSACTIONS_FILE = "transactions_prev.json"
 # The pairs of weeks N+2 to the last regular week. matchups_next already holds week N+1.
 # Past weeks never need the file, so load_raw reads it only when it exists.
 SCHEDULE_FILE = "schedule.json"
-# The per-player projections of weeks N+1 to the last regular week. projections.json holds week N only.
+# The per-player projections of weeks N+1 to the last NFL week. projections.json holds week N only.
 # Past weeks never need the file, so load_raw reads it only when it exists.
 PROJECTIONS_AHEAD_FILE = "projections_ahead.json"
 # The regular season ends at week 14. The playoff bracket, not the round robin, decides later weeks.
 LAST_REGULAR_WEEK = 14
+# The last week of the NFL fantasy season. A waiver add plays the fantasy playoffs too, so his rest of
+# season projection runs to this week.
+LAST_SEASON_WEEK = 17
 
 POSITIONS = ("QB", "RB", "WR", "TE", "DEF", "K")
 
@@ -128,17 +131,16 @@ def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
     ]
 
 
-def _projections_ahead(client: httpx.Client, season: int, week: int, rosters: list[dict]) -> list[dict]:
-    """One entry per week from week + 1 to LAST_REGULAR_WEEK, with the half-PPR projection of each rostered player."""
-    # Only rostered players stay, so the file stays small. A player with no half-PPR projection has no entry.
-    rostered = {pid for roster in rosters for pid in roster.get("players") or []}
+def _projections_ahead(client: httpx.Client, season: int, week: int) -> list[dict]:
+    """One entry per week from week + 1 to LAST_SEASON_WEEK, with the half-PPR projection of each player."""
+    # Every player stays, so the waiver board can rank the free agents. A player with no half-PPR projection has no entry.
     return [
         {"week": w, "projections": {
             item["player_id"]: item["stats"]["pts_half_ppr"]
             for item in _get_or_empty(client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{w}", _position_params())
-            if item["player_id"] in rostered and (item.get("stats") or {}).get("pts_half_ppr") is not None
+            if (item.get("stats") or {}).get("pts_half_ppr") is not None
         }}
-        for w in range(week + 1, LAST_REGULAR_WEEK + 1)
+        for w in range(week + 1, LAST_SEASON_WEEK + 1)
     ]
 
 
@@ -178,7 +180,7 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
         fetched = datetime.now(ZoneInfo("America/New_York"))
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
         schedule = _schedule(client, league, week)
-        projections_ahead = _projections_ahead(client, season, week, data["rosters"])
+        projections_ahead = _projections_ahead(client, season, week)
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
