@@ -109,13 +109,22 @@ def _matchups(raw: dict) -> list[Matchup]:
     return matchups
 
 
-def _next_matchups(raw: dict) -> list[tuple[int, int]]:
+def _pairs(entries: list[dict]) -> list[tuple[int, int]]:
     groups = defaultdict(list)
-    for entry in raw["matchups_next"]:
+    for entry in entries:
         if entry["matchup_id"] is not None:
             groups[entry["matchup_id"]].append(entry["roster_id"])
     # A pair is a matchup. A lone entry, such as a bye, has no opponent to name.
     return [tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2]
+
+
+def _next_matchups(raw: dict) -> list[tuple[int, int]]:
+    return _pairs(raw["matchups_next"])
+
+
+def _schedule(raw: dict) -> dict[int, list[tuple[int, int]]]:
+    # A cached week from before the schedule fetch has no schedule file, so it gives no weeks.
+    return {entry["week"]: _pairs(entry["matchups"]) for entry in raw.get("schedule", [])}
 
 
 def parse_moves(transactions: list[dict]) -> list[Move]:
@@ -159,6 +168,7 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         teams=_teams(raw, brian_user),
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
+        schedule=_schedule(raw),
         moves=parse_moves(raw["transactions"]),
         last_scored_week=raw["league"]["settings"]["last_scored_leg"],
         season_start=date.fromisoformat(state["season_start_date"]),

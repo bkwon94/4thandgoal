@@ -98,3 +98,16 @@ def test_trade_with_null_draft_picks_parses():
     trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405,
              "roster_ids": [2, 6], "adds": {"11610": 6}, "drops": {"11610": 2}, "draft_picks": None}
     assert parse_trades([trade])[0].draft_picks == []
+
+
+def test_schedule_pairs_per_week(fixture_raw_dir):
+    wk = parse_week(load_raw(fixture_raw_dir))
+    assert sorted(wk.schedule) == list(range(8, 15))
+    assert all(len(pairs) == 6 for pairs in wk.schedule.values())
+    assert all(a < b for pairs in wk.schedule.values() for a, b in pairs)
+
+
+def test_week_without_schedule_parses(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw.pop("schedule")
+    assert parse_week(raw).schedule == {}

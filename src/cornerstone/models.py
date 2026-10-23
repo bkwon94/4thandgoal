@@ -158,6 +158,8 @@ class Week(BaseModel):
     # The league scoring rates and the Sleeper stats of the week, keyed by player id.
     scoring: dict[str, float] = {}
     stats: dict[str, dict[str, float]] = {}
+    # The pairs of weeks N+2 to 14, keyed by week, in the shape of next_matchups.
+    schedule: dict[int, list[tuple[int, int]]] = {}
 
 
 def week_lines(week: Week) -> list[PlayerLine]:
