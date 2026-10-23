@@ -262,6 +262,23 @@ def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, f
         assert [s["fact_ids"] for s in sentences] == [[f"PR.{rid}"]]
 
 
+def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixture_raw_dir, fixture_history_root,
+                                                                  monkeypatch):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    saved = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
+    odds = {fid: f for fid, f in saved.items() if fid.startswith(("ODDS.", "SW."))}
+    assert len(odds) == 14
+
+    def no_engine(*args, **kwargs):
+        raise AssertionError("a rewrite ran the odds engine")
+
+    monkeypatch.setattr("cornerstone.sheet.playoff_odds", no_engine)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **OFFLINE)
+    after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
+    assert {fid: after[fid] for fid in odds} == odds
+
+
 def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
