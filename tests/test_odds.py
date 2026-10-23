@@ -4,6 +4,8 @@ They feed a small fixture league at the engine seam and read the odds, the statu
 """
 import time
 
+import pytest
+
 from cornerstone.odds import playoff_odds
 
 SEASON = 2026
@@ -14,10 +16,10 @@ RECORDS = {1: (3, 1, 215.0), 2: (2, 2, 211.0), 3: (2, 2, 218.0), 4: (1, 3, 184.0
 REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
 
 
-def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, **kwargs):
+def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, runs=RUNS):
     return playoff_odds(
         scores, records, remaining, season=SEASON, week=week,
-        playoff_spots=SPOTS, bye_count=BYES, runs=RUNS, **kwargs,
+        playoff_spots=SPOTS, bye_count=BYES, runs=runs,
     )
 
 
@@ -30,15 +32,22 @@ EVEN = {rid: (2, 2, 200.0) for rid in (1, 2, 3, 4)}
 FIXED_PAIRS = {3: [(1, 2), (3, 4)], 4: [(1, 2), (3, 4)]}
 
 
-def test_same_seed_gives_the_same_odds_twice():
+def test_same_random_seed_gives_the_same_odds_twice():
     assert _odds() == _odds()
 
 
-def test_a_different_seed_gives_odds_within_a_few_points():
-    # The seed derives from the season and the week, so another week is another seed.
-    first, second = _odds(week=2), _odds(week=3)
+def test_the_dict_order_of_the_inputs_does_not_change_the_odds():
+    def backward(d):
+        return dict(reversed(list(d.items())))
+
+    assert _odds(backward(SCORES), backward(RECORDS), backward(REMAINING)) == _odds()
+
+
+def test_a_different_random_seed_gives_odds_within_a_few_points():
+    # The random seed derives from the season and the week, so another week is another random seed.
+    first, second = _odds(week=2, runs=1000), _odds(week=3, runs=1000)
     for rid in RECORDS:
-        assert abs(first.teams[rid].playoff - second.teams[rid].playoff) <= 15
+        assert abs(first.teams[rid].playoff - second.teams[rid].playoff) <= 8
 
 
 def test_both_games_count():
@@ -69,7 +78,8 @@ def test_a_roster_that_wins_every_drawn_game_lands_at_the_1_seed():
     scores = {**SCORES, 4: [200.0, 210.0]}
     result = _odds(scores=scores, records=EVEN)
     assert result.teams[4].seed == 1
-    assert result.teams[4].bye == 100
+    # The roster is open, so its playoff odds clamp to 99, and the bye odds cap there.
+    assert result.teams[4].bye == 99
 
 
 def test_the_bye_goes_to_the_top_seeds():
@@ -78,6 +88,19 @@ def test_the_bye_goes_to_the_top_seeds():
         SCORES, records, {}, season=SEASON, week=4, playoff_spots=SPOTS, bye_count=2, runs=RUNS,
     )
     assert [result.teams[rid].bye for rid in (1, 2, 3, 4)] == [100, 100, 0, 0]
+
+
+def test_the_bye_odds_never_read_above_the_playoff_odds():
+    # Roster 1 takes the bye in every run, but it is open, so both numbers show 99.
+    result = _odds(scores=_flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0}), records=EVEN, remaining=FIXED_PAIRS)
+    assert (result.teams[1].playoff, result.teams[1].bye) == (99, 99)
+    assert all(t.bye <= t.playoff for t in _odds().teams.values())
+
+
+def test_an_odd_count_of_rosters_fails_with_a_clear_message():
+    records = {rid: RECORDS[rid] for rid in (1, 2, 3)}
+    with pytest.raises(ValueError, match="even count of rosters"):
+        _odds(scores={rid: SCORES[rid] for rid in (1, 2, 3)}, records=records, remaining={3: [(1, 2)]})
 
 
 def test_a_4_win_lead_with_1_week_left_is_in():

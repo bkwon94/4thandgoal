@@ -26,7 +26,7 @@ class TeamOdds(BaseModel):
 
 
 class Swing(BaseModel):
-    """The playoff odds of both sides of one next-week game, after a head-to-head win and after a loss."""
+    """The playoff odds of both sides of one next-week game. Each side has its odds after a win and after a loss."""
     a: int
     b: int
     a_win: int
@@ -57,23 +57,27 @@ def playoff_odds(
     `scores` holds each roster's played-week scores, oldest first. `records` holds the real wins, losses,
     and points for. `remaining` holds the pairs of each remaining week; the first week is week N+1.
     """
+    if len(records) % 2:
+        raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
     weeks_left = len(remaining)
-    status = {rid: _status(rid, records, weeks_left, playoff_spots) for rid in records}
     if not weeks_left:
         return _final_table(records, playoff_spots, bye_count)
 
-    # The seed derives from the season and the week, so the same inputs give the same odds.
+    # Sorted roster IDs, so each draw and each sort reads the rosters in one fixed order, whatever the dict order.
+    rosters = sorted(records)
+    status = {rid: _status(rid, records, weeks_left, playoff_spots) for rid in rosters}
+    # The random seed derives from the season and the week, so the same inputs give the same odds.
     rng = random.Random(season * 100 + week)
     order = [remaining[w] for w in sorted(remaining)]
-    draws = {rid: _draw_weights(s) for rid, s in scores.items()}
+    weights = {rid: _draw_weights(scores[rid]) for rid in rosters}
     next_pairs = order[0]
     made: Counter[int] = Counter()
     byes: Counter[int] = Counter()
-    seeds: dict[int, Counter[int]] = {rid: Counter() for rid in records}
-    # Per next-week pair, the runs that side a won and side b won, each as (a made it, b made it) counts.
+    seeds: dict[int, Counter[int]] = {rid: Counter() for rid in rosters}
+    # Per next-week pair and per winner, three counts: the runs, the runs side a made it, the runs side b made it.
     halves = {pair: {"a": [0, 0, 0], "b": [0, 0, 0]} for pair in next_pairs}
     for _ in range(runs):
-        drawn = {rid: rng.choices(values, cum_weights=cum, k=weeks_left) for rid, (values, cum) in draws.items()}
+        drawn = {rid: rng.choices(scores[rid], cum_weights=weights[rid], k=weeks_left) for rid in rosters}
         table = _run(records, order, drawn)
         top = set(table[:playoff_spots])
         for place, rid in enumerate(table[:playoff_spots], start=1):
@@ -91,14 +95,15 @@ def playoff_odds(
             half[2] += b in top
 
     teams = {}
-    for rid in records:
+    for rid in rosters:
         playoff = _shown(status[rid], made[rid], runs)
         # The most common seed; a tie between two seeds goes to the better seed.
         seed = min(seeds[rid], key=lambda s: (-seeds[rid][s], s)) if seeds[rid] else None
         teams[rid] = TeamOdds(
             roster_id=rid,
             playoff=playoff,
-            bye=round(100 * byes[rid] / runs),
+            # A bye needs a playoff spot, so the bye odds never read above the shown playoff odds.
+            bye=min(_percent(byes[rid], runs), playoff),
             seed=seed if playoff >= SEED_SHOW_AT else None,
             status=status[rid],
         )
@@ -106,13 +111,13 @@ def playoff_odds(
     return OddsResult(teams=teams, swings=swings)
 
 
-def _draw_weights(values: list[float]) -> tuple[list[float], list[int]]:
-    """A roster's played-week scores and their cumulative draw weights. The last RECENT_WEEKS weeks weigh more."""
+def _draw_weights(values: list[float]) -> list[int]:
+    """The cumulative draw weights of a roster's played-week scores. The last RECENT_WEEKS weeks weigh more."""
     cum, total = [], 0
     for i in range(len(values)):
         total += RECENT_WEIGHT if i >= len(values) - RECENT_WEEKS else 1
         cum.append(total)
-    return values, cum
+    return cum
 
 
 def _run(
@@ -120,7 +125,7 @@ def _run(
     order: list[list[tuple[int, int]]],
     drawn: dict[int, list[float]],
 ) -> list[int]:
-    """One run of the remaining weeks. The final table in seed order: wins, then points for, then roster ID."""
+    """One run of the remaining weeks. It returns the final table in seed order."""
     wins = {rid: r[0] for rid, r in records.items()}
     points = {rid: r[2] for rid, r in records.items()}
     for i, pairs in enumerate(order):
@@ -135,15 +140,23 @@ def _run(
             if score > median:
                 wins[rid] += 1
             points[rid] += score
-    return sorted(records, key=lambda rid: (-wins[rid], -points[rid], rid))
+    return _table_order(wins, points)
+
+
+def _table_order(wins: dict[int, int], points: dict[int, float]) -> list[int]:
+    """The roster IDs in seed order: most wins first, then most points for, then the lower roster ID.
+
+    The same order as standings_order in facts_league.py. Roster ID is the last key, so a full tie has one fixed order.
+    """
+    return sorted(wins, key=lambda rid: (-wins[rid], -points[rid], rid))
 
 
 def _median(scores: list[float]) -> float:
     """The line of the median game: the mean of the two middle scores, the 6th and 7th of 12.
 
     The same rule as week_median in facts_league.py, for any even count of rosters.
-    Floats are exact here: the mean equals a score only when both middle scores are equal,
-    and then it equals that score exactly, so a tie stays a tie.
+    Floats are exact here. The mean equals a score only when both middle scores are equal.
+    Then it equals that score exactly, so a tie stays a tie.
     """
     ordered = sorted(scores, reverse=True)
     middle = len(ordered) // 2
@@ -156,7 +169,7 @@ def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_le
     `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
     `out`: this roster cannot reach the wins of the roster in the last spot with 2 wins every week left.
     """
-    by_wins = sorted(records, key=lambda rid: -records[rid][0])
+    by_wins = sorted(records, key=lambda rid: (-records[rid][0], rid))
     reach = MAX_WINS_PER_WEEK * weeks_left
     wins = records[roster_id][0]
     if roster_id in by_wins[:spots] and all(records[o][0] + reach < wins for o in by_wins[spots:]):
@@ -172,7 +185,13 @@ def _shown(status: Status, made: int, runs: int) -> int:
         return 100
     if status == "out":
         return 0
-    return min(99, max(1, round(100 * made / runs)))
+    return min(99, max(1, _percent(made, runs)))
+
+
+def _percent(part: int, total: int) -> int:
+    """`part` over `total` as a whole percent."""
+    # Round half up in integers. Python's round() rounds half to even, so 2.5 would show as 2.
+    return (200 * part + total) // (2 * total)
 
 
 def _swing(a: int, b: int, half: dict[str, list[int]], status: dict[int, Status], teams: dict[int, TeamOdds]) -> Swing:
@@ -199,9 +218,9 @@ def _swing(a: int, b: int, half: dict[str, list[int]], status: dict[int, Status]
 def _final_table(records: dict[int, tuple[int, int, float]], spots: int, bye_count: int) -> OddsResult:
     """The result with no weeks left: the real table sets every roster, with no runs.
 
-    The table sorts by wins, then points for, then roster ID, so a tie on wins is settled too.
+    The seed order settles a tie on wins too.
     """
-    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    table = _table_order({rid: r[0] for rid, r in records.items()}, {rid: r[2] for rid, r in records.items()})
     teams = {}
     for place, rid in enumerate(table, start=1):
         made = place <= spots
