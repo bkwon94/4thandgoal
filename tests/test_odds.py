@@ -97,6 +97,45 @@ def test_the_bye_odds_never_read_above_the_playoff_odds():
     assert all(t.bye <= t.playoff for t in _odds().teams.values())
 
 
+def test_a_bye_of_0_needs_the_bye_to_be_gone():
+    # With 1 week left roster 3 can reach 5 wins, short of the 7 of roster 1, so the bye is gone.
+    # Its playoff spot is still open, since roster 2 holds the last spot at 5 wins.
+    records = {1: (7, 1, 300.0), 2: (5, 3, 280.0), 3: (3, 5, 250.0), 4: (1, 7, 240.0)}
+    result = _odds(records=records, remaining={5: [(1, 2), (3, 4)]}, week=4)
+    assert result.teams[3].status == "open"
+    assert result.teams[3].bye == 0
+    assert all(t.bye >= 1 for rid, t in result.teams.items() if rid in (1, 2))
+
+
+def test_a_roster_the_runs_never_give_a_bye_shows_1_while_it_can_catch_the_bye():
+    # Roster 1 takes the bye in every run, but every roster can still reach its wins.
+    result = _odds(scores=_flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0}), records=EVEN, remaining=FIXED_PAIRS)
+    assert [result.teams[rid].bye for rid in (2, 3, 4)] == [1, 1, 1]
+
+
+def test_a_sure_bye_shows_100():
+    # With 1 week left no roster can reach the 8 wins of roster 1.
+    records = {1: (8, 0, 300.0), 2: (5, 3, 280.0), 3: (3, 5, 250.0), 4: (0, 8, 240.0)}
+    result = _odds(records=records, remaining={5: [(1, 2), (3, 4)]}, week=4)
+    assert result.teams[1].bye == 100
+
+
+def test_a_roster_that_is_in_with_an_open_bye_shows_1_to_99():
+    # Rosters 1 and 2 are in and play each other, so the runs give the bye to roster 1 every time.
+    records = {1: (7, 1, 300.0), 2: (7, 1, 280.0), 3: (2, 6, 250.0), 4: (1, 7, 240.0)}
+    result = _odds(scores=_flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0}), records=records,
+                   remaining={5: [(1, 2), (3, 4)]}, week=4)
+    assert (result.teams[1].status, result.teams[2].status) == ("in", "in")
+    assert (result.teams[1].bye, result.teams[2].bye) == (99, 1)
+
+
+def test_an_out_roster_shows_a_bye_of_0():
+    records = {1: (6, 0, 300.0), 2: (5, 1, 280.0), 3: (0, 6, 250.0), 4: (2, 4, 240.0)}
+    result = _odds(records=records)
+    assert result.teams[3].status == "out"
+    assert result.teams[3].bye == 0
+
+
 def test_an_odd_count_of_rosters_fails_with_a_clear_message():
     records = {rid: RECORDS[rid] for rid in (1, 2, 3)}
     with pytest.raises(ValueError, match="even count of rosters"):
@@ -193,7 +232,7 @@ def test_the_odds_at_projection_weight_0_equal_the_odds_with_no_projections():
     assert _odds(projected=PROJECTED, projection_weight=0) == plain
     # The odds of the 4-team fixture with no projections, at this seed.
     assert {rid: (t.playoff, t.bye, t.seed) for rid, t in plain.teams.items()} == {
-        1: (75, 31, 2), 2: (72, 39, 1), 3: (53, 31, 1), 4: (1, 0, None)}
+        1: (75, 31, 2), 2: (72, 39, 1), 3: (53, 31, 1), 4: (1, 1, None)}
     assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(99, 56, 98, 37), (64, 18, 1, 1)]
 
 
