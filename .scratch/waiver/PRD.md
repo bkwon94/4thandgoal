@@ -142,8 +142,11 @@ one like him cost, and how many teams can outbid you.
   rest of season projection ranked within the position. The board score is the weighted sum with
   `BOARD_WEIGHTS`, usage 0.5, environment 0.3, projection 0.2. Brian chose on 2026-10-23 that
   usage leads and projection is a tiebreak, because the projection lags the usage.
-- Best adds: the top `BUCKET_SIZE` (8) of the pool by board score, any position, at most
-  `PER_POSITION` (3) per position so one position does not fill the bucket.
+- Best adds: the top `BUCKET_SIZE` (8) of the pool by board score, from QB, RB, WR, and TE, at most
+  `PER_POSITION` (3) per position so one position does not fill the bucket. Kickers and defenses
+  stay in the pool and out of this bucket, Tina's call on 2026-10-23 after ticket 01: they have no
+  usage or environment score, so a position-relative projection score puts the top of each in
+  best adds every week.
 - Trending: the top 8 of the pool by trending count, with the count as the fact. A player in both
   best adds and trending shows in both.
 - Sneaky: the pool players whose usage trend score is in the top quarter and whose projection
