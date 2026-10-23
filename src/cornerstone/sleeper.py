@@ -33,6 +33,12 @@ FETCHED_FILE = "fetched.json"
 # build of week N-1 carries leg N-1, so only this fresh copy has it. load_raw ignores the file.
 PREV_TRANSACTIONS_FILE = "transactions_prev.json"
 
+# The pairs of weeks N+2 to the last regular week. matchups_next already holds week N+1.
+# Past weeks never need the file, so load_raw reads it only when it exists.
+SCHEDULE_FILE = "schedule.json"
+# The regular season ends at week 14. The playoff bracket, not the round robin, decides later weeks.
+LAST_REGULAR_WEEK = 14
+
 POSITIONS = ("QB", "RB", "WR", "TE", "DEF", "K")
 
 
@@ -107,6 +113,18 @@ def read_prev_transactions(raw_dir: Path) -> list | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
+    """One entry per week from week + 2 to LAST_REGULAR_WEEK, with the roster id and matchup id of each row."""
+    # Only the pair keys stay. A future week has zero points and a lineup that can still change.
+    return [
+        {"week": w, "matchups": [
+            {"roster_id": row["roster_id"], "matchup_id": row["matchup_id"]}
+            for row in _get(client, f"{league}/matchups/{w}")
+        ]}
+        for w in range(week + 2, LAST_REGULAR_WEEK + 1)
+    ]
+
+
 def _league_raw(
         client: httpx.Client, league: str, season: int, week: int, players_cache: Path,
         known: dict[str, object]) -> dict[str, object]:
@@ -142,9 +160,11 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
         # The code takes the time right after the call returns. The page shows it and the history keeps it.
         fetched = datetime.now(ZoneInfo("America/New_York"))
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
+        schedule = _schedule(client, league, week)
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
+    _write_json(raw_dir / SCHEDULE_FILE, schedule)
     if previous is not None:
         _write_json(raw_dir / PREV_TRANSACTIONS_FILE, previous)
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
@@ -187,4 +207,7 @@ def load_raw(raw_dir: Path) -> dict[str, object]:
     for name in RAW_FILES:
         with (raw_dir / f"{name}.json").open(encoding="utf-8") as f:
             raw[name] = json.load(f)
+    schedule = raw_dir / SCHEDULE_FILE
+    if schedule.exists():
+        raw["schedule"] = json.loads(schedule.read_text(encoding="utf-8"))
     return raw

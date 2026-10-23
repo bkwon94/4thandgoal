@@ -44,6 +44,13 @@ The code check does not match the last name of an out-of-scope player when that 
 a scope team name. So a bare "London" passes when London Cooking is in scope.
 The full name "Drake London" still fails.
 
+### The season
+
+**Remaining schedule**:
+The pairs of every regular-season week after next week, weeks N+2 to 14, saved with the week's raw
+data as `schedule.json`. Next week's pairs stay in the next-week fetch. The odds engine reads both.
+_Avoid_: schedule (alone; that is the schedule played component), fixtures
+
 ### The page
 
 **Position leader**:
