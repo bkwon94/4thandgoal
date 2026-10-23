@@ -576,7 +576,7 @@ def _tagged(text, rid, *ids):
 
 def _good_rankings(sheet, ch):
     """One sentence per team in rank order: the team's PR fact, tagged with its roster."""
-    rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.")]
+    rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.") and not fid.endswith(".why")]
     return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}") for rid in rids]
 
 

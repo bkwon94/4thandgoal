@@ -88,6 +88,8 @@ check marks a team as clinched or out, so those two words are always true.
   when it cannot reach the 6th team's win total with 2 wins in every remaining week. Both are
   sufficient conditions, so the word is always true. Odds show as 100 for `in` and 0 for `out`.
   Every other team's odds clamp to 1 to 99 after the round to a whole percent.
+- The bye follows the same rule with the top 2: 100 when no team outside the top 2 can reach its
+  wins, 0 when it cannot reach the 2nd team's wins or the team is `out`, else 1 to 99, capped at the playoff odds.
 - The swing: the runs split by the result of the head-to-head game of week N+1, and each half
   gives its own playoff odds for both teams. The median game does not split the runs.
 - At week 14 no weeks remain. The engine skips the runs, the check sets every team `in` or `out`,

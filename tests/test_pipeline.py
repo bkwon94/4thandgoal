@@ -244,6 +244,28 @@ def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_r
     assert "rankings" in [c.key for c in read_bundle(facts).sheet.chapters]
 
 
+def test_rankings_command_adds_the_rank_why_facts_to_an_older_saved_chapter(
+    tmp_path, fixture_raw_dir, fixture_history_root,
+):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    # A week saved before the rank why facts has a rankings chapter with no .why ids.
+    facts = week_dir(repo, 2026, 6) / "facts.json"
+    bundle = read_bundle(facts)
+    bundle.sheet.facts = {fid: f for fid, f in bundle.sheet.facts.items() if not fid.endswith(".why")}
+    for c in bundle.sheet.chapters:
+        c.fact_ids = [fid for fid in c.fact_ids if not fid.endswith(".why")]
+    facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
+
+    run_rankings(repo, 2026, 6, _fake)
+    saved = read_bundle(facts)
+    chapter = next(c for c in saved.sheet.chapters if c.key == "rankings")
+    assert [c.key for c in saved.sheet.chapters].count("rankings") == 1
+    for rid in saved.data.teams:
+        assert f"PR.{rid}.why" in chapter.fact_ids
+        assert f"PR.{rid}.why" in saved.sheet.facts
+
+
 def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
 

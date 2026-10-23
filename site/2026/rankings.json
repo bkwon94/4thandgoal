@@ -1133,7 +1133,7 @@
           ],
           "odds": {
             "playoff": 20,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }
@@ -1168,7 +1168,7 @@
           ],
           "odds": {
             "playoff": 24,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }
@@ -1238,7 +1238,7 @@
           ],
           "odds": {
             "playoff": 37,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }
@@ -1273,7 +1273,7 @@
           ],
           "odds": {
             "playoff": 8,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }
@@ -1308,7 +1308,7 @@
           ],
           "odds": {
             "playoff": 3,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }
@@ -1343,7 +1343,7 @@
           ],
           "odds": {
             "playoff": 1,
-            "bye": 0,
+            "bye": 1,
             "seed": null,
             "status": "open"
           }

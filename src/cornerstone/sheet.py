@@ -14,6 +14,7 @@ from cornerstone.facts_league import (
     TREND_WEEKS,
     _ordinal,
     awards,
+    head_to_head,
     matchup_of_the_week,
     next_week,
     position_leaders,
@@ -813,6 +814,69 @@ def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
     return out
 
 
+def rank_why_facts(
+    history: History | None, rows: list[PowerRow], before: dict[int, int], team: Callable[[int], str],
+) -> list[Fact]:
+    """One fact per team on why its power rank moved or held, from the second week of the rankings on.
+
+    A mover names this week's head-to-head game and the component whose rank changed most since last week.
+    A held team names its best and its worst component. Week 1 of the rankings has no last week, so no fact.
+    `before` is the standing rank of each roster before this week. Like power_facts, it takes no Context,
+    so a saved week can get the facts from its history.
+    """
+    if history is None or not rows or history.week < 2:
+        return []
+    w = history.week
+    played = history.weeks[w]
+    # Context keeps only week N of the rankings, so week N-1 comes from a second call on the same history.
+    last = {row.roster_id: row for row in power_rankings(history, w - 1)[w - 1]}
+    out = []
+    for row in rows:
+        n = Nums()
+        name = team(row.roster_id)
+        teams = [name]
+        if not row.movement:
+            # max and min keep the first of equal ranks, so a tie goes to the first in component order.
+            best = min(COMPONENT_WORDS, key=lambda k: row.ranks[k])
+            worst = max(COMPONENT_WORDS, key=lambda k: row.ranks[k])
+            text = (
+                f"{name} held {n.ord(row.power_rank)}: {n.text(COMPONENT_WORDS[best])} sits "
+                f"{n.ord(row.ranks[best])}, {n.text(COMPONENT_WORDS[worst])} {n.ord(row.ranks[worst])}."
+            )
+        else:
+            side = "up" if row.movement > 0 else "down"
+            places = "place" if abs(row.movement) == 1 else "places"
+            text = f"{name} moved {side} {n(abs(row.movement))} {places}"
+            game = head_to_head(played, row.roster_id)
+            # A bye week has no head-to-head game, so the text names no game.
+            if game is not None:
+                opponent_id, result = game
+                opponent = team(opponent_id)
+                teams.append(opponent)
+                margin = round(abs(played.scores[row.roster_id] - played.scores[opponent_id]))
+                # A margin under half a point rounds to 0, and "a 0-point win" reads as a tie.
+                size = f"{n(margin)}-point" if margin else "narrow"
+                if result == 0:
+                    game_text = f"a tie with {opponent}"
+                elif result > 0:
+                    game_text = f"a {size} win over {opponent}"
+                else:
+                    game_text = f"a {size} loss to {opponent}"
+                text += f" after {game_text}, the {n.ord(before[opponent_id])}-place team"
+            last_ranks = last[row.roster_id].ranks
+            key = max(COMPONENT_WORDS, key=lambda k: abs(last_ranks[k] - row.ranks[k]))
+            # The power score can move while every component rank holds. The text then names no component.
+            if last_ranks[key] != row.ranks[key]:
+                verb = "rose" if row.ranks[key] < last_ranks[key] else "fell"
+                text += (
+                    f": {n.text(COMPONENT_WORDS[key])} {verb} from {n.ord(last_ranks[key])} "
+                    f"to {n.ord(row.ranks[key])}"
+                )
+            text += "."
+        out.append(fact(f"PR.{row.roster_id}.why", text, n, teams, []))
+    return out
+
+
 def standing_ranks(table: list[Standing]) -> dict[int, int]:
     """The standing rank of each roster, by roster ID. The sheet and a saved week both read it from here."""
     return {s.roster_id: s.rank for s in table}
@@ -828,7 +892,7 @@ def rankings_chapter(
     ids = [
         fid
         for row in rows
-        for fid in (f"PR.{row.roster_id}", f"S.{standing_rank[row.roster_id]}",
+        for fid in (f"PR.{row.roster_id}", f"PR.{row.roster_id}.why", f"S.{standing_rank[row.roster_id]}",
                     f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
                     f"ODDS.{row.roster_id}.why")
     ]
@@ -1411,6 +1475,7 @@ def build_bundle(
         matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
+        rank_why_facts(c.history, c.power, c.before, c.team),
         odds_facts(c.odds, c.team), swing_facts(c.odds, [(nx.a, nx.b) for nx in c.next if nx.must_watch], c.team),
         odds_why_facts(c),
     )

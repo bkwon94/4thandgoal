@@ -10886,10 +10886,10 @@
       },
       "ODDS.2": {
         "id": "ODDS.2",
-        "text": "All You Need Is Love makes the playoffs in about 20% of runs, with a bye in 0%.",
+        "text": "All You Need Is Love makes the playoffs in about 20% of runs, with a bye in 1%.",
         "numbers": [
           "20",
-          "0"
+          "1"
         ],
         "teams": [
           "All You Need Is Love"
@@ -10911,10 +10911,10 @@
       },
       "ODDS.4": {
         "id": "ODDS.4",
-        "text": "Pukancun on 3 makes the playoffs in about 1% of runs, with a bye in 0%.",
+        "text": "Pukancun on 3 makes the playoffs in about 1% of runs, with a bye in 1%.",
         "numbers": [
           "1",
-          "0"
+          "1"
         ],
         "teams": [
           "Pukancun on 3"
@@ -10949,10 +10949,10 @@
       },
       "ODDS.7": {
         "id": "ODDS.7",
-        "text": "To Infinity and Bijan makes the playoffs in about 3% of runs, with a bye in 0%.",
+        "text": "To Infinity and Bijan makes the playoffs in about 3% of runs, with a bye in 1%.",
         "numbers": [
           "3",
-          "0"
+          "1"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10987,10 +10987,10 @@
       },
       "ODDS.10": {
         "id": "ODDS.10",
-        "text": "behold the lamb makes the playoffs in about 24% of runs, with a bye in 0%.",
+        "text": "behold the lamb makes the playoffs in about 24% of runs, with a bye in 1%.",
         "numbers": [
           "24",
-          "0"
+          "1"
         ],
         "teams": [
           "behold the lamb"
@@ -10999,10 +10999,10 @@
       },
       "ODDS.11": {
         "id": "ODDS.11",
-        "text": "Unsolicited Dak Picks makes the playoffs in about 8% of runs, with a bye in 0%.",
+        "text": "Unsolicited Dak Picks makes the playoffs in about 8% of runs, with a bye in 1%.",
         "numbers": [
           "8",
-          "0"
+          "1"
         ],
         "teams": [
           "Unsolicited Dak Picks"
@@ -11011,10 +11011,10 @@
       },
       "ODDS.12": {
         "id": "ODDS.12",
-        "text": "Amon-Ra Dawg Your Team makes the playoffs in about 37% of runs, with a bye in 0%.",
+        "text": "Amon-Ra Dawg Your Team makes the playoffs in about 37% of runs, with a bye in 1%.",
         "numbers": [
           "37",
-          "0"
+          "1"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -12708,7 +12708,7 @@
       "2": {
         "roster_id": 2,
         "playoff": 20,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       },
@@ -12722,7 +12722,7 @@
       "4": {
         "roster_id": 4,
         "playoff": 1,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       },
@@ -12743,7 +12743,7 @@
       "7": {
         "roster_id": 7,
         "playoff": 3,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       },
@@ -12764,21 +12764,21 @@
       "10": {
         "roster_id": 10,
         "playoff": 24,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       },
       "11": {
         "roster_id": 11,
         "playoff": 8,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       },
       "12": {
         "roster_id": 12,
         "playoff": 37,
-        "bye": 0,
+        "bye": 1,
         "seed": null,
         "status": "open"
       }
