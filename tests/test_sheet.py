@@ -465,6 +465,17 @@ def test_a_team_that_tied_its_game_reads_a_tie_with(fixture_raw_dir, fixture_his
     )
 
 
+def test_a_margin_that_rounds_to_zero_reads_narrow(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    w6 = h.weeks[6]
+    close = w6.model_copy(update={"scores": {**w6.scores, 6: round(w6.scores[10] - 0.3, 2)}})
+    h = h.model_copy(update={"weeks": {**h.weeks, 6: close}})
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h)
+    assert b.sheet.facts["PR.10.why"].text.startswith("behold the lamb moved up ")
+    assert " after a narrow win over Bo Girds, the 2nd-place team" in b.sheet.facts["PR.10.why"].text
+
+
 def test_every_rank_why_fact_records_its_digits_and_sits_in_the_rankings_chapter(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
     for rid in hbundle.data.teams:

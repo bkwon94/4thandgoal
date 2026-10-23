@@ -18,4 +18,4 @@ Spec: `.scratch/reasons/PRD.md`, "The rank why".
 - [x] A team with no rank move names its best and its worst component.
 - [x] Every digit in the text is in the fact's numbers, so the bundle checks pass.
 - [x] Tests on the week 6 fixture: a mover, a held team, the opponent's place, a tie reads "a tie with".
-- [x] Ruff adds no finding from the diff; the full suite passes.
+- [x] Ruff adds no finding beyond E501 at the repo's line width; the full suite passes.

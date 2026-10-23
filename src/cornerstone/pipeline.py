@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
+from cornerstone.facts_league import season_records, standings_order
 from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, save_week_to_history, saved_through,
 )
@@ -25,8 +26,8 @@ from cornerstone.parse import parse_trades, parse_week
 from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
-    RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rankings_chapter, read_bundle, standing_ranks,
-    write_bundle,
+    RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
+    standing_ranks, write_bundle,
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -364,19 +365,28 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
     """The rankings chapter of a saved week, and True when the bundle had to take it in.
 
     A saved week with no rankings chapter has no PR facts, so they come from the saved history.
+    A saved chapter with no rank why ids is built again, so the blurb can cite the rank why facts.
+    Week 1 of the rankings has no rank why, so its saved chapter stands.
     """
     chapter = next((c for c in bundle.sheet.chapters if c.key == RANKINGS_CHAPTER), None)
-    if chapter is not None:
+    if chapter is not None and (history.week < 2 or any(fid.endswith(".why") for fid in chapter.fact_ids)):
         return chapter, False
     rows = power_rankings(history, history.week)[history.week]
 
     def team(roster_id: int) -> str:
         return bundle.data.teams[roster_id].name
 
+    # A saved week has no Week for ranks_before. With a complete history, ranks_before ranks the records
+    # through week N-1 in standings order, the same as here.
+    before = (
+        {rid: i + 1 for i, rid in enumerate(standings_order(season_records(history, history.week - 1)))}
+        if history.week > 1 else {}
+    )
     bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
-    chapter = rankings_chapter(bundle.sheet.facts, rows, team, standing_ranks(bundle.data.table))
-    bundle.sheet.chapters.append(chapter)
-    return chapter, True
+    bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
+    built = rankings_chapter(bundle.sheet.facts, rows, team, standing_ranks(bundle.data.table))
+    bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
+    return built, True
 
 
 def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
