@@ -336,12 +336,49 @@ class FactSheet(BaseModel):
     chapters: list[Chapter]
 
 
+class BoardScores(BaseModel):
+    """The three scores of a pool player, each from 0 to 1. A score with no input stays 0."""
+    usage: float = 0.0
+    environment: float = 0.0
+    projection: float = 0.0
+
+
+class WaiverPlayer(BaseModel):
+    """One ranked player of a bucket. The week projection is for week N+1, the rest of season one for N+1 to 17."""
+    player_id: str
+    name: str
+    position: str
+    team: str
+    week_projection: float
+    ros_projection: float
+    scores: BoardScores
+    board_score: float
+
+
+class BudgetRow(BaseModel):
+    """The FAAB budget left and the waiver order of one roster."""
+    roster_id: int
+    budget_left: int
+    waiver_order: int
+
+
+class WaiverBoard(BaseModel):
+    """The board of one week: the buckets by key, each in rank order, and the budget table in roster order."""
+    week: int
+    built: datetime
+    buckets: dict[str, list[WaiverPlayer]]
+    budgets: list[BudgetRow]
+
+
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
     # The engine's odds of the week, so the rankings file gets them without a second run.
     # None before `ODDS_FROM_WEEK`, or in a facts file with no `odds` key.
     odds: OddsResult | None = None
+    # The waiver board of the week, so a rewrite writes the week file without a second run.
+    # None in a facts file with no `waiver` key.
+    waiver: WaiverBoard | None = None
 
 
 class Sentence(BaseModel):

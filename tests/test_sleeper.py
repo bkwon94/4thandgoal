@@ -137,17 +137,17 @@ def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, li
     return json.loads((tmp_path / "raw" / "projections_ahead.json").read_text()), calls
 
 
-def test_fetch_week_saves_the_projections_ahead_for_rostered_players(tmp_path, monkeypatch):
+def test_fetch_week_saves_the_projections_ahead_of_every_player(tmp_path, monkeypatch):
     ahead, calls = _fetch_projections_ahead(tmp_path, monkeypatch, 6)
-    assert [entry["week"] for entry in ahead] == list(range(7, 15))
-    assert [url.rsplit("/", 1)[1] for url in calls if "/projections/nfl/" in url] == [str(w) for w in range(6, 15)]
-    # Only the rostered player with a half-PPR projection stays.
-    assert ahead[0] == {"week": 7, "projections": {"10": 17.0}}
+    assert [entry["week"] for entry in ahead] == list(range(7, 18))
+    assert [url.rsplit("/", 1)[1] for url in calls if "/projections/nfl/" in url] == [str(w) for w in range(6, 18)]
+    # The unrostered player "99" stays, so the waiver board can rank him. A player with no half-PPR projection drops.
+    assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
 
 
-def test_fetch_week_13_saves_one_projections_week_and_week_14_none(tmp_path, monkeypatch):
-    assert [entry["week"] for entry in _fetch_projections_ahead(tmp_path, monkeypatch, 13)[0]] == [14]
-    assert _fetch_projections_ahead(tmp_path, monkeypatch, 14)[0] == []
+def test_fetch_week_16_saves_one_projections_week_and_week_17_none(tmp_path, monkeypatch):
+    assert [entry["week"] for entry in _fetch_projections_ahead(tmp_path, monkeypatch, 16)[0]] == [17]
+    assert _fetch_projections_ahead(tmp_path, monkeypatch, 17)[0] == []
 
 
 def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):

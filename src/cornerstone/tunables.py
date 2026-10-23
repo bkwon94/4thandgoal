@@ -1,5 +1,5 @@
 """
-The tunable table: every number of the trade analyzer rubric, the power rankings, and the playoff odds engine.
+The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds, and the waiver board.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -116,3 +116,21 @@ SWING_FLAT = 5
 WHY_MOVE_AT = 2
 # The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
 WHY_ODDS_AT = 25
+
+# The season edges. The regular season ends at week 14. The playoff bracket, not the round robin, decides later weeks.
+LAST_REGULAR_WEEK = 14
+# The last week of the NFL fantasy season. A waiver add plays the fantasy playoffs too, so his rest of
+# season projection runs to this week.
+LAST_SEASON_WEEK = 17
+
+# The waiver board ranks the waiver pool into buckets.
+# The weights of the three board scores. Usage leads and projection is a tiebreak, because the projection
+# lags the usage.
+BOARD_WEIGHTS = {"usage": 0.5, "environment": 0.3, "projection": 0.2}
+# The count of players in a bucket. Eight fit the field and the list of the page on a phone.
+BUCKET_SIZE = 8
+# The most players of one position in a bucket, so one position does not fill it.
+PER_POSITION = 3
+# The positions of best adds. K and DEF have no usage or environment score, so a projection score ranked
+# inside the position would put the top of each in best adds every week. They stay in the pool.
+BEST_ADDS_POSITIONS = ("QB", "RB", "WR", "TE")

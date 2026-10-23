@@ -635,6 +635,14 @@ def test_the_projected_total_counts_0_for_a_player_with_no_projection(fixture_ra
     assert totals == {rid: ({7: 50.0} if rid == side.roster_id else {}) for rid in week.teams}
 
 
+def test_the_projected_totals_stop_at_the_last_regular_week(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    # The projections file runs to week 17 for the waiver board. The playoff weeks never reach the odds.
+    ahead = {**week.projections_ahead, 15: week.projections_ahead[14], 17: week.projections_ahead[14]}
+    totals = projected_totals(week.model_copy(update={"projections_ahead": ahead}))
+    assert all(sorted(by_week) == list(range(7, 15)) for by_week in totals.values())
+
+
 def test_the_projected_total_reads_the_current_roster_not_the_week_lineup(fixture_raw_dir):
     week = parse_week(load_raw(fixture_raw_dir))
     side = week.matchups[0].a
