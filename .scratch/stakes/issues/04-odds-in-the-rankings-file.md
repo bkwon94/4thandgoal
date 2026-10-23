@@ -10,11 +10,11 @@ Spec: `.scratch/stakes/PRD.md`, "The rankings file and the site".
 
 **Blocked by:** 03 — Odds facts and chapters.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The rankings writer takes the odds of the current week and puts an `odds` object on each of its rows.
-- [ ] The object holds `playoff`, `bye`, `seed` or null, and `status`.
-- [ ] Rows of past weeks have no `odds` key, and the file never shrinks.
-- [ ] The schema version stays 1.
-- [ ] Tests: the current week's rows carry `odds`; a past row does not; a rerun keeps the past rows as they were.
-- [ ] Ruff clean, the full suite passes.
+- [x] The rankings writer takes the odds of the current week and puts an `odds` object on each of its rows.
+- [x] The object holds `playoff`, `bye`, `seed` or null, and `status`.
+- [x] Rows of past weeks have no `odds` key, and the file never shrinks.
+- [x] The schema version stays 1.
+- [x] Tests: the current week's rows carry `odds`; a past row does not; a rerun keeps the past rows as they were.
+- [x] Ruff clean, the full suite passes.
