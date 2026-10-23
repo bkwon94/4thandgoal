@@ -957,7 +957,13 @@
                 "H.3.trend"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 80,
+            "seed": 1,
+            "status": "open"
+          }
         },
         {
           "roster_id": 5,
@@ -984,7 +990,13 @@
               "text": "Nobody is stopping them right now.",
               "fact_ids": []
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 67,
+            "seed": 2,
+            "status": "open"
+          }
         },
         {
           "roster_id": 6,
@@ -1013,7 +1025,13 @@
                 "S.3"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 46,
+            "seed": 3,
+            "status": "open"
+          }
         },
         {
           "roster_id": 9,
@@ -1042,7 +1060,13 @@
                 "S.4"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 79,
+            "bye": 4,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 8,
@@ -1071,7 +1095,13 @@
                 "S.7"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 72,
+            "bye": 2,
+            "seed": 4,
+            "status": "open"
+          }
         },
         {
           "roster_id": 2,
@@ -1100,7 +1130,13 @@
                 "H.2.trend"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 20,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 10,
@@ -1129,7 +1165,13 @@
                 "PR.10"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 24,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 1,
@@ -1158,7 +1200,13 @@
                 "H.1.trend"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 57,
+            "bye": 1,
+            "seed": 5,
+            "status": "open"
+          }
         },
         {
           "roster_id": 12,
@@ -1187,7 +1235,13 @@
                 "S.9"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 37,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 11,
@@ -1216,7 +1270,13 @@
                 "S.10"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 8,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 7,
@@ -1245,7 +1305,13 @@
                 "H.7.trend"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 3,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         },
         {
           "roster_id": 4,
@@ -1274,7 +1340,13 @@
                 "H.4.trend"
               ]
             }
-          ]
+          ],
+          "odds": {
+            "playoff": 1,
+            "bye": 0,
+            "seed": null,
+            "status": "open"
+          }
         }
       ]
     }

@@ -335,22 +335,22 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "MED.value gives 106.83 and MED.below.7 gives 60.75 below for To Infinity and Bijan."
+            "reason": "Median 106.83 and both 2.79 gaps match MED.value and MED.closest."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "H.7.high states 46.08 is a season low; S.11 states 2 games below the cut."
+            "reason": "46.08, season low, and 60.75 below the median all match MED.below.7 and H.7.high."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "Reaction with no factual claim."
+            "reason": "A reaction with no factual claim."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "MED.closest states Amon-Ra Dawg Your Team missed by 2.79 and Bo Girds cleared by 2.79."
+            "reason": "The 81.47 season low matches H.11.high and the 4-8 record matches S.10; 'no room for that' is opinion."
           }
         ],
         "passed": true
@@ -359,17 +359,30 @@
     "next_week": [
       {
         "chapter": "next_week",
+        "code_failures": [
+          "[0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "next_week",
         "code_failures": [],
         "verdicts": [
           {
             "index": 0,
             "supported": true,
-            "reason": "NX.3v8 names this matchup a Must Watch, H.8.streak gives Return of T Mac a 3-game win streak, and SOS.8 ranks their opponent's win rate (0.83) 1st of 12, the hardest draw next week."
+            "reason": "SW.3v8 states Lil Fridge stays near 99% either way and Return of T Mac goes to 80% with a win and 62% with a loss; NX.3v8 confirms the matchup."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "NX.4v7 gives the matchup and records, and S.11 and S.12 place both teams below the cut, at 11th and 12th."
+            "reason": "SW.2v6 states Bo Girds stays near 99% either way and All You Need Is Love goes to 34% with a win and 18% with a loss."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "This is a reaction with no factual claim."
           }
         ],
         "passed": true
