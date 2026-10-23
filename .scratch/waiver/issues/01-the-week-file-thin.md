@@ -16,14 +16,14 @@ land here, so the next tickets only add scores.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The pool is every active player with a team and a position of QB, RB, WR, TE, K, or DEF on no roster in this league.
-- [ ] Rest of season projection is the sum of weeks N+1 to 17 from the unfiltered projections ahead file, with the bye as 0.
-- [ ] The best adds bucket holds at most `BUCKET_SIZE` players and at most `PER_POSITION` per position.
-- [ ] The budget table holds every roster with budget left and waiver order from the raw files.
-- [ ] The build writes the file in the facts step, and a rewrite reads the saved file and never reruns the engine.
-- [ ] The publish copies the file with the week folder, with no new publish path.
-- [ ] The engine test on the week 6 fixture checks the cap, the pool filter, the rest of season sum, and that two runs give the same file.
-- [ ] The fetch test checks the projections ahead file holds an unrostered player.
-- [ ] Glossary gains **Waiver pool**, **Bucket**, and **Board score**.
+- [x] The pool is every active player with a team and a position of QB, RB, WR, TE, K, or DEF on no roster in this league.
+- [x] Rest of season projection is the sum of weeks N+1 to 17 from the unfiltered projections ahead file, with the bye as 0.
+- [x] The best adds bucket holds at most `BUCKET_SIZE` players and at most `PER_POSITION` per position.
+- [x] The budget table holds every roster with budget left and waiver order from the raw files.
+- [x] The build writes the file in the facts step, and a rewrite reads the saved file and never reruns the engine.
+- [x] The publish copies the file with the week folder, with no new publish path.
+- [x] The engine test on the week 6 fixture checks the cap, the pool filter, the rest of season sum, and that two runs give the same file.
+- [x] The fetch test checks the projections ahead file holds an unrostered player.
+- [x] Glossary gains **Waiver pool**, **Bucket**, and **Board score**.
