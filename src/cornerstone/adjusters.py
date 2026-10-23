@@ -92,13 +92,24 @@ def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list
 
     The fixed slots fill first, so a flex slot takes the player with the most points per game that no fixed slot took.
     """
-    def position(pid: str) -> str:
-        return snapshot.players[pid].position
+    positions = {pid: snapshot.players[pid].position for pid in roster}
+    return pick_lineup(roster, slots, positions, {pid: recent_points_per_game(snapshot, pid) for pid in roster})
 
-    def rank(pid: str) -> tuple[Decimal, int, str]:
+
+def pick_lineup(
+        roster: list[str], slots: list[str], positions: dict[str, str], points: dict[str, Decimal | float]) -> list[str]:
+    """The starters of the roster's best lineup by `points`, with the position order as the tie rule.
+
+    The fixed slots fill first, so a flex slot takes the player with the most points that no fixed slot took.
+    It reads plain dicts, so a caller with no Snapshot, such as the odds inputs, can rank by projections.
+    """
+    def position(pid: str) -> str:
+        return positions[pid]
+
+    def rank(pid: str) -> tuple[Decimal | float, int, str]:
         order = POSITION_ORDER.index(position(pid)) if position(pid) in POSITION_ORDER else len(POSITION_ORDER)
         # The player id breaks the last tie, so the same roster always gives the same lineup.
-        return (-recent_points_per_game(snapshot, pid), order, pid)
+        return (-points[pid], order, pid)
 
     pool = sorted(roster, key=rank)
     starters: list[str] = []
