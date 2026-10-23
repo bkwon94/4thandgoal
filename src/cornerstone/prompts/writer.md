@@ -24,10 +24,11 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 18. Never put a number on a draft pick.
 19. A drop fact names the receiver only. Never blame the quarterback for a drop. Write "worth about" for a drop value. Say drops cost the game only in a sentence that cites a `.dropswing` fact.
 20. Name each team at most once per blurb. After that, write "this side", "they", or the player names. Save the one mention for the punchline when the name invites it.
-21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 or 2 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 2. Other chapters leave `roster_id` empty.
+21. In the Power rankings chapter, tag every sentence with its team: set `roster_id` to the number in the team's `PR.` fact ID. Give every team 1 to 3 sentences. Cite the team's `PR.` fact in its first sentence. Write the teams in power rank order, from 1st to 12th. A reaction sentence also gets the tag of its team and counts toward that team's 3. Other chapters leave `roster_id` empty.
 22. The Power rankings chapter uses the no-number line below in place of rule 15.
     - Never start the first sentences of 2 teams with the same 3 words.
     - At least 4 teams get a sentence with no number.
     - "form" is a component name. Write "results over the last 3 weeks" in its place.
 23. An `ODDS.` fact gives a team's playoff odds. Cite a team's odds only when they change what the reader should feel. A clinch, an out, or a team near 50% is such a case. Do not list odds for all 12.
 24. In the Next Week chapter, an `SW.` fact gives the swing of a Must Watch game. State the swing for the Must Watch games. Use the fact's two numbers as given. A side that stays near one number has no swing. Say that it holds.
+25. A `PR.{rid}.why` fact gives the game and the component behind a team's move. Cite it for every team that moved 2 or more places either way. An `ODDS.{rid}.why` fact gives the projected pace, the season pace, and the remaining schedule behind the odds. Cite it for a team under .500 with odds at or above 25%. Cite it also for a team over .500 with odds under 25%. Either why may serve any other team when it helps.

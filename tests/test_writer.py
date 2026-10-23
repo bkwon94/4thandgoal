@@ -143,10 +143,10 @@ def test_writer_rule_21_tags_each_rankings_sentence_with_its_team(fixture_raw_di
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert ("21. In the Power rankings chapter, tag every sentence with its team: "
             "set `roster_id` to the number in the team's `PR.` fact ID.") in system
-    assert "Give every team 1 or 2 sentences." in system
+    assert "Give every team 1 to 3 sentences." in system
     assert "Cite the team's `PR.` fact in its first sentence." in system
     assert "Write the teams in power rank order, from 1st to 12th." in system
-    assert "A reaction sentence also gets the tag of its team and counts toward that team's 2." in system
+    assert "A reaction sentence also gets the tag of its team and counts toward that team's 3." in system
     assert "Other chapters leave `roster_id` empty." in system
 
 
@@ -451,6 +451,23 @@ def test_system_prompt_limits_the_odds_to_the_teams_where_they_matter(fixture_ra
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
     assert ("Cite a team's odds only when they change what the reader should feel. "
             "A clinch, an out, or a team near 50% is such a case. Do not list odds for all 12.") in system
+
+
+def test_rankings_rule_cites_the_why_facts_past_the_tunable_thresholds(fixture_raw_dir):
+    from cornerstone.tunables import WHY_MOVE_AT, WHY_ODDS_AT
+
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    rule = system.split("\n25. ", 1)[1]
+    assert rule.startswith("A `PR.{rid}.why` fact gives the game and the component behind a team's move.")
+    assert f"Cite it for every team that moved {WHY_MOVE_AT} or more places either way." in rule
+    assert ("An `ODDS.{rid}.why` fact gives the projected pace, the season pace, "
+            "and the remaining schedule behind the odds.") in rule
+    assert f"Cite it for a team under .500 with odds at or above {WHY_ODDS_AT}%." in rule
+    assert f"Cite it also for a team over .500 with odds under {WHY_ODDS_AT}%." in rule
+    assert "Either why may serve any other team when it helps." in rule
+    # The raised cap leaves room for a why sentence beside the team's opener.
+    assert "Give every team 1 to 3 sentences." in system
 
 
 def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir):

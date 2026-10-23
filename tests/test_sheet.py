@@ -405,7 +405,7 @@ def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
     facts = hbundle.sheet.facts
     assert ch.title == "Power rankings"
-    assert (ch.min_sentences, ch.max_sentences) == (12, 24)
+    assert (ch.min_sentences, ch.max_sentences) == (12, 36)
     assert sorted(ch.scope_teams) == sorted(t.name for t in hbundle.data.teams.values())
     rank = {s.roster_id: s.rank for s in hbundle.data.table}
     for rid in hbundle.data.teams:

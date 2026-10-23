@@ -91,8 +91,8 @@ SENTENCE_RANGES = {
     "median": (2, 4),
     # The third sentence leaves room for the swing of the Must Watch games.
     "next_week": (1, 3),
-    # One or two sentences for each of the 12 teams.
-    "rankings": (12, 24),
+    # One to three sentences for each of the 12 teams.
+    "rankings": (12, 36),
 }
 RANKINGS_CHAPTER = "rankings"
 # The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
