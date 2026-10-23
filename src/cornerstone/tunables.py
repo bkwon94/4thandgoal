@@ -101,6 +101,9 @@ RECENT_WEEKS = 3
 # The weight of each recent week in the score draw. An older week weighs 1. At 1.25 with 6 weeks played,
 # the last 3 weeks are 56 percent of the draws; at 2 they are 67 percent, too much trust in 3 scores.
 RECENT_WEIGHT = 1.25
+# The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
+# Past scores know the team's level, and the projection knows that week's roster. Half each, Brian's call.
+PROJECTION_WEIGHT = 0.5
 # The lowest playoff odds, in percent, that show the most likely seed. Below it the seed rests on fewer than half the runs.
 SEED_SHOW_AT = 50
 # The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.

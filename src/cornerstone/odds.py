@@ -8,7 +8,15 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from cornerstone.tunables import BYE_COUNT, PLAYOFF_SPOTS, RECENT_WEEKS, RECENT_WEIGHT, SEED_SHOW_AT, SIM_RUNS
+from cornerstone.tunables import (
+    BYE_COUNT,
+    PLAYOFF_SPOTS,
+    PROJECTION_WEIGHT,
+    RECENT_WEEKS,
+    RECENT_WEIGHT,
+    SEED_SHOW_AT,
+    SIM_RUNS,
+)
 
 Status = Literal["in", "out", "open"]
 # A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
@@ -51,11 +59,15 @@ def playoff_odds(
     playoff_spots: int = PLAYOFF_SPOTS,
     bye_count: int = BYE_COUNT,
     runs: int = SIM_RUNS,
+    projected: dict[int, dict[int, float]] | None = None,
+    projection_weight: float = PROJECTION_WEIGHT,
 ) -> OddsResult:
     """The playoff odds after week `week`.
 
     `scores` holds each roster's played-week scores, oldest first. `records` holds the real wins, losses,
     and points for. `remaining` holds the pairs of each remaining week; the first week is week N+1.
+    `projected` holds the projected best-lineup total of each roster, by roster ID and week. Each drawn
+    score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
     """
     if len(records) % 2:
         raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
@@ -70,6 +82,7 @@ def playoff_odds(
     rng = random.Random(season * 100 + week)
     order = [remaining[w] for w in sorted(remaining)]
     weights = {rid: _draw_weights(scores[rid]) for rid in rosters}
+    shifts = _shifts(scores, projected, sorted(remaining), projection_weight) if projected else None
     next_pairs = order[0]
     made: Counter[int] = Counter()
     byes: Counter[int] = Counter()
@@ -78,6 +91,8 @@ def playoff_odds(
     halves = {pair: {"a": [0, 0, 0], "b": [0, 0, 0]} for pair in next_pairs}
     for _ in range(runs):
         drawn = {rid: rng.choices(scores[rid], cum_weights=weights[rid], k=weeks_left) for rid in rosters}
+        if shifts:
+            drawn = {rid: [score + shift for score, shift in zip(d, shifts[rid])] for rid, d in drawn.items()}
         table = _run(records, order, drawn)
         top = set(table[:playoff_spots])
         for place, rid in enumerate(table[:playoff_spots], start=1):
@@ -118,6 +133,21 @@ def _draw_weights(values: list[float]) -> list[float]:
         total += RECENT_WEIGHT if i >= len(values) - RECENT_WEEKS else 1
         cum.append(total)
     return cum
+
+
+def _shifts(
+    scores: dict[int, list[float]], projected: dict[int, dict[int, float]], weeks: list[int], weight: float,
+) -> dict[int, list[float]]:
+    """The shift of each roster's drawn score in each remaining week, in the order of `weeks`.
+
+    A week with no projected total for the roster has no shift.
+    """
+    shifts = {}
+    for rid, values in scores.items():
+        average = sum(values) / len(values)
+        totals = projected.get(rid, {})
+        shifts[rid] = [weight * (totals[w] - average) if w in totals else 0.0 for w in weeks]
+    return shifts
 
 
 def _run(

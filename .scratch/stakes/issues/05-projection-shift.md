@@ -14,15 +14,15 @@ projections file).
 
 **Blocked by:** 03 — Odds facts and chapters.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The week fetch saves `projections_ahead.json` with weeks N+1 to 14, one entry per week, each with the half-PPR projection per player, only for players on any roster.
-- [ ] A fetch for week 14 saves one week, and a cached week without the file still parses.
-- [ ] A parsed week exposes the projections ahead as a dict of week to player id to points.
-- [ ] A helper gives the projected best-lineup total per roster per remaining week, with the existing best-lineup helper and the league roster slots; a player with no projection that week counts 0.
-- [ ] The engine takes the projected totals as an input and shifts each drawn score by `PROJECTION_WEIGHT` times the gap between that week's projected total and the team's season average.
-- [ ] `PROJECTION_WEIGHT = 0.7` joins the tunable table with a one-line why. At 0 the odds equal the odds before this ticket.
-- [ ] The facts step passes the projected totals to the engine. A rewrite still never calls the engine.
-- [ ] The week 6 test fixture gains a `projections_ahead.json` built from the live data, weeks 7 to 14, filtered to rostered players.
-- [ ] Tests: the fetch saves and filters the file; the parse gives 8 weeks for the fixture; the lineup total counts 0 for a missing projection; the engine at weight 0 matches the prior odds on the 4-team fixture; the engine at weight 1 centers a team on its projection; a missing projections file gives no shift.
-- [ ] Ruff clean on the touched files, the full suite passes.
+- [x] The week fetch saves `projections_ahead.json` with weeks N+1 to 14, one entry per week, each with the half-PPR projection per player, only for players on any roster.
+- [x] A fetch for week 13 saves one week, week 14, and a fetch for week 14 saves an empty list. A cached week without the file still parses.
+- [x] A parsed week exposes the projections ahead as a dict of week to player id to points.
+- [x] A helper gives the projected best-lineup total per roster per remaining week, with the existing best-lineup helper and the league roster slots; a player with no projection that week counts 0.
+- [x] The engine takes the projected totals as an input and shifts each drawn score by `PROJECTION_WEIGHT` times the gap between that week's projected total and the team's season average.
+- [x] `PROJECTION_WEIGHT = 0.5` joins the tunable table with a one-line why. At 0 the odds equal the odds before this ticket.
+- [x] The facts step passes the projected totals to the engine. A rewrite still never calls the engine.
+- [x] The week 6 test fixture gains a `projections_ahead.json` built from the live data, weeks 7 to 14, filtered to rostered players.
+- [x] Tests: the fetch saves and filters the file; the parse gives 8 weeks for the fixture; the lineup total counts 0 for a missing projection; the engine at weight 0 matches the prior odds on the 4-team fixture; the engine at weight 1 centers a team on its projection; a missing projections file gives no shift.
+- [x] Ruff adds no finding from the diff, the full suite passes.

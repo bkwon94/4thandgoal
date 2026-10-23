@@ -127,6 +127,19 @@ def _schedule(raw: dict) -> dict[int, list[tuple[int, int]]]:
     return {entry["week"]: _pairs(entry["matchups"]) for entry in raw.get("schedule", [])}
 
 
+def _projections_ahead(raw: dict) -> dict[int, dict[str, float]]:
+    # A cached week can lack the projections file, so it gives no weeks.
+    return {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+
+
+def _rosters(raw: dict) -> dict[int, dict[str, str]]:
+    # A roster with no players has None in rosters.json. A player missing from the players file has position "?".
+    return {
+        r["roster_id"]: {pid: (raw["players"].get(pid) or {}).get("position") or "?" for pid in r["players"] or []}
+        for r in raw["rosters"]
+    }
+
+
 def parse_moves(transactions: list[dict]) -> list[Move]:
     moves = []
     for transaction in transactions:
@@ -169,11 +182,14 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
         schedule=_schedule(raw),
+        projections_ahead=_projections_ahead(raw),
         moves=parse_moves(raw["transactions"]),
         last_scored_week=raw["league"]["settings"]["last_scored_leg"],
         season_start=date.fromisoformat(state["season_start_date"]),
         # The reserve slot counts: matchups.json lists the injured reserve player with the others.
         roster_slots=len(raw["league"]["roster_positions"]) + raw["league"]["settings"]["reserve_slots"],
+        roster_positions=raw["league"]["roster_positions"],
+        rosters=_rosters(raw),
         scoring=raw["league"]["scoring_settings"],
         stats={item["player_id"]: item["stats"] for item in raw["stats"]},
     )

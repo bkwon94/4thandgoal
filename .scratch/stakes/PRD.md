@@ -70,7 +70,7 @@ check marks a team as clinched or out, so those two words are always true.
 - Score draw: each simulated week draws one of the team's own weekly scores this season, with
   the last `RECENT_WEEKS` (3) weeks weighted `RECENT_WEIGHT` (1.25) times. No fit, no league pool.
 - Projection shift: the drawn score then moves toward that week's projection. The shift is
-  `PROJECTION_WEIGHT` (0.7) times the gap between the team's projected best-lineup total for that
+  `PROJECTION_WEIGHT` (0.5) times the gap between the team's projected best-lineup total for that
   week and the team's season average score. At 0 the draw is the plain past score. At 1 the draw
   centers on the projection with the team's own spread. The projected total is the sum of the
   Sleeper half-PPR projections over the best lineup of the current roster for that week, with the

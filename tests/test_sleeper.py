@@ -7,14 +7,15 @@ from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, re
 
 def test_load_raw_returns_every_file(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert set(raw) == {*RAW_FILES, "schedule"}
+    assert set(raw) == {*RAW_FILES, "schedule", "projections_ahead"}
     assert raw["league"]["name"] == "Cornerstone League"
     assert len(raw["matchups"]) == 12
 
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
     fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
-    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {*RAW_FILES, "fetched", "transactions_prev", "schedule"}
+    assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {
+        *RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead"}
 
 
 @pytest.mark.live
@@ -101,4 +102,58 @@ def test_load_raw_without_schedule(fixture_raw_dir, tmp_path):
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "schedule.json").unlink()
-    assert set(load_raw(raw_dir)) == set(RAW_FILES)
+    assert set(load_raw(raw_dir)) == {*RAW_FILES, "projections_ahead"}
+
+
+def _fake_projections_get(calls: list[str]):
+    """A fake of sleeper._get with 2 rosters and a projection row per week for a rostered and a free player."""
+    base = _fake_get(calls)
+
+    def get(client, url, params=None):
+        if url.endswith("/rosters"):
+            calls.append(url)
+            return [{"roster_id": 1, "players": ["10", "11"]}, {"roster_id": 2, "players": None}]
+        if "/projections/nfl/" in url:
+            calls.append(url)
+            week = int(url.rsplit("/", 1)[1])
+            return [
+                {"player_id": "10", "stats": {"pts_half_ppr": 10.0 + week, "pts_ppr": 99.0}},
+                # A rostered player with no half-PPR projection, such as a player on a bye.
+                {"player_id": "11", "stats": {}},
+                {"player_id": "99", "stats": {"pts_half_ppr": 5.0}},
+            ]
+        return base(client, url, params)
+    return get
+
+
+def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
+    import json
+
+    from cornerstone import sleeper
+
+    calls: list[str] = []
+    monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json")
+    return json.loads((tmp_path / "raw" / "projections_ahead.json").read_text()), calls
+
+
+def test_fetch_week_saves_the_projections_ahead_for_rostered_players(tmp_path, monkeypatch):
+    ahead, calls = _fetch_projections_ahead(tmp_path, monkeypatch, 6)
+    assert [entry["week"] for entry in ahead] == list(range(7, 15))
+    assert [url.rsplit("/", 1)[1] for url in calls if "/projections/nfl/" in url] == [str(w) for w in range(6, 15)]
+    # Only the rostered player with a half-PPR projection stays.
+    assert ahead[0] == {"week": 7, "projections": {"10": 17.0}}
+
+
+def test_fetch_week_13_saves_one_projections_week_and_week_14_none(tmp_path, monkeypatch):
+    assert [entry["week"] for entry in _fetch_projections_ahead(tmp_path, monkeypatch, 13)[0]] == [14]
+    assert _fetch_projections_ahead(tmp_path, monkeypatch, 14)[0] == []
+
+
+def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
+    import shutil
+
+    raw_dir = tmp_path / "raw"
+    shutil.copytree(fixture_raw_dir, raw_dir)
+    (raw_dir / "projections_ahead.json").unlink()
+    assert "projections_ahead" not in load_raw(raw_dir)

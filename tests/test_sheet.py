@@ -10,7 +10,7 @@ import pytest
 from cornerstone import sheet
 from cornerstone.history import load_history
 from cornerstone.models import PowerRow
-from cornerstone.odds import OddsResult, Swing, TeamOdds
+from cornerstone.odds import OddsResult, Swing, TeamOdds, playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     Context,
@@ -20,6 +20,7 @@ from cornerstone.sheet import (
     is_motw_recap,
     odds_facts,
     power_facts,
+    projected_totals,
     read_bundle,
     standings_facts,
     swing_facts,
@@ -530,3 +531,57 @@ def test_a_clinched_side_and_an_out_side_hold_no_digit():
     [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
     assert f.text == "Lil Fridge is in either way. Bo Girds is out either way."
     assert f.numbers == []
+
+
+def test_projected_totals_cover_every_roster_and_every_week_ahead(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    totals = projected_totals(week)
+    assert set(totals) == set(week.teams)
+    assert all(sorted(by_week) == list(range(7, 15)) for by_week in totals.values())
+    assert all(total > 50 for by_week in totals.values() for total in by_week.values())
+
+
+def test_the_projected_total_counts_0_for_a_player_with_no_projection(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    side = week.matchups[0].a
+    bench = next(line for line in side.lines if not line.started)
+    # Only one bench player has a projection, so the best lineup starts him and every other starter counts 0.
+    totals = projected_totals(week.model_copy(update={"projections_ahead": {7: {bench.player_id: 50.0}}}))
+    # A roster with no projected player that week has no total, so the engine gives it no shift.
+    assert totals == {rid: ({7: 50.0} if rid == side.roster_id else {}) for rid in week.teams}
+
+
+def test_the_projected_total_reads_the_current_roster_not_the_week_lineup(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    side = week.matchups[0].a
+    dropped = side.lines[0].player_id
+    # A player added after the lock is on the roster but not in the week's lines. A dropped player is the reverse.
+    rosters = {**week.rosters, side.roster_id: {"added": "RB", **{
+        pid: pos for pid, pos in week.rosters[side.roster_id].items() if pid != dropped}}}
+    totals = projected_totals(week.model_copy(update={
+        "rosters": rosters, "projections_ahead": {7: {"added": 30.0, dropped: 20.0}}}))
+    assert totals[side.roster_id] == {7: 30.0}
+
+
+def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, fixture_raw_dir, fixture_history_root):
+    seen = {}
+
+    def engine(*args, **kwargs):
+        seen.update(kwargs)
+        return playoff_odds(*args, **kwargs)
+
+    monkeypatch.setattr(sheet, "playoff_odds", engine)
+    raw = load_raw(fixture_raw_dir)
+    week = parse_week(raw)
+    build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
+    assert seen["projected"] == projected_totals(week)
+
+
+def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(monkeypatch, fixture_raw_dir,
+                                                                       fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    raw.pop("projections_ahead")
+    week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
+    plain = sheet._odds(week, history)
+    monkeypatch.setattr(sheet, "projected_totals", lambda week: None)
+    assert sheet._odds(week, history) == plain

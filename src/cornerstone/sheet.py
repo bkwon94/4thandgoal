@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
+from cornerstone.adjusters import pick_lineup
 from cornerstone.facts_league import (
     TREND_WEEKS,
     _ordinal,
@@ -223,7 +224,29 @@ def _odds(week: Week, history: History | None) -> OddsResult | None:
     if set(remaining) != set(range(week.week + 1, LAST_WEEK + 1)):
         logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
         return None
-    return playoff_odds(scores, season_records(history, week.week), remaining, season=week.season, week=week.week)
+    return playoff_odds(
+        scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
+        projected=projected_totals(week),
+    )
+
+
+def projected_totals(week: Week) -> dict[int, dict[int, float]]:
+    """The projected total of each roster's best lineup in each week ahead, by roster ID and week.
+
+    The roster is the current roster in rosters.json. The lineup picks by that week's projections, so a player
+    with no projection that week counts 0 and a healthy bench player takes his slot.
+    A roster with no projected player in a week has no total that week.
+    A missing week gives the roster no shift. It does not count as a total of 0.
+    """
+    totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
+    for w, projections in sorted(week.projections_ahead.items()):
+        for rid, positions in week.rosters.items():
+            if not any(pid in projections for pid in positions):
+                continue
+            points = {pid: projections.get(pid, 0.0) for pid in positions}
+            starters = pick_lineup(list(points), week.roster_positions, positions, points)
+            totals[rid][w] = sum(points[pid] for pid in starters)
+    return totals
 
 
 class Context:
