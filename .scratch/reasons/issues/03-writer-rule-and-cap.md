@@ -19,4 +19,5 @@ Spec: `.scratch/reasons/PRD.md`, "The writer".
 - [x] The per-team cap is 3 sentences and the chapter range is 12 to 36.
 - [x] Glossary entries: Rank why, Odds why, Projected pace, Season pace.
 - [x] One prompt text test pins the rule and the cap.
+- [x] Added after the first demo: `Chapter.required` lists the why ids each team must cite, the prompt names them, and the code check fails an uncited one. The prompt rule alone did not hold.
 - [x] Ruff adds no finding from the diff; the full suite passes.

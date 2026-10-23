@@ -123,6 +123,12 @@ The `ODDS.{rid}.why` fact. It gives the projected pace, the season pace, and the
 remaining schedule, the inputs behind the playoff odds. The writer cites it for a team under .500
 with odds at or above `WHY_ODDS_AT` percent, and for a team over .500 with odds under it.
 
+**Required fact**:
+A fact id a chapter must cite, listed on the chapter and named in the writer prompt. The rankings
+chapter requires the rank why of every mover and the odds why of a team whose odds and record disagree.
+The code check fails a blurb that leaves one uncited by that team's sentences.
+_Avoid_: mandatory fact, forced citation
+
 **Projected pace**:
 The mean of a team's projected best-lineup totals over the weeks left, rounded to a whole point.
 _Avoid_: projection (alone).
