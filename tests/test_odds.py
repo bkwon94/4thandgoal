@@ -16,10 +16,10 @@ RECORDS = {1: (3, 1, 215.0), 2: (2, 2, 211.0), 3: (2, 2, 218.0), 4: (1, 3, 184.0
 REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
 
 
-def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, runs=RUNS):
+def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, runs=RUNS, **kwargs):
     return playoff_odds(
         scores, records, remaining, season=SEASON, week=week,
-        playoff_spots=SPOTS, bye_count=BYES, runs=runs,
+        playoff_spots=SPOTS, bye_count=BYES, runs=runs, **kwargs,
     )
 
 
@@ -182,6 +182,44 @@ def test_the_odds_sum_to_the_spots_times_100_within_rounding():
     total = sum(t.playoff for t in result.teams.values())
     # Each roster rounds by at most half a point, and a clamp moves it by at most 1 more.
     assert abs(total - SPOTS * 100) <= len(RECORDS)
+
+
+# A projected total per roster per remaining week, far from each season average, so any shift shows in the odds.
+PROJECTED = {1: {3: 60.0, 4: 60.0}, 2: {3: 140.0, 4: 140.0}, 3: {3: 70.0, 4: 150.0}, 4: {3: 160.0, 4: 90.0}}
+
+
+def test_the_odds_at_projection_weight_0_equal_the_odds_with_no_projections():
+    plain = _odds()
+    assert _odds(projected=PROJECTED, projection_weight=0) == plain
+    # The odds of the 4-team fixture before the engine took projections, with the same random seed.
+    assert {rid: (t.playoff, t.bye, t.seed) for rid, t in plain.teams.items()} == {
+        1: (75, 31, 2), 2: (72, 39, 1), 3: (53, 31, 1), 4: (1, 0, None)}
+    assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(99, 56, 98, 37), (64, 18, 1, 1)]
+
+
+def test_the_projections_move_the_odds():
+    assert _odds(projected=PROJECTED) != _odds()
+
+
+def test_at_projection_weight_1_a_roster_draws_its_projection():
+    # Roster 4 always scores 70 in the past, so at weight 1 every draw is its projection of 200.
+    flat = _flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0})
+    assert _odds(scores=flat, records=EVEN, remaining=FIXED_PAIRS).teams[4].playoff == 1
+    result = _odds(scores=flat, records=EVEN, remaining=FIXED_PAIRS, projected={4: {3: 200.0, 4: 200.0}},
+                   projection_weight=1)
+    assert result.teams[4].playoff == 99
+    assert result.teams[4].seed == 1
+
+
+def test_no_projections_for_a_roster_or_a_week_gives_no_shift():
+    assert _odds(projected={}) == _odds()
+    flat = _flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0})
+    # Roster 4 has a projection for week 3 only. A week 4 projection equal to its average of 70 is no shift too.
+    def odds(projected):
+        return _odds(scores=flat, records=EVEN, remaining=FIXED_PAIRS, projected=projected, projection_weight=1)
+
+    assert odds({4: {3: 200.0}}) == odds({4: {3: 200.0, 4: 70.0}})
+    assert odds({4: {3: 200.0}}) != odds({4: {3: 200.0, 4: 200.0}})
 
 
 def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_history_root):
