@@ -92,3 +92,15 @@ FINDER_TOP = 3
 # The power score is the weighted mean of the four components, keyed by component.
 # The weights are equal so the rank is one line to explain.
 POWER_WEIGHTS = {"standing": 0.25, "form": 0.25, "schedule_played": 0.25, "scoring": 0.25}
+
+# The playoff odds engine: a Monte Carlo of the remaining weeks, one table per run.
+# The count of runs. At 5,000 runs one percent is 50 runs, so a whole-percent odds number holds still.
+SIM_RUNS = 5000
+# The count of latest played weeks that weigh more in the score draw, so the draw follows the current form.
+RECENT_WEEKS = 3
+# The weight of each recent week in the score draw. An older week weighs 1.
+RECENT_WEIGHT = 2
+# The lowest playoff odds, in percent, that show the most likely seed. Below it the seed is more noise than signal.
+SEED_SHOW_AT = 50
+# The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.
+BYE_COUNT = 2
