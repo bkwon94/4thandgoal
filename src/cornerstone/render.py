@@ -29,6 +29,8 @@ TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 PAGE_SCHEMA_VERSION = 2
 # The season file has its own version, so a change to one file never breaks the reader of the other.
 RANKINGS_SCHEMA_VERSION = 1
+# The keys of the odds object on a rankings row, in the order of the site type.
+RANKINGS_ODDS_KEYS = ("playoff", "bye", "seed", "status")
 
 log = logging.getLogger(__name__)
 
@@ -283,29 +285,20 @@ def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -
     return _write_page_json(context, week_dir)
 
 
-def _saved_rankings_blurbs(path: Path) -> dict[tuple[int, int], list[dict]]:
-    """The blurb sentences of each week and roster in the last season file. An unreadable file gives none."""
+def _saved_rankings(path: Path) -> tuple[dict[tuple[int, int], list[dict]], dict[tuple[int, int], dict]]:
+    """The blurb sentences and the odds of each week and roster in the last season file.
+    A row with no odds gives no odds. An unreadable file gives none of either."""
     if not path.exists():
-        return {}
-    # A bad last file must not stop the new one. Its past blurbs are lost, and the ranks are rebuilt.
+        return {}, {}
+    # A bad last file must not stop the new one. Its past blurbs and odds are lost, and the ranks are rebuilt.
     try:
         body = json.loads(path.read_text(encoding="utf-8"))
-        return {(w["week"], row["roster_id"]): row["blurb"] for w in body["weeks"] for row in w["rows"]}
+        rows = {(w["week"], row["roster_id"]): row for w in body["weeks"] for row in w["rows"]}
+        blurbs = {key: row["blurb"] for key, row in rows.items()}
+        return blurbs, {key: row["odds"] for key, row in rows.items() if "odds" in row}
     except (OSError, ValueError, KeyError, TypeError) as err:
-        log.warning("%s is unreadable, so past weeks lose their blurbs: %s", path, err)
-        return {}
-
-
-def _saved_rankings_odds(path: Path) -> dict[tuple[int, int], dict]:
-    """The odds of each week and roster in the last season file. A row with no odds and an unreadable file give none."""
-    if not path.exists():
-        return {}
-    # The blurb reader logs a bad file, so this reader stays silent.
-    try:
-        body = json.loads(path.read_text(encoding="utf-8"))
-        return {(w["week"], row["roster_id"]): row["odds"] for w in body["weeks"] for row in w["rows"] if "odds" in row}
-    except (OSError, ValueError, KeyError, TypeError):
-        return {}
+        log.warning("%s is unreadable, so past weeks lose their blurbs and odds: %s", path, err)
+        return {}, {}
 
 
 def render_rankings(
@@ -320,11 +313,10 @@ def render_rankings(
     file, or has no odds key, as the site reads the key as optional."""
     season_dir = site_dir / str(season)
     out = season_dir / "rankings.json"
-    saved = _saved_rankings_blurbs(out)
-    saved_odds = _saved_rankings_odds(out)
+    saved, saved_odds = _saved_rankings(out)
     # The engine gives the odds of one week only, so the other weeks keep what the last file has.
     fresh_odds = (
-        {rid: t.model_dump(include={"playoff", "bye", "seed", "status"}) for rid, t in odds.teams.items()}
+        {rid: t.model_dump(include=set(RANKINGS_ODDS_KEYS)) for rid, t in odds.teams.items()}
         if odds is not None else {}
     )
     # Each sentence keeps its fact IDs, as the site type asks. The roster tag only picks the row.

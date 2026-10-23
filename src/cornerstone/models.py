@@ -331,8 +331,8 @@ class FactSheet(BaseModel):
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
-    # The engine's odds of the week, so the rankings file gets them without a second run. None before the odds
-    # week, and in a facts file saved before the field.
+    # The engine's odds of the week, so the rankings file gets them without a second run.
+    # None before `ODDS_FROM_WEEK`, or in a facts file with no `odds` key.
     odds: OddsResult | None = None
 
 

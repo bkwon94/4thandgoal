@@ -347,7 +347,7 @@ def run_rewrite(
     # The season file holds the rankings blurb, so a rewrite of the chapter must reach the file too.
     if chapter == RANKINGS_CHAPTER:
         try:
-            if _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter]) is None:
+            if _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter], bundle.odds) is None:
                 log.warning("history incomplete through week %d: rankings.json not written", week)
         except (OSError, ValueError, KeyError) as err:
             log.warning("rankings.json not written for week %d: %s", week, err)
@@ -396,7 +396,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call)
     _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, verify)
-    out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key])
+    out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key], bundle.odds)
     if out is None:
         raise BuildStopped(HISTORY_GAP.format(week=week))
     return out
