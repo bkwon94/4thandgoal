@@ -1,5 +1,5 @@
 """
-The tunable table: every number of the trade analyzer rubric, the power rankings, and the playoff odds engine.
+The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds, and the waiver board.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -116,3 +116,12 @@ SWING_FLAT = 5
 WHY_MOVE_AT = 2
 # The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
 WHY_ODDS_AT = 25
+
+# The waiver board ranks the free agent pool into buckets.
+# The weights of the three board scores. Usage leads and projection is a tiebreak, because the projection
+# lags the usage. Brian's call on 2026-10-23.
+BOARD_WEIGHTS = {"usage": 0.5, "environment": 0.3, "projection": 0.2}
+# The count of players in a bucket. Eight fit the field and the list of the page on a phone.
+BUCKET_SIZE = 8
+# The most players of one position in a bucket, so one position does not fill it.
+PER_POSITION = 3
