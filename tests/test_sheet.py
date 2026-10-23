@@ -9,7 +9,7 @@ import pytest
 
 from cornerstone import sheet
 from cornerstone.history import load_history
-from cornerstone.models import PowerRow
+from cornerstone.models import History, PowerRow
 from cornerstone.odds import OddsResult, Swing, TeamOdds, playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
@@ -364,7 +364,9 @@ def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw
 
 
 def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
-    facts = {fid: f for fid, f in hbundle.sheet.facts.items() if fid.startswith("PR.")}
+    facts = {
+        fid: f for fid, f in hbundle.sheet.facts.items() if fid.startswith("PR.") and not fid.endswith(".why")
+    }
     assert sorted(facts) == sorted(f"PR.{rid}" for rid in hbundle.data.teams)
     for fid, f in facts.items():
         rid = int(fid.split(".")[1])
@@ -412,8 +414,77 @@ def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
     assert any(fid.endswith(".streak") for fid in ch.fact_ids)
     assert any(fid.endswith(".trend") for fid in ch.fact_ids)
     # The chapter lists the teams in power rank order.
-    ranks = [int(re.search(r"is (\d+)", facts[fid].text).group(1)) for fid in ch.fact_ids if fid.startswith("PR.")]
+    ranks = [
+        int(re.search(r"is (\d+)", facts[fid].text).group(1))
+        for fid in ch.fact_ids if fid.startswith("PR.") and not fid.endswith(".why")
+    ]
     assert ranks == list(range(1, 13))
+
+
+def test_a_mover_names_its_game_its_margin_and_the_component_that_moved(hbundle):
+    assert hbundle.sheet.facts["PR.10.why"].text == (
+        "behold the lamb moved up 4 places after a 5-point win over Bo Girds, the 2nd-place team: "
+        "schedule played rose from 8th to 2nd."
+    )
+    assert hbundle.sheet.facts["PR.1.why"].text == (
+        "Brock ‘N’ Roll moved down 4 places after a 38-point loss to Lil Fridge, the 1st-place team: "
+        "schedule played fell from 6th to 11th."
+    )
+
+
+def test_a_mover_of_one_place_reads_place(hbundle):
+    assert hbundle.sheet.facts["PR.9.why"].text.startswith("Maye d'force B with U moved up 1 place after a ")
+
+
+def test_a_held_team_names_its_best_and_its_worst_component(hbundle):
+    # Lil Fridge is 1st in three components. The tie goes to the first in component order: standing.
+    assert hbundle.sheet.facts["PR.3.why"].text == (
+        "Lil Fridge held 1st: standing sits 1st, results over the last 3 weeks 3rd."
+    )
+    assert hbundle.sheet.facts["PR.4.why"].text == (
+        "Pukancun on 3 held 12th: schedule played sits 10th, standing 12th."
+    )
+
+
+def test_the_opponent_place_is_the_standing_rank_before_this_week(hbundle):
+    # Lil Fridge beat Pukancun on 3, which was 12th before this week and is 12th after it.
+    # Return of T Mac beat Unsolicited Dak Picks, 7th before this week and 10th after it.
+    assert "the 7th-place team" in hbundle.sheet.facts["PR.8.why"].text
+    assert hbundle.sheet.facts["PR.8.why"].teams == ["Return of T Mac", "Unsolicited Dak Picks"]
+
+
+def test_a_team_that_tied_its_game_reads_a_tie_with(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    w6 = h.weeks[6]
+    tied = w6.model_copy(update={"scores": {**w6.scores, 6: w6.scores[10]}})
+    h = h.model_copy(update={"weeks": {**h.weeks, 6: tied}})
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h)
+    assert b.sheet.facts["PR.10.why"].text.startswith(
+        "behold the lamb moved up 3 places after a tie with Bo Girds, the 2nd-place team: "
+    )
+
+
+def test_every_rank_why_fact_records_its_digits_and_sits_in_the_rankings_chapter(hbundle):
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
+    for rid in hbundle.data.teams:
+        f = hbundle.sheet.facts[f"PR.{rid}.why"]
+        # A team name can hold a digit, such as "Pukancun on 3", and a name is not a number.
+        text = f.text
+        for name in f.teams:
+            text = text.replace(name, "")
+        for token in re.findall(r"\d+", text):
+            assert token in f.numbers
+        assert f"PR.{rid}.why" in ch.fact_ids
+
+
+def test_the_first_week_of_the_rankings_has_no_rank_why(fixture_raw_dir, fixture_history_root):
+    raw = load_raw(fixture_raw_dir)
+    h = load_history(fixture_history_root, raw, week=6)
+    week = parse_week(raw).model_copy(update={"week": 1})
+    b = build_bundle(week, news=lambda pid: [], history=History(week=1, weeks={1: h.weeks[1]}))
+    assert any(fid.startswith("PR.") for fid in b.sheet.facts)
+    assert not any(fid.endswith(".why") for fid in b.sheet.facts)
 
 
 def test_no_rankings_without_history(bundle):
