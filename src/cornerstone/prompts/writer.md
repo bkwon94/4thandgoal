@@ -29,5 +29,5 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
     - Never start the first sentences of 2 teams with the same 3 words.
     - At least 4 teams get a sentence with no number.
     - "form" is a component name. Write "results over the last 3 weeks" in its place.
-23. An `ODDS.` fact gives a team's playoff odds. Cite the odds for a team only when they change what the reader should feel, such as a clinch, an out, or a team near 50%. Do not list odds for all 12.
-24. In the Next Week chapter, an `SW.` fact gives the swing of a Must Watch game. State the swing for the Must Watch games. Use the fact's two numbers as given.
+23. An `ODDS.` fact gives a team's playoff odds. Cite a team's odds only when they change what the reader should feel. A clinch, an out, or a team near 50% is such a case. Do not list odds for all 12.
+24. In the Next Week chapter, an `SW.` fact gives the swing of a Must Watch game. State the swing for the Must Watch games. Use the fact's two numbers as given. A side that stays near one number has no swing. Say that it holds.

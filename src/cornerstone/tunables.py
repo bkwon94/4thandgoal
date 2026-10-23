@@ -105,3 +105,5 @@ RECENT_WEIGHT = 1.25
 SEED_SHOW_AT = 50
 # The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.
 BYE_COUNT = 2
+# The least gap, in points, between a side's win and loss odds that counts as a swing. A smaller gap is noise, not a stake.
+SWING_FLAT = 5

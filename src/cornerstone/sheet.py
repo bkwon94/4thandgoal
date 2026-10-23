@@ -48,13 +48,14 @@ from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
 from cornerstone.trades import is_late
+from cornerstone.tunables import SWING_FLAT
 
 logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
 LAST_WEEK = 14
-# The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds, and its 6 scores
-# per team are the thinnest draw the engine takes. A week before it gets no odds.
+# The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
+# per team are the fewest scores the engine draws from. A week before it gets no odds.
 ODDS_FROM_WEEK = 6
 # A chapter cites at most this many facts with an ID that starts with "H." or "P.", so the writer
 # stays focused. The cap does not cover the position-rank facts.
@@ -612,14 +613,19 @@ def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Cal
     if odds is None:
         return []
     swings = {(s.a, s.b): s for s in odds.swings}
+
+    def side(rid: int, win: int, loss: int, n: Nums) -> str:
+        t = odds.teams[rid]
+        # A clinched or out side cannot move, and a gap under SWING_FLAT is noise, so the side reads as flat.
+        if t.status != "open" or abs(win - loss) < SWING_FLAT:
+            return f"{team(rid)} stays near {n(t.playoff)}% either way."
+        return f"A win puts {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
+
     out = []
     for a, b in pairs:
         s = swings[(a, b)]
         n = Nums()
-        text = (
-            f"A win puts {team(a)} at {n(s.a_win)}%, a loss at {n(s.a_loss)}%. "
-            f"A win puts {team(b)} at {n(s.b_win)}%, a loss at {n(s.b_loss)}%."
-        )
+        text = f"{side(a, s.a_win, s.a_loss, n)} {side(b, s.b_win, s.b_loss, n)}"
         out.append(fact(f"SW.{a}v{b}", text, n, [team(a), team(b)], []))
     return out
 

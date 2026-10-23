@@ -431,7 +431,7 @@ def test_only_the_recap_of_the_matchup_of_the_week_is_the_motw_recap(bundle):
     assert not is_motw_recap(motw, sheet)
 
 
-def _odds(rid, playoff, bye, seed, status):
+def _team_odds(rid, playoff, bye, seed, status):
     return TeamOdds(roster_id=rid, playoff=playoff, bye=bye, seed=seed, status=status)
 
 
@@ -449,7 +449,8 @@ def test_one_swing_fact_per_must_watch_game_in_the_next_week_pair_order(hbundle)
 def test_swing_fact_states_both_sides():
     swing = Swing(a=3, b=8, a_win=71, a_loss=38, b_win=84, b_loss=67)
     names = {3: "Lil Fridge", 8: "Bo Girds"}
-    [f] = swing_facts(OddsResult(teams={}, swings=[swing]), [(3, 8)], names.get)
+    teams = {3: _team_odds(3, 55, 5, 4, "open"), 8: _team_odds(8, 75, 10, 3, "open")}
+    [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
     assert f.id == "SW.3v8"
     assert f.text == "A win puts Lil Fridge at 71%, a loss at 38%. A win puts Bo Girds at 84%, a loss at 67%."
     assert f.numbers == ["71", "38", "84", "67"]
@@ -457,19 +458,19 @@ def test_swing_fact_states_both_sides():
 
 
 def test_open_odds_fact_states_the_playoff_bye_and_seed():
-    [f] = odds_facts(OddsResult(teams={3: _odds(3, 64, 12, 4, "open")}, swings=[]), lambda rid: "Bo Girds")
+    [f] = odds_facts(OddsResult(teams={3: _team_odds(3, 64, 12, 4, "open")}, swings=[]), lambda rid: "Bo Girds")
     assert f.id == "ODDS.3"
     assert f.text == "Bo Girds makes the playoffs in about 64% of runs, with a bye in 12%, most often as the 4th seed."
     assert f.numbers == ["64", "12", "4"]
 
 
 def test_open_odds_fact_drops_the_seed_clause_with_no_seed():
-    [f] = odds_facts(OddsResult(teams={3: _odds(3, 30, 2, None, "open")}, swings=[]), lambda rid: "Bo Girds")
+    [f] = odds_facts(OddsResult(teams={3: _team_odds(3, 30, 2, None, "open")}, swings=[]), lambda rid: "Bo Girds")
     assert f.text == "Bo Girds makes the playoffs in about 30% of runs, with a bye in 2%."
 
 
 def test_clinched_and_out_odds_facts_hold_no_digit():
-    odds = OddsResult(teams={1: _odds(1, 100, 80, 1, "in"), 2: _odds(2, 0, 0, None, "out")}, swings=[])
+    odds = OddsResult(teams={1: _team_odds(1, 100, 80, 1, "in"), 2: _team_odds(2, 0, 0, None, "out")}, swings=[])
     names = {1: "Lil Fridge", 2: "Bo Girds"}
     facts = {f.id: f for f in odds_facts(odds, names.get)}
     assert facts["ODDS.1"].text == "Lil Fridge has clinched a playoff spot."
@@ -511,3 +512,20 @@ def test_a_week_with_no_saved_schedule_has_no_odds_facts(fixture_raw_dir, fixtur
 def test_median_chapter_lists_every_odds_fact(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "median")
     assert {fid for fid in ch.fact_ids if fid.startswith("ODDS.")} == {f"ODDS.{rid}" for rid in hbundle.data.teams}
+
+
+def test_a_flat_side_stays_near_its_odds_and_a_moving_side_keeps_its_swing():
+    swing = Swing(a=3, b=8, a_win=62, a_loss=58, b_win=84, b_loss=67)
+    teams = {3: _team_odds(3, 60, 5, 5, "open"), 8: _team_odds(8, 75, 10, 3, "open")}
+    names = {3: "Lil Fridge", 8: "Bo Girds"}
+    [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
+    assert f.text == "Lil Fridge stays near 60% either way. A win puts Bo Girds at 84%, a loss at 67%."
+    assert f.numbers == ["60", "84", "67"]
+
+
+def test_a_clinched_side_is_always_flat():
+    swing = Swing(a=3, b=8, a_win=100, a_loss=100, b_win=84, b_loss=67)
+    teams = {3: _team_odds(3, 100, 90, 1, "in"), 8: _team_odds(8, 75, 10, 3, "open")}
+    names = {3: "Lil Fridge", 8: "Bo Girds"}
+    [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
+    assert f.text == "Lil Fridge stays near 100% either way. A win puts Bo Girds at 84%, a loss at 67%."
