@@ -111,9 +111,9 @@ def playoff_odds(
     return OddsResult(teams=teams, swings=swings)
 
 
-def _draw_weights(values: list[float]) -> list[int]:
+def _draw_weights(values: list[float]) -> list[float]:
     """The cumulative draw weights of a roster's played-week scores. The last RECENT_WEEKS weeks weigh more."""
-    cum, total = [], 0
+    cum, total = [], 0.0
     for i in range(len(values)):
         total += RECENT_WEIGHT if i >= len(values) - RECENT_WEEKS else 1
         cum.append(total)
