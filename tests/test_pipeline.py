@@ -357,6 +357,37 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     assert {fid: after[fid] for fid in odds} == odds
 
 
+def _waiver(repo):
+    return json.loads((repo / "site" / "2026" / "week-06" / "waiver.json").read_text())
+
+
+def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    body = _waiver(repo)
+    assert body["schema_version"] == 1
+    assert body["week"] == 6
+    assert datetime.fromisoformat(body["built"]).tzinfo is not None
+    # The fixture rosters every player in its players file, so the pool is empty.
+    assert body["buckets"] == {"best_adds": []}
+    assert len(body["budgets"]) == 12
+    assert body["budgets"][0] == {"roster_id": 1, "budget_left": 69, "waiver_order": 1}
+
+
+def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    built = _waiver(repo)
+    (repo / "site" / "2026" / "week-06" / "waiver.json").unlink()
+
+    def no_engine(*args, **kwargs):
+        raise AssertionError("a rewrite ran the waiver engine")
+
+    monkeypatch.setattr("cornerstone.pipeline.waiver_board", no_engine)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **OFFLINE)
+    assert _waiver(repo) == built
+
+
 def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
@@ -468,6 +499,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "public/2026/week-06/page.json" in files
     assert "public/2026/rankings.json" in files
+    assert "public/2026/week-06/waiver.json" in files
     assert "public/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
     assert not any(f.startswith("public/static/") for f in files)

@@ -32,6 +32,7 @@ from cornerstone.sheet import (
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
+from cornerstone.waiver import waiver_board
 from cornerstone.writer import ClaudeCall
 
 log = logging.getLogger(__name__)
@@ -196,7 +197,7 @@ def make_bundle(
     fetched: datetime | None = None,
     nflverse: NflverseFetcher | None = None,
 ) -> tuple[Bundle, BuildRecord]:
-    """Load the raw data, run the week gate, load the history, and build the bundle."""
+    """Load the raw data, run the week gate, load the history, and build the bundle and the waiver board."""
     raw = load_raw(week_dir(repo, season, week) / "raw")
     parsed = parse_week(raw, week=week)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
@@ -213,6 +214,8 @@ def make_bundle(
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history)
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
+    # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
+    bundle.waiver = waiver_board(raw, week, started)
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),

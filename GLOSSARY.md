@@ -297,3 +297,22 @@ The backup to a roster's own starting running back. Insurance, never a player wi
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
 K, K over DEF.
+
+### The waiver page
+
+**Waiver pool**:
+Every player with a team, active, at QB, RB, WR, TE, K, or DEF, who is on no roster in this league.
+Sleeper gives a defense no status, so an active defense counts on its active flag.
+Use "pool" in code and "free agents" on the page.
+_Avoid_: free agent list, waiver wire (alone; that is the page)
+
+**Bucket**:
+One ranked list of the waiver board, such as best adds. It holds at most `BUCKET_SIZE` players and
+at most `PER_POSITION` of one position. A player can sit in more than one bucket.
+_Avoid_: tier, group, tab (a tab is the page control that shows one bucket)
+
+**Board score**:
+The weighted sum of a pool player's three scores, each from 0 to 1: usage trend, environment, and
+projection, with the weights of `BOARD_WEIGHTS`. The projection score is the rest of season
+projection, weeks N+1 to 17, ranked inside the position. A score with no input counts 0.
+_Avoid_: rank (that is the place in a bucket), value, power score
