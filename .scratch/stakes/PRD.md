@@ -69,10 +69,6 @@ check marks a team as clinched or out, so those two words are always true.
   the season and the week, so the same inputs give the same odds.
 - Score draw: each simulated week draws one of the team's own weekly scores this season, with
   the last `RECENT_WEEKS` (3) weeks weighted `RECENT_WEIGHT` (1.25) times. No fit, no league pool.
-- League pool: one draw in four comes from the pool of every team's weekly score this season,
-  not the team's own list. `LEAGUE_POOL_SHARE` (0.25) holds the share. A team with six clean
-  weeks can then draw a bad week it has not had yet, so a clean sheet stops reading as a lock.
-  Brian chose this on 2026-10-23 after an 8-4 team showed 99% after a loss; at 0.25 it shows 97%.
 - Projection shift: the drawn score then moves toward that week's projection. The shift is
   `PROJECTION_WEIGHT` (0.7) times the gap between the team's projected best-lineup total for that
   week and the team's season average score. At 0 the draw is the plain past score. At 1 the draw
