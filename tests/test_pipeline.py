@@ -13,6 +13,7 @@ import tempfile
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+import httpx
 import pytest
 
 from cornerstone.history import HISTORY_FILES, history_dir, history_root
@@ -50,7 +51,8 @@ def _no_bytes(url):
 
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
-NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity")
+NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity",
+                 "nflverse_stats_player")
 
 
 def _no_network(url):
@@ -63,6 +65,10 @@ def _fixture_nflverse(season, week, player_ids, players, teams, scoring):
     for f in NFLVERSE_FIXTURES.iterdir():
         shutil.copy(f, cache / f.name)
     return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network, scoring=scoring)
+
+
+def _no_bytes_nflverse(url):
+    raise httpx.ConnectError("down")
 
 
 def _down_nflverse(season, week, player_ids, players, teams, scoring):
@@ -665,7 +671,8 @@ def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir
     assert _nflverse_path(repo).exists()
     sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
     assert sources == {"history": True, "nflverse_pbp": True, "nflverse_ftn": True,
-                       "nflverse_injuries": True, "ffverse": True, "nflverse_snaps": True, "ffopportunity": True}
+                       "nflverse_injuries": True, "ffverse": True, "nflverse_snaps": True, "ffopportunity": True,
+                       "nflverse_stats_player": True}
 
 
 def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir):
@@ -782,6 +789,21 @@ def test_a_file_without_the_monday_night_game_is_not_saved(tmp_path, fixture_raw
     repo = _repo(tmp_path, fixture_raw_dir)
     _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=lagged)
     assert record.sources["ffopportunity"] is False and record.sources["nflverse_pbp"] is True
+    assert not _nflverse_path(repo).exists()
+
+
+def test_a_missing_player_file_sets_its_flag_false_and_is_not_saved(tmp_path, fixture_raw_dir):
+    def no_player_file(season, week, player_ids, players, teams, scoring):
+        cache = Path(tempfile.mkdtemp())
+        for f in NFLVERSE_FIXTURES.iterdir():
+            if f.name != "stats_player_week_2026.csv.gz":
+                shutil.copy(f, cache / f.name)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_bytes_nflverse,
+                             scoring=scoring)
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=no_player_file)
+    assert record.sources["nflverse_stats_player"] is False and record.sources["nflverse_pbp"] is True
     assert not _nflverse_path(repo).exists()
 
 
