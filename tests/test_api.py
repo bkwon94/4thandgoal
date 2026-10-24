@@ -518,6 +518,70 @@ def test_the_cache_key_changes_with_the_document_version(settings, sources, monk
     assert cache_key(trade, snapshot) != key
 
 
+def _with_week_rows(snapshot, returns, projections_ahead):
+    return snapshot.model_copy(update={"returns": returns, "projections_ahead": projections_ahead})
+
+
+def _outside_player(snapshot, roster_ids):
+    """A player on a roster outside `roster_ids`, so no grade of those rosters reads his rows."""
+    return next(player for roster_id, players in snapshot.rosters.items() if roster_id not in roster_ids
+                for player in players)
+
+
+def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    # A new returns file moves a return week inside the week, so the stored grade must miss.
+    key = cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, {}))
+    assert cache_key(trade, _with_week_rows(snapshot, {rostered: 9}, {})) != key
+    assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: 8}, {})) != finder_cache_key(
+        2026, 4, 12, _with_week_rows(snapshot, {rostered: 9}, {}))
+
+
+def test_the_cache_key_changes_with_a_projection_ahead_of_a_rostered_player_due_back(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    # The lineup value of a player due back is his projection from the return week on, so a change there must miss.
+    key = cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 12.5}}))
+    assert cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 13.5}})) != key
+    assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 12.5}})) != (
+        finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 13.5}})))
+
+
+def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    # Sleeper moves projections daily. A player not due back keeps his recent points, so his rows never reach the grade.
+    key = cache_key(trade, _with_week_rows(snapshot, {}, {rostered: {8: 12.5}}))
+    assert cache_key(trade, _with_week_rows(snapshot, {}, {rostered: {8: 13.5}})) == key
+    # The weeks before the return week are outside the mean too.
+    key = cache_key(trade, _with_week_rows(snapshot, {rostered: 9}, {rostered: {8: 12.5}}))
+    assert cache_key(trade, _with_week_rows(snapshot, {rostered: 9}, {rostered: {8: 13.5}})) == key
+
+
+def test_the_cache_key_tells_no_projections_file_from_no_rostered_rows(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    # With no projections file every player keeps his recent points, so the grade differs from an empty file.
+    assert cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, None)) != cache_key(
+        trade, _with_week_rows(snapshot, {rostered: 8}, {}))
+
+
+def test_the_cache_key_ignores_a_player_on_neither_roster(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    outside = _outside_player(snapshot, [4, 12])
+    # The rows of a player on neither roster never reach the grade, so a change to them keeps the hit.
+    key = cache_key(trade, _with_week_rows(snapshot, {outside: 8}, {outside: {7: 12.5}}))
+    assert cache_key(trade, _with_week_rows(snapshot, {outside: 9}, {outside: {7: 13.5}})) == key
+    assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {outside: 8}, {outside: {7: 12.5}})) == (
+        finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {outside: 9}, {outside: {7: 13.5}})))
+
+
 def _strings(value):
     """Every string in a document, at any depth."""
     if isinstance(value, dict):

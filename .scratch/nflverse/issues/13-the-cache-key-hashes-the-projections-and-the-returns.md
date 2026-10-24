@@ -14,7 +14,7 @@ return week of every player on the two rosters. The finder key shares `_content_
 
 **Status:** open
 
-- [ ] Two snapshots that differ only in one rostered player's return week give two different keys.
-- [ ] Two snapshots that differ only in one rostered player's projection ahead give two different keys.
-- [ ] A change to a player on neither roster leaves the key the same.
-- [ ] Every existing cache test passes unchanged.
+- [x] Two snapshots that differ only in one rostered player's return week give two different keys.
+- [x] Two snapshots that differ only in one rostered player's projection ahead give two different keys.
+- [x] A change to a player on neither roster leaves the key the same.
+- [x] Every existing cache test passes unchanged.
