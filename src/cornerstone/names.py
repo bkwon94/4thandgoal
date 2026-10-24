@@ -6,7 +6,7 @@ It holds the list of name suffixes, the name particles, and the last name of a f
 NAME_SUFFIXES = {"jr.", "sr.", "ii", "iii", "iv"}
 
 # A word that joins the last word to make one last name, such as "St." in "Amon-Ra St. Brown".
-# "Brown" alone names a different player to every reader. A chain such as "De La Cruz" keeps the last word only.
+# To a reader, "Brown" alone names a different player. A chain such as "De La Cruz" keeps the last word only.
 NAME_PARTICLES = ("st.", "st", "saint", "van", "vander", "de", "del", "von")
 
 

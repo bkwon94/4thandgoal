@@ -20,7 +20,7 @@ from cornerstone.tunables import LAST_REGULAR_WEEK
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 4
+DOCUMENT_VERSION = 5
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -47,22 +47,24 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     """The hash of the players, the record, and the week rows of each roster. The analyze key and the find key share it.
 
-    The week rows are the return week and the projections ahead of each rostered player. A new injuries file lands
-    daily and moves return weeks, and `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
+    The week rows are the return week and the projections ahead of each rostered player due back. The commissioner
+    edits the returns file by hand, and Sleeper moves projections daily. `DOCUMENT_VERSION` covers a deploy only, so
+    the rows must be in the key.
     Only the rows of the two rosters go in, so a change to any other player keeps the hit.
-    Sleeper moves projections daily, so the key holds only the projection rows the grade can read: the rows of a
-    player due back, from his return week through LAST_REGULAR_WEEK. Every other row would miss with no new grade.
+    The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
+    return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
+    # The returns file keeps a return week after the player is back, but the grade reads only a week still ahead.
+    due_back = {player: week for player, week in snapshot.returns.items() if week > snapshot.as_of.stats_through}
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),
             "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
-            "returns": {player: snapshot.returns[player] for player in snapshot.rosters[roster_id]
-                        if player in snapshot.returns},
-            "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), snapshot.returns[player])
-                                  for player in snapshot.rosters[roster_id] if player in snapshot.returns},
+            "returns": {player: due_back[player] for player in snapshot.rosters[roster_id] if player in due_back},
+            "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player])
+                                  for player in snapshot.rosters[roster_id] if player in due_back},
         }
         for roster_id in roster_ids
     }

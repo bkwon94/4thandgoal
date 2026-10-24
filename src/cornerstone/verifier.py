@@ -36,9 +36,9 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["unlucky"], ("AW.unlucky",)),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
-# Each of these words may appear in one sentence only.
+# Each of these words may appear in one sentence of the page only.
 ONCE_PER_PAGE_WORDS = ["lucky", "unlucky"]
-# The awards chapter owns the word of each award the sheet holds, so the award can always be named.
+# The awards chapter owns the word of each award the sheet holds, so the awards chapter can always name the award.
 AWARD_WORDS = {"lucky": "AW.lucky", "unlucky": "AW.unlucky"}
 AWARDS_CHAPTER = "awards"
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
@@ -124,9 +124,10 @@ def once_words(bare: str) -> set[str]:
 
 
 def page_words(blurb: Blurb, chapter: Chapter | None) -> set[str]:
-    """The once-per-page words that a blurb says. The chapter names are removed first, as in the code check.
+    """The once-per-page words that a blurb says.
 
-    The chapter is None for a saved blurb whose chapter the saved facts no longer hold, so no names are removed.
+    The function removes the chapter names first, as the code check does. The chapter is None for a saved blurb whose
+    chapter the saved facts no longer hold, so the function removes no names.
     """
     names = [*chapter.scope_teams, *chapter.scope_players] if chapter is not None else []
     return {word for s in blurb.sentences for word in once_words(remove_names(without_urls(s.text), names))}
@@ -140,7 +141,7 @@ def reserved_words(chapter_key: str, sheet: FactSheet) -> set[str]:
 
 
 def page_word_feedback(used_words: Collection[str]) -> str | None:
-    """The first-attempt feedback for the used words, so the writer does not spend an attempt on a known failure."""
+    """The lines that name the used words, so the writer does not spend an attempt on a known failure."""
     lines = [f"Do not say '{w}'. Another chapter of this page already does." for w in sorted(used_words)]
     return "\n".join(lines) or None
 
@@ -367,7 +368,8 @@ def code_check(
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")
 
-    # The writer prompt allows "lucky" once per page; a prompt rule holds most weeks, a count holds every week.
+    # The writer prompt allows "lucky" once per page and "unlucky" once per page. A prompt rule holds most weeks,
+    # but a count holds every week.
     # The count reads the text with names removed, and the whole-word match keeps "unlucky" out of "lucky".
     for word in ONCE_PER_PAGE_WORDS:
         said = [i for i, bare in enumerate(bares) if word in once_words(bare)]
@@ -479,10 +481,12 @@ def write_and_verify(
     chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
 ) -> tuple[Blurb, list[VerifyResult]]:
     results: list[VerifyResult] = []
-    feedback = page_word_feedback(used_words)
-    for _ in range(2):
+    # The used words go to every attempt, so a retry for another failure still hears them.
+    page_words = page_word_feedback(used_words)
+    feedback = None
+    for attempt in (1, 2):
         try:
-            blurb = write_blurb(chapter, sheet, call, feedback)
+            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt)
         except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
             # A writer error is a failed attempt, not a crash of the whole report.
             log.warning("writer failed for %s: %s", chapter.key, err)

@@ -890,7 +890,7 @@ def test_in_scope_two_word_last_name_does_not_name_an_out_of_scope_player(fixtur
 
 
 def _awards_with_luck(fixture_raw_dir):
-    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count is tested."""
+    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count can fail."""
     sheet = _sheet(fixture_raw_dir).model_copy(deep=True)
     ch = _ch(sheet, "awards")
     for fid in ("AW.lucky", "AW.unlucky"):
@@ -972,7 +972,7 @@ def test_write_and_verify_sends_the_page_word_failure_to_the_rewrite(fixture_raw
 
 
 def test_the_awards_chapter_owns_lucky_when_the_sheet_has_the_lucky_award(fixture_raw_dir):
-    # The award must always be named, so every other chapter starts with "lucky" used, even the first one.
+    # The awards chapter must always name the award, so every other chapter starts with "lucky" used.
     sheet, awards = _awards_with_luck(fixture_raw_dir)
     assert reserved_words("motw", sheet) == {"lucky", "unlucky"}
     assert reserved_words("awards", sheet) == set()
@@ -1002,8 +1002,30 @@ def test_the_first_writer_call_hears_the_used_words(fixture_raw_dir):
         users.append(user)
         return _good_writer_out()
 
-    write_and_verify(ch, sheet, fake, used_words={"lucky"})
-    assert "Do not say 'lucky'. Another chapter of this page already does." in users[0]
+    blurb, _ = write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert "Words this page already uses:\nDo not say 'lucky'. Another chapter of this page already does." in users[0]
+    # No last attempt exists yet, so the first call has no feedback section and the pass saves attempt 1.
+    assert "Feedback from the last attempt:" not in users[0]
+    assert blurb.attempt == 1
     users.clear()
     write_and_verify(ch, sheet, fake)
     assert "Do not say" not in users[0]
+
+
+def test_the_retry_still_hears_the_used_words(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            # Attempt 1 fails for an unsupported sentence, not for a page word.
+            return VerifyOut(verdicts=[Verdict(index=0, supported=len(users) > 1, reason="not in facts"),
+                                       Verdict(index=1, supported=True, reason="ok")])
+        users.append(user)
+        return _good_writer_out()
+
+    write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert len(users) == 2
+    assert "Sentence 0: not in facts" in users[1]
+    assert "Do not say 'lucky'. Another chapter of this page already does." in users[1]

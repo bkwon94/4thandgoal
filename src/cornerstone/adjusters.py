@@ -373,8 +373,9 @@ def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
 
 
 def _gain_when(snapshot: Snapshot, side: _Side) -> str:
-    """When the side's lineup gain comes. The text is "now" when the side gets no starter who is due back.
+    """The function gives the time of the side's lineup gain.
 
+    The text is "now" when the side gets no starter who is due back.
     A player due back does not play this week, so a gain he makes in the lineup comes after his return, not now.
     The text names each player due back that the side gets and starts. It gives the latest return week of them.
     """

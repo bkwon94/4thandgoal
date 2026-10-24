@@ -32,7 +32,7 @@ def _expected(row: dict[str, str], scoring: dict[str, float]) -> Decimal:
     """The full-PPR expected total of the row, rescaled to the league weights for receptions and interceptions.
 
     The expected points have no fumble term, so fumbles stay out. The rescale runs on exact decimals, because
-    float math can land a half just under it, and then the half rounds down.
+    float math can put a value just under a half, and then the value rounds down.
     """
     rec = Decimal(str(FILE_REC)) - Decimal(str(scoring.get("rec", 0.0)))
     pass_int = Decimal(str(scoring.get("pass_int", 0.0))) - Decimal(str(FILE_PASS_INT))
@@ -75,7 +75,7 @@ def window_gap(games: list[ExpectedGame], actual: dict[int, float]) -> float | N
     league's actual points of the player by week. A game with no actual points does not count, and fewer than
     WINDOW_MIN_GAMES games with them give None.
     """
-    # The gaps sum on exact decimals, so float drift cannot pull a half under it before the round.
+    # The gaps sum on exact decimals, so a float error cannot move a half down before the function rounds it.
     gaps = [Decimal(str(actual[g.week])) - Decimal(str(g.expected)) for g in games if g.week in actual]
     if len(gaps) < WINDOW_MIN_GAMES:
         return None
