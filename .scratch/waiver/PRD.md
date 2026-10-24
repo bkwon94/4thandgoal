@@ -144,9 +144,9 @@ one like him cost, and how many teams can outbid you.
   usage leads and projection is a tiebreak, because the projection lags the usage.
 - Best adds: the top `BUCKET_SIZE` (8) of the pool by board score, from QB, RB, WR, and TE, at most
   `PER_POSITION` (3) per position so one position does not fill the bucket. Kickers and defenses
-  stay in the pool and out of this bucket, Tina's call on 2026-10-23 after ticket 01: they have no
-  usage or environment score, so a position-relative projection score puts the top of each in
-  best adds every week.
+  stay in the pool and out of every ranked bucket, Tina's call on 2026-10-23 after tickets 01 and
+  03: they have no usage or environment score, so a position-relative projection score puts the
+  top of each in best adds every week, and live trending data put two kickers in the eight.
 - Trending: the top 8 of the pool by trending count, with the count as the fact. A player in both
   best adds and trending shows in both.
 - Sneaky: the pool players whose usage trend score is in the top quarter and whose projection
@@ -169,8 +169,11 @@ one like him cost, and how many teams can outbid you.
 - The price: the bid to win is the smallest whole dollar that beats the highest bid the model
   expects from any rival. Each rival's expected bid is his budget left times a need factor for the
   position, from `NEED_SHARE`: 0.35 when the rival has fewer healthy starters at the position
-  than the lineup needs, 0.12 otherwise, capped at his budget left. Past claims for the position
-  this season raise the floor to the largest winning bid plus one. The price never exceeds the
+  than the lineup needs, 0.12 otherwise, times the player's board score from 0 to 1, capped at
+  his budget left. The board score term is Tina's call on 2026-10-23 after ticket 06, so the top
+  player at a position costs more than the eighth. The last winning claim for the position within
+  the last `FLOOR_WEEKS` (3) weeks raises the floor to that bid plus one. Not the season's largest:
+  one $41 win in week 3 must not price every RB at $42 all season. The price never exceeds the
   highest budget left among the rivals. Every price is a fact with the inputs in its numbers.
 - The last like him: the most recent winning claim of the same position and the same bucket tier
   this season, with the team and the week. Empty when none.
