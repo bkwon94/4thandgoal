@@ -330,3 +330,23 @@ The weighted sum of a pool player's three scores, each from 0 to 1: usage trend,
 projection, with the weights of `BOARD_WEIGHTS`. The projection score is the rest of season
 projection, weeks N+1 to 17, ranked inside the position. A score with no input counts 0.
 _Avoid_: rank (that is the place in a bucket), value, power score
+
+**Usage trend**:
+The rise in a player's snap share plus his targets or carries share over the last `USAGE_WEEKS` weeks, ranked inside the position.
+_Avoid_: momentum, buzz
+
+**Environment**:
+The team's rank in plays per game, plus neutral pass rate for a QB, WR, or TE, or rush success for an RB.
+_Avoid_: situation, offense grade
+
+**Snap share**:
+The percent of the team's offensive snaps a player played in one week, from the nflverse snap counts.
+_Avoid_: playing time, usage (alone)
+
+**Neutral pass rate**:
+The percent of passes on a team's neutral plays: first or second down, score within 7, first three quarters, not the half's last two minutes.
+_Avoid_: pass rate over expected, PROE
+
+**Rush success**:
+The percent of a team's designed runs that nflverse marks as a success.
+_Avoid_: rush efficiency, YPC

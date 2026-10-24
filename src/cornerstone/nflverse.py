@@ -1,5 +1,5 @@
 """
-Download and parse the nflverse drop, injury, schedule, and depth chart files and the ffverse id map.
+Download and parse the nflverse play by play, snap count, injury, schedule, and depth chart files and the ffverse id map.
 A failure of any source never stops a build, so each read returns None for missing data.
 """
 import csv
@@ -12,8 +12,11 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel
 
+# A module import, not a name import: the usage module imports this one for the CSV helpers.
+from cornerstone import nflverse_usage
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import DropPlay, NflverseWeek
+from cornerstone.tunables import USAGE_SAVED_WEEKS
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +26,7 @@ INJURIES_URL = "https://github.com/nflverse/nflverse-data/releases/download/inju
 # One file holds the games of every season, so this URL has no season field.
 SCHEDULES_URL = "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
 DEPTH_CHARTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_{season}.csv.gz"
+SNAP_COUNTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{season}.csv"
 FFIDS_URL = "https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv"
 
 # The season files grow each week, so a one-day cache keeps them fresh on build day.
@@ -244,11 +248,24 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     injuries = read_injuries(injuries_path, week) if injuries_path else None
     id_map = read_id_map(ffids_path) if ffids_path else {}
     gsis = {pid: g for pid in player_ids if (g := gsis_id(pid, players, id_map))}
+    snaps = get(SNAP_COUNTS_URL)
+    # The waiver pool is not rostered, so the usage maps every QB, RB, WR, and TE of the blob, not `player_ids`.
+    skill = {pid for pid, entry in players.items() if (entry or {}).get("position") in SKILL_POSITIONS}
+    sleeper_of_gsis = {g: pid for pid in sorted(skill) if (g := gsis_id(pid, players, id_map))}
+    pfr_map = nflverse_usage.read_pfr_map(ffids_path) if ffids_path else {}
+    sleeper_of_pfr = {pfr: pid for pfr, pid in pfr_map.items() if pid in skill}
+    first_week = week - USAGE_SAVED_WEEKS + 1
+    snap_weeks = nflverse_usage.read_snaps(snaps, first_week, week, sleeper_of_pfr) if snaps else {}
+    plays = nflverse_usage.read_plays(pbp, week) if pbp else None
+    usage = None if plays is None else nflverse_usage.read_usage(plays, snap_weeks, week, first_week, sleeper_of_gsis)
+    environment = None if plays is None else nflverse_usage.read_environment(plays)
     return NflverseWeek(
         sources={"nflverse_pbp": pbp is not None and drops is not None,
                  "nflverse_ftn": ftn is not None and drops is not None,
                  "nflverse_injuries": injuries is not None,
-                 "ffverse": ffids_path is not None},
+                 "ffverse": ffids_path is not None,
+                 "nflverse_snaps": snaps is not None and usage is not None},
         gsis=gsis,
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
-        injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries})
+        injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},
+        usage=usage, environment=environment)

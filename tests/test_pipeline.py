@@ -47,7 +47,7 @@ def _no_bytes(url):
 
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
-NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse")
+NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps")
 
 
 def _no_network(url):
@@ -603,7 +603,7 @@ def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir
     assert _nflverse_path(repo).exists()
     sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
     assert sources == {"history": True, "nflverse_pbp": True, "nflverse_ftn": True,
-                       "nflverse_injuries": True, "ffverse": True}
+                       "nflverse_injuries": True, "ffverse": True, "nflverse_snaps": True}
 
 
 def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir):

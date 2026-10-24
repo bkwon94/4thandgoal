@@ -374,6 +374,33 @@ class WaiverBoard(BaseModel):
     budgets: list[BudgetRow]
 
 
+class UsageWeek(BaseModel):
+    """The usage of one player in one week, from the play by play and the snap counts. A share is in percent."""
+    week: int
+    # The Sleeper code of the team he played for.
+    team: str
+    # None when the snap counts have no row for him, such as a player with no PFR ID in the id map.
+    snaps: int | None
+    snap_share: int | None
+    targets: int
+    target_share: int
+    carries: int
+    carry_share: int
+    # The targets and the carries at the opponent's 20-yard line or closer.
+    red_zone_touches: int
+
+
+class TeamWeek(BaseModel):
+    """The counts of one team's offense in one week. The environment rates come from the sums of these counts."""
+    week: int
+    plays: int
+    passes: int
+    rushes: int
+    rush_successes: int
+    neutral_plays: int
+    neutral_passes: int
+
+
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
@@ -457,3 +484,8 @@ class NflverseWeek(BaseModel):
     # None means the source gave no data for the week. An empty dict means no player matched.
     drops: dict[str, list[DropPlay]] | None
     injuries: dict[str, dict[int, str]] | None
+    # The usage of the last `USAGE_SAVED_WEEKS` weeks by Sleeper ID, QB, RB, WR, and TE only. None in an
+    # extract with no usage field, or when the play by play has no row for the week.
+    usage: dict[str, list[UsageWeek]] | None = None
+    # The offense counts of each week of the season by Sleeper team code. None as for the usage.
+    environment: dict[str, list[TeamWeek]] | None = None
