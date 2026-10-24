@@ -60,7 +60,8 @@ AN_BEFORE_NUMBER = re.compile(r"(?<!\w)an\s+(\d(?:[\d,.]*\d)?)", re.IGNORECASE)
 
 
 # A web URL in a fact or a sentence is a citation. Its digits are part of the address, not a claim.
-URL = re.compile(r"https?://\S+")
+# The last character is not a stop or a bracket, so "(https://a.com/x)." gives "https://a.com/x".
+URL = re.compile(r"https?://[^\s()\[\]<>]*[^\s()\[\]<>.,;:!?'\"]")
 
 
 def without_urls(text: str) -> str:
@@ -264,8 +265,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
     bares: list[str] = []
 
     for i, sentence in enumerate(blurb.sentences):
-        # A sentence with no fact IDs is the one reaction a blurb may hold.
-        if not sentence.fact_ids:
+        # A URL is a citation: a chapter fact that carries the same URL counts as cited by the sentence.
+        urls = URL.findall(sentence.text)
+        url_ids = [fid for fid in chapter.fact_ids
+                   if fid in sheet.facts and any(u in sheet.facts[fid].text for u in urls)]
+        # A sentence with no fact IDs and no URL is the one reaction a blurb may hold.
+        if not sentence.fact_ids and not urls:
             reactions += 1
             if reactions > 1:
                 failures.append(f"[{i}] a second reaction sentence; a blurb may hold one, so cite a fact")
@@ -277,12 +282,12 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 valid_ids.append(fid)
             else:
                 failures.append(f"[{i}] fact ID {fid} is not in this chapter")
-        cited = _numbers(valid_ids, sheet)
+        cited = _numbers(valid_ids + url_ids, sheet)
 
-        # Digits inside a name ("Pukancun on 3") are not numbers.
-        bare = remove_names(sentence.text, scope_names)
+        # Digits inside a name ("Pukancun on 3") or inside a URL are not numbers.
+        bare = remove_names(without_urls(sentence.text), scope_names)
         bares.append(bare)
-        cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
+        cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids + url_ids)
         ids = ", ".join(sentence.fact_ids)
         for message in number_failures(bare, cited | always_allowed, cited_text):
             # A digit failure names the cited IDs, so the rewrite sees the facts that the check used.

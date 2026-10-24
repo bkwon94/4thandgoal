@@ -820,3 +820,36 @@ def test_an_opener_ignores_curly_quotes_and_question_marks(fixture_raw_dir, fixt
         _tagged("Scoring has? dipped too.", 2, "PR.2"),
     )
     assert [m[:4] for m in opener_failures(b, ch, sheet)] == ["[1] "]
+
+
+# A research claim cites its source by URL. The fact carries the URL, so a sentence with the same URL is cited.
+CLAIM_URL = "https://sports.yahoo.com/fantasy/article/week-7-waiver-wire-141451458.html"
+
+
+def _claim_sheet():
+    from cornerstone.models import Chapter, Fact, FactSheet
+
+    text = f"Tucker ran 31 routes and leads the Raiders wideouts. (Yahoo Fantasy) {CLAIM_URL}"
+    claim = Fact(id="WV.research.7.1", text=text, numbers=["31"], teams=[], players=["Tre Tucker"])
+    chapter = Chapter(key="waiver", title="Waiver wire", fact_ids=[claim.id], scope_teams=[],
+                      scope_players=["Tre Tucker"], min_sentences=1, max_sentences=2)
+    return FactSheet(facts={claim.id: claim}, chapters=[chapter]), chapter
+
+
+def test_a_claim_sentence_with_a_url_passes_and_the_same_sentence_with_no_url_fails():
+    sheet, ch = _claim_sheet()
+    sentence = "Harmon says Tre Tucker ran 31 routes and leads the Raiders wideouts"
+    assert code_check(_blurb("waiver", _s(f"{sentence} ({CLAIM_URL}).")), ch, sheet) == []
+    assert code_check(_blurb("waiver", _s(f"{sentence}.")), ch, sheet) != []
+
+
+def test_a_claim_sentence_with_a_url_still_fails_on_a_banned_word():
+    sheet, ch = _claim_sheet()
+    b = _blurb("waiver", _s(f"Harmon says Tre Tucker is the best add of the week ({CLAIM_URL})."))
+    assert "[0] banned word 'best'" in code_check(b, ch, sheet)
+
+
+def test_a_cited_research_fact_passes_with_its_url_in_the_sentence():
+    sheet, ch = _claim_sheet()
+    b = _blurb("waiver", _s(f"Tre Tucker ran 31 routes, per Yahoo Fantasy: {CLAIM_URL}", "WV.research.7.1"))
+    assert code_check(b, ch, sheet) == []
