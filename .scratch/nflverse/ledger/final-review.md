@@ -72,3 +72,29 @@ These items do not reach a reader. Fold them into a later cleanup.
 - New Minors 1, 2, 4, 5, and 6 above, and the STE table.
 
 Ticket 15, Minor 4 (`verifier.py:497`, now line 511) is not in this list. It can change the page, so it is Important 1 above.
+
+## Re-review of the fix wave
+
+Range: `3dfd0fd..e57445d` on `nflverse-final`. I read the diff and `final-fix.md`. I ran no suite.
+
+Verdict: all items ADDRESSED. The diff adds no new breakage. One new Minor note follows; it is optional.
+
+| Item | Verdict | Evidence |
+| --- | --- | --- |
+| Important 1 | ADDRESSED | `verifier.py:485-489` sends the used-word lines to each attempt as their own argument. `test_the_retry_still_hears_the_used_words` checks attempt 2. |
+| Important 2 | ADDRESSED | `cache.py:61` builds `due_back` with `week > stats_through`, the same rule as `_due_back`. Both comprehensions read it. The new test uses a return week equal to `stats_through`. |
+| Minor 1 and 3 | ADDRESSED | `writer.py` adds `PAGE_WORDS_HEADER` and `page_words`. Attempt 1 has no feedback header now. The loop passes `attempt`, so a first-try pass saves 1. Rule 14 names the section. |
+| Minor 2 | ADDRESSED | `DOCUMENT_VERSION = 5`. |
+| Minor 4 | ADDRESSED | The `_content_hash` docstring names the hand-kept returns file. |
+| Minor 5 | ADDRESSED | Rule 8 of `writer.md` holds "unlucky" to once per page, and the `verifier.py:371` comment names both words. `tone.md` stays without the rule. That is enough, because the writer reads `writer.md`. |
+| Minor 6 | ADDRESSED | `pipeline.py:321-322`. |
+| STE table and `cli.py:133` | ADDRESSED | Every row matches the fix text. The history comment is gone. |
+
+Placement: `build_writer_prompt` puts the used-word section in the user message. The section comes after the chapter facts and the MOTW note, and before any feedback. The model reads that part on each call, and rule 14 in the system prompt tells it what the section means.
+
+Wrapped docstrings: `page_words` (`verifier.py:127-131`) and `_content_hash` (`cache.py:48-56`) read well. Each sentence is whole and stays under 25 words.
+
+New Minor notes, optional:
+
+1. `src/cornerstone/verifier.py:485`: the local name `page_words` hides the module function `page_words` at line 126. No code in `write_and_verify` calls that function, so the code runs correctly. Fix: rename the local to `used_lines`.
+2. `src/cornerstone/verifier.py:146`: a reserved award word gets the text "Another chapter of this page already does." In a chapter before the awards chapter, no chapter has said the word yet. The section header "Words this page already uses:" makes the same claim. The command "Do not say" is still correct, so the risk is low. Fix later: "The awards chapter or another chapter of this page uses it."

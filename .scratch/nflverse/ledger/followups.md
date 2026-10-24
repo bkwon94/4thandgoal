@@ -49,3 +49,5 @@ Flow: Opus builder with TDD per ticket -> two Opus reviewers (standards, spec wi
 - 15: complete (commits dd1474c..81d6f58, review clean after 2 rounds). Minors deferred: writer.py:190 attempt saves 2 on a first-try pass with used words; retry feedback drops the used-word line (verifier.py:497).
 - 15 merged after a test-file conflict (both sides kept). Main 3dfd0fd: 1079 passed, ruff 135. All eight merged. Final whole-branch review out (opus).
 - Final review: 0 Critical, 2 Important (retry drops used-word lines -> page; cache key hashes past-return players -> cost only), 6 Minor, 17 STE rows. One fix wave dispatched on nflverse-final (opus).
+- Final fix wave done: 5a82296 (items 1-5), e57445d (STE). 1081 pass, ruff 135. Scoped re-review sent.
+- Fix wave merged. Main: 1081 passed, ruff 135. Pushed. Worktrees removed.
