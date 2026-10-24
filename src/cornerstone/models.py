@@ -343,6 +343,12 @@ class BoardScores(BaseModel):
     projection: float = 0.0
 
 
+class WaiverPrice(BaseModel):
+    """The bid to win of one pool player, a whole dollar, with the fact that holds its inputs."""
+    bid: int
+    fact: Fact
+
+
 class WaiverPlayer(BaseModel):
     """One ranked player of a bucket. The week projection is for week N+1, the rest of season one for N+1 to 17."""
     player_id: str
@@ -357,6 +363,8 @@ class WaiverPlayer(BaseModel):
     trending_count: int = 0
     # The facts of the player. Every digit in a fact's text is in its numbers.
     facts: list[Fact] = []
+    # None for a drop, and in a facts file saved before the price.
+    price: WaiverPrice | None = None
 
 
 class BudgetRow(BaseModel):

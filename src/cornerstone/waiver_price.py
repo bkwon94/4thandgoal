@@ -3,10 +3,16 @@ The waiver price: the bid to win of each player, the last like him, and the outb
 Pure code over the raw files and the bid history of the season, so the same inputs give the same price.
 """
 import json
+import math
+from collections import Counter
 from pathlib import Path
+from typing import NamedTuple
 
+from cornerstone.adjusters import OUT_STATUSES
 from cornerstone.history import history_dir
-from cornerstone.models import WaiverClaim
+from cornerstone.models import WaiverClaim, WaiverPlayer, WaiverPrice
+from cornerstone.sheet import Nums, fact
+from cornerstone.tunables import NEED_SHARE
 
 # Sleeper marks a claim that won as complete and a claim that lost as failed.
 CLAIM_RESULTS = {"complete": True, "failed": False}
@@ -39,3 +45,60 @@ def _claims(transactions: list[dict], positions: dict[str, str | None]) -> list[
         if t["type"] == "waiver" and t["status"] in CLAIM_RESULTS
         for player_id, roster_id in (t["adds"] or {}).items()
     ]
+
+
+class Rival(NamedTuple):
+    """One roster of the league as a bidder: its team name, its budget left, and its healthy players by position."""
+    team: str
+    budget_left: int
+    healthy: Counter
+
+
+class Bid(NamedTuple):
+    """The bid the model expects from one rival on one player."""
+    rival: Rival
+    need: bool
+    amount: float
+
+
+def price_players(players: list[WaiverPlayer], raw: dict[str, object], claims: list[WaiverClaim]) -> list[WaiverPlayer]:
+    """Each player of `players` with his price. A rival is every roster: the site takes out the viewer's own."""
+    rivals = _rivals(raw)
+    # Only the dedicated slots count. A FLEX slot takes any of several positions, so no one position needs it.
+    slots = Counter(raw["league"]["roster_positions"])
+    return [p.model_copy(update={"price": _price(p, rivals, slots[p.position])}) for p in players]
+
+
+def _price(player: WaiverPlayer, rivals: list[Rival], slots: int) -> WaiverPrice:
+    top = max((_expected_bid(r, player.position, slots) for r in rivals), key=lambda b: b.amount)
+    # The smallest whole dollar above the top expected bid.
+    bid = math.floor(top.amount) + 1
+    n = Nums()
+    text = (f"Bid ${n(bid)} to win {player.name}. The top rival bid is about ${n(top.amount)}, "
+            f"from {top.rival.team} with ${n(top.rival.budget_left)} left")
+    text += f" and a need at {player.position}." if top.need else "."
+    return WaiverPrice(bid=bid, fact=fact(f"waiver_price_{player.player_id}", text, n, [top.rival.team], [player.name]))
+
+
+def _expected_bid(rival: Rival, position: str, slots: int) -> Bid:
+    need = rival.healthy[position] < slots
+    share = NEED_SHARE["need" if need else "covered"]
+    return Bid(rival=rival, need=need, amount=min(rival.budget_left * share, rival.budget_left))
+
+
+def _rivals(raw: dict[str, object]) -> list[Rival]:
+    budget = raw["league"]["settings"]["waiver_budget"]
+    users = {u["user_id"]: u for u in raw["users"]}
+    rivals = []
+    for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"]):
+        # A roster with no players has None in rosters.json.
+        entries = [raw["players"].get(pid) or {} for pid in roster.get("players") or []]
+        healthy = Counter(e.get("position") for e in entries if e.get("injury_status") not in OUT_STATUSES)
+        rivals.append(Rival(team=_team_name(users.get(roster["owner_id"]) or {}), healthy=healthy,
+                            budget_left=budget - roster["settings"]["waiver_budget_used"]))
+    return rivals
+
+
+def _team_name(user: dict) -> str:
+    # The same rule as the parse of the week: the team name, else the display name.
+    return (user.get("metadata") or {}).get("team_name") or user.get("display_name") or ""

@@ -143,3 +143,6 @@ USAGE_WEEKS = 2
 # The count of latest weeks of usage the nflverse extract saves. The drops bucket needs 3 falls in a row,
 # and 3 falls take 4 weeks. The usage trend reads only the last USAGE_WEEKS of them.
 USAGE_SAVED_WEEKS = 4
+# The share of his budget left that a rival is expected to bid on a player. "need" is for a rival with fewer
+# healthy starters at the position than the lineup needs, "covered" for any other rival.
+NEED_SHARE = {"need": 0.35, "covered": 0.12}
