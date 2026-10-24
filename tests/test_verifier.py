@@ -820,3 +820,36 @@ def test_an_opener_ignores_curly_quotes_and_question_marks(fixture_raw_dir, fixt
         _tagged("Scoring has? dipped too.", 2, "PR.2"),
     )
     assert [m[:4] for m in opener_failures(b, ch, sheet)] == ["[1] "]
+
+
+# A research fact carries its source URL as text. The fact ID is the citation, as for any fact.
+CLAIM_URL = "https://sports.yahoo.com/fantasy/article/week-7-waiver-wire-141451458.html"
+
+
+def _claim_sheet():
+    from cornerstone.models import Chapter, Fact, FactSheet
+
+    text = f"Tucker ran 31 routes and leads the Raiders wideouts. Source: Yahoo Fantasy, {CLAIM_URL}"
+    claim = Fact(id="WV.research.7.1", text=text, numbers=["31"], teams=[], players=["Tre Tucker"])
+    chapter = Chapter(key="waiver", title="Waiver wire", fact_ids=[claim.id], scope_teams=[],
+                      scope_players=["Tre Tucker"], min_sentences=1, max_sentences=2)
+    return FactSheet(facts={claim.id: claim}, chapters=[chapter]), chapter
+
+
+def test_a_cited_research_fact_passes_with_its_url_in_the_sentence():
+    sheet, ch = _claim_sheet()
+    b = _blurb("waiver", _s(f"Tre Tucker ran 31 routes, per Yahoo Fantasy: {CLAIM_URL}", "WV.research.7.1"))
+    assert code_check(b, ch, sheet) == []
+
+
+def test_a_sentence_with_a_url_and_no_fact_id_is_a_reaction_and_fails_on_an_uncited_digit():
+    sheet, ch = _claim_sheet()
+    failures = code_check(_blurb("waiver", _s(f"Tucker ran 31 routes ({CLAIM_URL}).")), ch, sheet)
+    assert "[0] number 31 is not in the cited facts" in failures
+    assert any("reaction sentence" in f for f in failures)
+
+
+def test_a_cited_research_claim_still_fails_on_a_banned_word():
+    sheet, ch = _claim_sheet()
+    b = _blurb("waiver", _s(f"Tre Tucker is the best add, per Yahoo Fantasy: {CLAIM_URL}", "WV.research.7.1"))
+    assert "[0] banned word 'best'" in code_check(b, ch, sheet)

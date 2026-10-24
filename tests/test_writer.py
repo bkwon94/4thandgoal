@@ -486,3 +486,17 @@ def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir
     system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
     assert "State the swing for the Must Watch games. Use the fact's two numbers as given." in system
     assert "A side that stays near one number has no swing. Say that it holds." in system
+
+
+def test_the_research_call_alone_sends_the_web_search_tool(monkeypatch):
+    from cornerstone.models import ResearchOut
+    from cornerstone.writer import claude_call
+    from cornerstone.waiver_research import search_call
+
+    sent = _fake_client(monkeypatch)
+    search_call("research system", "user text")
+    assert [t["name"] for t in sent["tools"]] == ["web_search"]
+    assert sent["output_format"] is ResearchOut
+    sent.clear()
+    claude_call("writer system", "user text", WriterOut)
+    assert "tools" not in sent

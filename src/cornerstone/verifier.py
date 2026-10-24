@@ -59,6 +59,16 @@ A_BEFORE_VOWEL_NUMBER = re.compile(rf"(?<!\w)a\s+({VOWEL_SOUND_NUMBER})", re.IGN
 AN_BEFORE_NUMBER = re.compile(r"(?<!\w)an\s+(\d(?:[\d,.]*\d)?)", re.IGNORECASE)
 
 
+# A web URL in a fact or a sentence is a citation. Its digits are part of the address, not a claim.
+# The last character is not a stop or a bracket, so "(https://a.com/x)." gives "https://a.com/x".
+URL = re.compile(r"https?://[^\s()\[\]<>]*[^\s()\[\]<>.,;:!?'\"]")
+
+
+def without_urls(text: str) -> str:
+    """The text with each web URL replaced by a space."""
+    return URL.sub(" ", text)
+
+
 def normalize_number(number: str) -> str:
     number = number.replace(",", "")
     return number[:-2] if number.endswith(".0") else number
@@ -270,8 +280,8 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 failures.append(f"[{i}] fact ID {fid} is not in this chapter")
         cited = _numbers(valid_ids, sheet)
 
-        # Digits inside a name ("Pukancun on 3") are not numbers.
-        bare = remove_names(sentence.text, scope_names)
+        # Digits inside a name ("Pukancun on 3") or inside a URL are not numbers.
+        bare = remove_names(without_urls(sentence.text), scope_names)
         bares.append(bare)
         cited_text = " ".join(sheet.facts[fid].text for fid in valid_ids)
         ids = ", ".join(sentence.fact_ids)

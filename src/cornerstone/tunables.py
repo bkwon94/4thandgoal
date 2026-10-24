@@ -156,3 +156,15 @@ FLOOR_WEEKS = 3
 SNEAKY_USAGE_FLOOR = 0.75
 # The least projection score in the top half of a position. A score under it is in the bottom half.
 TOP_HALF = 0.5
+
+# The research step asks the web for research claims on the ranked players.
+# The most players the research step reads per build. Each one is one Claude call with web search, at about
+# $0.14 per player with tokens, so 32 players cost about $4.50 a week. 32 covers four full buckets of 8 when
+# none repeats. Prices from https://platform.claude.com/docs/en/about-claude/pricing, read 2026-10-23.
+RESEARCH_PLAYERS = 32
+# The most research claims kept per player. The sheet has room for two lines under the facts, and a third
+# claim is most often a repeat of the first two.
+CLAIMS_PER_PLAYER = 2
+# The most web searches in one research call. The prompt has four steps: the Yahoo waiver column, the Yahoo
+# author pages, the wider web, and one spare for a step that gave nothing. Each search costs $0.01.
+RESEARCH_SEARCHES = 4
