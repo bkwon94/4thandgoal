@@ -6,17 +6,17 @@ import csv
 import gzip
 import logging
 import time
-from collections import Counter
 from collections.abc import Callable, Collection
 from pathlib import Path
 
 import httpx
 from pydantic import BaseModel
 
+# A module import, not a name import: the usage module imports this one for the CSV helpers.
+from cornerstone import nflverse_usage
 from cornerstone.files import write_bytes_atomic
-from cornerstone.history import _round_half_up
-from cornerstone.models import DropPlay, NflverseWeek, TeamWeek, UsageWeek
-from cornerstone.tunables import USAGE_WEEKS
+from cornerstone.models import DropPlay, NflverseWeek
+from cornerstone.tunables import USAGE_SAVED_WEEKS
 
 logger = logging.getLogger(__name__)
 
@@ -219,130 +219,6 @@ def read_id_map(path: Path) -> dict[str, str]:
             if row["sleeper_id"] not in ("", "NA") and row["gsis_id"] not in ("", "NA")}
 
 
-# The play types of an offensive play. A kneel, a spike, a penalty with no play, and a kick are not plays.
-PLAY_TYPES = ("pass", "run")
-# A target or a carry at this yard line or closer to the end zone is a red zone touch.
-RED_ZONE_YARDS = 20
-
-
-def _share(part: int, whole: int) -> int:
-    return int(_round_half_up(100 * part / whole)) if whole else 0
-
-
-def _regular_week(row: dict[str, str], season_key: str) -> int | None:
-    """The week of a regular season row. None for a playoff row or a row with no week."""
-    if row.get(season_key, "REG") != "REG" or not row["week"].isdigit():
-        return None
-    return int(row["week"])
-
-
-def read_usage(pbp: Path, snaps: Path | None, week: int, first_week: int, sleeper_of_gsis: dict[str, str],
-               sleeper_of_pfr: dict[str, str]) -> dict[str, list[UsageWeek]] | None:
-    """The usage of weeks `first_week` to `week` by Sleeper ID, in week order. None when the play by play has no week `week`.
-
-    The play by play gives the targets and the carries, and the snap counts give the snaps. A player with
-    no Sleeper ID in the two maps is not in the result. A share is of the team's targets, carries, or snaps
-    that week. A carry is a designed run: a scramble is a pass play in nflverse, so it is no carry.
-    """
-    has_week = False
-    counts: dict[tuple[str, int], Counter] = {}
-    teams: dict[tuple[str, int], str] = {}
-    team_totals: dict[tuple[str, int], Counter] = {}
-    for row in _rows(pbp):
-        n = _regular_week(row, "season_type")
-        has_week = has_week or n == week
-        if n is None or not first_week <= n <= week or row["play_type"] not in PLAY_TYPES:
-            continue
-        team = _sleeper_team(row["posteam"])
-        for column, kind in (("receiver_player_id", "targets"), ("rusher_player_id", "carries")):
-            if not row[column] or (kind == "carries" and not _number(row["rush"])):
-                continue
-            team_totals.setdefault((team, n), Counter())[kind] += 1
-            pid = sleeper_of_gsis.get(row[column])
-            if pid is None:
-                continue
-            player = counts.setdefault((pid, n), Counter())
-            player[kind] += 1
-            teams[(pid, n)] = team
-            yardline = _yardline(row["yardline_100"])
-            if yardline is not None and yardline <= RED_ZONE_YARDS:
-                player["red_zone"] += 1
-    if not has_week:
-        return None
-    snap_rows: dict[tuple[str, int], tuple[int, int, str]] = {}
-    for row in _rows(snaps) if snaps else ():
-        n = _regular_week(row, "game_type")
-        pid = sleeper_of_pfr.get(row["pfr_player_id"])
-        if n is not None and pid is not None and first_week <= n <= week:
-            # nflverse writes the snap share as a fraction, such as 0.71.
-            snap_rows[(pid, n)] = (int(_number(row["offense_snaps"])),
-                                   int(_round_half_up(100 * _number(row["offense_pct"]))), _sleeper_team(row["team"]))
-    usage: dict[str, list[UsageWeek]] = {}
-    for key in sorted(set(counts) | set(snap_rows), key=lambda k: (k[0], k[1])):
-        pid, n = key
-        player, snap = counts.get(key, Counter()), snap_rows.get(key)
-        team = teams.get(key) or snap[2]
-        totals = team_totals.get((team, n), Counter())
-        usage.setdefault(pid, []).append(UsageWeek(
-            week=n, team=team, snaps=snap[0] if snap else None, snap_share=snap[1] if snap else None,
-            targets=player["targets"], target_share=_share(player["targets"], totals["targets"]),
-            carries=player["carries"], carry_share=_share(player["carries"], totals["carries"]),
-            red_zone_touches=player["red_zone"]))
-    return usage
-
-
-# A neutral down: the score is within this many points either way.
-NEUTRAL_SCORE = 7
-# The game clock of the end of the first half's two-minute warning: 30 minutes left plus 2.
-HALF_TWO_MINUTES_SECONDS = 1800 + 120
-
-
-def _is_neutral(row: dict[str, str]) -> bool:
-    """First or second down, the score within NEUTRAL_SCORE, in the first three quarters, outside the half's last two minutes.
-
-    On these downs the play call shows the coach's plan, not the score or the clock.
-    """
-    if row["down"] not in ("1", "2") or row["qtr"] not in ("1", "2", "3"):
-        return False
-    if row["qtr"] == "2" and _number(row["game_seconds_remaining"]) <= HALF_TWO_MINUTES_SECONDS:
-        return False
-    return row["score_differential"] not in ("", "NA") and abs(_number(row["score_differential"])) <= NEUTRAL_SCORE
-
-
-def read_environment(pbp: Path, week: int) -> dict[str, list[TeamWeek]] | None:
-    """The offense counts of weeks 1 to `week` by Sleeper team code, in week order. None when no row for week `week`."""
-    has_week = False
-    counts: dict[tuple[str, int], Counter] = {}
-    for row in _rows(pbp):
-        n = _regular_week(row, "season_type")
-        has_week = has_week or n == week
-        if n is None or n > week or row["play_type"] not in PLAY_TYPES:
-            continue
-        team = counts.setdefault((_sleeper_team(row["posteam"]), n), Counter())
-        passed, rushed = bool(_number(row["pass"])), bool(_number(row["rush"]))
-        team["plays"] += 1
-        team["passes"] += passed
-        team["rushes"] += rushed
-        team["rush_successes"] += rushed and bool(_number(row["success"]))
-        if _is_neutral(row):
-            team["neutral_plays"] += 1
-            team["neutral_passes"] += passed
-    if not has_week:
-        return None
-    environment: dict[str, list[TeamWeek]] = {}
-    for (team, n), c in sorted(counts.items()):
-        environment.setdefault(team, []).append(TeamWeek(
-            week=n, plays=c["plays"], passes=c["passes"], rushes=c["rushes"], rush_successes=c["rush_successes"],
-            neutral_plays=c["neutral_plays"], neutral_passes=c["neutral_passes"]))
-    return environment
-
-
-def read_pfr_map(path: Path) -> dict[str, str]:
-    """The Sleeper ID by PFR ID. The snap counts name a player by his PFR ID only."""
-    return {row["pfr_id"]: row["sleeper_id"] for row in _rows(path)
-            if row["sleeper_id"] not in ("", "NA") and row["pfr_id"] not in ("", "NA")}
-
-
 def gsis_id(player_id: str, players: dict, id_map: dict[str, str]) -> str | None:
     # The Sleeper blob has stray spaces in some ids and no id for some new players.
     blob = (players.get(player_id) or {}).get("gsis_id")
@@ -376,9 +252,13 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     # The waiver pool is not rostered, so the usage maps every QB, RB, WR, and TE of the blob, not `player_ids`.
     skill = {pid for pid, entry in players.items() if (entry or {}).get("position") in SKILL_POSITIONS}
     sleeper_of_gsis = {g: pid for pid in sorted(skill) if (g := gsis_id(pid, players, id_map))}
-    sleeper_of_pfr = {pfr: pid for pfr, pid in (read_pfr_map(ffids_path) if ffids_path else {}).items() if pid in skill}
-    usage = read_usage(pbp, snaps, week, week - USAGE_WEEKS + 1, sleeper_of_gsis, sleeper_of_pfr) if pbp else None
-    environment = read_environment(pbp, week) if pbp else None
+    pfr_map = nflverse_usage.read_pfr_map(ffids_path) if ffids_path else {}
+    sleeper_of_pfr = {pfr: pid for pfr, pid in pfr_map.items() if pid in skill}
+    first_week = week - USAGE_SAVED_WEEKS + 1
+    snap_weeks = nflverse_usage.read_snaps(snaps, first_week, week, sleeper_of_pfr) if snaps else {}
+    plays = nflverse_usage.read_plays(pbp, week) if pbp else None
+    usage = None if plays is None else nflverse_usage.read_usage(plays, snap_weeks, week, first_week, sleeper_of_gsis)
+    environment = None if plays is None else nflverse_usage.read_environment(plays)
     return NflverseWeek(
         sources={"nflverse_pbp": pbp is not None and drops is not None,
                  "nflverse_ftn": ftn is not None and drops is not None,
