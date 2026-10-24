@@ -12,5 +12,6 @@ columns are always present. No new download.
 
 - [ ] The team week has the EPA sum and the pass rate over expected sum, and the environment reader gives EPA per play and pass rate over expected per team per week.
 - [ ] A two-point try, a kneel, a spike, and a special teams play add nothing to either sum.
+- [ ] A two-point try also adds nothing to the team week's plays, passes, or rushes, since it is not a down. The usage reader already skips it, and the environment reader must agree.
 - [ ] A test on the play by play fixture pins one team week by hand.
 - [ ] The existing environment tests pass unchanged.

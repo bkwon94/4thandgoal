@@ -79,7 +79,7 @@ zone touches. Before any of that, the target count drops two-point tries, as its
 
 - The play columns gain `two_point_attempt`. The target count and the carry count skip a play
   where it is 1. The nflverse rule is "receiver set and no two-point try", and it matches the
-  nflverse target count in 188 of 188 team weeks of 2026.
+  nflverse target count in 186 of 186 team weeks of 2026, weeks 1 to 6.
 - This is its own change, first in the order. It moves live trade grades, so it goes out alone.
 
 ### The nflverse weekly player file
@@ -92,6 +92,8 @@ zone touches. Before any of that, the target count drops two-point tries, as its
   this file when the file is there, and from our count when it is not. The source flag says which.
 - The agreement test compares our count after the two-point fix with the file on the week 6
   fixture. The switch lands only with that test green.
+- Our carry count leaves out QB scrambles and kneels, so it runs under the file's `carries` for a
+  QB by 1 to 10 a week. Carries stay our read, so no fact reads the file's carries.
 
 ### Expected points
 
