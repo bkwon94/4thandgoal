@@ -13,6 +13,7 @@ from cornerstone.verifier import (
     code_check,
     opener_failures,
     page_words,
+    reserved_words,
     verify_blurb,
     write_and_verify,
 )
@@ -968,3 +969,41 @@ def test_write_and_verify_sends_the_page_word_failure_to_the_rewrite(fixture_raw
     blurb, results = write_and_verify(ch, sheet, fake, used_words={"lucky"})
     assert blurb.fallback and len(results) == 2
     assert "another chapter of this page already did" in users[1]
+
+
+def test_the_awards_chapter_owns_lucky_when_the_sheet_has_the_lucky_award(fixture_raw_dir):
+    # The award must always be named, so every other chapter starts with "lucky" used, even the first one.
+    sheet, awards = _awards_with_luck(fixture_raw_dir)
+    assert reserved_words("motw", sheet) == {"lucky", "unlucky"}
+    assert reserved_words("awards", sheet) == set()
+    motw = _ch(sheet, "motw")
+    b = _blurb("motw", _s("That was lucky.", *motw.fact_ids[:1]), _s("Again.", *motw.fact_ids[:1]))
+    assert "[0] says 'lucky', but another chapter of this page already did" in code_check(
+        b, motw, sheet, used_words=reserved_words("motw", sheet)
+    )
+    b = _blurb("awards", _s("The Lucky award goes out.", "AW.lucky"), _s("Again.", awards.fact_ids[0]))
+    assert code_check(b, awards, sheet, used_words=reserved_words("awards", sheet)) == []
+
+
+def test_no_award_fact_reserves_no_word(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    assert "AW.lucky" not in sheet.facts
+    assert reserved_words("motw", sheet) == set()
+
+
+def test_the_first_writer_call_hears_the_used_words(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
+        users.append(user)
+        return _good_writer_out()
+
+    write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert "Do not say 'lucky'. Another chapter of this page already does." in users[0]
+    users.clear()
+    write_and_verify(ch, sheet, fake)
+    assert "Do not say" not in users[0]

@@ -38,6 +38,9 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
 ]
 # Each of these words may appear in one sentence only.
 ONCE_PER_PAGE_WORDS = ["lucky", "unlucky"]
+# The awards chapter owns the word of each award the sheet holds, so the award can always be named.
+AWARD_WORDS = {"lucky": "AW.lucky", "unlucky": "AW.unlucky"}
+AWARDS_CHAPTER = "awards"
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
 NUMBER_WORDS = [
@@ -121,9 +124,25 @@ def once_words(bare: str) -> set[str]:
 
 
 def page_words(blurb: Blurb, chapter: Chapter | None) -> set[str]:
-    """The once-per-page words that a blurb says. The chapter names are removed first, as in the code check."""
+    """The once-per-page words that a blurb says. The chapter names are removed first, as in the code check.
+
+    The chapter is None for a saved blurb whose chapter the saved facts no longer hold, so no names are removed.
+    """
     names = [*chapter.scope_teams, *chapter.scope_players] if chapter is not None else []
     return {word for s in blurb.sentences for word in once_words(remove_names(without_urls(s.text), names))}
+
+
+def reserved_words(chapter_key: str, sheet: FactSheet) -> set[str]:
+    """The award words that the awards chapter owns, so any other chapter starts with them used."""
+    if chapter_key == AWARDS_CHAPTER:
+        return set()
+    return {word for word, fid in AWARD_WORDS.items() if fid in sheet.facts}
+
+
+def page_word_feedback(used_words: Collection[str]) -> str | None:
+    """The first-attempt feedback for the used words, so the writer does not spend an attempt on a known failure."""
+    lines = [f"Do not say '{w}'. Another chapter of this page already does." for w in sorted(used_words)]
+    return "\n".join(lines) or None
 
 
 def remove_names(text: str, names: list[str]) -> str:
@@ -355,7 +374,7 @@ def code_check(
         if len(said) > 1:
             where = ", ".join(f"[{i}]" for i in said[:-1]) + f" and [{said[-1]}]"
             failures.append(f"[{said[1]}] sentences {where} say '{word}'; a page may say it once")
-        # The chapters are written one at a time, so the build passes in the words that the other chapters used.
+        # The build writes the chapters one at a time, so it passes in the words that the other chapters used.
         if said and word in used_words:
             failures.append(f"[{said[0]}] says '{word}', but another chapter of this page already did")
 
@@ -460,7 +479,7 @@ def write_and_verify(
     chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
 ) -> tuple[Blurb, list[VerifyResult]]:
     results: list[VerifyResult] = []
-    feedback: str | None = None
+    feedback = page_word_feedback(used_words)
     for _ in range(2):
         try:
             blurb = write_blurb(chapter, sheet, call, feedback)

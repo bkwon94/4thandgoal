@@ -20,7 +20,7 @@ from cornerstone.history import HISTORY_FILES, history_dir, history_root
 from pathlib import Path
 
 from cornerstone.models import (
-    BuildRecord, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyFile, VerifyOut,
+    Blurb, BuildRecord, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyFile, VerifyOut,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.pipeline import (
@@ -937,8 +937,6 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
 
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
-    from cornerstone.models import Blurb
-
     def spy(chapter, sheet, call, used_words=frozenset()):
         seen[chapter.key] = set(used_words)
         text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
@@ -948,28 +946,56 @@ def _spy_write_and_verify(seen, lucky_key=None):
     return spy
 
 
-def test_build_carries_lucky_to_the_later_chapters(tmp_path, fixture_raw_dir, monkeypatch):
-    repo = _repo(tmp_path, fixture_raw_dir)
-    seen = {}
-    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen, "game_changer"))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    keys = list(seen)
-    after = keys.index("game_changer") + 1
-    assert all(seen[k] == set() for k in keys[:after])
-    assert all(seen[k] == {"lucky"} for k in keys[after:])
-
-
-def test_a_rewrite_sees_lucky_from_the_other_saved_blurbs(tmp_path, fixture_raw_dir, monkeypatch):
-    repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+def _saved_lucky(repo, key):
+    """Put "lucky" into the saved blurb of one chapter."""
     path = week_dir(repo, 2026, 6) / "blurbs.json"
     saved = json.loads(path.read_text(encoding="utf-8"))
-    saved["motw"]["sentences"][0]["text"] = "That was lucky."
+    saved[key]["sentences"][0]["text"] = "That was lucky."
     path.write_text(json.dumps(saved), encoding="utf-8")
+
+
+def test_build_reserves_the_award_words_and_carries_lucky(tmp_path, fixture_raw_dir, monkeypatch):
+    # The fixture week has both awards, so every chapter but awards starts with both words used.
+    repo = _repo(tmp_path, fixture_raw_dir)
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
-    assert seen["median"] == {"lucky"}
-    # The chapter in the rewrite does not count against itself.
-    run_rewrite(repo, 2026, 6, "motw", _fake, **OFFLINE)
-    assert seen["motw"] == set()
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    facts = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
+    assert "AW.lucky" in facts and "AW.unlucky" in facts
+    assert seen["awards"] == set()
+    assert all(seen[k] == {"lucky", "unlucky"} for k in seen if k != "awards")
+    # A "lucky" in an earlier chapter reaches the awards chapter.
+    seen.clear()
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen, "game_changer"))
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    assert seen["awards"] == {"lucky"}
+
+
+def test_a_rewrite_sees_lucky_from_an_earlier_saved_blurb(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    _saved_lucky(repo, "motw")
+    seen = {}
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    assert seen["awards"] == {"lucky"}
+
+
+def test_a_rewrite_of_an_earlier_chapter_sees_a_later_lucky(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    _saved_lucky(repo, "median")
+    seen = {}
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    assert seen["awards"] == {"lucky"}
+
+
+def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    _saved_lucky(repo, "awards")
+    seen = {}
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
+    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    assert seen["awards"] == set()
