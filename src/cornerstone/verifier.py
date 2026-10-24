@@ -36,9 +36,9 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["unlucky"], ("AW.unlucky",)),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
-# Each of these words may appear in one sentence only.
+# Each of these words may appear in one sentence of the page only.
 ONCE_PER_PAGE_WORDS = ["lucky", "unlucky"]
-# The awards chapter owns the word of each award the sheet holds, so the award can always be named.
+# The awards chapter owns the word of each award the sheet holds, so the awards chapter can always name the award.
 AWARD_WORDS = {"lucky": "AW.lucky", "unlucky": "AW.unlucky"}
 AWARDS_CHAPTER = "awards"
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
@@ -124,9 +124,10 @@ def once_words(bare: str) -> set[str]:
 
 
 def page_words(blurb: Blurb, chapter: Chapter | None) -> set[str]:
-    """The once-per-page words that a blurb says. The chapter names are removed first, as in the code check.
+    """The once-per-page words that a blurb says.
 
-    The chapter is None for a saved blurb whose chapter the saved facts no longer hold, so no names are removed.
+    The function removes the chapter names first, as the code check does. The chapter is None for a saved blurb whose
+    chapter the saved facts no longer hold, so the function removes no names.
     """
     names = [*chapter.scope_teams, *chapter.scope_players] if chapter is not None else []
     return {word for s in blurb.sentences for word in once_words(remove_names(without_urls(s.text), names))}

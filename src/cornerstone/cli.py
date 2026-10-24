@@ -130,13 +130,12 @@ def _names(snapshot: Snapshot, pids: list[str]) -> str:
 
 
 # The plain name of each slow source that the as-of line shows, by its key in Snapshot.missing, in print order.
-# The first three keep the order of the line before the nflverse files joined it.
-# The refreshed nflverse files use the names of REFRESHED_SOURCES. A cli test fails when the two lists drift.
+# The refreshed nflverse files use the names of REFRESHED_SOURCES. A cli test fails when the two lists differ.
 _SOURCE_NAMES = {
     "schedules": "schedules", "depth_charts": "depth charts", "points_allowed": "points allowed", "id_map": "id map",
     "injuries": "injuries", "expected_points": "expected points", "player_weeks": "player weeks",
 }
-# The id map only joins the ids of the other files, so the line names it when it is missing but not when it is there.
+# The id map only joins the ids of the other files. So the line names it only when it is missing.
 _JOIN_ONLY = "id_map"
 
 

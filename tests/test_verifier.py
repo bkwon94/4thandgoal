@@ -890,7 +890,7 @@ def test_in_scope_two_word_last_name_does_not_name_an_out_of_scope_player(fixtur
 
 
 def _awards_with_luck(fixture_raw_dir):
-    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count is tested."""
+    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count can fail."""
     sheet = _sheet(fixture_raw_dir).model_copy(deep=True)
     ch = _ch(sheet, "awards")
     for fid in ("AW.lucky", "AW.unlucky"):
@@ -972,7 +972,7 @@ def test_write_and_verify_sends_the_page_word_failure_to_the_rewrite(fixture_raw
 
 
 def test_the_awards_chapter_owns_lucky_when_the_sheet_has_the_lucky_award(fixture_raw_dir):
-    # The award must always be named, so every other chapter starts with "lucky" used, even the first one.
+    # The awards chapter must always name the award, so every other chapter starts with "lucky" used.
     sheet, awards = _awards_with_luck(fixture_raw_dir)
     assert reserved_words("motw", sheet) == {"lucky", "unlucky"}
     assert reserved_words("awards", sheet) == set()

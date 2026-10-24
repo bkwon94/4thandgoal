@@ -180,7 +180,7 @@ def _nflverse_for_week(
 
     A saved extract that lacks a key of NflverseWeek comes from an older build, so the build fetches it again.
     The refetch fills only the keys the file lacks, and every saved key keeps its value. So a source that is
-    down now never costs the rebuild a fact it had. The file is rewritten only when the refetch is complete.
+    down now never costs the rebuild a fact it had. The build rewrites the file only when the refetch is complete.
     """
     saved = None
     try:
@@ -196,8 +196,8 @@ def _nflverse_for_week(
                      ", ".join(missing))
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
         nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
-        # The check reads the fresh flags, not the merged ones. A merged extract has every key, so a saved one
-        # would never be fetched again, though a degraded source cut its rows.
+        # The check reads the fresh flags, not the merged ones. A merged extract has every key, so the build would
+        # never fetch a saved one again, though a degraded source cut its rows.
         complete = all(nfl.sources.get(key) for key in NFLVERSE_SOURCES)
         if saved is not None:
             nfl = _with_saved(nfl, saved)

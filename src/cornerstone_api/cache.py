@@ -47,12 +47,12 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     """The hash of the players, the record, and the week rows of each roster. The analyze key and the find key share it.
 
-    The week rows are the return week and the projections ahead of each rostered player. The commissioner edits the
-    returns file by hand, and Sleeper moves projections daily. `DOCUMENT_VERSION` covers a deploy only, so the rows
-    must be in the key.
+    The week rows are the return week and the projections ahead of each rostered player due back. The commissioner
+    edits the returns file by hand, and Sleeper moves projections daily. `DOCUMENT_VERSION` covers a deploy only, so
+    the rows must be in the key.
     Only the rows of the two rosters go in, so a change to any other player keeps the hit.
-    Sleeper moves projections daily, so the key holds only the projection rows the grade can read: the rows of a
-    player due back, from his return week through LAST_REGULAR_WEEK. Every other row would miss with no new grade.
+    The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
+    return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
