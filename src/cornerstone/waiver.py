@@ -6,11 +6,12 @@ from datetime import datetime
 
 from cornerstone.models import BoardScores, BudgetRow, Fact, WaiverBoard, WaiverPlayer, r2
 from cornerstone.parse import player_name
-from cornerstone.tunables import BEST_ADDS_POSITIONS, BOARD_WEIGHTS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION
+from cornerstone.tunables import (
+    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS,
+)
 
-# The positions of the pool. The Sleeper fetch asks for the same positions. A player at another position,
-# such as a linebacker, is never in the pool.
-POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
+# The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
+# another position, such as a linebacker, is never in the pool.
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
 
@@ -30,7 +31,7 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime) -> WaiverBo
         for pid, entry in pool.items()
     ]
     players = _with_trending(players, _trending_counts(raw))
-    best_adds = _capped(sorted((p for p in players if p.position in BEST_ADDS_POSITIONS), key=_rank_key))
+    best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
                        budgets=_budgets(raw))
 
@@ -119,10 +120,12 @@ def _trending_counts(raw: dict[str, object]) -> dict[str, int]:
 
 def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:
     """The players with the trending count of each. A player with no count keeps 0."""
-    return [p.model_copy(update={"trending_count": counts[p.player_id],
-                                 "facts": [*p.facts, _trending_fact(p, counts[p.player_id])]})
-            if p.player_id in counts else p
-            for p in players]
+    out = []
+    for p in players:
+        count = counts.get(p.player_id)
+        out.append(p if count is None else
+                   p.model_copy(update={"trending_count": count, "facts": [*p.facts, _trending_fact(p, count)]}))
+    return out
 
 
 def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
@@ -135,9 +138,11 @@ def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
 
 
 def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
-    """The pool players with a trending count, the most adds first.
+    """The pool players at a bucket position with a trending count, in the order of _trending_key."""
+    return _capped(sorted((p for p in players if p.trending_count and p.position in BUCKET_POSITIONS),
+                          key=_trending_key))
 
-    The player ID breaks a tie, so a tie has one order.
-    """
-    return _capped(sorted((p for p in players if p.trending_count),
-                          key=lambda p: (-p.trending_count, p.player_id)))
+
+def _trending_key(p: WaiverPlayer) -> tuple[int, str]:
+    """The most adds first, then the player ID, so a tie has one order."""
+    return -p.trending_count, p.player_id

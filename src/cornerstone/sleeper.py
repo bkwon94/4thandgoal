@@ -12,8 +12,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cornerstone.files import write_bytes_atomic
-from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK
-from cornerstone.waiver import POOL_POSITIONS
+from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK, POOL_POSITIONS
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +43,7 @@ PROJECTIONS_AHEAD_FILE = "projections_ahead.json"
 # The adds of each player across all Sleeper leagues in the last day. Past weeks have no such file,
 # so load_raw reads it only when it exists.
 TRENDING_FILE = "trending.json"
+# The bucket holds 8, and the pool filter and the position filter drop some of the top adds, so 50 leaves room.
 TRENDING_PARAMS = {"lookback_hours": 24, "limit": 50}
 
 
@@ -64,7 +64,7 @@ def _get_or_empty(client: httpx.Client, url: str, params=None) -> list:
         return _get(client, url, params)
     except (httpx.HTTPError, ValueError) as error:
         # ValueError covers a 200 response with a body that is not JSON.
-        logger.warning("Unofficial Sleeper endpoint failed: %s (%s)", url, error)
+        logger.warning("Sleeper endpoint failed: %s (%s)", url, error)
         return []
 
 

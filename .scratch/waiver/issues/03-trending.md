@@ -19,3 +19,7 @@ no trending file gets an empty bucket, not a failed build.
 - [x] A player in best adds and trending appears in both buckets.
 - [x] A week with no trending file gives an empty bucket and the build completes.
 - [x] Every count is a fact with the digit in its numbers.
+
+## Comments
+
+2026-10-23: the shared cap of 8 and 3 per position applies to trending too, and the count is written plain so the site formats it.

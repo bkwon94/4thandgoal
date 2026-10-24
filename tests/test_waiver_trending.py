@@ -80,11 +80,19 @@ def test_a_week_with_no_trending_file_gives_an_empty_bucket(fixture_raw_dir):
 
 
 def test_every_trending_count_is_a_fact_with_the_digits_in_its_numbers(fixture_raw_dir):
-    players = {"80001": _player("WR", "Hot Hand"), "80002": _player("K", "Big Leg")}
+    players = {"80001": _player("WR", "Hot Hand"), "80002": _player("TE", "Big Tight")}
     trending = waiver_board(_raw(fixture_raw_dir, players, {"80001": 41200, "80002": 7}), 6, BUILT).buckets["trending"]
     assert [(p.trending_count, [f.model_dump() for f in p.facts]) for p in trending] == [
         (41200, [{"id": "WV.trending.80001", "text": "Hot Hand was added in 41200 Sleeper leagues in the last day.",
                   "numbers": ["41200"], "teams": [], "players": ["Hot Hand"]}]),
-        (7, [{"id": "WV.trending.80002", "text": "Big Leg was added in 7 Sleeper leagues in the last day.",
-              "numbers": ["7"], "teams": [], "players": ["Big Leg"]}]),
+        (7, [{"id": "WV.trending.80002", "text": "Big Tight was added in 7 Sleeper leagues in the last day.",
+              "numbers": ["7"], "teams": [], "players": ["Big Tight"]}]),
     ]
+
+
+def test_a_top_kicker_and_a_top_defense_by_count_stay_out_of_trending(fixture_raw_dir):
+    players = {"80001": _player("K", "Big Leg"), "NYJ": _player("DEF", "Jets", team="NYJ"),
+               "80002": _player("WR", "Hot Hand")}
+    players["NYJ"]["status"] = None
+    raw = _raw(fixture_raw_dir, players, {"80001": 90000, "NYJ": 80000, "80002": 41200})
+    assert _trending(raw) == ["80002"]

@@ -317,9 +317,7 @@ in the pool but never land in it.
 _Avoid_: top adds, pickups
 
 **Trending**:
-The bucket of the pool players with the most adds across all Sleeper leagues in the last day, from
-the trending file of the week fetch. The count of adds is the trending count, and each player
-carries it as a fact. A week with no trending file has an empty bucket.
+The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day.
 _Avoid_: hot, buzz, most added
 
 **Budget table**:
