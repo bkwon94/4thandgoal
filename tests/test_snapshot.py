@@ -64,7 +64,7 @@ def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_hi
                             "player_weeks"]
 
 
-def test_slow_sources_fill_the_snapshot_and_none_stay_missing(
+def test_slow_sources_fill_the_snapshot_and_only_the_files_not_in_the_cache_stay_missing(
         fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
     cache = tmp_path / "nflverse"
     cache.mkdir()

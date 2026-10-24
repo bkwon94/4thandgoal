@@ -21,7 +21,7 @@ def _cache(fixture_nflverse_dir, tmp_path):
 NOT_IN_CACHE = ["expected_points", "player_weeks"]
 
 
-def test_load_slow_sources_gives_every_source(fixture_nflverse_dir, fixture_history_root, tmp_path):
+def test_load_slow_sources_gives_every_source_in_the_cache(fixture_nflverse_dir, fixture_history_root, tmp_path):
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root)
     assert sources.missing == NOT_IN_CACHE
     assert sources.schedules["SF"].bye_week == 8
@@ -87,7 +87,7 @@ def test_load_slow_sources_without_the_expected_points_file_gives_none_and_names
         fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
     scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root, scoring)
-    assert sources.expected is None and "expected_points" in sources.missing
+    assert sources.expected is None and sources.missing == NOT_IN_CACHE
 
 
 def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_week_before(
@@ -104,8 +104,8 @@ def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no
         fixture_nflverse_dir, fixture_history_root, tmp_path):
     cache = _cache(fixture_nflverse_dir, tmp_path)
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.wopr is None and "player_weeks" in sources.missing
+    assert sources.wopr is None and sources.missing == NOT_IN_CACHE
     shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
     (cache / "db_playerids.csv").unlink()
     without_id_map = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert without_id_map.wopr is None and "player_weeks" in without_id_map.missing
+    assert without_id_map.wopr is None and without_id_map.missing == ["id_map", *NOT_IN_CACHE]

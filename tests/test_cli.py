@@ -287,8 +287,11 @@ def test_analyze_names_the_one_source_the_cache_lacks(
 def test_the_source_names_are_the_names_of_the_refreshed_sources():
     from cornerstone import cli
     from cornerstone.live import REFRESHED_SOURCES
+    from cornerstone.snapshot import SLOW_SOURCES
 
-    # The line and the refresh name each nflverse file with the same words, so the two lists cannot drift.
+    # The line names each slow source the snapshot can miss, by the key the snapshot gives it.
+    assert set(cli._SOURCE_NAMES) == set(SLOW_SOURCES)
+    # The line and the refresh name each nflverse file with the same words.
     assert {name for name, _ in REFRESHED_SOURCES} <= set(cli._SOURCE_NAMES.values())
 
 
