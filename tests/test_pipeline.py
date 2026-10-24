@@ -933,3 +933,43 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
     assert data["schema_version"] == 2
     assert data["week"] == 6
     assert len(data["matchups"]) == 6
+
+
+def _spy_write_and_verify(seen, lucky_key=None):
+    """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
+    from cornerstone.models import Blurb
+
+    def spy(chapter, sheet, call, used_words=frozenset()):
+        seen[chapter.key] = set(used_words)
+        text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
+        sentences = [Sentence(text=text, fact_ids=[chapter.fact_ids[0]])] if chapter.fact_ids else []
+        return Blurb(chapter=chapter.key, attempt=1, fallback=False, sentences=sentences), []
+
+    return spy
+
+
+def test_build_carries_lucky_to_the_later_chapters(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    seen = {}
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen, "game_changer"))
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    keys = list(seen)
+    after = keys.index("game_changer") + 1
+    assert all(seen[k] == set() for k in keys[:after])
+    assert all(seen[k] == {"lucky"} for k in keys[after:])
+
+
+def test_a_rewrite_sees_lucky_from_the_other_saved_blurbs(tmp_path, fixture_raw_dir, monkeypatch):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    path = week_dir(repo, 2026, 6) / "blurbs.json"
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    saved["motw"]["sentences"][0]["text"] = "That was lucky."
+    path.write_text(json.dumps(saved), encoding="utf-8")
+    seen = {}
+    monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
+    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+    assert seen["median"] == {"lucky"}
+    # The chapter in the rewrite does not count against itself.
+    run_rewrite(repo, 2026, 6, "motw", _fake, **OFFLINE)
+    assert seen["motw"] == set()

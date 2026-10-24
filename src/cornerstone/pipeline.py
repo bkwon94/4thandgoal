@@ -34,7 +34,7 @@ from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, r
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import load_returns
 from cornerstone.trades import default_cutoff, trades_for_week
-from cornerstone.verifier import write_and_verify
+from cornerstone.verifier import page_words, write_and_verify
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history
 from cornerstone.waiver_research import SearchCall, research_board, search_call
@@ -318,8 +318,11 @@ def run_build(
 
     blurbs: dict[str, Blurb] = {}
     verify: dict[str, list[VerifyResult]] = {}
+    # "lucky" and "unlucky" each appear once per page, so each chapter gets the words that earlier chapters used.
+    used: set[str] = set()
     for chapter in bundle.sheet.chapters:
-        blurbs[chapter.key], verify[chapter.key] = write_and_verify(chapter, bundle.sheet, call)
+        blurbs[chapter.key], verify[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used)
+        used |= page_words(blurbs[chapter.key], chapter)
         _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, VerifyFile(build=record, chapters=verify))
 
@@ -370,6 +373,12 @@ def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[s
     return bundle, blurbs
 
 
+def _other_page_words(bundle: Bundle, blurbs: dict[str, Blurb], key: str) -> set[str]:
+    """The once-per-page words that the saved blurbs of the other chapters say, so a rewrite cannot add a second one."""
+    chapters = {c.key: c for c in bundle.sheet.chapters}
+    return {word for k, b in blurbs.items() if k != key for word in page_words(b, chapters.get(k))}
+
+
 def run_rewrite(
     repo: Path,
     season: int,
@@ -391,7 +400,8 @@ def run_rewrite(
         raise ValueError(f"Unknown chapter '{chapter}'. Valid chapters: {keys}")
 
     verify = read_verify(directory / "verify.json")
-    blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, call)
+    used = _other_page_words(bundle, blurbs, chapter)
+    blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, call, used)
     _log_chapter(chapter, blurbs[chapter])
     _save_blurbs(directory, blurbs, verify)
 
@@ -464,7 +474,8 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
         # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
         write_bundle(bundle, directory / "facts.json")
     verify = read_verify(directory / "verify.json")
-    blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call)
+    used = _other_page_words(bundle, blurbs, chapter.key)
+    blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used)
     _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, verify)
     out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key], bundle.odds)

@@ -12,6 +12,7 @@ from cornerstone.verifier import (
     claude_verify,
     code_check,
     opener_failures,
+    page_words,
     verify_blurb,
     write_and_verify,
 )
@@ -927,3 +928,43 @@ def test_lucky_once_and_unlucky_once_pass(fixture_raw_dir):
         _s("The Unlucky award goes out.", "AW.unlucky"),
     )
     assert code_check(b, ch, sheet) == []
+
+
+def test_lucky_after_an_earlier_chapter_said_it_fails(fixture_raw_dir):
+    # Chapter A said "lucky", so the build passes the word in; chapter B fails on its own "lucky".
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb("awards", _s("Again.", ch.fact_ids[0]), _s("The Lucky award goes out.", "AW.lucky"))
+    assert code_check(b, ch, sheet, used_words={"lucky"}) == [
+        "[1] says 'lucky', but another chapter of this page already did"
+    ]
+
+
+def test_unlucky_after_an_earlier_lucky_passes(fixture_raw_dir):
+    # Chapter A said "lucky" once and chapter B says "unlucky" once: each word is used once on the page.
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb("awards", _s("The Unlucky award goes out.", "AW.unlucky"), _s("Again.", ch.fact_ids[0]))
+    assert code_check(b, ch, sheet, used_words={"lucky"}) == []
+
+
+def test_page_words_skips_a_team_name_and_unlucky(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4").model_copy(deep=True)
+    ch.scope_teams.append("Lucky Lambs")
+    b = _blurb("recap_4", _s("Lucky Lambs played.", ch.fact_ids[0]), _s("That was unlucky.", ch.fact_ids[0]))
+    assert page_words(b, ch) == {"unlucky"}
+    assert page_words(b, None) == {"lucky", "unlucky"}
+
+
+def test_write_and_verify_sends_the_page_word_failure_to_the_rewrite(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
+        users.append(user)
+        return WriterOut(sentences=[_s("The Lucky award goes out.", "AW.lucky"), _s("Again.", ch.fact_ids[0])])
+
+    blurb, results = write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert blurb.fallback and len(results) == 2
+    assert "another chapter of this page already did" in users[1]
