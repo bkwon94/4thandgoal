@@ -44,12 +44,22 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 
 
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
-    """The hash of the players and the record of each roster. The analyze key and the find key share it."""
+    """The hash of the players, the record, and the week rows of each roster. The analyze key and the find key share it.
+
+    The week rows are the return week and the projections ahead of each rostered player. A new injuries file lands
+    daily and moves return weeks, and `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
+    Only the rows of the two rosters go in, so a change to any other player keeps the hit.
+    """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
+    projections_ahead = snapshot.projections_ahead or {}
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),
             "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
+            "returns": {player: snapshot.returns[player] for player in snapshot.rosters[roster_id]
+                        if player in snapshot.returns},
+            "projections_ahead": {player: projections_ahead[player] for player in snapshot.rosters[roster_id]
+                                  if player in projections_ahead},
         }
         for roster_id in roster_ids
     }
