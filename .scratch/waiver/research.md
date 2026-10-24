@@ -71,12 +71,12 @@ Each feed was fetched directly.
 
 ### What the research prompt uses
 
-The prompt names these sources first, in this order, then the wider web:
+The prompt follows these steps in this order:
 
-1. The Josh Norris author page and the Hayden Winks author page.
-2. The Matt Harmon author page.
-3. The weekly waiver wire column under `sports.yahoo.com/fantasy/article/`.
-4. The two podcast feeds.
+1. The weekly waiver wire column by Justin Boone under `sports.yahoo.com/fantasy/article/`.
+2. The author pages of Josh Norris, Hayden Winks, and Matt Harmon, and the two podcast feeds.
+3. The wider web.
+4. One spare search.
 
 ## 2. The Claude web search tool
 
@@ -95,10 +95,11 @@ The prompt names these sources first, in this order, then the wider web:
 
 ### Cost per call
 
-One research call is one player. A call with up to 3 searches and about 20,000 input tokens of
-results and 1,500 output tokens costs about 3 x $0.01 + 20,000 x $4 / 1M + 1,500 x $20 / 1M,
-which is about $0.14. Thirty-two players cost about $4.50 a week. This is an estimate. The live
-test reports the real usage.
+One research call is one player. The cost is about $0.14 per player with tokens, and about $4.50
+a week at 32 players. Source: https://platform.claude.com/docs/en/about-claude/pricing, read
+2026-10-23. The sum: a call that uses about 3 of its 4 searches, with about 20,000 input tokens of
+results and 1,500 output tokens, costs 3 x $0.01 + 20,000 x $4 / 1M + 1,500 x $20 / 1M. This is an
+estimate. The live test reports the real usage.
 
 ### Model id
 
@@ -110,7 +111,7 @@ The tool is a plain dict in the `tools` list of `messages.create` or `messages.p
 header is needed. Source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool
 
 ```python
-tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": 3}]
+tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": 4}]
 ```
 
 - Versions: `web_search_20250305` (basic), `web_search_20260209` (dynamic filtering),

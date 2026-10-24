@@ -13,17 +13,21 @@ is about the same player. Skip a page with no date.
 
 ## Sources
 
-Search the sources in this order. Go to the next step only when a step gives nothing on the player.
+You have 4 searches. Follow these steps in order. Go to the next step only when a step gives
+nothing on the player from the last 7 days.
 
-1. Yahoo Fantasy: Josh Norris (https://sports.yahoo.com/author/josh-norris/) and Hayden Winks
-   (https://sports.yahoo.com/author/hayden-winks/).
-2. Yahoo Fantasy: Matt Harmon (https://sports.yahoo.com/author/matt-harmon/).
-3. The Yahoo Fantasy weekly waiver wire column and the other articles under
-   https://sports.yahoo.com/fantasy/article/.
-4. The Yahoo podcasts: Yahoo Fantasy Football with Josh & Hayden
-   (https://feeds.simplecast.com/Lj5JhCEG) and Yahoo Fantasy Forecast
+1. The Yahoo Fantasy weekly waiver column by Justin Boone. Its title starts with
+   "Week N Fantasy Football Waiver Wire", with the week number for N. The URL changes each week,
+   so search for the title under https://sports.yahoo.com/fantasy/article/.
+2. The Yahoo Fantasy writers Josh Norris (https://sports.yahoo.com/author/josh-norris/), Hayden
+   Winks (https://sports.yahoo.com/author/hayden-winks/), and Matt Harmon
+   (https://sports.yahoo.com/author/matt-harmon/), and their podcasts: Yahoo Fantasy Football with
+   Josh & Hayden (https://feeds.simplecast.com/Lj5JhCEG) and Yahoo Fantasy Forecast
    (https://feeds.simplecast.com/s3ulbOAs).
-5. The wider web: other fantasy sites, beat reporters, and team news.
+3. The wider web: other fantasy sites, beat reporters, and team news.
+4. One spare search, for a step that gave nothing.
+
+An author page with no dates is a hub. Open it to find the articles, but cite only a dated item.
 
 ## Claims
 
@@ -35,8 +39,10 @@ Search the sources in this order. Go to the next step only when a step gives not
 5. Set `url` to the exact URL of the page that says it. Never guess or build a URL.
 6. Set `source` to the name of the site or the show, such as "Yahoo Fantasy".
 7. Set `date` to the date of the page, as YYYY-MM-DD.
-8. Set `stance` to `backs` when the claim agrees with an engine fact, `disputes` when it goes
-   against an engine fact, and `news` when it is about neither, such as an injury report.
+8. Set `stance` to `backs` when the claim agrees with an engine fact. Set `stance` to
+   `disputes` when the claim goes against an engine fact. Set `stance` to `news` when the claim
+   is about neither, such as an injury report. A number that differs from the engine fact for the
+   same stat and week disputes it.
 9. Never write the words best, star, hero, MVP, clutch, exploded, or cooked.
 
 ## Tone

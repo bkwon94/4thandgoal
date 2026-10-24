@@ -369,7 +369,7 @@ WaiverReason = Literal["board_score", "trending", "usage_rise", "behind_injury",
 
 
 class ResearchClaim(BaseModel):
-    """One expert take or news item on a player from the web: one sentence, its source, and its stance.
+    """One research claim on a player from the web: one sentence, its source, and its stance.
 
     `stance` says whether the claim backs the engine's facts, disputes them, or is plain news.
     """

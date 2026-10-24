@@ -406,6 +406,6 @@ One sentence from a web source about a ranked pool player, with its URL, the sou
 a stance: it backs the engine's facts, disputes them, or is plain news. The search reads only the last
 7 days, Yahoo Fantasy first. A claim with no URL is dropped. Each player keeps at most
 `CLAIMS_PER_PLAYER`, and at most `RESEARCH_PLAYERS` players get a search. The claims save as the fact
-family `WV.research.{player_id}.{n}`, with the URL as the citation. When the search fails for every
+family `WV.research.{player_id}.{n}`. The fact ID is the citation. The URL is text the page shows. When the search fails for every
 player, the board sets `experts_missing`. Use "experts" on the page.
 _Avoid_: expert take (alone), quote, rumor

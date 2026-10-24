@@ -7,7 +7,6 @@ from zoneinfo import ZoneInfo
 
 import anthropic
 import pytest
-import httpx2
 
 from cornerstone.models import BoardScores, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
@@ -80,7 +79,7 @@ def test_a_failure_for_one_player_leaves_the_other_claims_in_place(caplog):
 
 def test_a_failure_for_every_player_sets_the_missing_experts_flag(caplog):
     def call(system: str, user: str) -> ResearchOut:
-        raise anthropic.APIConnectionError(request=httpx2.Request("POST", "https://api.anthropic.com"))
+        raise anthropic.AnthropicError("connection error")
 
     board = research_board(_board(best_adds=[_player("1"), _player("2", "Jalen Coker")]), call)
     assert board.experts_missing
@@ -94,7 +93,7 @@ def test_each_claim_lands_in_the_facts_with_its_url_as_the_citation():
     facts = {f.id: f for f in board.buckets["best_adds"][0].facts}
     assert set(facts) == {"WV.research.7.1", "WV.research.7.2"}
     first = facts["WV.research.7.1"]
-    assert first.text.startswith("He ran 31 routes.") and URL in first.text
+    assert first.text == f"He ran 31 routes. Source: Yahoo Fantasy, {URL}"
     assert first.players == ["Tre Tucker"]
     # Every digit outside the URL is in the numbers. The URL digits are the citation, not a claim.
     assert set(NUMBER_TOKEN.findall(without_urls(first.text))) == set(first.numbers) == {"31"}
@@ -102,11 +101,12 @@ def test_each_claim_lands_in_the_facts_with_its_url_as_the_citation():
 
 def test_the_prompt_names_the_yahoo_writers_before_the_wider_web_and_keeps_to_7_days():
     system, user = build_research_prompt(_player("1"), _board())
-    order = [system.index(s) for s in ("https://sports.yahoo.com/author/josh-norris/",
+    order = [system.index(s) for s in ("Justin Boone", "Week N Fantasy Football Waiver Wire",
+                                       "https://sports.yahoo.com/fantasy/article/",
+                                       "https://sports.yahoo.com/author/josh-norris/",
                                        "https://sports.yahoo.com/author/hayden-winks/",
                                        "https://sports.yahoo.com/author/matt-harmon/",
-                                       "https://sports.yahoo.com/fantasy/article/",
-                                       "The wider web")]
+                                       "The wider web", "One spare search")]
     assert order == sorted(order)
     assert "Use only takes and news from the last 7 days before today's date." in system
     assert user.startswith("Today is 2026-10-20.")

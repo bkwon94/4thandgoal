@@ -43,3 +43,5 @@ player with the web search tool. A claim with no URL is dropped.
   sentence with a URL and no fact ID is still a reaction sentence.
 - `web_search_20260209` with `messages.parse` works on Opus 5.5. The live call on 2026-10-23 used
   1 search and returned 1 claim.
+- The cost is about $0.14 per player with tokens, and about $4.50 a week at 32 players. Source:
+  https://platform.claude.com/docs/en/about-claude/pricing, read 2026-10-23.
