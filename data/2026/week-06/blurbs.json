@@ -98,19 +98,19 @@
     "chapter": "awards",
     "sentences": [
       {
-        "text": "To Infinity and Bijan got 6.3 points from Bijan Robinson on a 23.08 projection, good for Underperformer.",
+        "text": "To Infinity and Bijan got 6.3 points from Bijan Robinson on a 23.08 projection, good for the Underperformer award.",
         "fact_ids": [
           "AW.underperformer"
         ],
         "roster_id": null
       },
       {
-        "text": "Not quite infinity.",
+        "text": "Not even close.",
         "fact_ids": [],
         "roster_id": null
       },
       {
-        "text": "Bhayshul Tuten, a recent add by trade, took Lucky with 22.7 on 12.49 expected points.",
+        "text": "Bhayshul Tuten, a trade pickup for Amon-Ra Dawg Your Team, took the Lucky award: 22.7 points from a stat line that usually scores about 12.49.",
         "fact_ids": [
           "AW.lucky",
           "W.adds"
@@ -118,21 +118,21 @@
         "roster_id": null
       },
       {
-        "text": "London Cooking left Jayden Daniels and his 21 points on the bench, the most of any bench player and good for MVB.",
+        "text": "CeeDee Lamb took the Unlucky award for behold the lamb: 11.5 points from a stat line that usually scores about 26.42.",
         "fact_ids": [
-          "AW.mvb"
+          "AW.unlucky"
         ],
         "roster_id": null
       }
     ],
-    "attempt": 1,
+    "attempt": 2,
     "fallback": false
   },
   "position_leaders": {
     "chapter": "position_leaders",
     "sentences": [
       {
-        "text": "Bo Girds showed up twice, with Kenneth Walker leading all running backs at 26.9 and Tyler Shough finishing 2nd among quarterbacks.",
+        "text": "Bo Girds had the top running back of the week in Kenneth Walker at 26.9, and Tyler Shough threw in the runner-up quarterback line.",
         "fact_ids": [
           "LEAD.RB.1",
           "LEAD.QB.2"
@@ -140,14 +140,7 @@
         "roster_id": null
       },
       {
-        "text": "Trevor Lawrence still topped every quarterback with 28.34 for Amon-Ra Dawg Your Team.",
-        "fact_ids": [
-          "LEAD.QB.1"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "The force was with Maye d'force B with U, as Drake Maye and Isaiah Likely both made the podium at their positions.",
+        "text": "Maye d'force B with U actually got the namesake to show up, with Drake Maye at 23.8 and Isaiah Likely leading all started tight ends at 20.9.",
         "fact_ids": [
           "LEAD.QB.3",
           "LEAD.TE.1"
@@ -155,11 +148,16 @@
         "roster_id": null
       },
       {
-        "text": "Tre Tucker topped all receivers on a WOPR that ranked just 26th, so All You Need Is Love apparently needs very few targets.",
+        "text": "Tre Tucker topped every started receiver with 24.2 while ranking only 26th in passing volume among started WRs.",
         "fact_ids": [
           "LEAD.WR.1",
           "LEAD.WR.1.volume"
         ],
+        "roster_id": null
+      },
+      {
+        "text": "Efficiency over everything.",
+        "fact_ids": [],
         "roster_id": null
       }
     ],

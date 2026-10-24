@@ -94,23 +94,50 @@
         "verdicts": [
           {
             "index": 0,
-            "supported": true,
-            "reason": "AW.underperformer states Bijan Robinson scored 6.3 on a 23.08 projection for To Infinity and Bijan."
+            "supported": false,
+            "reason": "The 6.3 on a 23.08 projection and the Underperformer award are supported, but 'by a wide gap' implies a lead over other underperformers, and no fact gives that comparison."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "A joke with no factual claim."
+            "reason": "A reaction with no factual claim."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "W.adds lists Tuten as a week 6 trade add, and AW.lucky gives 22.7 on 12.49 expected points."
+            "reason": "W.adds confirms Tuten was a trade add for Amon-Ra Dawg Your Team, and AW.lucky gives 22.7 against 12.49."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "AW.mvb states Jayden Daniels scored 21 on the bench for London Cooking, the most of any bench player."
+            "reason": "AW.overachiever confirms Tre Tucker of All You Need Is Love scored 24.2 on a 7.58 projection."
+          }
+        ],
+        "passed": false
+      },
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.underperformer gives Bijan Robinson 6.3 on a 23.08 projection, for To Infinity and Bijan."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "W.adds shows Tuten was acquired in a week 6 trade, and AW.lucky gives 22.7 on 12.49 expected points."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "AW.unlucky gives CeeDee Lamb of behold the lamb 11.5 on 26.42 expected points."
           }
         ],
         "passed": true
@@ -124,22 +151,22 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "Walker was 1st of 31 RBs at 26.9 and Shough was 2nd of 12 QBs, both for Bo Girds."
+            "reason": "LEAD.RB.1 gives Walker 1st among started RBs at 26.9 for Bo Girds, and LEAD.QB.2 gives Shough 2nd among started QBs for Bo Girds."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "Lawrence scored 28.34 for Amon-Ra Dawg Your Team, 1st of 12 started QBs."
+            "reason": "LEAD.QB.3 gives Maye 23.8 and LEAD.TE.1 gives Likely 1st of started TEs at 20.9, both for Maye d'force B with U; the namesake remark is tone."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "Maye was 3rd among QBs and Likely 1st among TEs, both top three, both for Maye d'force B with U."
+            "reason": "LEAD.WR.1 gives Tucker 1st among started WRs at 24.2, and LEAD.WR.1.volume ranks him 26th among started WRs, stated as passing volume."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "Tucker was 1st among WRs with a WOPR ranked 26th; the remark about few targets is a team-name joke, not a factual claim."
+            "reason": "A reaction with no factual claim."
           }
         ],
         "passed": true
