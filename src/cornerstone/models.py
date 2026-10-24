@@ -230,6 +230,17 @@ class DropLine(BaseModel):
     end_zone: int | None
 
 
+class Shootout(BaseModel):
+    """An NFL game of week N+1 by Sleeper team codes, with the recent pass rate over expected of each team."""
+    away: str
+    home: str
+    # The rates are in percentage points to one decimal, from the last games of each team up to SHOOTOUT_GAMES.
+    away_rate: float
+    home_rate: float
+    away_games: int
+    home_games: int
+
+
 class Pick(BaseModel):
     matchup_id: int
     reason: Literal["Closest Finish", "Upset", "Top of the Table", "Playoff Stakes"]
@@ -621,3 +632,6 @@ class NflverseWeek(BaseModel):
     environment: dict[str, list[TeamWeek]] | None = None
     # The expected points from ffopportunity. None in an extract with no expected field, or when the file is missing.
     expected: ExpectedPoints | None = None
+    # The away and home Sleeper team codes of each NFL game of week N+1. None in an extract with no such field, or
+    # when the schedule file is missing or has no game that week.
+    next_games: list[tuple[str, str]] | None = None

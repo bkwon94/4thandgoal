@@ -11,7 +11,7 @@ import pytest
 
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, PBP_URL, SCHEDULES_URL, download, gsis_id, http_get, nflverse_week,
-    read_depth_charts, read_drops, read_id_map, read_injuries, read_schedules,
+    read_depth_charts, read_drops, read_games, read_id_map, read_injuries, read_schedules,
 )
 from cornerstone.sleeper import load_raw
 
@@ -164,6 +164,16 @@ def test_read_schedules_names_the_rams_as_sleeper_does(fixture_nflverse_dir):
 
 def test_read_schedules_without_the_season_is_none(fixture_nflverse_dir):
     assert read_schedules(fixture_nflverse_dir / "games.csv", 2030) is None
+
+
+def test_read_games_gives_the_away_and_home_teams_of_the_week(fixture_nflverse_dir):
+    games = read_games(fixture_nflverse_dir / "games.csv", 2026, 7)
+    assert games[0] == ("NE", "CHI") and ("KC", "SEA") in games and ("LAR", "LV") in games
+    assert len(games) == 14
+
+
+def test_read_games_without_the_week_is_none(fixture_nflverse_dir):
+    assert read_games(fixture_nflverse_dir / "games.csv", 2030, 7) is None
 
 
 def test_read_depth_charts_gives_the_backfield_in_order(fixture_nflverse_dir):

@@ -498,6 +498,13 @@ def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir
     assert "A side that stays near one number has no swing. Say that it holds." in system
 
 
+def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    assert ("an `NX.shootout.` fact gives an NFL game next week where both teams have a positive pass rate over "
+            "expected. Mention at most one shootout. Pick the one with the most league starters in it.") in system
+
+
 def test_the_research_call_alone_sends_the_web_search_tool(monkeypatch):
     from cornerstone.models import ResearchOut
     from cornerstone.writer import claude_call

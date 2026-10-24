@@ -25,7 +25,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.facts_nflverse import drop_lines, expected_awards
+from cornerstone.facts_nflverse import drop_lines, expected_awards, shootouts
 from cornerstone.history import (
     _round_half_up,
     player_trend,
@@ -652,6 +652,62 @@ def next_facts(c: Context) -> list[Fact]:
         if nx.must_watch:
             text += f" Must Watch: {n.text(nx.reason)}."
         out.append(fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
+    return out
+
+
+# The writer reads one number to pick a shootout, so a long list of names adds no value past this cap.
+SHOOTOUT_NAMES_MAX = 8
+
+
+def _last_games(count: int, n: Nums) -> str:
+    return "its last game" if count == 1 else f"its last {n(count)} games"
+
+
+def _one_decimal(x: float, n: Nums) -> str:
+    # One decimal is enough for a rate in percentage points, and a fixed form keeps "4.0" from reading as a count.
+    s = f"{_round_half_up(x, 1):.1f}"
+    n.seen.append(s)
+    return s
+
+
+def _plural(count: int, word: str, n: Nums) -> str:
+    return f"{n(count)} {word}" + ("" if count == 1 else "s")
+
+
+def shootout_facts(c: Context) -> list[Fact]:
+    """One fact per shootout of next week, with the league starters in that game by roster.
+
+    The lineups of next week are not set yet, so a starter is a player in a starting lineup of this week.
+    """
+    out = []
+    for s in shootouts(c.nfl):
+        n = Nums()
+        # Short sentences, and the unit once, so the writer cannot turn the rate into a percent.
+        text = (
+            f"{s.away} at {s.home} next week is a shootout. {s.away}'s pass rate over expected is "
+            f"{_one_decimal(s.away_rate, n)} percentage points over {_last_games(s.away_games, n)}. "
+            f"{s.home}'s is {_one_decimal(s.home_rate, n)} over {_last_games(s.home_games, n)}."
+        )
+        starters = [
+            (side.roster_id, line.name)
+            for m in c.week.matchups for side in (m.a, m.b) for line in side.lines
+            if line.started and line.nfl_team in (s.away, s.home)
+        ]
+        shown: dict[int, list[str]] = {}
+        for rid, name in starters[:SHOOTOUT_NAMES_MAX]:
+            shown.setdefault(rid, []).append(name)
+        if starters:
+            rosters = {rid for rid, _ in starters}
+            text += (
+                f" {_plural(len(starters), 'league starter', n)} on {_plural(len(rosters), 'roster', n)}: "
+                + "; ".join(f"{c.team(rid)} ({', '.join(names)})" for rid, names in shown.items())
+            )
+            more = len(starters) - SHOOTOUT_NAMES_MAX
+            text += f"; and {n(more)} more." if more > 0 else "."
+        else:
+            text += " No league starter plays in that game."
+        out.append(fact(f"NX.shootout.{s.away}v{s.home}", text, n, [c.team(rid) for rid in shown],
+                        [name for names in shown.values() for name in names]))
     return out
 
 
@@ -1540,6 +1596,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
+        shootout_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
         rank_why_facts(c.history, c.power, c.before, c.team),

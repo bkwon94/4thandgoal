@@ -163,6 +163,16 @@ def read_schedules(path: Path, season: int) -> dict[str, TeamSchedule] | None:
             for team, played in weeks.items()}
 
 
+def read_games(path: Path, season: int, week: int) -> list[tuple[str, str]] | None:
+    """The away and home Sleeper team codes of each regular-season game of the week, in file order.
+
+    None when the file has no game that week.
+    """
+    games = [(_sleeper_team(row["away_team"]), _sleeper_team(row["home_team"])) for row in _rows(path)
+             if row["season"] == str(season) and row["game_type"] == "REG" and row["week"] == str(week)]
+    return games or None
+
+
 def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
     """The ordered gsis_ids by Sleeper team code and position, from the latest snapshot. None when no row.
 
@@ -246,6 +256,8 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     if usage is not None and player_weeks is not None:
         usage = nflverse_players.with_player_weeks(usage, player_weeks)
     environment = None if plays is None else nflverse_usage.read_environment(plays)
+    # The shootout facts look ahead, so they read the games of week N+1.
+    next_games = read_games(schedules, season, week + 1) if schedules else None
     ep_path = get(FFOPPORTUNITY_URL)
     expected = (nflverse_expected.read_expected(ep_path, schedules, season, week, scoring, sleeper_of_gsis)
                 if ep_path and schedules and scoring is not None else None)
@@ -262,4 +274,4 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
         gsis=gsis,
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
         injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},
-        usage=usage, environment=environment, expected=expected)
+        usage=usage, environment=environment, expected=expected, next_games=next_games)
