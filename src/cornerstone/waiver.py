@@ -159,11 +159,9 @@ def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[
 
 def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
     """The count fact of a trending player. The count is written plain, as a comma would split it into two numbers."""
-    # The sheet module imports the Sleeper client, which imports this module, so the fact skips its Nums helper.
-    # The one number goes into the text and the numbers from the same string.
-    number = str(count)
-    text = f"{p.name} was added in {number} Sleeper leagues in the last day."
-    return Fact(id=f"WV.trending.{p.player_id}", text=text, numbers=[number], teams=[], players=[p.name])
+    n = Nums()
+    text = f"{p.name} was added in {n(count)} Sleeper leagues in the last day."
+    return fact(f"WV.trending.{p.player_id}", text, n, [], [p.name])
 
 
 def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
