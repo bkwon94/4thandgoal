@@ -945,19 +945,14 @@
           },
           "blurb": [
             {
-              "text": "Lil Fridge stays on top, 1st in standing and 1st in scoring.",
+              "text": "Lil Fridge holds the top spot with a 10-2 record, 4 games above the cut.",
               "fact_ids": [
-                "PR.3"
-              ]
-            },
-            {
-              "text": "A 10-2 record puts them 4 games above the cut.",
-              "fact_ids": [
+                "PR.3",
                 "S.1"
               ]
             },
             {
-              "text": "Scoring has slipped lately, down to 113.91 a week, and they still make the playoffs in about 99% of runs.",
+              "text": "Scoring is down to 113.91 a week lately, and the bye still shows up in 80% of runs.",
               "fact_ids": [
                 "H.3.trend",
                 "ODDS.3"
@@ -986,14 +981,14 @@
           },
           "blurb": [
             {
-              "text": "London Cooking holds 2nd and rides a 4-game win streak.",
+              "text": "London Cooking stays 2nd and has won 4 straight.",
               "fact_ids": [
                 "PR.5",
                 "H.5.streak"
               ]
             },
             {
-              "text": "The scoring is climbing too, up to 122.9 a week lately.",
+              "text": "The kitchen is getting hotter, too, with recent scoring up from the season average.",
               "fact_ids": [
                 "H.5.trend"
               ]
@@ -1021,22 +1016,16 @@
           },
           "blurb": [
             {
-              "text": "Bo Girds sits 3rd but has lost 2 straight.",
+              "text": "Bo Girds hangs on at 3rd despite losing 2 straight.",
               "fact_ids": [
                 "PR.6",
                 "H.6.streak"
               ]
             },
             {
-              "text": "Still an 8-4 record, still 2 games above the cut.",
+              "text": "The bye shows up in 46% of runs, a coin flip with feathers.",
               "fact_ids": [
-                "S.3"
-              ]
-            },
-            {
-              "text": "The latest loss came to a lamb.",
-              "fact_ids": [
-                "PR.10.why"
+                "ODDS.6"
               ]
             }
           ],
@@ -1062,20 +1051,14 @@
           },
           "blurb": [
             {
-              "text": "Maye d'force B with U climbs 1 spot to 4th.",
+              "text": "Maye d'force B with U climbs to 4th and has won 2 straight.",
               "fact_ids": [
-                "PR.9"
-              ]
-            },
-            {
-              "text": "A 10-point win did it, their 2nd straight.",
-              "fact_ids": [
-                "PR.9.why",
+                "PR.9",
                 "H.9.streak"
               ]
             },
             {
-              "text": "The force is with them in about 79% of playoff runs.",
+              "text": "The force is real: 79% of runs end in the playoffs.",
               "fact_ids": [
                 "ODDS.9"
               ]
@@ -1103,22 +1086,23 @@
           },
           "blurb": [
             {
-              "text": "Return of T Mac is the hottest team going, 1st in results over the last 3 weeks.",
+              "text": "Return of T Mac jumps 2 spots after a 39-point win last week.",
               "fact_ids": [
-                "PR.8"
-              ]
-            },
-            {
-              "text": "A 39-point win moved them up 2 places.",
-              "fact_ids": [
+                "PR.8",
                 "PR.8.why"
               ]
             },
             {
-              "text": "They sit 1 spot outside the playoffs but make it in about 72% of runs.",
+              "text": "This side has won 3 straight and leads everyone in results over the last 3 weeks.",
               "fact_ids": [
-                "S.7",
-                "ODDS.8"
+                "H.8.streak",
+                "PR.8"
+              ]
+            },
+            {
+              "text": "At 6-6, the comeback tour still sits outside the playoff spots.",
+              "fact_ids": [
+                "S.7"
               ]
             }
           ],
@@ -1144,22 +1128,23 @@
           },
           "blurb": [
             {
-              "text": "All You Need Is Love holds 6th with a 7-5 record.",
+              "text": "All You Need Is Love sits 6th despite a 7-5 record that holds a playoff spot today.",
               "fact_ids": [
                 "PR.2",
                 "S.5"
               ]
             },
             {
-              "text": "Love is not all they need: they make the playoffs in about 20% of runs.",
+              "text": "The playoffs show up in only 20% of runs, on a projection of 98 a week from here.",
               "fact_ids": [
-                "ODDS.2"
+                "ODDS.2",
+                "ODDS.2.why"
               ]
             },
             {
-              "text": "They project 98 a week from here, below their 102 pace.",
+              "text": "Love, it turns out, is not all you need.",
               "fact_ids": [
-                "ODDS.2.why"
+                "ODDS.2"
               ]
             }
           ],
@@ -1185,22 +1170,16 @@
           },
           "blurb": [
             {
-              "text": "behold the lamb is the big climber, up 4 places to 7th.",
+              "text": "behold the lamb leaps 4 spots after a 5-point win last week.",
               "fact_ids": [
-                "PR.10"
-              ]
-            },
-            {
-              "text": "The jump came with a 5-point win over the 2nd-place team.",
-              "fact_ids": [
+                "PR.10",
                 "PR.10.why"
               ]
             },
             {
-              "text": "At 6-6, they still make the playoffs in only about 24% of runs.",
+              "text": "They still sit 2 spots outside the playoffs at 6-6.",
               "fact_ids": [
-                "S.8",
-                "ODDS.10"
+                "S.8"
               ]
             }
           ],
@@ -1226,19 +1205,14 @@
           },
           "blurb": [
             {
-              "text": "Brock ‘N’ Roll tumbles 4 places to 8th.",
+              "text": "Brock ‘N’ Roll tumbles 4 spots after a 38-point beating from the top team.",
               "fact_ids": [
-                "PR.1"
-              ]
-            },
-            {
-              "text": "The slide followed a 38-point loss to the 1st-place team.",
-              "fact_ids": [
+                "PR.1",
                 "PR.1.why"
               ]
             },
             {
-              "text": "They still hold the last playoff spot, with odds of about 57%.",
+              "text": "They still hold the last playoff spot, and 57% of runs keep it that way.",
               "fact_ids": [
                 "S.6",
                 "ODDS.1"
@@ -1267,19 +1241,14 @@
           },
           "blurb": [
             {
-              "text": "Amon-Ra Dawg Your Team slips 1 place to 9th.",
+              "text": "Amon-Ra Dawg Your Team slips to 9th at 4-8.",
               "fact_ids": [
-                "PR.12"
-              ]
-            },
-            {
-              "text": "A 4-8 record leaves them 2 games below the cut.",
-              "fact_ids": [
+                "PR.12",
                 "S.9"
               ]
             },
             {
-              "text": "The odds still say about 37%, with the easiest remaining schedule and a projected 109 a week ahead.",
+              "text": "Somehow the playoffs still show up in 37% of runs, with the easiest remaining schedule ahead.",
               "fact_ids": [
                 "ODDS.12",
                 "ODDS.12.why"
@@ -1308,22 +1277,15 @@
           },
           "blurb": [
             {
-              "text": "Unsolicited Dak Picks falls 1 spot to 10th.",
+              "text": "Unsolicited Dak Picks drops to 10th on 3 straight losses.",
               "fact_ids": [
-                "PR.11"
-              ]
-            },
-            {
-              "text": "Nobody asked for this losing streak either.",
-              "fact_ids": [
+                "PR.11",
                 "H.11.streak"
               ]
             },
             {
-              "text": "They make the playoffs in about 8% of runs.",
-              "fact_ids": [
-                "ODDS.11"
-              ]
+              "text": "Nobody asked for this either.",
+              "fact_ids": []
             }
           ],
           "odds": {
@@ -1348,20 +1310,23 @@
           },
           "blurb": [
             {
-              "text": "To Infinity and Bijan drops 1 place to 11th.",
+              "text": "To Infinity and Bijan falls to 11th on 77.06 a week lately.",
               "fact_ids": [
-                "PR.7"
+                "PR.7",
+                "H.7.trend"
               ]
             },
             {
-              "text": "The latest was a 66-point loss to the 3rd-place team.",
+              "text": "Infinity is not where this offense is headed.",
               "fact_ids": [
-                "PR.7.why"
+                "H.7.trend"
               ]
             },
             {
-              "text": "Brutal.",
-              "fact_ids": []
+              "text": "The playoffs show up in 3% of runs.",
+              "fact_ids": [
+                "ODDS.7"
+              ]
             }
           ],
           "odds": {
@@ -1386,20 +1351,14 @@
           },
           "blurb": [
             {
-              "text": "Pukancun on 3 holds last place with a 1-11 record.",
+              "text": "Pukancun on 3 stays last with a 1-11 record.",
               "fact_ids": [
                 "PR.4",
                 "S.12"
               ]
             },
             {
-              "text": "Scoring is up to 93.93 a week lately.",
-              "fact_ids": [
-                "H.4.trend"
-              ]
-            },
-            {
-              "text": "The reward is the hardest remaining schedule.",
+              "text": "They get the hardest remaining schedule as a reward.",
               "fact_ids": [
                 "ODDS.4.why"
               ]

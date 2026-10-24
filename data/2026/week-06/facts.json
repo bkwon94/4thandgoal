@@ -3,7 +3,7 @@
     "season": 2026,
     "week": 6,
     "dates": "Oct 15 – Oct 19, 2026",
-    "publish_date": "Fri Oct 23, 2026",
+    "publish_date": "Sat Oct 24, 2026",
     "teams": {
       "1": {
         "roster_id": 1,
@@ -2795,9 +2795,9 @@
       },
       "W.publish": {
         "id": "W.publish",
-        "text": "The report was published on Fri Oct 23, 2026.",
+        "text": "The report was published on Sat Oct 24, 2026.",
         "numbers": [
-          "23",
+          "24",
           "2026"
         ],
         "teams": [],
@@ -6457,16 +6457,46 @@
       },
       "AW.game_changer.news": {
         "id": "AW.game_changer.news",
-        "text": "Latest news on Germie Bernard: With multiple injuries in the Pittsburgh Steelers' wide receiver room, rookie wide receiver Germie Bernard has stepped up over the past two weeks, and he should continue to play a significant role for the foreseeable future. Bernard saw 12 targets in a 26-19 overtime victory against the Tampa Bay",
+        "text": "Latest news on Germie Bernard: Pittsburgh Steelers wide receiver Germie Bernard broke out with 11 catches for 87 yards and a touchdown on 12 targets last week and should remain heavily involved in Week 7 against the New Orleans Saints. With Michael Pittman Jr. (foot), Roman Wilson (finger), and Ben Skowronek (calf) all inactive,",
         "numbers": [
+          "11",
+          "87",
           "12",
-          "26-19",
-          "26",
-          "19"
+          "7"
         ],
         "teams": [],
         "players": [
           "Germie Bernard"
+        ]
+      },
+      "AW.unlucky": {
+        "id": "AW.unlucky",
+        "text": "Unlucky: CeeDee Lamb (WR, DAL), behold the lamb. CeeDee Lamb scored 11.5 on 26.42 expected points, 14.92 under.",
+        "numbers": [
+          "11.5",
+          "26.42",
+          "14.92"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "CeeDee Lamb"
+        ]
+      },
+      "AW.lucky": {
+        "id": "AW.lucky",
+        "text": "Lucky: Bhayshul Tuten (RB, JAX), Amon-Ra Dawg Your Team. Bhayshul Tuten scored 22.7 on 12.49 expected points, 10.21 over.",
+        "numbers": [
+          "22.7",
+          "12.49",
+          "10.21"
+        ],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Bhayshul Tuten"
         ]
       },
       "PICK": {
@@ -6596,6 +6626,57 @@
           "To Infinity and Bijan"
         ],
         "players": []
+      },
+      "NX.shootout.GBvDET": {
+        "id": "NX.shootout.GBvDET",
+        "text": "GB at DET next week is a shootout. GB's pass rate over expected is 4.0 percentage points over its last 3 games. DET's is 1.5 over its last 3 games. 5 league starters on 4 rosters: Brock ‘N’ Roll (Christian Watson); Return of T Mac (Jordan Love, Tucker Kraft); Bo Girds (Matthew Golden); Pukancun on 3 (MarShawn Lloyd).",
+        "numbers": [
+          "4.0",
+          "3",
+          "1.5",
+          "3",
+          "5",
+          "4"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll",
+          "Return of T Mac",
+          "Bo Girds",
+          "Pukancun on 3"
+        ],
+        "players": [
+          "Christian Watson",
+          "Jordan Love",
+          "Tucker Kraft",
+          "Matthew Golden",
+          "MarShawn Lloyd"
+        ]
+      },
+      "NX.shootout.DALvPHI": {
+        "id": "NX.shootout.DALvPHI",
+        "text": "DAL at PHI next week is a shootout. DAL's pass rate over expected is 3.6 percentage points over its last 3 games. PHI's is 3.2 over its last 3 games. 6 league starters on 4 rosters: Brock ‘N’ Roll (Dallas Goedert); Unsolicited Dak Picks (Dak Prescott, George Pickens); behold the lamb (CeeDee Lamb, Dameon Pierce); London Cooking (Javonte Williams).",
+        "numbers": [
+          "3.6",
+          "3",
+          "3.2",
+          "3",
+          "6",
+          "4"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll",
+          "Unsolicited Dak Picks",
+          "behold the lamb",
+          "London Cooking"
+        ],
+        "players": [
+          "Dallas Goedert",
+          "Dak Prescott",
+          "George Pickens",
+          "CeeDee Lamb",
+          "Dameon Pierce",
+          "Javonte Williams"
+        ]
       },
       "RANK.8151": {
         "id": "RANK.8151",
@@ -8169,6 +8250,20 @@
           "Kenneth Walker"
         ]
       },
+      "LEAD.RB.1.volume": {
+        "id": "LEAD.RB.1.volume",
+        "text": "Kenneth Walker (RB, KC) had a carry share of 83 percent, 7th among started RBs this week.",
+        "numbers": [
+          "83",
+          "7"
+        ],
+        "teams": [
+          "Bo Girds"
+        ],
+        "players": [
+          "Kenneth Walker"
+        ]
+      },
       "LEAD.RB.2": {
         "id": "LEAD.RB.2",
         "text": "Christian McCaffrey (RB, SF) scored 26.2 for Lil Fridge, 2nd of 31 among started RBs this week.",
@@ -8176,6 +8271,20 @@
           "26.2",
           "2",
           "31"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Christian McCaffrey"
+        ]
+      },
+      "LEAD.RB.2.volume": {
+        "id": "LEAD.RB.2.volume",
+        "text": "Christian McCaffrey (RB, SF) had a carry share of 62 percent, 15th among started RBs this week.",
+        "numbers": [
+          "62",
+          "15"
         ],
         "teams": [
           "Lil Fridge"
@@ -8199,6 +8308,20 @@
           "James Cook"
         ]
       },
+      "LEAD.RB.3.volume": {
+        "id": "LEAD.RB.3.volume",
+        "text": "James Cook (RB, BUF) had a carry share of 88 percent, 6th among started RBs this week.",
+        "numbers": [
+          "88",
+          "6"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": [
+          "James Cook"
+        ]
+      },
       "LEAD.WR.1": {
         "id": "LEAD.WR.1",
         "text": "Tre Tucker (WR, LV) scored 24.2 for All You Need Is Love, 1st of 38 among started WRs this week.",
@@ -8206,6 +8329,20 @@
           "24.2",
           "1",
           "38"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Tre Tucker"
+        ]
+      },
+      "LEAD.WR.1.volume": {
+        "id": "LEAD.WR.1.volume",
+        "text": "Tre Tucker (WR, LV) had a WOPR of 48, 26th among started WRs this week.",
+        "numbers": [
+          "48",
+          "26"
         ],
         "teams": [
           "All You Need Is Love"
@@ -8229,6 +8366,20 @@
           "Malik Nabers"
         ]
       },
+      "LEAD.WR.2.volume": {
+        "id": "LEAD.WR.2.volume",
+        "text": "Malik Nabers (WR, NYG) had a WOPR of 76, 9th among started WRs this week.",
+        "numbers": [
+          "76",
+          "9"
+        ],
+        "teams": [
+          "Return of T Mac"
+        ],
+        "players": [
+          "Malik Nabers"
+        ]
+      },
       "LEAD.WR.3": {
         "id": "LEAD.WR.3",
         "text": "Germie Bernard (WR, PIT) scored 20.2 for behold the lamb, 3rd of 38 among started WRs this week.",
@@ -8236,6 +8387,20 @@
           "20.2",
           "3",
           "38"
+        ],
+        "teams": [
+          "behold the lamb"
+        ],
+        "players": [
+          "Germie Bernard"
+        ]
+      },
+      "LEAD.WR.3.volume": {
+        "id": "LEAD.WR.3.volume",
+        "text": "Germie Bernard (WR, PIT) had a WOPR of 48, 26th among started WRs this week.",
+        "numbers": [
+          "48",
+          "26"
         ],
         "teams": [
           "behold the lamb"
@@ -8259,6 +8424,20 @@
           "Isaiah Likely"
         ]
       },
+      "LEAD.TE.1.volume": {
+        "id": "LEAD.TE.1.volume",
+        "text": "Isaiah Likely (TE, NYG) had a WOPR of 59, 2nd among started TEs this week.",
+        "numbers": [
+          "59",
+          "2"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Isaiah Likely"
+        ]
+      },
       "LEAD.TE.2": {
         "id": "LEAD.TE.2",
         "text": "Colston Loveland (TE, CHI) scored 15.5 for All You Need Is Love, 2nd of 15 among started TEs this week.",
@@ -8274,6 +8453,20 @@
           "Colston Loveland"
         ]
       },
+      "LEAD.TE.2.volume": {
+        "id": "LEAD.TE.2.volume",
+        "text": "Colston Loveland (TE, CHI) had a WOPR of 48, 6th among started TEs this week.",
+        "numbers": [
+          "48",
+          "6"
+        ],
+        "teams": [
+          "All You Need Is Love"
+        ],
+        "players": [
+          "Colston Loveland"
+        ]
+      },
       "LEAD.TE.3": {
         "id": "LEAD.TE.3",
         "text": "George Kittle (TE, SF) scored 15.4 for London Cooking, 3rd of 15 among started TEs this week.",
@@ -8281,6 +8474,20 @@
           "15.4",
           "3",
           "15"
+        ],
+        "teams": [
+          "London Cooking"
+        ],
+        "players": [
+          "George Kittle"
+        ]
+      },
+      "LEAD.TE.3.volume": {
+        "id": "LEAD.TE.3.volume",
+        "text": "George Kittle (TE, SF) had a WOPR of 62, 1st among started TEs this week.",
+        "numbers": [
+          "62",
+          "1"
         ],
         "teams": [
           "London Cooking"
@@ -11633,6 +11840,8 @@
           "AW.underperformer",
           "AW.overachiever",
           "AW.game_changer.news",
+          "AW.unlucky",
+          "AW.lucky",
           "W.adds",
           "W.injured",
           "RANK.13274",
@@ -11855,14 +12064,23 @@
           "LEAD.QB.2",
           "LEAD.QB.3",
           "LEAD.RB.1",
+          "LEAD.RB.1.volume",
           "LEAD.RB.2",
+          "LEAD.RB.2.volume",
           "LEAD.RB.3",
+          "LEAD.RB.3.volume",
           "LEAD.WR.1",
+          "LEAD.WR.1.volume",
           "LEAD.WR.2",
+          "LEAD.WR.2.volume",
           "LEAD.WR.3",
+          "LEAD.WR.3.volume",
           "LEAD.TE.1",
+          "LEAD.TE.1.volume",
           "LEAD.TE.2",
+          "LEAD.TE.2.volume",
           "LEAD.TE.3",
+          "LEAD.TE.3.volume",
           "LEAD.DEF.1",
           "LEAD.DEF.2",
           "LEAD.DEF.3"
@@ -12745,6 +12963,8 @@
           "NX.5v12",
           "NX.2v6",
           "NX.4v7",
+          "NX.shootout.GBvDET",
+          "NX.shootout.DALvPHI",
           "SOS.3",
           "SOS.5",
           "SOS.6",
@@ -13211,5 +13431,2066 @@
         "b_loss": 1
       }
     ]
+  },
+  "waiver": {
+    "week": 6,
+    "built": "2026-10-24T14:59:48.971318-04:00",
+    "buckets": {
+      "best_adds": [
+        {
+          "player_id": "12718",
+          "name": "Konata Mumpfield",
+          "position": "WR",
+          "team": "LAR",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 1.0,
+            "environment": 0.9516,
+            "projection": 1.0
+          },
+          "board_score": 0.9855,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.12718",
+              "text": "Konata Mumpfield played 47% of snaps and took 3 targets last week, up from 7% and 0.",
+              "numbers": [
+                "47",
+                "3",
+                "7",
+                "0"
+              ],
+              "teams": [],
+              "players": [
+                "Konata Mumpfield"
+              ]
+            },
+            {
+              "id": "W.env.12718",
+              "text": "LAR runs the 3rd fastest offense and passes on 59% of neutral downs.",
+              "numbers": [
+                "59",
+                "3"
+              ],
+              "teams": [],
+              "players": [
+                "Konata Mumpfield"
+              ]
+            },
+            {
+              "id": "WV.research.12718.1",
+              "text": "Yahoo Fantasy's Chris Allen listed Konata Mumpfield, rostered in 7% of leagues, as a desperation start, noting that his routes and targets went up while Matthew Stafford's main receivers were out. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-4-players-off-the-waiver-wire-you-can-start-if-youre-desperate-in-week-7-152117020.html",
+              "numbers": [
+                "7"
+              ],
+              "teams": [],
+              "players": [
+                "Konata Mumpfield"
+              ]
+            },
+            {
+              "id": "WV.research.12718.2",
+              "text": "Puka Nacua left Rams practice early with a calf injury, and SI's fantasy desk called Mumpfield a top waiver target if Nacua misses time. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/injuries/fantasy-football-impact-puka-nacua-leaves-practice-with-injury-making-konata-mumpfield-a-top-waiver-wire-target",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Konata Mumpfield"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_12718",
+              "text": "Bid $13 to win Konata Mumpfield. The top rival bid is about $10.64, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "10.64",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Konata Mumpfield"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 11,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "Yahoo Fantasy's Chris Allen listed Konata Mumpfield, rostered in 7% of leagues, as a desperation start, noting that his routes and targets went up while Matthew Stafford's main receivers were out.",
+              "url": "https://sports.yahoo.com/fantasy/article/fantasy-football-4-players-off-the-waiver-wire-you-can-start-if-youre-desperate-in-week-7-152117020.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-10-23",
+              "stance": "backs"
+            },
+            {
+              "text": "Puka Nacua left Rams practice early with a calf injury, and SI's fantasy desk called Mumpfield a top waiver target if Nacua misses time.",
+              "url": "https://www.si.com/onsi/fantasy/injuries/fantasy-football-impact-puka-nacua-leaves-practice-with-injury-making-konata-mumpfield-a-top-waiver-wire-target",
+              "source": "Sports Illustrated",
+              "date": "2026-10-23",
+              "stance": "news"
+            }
+          ]
+        },
+        {
+          "player_id": "8122",
+          "name": "Zonovan Knight",
+          "position": "RB",
+          "team": "ARI",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 1.0,
+            "environment": 0.7742,
+            "projection": 1.0
+          },
+          "board_score": 0.9323,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.8122",
+              "text": "Zonovan Knight played 44% of snaps and took 15 carries last week, up from 8% and 1.",
+              "numbers": [
+                "44",
+                "15",
+                "8",
+                "1"
+              ],
+              "teams": [],
+              "players": [
+                "Zonovan Knight"
+              ]
+            },
+            {
+              "id": "W.env.8122",
+              "text": "ARI runs the 4th fastest offense and succeeds on 43% of runs.",
+              "numbers": [
+                "43",
+                "4"
+              ],
+              "teams": [],
+              "players": [
+                "Zonovan Knight"
+              ]
+            },
+            {
+              "id": "WV.research.8122.1",
+              "text": "Kevin English of Draft Sharks says Knight led the Cardinals backfield with 80 rushing yards on 15 carries against the Rams while Jeremiyah Love (ankle) was inactive, and Tyler Allgeier had 18 carries. Source: Draft Sharks, https://www.draftsharks.com/fantasy-football-news/83568/zonovan-knight-makes-an-unexpected-splash",
+              "numbers": [
+                "80",
+                "15",
+                "18"
+              ],
+              "teams": [],
+              "players": [
+                "Zonovan Knight"
+              ]
+            },
+            {
+              "id": "WV.research.8122.2",
+              "text": "4for4 reports that Knight had full body cramps for much of the second half, which cut into his playing time, and that he could take carries from Allgeier if Love stays out. Source: 4for4, https://www.4for4.com/news/cardinals-rb-zonovan-knight-suffered-full-body-cramps",
+              "numbers": [
+                "4",
+                "4",
+                "4",
+                "4"
+              ],
+              "teams": [],
+              "players": [
+                "Zonovan Knight"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 11,
+            "fact": {
+              "id": "waiver_price_8122",
+              "text": "Bid $11 to win Zonovan Knight. The top rival bid is about $10.07, from London Cooking with $90 left. The last winning RB claim in the last 3 weeks is $2.",
+              "numbers": [
+                "11",
+                "10.07",
+                "90",
+                "3",
+                "2"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Zonovan Knight"
+              ]
+            },
+            "last_like": {
+              "player_id": "12529",
+              "name": "TreVeyon Henderson",
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "week": 6,
+              "bid": 2
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 14,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "Kevin English of Draft Sharks says Knight led the Cardinals backfield with 80 rushing yards on 15 carries against the Rams while Jeremiyah Love (ankle) was inactive, and Tyler Allgeier had 18 carries.",
+              "url": "https://www.draftsharks.com/fantasy-football-news/83568/zonovan-knight-makes-an-unexpected-splash",
+              "source": "Draft Sharks",
+              "date": "2026-10-19",
+              "stance": "backs"
+            },
+            {
+              "text": "4for4 reports that Knight had full body cramps for much of the second half, which cut into his playing time, and that he could take carries from Allgeier if Love stays out.",
+              "url": "https://www.4for4.com/news/cardinals-rb-zonovan-knight-suffered-full-body-cramps",
+              "source": "4for4",
+              "date": "2026-10-19",
+              "stance": "news"
+            }
+          ]
+        },
+        {
+          "player_id": "9482",
+          "name": "Michael Mayer",
+          "position": "TE",
+          "team": "LV",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.9667,
+            "environment": 0.629,
+            "projection": 1.0
+          },
+          "board_score": 0.872,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.9482",
+              "text": "Michael Mayer played 79% of snaps and took 9 targets last week, up from 65% and 1.",
+              "numbers": [
+                "79",
+                "9",
+                "65",
+                "1"
+              ],
+              "teams": [],
+              "players": [
+                "Michael Mayer"
+              ]
+            },
+            {
+              "id": "W.env.9482",
+              "text": "LV runs the 10th fastest offense and passes on 51% of neutral downs.",
+              "numbers": [
+                "51",
+                "10"
+              ],
+              "teams": [],
+              "players": [
+                "Michael Mayer"
+              ]
+            },
+            {
+              "id": "WV.research.9482.1",
+              "text": "Justin Boone lists Mayer as a Week 7 tight end pickup and says he could be seen as the real starting tight end in Las Vegas, with Brock Bowers playing more of a receiver role. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-7-fantasy-football-waiver-wire-rookies-mike-washington-jr-omar-cooper-jr-among-top-pickups-141451458.html",
+              "numbers": [
+                "7"
+              ],
+              "teams": [],
+              "players": [
+                "Michael Mayer"
+              ]
+            },
+            {
+              "id": "WV.research.9482.2",
+              "text": "Boone notes Mayer had 82 yards in Week 4 and 95 yards on Sunday, and calls him a TE2 streamer with a $3 FAB bid and 8% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-7-fantasy-football-waiver-wire-rookies-mike-washington-jr-omar-cooper-jr-among-top-pickups-141451458.html",
+              "numbers": [
+                "82",
+                "4",
+                "95",
+                "2",
+                "3",
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Michael Mayer"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 16,
+            "fact": {
+              "id": "waiver_price_9482",
+              "text": "Bid $16 to win Michael Mayer. The top rival bid is about $9.42, from London Cooking with $90 left. The last winning TE claim in the last 3 weeks is $15.",
+              "numbers": [
+                "16",
+                "9.42",
+                "90",
+                "3",
+                "15"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Michael Mayer"
+              ]
+            },
+            "last_like": {
+              "player_id": "9480",
+              "name": "Brenton Strange",
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "week": 5,
+              "bid": 15
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 13,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "Justin Boone lists Mayer as a Week 7 tight end pickup and says he could be seen as the real starting tight end in Las Vegas, with Brock Bowers playing more of a receiver role.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-7-fantasy-football-waiver-wire-rookies-mike-washington-jr-omar-cooper-jr-among-top-pickups-141451458.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-10-20",
+              "stance": "backs"
+            },
+            {
+              "text": "Boone notes Mayer had 82 yards in Week 4 and 95 yards on Sunday, and calls him a TE2 streamer with a $3 FAB bid and 8% rostered.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-7-fantasy-football-waiver-wire-rookies-mike-washington-jr-omar-cooper-jr-among-top-pickups-141451458.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-10-20",
+              "stance": "backs"
+            }
+          ]
+        },
+        {
+          "player_id": "6826",
+          "name": "Cole Kmet",
+          "position": "TE",
+          "team": "CHI",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.9333,
+            "environment": 0.5806,
+            "projection": 1.0
+          },
+          "board_score": 0.8408,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.6826",
+              "text": "Cole Kmet played 74% of snaps and took 2 targets last week, up from 42% and 2.",
+              "numbers": [
+                "74",
+                "2",
+                "42",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Cole Kmet"
+              ]
+            },
+            {
+              "id": "W.env.6826",
+              "text": "CHI runs the 1st fastest offense and passes on 47% of neutral downs.",
+              "numbers": [
+                "47",
+                "1"
+              ],
+              "teams": [],
+              "players": [
+                "Cole Kmet"
+              ]
+            },
+            {
+              "id": "WV.research.6826.1",
+              "text": "Bears coach Ben Johnson said Cole Kmet will miss the rest of the 2026 season with a right knee injury suffered in the 30-24 win over the Patriots. Source: ABC7 Chicago, https://abc7chicago.com/post/bears-te-cole-kmet-season-knee-injury-patriots/19973368/",
+              "numbers": [
+                "2026",
+                "30-24",
+                "30",
+                "24",
+                "7"
+              ],
+              "teams": [],
+              "players": [
+                "Cole Kmet"
+              ]
+            },
+            {
+              "id": "WV.research.6826.2",
+              "text": "The Bears officially placed Cole Kmet on injured reserve after his season-ending knee injury, so he should not be added off waivers. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/bears-cole-kmet-officially-placed-on-ir/",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Cole Kmet"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 16,
+            "fact": {
+              "id": "waiver_price_6826",
+              "text": "Bid $16 to win Cole Kmet. The top rival bid is about $9.08, from London Cooking with $90 left. The last winning TE claim in the last 3 weeks is $15.",
+              "numbers": [
+                "16",
+                "9.08",
+                "90",
+                "3",
+                "15"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Cole Kmet"
+              ]
+            },
+            "last_like": {
+              "player_id": "9480",
+              "name": "Brenton Strange",
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "week": 5,
+              "bid": 15
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 10,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "Bears coach Ben Johnson said Cole Kmet will miss the rest of the 2026 season with a right knee injury suffered in the 30-24 win over the Patriots.",
+              "url": "https://abc7chicago.com/post/bears-te-cole-kmet-season-knee-injury-patriots/19973368/",
+              "source": "ABC7 Chicago",
+              "date": "2026-10-24",
+              "stance": "news"
+            },
+            {
+              "text": "The Bears officially placed Cole Kmet on injured reserve after his season-ending knee injury, so he should not be added off waivers.",
+              "url": "https://www.cbssports.com/fantasy/football/news/bears-cole-kmet-officially-placed-on-ir/",
+              "source": "CBS Sports",
+              "date": "2026-10-24",
+              "stance": "news"
+            }
+          ]
+        },
+        {
+          "player_id": "11565",
+          "name": "J.J. McCarthy",
+          "position": "QB",
+          "team": "NYG",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 1.0,
+            "environment": 0.4516,
+            "projection": 1.0
+          },
+          "board_score": 0.8355,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.11565",
+              "text": "J.J. McCarthy played 40% of snaps and took 1 carries last week, up from 6% and 2.",
+              "numbers": [
+                "40",
+                "1",
+                "6",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "J.J. McCarthy"
+              ]
+            },
+            {
+              "id": "W.env.11565",
+              "text": "NYG runs the 8th fastest offense and passes on 45% of neutral downs.",
+              "numbers": [
+                "45",
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "J.J. McCarthy"
+              ]
+            },
+            {
+              "id": "WV.research.11565.1",
+              "text": "FTN Fantasy says, citing ESPN's Jeremy Fowler, that the Giants plan to start J.J. McCarthy on Sunday against the Houston Texans in Week 7. Source: FTN Fantasy, https://ftnfantasy.com/nfl/player/j-j-mccarthy",
+              "numbers": [
+                "7"
+              ],
+              "teams": [],
+              "players": [
+                "J.J. McCarthy"
+              ]
+            },
+            {
+              "id": "WV.research.11565.2",
+              "text": "FTN Fantasy says McCarthy replaced Jameis Winston after Winston's second interception in the 34-27 loss to New Orleans, and went 11 of 21 for 243 yards with 1 touchdown and 1 interception. Source: FTN Fantasy, https://ftnfantasy.com/nfl/player/j-j-mccarthy",
+              "numbers": [
+                "34-27",
+                "34",
+                "27",
+                "11",
+                "21",
+                "243",
+                "1",
+                "1"
+              ],
+              "teams": [],
+              "players": [
+                "J.J. McCarthy"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 10,
+            "fact": {
+              "id": "waiver_price_11565",
+              "text": "Bid $10 to win J.J. McCarthy. The top rival bid is about $9.02, from London Cooking with $90 left. The last winning QB claim in the last 3 weeks is $0.",
+              "numbers": [
+                "10",
+                "9.02",
+                "90",
+                "3",
+                "0"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "J.J. McCarthy"
+              ]
+            },
+            "last_like": {
+              "player_id": "1166",
+              "name": "Kirk Cousins",
+              "roster_id": 4,
+              "team": "Pukancun on 3",
+              "week": 6,
+              "bid": 0
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 8,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "FTN Fantasy says, citing ESPN's Jeremy Fowler, that the Giants plan to start J.J. McCarthy on Sunday against the Houston Texans in Week 7.",
+              "url": "https://ftnfantasy.com/nfl/player/j-j-mccarthy",
+              "source": "FTN Fantasy",
+              "date": "2026-10-21",
+              "stance": "news"
+            },
+            {
+              "text": "FTN Fantasy says McCarthy replaced Jameis Winston after Winston's second interception in the 34-27 loss to New Orleans, and went 11 of 21 for 243 yards with 1 touchdown and 1 interception.",
+              "url": "https://ftnfantasy.com/nfl/player/j-j-mccarthy",
+              "source": "FTN Fantasy",
+              "date": "2026-10-21",
+              "stance": "backs"
+            }
+          ]
+        },
+        {
+          "player_id": "12715",
+          "name": "Thomas Fidone",
+          "position": "TE",
+          "team": "NYG",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 1.0,
+            "environment": 0.4516,
+            "projection": 1.0
+          },
+          "board_score": 0.8355,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.12715",
+              "text": "Thomas Fidone played 38% of snaps and took 0 targets last week, up from 0% and 0.",
+              "numbers": [
+                "38",
+                "0",
+                "0",
+                "0"
+              ],
+              "teams": [],
+              "players": [
+                "Thomas Fidone"
+              ]
+            },
+            {
+              "id": "W.env.12715",
+              "text": "NYG runs the 8th fastest offense and passes on 45% of neutral downs.",
+              "numbers": [
+                "45",
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Thomas Fidone"
+              ]
+            },
+            {
+              "id": "WV.research.12715.1",
+              "text": "Alexander Wilson writes that Fidone practiced fully for a second straight day while Chris Manhertz missed practice with a calf injury and Theo Johnson stayed limited with a neck issue, which could earn Fidone a small receiving package against Houston. Source: Empire Sports Media, https://empiresportsmedia.com/new-york-giants/giants-might-have-a-new-reason-to-try-their-forgotten-tight-end/",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Thomas Fidone"
+              ]
+            },
+            {
+              "id": "WV.research.12715.2",
+              "text": "Wilson notes that Fidone is listed 4th on the depth chart behind Isaiah Likely, Johnson, and Manhertz, carries a shoulder designation, and has no catches in 9 NFL appearances. Source: Empire Sports Media, https://empiresportsmedia.com/new-york-giants/giants-might-have-a-new-reason-to-try-their-forgotten-tight-end/",
+              "numbers": [
+                "4",
+                "9"
+              ],
+              "teams": [],
+              "players": [
+                "Thomas Fidone"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 16,
+            "fact": {
+              "id": "waiver_price_12715",
+              "text": "Bid $16 to win Thomas Fidone. The top rival bid is about $9.02, from London Cooking with $90 left. The last winning TE claim in the last 3 weeks is $15.",
+              "numbers": [
+                "16",
+                "9.02",
+                "90",
+                "3",
+                "15"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Thomas Fidone"
+              ]
+            },
+            "last_like": {
+              "player_id": "9480",
+              "name": "Brenton Strange",
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "week": 5,
+              "bid": 15
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 8,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "Alexander Wilson writes that Fidone practiced fully for a second straight day while Chris Manhertz missed practice with a calf injury and Theo Johnson stayed limited with a neck issue, which could earn Fidone a small receiving package against Houston.",
+              "url": "https://empiresportsmedia.com/new-york-giants/giants-might-have-a-new-reason-to-try-their-forgotten-tight-end/",
+              "source": "Empire Sports Media",
+              "date": "2026-10-23",
+              "stance": "news"
+            },
+            {
+              "text": "Wilson notes that Fidone is listed 4th on the depth chart behind Isaiah Likely, Johnson, and Manhertz, carries a shoulder designation, and has no catches in 9 NFL appearances.",
+              "url": "https://empiresportsmedia.com/new-york-giants/giants-might-have-a-new-reason-to-try-their-forgotten-tight-end/",
+              "source": "Empire Sports Media",
+              "date": "2026-10-23",
+              "stance": "backs"
+            }
+          ]
+        },
+        {
+          "player_id": "7865",
+          "name": "Brandon Smith",
+          "position": "WR",
+          "team": "PIT",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.7941,
+            "environment": 0.7419,
+            "projection": 1.0
+          },
+          "board_score": 0.8196,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.7865",
+              "text": "Brandon Smith played 52% of snaps and took 0 targets last week, up from 27% and 0.",
+              "numbers": [
+                "52",
+                "0",
+                "27",
+                "0"
+              ],
+              "teams": [],
+              "players": [
+                "Brandon Smith"
+              ]
+            },
+            {
+              "id": "W.env.7865",
+              "text": "PIT runs the 15th fastest offense and passes on 58% of neutral downs.",
+              "numbers": [
+                "58",
+                "15"
+              ],
+              "teams": [],
+              "players": [
+                "Brandon Smith"
+              ]
+            },
+            {
+              "id": "WV.research.7865.1",
+              "text": "RotoWire says Brandon Smith played 41 of the Steelers' 79 offensive snaps in the Week 6 win at Tampa Bay, third among the team's wide receivers, but drew no targets. Source: RotoWire, https://www.rotowire.com/football/headlines/brandon-smith-news-reverts-to-steelers-practice-squad-643421",
+              "numbers": [
+                "41",
+                "79",
+                "6"
+              ],
+              "teams": [],
+              "players": [
+                "Brandon Smith"
+              ]
+            },
+            {
+              "id": "WV.research.7865.2",
+              "text": "The Steelers moved Smith up from the practice squad for Week 7 against the Saints, which uses his 3rd and final elevation, so he cannot play for them after Week 7 unless he is signed to the 53-man roster. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/steelers-brandon-smith-elevated-for-week-7/",
+              "numbers": [
+                "7",
+                "3",
+                "7",
+                "53"
+              ],
+              "teams": [],
+              "players": [
+                "Brandon Smith"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_7865",
+              "text": "Bid $13 to win Brandon Smith. The top rival bid is about $8.85, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "8.85",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Brandon Smith"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 9,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "RotoWire says Brandon Smith played 41 of the Steelers' 79 offensive snaps in the Week 6 win at Tampa Bay, third among the team's wide receivers, but drew no targets.",
+              "url": "https://www.rotowire.com/football/headlines/brandon-smith-news-reverts-to-steelers-practice-squad-643421",
+              "source": "RotoWire",
+              "date": "2026-10-19",
+              "stance": "backs"
+            },
+            {
+              "text": "The Steelers moved Smith up from the practice squad for Week 7 against the Saints, which uses his 3rd and final elevation, so he cannot play for them after Week 7 unless he is signed to the 53-man roster.",
+              "url": "https://www.cbssports.com/fantasy/football/news/steelers-brandon-smith-elevated-for-week-7/",
+              "source": "CBS Sports",
+              "date": "2026-10-24",
+              "stance": "news"
+            }
+          ]
+        },
+        {
+          "player_id": "12634",
+          "name": "Jordan Watkins",
+          "position": "WR",
+          "team": "SF",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.9706,
+            "environment": 0.4032,
+            "projection": 1.0
+          },
+          "board_score": 0.8063,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.12634",
+              "text": "Jordan Watkins played 76% of snaps and took 1 targets last week, up from 37% and 0.",
+              "numbers": [
+                "76",
+                "1",
+                "37",
+                "0"
+              ],
+              "teams": [],
+              "players": [
+                "Jordan Watkins"
+              ]
+            },
+            {
+              "id": "W.env.12634",
+              "text": "SF runs the 30th fastest offense and passes on 54% of neutral downs.",
+              "numbers": [
+                "54",
+                "30"
+              ],
+              "teams": [],
+              "players": [
+                "Jordan Watkins"
+              ]
+            },
+            {
+              "id": "WV.research.12634.1",
+              "text": "RotoWire says Jordan Watkins caught 1 pass for 22 yards in Monday's win and led all 49ers wide receivers with 47 offensive snaps. Source: RotoWire, https://www.rotowire.com/football/headlines/jordan-watkins-news-only-one-catch-in-mondays-win-643493",
+              "numbers": [
+                "1",
+                "22",
+                "49",
+                "47"
+              ],
+              "teams": [],
+              "players": [
+                "Jordan Watkins"
+              ]
+            },
+            {
+              "id": "WV.research.12634.2",
+              "text": "RotoWire says Watkins could see a bigger passing role in Week 8 against the Falcons, depending on whether Mike Evans (Achilles) and Deebo Samuel (hamstring) are available. Source: RotoWire, https://www.rotowire.com/football/headlines/jordan-watkins-news-only-one-catch-in-mondays-win-643493",
+              "numbers": [
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Jordan Watkins"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_12634",
+              "text": "Bid $13 to win Jordan Watkins. The top rival bid is about $8.71, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "8.71",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Jordan Watkins"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "board_score",
+          "bye": 8,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "RotoWire says Jordan Watkins caught 1 pass for 22 yards in Monday's win and led all 49ers wide receivers with 47 offensive snaps.",
+              "url": "https://www.rotowire.com/football/headlines/jordan-watkins-news-only-one-catch-in-mondays-win-643493",
+              "source": "RotoWire",
+              "date": "2026-10-20",
+              "stance": "backs"
+            },
+            {
+              "text": "RotoWire says Watkins could see a bigger passing role in Week 8 against the Falcons, depending on whether Mike Evans (Achilles) and Deebo Samuel (hamstring) are available.",
+              "url": "https://www.rotowire.com/football/headlines/jordan-watkins-news-only-one-catch-in-mondays-win-643493",
+              "source": "RotoWire",
+              "date": "2026-10-20",
+              "stance": "news"
+            }
+          ]
+        }
+      ],
+      "trending": [],
+      "sneaky": [
+        {
+          "player_id": "2197",
+          "name": "Brandin Cooks",
+          "position": "WR",
+          "team": "SF",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.5294,
+            "environment": 0.4032,
+            "projection": 1.0
+          },
+          "board_score": 0.5857,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.2197",
+              "text": "Brandin Cooks played 52% of snaps and took 2 targets last week, up from 40% and 2.",
+              "numbers": [
+                "52",
+                "2",
+                "40",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Brandin Cooks"
+              ]
+            },
+            {
+              "id": "W.env.2197",
+              "text": "SF runs the 30th fastest offense and passes on 54% of neutral downs.",
+              "numbers": [
+                "54",
+                "30"
+              ],
+              "teams": [],
+              "players": [
+                "Brandin Cooks"
+              ]
+            },
+            {
+              "id": "WV.story.2197",
+              "text": "Deebo Samuel is out, and Brandin Cooks is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Brandin Cooks",
+                "Deebo Samuel"
+              ]
+            },
+            {
+              "id": "WV.research.2197.1",
+              "text": "RotoWire reports that Brandin Cooks caught 1 of 2 targets for 13 yards in the 49ers' 23-17 win over the Commanders on Monday night. Source: RotoWire, https://www.rotowire.com/football/player/brandin-cooks-9260",
+              "numbers": [
+                "1",
+                "2",
+                "13",
+                "49",
+                "23-17",
+                "23",
+                "17"
+              ],
+              "teams": [],
+              "players": [
+                "Brandin Cooks"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_2197",
+              "text": "Bid $13 to win Brandin Cooks. The top rival bid is about $6.33, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "6.33",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Brandin Cooks"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 8,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "RotoWire reports that Brandin Cooks caught 1 of 2 targets for 13 yards in the 49ers' 23-17 win over the Commanders on Monday night.",
+              "url": "https://www.rotowire.com/football/player/brandin-cooks-9260",
+              "source": "RotoWire",
+              "date": "2026-10-19",
+              "stance": "backs"
+            }
+          ]
+        },
+        {
+          "player_id": "13333",
+          "name": "Deion Burks",
+          "position": "WR",
+          "team": "IND",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.4412,
+            "environment": 0.7581,
+            "projection": 1.0
+          },
+          "board_score": 0.648,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.13333",
+              "text": "Deion Burks played 18% of snaps and took 2 targets last week, up from 10% and 2.",
+              "numbers": [
+                "18",
+                "2",
+                "10",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Deion Burks"
+              ]
+            },
+            {
+              "id": "W.env.13333",
+              "text": "IND runs the 6th fastest offense and passes on 54% of neutral downs.",
+              "numbers": [
+                "54",
+                "6"
+              ],
+              "teams": [],
+              "players": [
+                "Deion Burks"
+              ]
+            },
+            {
+              "id": "WV.story.13333",
+              "text": "Ashton Dulin is out, and Deion Burks is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Deion Burks",
+                "Ashton Dulin"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_13333",
+              "text": "Bid $13 to win Deion Burks. The top rival bid is about $7, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "7",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Deion Burks"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 13,
+          "injury_status": null,
+          "return_week": null,
+          "research": []
+        },
+        {
+          "player_id": "12048",
+          "name": "George Holani",
+          "position": "RB",
+          "team": "SEA",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.375,
+            "environment": 0.4516,
+            "projection": 1.0
+          },
+          "board_score": 0.523,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.12048",
+              "text": "George Holani played 58% of snaps and took 5 carries last week, up from 41% and 4.",
+              "numbers": [
+                "58",
+                "5",
+                "41",
+                "4"
+              ],
+              "teams": [],
+              "players": [
+                "George Holani"
+              ]
+            },
+            {
+              "id": "W.env.12048",
+              "text": "SEA runs the 13th fastest offense and succeeds on 36% of runs.",
+              "numbers": [
+                "36",
+                "13"
+              ],
+              "teams": [],
+              "players": [
+                "George Holani"
+              ]
+            },
+            {
+              "id": "WV.story.12048",
+              "text": "Zach Charbonnet is on the PUP list, and George Holani is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "George Holani",
+                "Zach Charbonnet"
+              ]
+            },
+            {
+              "id": "WV.research.12048.1",
+              "text": "FantasyPros' Andrew Erickson notes George Holani played 49 of 85 snaps (58%, up from 41%) and finished with 5 carries for 20 yards and a touchdown. Source: FantasyPros, https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "numbers": [
+                "49",
+                "85",
+                "58",
+                "41",
+                "5",
+                "20"
+              ],
+              "teams": [],
+              "players": [
+                "George Holani"
+              ]
+            },
+            {
+              "id": "WV.research.12048.2",
+              "text": "Erickson says Emanuel Wilson still had 15 of the backs' 25 opportunities while Holani had 5, and Holani took on more of the work mainly once Seattle was playing from behind. Source: FantasyPros, https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "numbers": [
+                "15",
+                "25",
+                "5"
+              ],
+              "teams": [],
+              "players": [
+                "George Holani"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 6,
+            "fact": {
+              "id": "waiver_price_12048",
+              "text": "Bid $6 to win George Holani. The top rival bid is about $5.65, from London Cooking with $90 left. The last winning RB claim in the last 3 weeks is $2.",
+              "numbers": [
+                "6",
+                "5.65",
+                "90",
+                "3",
+                "2"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "George Holani"
+              ]
+            },
+            "last_like": {
+              "player_id": "12529",
+              "name": "TreVeyon Henderson",
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "week": 6,
+              "bid": 2
+            },
+            "outbid": {
+              "9": 11,
+              "19": 11,
+              "25": 11,
+              "51": 11,
+              "58": 11,
+              "61": 11,
+              "65": 11,
+              "67": 11,
+              "69": 11,
+              "72": 11,
+              "82": 11,
+              "90": 11
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 11,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "FantasyPros' Andrew Erickson notes George Holani played 49 of 85 snaps (58%, up from 41%) and finished with 5 carries for 20 yards and a touchdown.",
+              "url": "https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "source": "FantasyPros",
+              "date": "2026-10-20",
+              "stance": "backs"
+            },
+            {
+              "text": "Erickson says Emanuel Wilson still had 15 of the backs' 25 opportunities while Holani had 5, and Holani took on more of the work mainly once Seattle was playing from behind.",
+              "url": "https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "source": "FantasyPros",
+              "date": "2026-10-20",
+              "stance": "disputes"
+            }
+          ]
+        },
+        {
+          "player_id": "10220",
+          "name": "Will Mallory",
+          "position": "TE",
+          "team": "IND",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.0,
+            "environment": 0.7581,
+            "projection": 1.0
+          },
+          "board_score": 0.4274,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.env.10220",
+              "text": "IND runs the 6th fastest offense and passes on 54% of neutral downs.",
+              "numbers": [
+                "54",
+                "6"
+              ],
+              "teams": [],
+              "players": [
+                "Will Mallory"
+              ]
+            },
+            {
+              "id": "WV.story.10220",
+              "text": "Tyler Warren is out, and Will Mallory is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Will Mallory",
+                "Tyler Warren"
+              ]
+            },
+            {
+              "id": "WV.research.10220.1",
+              "text": "ESPN reports that Tyler Warren will miss a 2nd straight game with a groin injury when the Colts play the Vikings, and Will Mallory is the backup tight end who was activated from injured reserve. Source: ESPN, https://www.espn.com/nfl/story/_/id/50259536/colts-tyler-warren-miss-second-game-groin-injury",
+              "numbers": [
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Will Mallory"
+              ]
+            },
+            {
+              "id": "WV.research.10220.2",
+              "text": "RotoWire expects Mallory to play a bigger role again against the Vikings after the Colts ruled Warren out. Source: RotoWire, https://www.rotowire.com/football/headlines/will-mallory-news-bigger-role-on-tap-sans-warren-644053",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Will Mallory"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 16,
+            "fact": {
+              "id": "waiver_price_10220",
+              "text": "Bid $16 to win Will Mallory. The top rival bid is about $4.62, from London Cooking with $90 left. The last winning TE claim in the last 3 weeks is $15.",
+              "numbers": [
+                "16",
+                "4.62",
+                "90",
+                "3",
+                "15"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Will Mallory"
+              ]
+            },
+            "last_like": {
+              "player_id": "9480",
+              "name": "Brenton Strange",
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "week": 5,
+              "bid": 15
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 13,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "ESPN reports that Tyler Warren will miss a 2nd straight game with a groin injury when the Colts play the Vikings, and Will Mallory is the backup tight end who was activated from injured reserve.",
+              "url": "https://www.espn.com/nfl/story/_/id/50259536/colts-tyler-warren-miss-second-game-groin-injury",
+              "source": "ESPN",
+              "date": "2026-10-23",
+              "stance": "backs"
+            },
+            {
+              "text": "RotoWire expects Mallory to play a bigger role again against the Vikings after the Colts ruled Warren out.",
+              "url": "https://www.rotowire.com/football/headlines/will-mallory-news-bigger-role-on-tap-sans-warren-644053",
+              "source": "RotoWire",
+              "date": "2026-10-23",
+              "stance": "backs"
+            }
+          ]
+        },
+        {
+          "player_id": "10225",
+          "name": "Jonathan Mingo",
+          "position": "WR",
+          "team": "DAL",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.0,
+            "environment": 0.7903,
+            "projection": 1.0
+          },
+          "board_score": 0.4371,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.10225",
+              "text": "Jonathan Mingo played 19% of snaps and took 0 targets last week, down from 20% and 4.",
+              "numbers": [
+                "19",
+                "0",
+                "20",
+                "4"
+              ],
+              "teams": [],
+              "players": [
+                "Jonathan Mingo"
+              ]
+            },
+            {
+              "id": "W.env.10225",
+              "text": "DAL runs the 10th fastest offense and passes on 58% of neutral downs.",
+              "numbers": [
+                "58",
+                "10"
+              ],
+              "teams": [],
+              "players": [
+                "Jonathan Mingo"
+              ]
+            },
+            {
+              "id": "WV.story.10225",
+              "text": "KaVontae Turpin is out, and Jonathan Mingo is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Jonathan Mingo",
+                "KaVontae Turpin"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 13,
+            "fact": {
+              "id": "waiver_price_10225",
+              "text": "Bid $13 to win Jonathan Mingo. The top rival bid is about $4.72, from London Cooking with $90 left. The last winning WR claim in the last 3 weeks is $12.",
+              "numbers": [
+                "13",
+                "4.72",
+                "90",
+                "3",
+                "12"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Jonathan Mingo"
+              ]
+            },
+            "last_like": {
+              "player_id": "13274",
+              "name": "Germie Bernard",
+              "roster_id": 10,
+              "team": "behold the lamb",
+              "week": 5,
+              "bid": 12
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 14,
+          "injury_status": null,
+          "return_week": null,
+          "research": []
+        },
+        {
+          "player_id": "11582",
+          "name": "Carson Steele",
+          "position": "RB",
+          "team": "PHI",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.0,
+            "environment": 0.1452,
+            "projection": 1.0
+          },
+          "board_score": 0.2436,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.usage.11582",
+              "text": "Carson Steele played 5% of snaps and took 0 carries last week, up from 0% and 0.",
+              "numbers": [
+                "5",
+                "0",
+                "0",
+                "0"
+              ],
+              "teams": [],
+              "players": [
+                "Carson Steele"
+              ]
+            },
+            {
+              "id": "W.env.11582",
+              "text": "PHI runs the 26th fastest offense and succeeds on 34% of runs.",
+              "numbers": [
+                "34",
+                "26"
+              ],
+              "teams": [],
+              "players": [
+                "Carson Steele"
+              ]
+            },
+            {
+              "id": "WV.story.11582",
+              "text": "Will Shipley is on IR, and Carson Steele is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Carson Steele",
+                "Will Shipley"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 3,
+            "fact": {
+              "id": "waiver_price_11582",
+              "text": "Bid $3 to win Carson Steele. The top rival bid is about $2.63, from London Cooking with $90 left. The last winning RB claim in the last 3 weeks is $2.",
+              "numbers": [
+                "3",
+                "2.63",
+                "90",
+                "3",
+                "2"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Carson Steele"
+              ]
+            },
+            "last_like": {
+              "player_id": "12529",
+              "name": "TreVeyon Henderson",
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "week": 6,
+              "bid": 2
+            },
+            "outbid": {
+              "9": 11,
+              "19": 11,
+              "25": 11,
+              "51": 11,
+              "58": 11,
+              "61": 11,
+              "65": 11,
+              "67": 11,
+              "69": 11,
+              "72": 11,
+              "82": 11,
+              "90": 11
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 10,
+          "injury_status": "Questionable",
+          "return_week": null,
+          "research": []
+        },
+        {
+          "player_id": "12531",
+          "name": "Trevor Etienne",
+          "position": "RB",
+          "team": "CAR",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.0,
+            "environment": 0.7903,
+            "projection": 1.0
+          },
+          "board_score": 0.4371,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.env.12531",
+              "text": "CAR runs the 2nd fastest offense and succeeds on 43% of runs.",
+              "numbers": [
+                "43",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Trevor Etienne"
+              ]
+            },
+            {
+              "id": "WV.story.12531",
+              "text": "AJ Dillon is out, and Trevor Etienne is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Trevor Etienne",
+                "AJ Dillon"
+              ]
+            },
+            {
+              "id": "WV.research.12531.1",
+              "text": "CBS Sports reported that Trevor Etienne was active for the Panthers' game against the Eagles on 2026-10-18, his first game of 2026 after coming back from an ankle injury. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/panthers-trevor-etienne-green-light-to-make-2026-debut/",
+              "numbers": [
+                "2026-10",
+                "2026",
+                "10",
+                "18",
+                "2026"
+              ],
+              "teams": [],
+              "players": [
+                "Trevor Etienne"
+              ]
+            },
+            {
+              "id": "WV.research.12531.2",
+              "text": "USA TODAY Sports, via Yahoo Sports, reported that the Panthers took Trevor Etienne off injured reserve on 2026-10-17 after his ankle injury. Source: Yahoo Sports, https://sports.yahoo.com/articles/trevor-etienne-activated-ir-saturday-185623795.html",
+              "numbers": [
+                "2026-10",
+                "2026",
+                "10",
+                "17"
+              ],
+              "teams": [],
+              "players": [
+                "Trevor Etienne"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 5,
+            "fact": {
+              "id": "waiver_price_12531",
+              "text": "Bid $5 to win Trevor Etienne. The top rival bid is about $4.72, from London Cooking with $90 left. The last winning RB claim in the last 3 weeks is $2.",
+              "numbers": [
+                "5",
+                "4.72",
+                "90",
+                "3",
+                "2"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Trevor Etienne"
+              ]
+            },
+            "last_like": {
+              "player_id": "12529",
+              "name": "TreVeyon Henderson",
+              "roster_id": 8,
+              "team": "Return of T Mac",
+              "week": 6,
+              "bid": 2
+            },
+            "outbid": {
+              "9": 11,
+              "19": 11,
+              "25": 11,
+              "51": 11,
+              "58": 11,
+              "61": 11,
+              "65": 11,
+              "67": 11,
+              "69": 11,
+              "72": 11,
+              "82": 11,
+              "90": 11
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 5,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "CBS Sports reported that Trevor Etienne was active for the Panthers' game against the Eagles on 2026-10-18, his first game of 2026 after coming back from an ankle injury.",
+              "url": "https://www.cbssports.com/fantasy/football/news/panthers-trevor-etienne-green-light-to-make-2026-debut/",
+              "source": "CBS Sports",
+              "date": "2026-10-18",
+              "stance": "news"
+            },
+            {
+              "text": "USA TODAY Sports, via Yahoo Sports, reported that the Panthers took Trevor Etienne off injured reserve on 2026-10-17 after his ankle injury.",
+              "url": "https://sports.yahoo.com/articles/trevor-etienne-activated-ir-saturday-185623795.html",
+              "source": "Yahoo Sports",
+              "date": "2026-10-17",
+              "stance": "news"
+            }
+          ]
+        },
+        {
+          "player_id": "12700",
+          "name": "Gavin Bartholomew",
+          "position": "TE",
+          "team": "MIN",
+          "week_projection": 0.0,
+          "ros_projection": 0.0,
+          "scores": {
+            "usage": 0.0,
+            "environment": 0.2903,
+            "projection": 1.0
+          },
+          "board_score": 0.2871,
+          "trending_count": 0,
+          "facts": [
+            {
+              "id": "W.env.12700",
+              "text": "MIN runs the 22nd fastest offense and passes on 47% of neutral downs.",
+              "numbers": [
+                "47",
+                "22"
+              ],
+              "teams": [],
+              "players": [
+                "Gavin Bartholomew"
+              ]
+            },
+            {
+              "id": "WV.story.12700",
+              "text": "T.J. Hockenson is out, and Gavin Bartholomew is next on the depth chart.",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Gavin Bartholomew",
+                "T.J. Hockenson"
+              ]
+            },
+            {
+              "id": "WV.research.12700.1",
+              "text": "FantasyPros reports that Gavin Bartholomew's target share rose to 19.4% from 2.4%, and that he caught 5 of 6 targets for 33 yards against New Orleans. Source: FantasyPros, https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "numbers": [
+                "19.4",
+                "2.4",
+                "5",
+                "6",
+                "33"
+              ],
+              "teams": [],
+              "players": [
+                "Gavin Bartholomew"
+              ]
+            }
+          ],
+          "price": {
+            "bid": 16,
+            "fact": {
+              "id": "waiver_price_12700",
+              "text": "Bid $16 to win Gavin Bartholomew. The top rival bid is about $3.1, from London Cooking with $90 left. The last winning TE claim in the last 3 weeks is $15.",
+              "numbers": [
+                "16",
+                "3.1",
+                "90",
+                "3",
+                "15"
+              ],
+              "teams": [
+                "London Cooking"
+              ],
+              "players": [
+                "Gavin Bartholomew"
+              ]
+            },
+            "last_like": {
+              "player_id": "9480",
+              "name": "Brenton Strange",
+              "roster_id": 2,
+              "team": "All You Need Is Love",
+              "week": 5,
+              "bid": 15
+            },
+            "outbid": {
+              "9": 11,
+              "19": 10,
+              "25": 10,
+              "51": 10,
+              "58": 10,
+              "61": 10,
+              "65": 10,
+              "67": 10,
+              "69": 10,
+              "72": 10,
+              "82": 10,
+              "90": 10
+            }
+          },
+          "drop": null,
+          "reason": "behind_injury",
+          "bye": 6,
+          "injury_status": null,
+          "return_week": null,
+          "research": [
+            {
+              "text": "FantasyPros reports that Gavin Bartholomew's target share rose to 19.4% from 2.4%, and that he caught 5 of 6 targets for 33 yards against New Orleans.",
+              "url": "https://www.fantasypros.com/2026/10/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-7-2/",
+              "source": "FantasyPros",
+              "date": "2026-10-22",
+              "stance": "backs"
+            }
+          ]
+        }
+      ],
+      "stashes": [],
+      "drops": []
+    },
+    "budgets": [
+      {
+        "roster_id": 1,
+        "budget_left": 69,
+        "waiver_order": 1
+      },
+      {
+        "roster_id": 2,
+        "budget_left": 72,
+        "waiver_order": 4
+      },
+      {
+        "roster_id": 3,
+        "budget_left": 82,
+        "waiver_order": 3
+      },
+      {
+        "roster_id": 4,
+        "budget_left": 58,
+        "waiver_order": 9
+      },
+      {
+        "roster_id": 5,
+        "budget_left": 90,
+        "waiver_order": 2
+      },
+      {
+        "roster_id": 6,
+        "budget_left": 51,
+        "waiver_order": 8
+      },
+      {
+        "roster_id": 7,
+        "budget_left": 19,
+        "waiver_order": 6
+      },
+      {
+        "roster_id": 8,
+        "budget_left": 9,
+        "waiver_order": 10
+      },
+      {
+        "roster_id": 9,
+        "budget_left": 67,
+        "waiver_order": 7
+      },
+      {
+        "roster_id": 10,
+        "budget_left": 61,
+        "waiver_order": 11
+      },
+      {
+        "roster_id": 11,
+        "budget_left": 25,
+        "waiver_order": 12
+      },
+      {
+        "roster_id": 12,
+        "budget_left": 65,
+        "waiver_order": 5
+      }
+    ],
+    "experts_missing": false
   }
 }
