@@ -20,6 +20,11 @@ def _avatar_url(user: dict) -> str | None:
     return None
 
 
+def team_name(user: dict) -> str:
+    """The team name the user set, else the display name."""
+    return (user.get("metadata") or {}).get("team_name") or user["display_name"]
+
+
 def _teams(raw: dict, brian_user: str) -> dict[int, Team]:
     users = {u["user_id"]: u for u in raw["users"]}
     teams = {}
@@ -30,7 +35,7 @@ def _teams(raw: dict, brian_user: str) -> dict[int, Team]:
         points_for = settings["fpts"] + settings.get("fpts_decimal", 0) / 100
         teams[roster["roster_id"]] = Team(
             roster_id=roster["roster_id"],
-            name=(user.get("metadata") or {}).get("team_name") or user["display_name"],
+            name=team_name(user),
             owner=user["display_name"],
             avatar_url=_avatar_url(user),
             wins=settings["wins"],

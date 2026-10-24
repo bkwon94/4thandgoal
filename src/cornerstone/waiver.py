@@ -2,18 +2,20 @@
 The waiver board engine: it ranks the waiver pool into buckets and builds the budget table of the league.
 Pure code: no network and no Claude, so the same raw data gives the same board.
 """
+from collections.abc import Sequence
 from datetime import datetime
 from typing import NamedTuple
 
 from cornerstone.history import _round_half_up
 from cornerstone.models import (
-    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2,
+    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer, r2,
 )
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
+from cornerstone.waiver_price import budget_left, price_players
 
 # The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
 # another position, such as a linebacker, is never in the pool.
@@ -21,11 +23,15 @@ BEST_ADDS = "best_adds"
 TRENDING = "trending"
 
 
-def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None) -> WaiverBoard:
+def waiver_board(
+    raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
+    claims: Sequence[WaiverClaim] = (),
+) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
     `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
-    score and an environment score of 0.
+    score and an environment score of 0. `claims` is the bid history of the season, the input of the price
+    floor and the last like him.
     """
     ahead = {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
     rostered = _rostered(raw)
@@ -49,17 +55,22 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
             p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
-    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
-                       budgets=_budgets(raw))
+    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
+    # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
+    # gets one price, so the price runs once per player.
+    ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
+    prices = {p.player_id: p.price for p in price_players(list(ranked.values()), raw, list(claims), week)}
+    buckets = {key: [p.model_copy(update={"price": prices[p.player_id]}) for p in bucket]
+               for key, bucket in buckets.items()}
+    return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
     """One row per roster in roster order: the league budget minus the budget used, and the waiver position."""
-    budget = raw["league"]["settings"]["waiver_budget"]
     return [
         BudgetRow(
             roster_id=roster["roster_id"],
-            budget_left=budget - roster["settings"]["waiver_budget_used"],
+            budget_left=budget_left(raw, roster),
             waiver_order=roster["settings"]["waiver_position"],
         )
         for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"])
@@ -148,11 +159,9 @@ def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[
 
 def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
     """The count fact of a trending player. The count is written plain, as a comma would split it into two numbers."""
-    # The sheet module imports the Sleeper client, which imports this module, so the fact skips its Nums helper.
-    # The one number goes into the text and the numbers from the same string.
-    number = str(count)
-    text = f"{p.name} was added in {number} Sleeper leagues in the last day."
-    return Fact(id=f"WV.trending.{p.player_id}", text=text, numbers=[number], teams=[], players=[p.name])
+    n = Nums()
+    text = f"{p.name} was added in {n(count)} Sleeper leagues in the last day."
+    return fact(f"WV.trending.{p.player_id}", text, n, [], [p.name])
 
 
 def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:

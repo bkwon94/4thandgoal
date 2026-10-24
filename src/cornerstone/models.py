@@ -343,6 +343,27 @@ class BoardScores(BaseModel):
     projection: float = 0.0
 
 
+class LastLike(BaseModel):
+    """The most recent winning claim at a player's position this season: the player, the team, the week, the bid."""
+    player_id: str
+    name: str
+    roster_id: int
+    team: str
+    week: int
+    bid: int
+
+
+class WaiverPrice(BaseModel):
+    """The bid to win of one pool player, a whole dollar, with the fact that holds its inputs."""
+    bid: int
+    fact: Fact
+    # None when no claim at the position won this season.
+    last_like: LastLike | None
+    # Per budget left in the league, the count of other rosters with more budget left than a viewer at that level
+    # can bid. The site looks it up.
+    outbid: dict[int, int]
+
+
 class WaiverPlayer(BaseModel):
     """One ranked player of a bucket. The week projection is for week N+1, the rest of season one for N+1 to 17."""
     player_id: str
@@ -357,6 +378,8 @@ class WaiverPlayer(BaseModel):
     trending_count: int = 0
     # The facts of the player. Every digit in a fact's text is in its numbers.
     facts: list[Fact] = []
+    # None for a drop, and in a facts file saved before the price.
+    price: WaiverPrice | None = None
 
 
 class BudgetRow(BaseModel):
@@ -399,6 +422,17 @@ class TeamWeek(BaseModel):
     rush_successes: int
     neutral_plays: int
     neutral_passes: int
+
+
+class WaiverClaim(BaseModel):
+    """One waiver claim of the season: the bid, the player, his position, the week, and whether the claim won."""
+    player_id: str
+    roster_id: int
+    # None when the players file has no row for the player.
+    position: str | None
+    week: int
+    bid: int
+    won: bool
 
 
 class Bundle(BaseModel):

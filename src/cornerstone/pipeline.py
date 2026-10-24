@@ -33,6 +33,7 @@ from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, r
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.waiver import waiver_board
+from cornerstone.waiver_price import bid_history
 from cornerstone.writer import ClaudeCall
 
 log = logging.getLogger(__name__)
@@ -215,7 +216,7 @@ def make_bundle(
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
-    bundle.waiver = waiver_board(raw, week, started, nfl)
+    bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(repo, season), raw, week))
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),
