@@ -160,3 +160,15 @@ def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixtu
     assert price.outbid[51] == 8
     # A viewer at $9 can bid only $9: the 11 other rosters have more than $9.
     assert price.outbid[9] == 11
+
+
+def test_a_player_in_best_adds_and_trending_carries_one_price(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw["players"]["80001"] = {"position": "WR", "team": "KC", "status": "Active", "full_name": "Hot Wideout"}
+    raw["projections_ahead"] = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
+    raw["trending"] = [{"player_id": "80001", "count": 5000}]
+    buckets = waiver_board(raw, 6, BUILT).buckets
+    best = next(p for p in buckets["best_adds"] if p.player_id == "80001")
+    trending = next(p for p in buckets["trending"] if p.player_id == "80001")
+    assert best.price is not None
+    assert best.price is trending.price

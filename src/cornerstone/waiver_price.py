@@ -14,7 +14,6 @@ from cornerstone.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from cornerstone.parse import player_name, team_name
 from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import FLOOR_WEEKS, NEED_SHARE
-from cornerstone.waiver import _budgets
 
 # Sleeper marks a claim that won as complete and a claim that lost as failed.
 CLAIM_RESULTS = {"complete": True, "failed": False}
@@ -128,15 +127,18 @@ def _expected_bid(rival: Rival, player: WaiverPlayer, slots: int) -> ExpectedBid
     return ExpectedBid(rival=rival, need=need, amount=rival.budget_left * share * player.board_score)
 
 
+def budget_left(raw: dict[str, object], roster: dict) -> int:
+    """The league budget minus the budget the roster used."""
+    return raw["league"]["settings"]["waiver_budget"] - roster["settings"]["waiver_budget_used"]
+
+
 def _rivals(raw: dict[str, object]) -> list[Rival]:
     users = {u["user_id"]: u for u in raw["users"]}
-    rosters = {r["roster_id"]: r for r in raw["rosters"]}
     rivals = []
-    for row in _budgets(raw):
-        roster = rosters[row.roster_id]
+    for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"]):
         # A roster with no players has None in rosters.json.
         entries = [raw["players"].get(pid) or {} for pid in roster.get("players") or []]
         healthy = Counter(e.get("position") for e in entries if e.get("injury_status") not in OUT_STATUSES)
-        rivals.append(Rival(roster_id=row.roster_id, team=team_name(users[roster["owner_id"]]),
-                            budget_left=row.budget_left, healthy=healthy))
+        rivals.append(Rival(roster_id=roster["roster_id"], team=team_name(users[roster["owner_id"]]),
+                            budget_left=budget_left(raw, roster), healthy=healthy))
     return rivals

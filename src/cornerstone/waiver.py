@@ -15,6 +15,7 @@ from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
+from cornerstone.waiver_price import budget_left, price_players
 
 # The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
 # another position, such as a linebacker, is never in the pool.
@@ -54,23 +55,22 @@ def waiver_board(
             p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
-    # The import sits inside the function to break a cycle. waiver_price imports the history module, and the
-    # history module imports this module through the Sleeper fetch.
-    from cornerstone.waiver_price import price_players
-
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
-    # Every bucket but drops carries a price. The drops bucket stays out of this step.
-    buckets = {key: price_players(bucket, raw, list(claims), week) for key, bucket in buckets.items()}
+    # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
+    # gets one price, so the price runs once per player.
+    ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
+    prices = {p.player_id: p.price for p in price_players(list(ranked.values()), raw, list(claims), week)}
+    buckets = {key: [p.model_copy(update={"price": prices[p.player_id]}) for p in bucket]
+               for key, bucket in buckets.items()}
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
     """One row per roster in roster order: the league budget minus the budget used, and the waiver position."""
-    budget = raw["league"]["settings"]["waiver_budget"]
     return [
         BudgetRow(
             roster_id=roster["roster_id"],
-            budget_left=budget - roster["settings"]["waiver_budget_used"],
+            budget_left=budget_left(raw, roster),
             waiver_order=roster["settings"]["waiver_position"],
         )
         for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"])
