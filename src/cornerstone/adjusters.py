@@ -130,7 +130,8 @@ def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list
 
 
 def pick_lineup(
-        roster: list[str], slots: list[str], positions: dict[str, str], points: dict[str, Decimal | float]) -> list[str]:
+        roster: list[str], slots: list[str], positions: dict[str, str], points: dict[str, Decimal | float]
+    ) -> list[str]:
     """The starters of the roster's best lineup by `points`, with the position order as the tie rule.
 
     The fixed slots fill first, so a flex slot takes the player with the most points that no fixed slot took.
@@ -403,7 +404,8 @@ def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
         if side.lineup_loses and late:
             pid, why = late[0]
             return Adjuster(name=STANDING, step=-1,
-                            reason=f"{lead}, but the best lineup loses now for {snapshot.players[pid].name}, who {why}.")
+                            reason=f"{lead}, but the best lineup loses now for {snapshot.players[pid].name}, "
+                                   f"who {why}.")
         return Adjuster(name=STANDING, step=0, reason=f"{lead}, and the trade is no win-now move or return bet.")
     if race == "seller":
         lead = "The team is out of the playoff race"
@@ -446,7 +448,8 @@ def _wopr(snapshot: Snapshot, player_id: str) -> _WoprWindow | None:
 
 
 def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
-    """The set of share directions, up or down, of the players. A flat share or a player with no usage data adds none."""
+    """The set of share directions, up or down, of the players.
+    A flat share or a player with no usage data adds none."""
     through = snapshot.as_of.stats_through
     shares = [share(snapshot.stats, pid, through) for pid in players for share in (snap_share, target_share)]
     return {share.direction for share in shares if share is not None and share.direction in ("up", "down")}
@@ -671,7 +674,8 @@ def _byes_left(snapshot: Snapshot, players: list[str]) -> int:
 
 
 def _playoff_rank(snapshot: Snapshot, players: list[str]) -> Fraction | None:
-    """The mean over the players of the mean rank of each one's week 15 to 17 opponents in points allowed to his position.
+    """The mean over the players of the mean rank of each one's week 15 to 17 opponents in points allowed to his
+    position.
 
     Rank 1 allows the most points, so a low mean is a soft schedule. A player with no schedule, no opponent with a
     points allowed row, or a position with no rank counts on neither side. None when no player counts.

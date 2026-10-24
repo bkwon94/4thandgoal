@@ -312,7 +312,10 @@ def test_position_leaders_are_the_top_three_started_at_each_position(bundle):
         assert [leader.rank for leader in board] == [1, 2, 3]
         assert all(a.line.points >= b.line.points for a, b in zip(board, board[1:]))
     assert all(leader.line.started for leader in leaders)
-    rbs = [(leader.line.name, leader.of, bundle.data.teams[leader.roster_id].name) for leader in leaders if leader.position == "RB"]
+    rbs = [
+        (leader.line.name, leader.of, bundle.data.teams[leader.roster_id].name)
+        for leader in leaders if leader.position == "RB"
+    ]
     assert rbs == [
         ("Kenneth Walker", 31, "Bo Girds"),
         ("Christian McCaffrey", 31, "Lil Fridge"),

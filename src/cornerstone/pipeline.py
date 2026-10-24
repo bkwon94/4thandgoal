@@ -223,7 +223,10 @@ def _raw_fetch_time(repo: Path, season: int, week: int) -> datetime | None:
         written = datetime.fromtimestamp(path.stat().st_mtime, ZoneInfo("America/New_York"))
     except OSError:
         return None
-    log.warning("no fetch time for week %d: the fetch time falls back to the write time of %s, %s", week, path, written.isoformat())
+    log.warning(
+        "no fetch time for week %d: the fetch time falls back to the write time of %s, %s",
+        week, path, written.isoformat(),
+    )
     return written
 
 

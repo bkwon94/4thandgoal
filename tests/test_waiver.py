@@ -19,7 +19,8 @@ def _player(position: str, team: str | None = "KC", status: str | None = "Active
 
 
 def _raw(fixture_raw_dir, players: dict[str, dict], per_week: dict[str, float]) -> dict:
-    """The week 6 raw with `players` added to the players file and a flat projection per week for each ID in `per_week`."""
+    """The week 6 raw with `players` added to the players file and a flat projection per week for each ID in
+    `per_week`."""
     raw = load_raw(fixture_raw_dir)
     raw["players"] = {**raw["players"], **players}
     raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in AHEAD]

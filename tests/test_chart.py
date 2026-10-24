@@ -11,8 +11,8 @@ import pytest
 from PIL import Image
 
 from cornerstone.chart import (
-    CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_dir, chart_values, claude_read, cut_strips,
-    fetch_chart, guard_results, load_chart, match_chart, read_chart, saved_chart_read,
+    CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_dir, chart_values, claude_read,
+    cut_strips, fetch_chart, guard_results, load_chart, match_chart, read_chart, saved_chart_read,
 )
 from cornerstone.writer import WriterError
 from cornerstone.models import ChartRead, ChartRow, PlayerLine
@@ -108,7 +108,9 @@ def _png(height, width=40):
 
 def test_strips_cover_the_sheet_with_overlap():
     strips = [Image.open(io.BytesIO(s)) for s in cut_strips(_png(2500))]
-    assert [s.size for s in strips] == [(40, STRIP_HEIGHT), (40, STRIP_HEIGHT), (40, 2500 - 2 * (STRIP_HEIGHT - STRIP_OVERLAP))]
+    assert [s.size for s in strips] == [
+        (40, STRIP_HEIGHT), (40, STRIP_HEIGHT), (40, 2500 - 2 * (STRIP_HEIGHT - STRIP_OVERLAP))
+    ]
 
 
 def test_a_short_sheet_is_one_strip():

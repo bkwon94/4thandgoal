@@ -226,7 +226,9 @@ def _headshot_players(bundle: Bundle) -> list[tuple[str, bool]]:
     return players
 
 
-def _download_headshots(bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]) -> dict[str, str]:
+def _download_headshots(
+    bundle: Bundle, headshot_dir: Path, fetch_bytes: Callable[[str], bytes | None]
+) -> dict[str, str]:
     """Save the headshot of each player on the Game Changer hero, the award tiles, the leader rows, and the trade cards.
     A failed download falls back to the default silhouette."""
     paths = {}

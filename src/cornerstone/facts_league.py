@@ -317,7 +317,11 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
         rankings.append((
             "underperformer",
             [
-                (x, f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, {sub(x[0].projection, x[0].points)} under.")
+                (
+                    x,
+                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                    f"{sub(x[0].projection, x[0].points)} under.",
+                )
                 for x in sorted(
                     (x for x in with_projection if x[0].projection >= UNDERPERFORMER_MIN_PROJECTION),
                     key=lambda x: sub(x[0].projection, x[0].points),
@@ -328,7 +332,11 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
         rankings.append((
             "overachiever",
             [
-                (x, f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, {sub(x[0].points, x[0].projection)} over.")
+                (
+                    x,
+                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                    f"{sub(x[0].points, x[0].projection)} over.",
+                )
                 for x in sorted(
                     with_projection,
                     key=lambda x: sub(x[0].points, x[0].projection),

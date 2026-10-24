@@ -204,7 +204,8 @@ def _usage_share(
     numerator: Callable[[PastWeek], float],
     denominator: Callable[[PastWeek], float],
 ) -> UsageShare | None:
-    """The share of the player in the last SHARE_WEEKS scored weeks, and its direction against the SHARE_WEEKS before."""
+    """The share of the player in the last SHARE_WEEKS scored weeks,
+    and its direction against the SHARE_WEEKS before."""
     if not stats_complete(history, through):
         return None
     weeks = [w for w in scored_weeks(history, player_id, through) if denominator(history.weeks[w]) > 0]

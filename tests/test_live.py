@@ -70,9 +70,11 @@ def _no_history_fetch(league_id, season, week, out_dir):
 def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, sleeper, chart_week6):
     chart = ChartRecorder(chart_week6)
     # The cutoff of week 7 is Tuesday 2026-10-20 08:00.
-    after = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    after = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET),
+                          fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                           fetch_nflverse=_no_network, read_chart=chart)
-    before = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    before = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET),
+                           fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                            fetch_nflverse=_no_network, read_chart=chart)
     assert [week for _, week in chart.weeks] == [7, 6]
     assert after.as_of.chart_week == chart_week6.week
@@ -80,7 +82,8 @@ def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, 
 
 
 def test_the_stamps_hold_the_stats_through_week_and_the_rosters_fetch_time(live_repo, sleeper, chart_week6):
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                         fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6))
     assert snap.as_of.chart_week == 6
     assert snap.as_of.rosters_fetched == FETCHED
@@ -99,7 +102,8 @@ def test_a_source_older_than_a_day_refreshes_before_the_snapshot(live_repo, slee
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                         fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert asked == [SCHEDULES_URL]
     assert time.time() - path.stat().st_mtime < DAY
@@ -114,7 +118,8 @@ def test_a_failed_refresh_keeps_the_old_cache_and_notes_it(live_repo, sleeper):
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                         fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert path.read_bytes() == before
     assert snap.stale == ["depth charts"]
@@ -127,7 +132,8 @@ def test_a_source_with_no_cache_and_a_failed_fetch_is_missing_and_noted(live_rep
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                         fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                          fetch_nflverse=fetch, read_chart=ChartRecorder(None))
     assert snap.stale == ["id map"]
     assert "id_map" in snap.missing
@@ -135,7 +141,8 @@ def test_a_source_with_no_cache_and_a_failed_fetch_is_missing_and_noted(live_rep
 
 def test_a_season_that_is_not_in_progress_stops_the_build(live_repo, sleeper):
     with pytest.raises(ValueError, match="2025"):
-        live_snapshot(live_repo, 2025, now=datetime(2026, 10, 19, tzinfo=ET), fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
+        live_snapshot(live_repo, 2025, now=datetime(2026, 10, 19, tzinfo=ET),
+                      fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
                       fetch_nflverse=_no_network, read_chart=ChartRecorder(None))
 
 

@@ -179,7 +179,9 @@ def test_chart_prints_the_table_and_every_guard_when_a_guard_fails(tmp_path, fix
     from cornerstone.models import ChartRead, ChartRow
 
     _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
-    _save_chart(tmp_path, ChartRead(week=6, date="2026-10-13", rows=[ChartRow(value=60.0, name="Some One", position="RB")]))
+    _save_chart(
+        tmp_path, ChartRead(week=6, date="2026-10-13", rows=[ChartRow(value=60.0, name="Some One", position="RB")])
+    )
 
     assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 1
     out = capsys.readouterr().out

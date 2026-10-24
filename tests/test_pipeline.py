@@ -648,7 +648,9 @@ def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_h
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     _fetched(repo, datetime(2026, 10, 21, 9, 0, tzinfo=ET))
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 20, 12, 0, tzinfo=ET)
+    assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(
+        2026, 10, 20, 12, 0, tzinfo=ET
+    )
 
 
 def test_fetch_time_without_a_saved_one_comes_from_the_raw_write_time(
@@ -737,7 +739,9 @@ def test_window_reads_the_fresh_transactions_of_the_week_before(tmp_path, fixtur
     assert len(bundle.data.trades) == 6
 
 
-def test_window_without_fresh_transactions_reads_the_history_copy(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+def test_window_without_fresh_transactions_reads_the_history_copy(
+    tmp_path, fixture_raw_dir, fixture_history_root, caplog
+):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 5

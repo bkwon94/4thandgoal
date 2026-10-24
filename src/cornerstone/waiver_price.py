@@ -107,7 +107,9 @@ def _outbid(bid: int, budgets: list[int]) -> dict[int, int]:
     return {level: sum(b > min(bid, level) for b in budgets) - (level > bid) for level in sorted(set(budgets))}
 
 
-def _last_like(position: str, claims: list[WaiverClaim], players: dict[str, dict], teams: dict[int, str]) -> LastLike | None:
+def _last_like(
+    position: str, claims: list[WaiverClaim], players: dict[str, dict], teams: dict[int, str]
+) -> LastLike | None:
     """The latest winning claim at `position`. Inside one week the higher bid, then the player ID, breaks the tie.
 
     The match is on position alone, because a past claim has no bucket tier.

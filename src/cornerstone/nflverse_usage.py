@@ -57,7 +57,9 @@ def read_plays(pbp: Path, week: int) -> list[dict[str, str]] | None:
     return plays if has_week else None
 
 
-def read_snaps(snaps: Path, first_week: int, week: int, sleeper_of_pfr: dict[str, str]) -> dict[tuple[str, int], SnapWeek]:
+def read_snaps(
+    snaps: Path, first_week: int, week: int, sleeper_of_pfr: dict[str, str]
+) -> dict[tuple[str, int], SnapWeek]:
     """The snap counts of weeks `first_week` to `week` by Sleeper ID and week. A player with no PFR ID is not in it."""
     out = {}
     for row in _rows(snaps):
@@ -116,7 +118,8 @@ def read_usage(plays: list[dict[str, str]], snaps: dict[tuple[str, int], SnapWee
 
 
 def _is_neutral(play: dict[str, str]) -> bool:
-    """First or second down, the score within NEUTRAL_SCORE, in the first three quarters, outside the half's last two minutes.
+    """First or second down, the score within NEUTRAL_SCORE, in the first three quarters,
+    outside the half's last two minutes.
 
     On these downs the play call shows the coach's plan, not the score or the clock.
     """
