@@ -380,6 +380,8 @@ class WaiverPlayer(BaseModel):
     facts: list[Fact] = []
     # None for a drop, and in a facts file saved before the price.
     price: WaiverPrice | None = None
+    # The roster that holds a drop candidate and the pool player who beats him. None for a pool player.
+    drop: "DropInfo | None" = None
 
 
 class BudgetRow(BaseModel):
@@ -393,8 +395,7 @@ class WaiverBoard(BaseModel):
     """The board of one week: the buckets by key, each in rank order, and the budget table in roster order."""
     week: int
     built: datetime
-    # A drop entry is a DropPlayer, so the saved board keeps the roster that holds him.
-    buckets: dict[str, list["DropPlayer | WaiverPlayer"]]
+    buckets: dict[str, list[WaiverPlayer]]
     budgets: list[BudgetRow]
 
 
@@ -436,18 +437,24 @@ class WaiverClaim(BaseModel):
     won: bool
 
 
-class DropPlayer(WaiverPlayer):
-    """One rostered player of the drops bucket, the roster that holds him, and the pool player who beats him."""
+# The reason code of a drop candidate whose snap share fell DROP_WEEKS weeks in a row.
+THREE_FALLS = "three_falls"
+
+
+class DropInfo(BaseModel):
+    """The roster that holds a drop candidate, the rule that put him in the bucket, and the pool player who beats him.
+
+    A pool player has no DropInfo, so the site tells a drop candidate by it.
+    """
     roster_id: int
     # The team name of the roster that holds him.
     holder: str
-    # The rule that put him in the bucket.
-    reason: str = "three_falls"
+    reason: str = THREE_FALLS
     # The best pool player at his position by rest of season projection.
     beaten_by: str
     beaten_by_name: str
     # The rest of season projection of beaten_by minus his, per remaining week, to one decimal.
-    gap: float
+    margin: float
 
 
 class Bundle(BaseModel):

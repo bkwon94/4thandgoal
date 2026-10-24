@@ -1,29 +1,28 @@
 """
-The drops bucket of the waiver board: rostered players whose snap share fell week after week.
+The drops bucket of the waiver board: rostered players whose snap share fell three weeks in a row.
 Pure code over the raw files and the usage, so the same inputs give the same bucket.
 """
 from cornerstone.history import _round_half_up
-from cornerstone.models import BoardScores, DropPlayer, UsageWeek, WaiverPlayer, r2
+from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
 from cornerstone.parse import player_name, team_name
 from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import BUCKET_POSITIONS, DROP_WEEKS, LAST_SEASON_WEEK
-
-THREE_FALLS = "three_falls"
+from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
 
 
 def drop_candidates(
     raw: dict[str, object], week: int, usage: dict[str, list[UsageWeek]], pool: list[WaiverPlayer],
-) -> list[DropPlayer]:
-    """The rostered players after week `week` with DROP_WEEKS falls of the snap share and a better pool player.
+) -> list[WaiverPlayer]:
+    """The drop candidates after week `week`: rostered players with DROP_WEEKS falls of the snap share in a row.
 
-    The falls are in a row. The better pool player has the highest rest of season projection at the position.
-    The result is every candidate, the largest gap first. The engine applies the bucket cap.
+    A drop candidate also has a better pool player: the one with the highest rest of season projection at
+    his position. The result is every drop candidate, the largest margin first. The engine applies the cap.
     """
-    ahead = {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+    ahead = projections_ahead(raw)
     best = _best_by_position(pool)
     users = {u["user_id"]: u for u in raw["users"]}
     remaining = LAST_SEASON_WEEK - week
-    drops = []
+    candidates = []
     for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"]):
         # A roster with no players has None in rosters.json.
         for pid in sorted(roster.get("players") or []):
@@ -31,14 +30,14 @@ def drop_candidates(
             top = best.get(entry.get("position"))
             if top is None or remaining <= 0 or not _falls(usage.get(pid, []), week):
                 continue
-            # The same sum as the pool's rest of season projection: weeks N+1 to 17, a week with none counts 0.
-            ros = r2(sum(ahead.get(w, {}).get(pid, 0.0) for w in range(week + 1, LAST_SEASON_WEEK + 1)))
+            ros = rest_of_season(ahead, pid, week)
             if ros >= top.ros_projection:
                 continue
-            gap = _round_half_up((top.ros_projection - ros) / remaining, 1)
-            drops.append(_drop(pid, entry, roster["roster_id"], team_name(users[roster["owner_id"]]), top, gap,
-                               r2(ahead.get(week + 1, {}).get(pid, 0.0)), ros))
-    return sorted(drops, key=lambda d: (-d.gap, d.player_id))
+            info = DropInfo(roster_id=roster["roster_id"], holder=team_name(users[roster["owner_id"]]),
+                            beaten_by=top.player_id, beaten_by_name=top.name,
+                            margin=_round_half_up((top.ros_projection - ros) / remaining, 1))
+            candidates.append(_candidate(pid, entry, info, next_week(ahead, pid, week), ros))
+    return sorted(candidates, key=lambda c: (-c.drop.margin, c.player_id))
 
 
 def _best_by_position(pool: list[WaiverPlayer]) -> dict[str, WaiverPlayer]:
@@ -65,14 +64,12 @@ def _falls(rows: list[UsageWeek], week: int) -> bool:
     return all(later < earlier for earlier, later in zip(shares, shares[1:]))
 
 
-def _drop(player_id: str, entry: dict, roster_id: int, holder: str, top: WaiverPlayer, gap: float,
-          week_projection: float, ros: float) -> DropPlayer:
+def _candidate(player_id: str, entry: dict, info: DropInfo, week_projection: float, ros: float) -> WaiverPlayer:
+    """The drop candidate with his drop fact. He has no board score, as the bucket ranks by the margin."""
     name = player_name(player_id, entry)
     n = Nums()
-    text = f"{holder} holds {name}, and {top.name} projects {n(gap)} points a week higher."
-    return DropPlayer(
+    text = f"{info.holder} holds {name}, and {info.beaten_by_name} projects {n(info.margin)} points a week higher."
+    return WaiverPlayer(
         player_id=player_id, name=name, position=entry["position"], team=entry.get("team") or "",
         week_projection=week_projection, ros_projection=ros, scores=BoardScores(), board_score=0.0,
-        facts=[fact(f"WV.drop.{player_id}", text, n, [holder], [name, top.name])],
-        roster_id=roster_id, holder=holder, reason=THREE_FALLS, beaten_by=top.player_id, beaten_by_name=top.name,
-        gap=gap)
+        facts=[fact(f"WV.drop.{player_id}", text, n, [info.holder], [name, info.beaten_by_name])], drop=info)
