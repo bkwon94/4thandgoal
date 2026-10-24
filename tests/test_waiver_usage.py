@@ -134,3 +134,17 @@ def test_a_rising_snap_share_outranks_a_higher_projection_with_flat_usage(fixtur
     nfl = _nfl({"80001": [_usage(5, 48, targets=2), _usage(6, 71, targets=5)],
                 "80002": [_usage(5, 70, targets=6), _usage(6, 70, targets=6)]})
     assert [p.player_id for p in _best_adds(raw, nfl)] == ["80001", "80002"]
+
+
+def test_the_environment_ranks_passers_by_pace_and_neutral_passes_and_backs_by_rush_success(fixture_raw_dir):
+    # FAST runs the most plays and passes the most. GRND runs fewer plays and wins the most runs.
+    # SLOW runs the fewest plays. Every player has the same projection and no usage.
+    environment = {"FAST": _team(plays=70, neutral_passes=26, rush_successes=8),
+                   "GRND": _team(plays=65, neutral_passes=18, rush_successes=14),
+                   "SLOW": _team(plays=60, neutral_passes=22, rush_successes=11)}
+    players = {"80001": _player("WR", team="GRND"), "80002": _player("WR", team="FAST"),
+               "80003": _player("RB", team="FAST"), "80004": _player("RB", team="GRND")}
+    raw = _raw(fixture_raw_dir, players, {pid: 8.0 for pid in players})
+    best = [p.player_id for p in _best_adds(raw, _nfl({}, environment))]
+    assert best.index("80002") < best.index("80001")
+    assert best.index("80004") < best.index("80003")

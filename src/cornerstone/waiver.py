@@ -3,8 +3,11 @@ The waiver board engine: it ranks the waiver pool into buckets and builds the bu
 Pure code: no network and no Claude, so the same raw data gives the same board.
 """
 from datetime import datetime
+from typing import NamedTuple
 
-from cornerstone.models import BoardScores, BudgetRow, Fact, NflverseWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2
+from cornerstone.models import (
+    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2,
+)
 from cornerstone.parse import player_name
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
@@ -31,9 +34,11 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = _projection_scores(positions, ros)
     usage = _usage_scores(positions, (nfl.usage if nfl else None) or {}, week)
+    teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
     players = [
         _pool_player(pid, entry, r2(ahead.get(week + 1, {}).get(pid, 0.0)), ros[pid],
-                     BoardScores(usage=usage.get(pid, 0.0), projection=projection[pid]))
+                     BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
+                                 projection=projection[pid]))
         for pid, entry in pool.items()
     ]
     players = _with_trending(players, _trending_counts(raw))
@@ -192,3 +197,61 @@ def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], 
             rises[pid] = rise
     # The projection rank is a rank inside the position, which is the scale the usage needs too.
     return _projection_scores({pid: positions[pid] for pid in rises}, rises)
+
+
+class TeamRates(NamedTuple):
+    """The season rates of one offense, from week 1 to the board's week. A rate is a fraction."""
+    plays_per_game: float
+    neutral_pass_rate: float
+    rush_success: float
+
+
+class TeamRanks(NamedTuple):
+    """The rates of one offense and its rank score in each, from 1 for the best offense to 0, plus its pace place."""
+    rates: TeamRates
+    pace: float
+    neutral_pass: float
+    rush_success: float
+    # 1 for the offense with the most plays per game. The environment fact names it.
+    pace_place: int
+
+
+def _team_rates(environment: dict[str, list[TeamWeek]], week: int) -> dict[str, TeamRates]:
+    """The season rates of each team with a game up to `week`. A bye week has no row, so it is not a game."""
+    rates = {}
+    for team, weeks in environment.items():
+        played = [w for w in weeks if w.week <= week]
+        if not played:
+            continue
+        neutral = sum(w.neutral_plays for w in played)
+        rushes = sum(w.rushes for w in played)
+        rates[team] = TeamRates(
+            plays_per_game=sum(w.plays for w in played) / len(played),
+            neutral_pass_rate=sum(w.neutral_passes for w in played) / neutral if neutral else 0.0,
+            rush_success=sum(w.rush_successes for w in played) / rushes if rushes else 0.0)
+    return rates
+
+
+def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
+    # The projection rank is a rank inside a group. Here one group holds every team.
+    every = dict.fromkeys(rates, "NFL")
+    pace = _projection_scores(every, {t: r.plays_per_game for t, r in rates.items()})
+    neutral = _projection_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
+    rush = _projection_scores(every, {t: r.rush_success for t, r in rates.items()})
+    faster = sorted((r.plays_per_game for r in rates.values()), reverse=True)
+    return {t: TeamRanks(rates=r, pace=pace[t], neutral_pass=neutral[t], rush_success=rush[t],
+                         pace_place=faster.index(r.plays_per_game) + 1)
+            for t, r in rates.items()}
+
+
+def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
+    """The mean of two team rank scores: pace and neutral passes for a QB, WR, or TE, rush success and pace for an RB.
+
+    A pass catcher and a passer gain from more plays and more passes. A back gains from more plays and from
+    runs that work. A kicker, a defense, or a team with no environment gets 0.
+    """
+    ranks = teams.get(entry["team"])
+    if ranks is None or entry["position"] not in BUCKET_POSITIONS:
+        return 0.0
+    second = ranks.rush_success if entry["position"] == "RB" else ranks.neutral_pass
+    return round((ranks.pace + second) / 2, 4)
