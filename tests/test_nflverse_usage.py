@@ -1,6 +1,7 @@
 """
 Tests for the nflverse usage and environment readers.
-They read a small hand-built play by play and snap counts file, and the week extract from the fixtures.
+They read a small hand-built play by play and snap counts file, the week extract from the fixtures, and a real
+week 6 play by play cut of six teams beside the nflverse targets of the same team weeks.
 """
 import csv
 import gzip
@@ -15,9 +16,8 @@ from cornerstone.nflverse_usage import read_environment, read_plays, read_snaps,
 
 FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "two_point_attempt", "pass", "rush",
-              "receiver_player_id",
-              "rusher_player_id", "yardline_100", "success", "down", "score_differential", "qtr",
-              "game_seconds_remaining")
+              "receiver_player_id", "rusher_player_id", "yardline_100", "success", "down", "score_differential",
+              "qtr", "game_seconds_remaining")
 SNAP_FIELDS = ("game_type", "week", "pfr_player_id", "team", "offense_snaps", "offense_pct")
 
 
@@ -67,7 +67,7 @@ def test_the_usage_reader_gives_snaps_targets_carries_and_shares_per_week(tmp_pa
 
 
 def test_a_two_point_try_is_no_target_no_carry_and_no_red_zone_touch(tmp_path):
-    # nflverse counts a target only on a play with a receiver and no two-point try. Each try is at the 2.
+    # nflverse counts a target only on a play with a receiver and no two-point try. Each try is at the 2 or the 1.
     plays = [_play(6, receiver="00-W", yardline=10), _play(6, receiver="00-X"),
              _play(6, receiver="00-W", yardline=2, two_point=1), _play(6, kind="run", rusher="00-R"),
              _play(6, kind="run", rusher="00-R", yardline=2, two_point=1)]
@@ -81,7 +81,7 @@ def test_a_two_point_try_is_no_target_no_carry_and_no_red_zone_touch(tmp_path):
 def test_the_target_count_equals_the_nflverse_count_for_every_team_week():
     # The play by play holds every week 6 play of six teams, and the weekly player file holds the nflverse targets
     # of the same team weeks. Both are cut from the real 2026 files. The DAL week has a two-point pass with a receiver.
-    plays = read_plays(FIXTURES / "play_by_play_2026_week6_full_games.csv.gz", 6)
+    plays = read_plays(FIXTURES / "play_by_play_2026_week6_six_teams.csv.gz", 6)
     receivers = {play["receiver_player_id"] for play in plays if play["receiver_player_id"]}
     usage = read_usage(plays, {}, 6, 6, {gsis: gsis for gsis in receivers})
     ours = Counter()
