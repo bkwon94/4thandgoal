@@ -372,13 +372,28 @@ def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
     return [pid for pid in side.gets if _return_bet(snapshot, pid)]
 
 
+def _gain_when(snapshot: Snapshot, side: _Side) -> str:
+    """When the side's lineup gain comes. The text is "now" when the side gets no starter who is due back.
+
+    A player due back does not play this week, so a gain he makes in the lineup comes after his return, not now.
+    The text names each player due back that the side gets and starts. It gives the latest return week of them.
+    """
+    due_back = [pid for pid in side.gets if pid in side.starters_after and _due_back(snapshot, pid)]
+    if not due_back:
+        return "now"
+    week = max(snapshot.returns[pid] for pid in due_back)
+    returns = named(snapshot, due_back, "returns", "return")
+    return f"after {returns} in week {week}"
+
+
 def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Standing: a contender's win-now move or return bet, and a seller's bet on the future."""
     race = team_race(snapshot, side.roster_id)
     if race == "contender":
         lead = "The team holds a playoff spot"
         if side.lineup_gains:
-            return Adjuster(name=STANDING, step=1, reason=f"{lead}, and the best lineup gains now.")
+            return Adjuster(name=STANDING, step=1,
+                            reason=f"{lead}, and the best lineup gains {_gain_when(snapshot, side)}.")
         bets = _credited_return_bets(snapshot, side)
         if bets:
             due = named(snapshot, bets, "is", "are")
