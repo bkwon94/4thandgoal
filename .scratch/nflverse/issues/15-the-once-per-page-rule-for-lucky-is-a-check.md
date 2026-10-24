@@ -14,6 +14,6 @@ sentence fails the page as a word-gate failure does today.
 **Status:** open
 
 - [ ] A page with "lucky" in two sentences fails the verify step and the failure names both sentences.
-- [ ] A page with "lucky" once and "unlucky" once passes.
-- [ ] "Unlucky" does not count as "lucky".
-- [ ] Every existing verify test passes unchanged.
+- [x] A page with "lucky" once and "unlucky" once passes.
+- [x] "Unlucky" does not count as "lucky".
+- [x] Every existing verify test passes unchanged.

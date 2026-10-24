@@ -35,6 +35,8 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["unlucky"], ("AW.unlucky",)),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
+# Each of these words may appear in one sentence only.
+ONCE_PER_PAGE_WORDS = ["lucky", "unlucky"]
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
 NUMBER_WORDS = [
@@ -330,6 +332,14 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                 ):
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")
+
+    # The writer prompt allows "lucky" once per page; a prompt rule holds most weeks, a count holds every week.
+    # The count reads the text with names removed, and the whole-word match keeps "unlucky" out of "lucky".
+    for word in ONCE_PER_PAGE_WORDS:
+        said = [i for i, bare in enumerate(bares) if whole_word(word, bare)]
+        if len(said) > 1:
+            where = ", ".join(f"[{i}]" for i in said[:-1]) + f" and [{said[-1]}]"
+            failures.append(f"[{said[1]}] sentences {where} say '{word}'; a page may say it once")
 
     # The 12-team chapters name many teams, so only a chapter about one or two teams gets this check.
     if two_team_chapter(chapter.key):

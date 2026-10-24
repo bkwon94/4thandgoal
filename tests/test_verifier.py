@@ -885,3 +885,45 @@ def test_in_scope_two_word_last_name_does_not_name_an_out_of_scope_player(fixtur
     assert "Amon-Ra St. Brown" in ch.scope_players
     b = _blurb("recap_3", _s("St. Brown also played.", "M3.result"), _s("They won.", "M3.result"))
     assert not any("player A.J. Brown" in m for m in code_check(b, ch, sheet))
+
+
+def _awards_with_luck(fixture_raw_dir):
+    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count is tested."""
+    sheet = _sheet(fixture_raw_dir).model_copy(deep=True)
+    ch = _ch(sheet, "awards")
+    for fid in ("AW.lucky", "AW.unlucky"):
+        sheet.facts[fid] = sheet.facts[ch.fact_ids[0]].model_copy(update={"id": fid})
+        ch.fact_ids.append(fid)
+    return sheet, ch
+
+
+def test_lucky_in_two_sentences_fails_and_names_both(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Lucky award goes out.", "AW.lucky"),
+        _s("Again.", ch.fact_ids[0]),
+        _s("That was LUCKY.", "AW.lucky"),
+    )
+    assert code_check(b, ch, sheet) == ["[2] sentences [0] and [2] say 'lucky'; a page may say it once"]
+
+
+def test_unlucky_in_two_sentences_fails(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Unlucky award goes out.", "AW.unlucky"),
+        _s("That was unlucky.", "AW.unlucky"),
+    )
+    assert code_check(b, ch, sheet) == ["[1] sentences [0] and [1] say 'unlucky'; a page may say it once"]
+
+
+def test_lucky_once_and_unlucky_once_pass(fixture_raw_dir):
+    # "unlucky" holds "lucky" inside it, but the whole-word match does not count it as "lucky".
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Lucky award goes out.", "AW.lucky"),
+        _s("The Unlucky award goes out.", "AW.unlucky"),
+    )
+    assert code_check(b, ch, sheet) == []
