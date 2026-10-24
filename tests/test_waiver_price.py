@@ -1,6 +1,6 @@
 """
 Tests for the waiver price: the bid history, the bid to win, the last like him, and the outbid counts.
-They feed a small hand-built league at the price seam, and the fixture history at the bid history seam.
+They price players in a small hand-built league, and they read the bid history from the fixture history.
 """
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -36,13 +36,14 @@ def _league(rosters: list[tuple[int, list[str | None]]]) -> dict:
     return raw
 
 
-def _free_agent(player_id: str, position: str) -> WaiverPlayer:
+def _free_agent(player_id: str, position: str, board_score: float = 0.75) -> WaiverPlayer:
     return WaiverPlayer(player_id=player_id, name=f"Player {player_id}", position=position, team="KC",
-                        week_projection=0.0, ros_projection=0.0, scores=BoardScores(), board_score=0.0)
+                        week_projection=0.0, ros_projection=0.0, scores=BoardScores(), board_score=board_score)
 
 
-def _bid(raw: dict, position: str = "RB", claims: list[WaiverClaim] = ()) -> int:
-    return price_players([_free_agent("900", position)], raw, list(claims))[0].price.bid
+def _bid(raw: dict, position: str = "RB", claims: list[WaiverClaim] = (), board_score: float = 0.75) -> int:
+    """The bid to win of one free agent after week 6."""
+    return price_players([_free_agent("900", position, board_score)], raw, list(claims), 6)[0].price.bid
 
 
 def test_the_bid_history_holds_every_waiver_claim_of_the_season_with_its_bid_and_result(
@@ -61,26 +62,43 @@ def test_the_bid_history_holds_every_waiver_claim_of_the_season_with_its_bid_and
 
 
 def test_a_rival_with_a_need_at_the_position_raises_the_price_more_than_one_without():
-    # Team 1 has $40 left and one of its two RBs is out, so it bids 35% of $40, $14. The bid to win is $15.
+    # Team 1 has $40 left and one of its two RBs is out. At a board score of 0.75 it bids 35% of $40 times
+    # 0.75, $10.50. The bid to win is $11.
     needy = _league([(40, [None, "Out"]), (60, [None, None]), (20, [None, None])])
-    # With both RBs healthy, the top bid is 12% of team 2's $60, $7.20, so the bid to win is $8.
+    # With both RBs healthy, the top bid is 12% of team 2's $60 times 0.75, $5.40, so the bid to win is $6.
     covered = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
-    assert _bid(needy) == 15
-    assert _bid(covered) == 8
-    # No roster needs a WR, so the WR price stays at $8 in both leagues.
-    assert _bid(needy, "WR") == 8
+    assert _bid(needy) == 11
+    assert _bid(covered) == 6
+    # No roster needs a WR, so the WR price stays at $6 in both leagues.
+    assert _bid(needy, "WR") == 6
 
 
-def _claim(position: str, bid: int, week: int = 3, won: bool = True, roster_id: int = 1) -> WaiverClaim:
+def test_the_player_with_the_higher_board_score_costs_more_at_the_same_position():
+    needy = _league([(40, [None, "Out"]), (60, [None, None]), (20, [None, None])])
+    # Team 1 bids 35% of $40 times the score: $14 at 1, so $15, and $7 at 0.5, so $8.
+    assert _bid(needy, board_score=1.0) == 15
+    assert _bid(needy, board_score=0.5) == 8
+
+
+def _claim(position: str, bid: int, week: int = 5, won: bool = True, roster_id: int = 1) -> WaiverClaim:
     return WaiverClaim(player_id=f"7{week}{bid}", roster_id=roster_id, position=position, week=week, bid=bid, won=won)
 
 
 def test_a_past_winning_claim_at_the_position_raises_the_floor_to_that_bid_plus_1():
     raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
-    # A $20 RB win raises the RB floor to $21. A lost $30 RB claim and a won $50 WR claim leave the RB floor.
+    # A $20 RB win in week 5 raises the RB floor to $21. A lost $30 RB claim and a won $50 WR claim leave
+    # the RB floor.
     claims = [_claim("RB", 20), _claim("RB", 30, won=False), _claim("WR", 50)]
     assert _bid(raw, "RB", claims) == 21
     assert _bid(raw, "WR", claims) == 51
+
+
+def test_only_the_most_recent_win_of_the_last_3_weeks_sets_the_floor():
+    raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
+    # After week 6 the window is weeks 4 to 6. A $30 win in week 3 is older, so the price stays at $6.
+    assert _bid(raw, "RB", [_claim("RB", 30, week=3)]) == 6
+    # The $10 win of week 5 sets the floor at $11, though the $25 win of week 4 is larger.
+    assert _bid(raw, "RB", [_claim("RB", 25, week=4), _claim("RB", 10, week=5)]) == 11
 
 
 def test_the_price_never_exceeds_the_highest_rival_budget_left_and_is_a_whole_dollar():
@@ -92,7 +110,7 @@ def test_the_price_never_exceeds_the_highest_rival_budget_left_and_is_a_whole_do
 
 
 def _last_like(raw: dict, position: str, claims: list[WaiverClaim]):
-    return price_players([_free_agent("900", position)], raw, claims)[0].price.last_like
+    return price_players([_free_agent("900", position)], raw, claims, 6)[0].price.last_like
 
 
 def test_the_last_like_him_is_the_latest_winning_claim_at_the_position_with_the_team_and_the_week():
@@ -118,9 +136,9 @@ def test_the_last_like_him_is_empty_when_the_history_has_no_win_at_the_position(
 def test_every_number_in_the_price_fact_text_is_in_its_numbers():
     raw = _league([(41, [None, "IR"]), (60, [None, None]), (20, [None, None])])
     # The fact names the need, the past win, and the cap, so every part of the text is in play.
-    price = price_players([_free_agent("900", "RB")], raw, [_claim("RB", 70)])[0].price
-    assert price.fact.text == ("Bid $60 to win Player 900. The top rival bid is about $14.35, from Team 1 with $41 left"
-                               " and a need at RB. The top winning RB claim this season is $70."
+    price = price_players([_free_agent("900", "RB")], raw, [_claim("RB", 70)], 6)[0].price
+    assert price.fact.text == ("Bid $60 to win Player 900. The top rival bid is about $10.76, from Team 1 with $41 left"
+                               " and a need at RB. The last winning RB claim in the last 3 weeks is $70."
                                " No rival has more than $60 left.")
     # The digits of the names in this hand-built league are names, not numbers.
     text = price.fact.text.replace("Player 900", "").replace("Team 1", "")
@@ -133,12 +151,12 @@ def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixtu
     raw = load_raw(fixture_raw_dir)
     raw["players"]["80001"] = {"position": "RB", "team": "KC", "status": "Active", "full_name": "Free Back"}
     raw["projections_ahead"] = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
-    # A $40 RB win sets the floor at $41. The top expected bid is 35% of $90, $31.50, below the floor.
+    # A $40 RB win in week 5 sets the floor at $41. The top expected bid is at most 35% of $90, $31.50.
     best = waiver_board(raw, 6, BUILT, claims=[_claim("RB", 40)]).buckets["best_adds"]
     price = next(p.price for p in best if p.player_id == "80001")
     assert price.bid == 41
     assert sorted(price.outbid) == [9, 19, 25, 51, 58, 61, 65, 67, 69, 72, 82, 90]
     # A viewer at $51 can bid the $41: 9 rosters have more than $41, his own among them, so 8 rivals can outbid him.
-    assert price.outbid[51] == 9
+    assert price.outbid[51] == 8
     # A viewer at $9 can bid only $9: the 11 other rosters have more than $9.
     assert price.outbid[9] == 11

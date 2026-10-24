@@ -54,13 +54,13 @@ def waiver_board(
             p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
-    # The import waits for the call: waiver_price reads the history module, and the history module reaches this
-    # module through the Sleeper fetch, so a top-level import is a cycle.
+    # The import sits inside the function to break a cycle. waiver_price imports the history module, and the
+    # history module imports this module through the Sleeper fetch.
     from cornerstone.waiver_price import price_players
 
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
-    # Every bucket but drops carries a price, so the drops bucket stays out of this step once it exists.
-    buckets = {key: price_players(bucket, raw, list(claims)) for key, bucket in buckets.items()}
+    # Every bucket but drops carries a price. The drops bucket stays out of this step.
+    buckets = {key: price_players(bucket, raw, list(claims), week) for key, bucket in buckets.items()}
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 

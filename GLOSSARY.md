@@ -353,14 +353,15 @@ _Avoid_: rush efficiency, YPC
 
 **Bid to win**:
 The price of a pool player: the smallest whole dollar above the highest bid the model expects from any
-rival. A rival's expected bid is his budget left times `NEED_SHARE`, 0.35 when he has fewer healthy
-starters at the position than the lineup's dedicated slots need, 0.12 otherwise. The top winning claim
-at the position this season raises the floor to that bid plus one. The price never exceeds the highest
-budget left in the league. Every bucket but drops carries it, as a fact with its inputs in the numbers.
+rival. A rival's expected bid is his budget left times `NEED_SHARE` times the player's board score.
+The need share is 0.35 when the rival has fewer healthy starters at the position than the lineup's
+dedicated slots need. It is 0.12 otherwise. The most recent winning claim at the position in the last
+`FLOOR_WEEKS` weeks raises the floor to that bid plus one. The price never exceeds the highest budget
+left in the league. Every bucket but drops carries it, as a fact with its inputs in the numbers.
 _Avoid_: value, cost, FAAB value
 
 **Last like him**:
 The most recent winning waiver claim at a pool player's position this season, with the player, the
-team, the week, and the bid. Empty when no claim at the position won. The match is on position alone
-until the board has more buckets than best adds.
+team, the week, and the bid. Empty when no claim at the position won. The match is on position alone,
+because a past claim has no bucket tier.
 _Avoid_: comp, last comparable

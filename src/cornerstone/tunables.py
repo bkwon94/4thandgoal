@@ -143,6 +143,9 @@ USAGE_WEEKS = 2
 # The count of latest weeks of usage the nflverse extract saves. The drops bucket needs 3 falls in a row,
 # and 3 falls take 4 weeks. The usage trend reads only the last USAGE_WEEKS of them.
 USAGE_SAVED_WEEKS = 4
-# The share of his budget left that a rival is expected to bid on a player. "need" is for a rival with fewer
-# healthy starters at the position than the lineup needs, "covered" for any other rival.
+# The share of his budget left that the model expects a rival to bid on a player with a board score of 1.
+# "need" is for a rival with fewer healthy starters at the position than the lineup needs, "covered" for any other.
 NEED_SHARE = {"need": 0.35, "covered": 0.12}
+# The count of weeks, N-2 to N, whose most recent winning claim at a position sets the price floor. One old
+# big win, such as $41 for an RB in week 3, must not set the price of every RB all season.
+FLOOR_WEEKS = 3
