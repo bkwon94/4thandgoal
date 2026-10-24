@@ -8,6 +8,8 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **MVB**: the bench player with the most points, across all teams.
 - **Underperformer**: the starter with the largest gap below projection, among starters projected at 10 or more.
 - **Overachiever**: the starter with the largest gap above projection.
+- **Unlucky**: the starter with the largest gap below his expected points, at least 5 under. Expected points are what his volume should have scored. Say "unlucky" only in a sentence that cites `AW.unlucky`.
+- **Lucky**: the starter with the largest gap above his expected points, at least 5 over. Say "lucky" for it only in a sentence that cites `AW.lucky`.
 - **Game Changer**: the starter on a winning side whose points exceed the margin, ranked by gap to projection, with a bonus for a recent add.
 - **Matchup of the Week**: the matchup that scored highest on closest margin, biggest upset, highest combined standing, and nearness to the playoff cut.
 - **margin driver**: a player on either side whose gap to projection, in absolute terms, is at least the margin. Only a margin driver may be called a decider. Plain phrase for "margin driver" or "decider": "won it" on the winning side, "blew it" on the losing side.
@@ -27,7 +29,7 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **points per game**: half-PPR points over the weeks with a scored game, weeks 1 to N-1.
 - **position rank by season points**: among every player at the position in Sleeper's weekly stats, weeks 1 to N-1.
 - **upset**: the winner ranked below the loser in the standings before this week. Use it only in a sentence that cites a fact with `.upset` in its ID.
-- **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it, and the word "lucky", only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`. Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection. Plain phrase: "the new pickup".
+- **recent add**: a starter added by waiver, free agent, or trade in this week or the week before. Use it only in a sentence that cites a fact with `.move.` in its ID or the fact `W.adds`. Say "lucky" only in a sentence that cites a fact with `.move.` in its ID, the fact `W.adds`, or the fact `AW.lucky`. Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection or for the Lucky award. Plain phrase: "the new pickup".
 - **injury status**: the Sleeper designation for a player as of the Tuesday after the games. It says nothing about the player's status at kickoff. Use it only in a sentence that cites a fact with `.inj.` in its ID or the fact `W.injured`.
 - **injury history**: the weekly NFL report status from nflverse, per week.
 - **pre-game status**: the final NFL report before the game, from nflverse. A roast of a manager who started a player listed Out or Doubtful before the game cites this fact.

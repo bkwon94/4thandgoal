@@ -51,7 +51,7 @@ At most one sentence per blurb may end in a ', which' clause. Never use it as th
 
 - When an `.upset` fact is in the chapter, cite it and say it was an upset.
 - When a `.move.` fact or `W.adds` is in the chapter, cite it and call out the recent add and its points.
-- Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection.
+- Say "lucky" at most once per page, and only for a recent add that scored at least twice its projection or for the Lucky award.
 - The humor never comes from a player's real-life situation.
 - When an `.inj.` fact is in the chapter, cite it and name the designation.
 - In Next Week, when both teams in a matchup are below the cut, say so by name and record.

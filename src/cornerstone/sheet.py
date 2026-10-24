@@ -25,7 +25,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.facts_nflverse import drop_lines
+from cornerstone.facts_nflverse import drop_lines, expected_awards
 from cornerstone.history import (
     _round_half_up,
     player_trend,
@@ -79,6 +79,8 @@ AWARD_TITLES = {
     "mvb": "MVB",
     "underperformer": "Underperformer",
     "overachiever": "Overachiever",
+    "unlucky": "Unlucky",
+    "lucky": "Lucky",
 }
 # (min, max) sentences per chapter, from the spec.
 SENTENCE_RANGES = {
@@ -587,6 +589,21 @@ def award_facts(c: Context) -> list[Fact]:
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
     if gc:
         out += _news_facts(c, gc)
+    return out
+
+
+def expected_award_facts(c: Context) -> list[Fact]:
+    """The unlucky and lucky awards from the expected gap. None when the expected points lack week N."""
+    out = []
+    for key, g in expected_awards(c.week, c.nfl, frozenset(a.line.player_id for a in c.awards)).items():
+        n = Nums()
+        team = c.team(g.roster_id)
+        side = "under" if g.gap < 0 else "over"
+        text = (
+            f"{AWARD_TITLES[key]}: {c.who(g.line)}, {team}. "
+            f"{g.line.name} scored {n(g.line.points)} on {n(g.expected)} expected points, {n(abs(g.gap))} {side}."
+        )
+        out.append(fact(f"AW.{key}", text, n, [team], [g.line.name]))
     return out
 
 
@@ -1522,7 +1539,7 @@ def build_bundle(
     c = Context(week, news, history, trades, nfl)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
-        matchup_fact_family(c), award_facts(c), pick_facts(c), next_facts(c),
+        matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
         rank_why_facts(c.history, c.power, c.before, c.team),

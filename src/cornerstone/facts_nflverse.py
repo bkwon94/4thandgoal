@@ -1,10 +1,23 @@
 """
-Drop value and drop lines from the nflverse drop plays and the Sleeper stats.
+Drop value and drop lines from the nflverse drop plays and the Sleeper stats, and the unlucky and lucky starters.
 The fact text lives in sheet.py with the other facts.
 """
 from decimal import Decimal
+from typing import NamedTuple
 
-from cornerstone.models import DropLine, DropPlay, NflverseWeek, Week
+from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Week, sub
+
+# The fewest points a starter must score under or over his expected points to win the unlucky or lucky award.
+# A smaller gap in one game is noise, so a quiet week gives no award. The commissioner tunes it.
+EXPECTED_AWARD_FLOOR = 5.0
+
+
+class GapLine(NamedTuple):
+    """A starter's line, with his expected points for week N and his expected gap."""
+    line: PlayerLine
+    roster_id: int
+    expected: float
+    gap: float
 
 
 def _drop_value(play: DropPlay, scoring: dict[str, float]) -> Decimal:
@@ -53,3 +66,35 @@ def drop_lines(week: Week, nfl: NflverseWeek | None = None) -> list[DropLine]:
                     value=value, end_zone=end_zone)))
     found.sort(key=lambda x: (-x[1].drops, -(x[1].value or 0), x[0]))
     return [d for _, d in found]
+
+
+def expected_awards(
+    week: Week, nfl: NflverseWeek | None = None, picked: frozenset[str] = frozenset(),
+) -> dict[str, GapLine]:
+    """The unlucky and the lucky starter of week N by expected gap, keyed "unlucky" and "lucky".
+
+    A key is absent when no starter clears EXPECTED_AWARD_FLOOR. Both are absent when the expected points are
+    missing or read through the week before, because then the file holds no game of week N.
+    The expected gap is his points in this league minus his expected points. The file's own points miss part
+    of the league scoring, so they stay out.
+    `picked` holds the Sleeper IDs that already hold an award, so one starter never wins two awards.
+    """
+    if nfl is None or nfl.expected is None or nfl.expected.through_week < week.week:
+        return {}
+    gaps = []
+    for m in week.matchups:
+        for side in (m.a, m.b):
+            for line in side.lines:
+                games = nfl.expected.players.get(line.player_id, [])
+                game = next((g for g in games if g.week == week.week), None)
+                if line.started and game is not None and line.player_id not in picked:
+                    gaps.append(GapLine(line, side.roster_id, game.expected, sub(line.points, game.expected)))
+    out = {}
+    # A tie goes to the first name, so a rebuild names the same player.
+    unlucky = min(gaps, key=lambda g: (g.gap, g.line.name), default=None)
+    if unlucky is not None and unlucky.gap <= -EXPECTED_AWARD_FLOOR:
+        out["unlucky"] = unlucky
+    lucky = min(gaps, key=lambda g: (-g.gap, g.line.name), default=None)
+    if lucky is not None and lucky.gap >= EXPECTED_AWARD_FLOOR:
+        out["lucky"] = lucky
+    return out

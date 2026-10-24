@@ -29,7 +29,10 @@ DECIDED_WORDS = ["decided", "decider", "decide"]
 GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (DECIDED_WORDS + ["won it", "blew it"], (".driver",)),
     (["upset"], (".upset",)),
-    (["recent add", "lucky", "waiver add", "free agent add", "new pickup"], (".move.", "W.adds")),
+    (["recent add", "waiver add", "free agent add", "new pickup"], (".move.", "W.adds")),
+    # The Lucky award names its own award, so a sentence that cites AW.lucky may say "lucky".
+    (["lucky"], (".move.", "W.adds", "AW.lucky")),
+    (["unlucky"], ("AW.unlucky",)),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
