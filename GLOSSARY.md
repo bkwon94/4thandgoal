@@ -320,6 +320,18 @@ _Avoid_: top adds, pickups
 The bucket of the pool players at QB, RB, WR, or TE with the most Sleeper adds in the last day.
 _Avoid_: hot, buzz, most added
 
+**Drop candidate**:
+A rostered player at QB, RB, WR, or TE whose snap share fell `DROP_WEEKS` weeks in a row, and whose
+rest of season projection is below the best pool player at his position. The drops bucket holds the
+top `BUCKET_SIZE` drop candidates by the margin, with no cap per position. Each drop candidate names
+the roster that holds him and the pool player who beats him. A drop candidate carries no price.
+_Avoid_: cut, drop (alone; that is a transaction), sell
+
+**Margin**:
+The per-week rest of season projection difference between a drop candidate and the pool player who
+beats him: the difference over weeks N+1 to 17, divided by the count of those weeks, to one decimal.
+_Avoid_: gap (that is the swing's difference between a win and a loss), edge
+
 **Budget table**:
 One row per roster with its FAAB budget left and its waiver order. The budget left is the league
 budget minus the budget the roster used.

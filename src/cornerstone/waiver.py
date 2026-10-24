@@ -8,19 +8,22 @@ from typing import NamedTuple
 
 from cornerstone.history import _round_half_up
 from cornerstone.models import (
-    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer, r2,
+    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
 )
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
-    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
+    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
+from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
+from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
 
 # The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
 # another position, such as a linebacker, is never in the pool.
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
+DROPS = "drops"
 
 
 def waiver_board(
@@ -33,19 +36,17 @@ def waiver_board(
     score and an environment score of 0. `claims` is the bid history of the season, the input of the price
     floor and the last like him.
     """
-    ahead = {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+    ahead = projections_ahead(raw)
     rostered = _rostered(raw)
     pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if _in_pool(entry, rostered, pid)}
-    # A week with no projection for the player, such as his bye, counts 0.
-    ros = {pid: r2(sum(ahead.get(w, {}).get(pid, 0.0) for w in range(week + 1, LAST_SEASON_WEEK + 1)))
-           for pid in pool}
+    ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = _rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
     players = [
-        _pool_player(pid, entry, r2(ahead.get(week + 1, {}).get(pid, 0.0)), ros[pid],
+        _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
                      BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
                                  projection=projection[pid]))
         for pid, entry in pool.items()
@@ -62,6 +63,9 @@ def waiver_board(
     prices = {p.player_id: p.price for p in price_players(list(ranked.values()), raw, list(claims), week)}
     buckets = {key: [p.model_copy(update={"price": prices[p.player_id]}) for p in bucket]
                for key, bucket in buckets.items()}
+    # Drop candidates come after the price step, so a drop candidate never carries a price. The bucket has no
+    # cap per position, as one roster can hold several fading players at one position.
+    buckets[DROPS] = drop_candidates(raw, week, usage_rows, players)[:BUCKET_SIZE]
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 
