@@ -1158,6 +1158,16 @@ def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reas
     assert _adjuster(eleventh, "roster fit").step == -1
 
 
+def test_a_contender_whose_lineup_gain_comes_from_a_player_due_back_names_him_and_his_return_week(snap):
+    # Roster 3 holds a playoff spot. Jacobs does not play this week, so the gain comes after his return.
+    snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(9, 15)}})
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 9}}))
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == (
+        "The team holds a playoff spot, and the best lineup gains after Josh Jacobs returns in week 9.")
+
+
 def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(snap):
     today = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, None))
     projected = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}}))

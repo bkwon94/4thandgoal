@@ -14,6 +14,6 @@ in the gain, the reason stays as today.
 
 **Status:** open
 
-- [ ] A contender whose lineup gain comes from a player due back in week 9 reads "and the best lineup gains after Josh Jacobs returns in week 9."
-- [ ] A contender whose lineup gain comes from a healthy player reads "and the best lineup gains now." as today.
-- [ ] Every existing adjuster test passes unchanged.
+- [x] A contender whose lineup gain comes from a player due back in week 9 reads "and the best lineup gains after Josh Jacobs returns in week 9."
+- [x] A contender whose lineup gain comes from a healthy player reads "and the best lineup gains now." as today.
+- [x] Every existing adjuster test passes unchanged.
