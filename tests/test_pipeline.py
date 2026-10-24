@@ -370,7 +370,7 @@ def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir)
     assert datetime.fromisoformat(body["built"]).tzinfo is not None
     # The fixture rosters every player in its players file, so the pool is empty and no drop has a better pool
     # player. It has no trending file.
-    assert body["buckets"] == {"best_adds": [], "trending": [], "drops": []}
+    assert body["buckets"] == {"best_adds": [], "trending": [], "sneaky": [], "stashes": [], "drops": []}
     assert len(body["budgets"]) == 12
     assert body["budgets"][0] == {"roster_id": 1, "budget_left": 69, "waiver_order": 1}
 

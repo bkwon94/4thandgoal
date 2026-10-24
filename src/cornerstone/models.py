@@ -364,6 +364,10 @@ class WaiverPrice(BaseModel):
     outbid: dict[int, int]
 
 
+# The bucket reasons: best adds, trending, the two sneaky rules, and the two stash rules.
+WaiverReason = Literal["board_score", "trending", "usage_rise", "behind_injury", "return", "handcuff"]
+
+
 class WaiverPlayer(BaseModel):
     """One ranked player of a bucket. The week projection is for week N+1, the rest of season one for N+1 to 17."""
     player_id: str
@@ -382,6 +386,15 @@ class WaiverPlayer(BaseModel):
     price: WaiverPrice | None = None
     # The roster that holds a drop candidate and the pool player who beats him. None for a pool player.
     drop: "DropInfo | None" = None
+    # The code of the rule that put him in the bucket. A drop candidate keeps his reason in his own record, so his
+    # reason here is None. A facts file saved before the reasons has None too.
+    reason: WaiverReason | None = None
+    # The bye week of his team. None when the schedules are missing or show no bye.
+    bye: int | None = None
+    # The Sleeper injury status, such as Out or IR. None for a healthy player.
+    injury_status: str | None = None
+    # The week he is back, for a player who is out. None when he is healthy or no source knows the week.
+    return_week: int | None = None
 
 
 class BudgetRow(BaseModel):

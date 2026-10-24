@@ -6,12 +6,15 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import NamedTuple
 
+from cornerstone import waiver_buckets
+from cornerstone.adjusters import OUT_STATUSES
 from cornerstone.history import _round_half_up
 from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
 )
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
+from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
@@ -24,17 +27,21 @@ from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
 DROPS = "drops"
+# The bucket reasons of best adds and trending. The sneaky and stash reasons live in waiver_buckets.
+BOARD_SCORE = "board_score"
+TRENDING_REASON = "trending"
 
 
 def waiver_board(
     raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
-    claims: Sequence[WaiverClaim] = (),
+    claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None, returns: dict[str, int] | None = None,
 ) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
     `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
     score and an environment score of 0. `claims` is the bid history of the season, the input of the price
-    floor and the last like him.
+    floor and the last like him. `slow` gives the depth charts and the injury report of the sneaky and stash
+    buckets. None leaves out every rule that needs them. `returns` is the hand-kept return week by player ID.
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
@@ -45,18 +52,26 @@ def waiver_board(
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
+    inputs = waiver_buckets.BucketInputs(raw["players"], week, slow, returns or {},
+                                         lambda pid: rest_of_season(ahead, pid, week))
     players = [
         _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
                      BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
-                                 projection=projection[pid]))
+                                 projection=projection[pid]),
+                     _bye(slow, entry["team"]), _return_week(entry, pid, inputs))
         for pid, entry in pool.items()
     ]
     for p in players:
         if p.position in BUCKET_POSITIONS:
             p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
-    best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
-    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
+    # A player who is out lands in stashes only, so every other bucket skips him.
+    healthy = [p for p in players if p.injury_status not in OUT_STATUSES]
+    best_adds = _capped(sorted((p.model_copy(update={"reason": BOARD_SCORE})
+                                for p in healthy if p.position in BUCKET_POSITIONS), key=_rank_key))
+    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(healthy)}
+    candidates = waiver_buckets.sneaky_and_stashes(players, best_adds, inputs)
+    buckets |= {key: _capped(ranked) for key, ranked in candidates.items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
     # gets one price, so the price runs once per player.
     ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
@@ -65,8 +80,20 @@ def waiver_board(
                for key, bucket in buckets.items()}
     # Drop candidates come after the price step, so a drop candidate never carries a price. The bucket has no
     # cap per position, as one roster can hold several fading players at one position.
-    buckets[DROPS] = drop_candidates(raw, week, usage_rows, players)[:BUCKET_SIZE]
+    # A player who is out cannot replace a drop candidate this week, so drops compare against the healthy pool.
+    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy)[:BUCKET_SIZE]
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
+
+
+def _bye(slow: SlowSources | None, team: str) -> int | None:
+    """The bye week of the team from the schedules of the slow sources. None when the schedules lack it."""
+    schedule = (slow.schedules or {}).get(team) if slow is not None else None
+    return schedule.bye_week if schedule is not None else None
+
+
+def _return_week(entry: dict, player_id: str, inputs: waiver_buckets.BucketInputs) -> int | None:
+    """The return week of a player who is out. A healthy player has none, even when a later report lists him."""
+    return inputs.return_week_of(player_id) if entry.get("injury_status") in OUT_STATUSES else None
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
@@ -87,12 +114,18 @@ def _rostered(raw: dict[str, object]) -> set[str]:
 
 
 def _in_pool(entry: dict, rostered: set[str], player_id: str) -> bool:
-    """A player with a team, active, at a pool position, and on no roster in the league."""
+    """A player with a team, active, at a pool position, and on no roster in the league.
+
+    A player with the status Inactive and an out injury status joins too, for stashes only.
+    """
     if player_id in rostered or not entry.get("team") or entry.get("position") not in POOL_POSITIONS:
         return False
     # Sleeper gives a defense no status, only the active flag.
     if entry["position"] == "DEF":
         return entry.get("active") is True
+    # Sleeper gives an IR player the status Inactive. He is the classic stash, so he joins the pool.
+    if entry.get("status") == "Inactive" and entry.get("active") is True:
+        return entry.get("injury_status") in OUT_STATUSES
     return entry.get("status") == "Active"
 
 
@@ -115,7 +148,8 @@ def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[st
     return scores
 
 
-def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float, scores: BoardScores) -> WaiverPlayer:
+def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float, scores: BoardScores,
+                 bye: int | None, return_week: int | None) -> WaiverPlayer:
     return WaiverPlayer(
         player_id=player_id,
         name=player_name(player_id, entry),
@@ -125,6 +159,9 @@ def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float
         ros_projection=ros,
         scores=scores,
         board_score=round(sum(weight * getattr(scores, key) for key, weight in BOARD_WEIGHTS.items()), 4),
+        bye=bye,
+        injury_status=entry.get("injury_status"),
+        return_week=return_week,
     )
 
 
@@ -170,7 +207,8 @@ def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
 
 def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
     """The pool players at a bucket position with a trending count, in the order of _trending_key."""
-    return _capped(sorted((p for p in players if p.trending_count and p.position in BUCKET_POSITIONS),
+    return _capped(sorted((p.model_copy(update={"reason": TRENDING_REASON})
+                           for p in players if p.trending_count and p.position in BUCKET_POSITIONS),
                           key=_trending_key))
 
 
