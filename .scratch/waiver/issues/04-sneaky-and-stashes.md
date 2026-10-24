@@ -37,6 +37,7 @@ best adds is not sneaky.
 - A stash needs a rest of season projection above 0, because a tie at 0 ranks every player at the top.
 - Every ranked player carries a reason: `board_score`, `trending`, `usage_rise`, `behind_injury`, `return`, or `handcuff`. Every pool player carries his bye, his injury status, and his return week.
 - The story fact sits on the sneaky and stash entries only.
+- The drops bucket compares a drop candidate against the healthy pool only, because a player who is out cannot replace him this week.
 - The return window shares `back_inside` with the trade analyzer. The handcuff test does not share code with it: the analyzer asks for second or lower with the starter on a roster, and the board asks for one slot below a healthy top-half starter.
 
 2026-10-23, the real week 6 check: before the fix, eight healthy backups landed in stashes as handcuffs, and two out players landed in sneaky. Every rest of season projection was 0, because the saved raw predates the lifted filter of the projections ahead fetch. After the fix, stashes is empty and sneaky holds eight healthy players behind an out player.
