@@ -461,6 +461,21 @@ class TeamWeek(BaseModel):
     neutral_passes: int
 
 
+class ExpectedGame(BaseModel):
+    """The expected points of one player in one game, from ffopportunity, rescaled to the league scoring."""
+    week: int
+    game_id: str
+    expected: float
+
+
+class ExpectedPoints(BaseModel):
+    """The expected window of each player by Sleeper ID, and the last week the file holds in full."""
+    # The week N of the build, or N-1 when the file lacks the games of the last game day of week N.
+    through_week: int
+    # The last games played through `through_week`, in week order. A bye is not a game.
+    players: dict[str, list[ExpectedGame]]
+
+
 class WaiverClaim(BaseModel):
     """One waiver claim of the season: the bid, the player, his position, the week, and whether the claim won."""
     player_id: str
@@ -580,3 +595,5 @@ class NflverseWeek(BaseModel):
     usage: dict[str, list[UsageWeek]] | None = None
     # The offense counts of each week of the season by Sleeper team code. None as for the usage.
     environment: dict[str, list[TeamWeek]] | None = None
+    # The expected points from ffopportunity. None in an extract with no expected field, or when the file is missing.
+    expected: ExpectedPoints | None = None
