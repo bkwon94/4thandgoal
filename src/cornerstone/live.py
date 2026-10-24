@@ -4,6 +4,8 @@ It fetches Sleeper at request time, refreshes the slow sources that are a day ol
 On the Tuesday after the cutoff, it saves the week before the trade week into the history.
 """
 import logging
+import threading
+import time
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -21,9 +23,10 @@ from cornerstone.nflverse import (
 from cornerstone.parse import parse_week
 from cornerstone.pipeline import LEAGUE_ID, nflverse_cache_dir
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import fetch_live_raw, fetch_past_week
+from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
 from cornerstone.snapshot import Snapshot, build_snapshot, load_returns
 from cornerstone.trades import default_cutoff
+from cornerstone.tunables import TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,8 @@ logger = logging.getLogger(__name__)
 SleeperFetcher = Callable[[str, Path], tuple[dict[str, object], datetime]]
 # The chart read takes the repo, the season start, the chart week, and the player lines.
 ChartReader = Callable[[Path, date, int, Iterable[PlayerLine]], ChartValues | None]
+# The projections fetch takes the season and the raw week. It gives the projections ahead of that week.
+ProjectionsFetcher = Callable[[int, int], list[dict]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
 # The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
@@ -89,6 +94,37 @@ def _read_chart(
     except Exception as error:
         logger.warning("Chart read for week %d failed (%s), so the week has no chart", week, type(error).__name__)
         return None, True
+
+
+class ProjectionsCache:
+    """The projections ahead per season and raw week, with the monotonic time of the fetch.
+
+    The fetch is one Sleeper call per week ahead and takes seconds, so a repeat grade in the window pays nothing.
+    One lock covers the check and the fetch, so two first requests make one fetch and not two.
+    """
+
+    def __init__(self, max_age_seconds: float, clock: Callable[[], float] = time.monotonic) -> None:
+        self.max_age_seconds = max_age_seconds
+        self.clock = clock
+        self._lock = threading.Lock()
+        self._entries: dict[tuple[int, int], tuple[float, list[dict]]] = {}
+
+    def get_or_fetch(self, season: int, week: int, fetch: ProjectionsFetcher) -> list[dict]:
+        """The projections ahead of `week` from memory within the window.
+
+        Past it, `fetch` runs and the cache keeps its answer.
+        """
+        with self._lock:
+            entry = self._entries.get((season, week))
+            if entry is not None and self.clock() - entry[0] < self.max_age_seconds:
+                return entry[1]
+            ahead = fetch(season, week)
+            self._entries[(season, week)] = (self.clock(), ahead)
+            return ahead
+
+
+# The projections change at most a few times a day, so the window of the teams answer is short enough.
+PROJECTIONS_CACHE = ProjectionsCache(TEAMS_CACHE_SECONDS)
 
 
 @dataclass(frozen=True)
@@ -173,10 +209,13 @@ def live_snapshot(
         fetch_sleeper: SleeperFetcher = fetch_live_raw,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
-        read_chart: ChartReader | None = chart_values) -> Snapshot:
+        read_chart: ChartReader | None = chart_values,
+        fetch_projections: ProjectionsFetcher = fetch_projections_ahead,
+        projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.
 
     With `read_chart` None, the snapshot has no chart, and the chart is not noted as stale.
+    The projections ahead come through `projections`, so a repeat grade in its window fetches none.
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
     """
@@ -198,6 +237,10 @@ def live_snapshot(
             logger.warning("Week %d not saved to history (%s), so the saved weeks stand", week.week, error)
             if "history" not in stale:
                 stale.append("history")
+    # Only the grade reads the projections ahead, so this route fetches them and the rosters route does not.
+    # A fetcher that gives them already, as a saved week's raw data does, needs no fetch here.
+    if "projections_ahead" not in raw:
+        raw = {**raw, "projections_ahead": projections.get_or_fetch(season, week.week, fetch_projections)}
     return _build_live(repo, season, raw, fetched, trade_week, result.chart, stale)
 
 

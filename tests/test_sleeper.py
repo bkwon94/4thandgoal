@@ -159,18 +159,13 @@ def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
     assert "projections_ahead" not in load_raw(raw_dir)
 
 
-def test_fetch_live_raw_holds_the_projections_ahead_as_fetch_week_saves_them(tmp_path, monkeypatch):
+def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
+    # The trade grade reads no week after the last regular week, so the live fetch skips those calls.
     from cornerstone import sleeper
 
     calls: list[str] = []
-    projections_get = _fake_projections_get(calls)
-
-    def get(client, url, params=None):
-        if url.endswith("/state/nfl"):
-            return {"season": "2026", "display_week": 6}
-        return projections_get(client, url, params)
-
-    monkeypatch.setattr(sleeper, "_get", get)
-    raw, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
-    assert [entry["week"] for entry in raw["projections_ahead"]] == list(range(7, 18))
-    assert raw["projections_ahead"][0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
+    monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
+    ahead = sleeper.fetch_projections_ahead(2026, 6)
+    assert [entry["week"] for entry in ahead] == list(range(7, 15))
+    assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
+    assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}

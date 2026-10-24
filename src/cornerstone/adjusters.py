@@ -112,8 +112,8 @@ def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
 def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
     """The points per game the player counts for in a best lineup.
 
-    A player due back has no recent games to show his worth, so his projection ahead stands in for them.
-    Recent points carry form, so every other player keeps them. With no projections file, all players keep them.
+    A player due back has no recent games, so his projection ahead gives his lineup value.
+    Recent points show current play, so every other player keeps them. With no projections file, all players keep them.
     """
     if snapshot.projections_ahead is not None and _due_back(snapshot, player_id):
         return projection_ahead(snapshot, player_id)
@@ -292,8 +292,10 @@ def _due_back_notes(snapshot: Snapshot, side: _Side) -> list[str]:
     if snapshot.projections_ahead is None:
         return ["The projections ahead are not available, so " + named(
             snapshot, due_back, "counts for his recent points per game.", "count for their recent points per game.")]
+    # The quantize keeps the Decimal exact. _round_half_up goes through a float, which can print a long tail.
     return [f"{snapshot.players[pid].name} is due back in week {snapshot.returns[pid]}, so he counts for his "
-            f"projection of {projection_ahead(snapshot, pid).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)} a game."
+            f"projection ahead of {projection_ahead(snapshot, pid).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)}"
+            " a game."
             for pid in due_back]
 
 

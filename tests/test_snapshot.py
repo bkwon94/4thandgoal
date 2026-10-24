@@ -118,8 +118,19 @@ def test_the_snapshot_carries_the_projections_ahead_by_player_and_week(
     assert snap.projections_ahead["5850"] == {7: 10.81, 8: 14.19, 9: 12.41, 10: 11.0, 12: 11.39, 13: 13.25, 14: 12.4}
 
 
+def test_the_projections_ahead_start_at_the_raw_week(fixture_raw_dir, fixture_history_root, chart_week6):
+    # A player due back in the raw week counts for that week too, so its half-PPR projection joins the weeks ahead.
+    # Nico Collins has his bye in week 8, so that week has no row.
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert snap.projections_ahead["7569"] == {
+        6: 15.52, 7: 15.29, 9: 15.25, 10: 14.48, 11: 15.16, 12: 14.88, 13: 15.43, 14: 16.6}
+
+
 def test_a_week_with_no_projections_ahead_file_has_none(fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "projections_ahead.json").unlink()
-    assert load_snapshot(raw_dir, fixture_history_root, chart_week6).projections_ahead is None
+    snap = load_snapshot(raw_dir, fixture_history_root, chart_week6)
+    assert snap.projections_ahead is None
+    # The missing list stays as it is. The fit reason says the projections are not available when a player is due back.
+    assert "projections_ahead" not in snap.missing and "projections" not in snap.missing

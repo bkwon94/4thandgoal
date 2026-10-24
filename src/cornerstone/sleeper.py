@@ -130,8 +130,8 @@ def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
     ]
 
 
-def _projections_ahead(client: httpx.Client, season: int, week: int) -> list[dict]:
-    """One entry per week from week + 1 to LAST_SEASON_WEEK, with the half-PPR projection of each player."""
+def _projections_ahead(client: httpx.Client, season: int, week: int, last: int = LAST_SEASON_WEEK) -> list[dict]:
+    """One entry per week from week + 1 to `last`, with the half-PPR projection of each player."""
     # Every player stays, so the waiver board can rank the waiver pool. A player with no half-PPR projection has no entry.
     return [
         {"week": w, "projections": {
@@ -139,8 +139,17 @@ def _projections_ahead(client: httpx.Client, season: int, week: int) -> list[dic
             for item in _get_or_empty(client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{w}", _position_params())
             if (item.get("stats") or {}).get("pts_half_ppr") is not None
         }}
-        for w in range(week + 1, LAST_SEASON_WEEK + 1)
+        for w in range(week + 1, last + 1)
     ]
+
+
+def fetch_projections_ahead(season: int, week: int) -> list[dict]:
+    """The projections ahead of `week` through LAST_REGULAR_WEEK, in the entries that fetch_week saves.
+
+    The trade grade reads no later week, so the live grade skips those calls.
+    """
+    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+        return _projections_ahead(client, season, week, LAST_REGULAR_WEEK)
 
 
 def _trending(client: httpx.Client) -> list[dict]:
@@ -211,8 +220,6 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
         fetched = datetime.now(ZoneInfo("America/New_York"))
         data = _league_raw(client, league, season, week, players_cache, {"state": state, "rosters": rosters})
-        # On Fly no weekly build saves the projections ahead, so the live grade fetches them as fetch_week does.
-        data["projections_ahead"] = _projections_ahead(client, season, week)
     return data, fetched
 
 
