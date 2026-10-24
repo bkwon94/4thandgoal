@@ -9,6 +9,7 @@ from cornerstone.models import NflverseWeek, UsageWeek
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources
 from cornerstone.waiver import waiver_board
+from cornerstone.waiver_buckets import return_week
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 
@@ -88,3 +89,19 @@ def test_a_player_out_with_a_return_week_and_a_top_half_projection_lands_in_stas
     stashes = waiver_board(raw, 6, BUILT, returns={"80001": 9}).buckets["stashes"]
     assert _ids(stashes) == ["80001"]
     assert stashes[0].reason == "return"
+
+
+def test_a_player_out_with_no_return_week_or_one_past_the_season_stays_out_of_stashes(fixture_raw_dir):
+    players = {"80001": _player("WR", "No Date", injury="Out"), "80002": _player("WR", "Late Date", injury="IR"),
+               "80003": _player("WR", "Low Guy")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 15.0, "80002": 14.0, "80003": 4.0})
+    # The injury report lists the first player as out in week 6 only, so it gives no return week.
+    slow = SlowSources(depth_charts=None, id_map={}, injuries={"G80001": {6: "Out"}})
+    assert waiver_board(raw, 6, BUILT, slow=slow, returns={"80002": 18}).buckets["stashes"] == []
+
+
+def test_the_return_week_reads_the_returns_file_first_and_the_injury_report_second():
+    injuries = {"G1": {6: "Out", 7: "Out", 8: "Questionable"}}
+    assert return_week("1", "G1", 6, {"1": 10}, injuries) == 10
+    assert return_week("1", "G1", 6, {}, injuries) == 8
+    assert return_week("1", "G1", 6, {}, None) is None
