@@ -9,7 +9,9 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **Underperformer**: the starter with the largest gap below projection, among starters projected at 10 or more.
 - **Overachiever**: the starter with the largest gap above projection.
 - **Unlucky**: the starter with the largest gap below his expected points, at least 5 under. Expected points are what his volume should have scored. Say "unlucky" only in a sentence that cites `AW.unlucky`.
+- **Unlucky award in prose**: name it "the Unlucky award", never a bare "Unlucky". In the same sentence, say what it measures, with the numbers as the fact gives them. Plain phrase: "took the Unlucky award: 6.1 points from a stat line that usually scores about 14.8".
 - **Lucky**: the starter with the largest gap above his expected points, at least 5 over. Say "lucky" for it only in a sentence that cites `AW.lucky`.
+- **Lucky award in prose**: name it "the Lucky award", never a bare "Lucky". In the same sentence, say what it measures, with the numbers as the fact gives them. Plain phrase: "took the Lucky award: 22.7 points from a stat line that usually scores about 12.49".
 - **Game Changer**: the starter on a winning side whose points exceed the margin, ranked by gap to projection, with a bonus for a recent add.
 - **Matchup of the Week**: the matchup that scored highest on closest margin, biggest upset, highest combined standing, and nearness to the playoff cut.
 - **margin driver**: a player on either side whose gap to projection, in absolute terms, is at least the margin. Only a margin driver may be called a decider. Plain phrase for "margin driver" or "decider": "won it" on the winning side, "blew it" on the losing side.
@@ -37,12 +39,14 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone.
 - **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game.
 - **WOPR**: weighted opportunity rating, 1.5 times target share plus 0.7 times air yards share; a weighted sum and not a share, so never a percent; it can pass 100 or go negative.
+- **WOPR in prose**: never write "WOPR" in prose. Say what it measures. Plain phrase: "the 2nd-biggest share of his team's targets and air yards among started tight ends", or shorter, "2nd in passing volume among started TEs".
+- **expected points**: what his volume should have scored. Never write "expected points" in prose. Plain phrase: "what his stat line usually scores".
 - **carry share**: his share of his team's carries, in percent.
 
 ## Banned words
 
-Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked.
+Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked, WOPR.
 
 ## Banned phrases
 
-Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say.
+Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say, expected points.
