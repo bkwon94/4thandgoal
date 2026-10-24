@@ -1,12 +1,12 @@
 """
-Tests for the drop value, the drop lines and the drop facts.
+Tests for the drop value, the drop lines, the drop facts, and the unlucky and lucky award facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
 from cornerstone.facts_nflverse import drop_lines, drop_value
-from cornerstone.models import NflverseWeek
+from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
-from cornerstone.sheet import build_bundle
+from cornerstone.sheet import NUMBER_TOKEN, build_bundle
 from cornerstone.sleeper import load_raw
 
 
@@ -135,3 +135,84 @@ def test_missing_yardline_is_not_the_end_zone(fixture_raw_dir):
     play = DropPlay(game_id="g", play_id="p", air_yards=23.0, yardline_100=None)
     # One reception and 23 air yards, with no touchdown.
     assert drop_value(play, wk.scoring) == drop_value(play.model_copy(update={"yardline_100": 99.0}), wk.scoring)
+
+
+def _expected_bundle(fixture_raw_dir, nfl_week6, games: dict[str, list[tuple[int, float]]], through_week: int = 6):
+    """The week 6 sheet with hand-set expected points, by Sleeper ID, as (week, expected) per game."""
+    expected = ExpectedPoints(through_week=through_week, players={
+        pid: [ExpectedGame(week=w, game_id=f"2026_{w:02d}_{pid}", expected=x) for w, x in played]
+        for pid, played in games.items()})
+    nfl = nfl_week6.model_copy(update={"expected": expected})
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl)
+
+
+# Started: Derrick Henry 4.5, Davante Adams 5.4, Stefon Diggs 13.4, Mike Evans 10.9.
+# Bench: Jakobi Meyers 10.8, Alvin Kamara 13.9. Each bench gap is larger than any started gap.
+HAND_SET = {
+    "3198": [(5, 30.0), (6, 16.5)],
+    "2133": [(6, 9.0)],
+    "2449": [(6, 7.0)],
+    "2216": [(6, 8.9)],
+    "5947": [(6, 30.0)],
+    "4035": [(6, 0.5)],
+}
+
+
+def test_unlucky_fact_names_the_starter_furthest_under(fixture_raw_dir, nfl_week6):
+    f = _expected_bundle(fixture_raw_dir, nfl_week6, HAND_SET).sheet.facts["AW.unlucky"]
+    assert f.text == ("Unlucky: Derrick Henry (RB, BAL), Lil Fridge. "
+                      "Derrick Henry scored 4.5 on 16.5 expected points, 12 under.")
+    assert {"4.5", "16.5", "12"} <= set(f.numbers)
+    assert f.players == ["Derrick Henry"]
+
+
+def test_lucky_fact_names_the_starter_furthest_over(fixture_raw_dir, nfl_week6):
+    f = _expected_bundle(fixture_raw_dir, nfl_week6, HAND_SET).sheet.facts["AW.lucky"]
+    assert f.text == ("Lucky: Stefon Diggs (WR, WAS), Lil Fridge. "
+                      "Stefon Diggs scored 13.4 on 7 expected points, 6.4 over.")
+    assert {"13.4", "7", "6.4"} <= set(f.numbers)
+
+
+def test_no_expected_award_under_the_floor(fixture_raw_dir, nfl_week6):
+    # Adams is 3.6 under and Evans 2 over, so neither clears the floor of 5.
+    b = _expected_bundle(fixture_raw_dir, nfl_week6, {"2133": [(6, 9.0)], "2216": [(6, 8.9)]})
+    assert "AW.unlucky" not in b.sheet.facts and "AW.lucky" not in b.sheet.facts
+    assert "awards" in {c.key for c in b.sheet.chapters}
+
+
+def test_a_gap_of_exactly_the_floor_wins(fixture_raw_dir, nfl_week6):
+    b = _expected_bundle(fixture_raw_dir, nfl_week6, {"2133": [(6, 10.4)], "2216": [(6, 5.9)]})
+    assert "Davante Adams" in b.sheet.facts["AW.unlucky"].text
+    assert "Mike Evans" in b.sheet.facts["AW.lucky"].text
+
+
+def test_a_lagged_file_gives_no_expected_award(fixture_raw_dir, nfl_week6):
+    b = _expected_bundle(fixture_raw_dir, nfl_week6, {"3198": [(5, 30.0)], "2449": [(5, 1.0)]}, through_week=5)
+    assert "AW.unlucky" not in b.sheet.facts and "AW.lucky" not in b.sheet.facts
+
+
+def test_a_bench_player_never_gets_an_expected_award(fixture_raw_dir, nfl_week6):
+    b = _expected_bundle(fixture_raw_dir, nfl_week6, {"5947": [(6, 30.0)], "4035": [(6, 0.5)]})
+    assert "AW.unlucky" not in b.sheet.facts and "AW.lucky" not in b.sheet.facts
+
+
+def test_missing_expected_data_builds_without_the_awards(fixture_raw_dir, nfl_week6):
+    nfl = nfl_week6.model_copy(update={"expected": None})
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl)
+    assert "AW.unlucky" not in b.sheet.facts and "AW.lucky" not in b.sheet.facts
+    assert "awards" in {c.key for c in b.sheet.chapters}
+
+
+def test_only_the_awards_chapter_cites_the_expected_awards(fixture_raw_dir, nfl_week6):
+    b = _expected_bundle(fixture_raw_dir, nfl_week6, HAND_SET)
+    citing = {c.key for c in b.sheet.chapters if {"AW.unlucky", "AW.lucky"} & set(c.fact_ids)}
+    assert citing == {"awards"}
+    awards = next(c for c in b.sheet.chapters if c.key == "awards")
+    assert {"AW.unlucky", "AW.lucky"} <= set(awards.fact_ids)
+
+
+def test_every_number_in_an_expected_award_text_is_in_its_numbers(fixture_raw_dir, nfl_week6):
+    facts = _expected_bundle(fixture_raw_dir, nfl_week6, HAND_SET).sheet.facts
+    for fid in ("AW.unlucky", "AW.lucky"):
+        for token in NUMBER_TOKEN.findall(facts[fid].text):
+            assert token in facts[fid].numbers, (fid, token)

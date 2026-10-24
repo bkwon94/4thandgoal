@@ -422,6 +422,18 @@ def test_gated_word_inside_team_name_passes(fixture_raw_dir):
     assert not any("lucky" in m.lower() for m in code_check(b, ch, sheet))
 
 
+def test_lucky_passes_with_the_lucky_award_cited(fixture_raw_dir):
+    # The Lucky award names its own award, so the word needs no recent add.
+    sheet = _sheet(fixture_raw_dir).model_copy(deep=True)
+    ch = _ch(sheet, "awards")
+    sheet.facts["AW.lucky"] = sheet.facts[ch.fact_ids[0]].model_copy(update={"id": "AW.lucky"})
+    ch.fact_ids.append("AW.lucky")
+    b = _blurb("awards", _s("The Lucky award goes out.", "AW.lucky"), _s("Again.", ch.fact_ids[0]))
+    assert not any("lucky" in m.lower() for m in code_check(b, ch, sheet))
+    b = _blurb("awards", _s("That was lucky.", ch.fact_ids[0]), _s("Again.", ch.fact_ids[0]))
+    assert any("'lucky' needs" in m for m in code_check(b, ch, sheet))
+
+
 def test_writer_with_no_output_twice_falls_back(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
