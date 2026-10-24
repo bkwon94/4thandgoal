@@ -6,10 +6,9 @@ from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
-# A module import, not a name import: the nflverse module imports this one to call the readers.
-from cornerstone import nflverse
 from cornerstone.history import _round_half_up
 from cornerstone.models import TeamWeek, UsageWeek
+from cornerstone.nflverse_rows import _number, _rows, _sleeper_team, _yardline
 
 # The play types of an offensive play. A kneel, a spike, a penalty with no play, and a kick are not plays.
 PLAY_TYPES = ("pass", "run")
@@ -49,7 +48,7 @@ def read_plays(pbp: Path, week: int) -> list[dict[str, str]] | None:
     """
     has_week = False
     plays = []
-    for row in nflverse._rows(pbp):
+    for row in _rows(pbp):
         row_week = _regular_week(row, "season_type")
         has_week = has_week or row_week == week
         if row_week is not None and row_week <= week and row["play_type"] in PLAY_TYPES:
@@ -60,14 +59,14 @@ def read_plays(pbp: Path, week: int) -> list[dict[str, str]] | None:
 def read_snaps(snaps: Path, first_week: int, week: int, sleeper_of_pfr: dict[str, str]) -> dict[tuple[str, int], SnapWeek]:
     """The snap counts of weeks `first_week` to `week` by Sleeper ID and week. A player with no PFR ID is not in it."""
     out = {}
-    for row in nflverse._rows(snaps):
+    for row in _rows(snaps):
         row_week = _regular_week(row, "game_type")
         pid = sleeper_of_pfr.get(row["pfr_player_id"])
         if row_week is not None and pid is not None and first_week <= row_week <= week:
             # nflverse writes the snap share as a fraction, such as 0.71.
-            out[(pid, row_week)] = SnapWeek(snaps=int(nflverse._number(row["offense_snaps"])),
-                                            share=int(_round_half_up(100 * nflverse._number(row["offense_pct"]))),
-                                            team=nflverse._sleeper_team(row["team"]))
+            out[(pid, row_week)] = SnapWeek(snaps=int(_number(row["offense_snaps"])),
+                                            share=int(_round_half_up(100 * _number(row["offense_pct"]))),
+                                            team=_sleeper_team(row["team"]))
     return out
 
 
@@ -86,9 +85,9 @@ def read_usage(plays: list[dict[str, str]], snaps: dict[tuple[str, int], SnapWee
         play_week = int(play["week"])
         if play_week < first_week:
             continue
-        team = nflverse._sleeper_team(play["posteam"])
+        team = _sleeper_team(play["posteam"])
         for column, kind in (("receiver_player_id", "targets"), ("rusher_player_id", "carries")):
-            if not play[column] or (kind == "carries" and not nflverse._number(play["rush"])):
+            if not play[column] or (kind == "carries" and not _number(play["rush"])):
                 continue
             team_totals.setdefault((team, play_week), Counter())[kind] += 1
             pid = sleeper_of_gsis.get(play[column])
@@ -97,7 +96,7 @@ def read_usage(plays: list[dict[str, str]], snaps: dict[tuple[str, int], SnapWee
             player = counts.setdefault((pid, play_week), Counter())
             player[kind] += 1
             teams[(pid, play_week)] = team
-            yardline = nflverse._yardline(play["yardline_100"])
+            yardline = _yardline(play["yardline_100"])
             if yardline is not None and yardline <= RED_ZONE_YARDS:
                 player["red_zone"] += 1
     usage: dict[str, list[UsageWeek]] = {}
@@ -121,22 +120,22 @@ def _is_neutral(play: dict[str, str]) -> bool:
     """
     if play["down"] not in ("1", "2") or play["qtr"] not in ("1", "2", "3"):
         return False
-    if play["qtr"] == "2" and nflverse._number(play["game_seconds_remaining"]) <= HALF_TWO_MINUTES_SECONDS:
+    if play["qtr"] == "2" and _number(play["game_seconds_remaining"]) <= HALF_TWO_MINUTES_SECONDS:
         return False
     return (play["score_differential"] not in ("", "NA")
-            and abs(nflverse._number(play["score_differential"])) <= NEUTRAL_SCORE)
+            and abs(_number(play["score_differential"])) <= NEUTRAL_SCORE)
 
 
 def read_environment(plays: list[dict[str, str]]) -> dict[str, list[TeamWeek]]:
     """The offense counts of each week of the plays by Sleeper team code, in week order."""
     counts: dict[tuple[str, int], Counter] = {}
     for play in plays:
-        team = counts.setdefault((nflverse._sleeper_team(play["posteam"]), int(play["week"])), Counter())
-        passed, rushed = bool(nflverse._number(play["pass"])), bool(nflverse._number(play["rush"]))
+        team = counts.setdefault((_sleeper_team(play["posteam"]), int(play["week"])), Counter())
+        passed, rushed = bool(_number(play["pass"])), bool(_number(play["rush"]))
         team["plays"] += 1
         team["passes"] += passed
         team["rushes"] += rushed
-        team["rush_successes"] += rushed and bool(nflverse._number(play["success"]))
+        team["rush_successes"] += rushed and bool(_number(play["success"]))
         if _is_neutral(play):
             team["neutral_plays"] += 1
             team["neutral_passes"] += passed
@@ -150,5 +149,5 @@ def read_environment(plays: list[dict[str, str]]) -> dict[str, list[TeamWeek]]:
 
 def read_pfr_map(path: Path) -> dict[str, str]:
     """The Sleeper ID by PFR ID. The snap counts name a player by his PFR ID only."""
-    return {row["pfr_id"]: row["sleeper_id"] for row in nflverse._rows(path)
+    return {row["pfr_id"]: row["sleeper_id"] for row in _rows(path)
             if row["sleeper_id"] not in ("", "NA") and row["pfr_id"] not in ("", "NA")}

@@ -2,8 +2,6 @@
 Download and parse the nflverse play by play, snap count, injury, schedule, and depth chart files and the ffverse id map.
 A failure of any source never stops a build, so each read returns None for missing data.
 """
-import csv
-import gzip
 import logging
 import time
 from collections.abc import Callable, Collection
@@ -12,10 +10,10 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel
 
-# A module import, not a name import: the usage module imports this one for the CSV helpers.
 from cornerstone import nflverse_usage
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import DropPlay, NflverseWeek
+from cornerstone.nflverse_rows import NFLVERSE_TEAM, SLEEPER_TEAM, _number, _rows, _sleeper_team, _yardline
 from cornerstone.tunables import USAGE_SAVED_WEEKS
 
 logger = logging.getLogger(__name__)
@@ -64,25 +62,6 @@ def download(url: str, path: Path, max_age_seconds: int = CACHE_MAX_AGE_SECONDS,
     return path
 
 
-def _rows(path: Path):
-    # Plain and gzip files share one reader, so the caller does not care which one it has.
-    opener = gzip.open if path.suffix == ".gz" else open
-    with opener(path, "rt", encoding="utf-8", newline="") as f:
-        yield from csv.DictReader(f)
-
-
-def _number(text: str) -> float:
-    # nflverse writes NA for a missing value. A negative value is real data and stays.
-    return 0.0 if text in ("", "NA") else float(text)
-
-
-# Sleeper and nflverse share every team code but this one.
-NFLVERSE_TEAM = {"LAR": "LA"}
-
-
-# The inverse of NFLVERSE_TEAM: the readers below name teams as Sleeper does, so they join the rosters.
-SLEEPER_TEAM = {nflverse: sleeper for sleeper, nflverse in NFLVERSE_TEAM.items()}
-
 # The weeks of the fantasy playoffs, when a team schedule decides a title.
 PLAYOFF_WEEKS = (15, 16, 17)
 REGULAR_SEASON_WEEKS = range(1, 19)
@@ -95,19 +74,10 @@ class TeamSchedule(BaseModel):
     playoff_opponents: dict[int, str]
 
 
-def _sleeper_team(code: str) -> str:
-    return SLEEPER_TEAM.get(code, code)
-
-
 def _bye_week(played: set[int]) -> int | None:
     # A team with a game in every week but one has that week off. A short file has no bye, not a wrong one.
     off = set(REGULAR_SEASON_WEEKS) - played
     return next(iter(off)) if len(off) == 1 else None
-
-
-def _yardline(text: str) -> float | None:
-    # A missing yard line is unknown, not the goal line: 0 would put every such drop in the end zone.
-    return None if text in ("", "NA") else float(text)
 
 
 def read_drops(pbp: Path, ftn: Path, week: int, teams: Collection[str] = ()) -> dict[str, list[DropPlay]] | None:
