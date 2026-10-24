@@ -12,6 +12,7 @@ from cornerstone.tunables import BEST_ADDS_POSITIONS, BOARD_WEIGHTS, BUCKET_SIZE
 # such as a linebacker, is never in the pool.
 POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
 BEST_ADDS = "best_adds"
+TRENDING = "trending"
 
 
 def waiver_board(raw: dict[str, object], week: int, built: datetime) -> WaiverBoard:
@@ -28,8 +29,9 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime) -> WaiverBo
                      BoardScores(projection=projection[pid]))
         for pid, entry in pool.items()
     ]
+    players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BEST_ADDS_POSITIONS), key=_rank_key))
-    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds}, budgets=_budgets(raw))
+    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}, budgets=_budgets(raw))
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
@@ -107,3 +109,20 @@ def _capped(ranked: list[WaiverPlayer]) -> list[WaiverPlayer]:
 def _rank_key(p: WaiverPlayer) -> tuple[float, float, str]:
     """Best board score first, then the higher rest of season projection, then the player ID, so a tie has one order."""
     return -p.board_score, -p.ros_projection, p.player_id
+
+
+def _trending_counts(raw: dict[str, object]) -> dict[str, int]:
+    """The trending count of each player in the trending file. A week with no file has no counts."""
+    return {row["player_id"]: row["count"] for row in raw.get("trending", [])}
+
+
+def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:
+    """The players with the trending count of each. A player with no count keeps 0."""
+    return [p.model_copy(update={"trending_count": counts[p.player_id]}) if p.player_id in counts else p
+            for p in players]
+
+
+def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
+    """The pool players with a trending count, the most adds first. The player ID breaks a tie, so a tie has one order."""
+    return _capped(sorted((p for p in players if p.trending_count),
+                          key=lambda p: (-p.trending_count, p.player_id)))

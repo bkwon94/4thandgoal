@@ -3,9 +3,14 @@ Tests for the trending bucket of the waiver board and the fetch of the trending 
 They feed a fake Sleeper client at the fetch seam and hand-set counts on the week 6 raw at the engine seam.
 """
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from cornerstone import sleeper
 from cornerstone.sleeper import fetch_week, load_raw
+from cornerstone.waiver import waiver_board
+
+BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 
 TRENDING_URL = "https://api.sleeper.app/v1/players/nfl/trending/add"
 
@@ -28,3 +33,33 @@ def test_the_week_fetch_saves_the_trending_file(tmp_path, monkeypatch):
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
     assert [dict(params) for url, params in calls if url == TRENDING_URL] == [{"lookback_hours": 24, "limit": 50}]
     assert load_raw(tmp_path / "raw")["trending"] == saved
+
+
+def _player(position: str, name: str, team: str = "KC") -> dict:
+    return {"position": position, "team": team, "status": "Active", "active": True, "full_name": name}
+
+
+def _raw(fixture_raw_dir, players: dict[str, dict], counts: dict[str, int]) -> dict:
+    """The week 6 raw with `players` added to the players file and one trending row per ID in `counts`."""
+    raw = load_raw(fixture_raw_dir)
+    raw["players"] = {**raw["players"], **players}
+    raw["trending"] = [{"player_id": pid, "count": count} for pid, count in counts.items()]
+    return raw
+
+
+def _trending(raw) -> list[str]:
+    return [p.player_id for p in waiver_board(raw, 6, BUILT).buckets["trending"]]
+
+
+def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixture_raw_dir):
+    rostered = load_raw(fixture_raw_dir)["rosters"][0]["players"][0]
+    # Eight free agents at four positions, two each, so the per-position cap never stops one.
+    positions = ("RB", "WR", "TE", "QB")
+    players = {f"8000{i}": _player(positions[i % 4], f"Free Agent {i}") for i in range(8)}
+    # The rostered player looks like a pool player in every other way, so only his roster keeps him out.
+    players[rostered] = _player("RB", "Rostered Back")
+    counts = {"80003": 900, "80000": 41200, "80006": 75, "80001": 5000, "80004": 300,
+              "80007": 12, "80002": 2200, rostered: 99999}
+    # 80005 has no trending row, so seven players have a count and the rostered player is out.
+    assert _trending(_raw(fixture_raw_dir, players, counts)) == [
+        "80000", "80001", "80002", "80003", "80004", "80006", "80007"]

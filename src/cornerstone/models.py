@@ -353,6 +353,8 @@ class WaiverPlayer(BaseModel):
     ros_projection: float
     scores: BoardScores
     board_score: float
+    # The adds across all Sleeper leagues in the last day. 0 when he is not in the trending file.
+    trending_count: int = 0
 
 
 class BudgetRow(BaseModel):
