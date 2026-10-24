@@ -46,10 +46,10 @@ LEAGUE_ID = "1386167364424318976"
 
 NewsFetcher = Callable[[str], list[dict]]
 BytesFetcher = Callable[[str], bytes | None]
-# The fetch takes the season, the week, the rostered player IDs, the players file, and the Sleeper
-# codes of the NFL teams whose started players played.
-NflverseFetcher = Callable[[int, int, list[str], dict, set[str]], NflverseWeek]
-NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps")
+# The fetch takes the season, the week, the rostered player IDs, the players file, the Sleeper
+# codes of the NFL teams whose started players played, and the league scoring.
+NflverseFetcher = Callable[[int, int, list[str], dict, set[str], dict], NflverseWeek]
+NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
 HISTORY_GAP = "The history is missing a week from 1 to {week}. Run cornerstone history --through {week}."
@@ -127,8 +127,9 @@ def fetch_nflverse(repo: Path) -> NflverseFetcher:
     """Bind the one nflverse cache directory to the fetch. Tests patch this name with a fixture-backed fetcher."""
     cache_dir = nflverse_cache_dir(repo)
 
-    def fetch(season: int, week: int, player_ids: list[str], players: dict, teams: set[str]) -> NflverseWeek:
-        return nflverse_week(season, week, player_ids, players, cache_dir, teams)
+    def fetch(season: int, week: int, player_ids: list[str], players: dict, teams: set[str],
+              scoring: dict) -> NflverseWeek:
+        return nflverse_week(season, week, player_ids, players, cache_dir, teams, scoring=scoring)
 
     return fetch
 
@@ -170,7 +171,7 @@ def _nflverse_for_week(
         if saved is not None or nflverse is None:
             return saved
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
-        nfl = nflverse(season, week, rostered, raw["players"], teams)
+        nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
         # A degraded extract is not saved, so the next build tries the sources again.
         if all(nfl.sources.get(key) for key in NFLVERSE_SOURCES):
             _save_nflverse(raw_dir / "nflverse.json", nfl)

@@ -1,5 +1,6 @@
 """
-Download and parse the nflverse play by play, snap count, injury, schedule, and depth chart files and the ffverse id map.
+Download and parse the nflverse play by play, snap count, injury, schedule, and depth chart files, the ffverse id map,
+and the ffopportunity expected points.
 A failure of any source never stops a build, so each read returns None for missing data.
 """
 import logging
@@ -10,7 +11,7 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel
 
-from cornerstone import nflverse_usage
+from cornerstone import nflverse_expected, nflverse_usage
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import DropPlay, NflverseWeek
 from cornerstone.nflverse_rows import NFLVERSE_TEAM, SLEEPER_TEAM, _number, _rows, _sleeper_team, _yardline
@@ -26,6 +27,7 @@ SCHEDULES_URL = "https://github.com/nflverse/nflverse-data/releases/download/sch
 DEPTH_CHARTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_{season}.csv.gz"
 SNAP_COUNTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{season}.csv"
 FFIDS_URL = "https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv"
+FFOPPORTUNITY_URL = "https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_{season}.csv"
 
 # The season files grow each week, so a one-day cache keeps them fresh on build day.
 CACHE_MAX_AGE_SECONDS = 24 * 60 * 60
@@ -203,15 +205,22 @@ def cache_path(cache_dir: Path, url_template: str, season: int) -> Path:
 
 
 def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, cache_dir: Path,
-                  teams: Collection[str] = (), fetch: Callable[[str], bytes] = http_get) -> NflverseWeek:
+                  teams: Collection[str] = (), fetch: Callable[[str], bytes] = http_get,
+                  scoring: dict[str, float] | None = None) -> NflverseWeek:
+    """The nflverse extract of one week.
+
+    `scoring` is the league scoring. Without it the extract has no expected points, because the rescale needs
+    the league weights.
+    """
     def get(url_template: str) -> Path | None:
         # The ffverse URL has no season field, and format leaves it as it is.
         url = url_template.format(season=season)
         return download(url, cache_path(cache_dir, url_template, season), fetch=fetch)
 
     pbp, ftn = get(PBP_URL), get(FTN_URL)
-    # These two only fill the cache. The slow source loader reads them, and a failure shows there as a missing source.
-    get(SCHEDULES_URL)
+    # The slow source loader reads these two, and a failure shows there as a missing source. The expected points
+    # reader reads the schedules too, for the last game of the week.
+    schedules = get(SCHEDULES_URL)
     get(DEPTH_CHARTS_URL)
     injuries_path, ffids_path = get(INJURIES_URL), get(FFIDS_URL)
     drops = read_drops(pbp, ftn, week, teams) if pbp and ftn else None
@@ -229,13 +238,19 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     plays = nflverse_usage.read_plays(pbp, week) if pbp else None
     usage = None if plays is None else nflverse_usage.read_usage(plays, snap_weeks, week, first_week, sleeper_of_gsis)
     environment = None if plays is None else nflverse_usage.read_environment(plays)
+    ep_path = get(FFOPPORTUNITY_URL)
+    expected = (nflverse_expected.read_expected(ep_path, schedules, season, week, scoring, sleeper_of_gsis)
+                if ep_path and schedules and scoring is not None else None)
     return NflverseWeek(
         sources={"nflverse_pbp": pbp is not None and drops is not None,
                  "nflverse_ftn": ftn is not None and drops is not None,
                  "nflverse_injuries": injuries is not None,
                  "ffverse": ffids_path is not None,
-                 "nflverse_snaps": snaps is not None and usage is not None},
+                 "nflverse_snaps": snaps is not None and usage is not None,
+                 # A file that reads through week N-1 is incomplete, so the build does not save the extract. The
+                 # cache keeps the lagged file for a day, so a build after the cache ages out reads a fresh file.
+                 "ffopportunity": expected is not None and expected.through_week == week},
         gsis=gsis,
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
         injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},
-        usage=usage, environment=environment)
+        usage=usage, environment=environment, expected=expected)

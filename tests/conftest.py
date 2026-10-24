@@ -147,4 +147,5 @@ def nfl_week6(fixture_nflverse_dir, fixture_raw_dir, tmp_path) -> NflverseWeek:
     for f in fixture_nflverse_dir.iterdir():
         shutil.copy(f, cache / f.name)
     starters = sorted({p for entry in raw["matchups"] for p in entry["starters"] if p != "0"})
-    return nflverse_week(2026, 6, starters, raw["players"], cache, fetch=no_network)
+    return nflverse_week(2026, 6, starters, raw["players"], cache, fetch=no_network,
+                         scoring=raw["league"]["scoring_settings"])
