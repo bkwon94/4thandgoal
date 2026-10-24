@@ -8,8 +8,8 @@ Accuracy is the first rule. No claim is better than a wrong one.
 
 ## Freshness
 
-Use only takes and news from the last 7 days before today's date. Skip an older page, even when it
-is about the same player. Skip a page with no date.
+Use only research claims and news from the last 7 days before today's date.
+Skip an older page, even when it is about the same player. Skip a page with no date.
 
 ## Sources
 

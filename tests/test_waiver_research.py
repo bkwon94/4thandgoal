@@ -108,7 +108,7 @@ def test_the_prompt_names_the_yahoo_writers_before_the_wider_web_and_keeps_to_7_
                                        "https://sports.yahoo.com/author/matt-harmon/",
                                        "The wider web", "One spare search")]
     assert order == sorted(order)
-    assert "Use only takes and news from the last 7 days before today's date." in system
+    assert "Use only research claims and news from the last 7 days before today's date." in system
     assert user.startswith("Today is 2026-10-20.")
 
 
