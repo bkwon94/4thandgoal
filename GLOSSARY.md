@@ -199,6 +199,14 @@ _Avoid_: anchor, base grade
 One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
 trend and usage, injury history, handcuff, schedule, or expected gap.
 
+**Lineup value**:
+The points per game a player counts for in a side's best lineup: his recent points per game, or his projection ahead when he is due back.
+_Avoid_: value (alone), worth
+
+**Due back**:
+A player the returns file lists with a return week after the last completed week, so he is out now and returns later.
+_Avoid_: injured (alone), on the mend
+
 **Breakdown**:
 The start letter, every adjuster with its step, and the final letter, for one side.
 

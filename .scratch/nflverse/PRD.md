@@ -168,6 +168,15 @@ zone touches. Before any of that, the target count drops two-point tries, as its
 - The snapshot the API refreshes carries the expected games and the WOPR per player per week,
   read from the cache, with the two files in the refresh list so Fly downloads them.
 
+### The lineup value of a player due back
+
+- The roster fit adjuster values a player due back by his Sleeper projection ahead, the mean of his
+  weekly projections from his return week through the last regular week, in place of his recent
+  points per game, which are 0 for a player who missed the last 4 weeks. Every other player keeps
+  his recent points. The start letter already comes from the consensus chart, and the trend and
+  expected gap adjusters already skip a due-back player, so this closes the last hole for an
+  injured top player. Ticket 10, added 2026-10-24 on Brian's Lamar Jackson case.
+
 ### The glossary
 
 - The terms are in `GLOSSARY.md` under "Player data from nflverse": target, target share, WOPR,
