@@ -368,8 +368,8 @@ def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir)
     assert body["schema_version"] == 1
     assert body["week"] == 6
     assert datetime.fromisoformat(body["built"]).tzinfo is not None
-    # The fixture rosters every player in its players file, so the pool is empty.
-    assert body["buckets"] == {"best_adds": []}
+    # The fixture rosters every player in its players file, so the pool is empty. It has no trending file.
+    assert body["buckets"] == {"best_adds": [], "trending": []}
     assert len(body["budgets"]) == 12
     assert body["budgets"][0] == {"roster_id": 1, "budget_left": 69, "waiver_order": 1}
 

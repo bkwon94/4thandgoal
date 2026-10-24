@@ -131,6 +131,9 @@ BOARD_WEIGHTS = {"usage": 0.5, "environment": 0.3, "projection": 0.2}
 BUCKET_SIZE = 8
 # The most players of one position in a bucket, so one position does not fill it.
 PER_POSITION = 3
-# The positions of best adds. K and DEF have no usage or environment score, so a projection score ranked
-# inside the position would put the top of each in best adds every week. They stay in the pool.
-BEST_ADDS_POSITIONS = ("QB", "RB", "WR", "TE")
+# The positions of every ranked bucket. K and DEF have no usage or environment score, so a projection score
+# ranked inside the position would put the top of each in best adds every week. Kickers also fill the trending
+# adds, as live data showed. They stay in the pool.
+BUCKET_POSITIONS = ("QB", "RB", "WR", "TE")
+# The positions of the waiver pool. Here and not in the engine, so the Sleeper client imports it with no cycle.
+POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")

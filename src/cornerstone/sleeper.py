@@ -12,8 +12,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cornerstone.files import write_bytes_atomic
-from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK
-from cornerstone.waiver import POOL_POSITIONS
+from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK, POOL_POSITIONS
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,11 @@ SCHEDULE_FILE = "schedule.json"
 # The per-player projections of weeks N+1 to the last NFL week. projections.json holds week N only.
 # Past weeks never need the file, so load_raw reads it only when it exists.
 PROJECTIONS_AHEAD_FILE = "projections_ahead.json"
+# The adds of each player across all Sleeper leagues in the last day. Past weeks have no such file,
+# so load_raw reads it only when it exists.
+TRENDING_FILE = "trending.json"
+# The bucket holds 8, and the pool filter and the position filter drop some of the top adds, so 50 leaves room.
+TRENDING_PARAMS = {"lookback_hours": 24, "limit": 50}
 
 
 def _position_params() -> list[tuple[str, str]]:
@@ -60,7 +64,7 @@ def _get_or_empty(client: httpx.Client, url: str, params=None) -> list:
         return _get(client, url, params)
     except (httpx.HTTPError, ValueError) as error:
         # ValueError covers a 200 response with a body that is not JSON.
-        logger.warning("Unofficial Sleeper endpoint failed: %s (%s)", url, error)
+        logger.warning("Sleeper endpoint failed: %s (%s)", url, error)
         return []
 
 
@@ -139,6 +143,12 @@ def _projections_ahead(client: httpx.Client, season: int, week: int) -> list[dic
     ]
 
 
+def _trending(client: httpx.Client) -> list[dict]:
+    """The top adds across all Sleeper leagues in the last day, each with the player ID and the count."""
+    # The board shows an empty trending bucket on a failure, so a failed call must not stop the fetch.
+    return _get_or_empty(client, f"{OFFICIAL_URL}/players/nfl/trending/add", TRENDING_PARAMS)
+
+
 def _league_raw(
         client: httpx.Client, league: str, season: int, week: int, players_cache: Path,
         known: dict[str, object]) -> dict[str, object]:
@@ -176,11 +186,13 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
         schedule = _schedule(client, league, week)
         projections_ahead = _projections_ahead(client, season, week)
+        trending = _trending(client)
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
         _write_json(raw_dir / f"{name}.json", data[name])
     _write_json(raw_dir / SCHEDULE_FILE, schedule)
     _write_json(raw_dir / PROJECTIONS_AHEAD_FILE, projections_ahead)
+    _write_json(raw_dir / TRENDING_FILE, trending)
     if previous is not None:
         _write_json(raw_dir / PREV_TRANSACTIONS_FILE, previous)
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
@@ -225,6 +237,7 @@ def load_raw(raw_dir: Path) -> dict[str, object]:
             raw[name] = json.load(f)
     _read_if_exists(raw, "schedule", raw_dir / SCHEDULE_FILE)
     _read_if_exists(raw, "projections_ahead", raw_dir / PROJECTIONS_AHEAD_FILE)
+    _read_if_exists(raw, "trending", raw_dir / TRENDING_FILE)
     return raw
 
 
