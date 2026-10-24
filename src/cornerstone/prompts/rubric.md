@@ -95,6 +95,10 @@ Every other share is flat. A player with too few weeks of data counts as flat.
 - The players the side gets are down and the players it gives are up: one step down.
 - Shares that point both ways are mixed: no step. A player with one share up and one share down
   makes the trade mixed.
+- When every share is flat and the players include a WR or TE, his WOPR direction over the same
+  window decides first. A WOPR that moves by `WOPR_SWING` or more is up or down, and the steps
+  follow the share rules above. It falls through when a window week has no WOPR or the WOPR
+  points both ways.
 - When every share is flat, red-zone use decides. Red-zone use is the red-zone targets and
   rushes over the season. More red-zone use in the players the side gets is one step up. More in the
   players it gives is one step down. Equal use is no step.

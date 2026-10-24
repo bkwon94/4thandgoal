@@ -14,7 +14,7 @@ import pytest
 from cornerstone.history import save_week_to_history
 from cornerstone.live import live_snapshot
 from cornerstone.nflverse import (
-    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, cache_path,
+    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
 from cornerstone.sleeper import load_raw
 
@@ -302,3 +302,23 @@ def test_the_live_snapshot_without_the_expected_points_file_and_a_failed_fetch_s
                          fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
                          read_chart=ChartRecorder(chart_week6))
     assert snap.expected is None and snap.stale == ["expected points"]
+
+
+def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_carries_the_wopr(
+        live_repo, sleeper, chart_week6, fixture_nflverse_dir):
+    # On Fly no weekly build fills the cache, so the seed cache has no weekly player file.
+    path = cache_path(live_repo / "data" / "cache" / "nflverse", STATS_PLAYER_URL, 2026)
+    path.unlink()
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / path.name).read_bytes()
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
+                         read_chart=ChartRecorder(chart_week6))
+    assert asked == [STATS_PLAYER_URL.format(season=2026)]
+    assert path.exists()
+    assert snap.wopr and all(week < snap.week for weeks in snap.wopr.values() for week in weeks)
+    assert snap.stale == []

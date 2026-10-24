@@ -41,6 +41,9 @@ RETURN_BY_WEEK = 14
 # Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
 # The count of scored weeks in each window. The share helpers in history.py read it, so both windows change here.
 SHARE_WEEKS = 2
+# The change in mean WOPR between the two windows that counts as up or down. WOPR is 1.5 times target share plus
+# 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.
+WOPR_SWING = 8
 
 # Injury: a player the side gets who is out now, or who was on the injury report in many weeks, is a step down.
 # The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
