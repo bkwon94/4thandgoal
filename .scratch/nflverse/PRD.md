@@ -158,10 +158,15 @@ zone touches. Before any of that, the target count drops two-point tries, as its
 - `EXPECTED_GAP` starts at 3 points per game. `EXPECTED_ADJUSTER_ON` starts false, so the
   adjuster appears in no breakdown until a real trade checks out. Both are tunables with a reason
   comment.
-- The trend adjuster reads the nflverse target share where the file is there. When the snap and
-  target shares are flat, the WOPR direction decides for a WR or TE before red zone touches.
-- The snapshot the API refreshes carries the expected gap and WOPR per player, as it carries the
-  shares today.
+- The trend adjuster keeps the Sleeper target share. On real data the Sleeper weekly target counts
+  equal the nflverse counts every week, so a source switch buys nothing, and the saved extracts
+  never reach the live API on Fly. When the snap and target shares are flat, the WOPR direction
+  decides for a WR or TE before red zone touches. The WOPR comes from the nflverse weekly player
+  file in the cache, read by the slow sources through week N-1 as the expected points are, and
+  the file joins the API refresh. The swing is a tunable of its own, about 8 WOPR points, since
+  WOPR is 1.5 times target share plus 0.7 times air yards share.
+- The snapshot the API refreshes carries the expected games and the WOPR per player per week,
+  read from the cache, with the two files in the refresh list so Fly downloads them.
 
 ### The glossary
 
