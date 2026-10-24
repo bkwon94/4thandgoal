@@ -49,6 +49,7 @@ def sneaky_and_stashes(
 
 
 def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer], above: dict[str, Above]) -> list[WaiverPlayer]:
+    """The pool players with a top-quarter usage score and a bottom-half projection, or behind an injured player."""
     taken = {p.player_id for p in best_adds}
     sneaky = []
     for p in players:

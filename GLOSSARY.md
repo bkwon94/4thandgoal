@@ -332,6 +332,27 @@ The per-week rest of season projection difference between a drop candidate and t
 beats him: the difference over weeks N+1 to 17, divided by the count of those weeks, to one decimal.
 _Avoid_: gap (that is the swing's difference between a win and a loss), edge
 
+**Sneaky add**:
+A pool player at QB, RB, WR, or TE whose usage trend score is in the top quarter and whose projection score
+is in the bottom half, or who sits one depth chart slot below a player who is out. The bucket ranks by usage
+trend, with the shared cap. A player in best adds is not a sneaky add. The reason code is `usage_rise` or
+`behind_injury`.
+_Avoid_: sleeper (that is the league app), deep add
+
+**Stash**:
+A pool player at QB, RB, WR, or TE who is out with a return week inside the season and a rest of season
+projection in the top half of his position. The returns file gives the return week first, the injury report
+second. A handcuff counts too: a player one slot below a healthy starter who is in the top half of the
+position when the starter's rest of season projection counts as his. The bucket ranks by rest of season
+projection, with the shared cap. The reason code is `return` or `handcuff`.
+_Avoid_: IR stash (alone), hold
+
+**Story fact**:
+The injury fact of a bucket entry behind an injured player: "{starter} is {status}, and {name} is next on the
+depth chart." It comes from the injury status and the depth chart, names the starter in its players, and may be
+empty.
+_Avoid_: injury note, news fact
+
 **Budget table**:
 One row per roster with its FAAB budget left and its waiver order. The budget left is the league
 budget minus the budget the roster used.
