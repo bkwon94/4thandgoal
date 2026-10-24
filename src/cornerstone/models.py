@@ -359,6 +359,10 @@ class WaiverPrice(BaseModel):
     fact: Fact
     # None when no claim at the position won this season.
     last_like: LastLike | None
+    # Per budget left in the league, the count of rosters with more budget left than a viewer at that level can
+    # bid: the bid to win, or his whole budget left when it is less. The count holds the viewer's own roster when
+    # his budget left exceeds the bid, so the site takes 1 off in that case.
+    outbid: dict[int, int]
 
 
 class WaiverPlayer(BaseModel):

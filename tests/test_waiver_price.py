@@ -2,10 +2,16 @@
 Tests for the waiver price: the bid history, the bid to win, the last like him, and the outbid counts.
 They feed a small hand-built league at the price seam, and the fixture history at the bid history seam.
 """
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from cornerstone.models import BoardScores, WaiverClaim, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.sleeper import load_raw
+from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history, price_players
+
+BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 
 # The lineup needs 1 QB, 2 RBs, and 1 WR. The FLEX slot needs no one position.
 LINEUP = ["QB", "RB", "RB", "WR", "FLEX", "BN", "BN"]
@@ -120,3 +126,19 @@ def test_every_number_in_the_price_fact_text_is_in_its_numbers():
     text = price.fact.text.replace("Player 900", "").replace("Team 1", "")
     assert set(NUMBER_TOKEN.findall(text)) == set(price.fact.numbers)
     assert price.fact.teams == ["Team 1"]
+
+
+def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixture_raw_dir):
+    # The week 6 budgets left: 90, 82, 72, 69, 67, 65, 61, 58, 51, 25, 19, and 9.
+    raw = load_raw(fixture_raw_dir)
+    raw["players"]["80001"] = {"position": "RB", "team": "KC", "status": "Active", "full_name": "Free Back"}
+    raw["projections_ahead"] = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
+    # A $40 RB win sets the floor at $41. The top expected bid is 35% of $90, $31.50, below the floor.
+    best = waiver_board(raw, 6, BUILT, claims=[_claim("RB", 40)]).buckets["best_adds"]
+    price = next(p.price for p in best if p.player_id == "80001")
+    assert price.bid == 41
+    assert sorted(price.outbid) == [9, 19, 25, 51, 58, 61, 65, 67, 69, 72, 82, 90]
+    # A viewer at $51 can bid the $41: 9 rosters have more than $41, his own among them, so 8 rivals can outbid him.
+    assert price.outbid[51] == 9
+    # A viewer at $9 can bid only $9: the 11 other rosters have more than $9.
+    assert price.outbid[9] == 11

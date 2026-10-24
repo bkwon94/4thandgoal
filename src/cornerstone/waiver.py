@@ -2,12 +2,13 @@
 The waiver board engine: it ranks the waiver pool into buckets and builds the budget table of the league.
 Pure code: no network and no Claude, so the same raw data gives the same board.
 """
+from collections.abc import Sequence
 from datetime import datetime
 from typing import NamedTuple
 
 from cornerstone.history import _round_half_up
 from cornerstone.models import (
-    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2,
+    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer, r2,
 )
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
@@ -21,11 +22,15 @@ BEST_ADDS = "best_adds"
 TRENDING = "trending"
 
 
-def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None) -> WaiverBoard:
+def waiver_board(
+    raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
+    claims: Sequence[WaiverClaim] = (),
+) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
     `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
-    score and an environment score of 0.
+    score and an environment score of 0. `claims` is the bid history of the season, the input of the price
+    floor and the last like him.
     """
     ahead = {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
     rostered = _rostered(raw)
@@ -49,8 +54,14 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
             p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
-    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
-                       budgets=_budgets(raw))
+    # The import waits for the call: waiver_price reads the history module, and the history module reaches this
+    # module through the Sleeper fetch, so a top-level import is a cycle.
+    from cornerstone.waiver_price import price_players
+
+    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
+    # Every bucket but drops carries a price, so the drops bucket stays out of this step once it exists.
+    buckets = {key: price_players(bucket, raw, list(claims)) for key, bucket in buckets.items()}
+    return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:

@@ -94,7 +94,12 @@ def _price(
     if bid < floor:
         text += f" No rival has more than ${n(ceiling)} left."
     return WaiverPrice(bid=bid, fact=fact(f"waiver_price_{player.player_id}", text, n, [top.rival.team], [player.name]),
-                       last_like=last_like)
+                       last_like=last_like, outbid=_outbid(bid, [r.budget_left for r in rivals]))
+
+
+def _outbid(bid: int, budgets: list[int]) -> dict[int, int]:
+    """Per budget level, the count of budgets above what a viewer at that level can bid on the player."""
+    return {level: sum(b > min(bid, level) for b in budgets) for level in sorted(set(budgets))}
 
 
 def _last_like(position: str, claims: list[WaiverClaim], players: dict[str, dict], teams: dict[int, str]) -> LastLike | None:
