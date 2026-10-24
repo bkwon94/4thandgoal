@@ -82,3 +82,27 @@ def test_the_price_never_exceeds_the_highest_rival_budget_left_and_is_a_whole_do
     bid = _bid(raw, "RB", [_claim("RB", 70)])
     assert bid == 60
     assert isinstance(bid, int)
+
+
+def _last_like(raw: dict, position: str, claims: list[WaiverClaim]):
+    return price_players([_free_agent("900", position)], raw, claims)[0].price.last_like
+
+
+def test_the_last_like_him_is_the_latest_winning_claim_at_the_position_with_the_team_and_the_week():
+    raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
+    raw["players"]["7101"] = {"position": "RB", "full_name": "Late Back", "team": "KC"}
+    claims = [
+        _claim("RB", 9, week=2, roster_id=1),
+        WaiverClaim(player_id="7101", roster_id=2, position="RB", week=4, bid=3, won=True),
+        # A lost claim and a claim at another position are never the last like him.
+        _claim("RB", 12, week=5, won=False, roster_id=3),
+        _claim("WR", 6, week=5, roster_id=3),
+    ]
+    last = _last_like(raw, "RB", claims)
+    assert last.model_dump() == {"player_id": "7101", "name": "Late Back", "roster_id": 2, "team": "Team 2",
+                                 "week": 4, "bid": 3}
+
+
+def test_the_last_like_him_is_empty_when_the_history_has_no_win_at_the_position():
+    raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
+    assert _last_like(raw, "TE", [_claim("RB", 9), _claim("TE", 4, won=False)]) is None

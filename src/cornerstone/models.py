@@ -343,10 +343,22 @@ class BoardScores(BaseModel):
     projection: float = 0.0
 
 
+class LastLike(BaseModel):
+    """The most recent winning claim at a player's position this season: the player, the team, the week, the bid."""
+    player_id: str
+    name: str
+    roster_id: int
+    team: str
+    week: int
+    bid: int
+
+
 class WaiverPrice(BaseModel):
     """The bid to win of one pool player, a whole dollar, with the fact that holds its inputs."""
     bid: int
     fact: Fact
+    # None when no claim at the position won this season.
+    last_like: LastLike | None
 
 
 class WaiverPlayer(BaseModel):
