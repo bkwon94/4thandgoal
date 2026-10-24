@@ -105,3 +105,19 @@ def test_the_return_week_reads_the_returns_file_first_and_the_injury_report_seco
     assert return_week("1", "G1", 6, {"1": 10}, injuries) == 10
     assert return_week("1", "G1", 6, {}, injuries) == 8
     assert return_week("1", "G1", 6, {}, None) is None
+
+
+def test_a_handcuff_below_a_healthy_starter_lands_in_stashes_when_the_starter_projection_is_top_half(fixture_raw_dir):
+    # The starter is rostered. On the starter's projection the backup ranks first of the pool RBs, and on his
+    # own he is in the bottom half. The backup of a weak starter stays out.
+    rostered = load_raw(fixture_raw_dir)["rosters"][0]["players"][0]
+    players = {"80001": _player("RB", "Good Cuff"), "80002": _player("RB", "Weak Cuff", team="NYJ"),
+               "80003": _player("RB", "Weak Starter", team="NYJ")}
+    players |= {f"8090{i}": _player("RB", f"Pool Back {i}", team="BUF") for i in range(3)}
+    per_week = {rostered: 20.0, "80001": 2.0, "80002": 1.0, "80003": 1.5, "80900": 9.0, "80901": 8.0, "80902": 7.0}
+    raw = _raw(fixture_raw_dir, players, per_week)
+    raw["players"][rostered] = {**raw["players"][rostered], "gsis_id": f"G{rostered}", "injury_status": None}
+    slow = _depth({"KC": {"RB": [rostered, "80001"]}, "NYJ": {"RB": ["80003", "80002"]}})
+    stashes = waiver_board(raw, 6, BUILT, slow=slow).buckets["stashes"]
+    assert _ids(stashes) == ["80001"]
+    assert stashes[0].reason == "handcuff"

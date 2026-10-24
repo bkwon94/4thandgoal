@@ -2,6 +2,7 @@
 The sneaky and stash buckets of the waiver board, each entry with the code of the rule that put him there.
 Pure code over the scored pool, the depth charts, the injury report, and the returns file.
 """
+from collections.abc import Callable
 from typing import NamedTuple
 
 from cornerstone.adjusters import OUT_STATUSES
@@ -18,6 +19,7 @@ STASHES = "stashes"
 USAGE_RISE = "usage_rise"
 BEHIND_INJURY = "behind_injury"
 RETURN = "return"
+HANDCUFF = "handcuff"
 
 # The words of the story fact for each status of OUT_STATUSES: "{starter} is {word}".
 STATUS_WORDS = {"Out": "out", "IR": "on IR", "PUP": "on the PUP list", "Sus": "suspended", "NA": "not active"}
@@ -28,22 +30,25 @@ class Above(NamedTuple):
     player_id: str
     name: str
     status: str | None
+    # True when he is first on the chart, the starter.
+    starter: bool
 
 
 def sneaky_and_stashes(
     players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dict[str, object], week: int,
-    slow: SlowSources | None, returns: dict[str, int],
+    slow: SlowSources | None, returns: dict[str, int], ros_of: Callable[[str], float],
 ) -> dict[str, list[WaiverPlayer]]:
     """The sneaky and the stash candidates in rank order, each with his reason. The engine applies the bucket cap.
 
-    A player in best adds is not sneaky. With no depth chart, no player is behind an injury.
+    A player in best adds is not sneaky. With no depth chart, no player is behind an injury or a handcuff.
+    `ros_of` gives the rest of season projection of any player, a rostered starter too.
     """
-    return {SNEAKY: _sneaky(players, best_adds, raw, slow), STASHES: _stashes(players, raw, week, slow, returns)}
-
-
-def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dict[str, object],
-            slow: SlowSources | None) -> list[WaiverPlayer]:
     above = _slots_above(players, raw, slow)
+    return {SNEAKY: _sneaky(players, best_adds, above),
+            STASHES: _stashes(players, raw, week, slow, returns, above, ros_of)}
+
+
+def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer], above: dict[str, Above]) -> list[WaiverPlayer]:
     taken = {p.player_id for p in best_adds}
     sneaky = []
     for p in players:
@@ -59,19 +64,36 @@ def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dic
 
 
 def _stashes(players: list[WaiverPlayer], raw: dict[str, object], week: int, slow: SlowSources | None,
-             returns: dict[str, int]) -> list[WaiverPlayer]:
-    """The pool players out now with a return week inside the season and a top-half projection at the position."""
+             returns: dict[str, int], above: dict[str, Above], ros_of: Callable[[str], float]) -> list[WaiverPlayer]:
+    """The pool players out now with a return week inside the season and a top-half projection at the position.
+
+    Plus the handcuffs: a player one slot below a healthy starter who is in the top half of the position when
+    the starter's rest of season projection counts as his.
+    """
     blob = raw["players"]
     injuries = slow.injuries if slow is not None else None
     id_map = (slow.id_map if slow is not None else None) or {}
     stashes = []
     for p in players:
-        if p.position not in BUCKET_POSITIONS or blob[p.player_id].get("injury_status") not in OUT_STATUSES:
+        if p.position not in BUCKET_POSITIONS:
             continue
-        back = return_week(p.player_id, gsis_id(p.player_id, blob, id_map), week, returns, injuries)
-        if back is not None and week < back <= LAST_SEASON_WEEK and p.scores.projection >= TOP_HALF:
-            stashes.append(p.model_copy(update={"reason": RETURN}))
+        up = above.get(p.player_id)
+        if blob[p.player_id].get("injury_status") in OUT_STATUSES:
+            back = return_week(p.player_id, gsis_id(p.player_id, blob, id_map), week, returns, injuries)
+            if back is not None and week < back <= LAST_SEASON_WEEK and p.scores.projection >= TOP_HALF:
+                stashes.append(_entry(p, RETURN, up))
+                continue
+        if up is not None and up.starter and up.status not in OUT_STATUSES and _top_half(
+                ros_of(up.player_id), [o.ros_projection for o in players if o.position == p.position and o is not p]):
+            stashes.append(_entry(p, HANDCUFF, up))
     return sorted(stashes, key=_stash_key)
+
+
+def _top_half(value: float, others: list[float]) -> bool:
+    """True when `value` has a rank score of TOP_HALF or more among `others`, as the projection score ranks."""
+    if not others:
+        return True
+    return 1 - sum(o > value for o in others) / len(others) >= TOP_HALF
 
 
 def return_week(player_id: str, gsis: str | None, week: int, returns: dict[str, int],
@@ -116,9 +138,11 @@ def _slots_above(players: list[WaiverPlayer], raw: dict[str, object], slow: Slow
         mine = gsis_id(p.player_id, blob, id_map)
         if mine not in chart or chart.index(mine) == 0:
             continue
-        up_id = sleeper_of.get(chart[chart.index(mine) - 1])
+        slot = chart.index(mine) - 1
+        up_id = sleeper_of.get(chart[slot])
         if up_id is not None:
-            out[p.player_id] = Above(up_id, player_name(up_id, blob[up_id]), blob[up_id].get("injury_status"))
+            out[p.player_id] = Above(up_id, player_name(up_id, blob[up_id]), blob[up_id].get("injury_status"),
+                                     starter=slot == 0)
     return out
 
 

@@ -60,7 +60,8 @@ def waiver_board(
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
-    candidates = sneaky_and_stashes(players, best_adds, raw, week, slow, returns or {})
+    candidates = sneaky_and_stashes(players, best_adds, raw, week, slow, returns or {},
+                                    lambda pid: rest_of_season(ahead, pid, week))
     buckets |= {key: _capped(ranked) for key, ranked in candidates.items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
     # gets one price, so the price runs once per player.
