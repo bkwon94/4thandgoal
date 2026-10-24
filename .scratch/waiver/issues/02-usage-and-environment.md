@@ -35,4 +35,6 @@ environment 0.3, projection 0.2, scaled by position as the spec says.
 - Only a rise scores. A flat or a falling usage scores 0, and the risers rank inside the position from 1 to 0.
 - The touches that count are targets for a WR or a TE and carries for an RB or a QB.
 - The environment uses the season to date. An RB's environment fact names the rush success, not the neutral pass rate.
+- The extract saves `USAGE_SAVED_WEEKS` (4) weeks of usage for the drops bucket. The score reads the last `USAGE_WEEKS`.
 - `nflverse_snaps` joins the sources that gate the save of the extract, so a failed snap fetch tries again on the next build.
+- A partial game in week N-1, such as an injury exit, inflates the rise. A later ticket may use the last full game as the base.
