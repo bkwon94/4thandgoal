@@ -211,6 +211,8 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
         fetched = datetime.now(ZoneInfo("America/New_York"))
         data = _league_raw(client, league, season, week, players_cache, {"state": state, "rosters": rosters})
+        # On Fly no weekly build saves the projections ahead, so the live grade fetches them as fetch_week does.
+        data["projections_ahead"] = _projections_ahead(client, season, week)
     return data, fetched
 
 

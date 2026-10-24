@@ -5,7 +5,7 @@ expected gap. It also holds what they read of one side: the best lineup before a
 from __future__ import annotations
 
 from collections.abc import Callable
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from fractions import Fraction
 from typing import TYPE_CHECKING, Literal, NamedTuple
 
@@ -24,6 +24,7 @@ from cornerstone.tunables import (
     EXPECTED_GAP,
     FIT_THRESHOLD,
     INJURY_WEEKS,
+    LAST_REGULAR_WEEK,
     LINEUP_WEEKS,
     RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
@@ -96,13 +97,36 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     return total / len(played)
 
 
+def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
+    """The mean of the player's weekly projections from his return week through LAST_REGULAR_WEEK.
+
+    A week with no projection row, such as a bye, is no game. With no row in those weeks, he counts for 0.
+    """
+    rows = snapshot.projections_ahead.get(player_id, {})
+    weeks = [rows[week] for week in range(snapshot.returns[player_id], LAST_REGULAR_WEEK + 1) if week in rows]
+    if not weeks:
+        return Decimal(0)
+    return sum((Decimal(str(points)) for points in weeks), Decimal(0)) / len(weeks)
+
+
+def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
+    """The points per game the player counts for in a best lineup.
+
+    A player due back has no recent games to show his worth, so his projection ahead stands in for them.
+    Recent points carry form, so every other player keeps them. With no projections file, all players keep them.
+    """
+    if snapshot.projections_ahead is not None and _due_back(snapshot, player_id):
+        return projection_ahead(snapshot, player_id)
+    return recent_points_per_game(snapshot, player_id)
+
+
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:
-    """The starters of the roster's best lineup, by recent points per game, with the position order as the tie rule.
+    """The starters of the roster's best lineup, by lineup value, with the position order as the tie rule.
 
     The fixed slots fill first, so a flex slot takes the player with the most points per game that no fixed slot took.
     """
     positions = {pid: snapshot.players[pid].position for pid in roster}
-    return pick_lineup(roster, slots, positions, {pid: recent_points_per_game(snapshot, pid) for pid in roster})
+    return pick_lineup(roster, slots, positions, {pid: lineup_value(snapshot, pid) for pid in roster})
 
 
 def pick_lineup(
@@ -133,7 +157,7 @@ def pick_lineup(
 
 
 def _lineup_total(roster: list[str], snapshot: Snapshot) -> Decimal:
-    return sum((recent_points_per_game(snapshot, pid)
+    return sum((lineup_value(snapshot, pid)
                 for pid in best_lineup(roster, snapshot.roster_positions, snapshot)), Decimal(0))
 
 
@@ -247,7 +271,34 @@ EXPECTED = "expected gap"
 
 
 def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
-    """Roster fit: the change in the side's best lineup."""
+    """Roster fit: the change in the side's best lineup, with a note for each player due back in the trade.
+
+    The note gives the lineup value of a player due back, because his recent points do not show it.
+    """
+    adjuster = _fit_step(snapshot, side)
+    notes = _due_back_notes(snapshot, side)
+    if not notes:
+        return adjuster
+    return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
+
+
+def _due_back_notes(snapshot: Snapshot, side: _Side) -> list[str]:
+    """One sentence per player due back in the trade with the projection he counts for, or one sentence that says
+    the projections are not available.
+    """
+    due_back = [pid for pid in side.gets + side.gives if _due_back(snapshot, pid)]
+    if not due_back:
+        return []
+    if snapshot.projections_ahead is None:
+        return ["The projections ahead are not available, so " + named(
+            snapshot, due_back, "counts for his recent points per game.", "count for their recent points per game.")]
+    return [f"{snapshot.players[pid].name} is due back in week {snapshot.returns[pid]}, so he counts for his "
+            f"projection of {projection_ahead(snapshot, pid).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)} a game."
+            for pid in due_back]
+
+
+def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """The roster fit step and its reason, from the change in the side's best lineup."""
     if side.lineup_loses:
         # A handcuff is insurance that sits on the bench, so a lineup loss in a trade for him does not count.
         if side.gets_handcuffs:

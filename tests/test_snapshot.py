@@ -109,3 +109,17 @@ def test_the_snapshot_carries_the_wopr_by_player_and_week(fixture_raw_dir, fixtu
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, SlowSources(wopr={"12501": {5: 58}}))
     assert snap.wopr == {"12501": {5: 58}}
     assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6).wopr is None
+
+
+def test_the_snapshot_carries_the_projections_ahead_by_player_and_week(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Josh Jacobs has his bye in week 11, so that week has no row.
+    assert snap.projections_ahead["5850"] == {7: 10.81, 8: 14.19, 9: 12.41, 10: 11.0, 12: 11.39, 13: 13.25, 14: 12.4}
+
+
+def test_a_week_with_no_projections_ahead_file_has_none(fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
+    raw_dir = tmp_path / "raw"
+    shutil.copytree(fixture_raw_dir, raw_dir)
+    (raw_dir / "projections_ahead.json").unlink()
+    assert load_snapshot(raw_dir, fixture_history_root, chart_week6).projections_ahead is None
