@@ -1168,6 +1168,32 @@ def test_a_contender_whose_lineup_gain_comes_from_a_player_due_back_names_him_an
         "The team holds a playoff spot, and the best lineup gains after Josh Jacobs returns in week 9.")
 
 
+# Shakir sits on roster 3's bench. A.J. Brown and Jonathan Taylor are on roster 11.
+SHAKIR, AJ_BROWN, J_TAYLOR = "8134", "5859", "6813"
+
+
+def test_a_contender_whose_lineup_gain_comes_from_two_players_due_back_names_both_and_the_latest_week(snap):
+    # Both start on roster 3 after the trade, so the gain comes after the later return, in week 10.
+    snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(9, 15)},
+                                    AJ_BROWN: {week: 20.0 for week in range(10, 15)}})
+    third, _ = grade(_trade(3, [WICKS, SHAKIR], 11, [JACOBS, AJ_BROWN]),
+                     snap.model_copy(update={"returns": {JACOBS: 9, AJ_BROWN: 10}}))
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == (
+        "The team holds a playoff spot, and the best lineup gains after Josh Jacobs and A.J. Brown return in week 10.")
+
+
+def test_a_contender_whose_player_due_back_sits_on_the_bench_gains_now(snap):
+    # Taylor takes an RB spot on roster 3 now. Jacobs projects 1.0 a game, so he sits on the bench.
+    snap = _with_projections(snap, {JACOBS: {9: 1.0}})
+    third, _ = grade(_trade(3, [WICKS, SHAKIR], 11, [JACOBS, J_TAYLOR]),
+                     snap.model_copy(update={"returns": {JACOBS: 9}}))
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == "The team holds a playoff spot, and the best lineup gains now."
+
+
 def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(snap):
     today = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, None))
     projected = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}}))
