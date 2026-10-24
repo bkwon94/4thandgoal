@@ -3,8 +3,13 @@ Tests for the usage and environment of the waiver board.
 They read a small play by play at the usage seam and feed hand-set usage at the engine seam.
 """
 import csv
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
+from cornerstone.models import NflverseWeek, TeamWeek, UsageWeek
 from cornerstone.nflverse import read_environment, read_usage
+from cornerstone.sleeper import load_raw
+from cornerstone.waiver import waiver_board
 
 PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "pass", "rush", "receiver_player_id",
               "rusher_player_id", "yardline_100", "success", "down", "score_differential", "qtr",
@@ -85,3 +90,47 @@ def test_the_week_extract_carries_the_usage_and_the_environment(nfl_week6):
             for u in golden] == [(6, "GB", 52, 83, 4, 100, 1)]
     assert nfl_week6.environment["GB"][0].plays == 4 and "LAR" in nfl_week6.environment
     assert nfl_week6.sources["nflverse_snaps"]
+
+
+BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
+
+
+def _player(position, team="KC", name="Free Agent"):
+    return {"position": position, "team": team, "status": "Active", "active": True, "full_name": name}
+
+
+def _raw(fixture_raw_dir, players, per_week):
+    """The week 6 raw with `players` added and a flat projection per week, weeks 7 to 17, for each ID in `per_week`."""
+    raw = load_raw(fixture_raw_dir)
+    raw["players"] = {**raw["players"], **players}
+    raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
+    return raw
+
+
+def _usage(week, snap_share, targets=0, carries=0, team="KC"):
+    """One usage week. The target share and the carry share are four times the count, as on a team of 25 each."""
+    return UsageWeek(week=week, team=team, snaps=snap_share, snap_share=snap_share, targets=targets,
+                     target_share=4 * targets, carries=carries, carry_share=4 * carries, red_zone_touches=0)
+
+
+def _team(plays=60, neutral_passes=30, rush_successes=10):
+    """One game of a team with 40 neutral plays and 25 rushes."""
+    return [TeamWeek(week=6, plays=plays, passes=plays - 25, rushes=25, rush_successes=rush_successes,
+                     neutral_plays=40, neutral_passes=neutral_passes)]
+
+
+def _nfl(usage, environment=None):
+    return NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, usage=usage,
+                        environment=environment or {"KC": _team()})
+
+
+def _best_adds(raw, nfl):
+    return waiver_board(raw, 6, BUILT, nfl).buckets["best_adds"]
+
+
+def test_a_rising_snap_share_outranks_a_higher_projection_with_flat_usage(fixture_raw_dir):
+    players = {"80001": _player("WR", name="Riser"), "80002": _player("WR", name="Steady")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 5.0, "80002": 10.0})
+    nfl = _nfl({"80001": [_usage(5, 48, targets=2), _usage(6, 71, targets=5)],
+                "80002": [_usage(5, 70, targets=6), _usage(6, 70, targets=6)]})
+    assert [p.player_id for p in _best_adds(raw, nfl)] == ["80001", "80002"]

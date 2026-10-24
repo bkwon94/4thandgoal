@@ -4,10 +4,10 @@ Pure code: no network and no Claude, so the same raw data gives the same board.
 """
 from datetime import datetime
 
-from cornerstone.models import BoardScores, BudgetRow, Fact, WaiverBoard, WaiverPlayer, r2
+from cornerstone.models import BoardScores, BudgetRow, Fact, NflverseWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2
 from cornerstone.parse import player_name
 from cornerstone.tunables import (
-    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS,
+    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
 
 # The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
@@ -16,18 +16,24 @@ BEST_ADDS = "best_adds"
 TRENDING = "trending"
 
 
-def waiver_board(raw: dict[str, object], week: int, built: datetime) -> WaiverBoard:
-    """The board after week `week` from the raw files of the week. `built` is the build time the file shows."""
+def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None) -> WaiverBoard:
+    """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
+
+    `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
+    score and an environment score of 0.
+    """
     ahead = {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
     rostered = _rostered(raw)
     pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if _in_pool(entry, rostered, pid)}
     # A week with no projection for the player, such as his bye, counts 0.
     ros = {pid: r2(sum(ahead.get(w, {}).get(pid, 0.0) for w in range(week + 1, LAST_SEASON_WEEK + 1)))
            for pid in pool}
-    projection = _projection_scores({pid: entry["position"] for pid, entry in pool.items()}, ros)
+    positions = {pid: entry["position"] for pid, entry in pool.items()}
+    projection = _projection_scores(positions, ros)
+    usage = _usage_scores(positions, (nfl.usage if nfl else None) or {}, week)
     players = [
         _pool_player(pid, entry, r2(ahead.get(week + 1, {}).get(pid, 0.0)), ros[pid],
-                     BoardScores(projection=projection[pid]))
+                     BoardScores(usage=usage.get(pid, 0.0), projection=projection[pid]))
         for pid, entry in pool.items()
     ]
     players = _with_trending(players, _trending_counts(raw))
@@ -146,3 +152,43 @@ def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
 def _trending_key(p: WaiverPlayer) -> tuple[int, str]:
     """The most adds first, then the player ID, so a tie has one order."""
     return -p.trending_count, p.player_id
+
+
+def _usage_window(rows: list[UsageWeek], week: int) -> tuple[UsageWeek, UsageWeek] | None:
+    """The usage of the first and the last week of the USAGE_WEEKS weeks up to `week`.
+
+    None when either week has no row or no snap share, such as a rookie's first week or a bye.
+    """
+    by_week = {u.week: u for u in rows if u.snap_share is not None}
+    before, last = by_week.get(week - USAGE_WEEKS + 1), by_week.get(week)
+    return (before, last) if before and last else None
+
+
+def _opportunities(position: str, u: UsageWeek) -> tuple[int, int, str]:
+    """The count, the share, and the word of the touches that count for the position.
+
+    A WR or a TE earns targets. An RB or a QB earns carries: a QB's targets are near none.
+    """
+    if position in ("WR", "TE"):
+        return u.targets, u.target_share, "targets"
+    return u.carries, u.carry_share, "carries"
+
+
+def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], week: int) -> dict[str, float]:
+    """The usage score of each player whose usage rose: his rise ranked inside the position, from 1 to 0.
+
+    The rise is the change in snap share plus the change in the share of his touches over the window. A
+    player with a flat or a falling usage, or with no window, is not in the result, so his score stays 0.
+    """
+    rises = {}
+    for pid, position in positions.items():
+        window = _usage_window(usage.get(pid, []), week)
+        if window is None or position not in BUCKET_POSITIONS:
+            continue
+        before, last = window
+        rise = (last.snap_share - before.snap_share
+                + _opportunities(position, last)[1] - _opportunities(position, before)[1])
+        if rise > 0:
+            rises[pid] = rise
+    # The projection rank is a rank inside the position, which is the scale the usage needs too.
+    return _projection_scores({pid: positions[pid] for pid in rises}, rises)
