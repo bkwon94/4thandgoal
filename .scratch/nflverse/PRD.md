@@ -139,8 +139,8 @@ zone touches. Before any of that, the target count drops two-point tries, as its
 - `NX.shootout.{game}`: one per NFL game of week N+1 where both teams have a positive pass rate
   over expected over the last 3 weeks, with the league starters in that game by roster. The next
   week chapter may cite them. The writer picks the one to mention.
-- When the expected points read through week N-1, the award facts say "through week N-1" and the
-  awards chapter gets no unlucky or lucky award for week N. The leader and shootout facts do not
+- When the expected points read through week N-1, there is no unlucky or lucky award fact for
+  week N, and the awards chapter builds without them. The leader and shootout facts do not
   depend on that file.
 - A chapter whose source is missing builds without the family and reads as it does today.
 

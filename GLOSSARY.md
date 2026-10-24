@@ -305,11 +305,15 @@ A pass play with a receiver, two-point tries left out. The nflverse rule, which 
 _Avoid_: look, pass attempt to
 
 **Target share**:
-A player's share of his team's targets in one game, from the nflverse weekly player file.
+A player's share of his team's targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks.
 _Avoid_: target rate, target percent
 
+**Air yards share**:
+A player's share of his team's air yards in one game, from the nflverse weekly player file. It can be negative on a pass behind the line.
+_Avoid_: aDOT share, depth share
+
 **WOPR**:
-Weighted opportunity rating: 1.5 times target share plus 0.7 times air yards share, per game, from the nflverse weekly player file.
+Weighted opportunity rating: 1.5 times target share plus 0.7 times air yards share, per game, from the nflverse weekly player file. It is not a share, so it can pass 100 or go negative.
 _Avoid_: opportunity share, volume score
 
 **Expected points**:

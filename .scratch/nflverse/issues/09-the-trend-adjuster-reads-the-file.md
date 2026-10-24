@@ -14,5 +14,6 @@ snapshot the API refreshes carries WOPR per player as it carries the shares.
 - [ ] With the file present, the target share direction comes from the file's shares. With it missing, from our count, as today.
 - [ ] A flat trade where the players a side gets have WOPR up steps up, with a reason that says so, before red zone touches are read.
 - [ ] A flat trade with WOPR flat falls through to red zone touches as today.
+- [ ] The WOPR direction counts only when both ends of the window have a value. A None at either end falls through to red zone touches, since the file can lack a row for one week.
 - [ ] An RB's WOPR never decides, since his touches are carries.
 - [ ] The existing rubric tests pass unchanged.
