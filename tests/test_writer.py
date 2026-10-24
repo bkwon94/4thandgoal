@@ -405,7 +405,8 @@ def test_vocabulary_has_one_rule_line_for_the_unlucky_and_lucky_awards(fixture_r
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "awards"), sheet, None)
     assert ("- **Unlucky**: the starter with the largest gap below his expected points, at least 5 under. "
-            "Expected points are what his volume should have scored.") in system
+            "Expected points are what his volume should have scored. "
+            "Say \"unlucky\" only in a sentence that cites `AW.unlucky`.") in system
     assert ("- **Lucky**: the starter with the largest gap above his expected points, at least 5 over. "
             "Say \"lucky\" for it only in a sentence that cites `AW.lucky`.") in system
 

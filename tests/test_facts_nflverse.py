@@ -2,11 +2,13 @@
 Tests for the drop value, the drop lines, the drop facts, and the unlucky and lucky award facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
-from cornerstone.facts_nflverse import drop_lines, drop_value
+from pathlib import Path
+
+from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value
 from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
-from cornerstone.sheet import NUMBER_TOKEN, build_bundle
+from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
 from cornerstone.sleeper import load_raw
 
 
@@ -214,5 +216,26 @@ def test_only_the_awards_chapter_cites_the_expected_awards(fixture_raw_dir, nfl_
 def test_every_number_in_an_expected_award_text_is_in_its_numbers(fixture_raw_dir, nfl_week6):
     facts = _expected_bundle(fixture_raw_dir, nfl_week6, HAND_SET).sheet.facts
     for fid in ("AW.unlucky", "AW.lucky"):
-        for token in NUMBER_TOKEN.findall(facts[fid].text):
+        # The verifier removes the names first, so a digit in a team name is not a number.
+        bare = facts[fid].text
+        for name in (*facts[fid].teams, *facts[fid].players):
+            bare = bare.replace(name, "")
+        for token in NUMBER_TOKEN.findall(bare):
             assert token in facts[fid].numbers, (fid, token)
+
+
+def test_a_starter_with_an_award_is_skipped_for_the_expected_awards(fixture_raw_dir, nfl_week6):
+    # Bijan Robinson is the Underperformer and Germie Bernard the Overachiever. Each has the largest gap.
+    games = {**HAND_SET, "9509": [(6, 30.0)], "13274": [(6, 5.0)]}
+    facts = _expected_bundle(fixture_raw_dir, nfl_week6, games).sheet.facts
+    assert "Derrick Henry" in facts["AW.unlucky"].text
+    assert "Stefon Diggs" in facts["AW.lucky"].text
+
+
+def test_the_vocabulary_rule_lines_carry_the_floor():
+    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    floor = fmt(EXPECTED_AWARD_FLOOR)
+    unlucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Unlucky**"))
+    lucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Lucky**"))
+    assert f"at least {floor} under" in unlucky
+    assert f"at least {floor} over" in lucky

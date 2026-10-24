@@ -13,7 +13,7 @@ EXPECTED_AWARD_FLOOR = 5.0
 
 
 class GapLine(NamedTuple):
-    """A started line with his expected points for week N and his gap, actual minus expected."""
+    """A starter's line, with his expected points for week N and his expected gap."""
     line: PlayerLine
     roster_id: int
     expected: float
@@ -68,12 +68,16 @@ def drop_lines(week: Week, nfl: NflverseWeek | None = None) -> list[DropLine]:
     return [d for _, d in found]
 
 
-def expected_awards(week: Week, nfl: NflverseWeek | None = None) -> dict[str, GapLine]:
+def expected_awards(
+    week: Week, nfl: NflverseWeek | None = None, picked: frozenset[str] = frozenset(),
+) -> dict[str, GapLine]:
     """The unlucky and the lucky starter of week N by expected gap, keyed "unlucky" and "lucky".
 
     A key is absent when no starter clears EXPECTED_AWARD_FLOOR. Both are absent when the expected points are
     missing or read through the week before, because then the file holds no game of week N.
-    The actual is the league's own points from Sleeper, since the file's actual misses part of the league scoring.
+    The expected gap is his points in this league minus his expected points. The file's own points miss part
+    of the league scoring, so they stay out.
+    `picked` holds the Sleeper IDs that already hold an award, so one starter never wins two awards.
     """
     if nfl is None or nfl.expected is None or nfl.expected.through_week < week.week:
         return {}
@@ -83,7 +87,7 @@ def expected_awards(week: Week, nfl: NflverseWeek | None = None) -> dict[str, Ga
             for line in side.lines:
                 games = nfl.expected.players.get(line.player_id, [])
                 game = next((g for g in games if g.week == week.week), None)
-                if line.started and game is not None:
+                if line.started and game is not None and line.player_id not in picked:
                     gaps.append(GapLine(line, side.roster_id, game.expected, sub(line.points, game.expected)))
     out = {}
     # A tie goes to the first name, so a rebuild names the same player.
