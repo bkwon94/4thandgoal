@@ -63,3 +63,17 @@ def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixtu
     # 80005 has no trending row, so seven players have a count and the rostered player is out.
     assert _trending(_raw(fixture_raw_dir, players, counts)) == [
         "80000", "80001", "80002", "80003", "80004", "80006", "80007"]
+
+
+def test_a_player_in_best_adds_and_trending_shows_in_both(fixture_raw_dir):
+    raw = _raw(fixture_raw_dir, {"80001": _player("WR", "Hot Hand")}, {"80001": 41200})
+    raw["projections_ahead"] = [{"week": w, "projections": {"80001": 12.0}} for w in range(7, 18)]
+    buckets = waiver_board(raw, 6, BUILT).buckets
+    assert [p.player_id for p in buckets["best_adds"]] == ["80001"]
+    assert [p.player_id for p in buckets["trending"]] == ["80001"]
+
+
+def test_a_week_with_no_trending_file_gives_an_empty_bucket(fixture_raw_dir):
+    raw = _raw(fixture_raw_dir, {"80001": _player("WR", "Free Agent")}, {})
+    del raw["trending"]
+    assert _trending(raw) == []
