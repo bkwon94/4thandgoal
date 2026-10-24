@@ -156,3 +156,11 @@ FLOOR_WEEKS = 3
 SNEAKY_USAGE_FLOOR = 0.75
 # The least projection score in the top half of a position. A score under it is in the bottom half.
 TOP_HALF = 0.5
+
+# The research step asks the web for expert takes on the ranked players.
+# The most players the research step reads per build. Each one is one Claude call with web search, at about
+# $0.10 a call, so 32 caps the week near $3 to $5. 32 covers four full buckets of 8 when none repeats.
+RESEARCH_PLAYERS = 32
+# The most research claims kept per player. The sheet has room for two lines under the facts, and a third
+# claim is most often a repeat of the first two.
+CLAIMS_PER_PLAYER = 2

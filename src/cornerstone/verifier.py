@@ -59,6 +59,15 @@ A_BEFORE_VOWEL_NUMBER = re.compile(rf"(?<!\w)a\s+({VOWEL_SOUND_NUMBER})", re.IGN
 AN_BEFORE_NUMBER = re.compile(r"(?<!\w)an\s+(\d(?:[\d,.]*\d)?)", re.IGNORECASE)
 
 
+# A web URL in a fact or a sentence is a citation. Its digits are part of the address, not a claim.
+URL = re.compile(r"https?://\S+")
+
+
+def without_urls(text: str) -> str:
+    """The text with each web URL replaced by a space."""
+    return URL.sub(" ", text)
+
+
 def normalize_number(number: str) -> str:
     number = number.replace(",", "")
     return number[:-2] if number.endswith(".0") else number

@@ -368,6 +368,24 @@ class WaiverPrice(BaseModel):
 WaiverReason = Literal["board_score", "trending", "usage_rise", "behind_injury", "return", "handcuff"]
 
 
+class ResearchClaim(BaseModel):
+    """One expert take or news item on a player from the web: one sentence, its source, and its stance.
+
+    `stance` says whether the claim backs the engine's facts, disputes them, or is plain news.
+    """
+    text: str
+    # The search can give a claim with no URL. The research step drops it, as it has no citation.
+    url: str
+    source: str
+    date: str
+    stance: Literal["backs", "disputes", "news"]
+
+
+class ResearchOut(BaseModel):
+    """The output of one research call: the claims on one player."""
+    claims: list[ResearchClaim]
+
+
 class WaiverPlayer(BaseModel):
     """One ranked player of a bucket. The week projection is for week N+1, the rest of season one for N+1 to 17."""
     player_id: str
@@ -395,6 +413,8 @@ class WaiverPlayer(BaseModel):
     injury_status: str | None = None
     # The week he is back, for a player who is out. None when he is healthy or no source knows the week.
     return_week: int | None = None
+    # The research claims on him. Empty for a drop, for a player past the research cap, and in an older file.
+    research: list[ResearchClaim] = []
 
 
 class BudgetRow(BaseModel):
@@ -410,6 +430,8 @@ class WaiverBoard(BaseModel):
     built: datetime
     buckets: dict[str, list[WaiverPlayer]]
     budgets: list[BudgetRow]
+    # True when the search failed for every player, so the page says the experts are missing this week.
+    experts_missing: bool = False
 
 
 class UsageWeek(BaseModel):
