@@ -844,11 +844,32 @@ def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, 
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     path = _old_extract(repo)
     with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
-        bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+        _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
     saved = json.loads(path.read_text())
     assert saved["usage"] and saved["expected"] and saved["next_games"]
     assert record.sources["nflverse_stats_player"] is True
-    assert "nflverse.json lacks" in caplog.text and "usage" in caplog.text
+    assert ("week 6 nflverse.json lacks environment, expected, next_games, usage, "
+            "so the build fetches the extract again") in caplog.text
+
+
+def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_raw_dir):
+    # With no FTN file the fresh extract has no drops, but the play by play still gives the usage.
+    def no_ftn(season, week, player_ids, players, teams, scoring):
+        cache = Path(tempfile.mkdtemp())
+        for f in NFLVERSE_FIXTURES.iterdir():
+            if f.name != "ftn_charting_2026.csv":
+                shutil.copy(f, cache / f.name)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_bytes_nflverse,
+                             scoring=scoring)
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    saved_drops = json.loads(_nflverse_path(repo).read_text())["drops"]
+    _old_extract(repo)
+    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=no_ftn)
+    assert bundle.data.drop_source == "nflverse" and record.sources["nflverse_ftn"] is True
+    rewritten = json.loads(_nflverse_path(repo).read_text())
+    assert rewritten["drops"] == saved_drops and rewritten["usage"]
 
 
 def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, caplog):

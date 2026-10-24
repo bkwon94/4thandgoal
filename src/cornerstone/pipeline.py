@@ -162,6 +162,14 @@ def _played_teams(week: Week) -> set[str]:
     }
 
 
+def _with_saved(nfl: NflverseWeek, saved: NflverseWeek) -> NflverseWeek:
+    """The refetched extract, with each None field filled from the saved one. A source true in either is true."""
+    filled = {key: getattr(saved, key) for key in saved.model_fields_set if getattr(nfl, key) is None}
+    sources = {key: nfl.sources.get(key, False) or saved.sources.get(key, False)
+               for key in nfl.sources.keys() | saved.sources.keys()}
+    return nfl.model_copy(update={**filled, "sources": sources})
+
+
 def _nflverse_for_week(
     raw_dir: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
     teams: set[str],
@@ -169,18 +177,26 @@ def _nflverse_for_week(
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
 
     A saved extract that lacks a key of NflverseWeek comes from an older build, so the build fetches it again.
+    The refetch rewrites every key, not only the absent ones. The facts of a past week read only rows of that
+    week or earlier, so the data of today gives the same facts. A field the refetch cannot fill keeps the saved
+    value, so a source that is down now never costs the rebuild a fact it had.
     """
     saved = None
     try:
         saved = load_nflverse(raw_dir)
-        # A key the file does not hold loads as None, so only the set fields tell an old file from a new one.
-        missing = sorted(set(NflverseWeek.model_fields) - saved.model_fields_set) if saved is not None else []
-        if (saved is not None and not missing) or nflverse is None:
+        if nflverse is None:
             return saved
-        if missing:
-            log.info("nflverse.json lacks %s, so the build fetches the extract again", ", ".join(missing))
+        # A key the file does not hold loads as None, so only the set fields tell an old file from a new one.
+        if saved is not None:
+            missing = sorted(set(NflverseWeek.model_fields) - saved.model_fields_set)
+            if not missing:
+                return saved
+            log.info("week %d nflverse.json lacks %s, so the build fetches the extract again", week,
+                     ", ".join(missing))
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
         nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
+        if saved is not None:
+            nfl = _with_saved(nfl, saved)
         # A degraded extract is not saved, so the next build tries the sources again.
         if all(nfl.sources.get(key) for key in NFLVERSE_SOURCES):
             _save_nflverse(raw_dir / "nflverse.json", nfl)
