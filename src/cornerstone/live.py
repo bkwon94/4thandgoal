@@ -15,8 +15,8 @@ from cornerstone.chart import chart_values
 from cornerstone.history import fetch_history, history_dir, history_root, returns_path, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
-    CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, cache_path,
-    download, http_get, is_fresh,
+    CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL,
+    STATS_PLAYER_URL, cache_path, download, http_get, is_fresh,
 )
 from cornerstone.parse import parse_week
 from cornerstone.pipeline import LEAGUE_ID, nflverse_cache_dir
@@ -33,10 +33,11 @@ SleeperFetcher = Callable[[str, Path], tuple[dict[str, object], datetime]]
 ChartReader = Callable[[Path, date, int, Iterable[PlayerLine]], ChartValues | None]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
-# The injuries file and the expected points file are here because on Fly no weekly build downloads them.
+# The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
+# downloads them.
 REFRESHED_SOURCES = (
     ("schedules", SCHEDULES_URL), ("depth charts", DEPTH_CHARTS_URL), ("id map", FFIDS_URL),
-    ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL),
+    ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL), ("player weeks", STATS_PLAYER_URL),
 )
 # The last week of the NFL regular season. No trade window opens after its cutoff.
 LAST_REGULAR_SEASON_WEEK = 18

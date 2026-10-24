@@ -20,8 +20,9 @@ from cornerstone.trades import default_cutoff, trades_for_week
 
 ET = ZoneInfo("America/New_York")
 
-# The trend reason gives share percents and the weeks behind them, such as "52%" and "weeks 4 and 5".
-_TREND_NUMBERS = re.compile(r"\b\d+%|\bweeks? \d+(?:(?:, | and )\d+)*")
+# The trend reason gives share percents, WOPR values, and the weeks behind them, such as "52%", "WOPR 55", and
+# "weeks 4 and 5".
+_TREND_NUMBERS = re.compile(r"\b\d+%|\bWOPR -?\d+|\bweeks? \d+(?:(?:, | and )\d+)*")
 
 
 def strip_trend_numbers(reason: str) -> str:

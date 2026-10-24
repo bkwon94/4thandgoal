@@ -7,11 +7,14 @@ from __future__ import annotations
 from collections.abc import Callable
 from decimal import Decimal
 from fractions import Fraction
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from pydantic import BaseModel
 
-from cornerstone.history import player_points, red_zone, snap_share, target_share
+from cornerstone.history import (
+    SHARE_DIRECTION_WEEKS, _round_half_up, player_points, red_zone, scored_weeks, snap_share, stats_complete,
+    target_share,
+)
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
@@ -26,6 +29,8 @@ from cornerstone.tunables import (
     RETURN_WINDOW_WEEKS,
     SCHEDULE_RANK_GAP,
     SELLER_GAP,
+    SHARE_WEEKS,
+    WOPR_SWING,
 )
 
 if TYPE_CHECKING:
@@ -343,6 +348,34 @@ def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=STANDING, step=0, reason="The team is neither in a playoff spot nor out of the race.")
 
 
+class _WoprWindow(NamedTuple):
+    """The mean WOPR of a player over the last SHARE_WEEKS weeks, and its direction against the weeks before."""
+    value: int
+    direction: Literal["up", "down", "flat"]
+    weeks_used: list[int]
+
+
+def _wopr(snapshot: Snapshot, player_id: str) -> _WoprWindow | None:
+    """The WOPR window of a WR or TE over his last SHARE_DIRECTION_WEEKS played weeks.
+
+    WOPR measures receiver volume, so only a WR or TE has one that counts.
+    The file can lack a row for one week, so a window with a week that has no WOPR is None.
+    A stats outage leaves a week out of the played weeks, so a window that skips it is None too.
+    """
+    if snapshot.wopr is None or snapshot.players[player_id].position not in ("WR", "TE"):
+        return None
+    if not stats_complete(snapshot.stats, snapshot.as_of.stats_through):
+        return None
+    weeks = scored_weeks(snapshot.stats, player_id, snapshot.as_of.stats_through)[-SHARE_DIRECTION_WEEKS:]
+    by_week = snapshot.wopr.get(player_id, {})
+    if len(weeks) < SHARE_DIRECTION_WEEKS or any(week not in by_week for week in weeks):
+        return None
+    recent = sum(by_week[week] for week in weeks[-SHARE_WEEKS:]) / SHARE_WEEKS
+    prior = sum(by_week[week] for week in weeks[:-SHARE_WEEKS]) / (SHARE_DIRECTION_WEEKS - SHARE_WEEKS)
+    direction = "up" if recent - prior >= WOPR_SWING else "down" if prior - recent >= WOPR_SWING else "flat"
+    return _WoprWindow(value=int(_round_half_up(recent)), direction=direction, weeks_used=weeks[-SHARE_WEEKS:])
+
+
 def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
     """The set of share directions, up or down, of the players. A flat share or a player with no usage data adds none."""
     through = snapshot.as_of.stats_through
@@ -423,6 +456,7 @@ def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], lis
 def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Trend and usage: the snap and target share directions of the players it gets against the players it gives.
 
+    When every share is flat, the WOPR direction of a WR or TE breaks the tie first, and red-zone use breaks it next.
     A handcuff's use does not count on either side, so the trend never steps a side down because of him.
     A player due back has no recent use to compare, so his use does not count on either side either.
     """
@@ -434,10 +468,38 @@ def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
     return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
 
 
+def _wopr_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster | None:
+    """The trend when every share is flat and the WOPR of the WR and TE points one way.
+
+    None when no WOPR moved or when it points both ways.
+    """
+    woprs = {pid: wopr for pid in gets + gives
+             if (wopr := _wopr(snapshot, pid)) is not None and wopr.direction in ("up", "down")}
+    if not woprs:
+        return None
+    got = {woprs[pid].direction for pid in gets if pid in woprs}
+    gave = {woprs[pid].direction for pid in gives if pid in woprs}
+    lead = "The snap and target shares are flat."
+    if got <= {"up"} and gave <= {"down"}:
+        step, lead = 1, f"{lead} The players it gets gain WOPR, and the players it gives lose it."
+    elif got <= {"down"} and gave <= {"up"}:
+        step, lead = -1, f"{lead} The players it gets lose WOPR, and the players it gives gain it."
+    else:
+        # WOPR only breaks a tie, so a WOPR that points both ways leaves the tie to red-zone use.
+        return None
+    names = _short_names(snapshot, gets + gives)
+    sentences = [f"{names[pid]}: WOPR {wopr.value}, {wopr.direction}, over {_weeks_text(wopr.weeks_used)}."
+                 for pid, wopr in woprs.items()]
+    return Adjuster(name=TREND, step=step, reason=" ".join([lead, *sentences]))
+
+
 def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster:
     got, gave = _directions(snapshot, gets), _directions(snapshot, gives)
     if not got and not gave:
-        # Every share is flat, so red-zone use decides.
+        # Every share is flat, so the WOPR of a WR or TE decides, and then red-zone use.
+        wopr = _wopr_step(snapshot, gets, gives)
+        if wopr is not None:
+            return wopr
         got_rz, gave_rz = _red_zone_touches(snapshot, gets), _red_zone_touches(snapshot, gives)
         lead = "The snap and target shares are flat"
         if got_rz > gave_rz:

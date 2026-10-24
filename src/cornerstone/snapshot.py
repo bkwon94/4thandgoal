@@ -77,6 +77,10 @@ class Snapshot(BaseModel):
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The expected window of each player by Sleeper id, from ffopportunity. None when the slow sources cannot read it.
     expected: ExpectedPoints | None = None
+    # The WOPR by Sleeper id and week, from the nflverse weekly player file in the cache. None when the file or
+    # the id map is missing, or the file has no row for the week before the trade week.
+    # A whole number is fine: the rounding moves a week by half a point at most, far under WOPR_SWING.
+    wopr: dict[str, dict[int, int]] | None = None
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.
     returns: dict[str, int] = {}
@@ -168,6 +172,7 @@ def build_snapshot(
         points_allowed=slow.points_allowed if slow else None,
         injuries=slow.injuries if slow else None,
         expected=slow.expected if slow else None,
+        wopr=slow.wopr if slow else None,
         returns=returns or {},
         missing=missing,
         stale=stale,

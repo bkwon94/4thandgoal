@@ -4,7 +4,7 @@ They build it from the recorded week 6 data and the week 6 trade values, with no
 """
 import shutil
 
-from cornerstone.slow_sources import load_slow_sources
+from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import load_snapshot
 
 
@@ -103,3 +103,9 @@ def test_a_season_with_no_returns_file_has_no_return_weeks_and_names_it_as_missi
     snap = load_snapshot(fixture_raw_dir, history_root, chart_week6)
     assert snap.returns == {}
     assert snap.missing[-1] == "returns"
+
+
+def test_the_snapshot_carries_the_wopr_by_player_and_week(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, SlowSources(wopr={"12501": {5: 58}}))
+    assert snap.wopr == {"12501": {5: 58}}
+    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6).wopr is None

@@ -84,3 +84,23 @@ def test_load_slow_sources_without_the_expected_points_file_gives_none_and_misse
     scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root, scoring)
     assert sources.expected is None and sources.missing == []
+
+
+def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_week_before(
+        fixture_nflverse_dir, fixture_history_root, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
+    sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    # Matthew Golden's WOPR by week. The trade week is 6, so week 6 is not in it.
+    assert sources.wopr["12501"] == {1: 65, 2: 57, 3: 71, 4: 64, 5: 58}
+    assert sources.missing == []
+
+
+def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no_wopr_and_misses_nothing(
+        fixture_nflverse_dir, fixture_history_root, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    assert sources.wopr is None and sources.missing == []
+    shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
+    (cache / "db_playerids.csv").unlink()
+    assert load_slow_sources(cache, 2026, 6, fixture_history_root).wopr is None

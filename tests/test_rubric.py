@@ -423,6 +423,78 @@ def test_red_zone_use_breaks_the_tie_when_every_share_is_flat(snap):
     assert _adjuster(ninth, "trend and usage").step == -1
 
 
+# Both shares are flat through week 5 for Jameson Williams, a WR on roster 4 with 3 red-zone touches,
+# and for Michael Wilson, a WR on roster 5 with 9. Red-zone use alone steps roster 4 up.
+# Each played weeks 1 to 5, so the WOPR window is weeks 2 to 5.
+J_WILLIAMS, M_WILSON = "8148", "10232"
+
+
+def _with_wopr(snap, woprs: dict[str, list[int | None]]):
+    """The snapshot with hand-set WOPR for weeks 2 to 5. A None leaves that week out, as a missing row of the file."""
+    wopr = {pid: {week: value for week, value in zip(range(2, 6), values) if value is not None}
+            for pid, values in woprs.items()}
+    return snap.model_copy(update={"wopr": wopr})
+
+
+def test_wopr_up_breaks_a_flat_trend_before_red_zone_use(snap):
+    snap = _with_wopr(snap, {J_WILLIAMS: [40, 40, 55, 55], M_WILSON: [50] * 4})
+    fourth, fifth = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
+    assert _adjuster(fifth, "trend and usage").step == 1
+    assert _adjuster(fifth, "trend and usage").reason == (
+        "The snap and target shares are flat. The players it gets gain WOPR, and the players it gives lose it. "
+        "Williams: WOPR 55, up, over weeks 4 and 5.")
+    assert _adjuster(fourth, "trend and usage").step == -1
+    assert _adjuster(fourth, "trend and usage").reason.startswith(
+        "The snap and target shares are flat. The players it gets lose WOPR, and the players it gives gain it.")
+
+
+def test_a_flat_wopr_falls_through_to_red_zone_use(snap):
+    # Williams moves 7 points, under the WOPR swing of 8.
+    snap = _with_wopr(snap, {J_WILLIAMS: [40, 40, 47, 47], M_WILSON: [50] * 4})
+    fourth, _ = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
+    assert _adjuster(fourth, "trend and usage").step == 1
+    assert _adjuster(fourth, "trend and usage").reason == (
+        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+
+
+def test_a_wopr_that_points_both_ways_falls_through_to_red_zone_use(snap):
+    # Both WOPRs rise, so each side gets a gain and gives a gain.
+    snap = _with_wopr(snap, {J_WILLIAMS: [40, 40, 55, 55], M_WILSON: [40, 40, 55, 55]})
+    fourth, fifth = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
+    assert _adjuster(fourth, "trend and usage").step == 1
+    assert _adjuster(fourth, "trend and usage").reason == (
+        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+    assert _adjuster(fifth, "trend and usage").step == -1
+
+
+@pytest.mark.parametrize("woprs", [[None, 40, 55, 55], [40, None, 55, 55], [40, 40, 55, None]])
+def test_a_wopr_with_no_value_at_either_end_of_the_window_falls_through_to_red_zone_use(snap, woprs):
+    snap = _with_wopr(snap, {J_WILLIAMS: woprs, M_WILSON: [50] * 4})
+    fourth, _ = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
+    assert _adjuster(fourth, "trend and usage").step == 1
+    assert "red-zone use" in _adjuster(fourth, "trend and usage").reason
+
+
+def test_a_stats_outage_keeps_wopr_from_deciding(snap):
+    # Week 3 has no stat lines, so the played weeks skip it and the window would be weeks 1, 2, 4, and 5.
+    # Week 1 has a WOPR, so only the outage check keeps that window from deciding.
+    week3 = snap.stats.weeks[3].model_copy(update={"stats": {}})
+    stats = snap.stats.model_copy(update={"weeks": {**snap.stats.weeks, 3: week3}})
+    snap = _with_wopr(snap.model_copy(update={"stats": stats}), {J_WILLIAMS: [40, 40, 55, 55], M_WILSON: [50] * 4})
+    snap.wopr[J_WILLIAMS][1] = 40
+    fourth, _ = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
+    assert "WOPR" not in _adjuster(fourth, "trend and usage").reason
+
+
+def test_a_running_backs_wopr_never_decides(snap):
+    # Harvey and Kamara are RBs, so Kamara's rising WOPR leaves the red-zone tiebreak to decide.
+    snap = _with_wopr(snap, {HARVEY: [10] * 4, KAMARA: [10, 10, 30, 30]})
+    first, _ = grade(_trade(1, [HARVEY], 9, [KAMARA]), snap)
+    assert _adjuster(first, "trend and usage").step == 1
+    assert _adjuster(first, "trend and usage").reason == (
+        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+
+
 def test_injury_steps_down_for_a_player_out_now_with_no_near_return(snap):
     # Saquon Barkley is Out and has no row in the returns file. Wicks is Questionable, which is not out.
     third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)

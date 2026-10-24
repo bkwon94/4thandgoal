@@ -1,7 +1,7 @@
 """
-Loads the slow sources of the snapshot: the schedules, the depth charts, the id map, the points allowed, injuries, and
-the expected points. A source that is not there is None, so the build never stops on one.
-`missing` names each source that is not there, except the expected points.
+Loads the slow sources of the snapshot: the schedules, the depth charts, the id map, the points allowed, injuries,
+the expected points, and the WOPR. A source that is not there is None, so the build never stops on one.
+`missing` names each source that is not there, except the expected points and the WOPR.
 """
 import csv
 import logging
@@ -11,10 +11,11 @@ from pydantic import BaseModel
 
 from cornerstone.models import ExpectedPoints
 from cornerstone.nflverse import (
-    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, TeamSchedule, cache_path,
-    read_depth_charts, read_id_map, read_injuries, read_schedules,
+    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, TeamSchedule,
+    cache_path, read_depth_charts, read_id_map, read_injuries, read_schedules,
 )
 from cornerstone.nflverse_expected import read_expected
+from cornerstone.nflverse_players import read_player_weeks
 from cornerstone.points_allowed import PositionAllowed, points_allowed
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,9 @@ class SlowSources(BaseModel):
     # The expected window of each player by Sleeper id. Only the expected gap adjuster reads it.
     # That adjuster says in its own reason when the data is not there, so a None here is not in `missing`.
     expected: ExpectedPoints | None = None
+    # The WOPR by Sleeper id and week. Only the trend adjuster reads it, as a tiebreak before red-zone use.
+    # Without it, red-zone use breaks the tie, so a None here is not in `missing`.
+    wopr: dict[str, dict[int, int]] | None = None
     missing: list[str] = []
 
 
@@ -54,6 +58,7 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     because the stat lines of the current week are not final. The injury report must hold the week
     before `week` too, so a file that ends earlier counts as missing.
     `scoring` is the league scoring. The expected points rescale to it, so without it they are None.
+    The WOPR comes from the nflverse weekly player file and ends at the week before `week`.
     """
     schedules_path = cache_path(cache_dir, SCHEDULES_URL, season)
     depth_path = cache_path(cache_dir, DEPTH_CHARTS_URL, season)
@@ -66,13 +71,28 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
         "points_allowed": _read("points_allowed", points_allowed, history_root, week - 1),
         "injuries": _read("injuries", read_injuries, injuries_path, week - 1) if injuries_path.exists() else None,
     }
+    # The id map joins the gsis ids of the nflverse files to Sleeper ids, as it does for the depth chart.
+    sleeper_of_gsis = {gsis: pid for pid, gsis in sorted((sources["id_map"] or {}).items())}
     expected_path = cache_path(cache_dir, FFOPPORTUNITY_URL, season)
     expected = None
-    if scoring is not None and sources["id_map"] and expected_path.exists() and schedules_path.exists():
-        # The id map joins the gsis ids of the file to Sleeper ids, as it does for the depth chart.
-        sleeper_of_gsis = {gsis: pid for pid, gsis in sorted(sources["id_map"].items())}
+    if scoring is not None and sleeper_of_gsis and expected_path.exists() and schedules_path.exists():
         # Every grade input ends at the week before `week`, so the expected window does too.
         expected = _read("expected", read_expected, expected_path, schedules_path, season, week - 1, scoring,
                          sleeper_of_gsis)
-    return SlowSources(**sources, expected=expected,
+    stats_player_path = cache_path(cache_dir, STATS_PLAYER_URL, season)
+    wopr = None
+    if sleeper_of_gsis and stats_player_path.exists():
+        wopr = _read("wopr", _read_wopr, stats_player_path, week - 1, sleeper_of_gsis)
+    return SlowSources(**sources, expected=expected, wopr=wopr,
                        missing=[name for name, source in sources.items() if source is None])
+
+
+def _read_wopr(path: Path, through: int, sleeper_of_gsis: dict[str, str]) -> dict[str, dict[int, int]] | None:
+    """The WOPR by Sleeper id and week, from week 1 to `through`. None when the file has no row for `through`."""
+    rows = read_player_weeks(path, 1, through, sleeper_of_gsis)
+    if rows is None:
+        return None
+    out: dict[str, dict[int, int]] = {}
+    for (pid, week), row in sorted(rows.items()):
+        out.setdefault(pid, {})[week] = row.wopr
+    return out

@@ -905,7 +905,7 @@ def test_settings_from_the_environment_need_a_passphrase(monkeypatch, tmp_path):
 
 
 # Every source that the refresh fetches, in the order of the refresh.
-ALL_SOURCES = ["schedules", "depth charts", "id map", "injuries", "expected points"]
+ALL_SOURCES = ["schedules", "depth charts", "id map", "injuries", "expected points", "player weeks"]
 
 
 def _fixture_fetch(fixture_nflverse_dir, asked):
