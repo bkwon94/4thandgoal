@@ -465,11 +465,13 @@ class TeamWeek(BaseModel):
 
     @property
     def epa_per_play(self) -> float:
+        """The mean nflverse epa of the plays."""
         return self.epa / self.plays if self.plays else 0.0
 
+    # The waiver rates are fractions, such as 0.55. This rate is in percentage points, such as 5.1, so do not mix them.
     @property
     def pass_rate_over_expected(self) -> float:
-        """The mean pass_oe of the plays, in percent points over the dropback rate the nflverse model expects."""
+        """The mean pass_oe of the plays, in percentage points over the dropback rate the nflverse model expects."""
         return self.pass_oe / self.plays if self.plays else 0.0
 
 

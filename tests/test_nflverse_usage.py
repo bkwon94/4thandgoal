@@ -121,8 +121,8 @@ def test_the_environment_reader_counts_plays_neutral_passes_and_rush_successes(t
     assert set(environment) == {"KC", "BUF"}
 
 
-def test_the_environment_reader_sums_epa_and_pass_rate_over_expected(tmp_path):
-    plays = [_play(6, receiver="00-W", epa=1.5, pass_oe=40.0), _play(6, epa=-2.0, pass_oe=10.0),
+def test_the_environment_reader_sums_epa_and_pass_oe(tmp_path):
+    plays = [_play(6, receiver="00-W", epa=1.75, pass_oe=40.0), _play(6, epa=-2.0, pass_oe=10.0),
              _play(6, kind="run", rusher="00-R", epa=0.5, pass_oe=-30.0)]
     # A two-point try, a kneel, a spike, and a kick add nothing. A try has no down, so its pass_oe is empty.
     not_plays = [_play(6, receiver="00-W", two_point=1, down="", epa=3.0, pass_oe=""),
@@ -132,12 +132,13 @@ def test_the_environment_reader_sums_epa_and_pass_rate_over_expected(tmp_path):
     pbp = _csv(tmp_path / "pbp.csv", PBP_FIELDS, plays + not_plays)
     week = read_environment(read_plays(pbp, 6))["KC"][0]
     assert (week.plays, week.passes, week.rushes) == (3, 2, 1)
-    assert (week.epa, week.pass_oe) == (0.0, 20.0)
-    assert (week.epa_per_play, week.pass_rate_over_expected) == (0.0, 20.0 / 3)
+    assert (week.epa, week.pass_oe) == (0.25, 20.0)
+    assert (week.epa_per_play, week.pass_rate_over_expected) == (0.25 / 3, 20.0 / 3)
 
 
-def test_the_environment_reader_gives_the_dallas_week_6_by_hand():
-    # Worked by hand from the fixture rows: 70 pass and run plays with the one two-point pass left out.
+def test_the_environment_reader_matches_the_dallas_week_6_sums():
+    # A script outside the reader summed these numbers from the fixture rows: 70 pass and run plays, with the one
+    # two-point pass left out.
     # The EPA sum is -8.46435826329979 and the pass_oe sum is 357.572077214718.
     plays = read_plays(FIXTURES / "play_by_play_2026_week6_six_teams.csv.gz", 6)
     week = read_environment(plays)["DAL"][0]
