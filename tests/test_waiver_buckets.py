@@ -79,3 +79,12 @@ def test_a_player_one_slot_below_an_injured_starter_lands_in_sneaky_with_the_sto
     story = sneaky[0].facts[-1]
     assert story.text == "Michael Pittman is out, and Jake Bernard is next on the depth chart."
     assert "Michael Pittman" in story.players
+
+
+def test_a_player_out_with_a_return_week_and_a_top_half_projection_lands_in_stashes(fixture_raw_dir):
+    players = {"80001": _player("WR", "Hurt Star", injury="Out"), "80002": _player("WR", "Low Guy"),
+               "80003": _player("WR", "Mid Guy")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 15.0, "80002": 4.0, "80003": 8.0})
+    stashes = waiver_board(raw, 6, BUILT, returns={"80001": 9}).buckets["stashes"]
+    assert _ids(stashes) == ["80001"]
+    assert stashes[0].reason == "return"

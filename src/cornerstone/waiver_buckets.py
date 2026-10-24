@@ -10,13 +10,14 @@ from cornerstone.nflverse import gsis_id
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
 from cornerstone.slow_sources import SlowSources
-from cornerstone.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
+from cornerstone.tunables import BUCKET_POSITIONS, LAST_SEASON_WEEK, SNEAKY_USAGE_FLOOR, TOP_HALF
 
 SNEAKY = "sneaky"
 STASHES = "stashes"
 # The bucket reasons. The site says which rule put a player in a bucket from these codes.
 USAGE_RISE = "usage_rise"
 BEHIND_INJURY = "behind_injury"
+RETURN = "return"
 
 # The words of the story fact for each status of OUT_STATUSES: "{starter} is {word}".
 STATUS_WORDS = {"Out": "out", "IR": "on IR", "PUP": "on the PUP list", "Sus": "suspended", "NA": "not active"}
@@ -30,12 +31,18 @@ class Above(NamedTuple):
 
 
 def sneaky_and_stashes(
-    players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dict[str, object], slow: SlowSources | None,
+    players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dict[str, object], week: int,
+    slow: SlowSources | None, returns: dict[str, int],
 ) -> dict[str, list[WaiverPlayer]]:
     """The sneaky and the stash candidates in rank order, each with his reason. The engine applies the bucket cap.
 
     A player in best adds is not sneaky. With no depth chart, no player is behind an injury.
     """
+    return {SNEAKY: _sneaky(players, best_adds, raw, slow), STASHES: _stashes(players, raw, week, slow, returns)}
+
+
+def _sneaky(players: list[WaiverPlayer], best_adds: list[WaiverPlayer], raw: dict[str, object],
+            slow: SlowSources | None) -> list[WaiverPlayer]:
     above = _slots_above(players, raw, slow)
     taken = {p.player_id for p in best_adds}
     sneaky = []
@@ -48,7 +55,36 @@ def sneaky_and_stashes(
             sneaky.append(_entry(p, BEHIND_INJURY, up))
         elif p.scores.usage >= SNEAKY_USAGE_FLOOR and p.scores.projection < TOP_HALF:
             sneaky.append(_entry(p, USAGE_RISE, up))
-    return {SNEAKY: sorted(sneaky, key=_sneaky_key), STASHES: []}
+    return sorted(sneaky, key=_sneaky_key)
+
+
+def _stashes(players: list[WaiverPlayer], raw: dict[str, object], week: int, slow: SlowSources | None,
+             returns: dict[str, int]) -> list[WaiverPlayer]:
+    """The pool players out now with a return week inside the season and a top-half projection at the position."""
+    blob = raw["players"]
+    injuries = slow.injuries if slow is not None else None
+    id_map = (slow.id_map if slow is not None else None) or {}
+    stashes = []
+    for p in players:
+        if p.position not in BUCKET_POSITIONS or blob[p.player_id].get("injury_status") not in OUT_STATUSES:
+            continue
+        back = return_week(p.player_id, gsis_id(p.player_id, blob, id_map), week, returns, injuries)
+        if back is not None and week < back <= LAST_SEASON_WEEK and p.scores.projection >= TOP_HALF:
+            stashes.append(p.model_copy(update={"reason": RETURN}))
+    return sorted(stashes, key=_stash_key)
+
+
+def return_week(player_id: str, gsis: str | None, week: int, returns: dict[str, int],
+                injuries: dict[str, dict[int, str]] | None) -> int | None:
+    """The week the player is back: the returns file first, the injury report second. None when neither knows.
+
+    The injury report has no return field. Its first week after `week` with a status that does not keep him out
+    is the return week, so it gives one only once the report of a later week is out.
+    """
+    if player_id in returns:
+        return returns[player_id]
+    reported = (injuries or {}).get(gsis or "", {})
+    return next((w for w in sorted(reported) if w > week and reported[w] not in OUT_STATUSES), None)
 
 
 def _entry(p: WaiverPlayer, reason: str, up: Above | None) -> WaiverPlayer:
@@ -84,6 +120,11 @@ def _slots_above(players: list[WaiverPlayer], raw: dict[str, object], slow: Slow
         if up_id is not None:
             out[p.player_id] = Above(up_id, player_name(up_id, blob[up_id]), blob[up_id].get("injury_status"))
     return out
+
+
+def _stash_key(p: WaiverPlayer) -> tuple[float, str]:
+    """The higher rest of season projection first, then the player ID, so a tie has one order."""
+    return -p.ros_projection, p.player_id
 
 
 def _sneaky_key(p: WaiverPlayer) -> tuple[float, float, str]:
