@@ -976,20 +976,53 @@ def test_expected_gap_steps_up_for_a_side_that_gets_a_player_under_expected(snap
     gap = _adjuster(tenth, "expected gap")
     assert gap.step == 1
     assert "Cook: -4.00 points per game against expected, over weeks 3, 4 and 5." in gap.reason
-    assert _adjuster(fifth, "expected gap").step == 0
+    # Roster 5 gives Cook under expected, so it sells low.
+    assert _adjuster(fifth, "expected gap").step == -1
 
 
 def test_expected_gap_steps_up_for_a_side_that_gives_a_player_over_expected(snap, expected_on):
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: OVER}))
     assert _adjuster(fifth, "expected gap").step == 1
-    assert _adjuster(tenth, "expected gap").step == 0
+    # Roster 10 gets Cook over expected, so it buys high.
+    assert _adjuster(tenth, "expected gap").step == -1
 
 
-def test_expected_gap_under_on_the_gets_and_over_on_the_gives_cancel(snap, expected_on):
+def test_expected_gap_under_on_the_gets_and_over_on_the_gives_steps_up_once(snap, expected_on):
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER, SAQUON: OVER}))
     gap = _adjuster(tenth, "expected gap")
-    assert gap.step == 0
+    assert gap.step == 1
     assert "Barkley: +4.00" in gap.reason and "Cook: -4.00" in gap.reason
+
+
+def test_expected_gap_steps_down_for_a_side_that_gets_a_player_over_expected(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: OVER}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == -1
+    assert gap.reason.startswith("The players it gets run over their expected points, so their points can fall.")
+
+
+def test_expected_gap_steps_down_for_a_side_that_gives_a_player_under_expected(snap, expected_on):
+    _, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER}))
+    gap = _adjuster(fifth, "expected gap")
+    assert gap.step == -1
+    assert gap.reason.startswith("The players it gives run under their expected points, so their points can rise.")
+
+
+def test_expected_gap_of_one_get_under_and_one_get_over_takes_no_step(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, HUBBARD]), _with_expected(snap, {COOK: UNDER, HUBBARD: OVER}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == 0
+    assert gap.reason.startswith("The players it gets and the players it gives run near their expected points.")
+
+
+def test_expected_gap_of_gets_under_and_gives_under_takes_no_step(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER, SAQUON: UNDER}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == 0
+    assert gap.reason.startswith(
+        "The players it gets run under their expected points, so their points can rise. "
+        "The players it gives run under their expected points, so their points can rise. "
+        "The step up and the step down cancel.")
 
 
 def test_expected_gap_of_a_handcuff_does_not_count(slow_snap, expected_on):

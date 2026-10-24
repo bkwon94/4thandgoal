@@ -607,8 +607,8 @@ def _mean_gap(gaps: list[Decimal]) -> Decimal | None:
 def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Expected gap: the players it gets against their expected points, and the players it gives against theirs.
 
-    Points under expected tend to rise and points over expected tend to fall. So gets that run under expected are
-    a step up, and gives that run over expected are a step up. The two at once cancel to no step.
+    Points under expected tend to rise and points over expected tend to fall. So the side steps up when it buys low
+    or sells high, and steps down when it buys high or sells low. A step up and a step down at once give no step.
     Handcuffs and players due back do not count, by the rule the trend reads.
     """
     if snapshot.expected is None:
@@ -626,15 +626,23 @@ def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
             gaps[pid], weeks[pid] = Decimal(str(gap)), [game.week for game in games if game.week in points]
     got = _mean_gap([gaps[pid] for pid in gets if pid in gaps])
     gave = _mean_gap([gaps[pid] for pid in gives if pid in gaps])
-    got_under = got is not None and got <= -EXPECTED_GAP
-    gave_over = gave is not None and gave >= EXPECTED_GAP
-    if got_under and gave_over:
-        step, lead = 0, ("The players it gets run under expected and the players it gives run over it, "
-                         "so the two cancel.")
-    elif got_under:
-        step, lead = 1, "The players it gets run under their expected points, so their points can rise."
-    elif gave_over:
-        step, lead = 1, "The players it gives run over their expected points, so their points can fall."
+    under = "run under their expected points, so their points can rise."
+    over = "run over their expected points, so their points can fall."
+    # Each case is a step and its sentence: buy low and sell high step up, buy high and sell low step down.
+    cases = []
+    if got is not None and got <= -EXPECTED_GAP:
+        cases.append((1, f"The players it gets {under}"))
+    if got is not None and got >= EXPECTED_GAP:
+        cases.append((-1, f"The players it gets {over}"))
+    if gave is not None and gave >= EXPECTED_GAP:
+        cases.append((1, f"The players it gives {over}"))
+    if gave is not None and gave <= -EXPECTED_GAP:
+        cases.append((-1, f"The players it gives {under}"))
+    steps = {step for step, _ in cases}
+    if steps == {1, -1}:
+        step, lead = 0, " ".join([text for _, text in cases] + ["The step up and the step down cancel."])
+    elif cases:
+        step, lead = cases[0][0], " ".join(text for _, text in cases)
     elif gaps:
         step, lead = 0, "The players it gets and the players it gives run near their expected points."
     else:
