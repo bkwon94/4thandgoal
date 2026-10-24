@@ -16,7 +16,7 @@ test: ## Run the tests
 	uv run pytest -q
 
 lint: ## Check the code style
-	uv run ruff check --line-length 120 src tests
+	uv run ruff check src tests
 
 check: lint test ## Run lint, then the tests
 
