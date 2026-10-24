@@ -128,12 +128,14 @@ def test_read_sends_every_strip_in_order_and_drops_the_overlap_rows():
 
 
 def test_overlap_rows_that_differ_fail_the_guard():
-    read = lambda strips, output_model: _padded((50.0, "DJ Moore", "WR"), (49.0, "D.J. Moore", "WR"))
+    def read(strips, output_model):
+        return _padded((50.0, "DJ Moore", "WR"), (49.0, "D.J. Moore", "WR"))
     assert _failed(read_chart(_png(2500), read)) == ["overlap rows agree"]
 
 
 def test_overlap_rows_that_agree_dedupe_and_pass():
-    read = lambda strips, output_model: _padded((50.0, "DJ Moore", "WR"), (50.0, "D.J. Moore", "WR"))
+    def read(strips, output_model):
+        return _padded((50.0, "DJ Moore", "WR"), (50.0, "D.J. Moore", "WR"))
     parsed = read_chart(_png(2500), read)
     assert [r.name for r in parsed.rows[:2]] == ["DJ Moore", "Pad a"]
     assert _failed(parsed) == []
@@ -175,7 +177,8 @@ def test_fetch_picks_the_file_in_the_week_window(tmp_path):
 
 def test_a_fetched_body_that_is_not_a_png_is_a_failed_fetch(tmp_path, caplog):
     listing = _site("20261013")
-    fetch = lambda url: listing(url) if url == MEDIA_URL else b"<html>Not found</html>"
+    def fetch(url):
+        return listing(url) if url == MEDIA_URL else b"<html>Not found</html>"
     assert fetch_chart(SEASON_START, 6, tmp_path, fetch) is None
     assert not (tmp_path / "week-06.png").exists()
     assert "is not a PNG" in caplog.text
@@ -222,7 +225,8 @@ def test_an_outage_uses_the_newest_of_the_two_weeks_before(tmp_path, caplog):
 def test_a_failed_file_fetch_falls_back_too(tmp_path):
     _cached(tmp_path, 5)
     listing = _site("20261013")
-    fetch = lambda url: listing(url) if url == MEDIA_URL else _down(url)
+    def fetch(url):
+        return listing(url) if url == MEDIA_URL else _down(url)
     assert fetch_chart(SEASON_START, 6, tmp_path, fetch) == tmp_path / "week-05.png"
 
 
@@ -234,7 +238,8 @@ def _site_with_png(chart_date, height=1500):
     """A fake fetch like _site, but the PNG is a real image that the strip cut can open."""
     png = _png(height)
     inner = _site(chart_date)
-    fetch = lambda url: inner(url) if url == MEDIA_URL else png
+    def fetch(url):
+        return inner(url) if url == MEDIA_URL else png
     fetch.calls = inner.calls
     return fetch
 

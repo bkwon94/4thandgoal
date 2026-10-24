@@ -265,7 +265,6 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
     located = _located_lines(week)
     started = [x for x in located if x[0].started]
     projections_up = any(x[0].projection is not None for x in started)
-    margins = {f.matchup_id: f.margin for f in mfacts}
 
     # Each ranking lists (located line, reason) from best to worst.
     rankings: list[tuple[str, list[tuple[tuple[PlayerLine, int, int], str]]]] = []

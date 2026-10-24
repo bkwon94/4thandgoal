@@ -20,7 +20,7 @@ from cornerstone.history import HISTORY_FILES, history_dir, history_root
 from pathlib import Path
 
 from cornerstone.models import (
-    Blurb, BuildRecord, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyFile, VerifyOut,
+    Blurb, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyOut,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.pipeline import (
