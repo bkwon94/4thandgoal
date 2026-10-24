@@ -6,6 +6,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from cornerstone.models import NflverseWeek, UsageWeek
+from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources
 from cornerstone.waiver import waiver_board
@@ -121,3 +122,28 @@ def test_a_handcuff_below_a_healthy_starter_lands_in_stashes_when_the_starter_pr
     stashes = waiver_board(raw, 6, BUILT, slow=slow).buckets["stashes"]
     assert _ids(stashes) == ["80001"]
     assert stashes[0].reason == "handcuff"
+
+
+def test_each_entry_carries_its_reason_and_a_price_and_every_fact_digit_is_in_its_numbers(fixture_raw_dir):
+    # One fixture fills both buckets: a riser, a back behind an IR starter, a stash with a return, and a handcuff.
+    risers = ["80001", "80002", "80003", "80004"]
+    players = {pid: _player("WR", f"Riser {name}") for pid, name in zip(risers, "ABCD")}
+    players |= {"80011": _player("RB", "Hurt Starter", injury="IR"), "80012": _player("RB", "Next Up"),
+                "80021": _player("TE", "Hurt Star", injury="Out", team="BUF"), "80022": _player("TE", "Low End"),
+                "80031": _player("QB", "Healthy QB", team="NYJ"), "80032": _player("QB", "Backup QB", team="NYJ")}
+    players |= _top_backs()
+    per_week = {"80001": 2.0, "80002": 30.0, "80003": 31.0, "80004": 32.0, "80011": 14.0, "80012": 5.0,
+                "80021": 12.0, "80022": 3.0, "80031": 20.0, "80032": 1.0} | dict.fromkeys(_top_backs(), 30.0)
+    usage = {pid: [_usage(5, 30, 2), _usage(6, 75, 7)] for pid in risers}
+    slow = _depth({"KC": {"RB": ["80011", "80012"]}, "NYJ": {"QB": ["80031", "80032"]}})
+    board = waiver_board(_raw(fixture_raw_dir, players, per_week), 6, BUILT, _nfl(usage), slow=slow,
+                         returns={"80021": 10})
+    reasons = {key: {p.player_id: p.reason for p in board.buckets[key]} for key in ("sneaky", "stashes")}
+    assert reasons == {"sneaky": {"80001": "usage_rise", "80012": "behind_injury"},
+                       "stashes": {"80021": "return", "80032": "handcuff"}}
+    entries = board.buckets["sneaky"] + board.buckets["stashes"]
+    assert all(p.price is not None for p in entries)
+    story = next(f for f in board.buckets["sneaky"][1].facts if f.id.startswith("WV.story."))
+    assert story.text == "Hurt Starter is on IR, and Next Up is next on the depth chart."
+    for f in (f for p in entries for f in [*p.facts, p.price.fact]):
+        assert set(NUMBER_TOKEN.findall(f.text)) <= set(f.numbers), f.text
