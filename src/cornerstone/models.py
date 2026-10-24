@@ -484,3 +484,8 @@ class NflverseWeek(BaseModel):
     # None means the source gave no data for the week. An empty dict means no player matched.
     drops: dict[str, list[DropPlay]] | None
     injuries: dict[str, dict[int, str]] | None
+    # The usage of the last `USAGE_WEEKS` weeks by Sleeper ID, QB, RB, WR, and TE only. None in an extract
+    # saved before the field existed, or when the play by play has no row for the week.
+    usage: dict[str, list[UsageWeek]] | None = None
+    # The offense counts of each week of the season by Sleeper team code. None as for the usage.
+    environment: dict[str, list[TeamWeek]] | None = None

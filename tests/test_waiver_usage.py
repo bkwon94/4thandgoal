@@ -76,3 +76,12 @@ def test_the_environment_reader_counts_plays_neutral_passes_and_rush_successes(t
     assert (week.week, week.plays, week.passes, week.rushes, week.rush_successes) == (6, 9, 6, 3, 2)
     assert (week.neutral_plays, week.neutral_passes) == (4, 2)
     assert set(read_environment(pbp, 6)) == {"KC", "BUF"}
+
+
+def test_the_week_extract_carries_the_usage_and_the_environment(nfl_week6):
+    # Matthew Golden takes all 4 Packers targets of the fixture, one at the 9, and plays 83% of the snaps.
+    golden = nfl_week6.usage["12501"]
+    assert [(u.week, u.team, u.snaps, u.snap_share, u.targets, u.target_share, u.red_zone_touches)
+            for u in golden] == [(6, "GB", 52, 83, 4, 100, 1)]
+    assert nfl_week6.environment["GB"][0].plays == 4 and "LAR" in nfl_week6.environment
+    assert nfl_week6.sources["nflverse_snaps"]

@@ -137,3 +137,6 @@ PER_POSITION = 3
 BUCKET_POSITIONS = ("QB", "RB", "WR", "TE")
 # The positions of the waiver pool. Here and not in the engine, so the Sleeper client imports it with no cycle.
 POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
+# The count of latest weeks the usage trend reads. The trend is the change from the first of these weeks
+# to the last, so 2 compares last week with the week before.
+USAGE_WEEKS = 2
