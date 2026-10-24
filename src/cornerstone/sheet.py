@@ -25,7 +25,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.facts_nflverse import drop_lines, expected_awards, shootouts
+from cornerstone.facts_nflverse import drop_lines, expected_awards, shootouts, volume_ranks
 from cornerstone.history import (
     _round_half_up,
     player_trend,
@@ -821,6 +821,7 @@ def rank_facts(c: Context) -> list[Fact]:
 
 def leader_facts(c: Context) -> list[Fact]:
     out = []
+    volumes = {p: volume_ranks(c.week, c.nfl, p) for p in {lead.position for lead in c.leaders}}
     for lead in c.leaders:
         n = Nums()
         line = lead.line
@@ -830,7 +831,28 @@ def leader_facts(c: Context) -> list[Fact]:
             f"{n.ord(lead.rank)} of {n(lead.of)} among started {lead.position}s this week."
         )
         out.append(fact(f"LEAD.{lead.position}.{lead.rank}", text, n, [team], [line.name]))
+        if line.player_id in volumes[lead.position]:
+            fid = f"LEAD.{lead.position}.{lead.rank}.volume"
+            out.append(_volume_fact(c, fid, lead.position, line, team, volumes[lead.position][line.player_id]))
     return out
+
+
+# The volume label and the plural position name of each position with a volume line.
+VOLUME_LABELS = {"RB": ("carry share", "running backs"), "WR": ("WOPR", "wide receivers"), "TE": ("WOPR", "tight ends")}
+
+
+def _volume_fact(c: Context, fid: str, position: str, line: PlayerLine, team: str, volume: tuple[int, int]) -> Fact:
+    """The week N volume of one position leader and its rank among the started players at his position."""
+    value, rank = volume
+    label, plural = VOLUME_LABELS[position]
+    n = Nums()
+    # WOPR is a weighted sum and not a share, so only the carry share reads as a percent.
+    unit = " percent" if label == "carry share" else ""
+    text = (
+        f"{line.name}'s {label} in week {n(c.week.week)} is {n(value)}{unit}, "
+        f"{n.ord(rank)} among started {plural}."
+    )
+    return fact(fid, text, n, [team], [line.name])
 
 
 def strength_facts(c: Context) -> list[Fact]:

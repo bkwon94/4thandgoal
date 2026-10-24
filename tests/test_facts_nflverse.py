@@ -1,13 +1,15 @@
 """
-Tests for the drop value, the drop lines, the drop facts, the unlucky and lucky award facts, and the shootout
-facts.
+Tests for the drop value, the drop lines, the drop facts, the unlucky and lucky award facts, the shootout
+facts, and the leader volume facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
 import re
 from pathlib import Path
 
+import pytest
+
 from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value
-from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek
+from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
 from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
@@ -347,3 +349,95 @@ def test_a_sheet_with_the_environment_missing_has_no_shootout_fact(fixture_raw_d
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, next_games=None)) == []
     wk = parse_week(load_raw(fixture_raw_dir))
     assert _shootout_ids(build_bundle(wk, news=lambda pid: [])) == []
+
+
+def _usage(week: int = 6, wopr: int | None = None, carry_share: int = 0) -> UsageWeek:
+    return UsageWeek(week=week, team="KC", snaps=None, snap_share=None, targets=0, target_share=0, carries=0,
+                     carry_share=carry_share, red_zone_touches=0, wopr=wopr)
+
+
+def _volume_facts(fixture_raw_dir, usage):
+    wk = parse_week(load_raw(fixture_raw_dir))
+    nfl = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, usage=usage)
+    return build_bundle(wk, news=lambda pid: [], nfl=nfl)
+
+
+def _bench_id(fixture_raw_dir, position: str) -> str:
+    wk = parse_week(load_raw(fixture_raw_dir))
+    return next(line.player_id for m in wk.matchups for s in (m.a, m.b) for line in s.lines
+                if not line.started and line.position == position)
+
+
+@pytest.fixture
+def vbundle(fixture_raw_dir):
+    usage = {
+        # Wide receivers: Lamb ties Nabers, and the name puts Lamb first. Golden has no WOPR, so no rank.
+        "10213": [_usage(wopr=60)],
+        "11632": [_usage(wopr=85)],
+        "6786": [_usage(wopr=85)],
+        "12501": [_usage(wopr=None)],
+        # A bench receiver and an earlier week do not count.
+        _bench_id(fixture_raw_dir, "WR"): [_usage(wopr=140)],
+        "2449": [_usage(week=5, wopr=120), _usage(wopr=10)],
+        # Running backs: Henry ties Walker, and the name puts Henry first.
+        "4034": [_usage(carry_share=80)],
+        "3198": [_usage(carry_share=72)],
+        "8151": [_usage(carry_share=72)],
+        "8138": [_usage(carry_share=50)],
+        # A tight end, and a quarterback with a row.
+        "8131": [_usage(wopr=-5)],
+        "7523": [_usage(wopr=30, carry_share=20)],
+    }
+    return _volume_facts(fixture_raw_dir, usage)
+
+
+def test_a_wr_leader_holds_his_wopr_and_its_rank_among_started_wrs(vbundle):
+    f = vbundle.sheet.facts
+    assert f["LEAD.WR.2.volume"].text == "Malik Nabers's WOPR in week 6 is 85, 2nd among started wide receivers."
+    assert f["LEAD.WR.1.volume"].text == "Tre Tucker's WOPR in week 6 is 60, 3rd among started wide receivers."
+    assert f["LEAD.WR.1.volume"].teams == f["LEAD.WR.1"].teams
+    assert f["LEAD.WR.1.volume"].players == ["Tre Tucker"]
+    assert f["LEAD.TE.1.volume"].text == "Isaiah Likely's WOPR in week 6 is -5, 1st among started tight ends."
+
+
+def test_an_rb_leader_holds_his_carry_share_and_its_rank_among_started_rbs(vbundle):
+    f = vbundle.sheet.facts
+    assert f["LEAD.RB.2.volume"].text == (
+        "Christian McCaffrey's carry share in week 6 is 80 percent, 1st among started running backs.")
+    assert f["LEAD.RB.1.volume"].text == (
+        "Kenneth Walker's carry share in week 6 is 72 percent, 3rd among started running backs.")
+    assert f["LEAD.RB.3.volume"].text == (
+        "James Cook's carry share in week 6 is 50 percent, 4th among started running backs.")
+
+
+def test_a_qb_or_def_leader_has_no_volume_fact(vbundle):
+    assert not any(fid.endswith(".volume") for fid in vbundle.sheet.facts
+                   if fid.startswith(("LEAD.QB.", "LEAD.DEF.")))
+
+
+def test_a_leader_with_no_usage_row_has_no_volume_fact(vbundle):
+    f = vbundle.sheet.facts
+    assert "LEAD.WR.3" in f and "LEAD.WR.3.volume" not in f
+    assert "LEAD.TE.2" in f and "LEAD.TE.2.volume" not in f
+
+
+@pytest.mark.parametrize("usage", [None, {}])
+def test_the_chapter_builds_without_usage(fixture_raw_dir, usage):
+    b = _volume_facts(fixture_raw_dir, usage)
+    assert not any(fid.endswith(".volume") for fid in b.sheet.facts)
+    ch = next(c for c in b.sheet.chapters if c.key == "position_leaders")
+    assert len(ch.fact_ids) == 15
+
+
+def test_only_the_position_leaders_chapter_cites_the_volume_facts(vbundle):
+    volume = {fid for fid in vbundle.sheet.facts if fid.startswith("LEAD.") and fid.endswith(".volume")}
+    assert len(volume) == 6
+    for c in vbundle.sheet.chapters:
+        cited = volume & set(c.fact_ids)
+        assert cited == (volume if c.key == "position_leaders" else set()), c.key
+
+
+def test_every_number_in_a_volume_fact_text_is_in_its_numbers(vbundle):
+    for fid, f in vbundle.sheet.facts.items():
+        if fid.endswith(".volume"):
+            assert set(NUMBER_TOKEN.findall(f.text)) <= set(f.numbers), fid

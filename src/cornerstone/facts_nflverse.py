@@ -1,6 +1,6 @@
 """
 Drop value and drop lines from the nflverse drop plays and the Sleeper stats, the unlucky and lucky starters,
-and the shootouts of next week.
+the shootouts of next week, and the leader volume ranks.
 The fact text lives in sheet.py with the other facts.
 """
 from decimal import Decimal
@@ -129,3 +129,30 @@ def shootouts(nfl: NflverseWeek | None) -> list[Shootout]:
             continue
         found.append(Shootout(away=away, home=home, away_rate=a[0], home_rate=h[0], away_games=a[1], home_games=h[1]))
     return found
+
+
+# The usage field that measures a leader's volume at each position. A QB, a K, or a DEF has none.
+VOLUME_FIELDS = {"RB": "carry_share", "WR": "wopr", "TE": "wopr"}
+
+
+def volume_ranks(week: Week, nfl: NflverseWeek | None, position: str) -> dict[str, tuple[int, int]]:
+    """The week N volume and its rank of each started player at the position, by Sleeper ID.
+
+    The rank is league wide at the position, the higher volume first, then the name.
+    A player with no usage row for week N, or with no value in it, has no entry and takes no rank.
+    """
+    field = VOLUME_FIELDS.get(position)
+    if field is None or nfl is None or nfl.usage is None:
+        return {}
+    found = []
+    for m in week.matchups:
+        for side in (m.a, m.b):
+            for line in side.lines:
+                if not line.started or line.position != position:
+                    continue
+                row = next((u for u in nfl.usage.get(line.player_id, []) if u.week == week.week), None)
+                value = None if row is None else getattr(row, field)
+                if value is not None:
+                    found.append((-value, line.name, line.player_id, value))
+    found.sort()
+    return {pid: (value, i + 1) for i, (_, _, pid, value) in enumerate(found)}
