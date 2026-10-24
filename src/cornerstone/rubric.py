@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 
 from cornerstone.adjusters import (
-    ADJUSTERS, SCHEDULE, Adjuster, Lean, build_side, named, recent_points_per_game, trade_handcuffs,
+    ADJUSTERS, SCHEDULE, Adjuster, Lean, build_side, lineup_value, named, trade_handcuffs,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -201,14 +201,16 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
     """The single highest-value player in the trade, or None when two or more tie at the top.
 
     Trade value picks him, with a handcuff at zero as in the sums. When the week has no chart or a traded
-    player is unlisted, the trade values of the two sides do not compare, so recent points per game pick him.
+    player is unlisted, the trade values of the two sides do not compare, so the lineup value picks him.
+    The lineup value is recent points per game, or the projection ahead of a player due back, who has no recent games.
     """
     players = [pid for side in trade.sides for pid in side.gives]
     values = _trade_values(snapshot, handcuffs) if snapshot.chart is not None else {}
     if all(pid in values for pid in players):
         worth = {pid: Decimal(str(values[pid])) for pid in players}
     else:
-        worth = {pid: recent_points_per_game(snapshot, pid) for pid in players}
+        # A handcuff counts as zero here too, so a handcuff due back with a high projection is never the pick.
+        worth = {pid: Decimal(0) if pid in handcuffs else lineup_value(snapshot, pid) for pid in players}
     top = max(worth.values())
     leaders = [pid for pid, w in worth.items() if w == top]
     return leaders[0] if len(leaders) == 1 else None

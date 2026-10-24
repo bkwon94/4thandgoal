@@ -1208,3 +1208,42 @@ def test_a_player_due_back_in_the_trade_week_counts_for_that_week(snap):
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 6}}))
     assert _adjuster(third, "roster fit").reason.endswith(
         "Josh Jacobs is due back in week 6, so he counts for his projection ahead of 18.0 a game.")
+
+
+# Stefon Diggs on roster 3 scores 10.17 a game over weeks 2 to 5. Jacobs is due back in week 7 with no recent games.
+DIGGS = "2449"
+
+
+def test_with_no_chart_a_player_due_back_is_the_highest_value_player_by_his_projection(snap):
+    snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}})
+    no_chart = snap.model_copy(update={"chart": None})
+    assert rubric._highest_value_player(_trade(3, [DIGGS], 11, [JACOBS]), no_chart, []) == JACOBS
+
+
+def test_with_a_chart_that_lists_every_player_trade_value_picks_the_highest_value_player(snap):
+    # Jacobs projects to 18 a game, but the chart values Diggs above him, so the chart decides.
+    snap = _with_values(_with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}}),
+                        {DIGGS: 20.0, JACOBS: 5.0})
+    assert rubric._highest_value_player(_trade(3, [DIGGS], 11, [JACOBS]), snap, []) == DIGGS
+
+
+# Jameson Williams on roster 4 scores 10.53 a game. Roster 4 is last, out of the playoff race.
+J_WILLIAMS = "8148"
+
+
+def test_with_no_chart_a_seller_that_gets_a_player_due_back_gets_the_highest_value_player(snap):
+    snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}}).model_copy(update={"chart": None})
+    fourth, _ = grade(_trade(4, [J_WILLIAMS], 11, [JACOBS]), snap)
+    standing = _adjuster(fourth, "standing")
+    assert standing.step == 1
+    assert standing.reason == "The team is out of the playoff race, and it gets the highest-value player in the trade."
+
+
+def test_with_no_chart_a_handcuff_due_back_is_never_the_highest_value_player(slow_snap):
+    # Mitchell backs up Hampton on roster 12, so he is a handcuff there. His projection of 30 does not count.
+    snap = _with_projections(_with_ids(slow_snap, LAC_IDS), {MITCHELL: {week: 30.0 for week in range(7, 15)}})
+    snap = snap.model_copy(update={"chart": None, "returns": {**snap.returns, MITCHELL: 7}})
+    trade = _trade(12, [POLLARD], 11, [MITCHELL])
+    handcuffs = rubric.trade_handcuffs(trade, snap)
+    assert handcuffs == [MITCHELL]
+    assert rubric._highest_value_player(trade, snap, handcuffs) == POLLARD
