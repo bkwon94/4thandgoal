@@ -97,7 +97,8 @@ def whole_word(word: str, text: str) -> bool:
 
 
 def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list[str]:
-    """The number rule on prose with the names removed: each digit and each number word must come from the cited facts."""
+    """The number rule on prose with the names removed: each digit and each number word must come from the cited
+    facts."""
     failures = [
         f"number {token} is not in the cited facts"
         for token in NUMBER_TOKEN.findall(bare)

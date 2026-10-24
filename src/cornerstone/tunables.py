@@ -1,5 +1,6 @@
 """
-The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds, and the waiver board.
+The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds,
+and the waiver board.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -35,7 +36,8 @@ PLAYOFF_SPOTS = 6
 # A seller has more than this many wins fewer than the team in the last playoff spot.
 # The league scores a median game each week, so each week gives two results, and two games are one week of results.
 SELLER_GAP = 2
-# The last week of the regular season. When the side gets a player who is due back by this week, the trade is a return bet.
+# The last week of the regular season. When the side gets a player who is due back by this week,
+# the trade is a return bet.
 RETURN_BY_WEEK = 14
 
 # Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
@@ -51,7 +53,8 @@ INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
 RETURN_WINDOW_WEEKS = 2
 
-# Schedule: byes left and the playoff opponents of the players it gets against the players it gives. It never moves a letter.
+# Schedule: byes left and the playoff opponents of the players it gets against the players it gives.
+# It never moves a letter.
 # The gap in the mean rank of the week 15 to 17 opponents, in points allowed to the position, that makes a lean.
 # Set this number by hand. The commissioner tunes it.
 SCHEDULE_RANK_GAP = 4
@@ -115,15 +118,18 @@ RECENT_WEIGHT = 1.25
 # The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
 # Past scores know the team's level, and the projection knows that week's roster. Half each, Brian's call.
 PROJECTION_WEIGHT = 0.5
-# The lowest playoff odds, in percent, that show the most likely seed. Below it the seed rests on fewer than half the runs.
+# The lowest playoff odds, in percent, that show the most likely seed.
+# Below it the seed rests on fewer than half the runs.
 SEED_SHOW_AT = 50
 # The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.
 BYE_COUNT = 2
-# The least gap, in points, between a side's win and loss odds that counts as a swing. A smaller gap is noise, not a stake.
+# The least gap, in points, between a side's win and loss odds that counts as a swing.
+# A smaller gap is noise, not a stake.
 SWING_FLAT = 5
 
 # The why facts. Rule 25 of the writer prompt holds these two numbers as digits, so change rule 25 too.
-# The least move, in places either way, that makes the writer cite the rank why. A 1-place move needs no reason on the page.
+# The least move, in places either way, that makes the writer cite the rank why.
+# A 1-place move needs no reason on the page.
 WHY_MOVE_AT = 2
 # The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
 WHY_ODDS_AT = 25

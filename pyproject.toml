@@ -32,6 +32,9 @@ dev = [
 markers = ["live: calls a real external API"]
 addopts = "-m 'not live'"
 
+[tool.ruff]
+line-length = 120
+
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.
 module-name = ["cornerstone", "cornerstone_api"]

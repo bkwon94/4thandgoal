@@ -101,14 +101,16 @@ class StubAnalyzer:
         self.calls += 1
         breakdowns = grade(trade, snapshot)
         letters = self.claude_letters or [b.final_letter for b in breakdowns]
-        far = any(abs(LETTERS.index(l) - LETTERS.index(b.final_letter)) > 1 for l, b in zip(letters, breakdowns))
+        far = any(
+            abs(LETTERS.index(letter) - LETTERS.index(b.final_letter)) > 1 for letter, b in zip(letters, breakdowns)
+        )
         if far:
             return code_only(trade, snapshot)
         code = verdict(trade, breakdowns)
-        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=l,
-                                   reason=None if l == b.final_letter else "Claude reads it one step off.",
+        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=letter,
+                                   reason=None if letter == b.final_letter else "Claude reads it one step off.",
                                    analysis="Nico Collins leads the trade in points per game.", cited=[])
-                      for l, b in zip(letters, breakdowns))
+                      for letter, b in zip(letters, breakdowns))
         return Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=code,
                         verdict_differs=False, fallback=False)
 
@@ -660,7 +662,9 @@ def test_the_cache_survives_a_restart(settings, sources):
 
 def test_a_repeat_an_hour_later_on_unchanged_rosters_is_a_cache_hit(settings, fixture_raw_dir, chart_week6):
     analyzer = StubAnalyzer()
-    _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post(
+        "/analyze", json=TRADE, headers=HEADERS
+    )
     _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED.replace(hour=10)), analyzer).post(
         "/analyze", json=TRADE, headers=HEADERS)
     assert analyzer.calls == 1
@@ -679,7 +683,9 @@ def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
 
 def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
     analyzer = StubAnalyzer()
-    _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post("/analyze", json=TRADE, headers=HEADERS)
+    _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post(
+        "/analyze", json=TRADE, headers=HEADERS
+    )
     _client(settings, _without_a_bench_player(fixture_raw_dir, chart_week6, 12), analyzer).post(
         "/analyze", json=TRADE, headers=HEADERS)
     _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer).post(

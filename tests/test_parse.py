@@ -22,7 +22,7 @@ def test_parse_week_teams_and_matchups(fixture_raw_dir):
 def test_parse_week_lines_have_projection(fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
     m = next(m for m in wk.matchups if m.matchup_id == 4)
-    shough = next(l for s in (m.a, m.b) for l in s.lines if l.name == "Tyler Shough")
+    shough = next(line for s in (m.a, m.b) for line in s.lines if line.name == "Tyler Shough")
     assert shough.started and shough.points == 26.96 and shough.projection == 17.06
 
 
@@ -30,8 +30,8 @@ def test_unknown_player_falls_back_to_id(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
     raw["players"].pop("8183")  # Brock Purdy
     wk = parse_week(raw)
-    lines = [l for m in wk.matchups for s in (m.a, m.b) for l in s.lines]
-    purdy = next(l for l in lines if l.player_id == "8183")
+    lines = [line for m in wk.matchups for s in (m.a, m.b) for line in s.lines]
+    purdy = next(line for line in lines if line.player_id == "8183")
     assert purdy.name == "8183" and purdy.position == "?"
 
 
@@ -42,13 +42,13 @@ def test_week_argument_overrides_display_week(fixture_raw_dir):
 
 def test_defense_name_and_slot(fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
-    lines = [l for m in wk.matchups for s in (m.a, m.b) for l in s.lines]
-    tb = next(l for l in lines if l.player_id == "TB")
+    lines = [line for m in wk.matchups for s in (m.a, m.b) for line in s.lines]
+    tb = next(line for line in lines if line.player_id == "TB")
     assert tb.name == "Tampa Bay Buccaneers" and tb.position == "DEF"
     assert tb.started and tb.slot == "DEF"
-    bench = next(l for l in lines if not l.started)
+    bench = next(line for line in lines if not line.started)
     assert bench.slot is None
-    assert all(l.season_avg is None for l in lines)
+    assert all(line.season_avg is None for line in lines)
 
 
 def test_moves_are_complete_only(fixture_raw_dir):
@@ -76,9 +76,9 @@ def test_empty_starter_slot_makes_no_line(fixture_raw_dir):
     entry["starters"][1] = "0"
     entry["players"].append("0")
     wk = parse_week(raw)
-    lines = [l for m in wk.matchups for s in (m.a, m.b) for l in s.lines]
-    assert not any(l.player_id == "0" or l.name == "0" for l in lines)
-    third = next(l for l in lines if l.player_id == entry["starters"][2])
+    lines = [line for m in wk.matchups for s in (m.a, m.b) for line in s.lines]
+    assert not any(line.player_id == "0" or line.name == "0" for line in lines)
+    third = next(line for line in lines if line.player_id == entry["starters"][2])
     assert third.slot == raw["league"]["roster_positions"][2]
 
 

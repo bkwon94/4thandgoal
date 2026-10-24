@@ -132,7 +132,8 @@ def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
 
 def _projections_ahead(client: httpx.Client, season: int, week: int, last: int = LAST_SEASON_WEEK) -> list[dict]:
     """One entry per week from week + 1 to `last`, with the half-PPR projection of each player."""
-    # Every player stays, so the waiver board can rank the waiver pool. A player with no half-PPR projection has no entry.
+    # Every player stays, so the waiver board can rank the waiver pool.
+    # A player with no half-PPR projection has no entry.
     return [
         {"week": w, "projections": {
             item["player_id"]: item["stats"]["pts_half_ppr"]

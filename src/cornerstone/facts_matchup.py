@@ -34,9 +34,9 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
     drivers = (
         sorted(
             (
-                l
-                for l in all_lines
-                if l.started and l.projection is not None and gap(l) >= margin
+                line
+                for line in all_lines
+                if line.started and line.projection is not None and gap(line) >= margin
             ),
             key=gap,
             reverse=True,
@@ -46,8 +46,8 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
     )
     swing = (
         sorted(
-            (l for l in winner_side.lines if l.started and l.points > margin),
-            key=lambda l: l.points,
+            (line for line in winner_side.lines if line.started and line.points > margin),
+            key=lambda line: line.points,
             reverse=True,
         )
         if winner_side
@@ -62,7 +62,7 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
         margin=margin,
         # max() returns the first maximum, so a tie goes to the first in roster order.
         top_scorer={
-            s.roster_id: max((l for l in s.lines if l.started), key=lambda l: l.points)
+            s.roster_id: max((line for line in s.lines if line.started), key=lambda line: line.points)
             for s in sides
         },
         drivers=drivers,
@@ -81,13 +81,13 @@ def _bench_regret(
         return []
     lead = Decimal(str(winner.points)) - Decimal(str(loser.points))
     pairs = []
-    for bench in (l for l in loser.lines if not l.started):
+    for bench in (line for line in loser.lines if not line.started):
         same_position = [
-            l for l in loser.lines if l.started and l.position == bench.position
+            line for line in loser.lines if line.started and line.position == bench.position
         ]
         if not same_position:
             continue
-        starter = min(same_position, key=lambda l: l.points)
+        starter = min(same_position, key=lambda line: line.points)
         gain = Decimal(str(bench.points)) - Decimal(str(starter.points))
         # A gain equal to the lead gives a tie, not a flip.
         if gain > lead:
@@ -96,7 +96,7 @@ def _bench_regret(
 
 
 def _recent_moves(sides: tuple[Side, Side], moves: list[Move], week: int) -> list[Move]:
-    started = {(s.roster_id, l.player_id) for s in sides for l in s.lines if l.started}
+    started = {(s.roster_id, line.player_id) for s in sides for line in s.lines if line.started}
     return [
         mv
         for mv in moves

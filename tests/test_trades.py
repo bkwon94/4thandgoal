@@ -53,7 +53,9 @@ def _trade_at(fixture_raw_dir, created):
 
 
 def _holds(trade, week):
-    return trades_for_week([trade], [], default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1))
+    return trades_for_week(
+        [trade], [], default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1)
+    )
 
 
 def test_a_trade_at_the_week_6_cutoff_is_in_week_5_only(fixture_raw_dir):
@@ -112,8 +114,9 @@ def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
     from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     a, b, c = week.matchups[0].a, week.matchups[0].b, week.matchups[1].a
-    pa, pb = (next(l for l in s.lines if l.started) for s in (a, b))
-    trade = Trade(transaction_id="x", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[a.roster_id, b.roster_id, c.roster_id],
+    pa, pb = (next(line for line in s.lines if line.started) for s in (a, b))
+    trade = Trade(transaction_id="x", created=datetime(2026, 10, 14, tzinfo=ET),
+                  roster_ids=[a.roster_id, b.roster_id, c.roster_id],
                   adds={pa.player_id: a.roster_id, pb.player_id: b.roster_id},
                   drops={pa.player_id: c.roster_id, pb.player_id: a.roster_id}, draft_picks=[])
     f = recap_facts(week, trades=[trade])
@@ -128,7 +131,9 @@ def test_late_trade_has_no_swing_and_no_need(rfacts):
 
 def test_late_fact_says_the_lineup_shows_the_roster_from_before(rfacts):
     f = rfacts
-    assert f["T6.late"].text == "The trade came after the lineups locked, so the lineups show the rosters from before it."
+    assert f["T6.late"].text == (
+        "The trade came after the lineups locked, so the lineups show the rosters from before it."
+    )
     assert f["T6.late"].teams == f["T6.sides"].teams
     assert not any(fid.startswith(f"T{n}.late") for n in range(1, 6) for fid in f)
 
@@ -139,7 +144,9 @@ def test_three_team_trade(fixture_raw_dir, fixture_history_root):
     three = next(t for t in h.weeks[5].trades if len(t.roster_ids) == 3)
     f = recap_facts(parse_week(raw), history=h, trades=[three])
     assert f["T1.sides"].text.startswith("In a 3-team trade,")
-    assert all(name in f["T1.sides"].text for name in ("To Infinity and Bijan", "Return of T Mac", "Amon-Ra Dawg Your Team"))
+    assert all(
+        name in f["T1.sides"].text for name in ("To Infinity and Bijan", "Return of T Mac", "Amon-Ra Dawg Your Team")
+    )
 
 
 def test_need_clamps_open_spots_at_zero(tinputs):
@@ -165,7 +172,7 @@ def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     owner = week.matchups[0].a
-    star = next(l for l in owner.lines if l.started)
+    star = next(line for line in owner.lines if line.started)
     first, second = [r for r in week.teams if r != owner.roster_id][:2]
     made = datetime(2026, 10, 16, tzinfo=ET)
     trades = [
@@ -200,8 +207,9 @@ def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
     m = week.matchups[0]
     tied = m.model_copy(update={"b": m.b.model_copy(update={"points": m.a.points})})
     week = week.model_copy(update={"matchups": [tied, *week.matchups[1:]]})
-    star = next(l for l in m.a.lines if l.started)
-    trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[m.b.roster_id, m.a.roster_id],
+    star = next(line for line in m.a.lines if line.started)
+    trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET),
+                  roster_ids=[m.b.roster_id, m.a.roster_id],
                   adds={star.player_id: m.a.roster_id}, drops={star.player_id: m.b.roster_id}, draft_picks=[])
     assert "tied" in build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts["M1.result"].text
     f = recap_facts(week, trades=[trade])
@@ -275,16 +283,19 @@ def test_vocabulary_has_the_profile_terms():
 def _injured(fixture_raw_dir, fixture_history_root):
     # The week 6 "Out" is after the trade, so no injury fact may count it.
     nfl = NflverseWeek(sources={}, gsis={}, drops=None,
-                       injuries={"12490": {4: "Questionable", 5: "Questionable", 6: "Out"}, "8146": {3: "Questionable"}})
+                       injuries={"12490": {4: "Questionable", 5: "Questionable", 6: "Out"},
+                                 "8146": {3: "Questionable"}})
     return _trade_inputs(fixture_raw_dir, fixture_history_root, nfl=nfl)
 
 
 def test_usage_facts(tinputs):
     f = tinputs
     assert f["T5.12490.usage"].text == (
-        "Bhayshul Tuten's snap share was 64 percent over the last 2 weeks before the trade, up from the 2 weeks before that.")
+        "Bhayshul Tuten's snap share was 64 percent over the last 2 weeks before the trade, "
+        "up from the 2 weeks before that.")
     assert f["T5.12490.targets"].text == (
-        "Bhayshul Tuten's target share was 11 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.")
+        "Bhayshul Tuten's target share was 11 percent over the last 2 weeks before the trade, "
+        "flat from the 2 weeks before that.")
     assert f["T3.7569.usage"].text == "Nico Collins's snap share was 71 percent over 3 games before the trade."
 
 
@@ -310,8 +321,11 @@ def test_player_in_two_trades_gets_facts_in_both(tinputs):
 def test_injury_facts_end_at_week_5(fixture_raw_dir, fixture_history_root):
     f = _injured(fixture_raw_dir, fixture_history_root)
     assert f["T5.12490.injury"].text == (
-        "Bhayshul Tuten was listed Questionable on the NFL injury report in week 5, and in 2 weeks this season before the trade.")
-    assert f["T5.8146.injury"].text == "Garrett Wilson was on the NFL injury report in 1 week this season before the trade."
+        "Bhayshul Tuten was listed Questionable on the NFL injury report in week 5, "
+        "and in 2 weeks this season before the trade.")
+    assert f["T5.8146.injury"].text == (
+        "Garrett Wilson was on the NFL injury report in 1 week this season before the trade."
+    )
     assert "T5.11834.injury" not in f
     assert "injury report" not in f["T5.12.got.12490"].text
 
@@ -366,7 +380,9 @@ def test_unlisted_player_gets_no_value_fact_and_a_clause_on_each_side(vinputs):
     facts = vinputs
     assert "T2.13330.value" not in facts
     assert "T2.10236.value" in facts
-    assert facts["T2.7.value"].text == "To Infinity and Bijan gave 31.5 and got 0 in trade value, with Kenyon Sadiq unlisted."
+    assert facts["T2.7.value"].text == (
+        "To Infinity and Bijan gave 31.5 and got 0 in trade value, with Kenyon Sadiq unlisted."
+    )
     assert facts["T2.12.value"].text == (
         "Amon-Ra Dawg Your Team gave 0 and got 31.5 in trade value, with Kenyon Sadiq unlisted."
     )

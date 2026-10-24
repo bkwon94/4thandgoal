@@ -310,7 +310,8 @@ def test_verdict_count_mismatch_marks_all_unsupported(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("A.", "MED.value"), _s("B.", "MED.value"))
-    fake = lambda s, u, m: VerifyOut(verdicts=[Verdict(index=0, supported=True, reason="ok")])
+    def fake(s, u, m):
+        return VerifyOut(verdicts=[Verdict(index=0, supported=True, reason="ok")])
     verdicts = claude_verify(b, ch, sheet, fake)
     assert [v.supported for v in verdicts] == [False, False]
     assert "returned 1 verdicts for 2 sentences" in verdicts[0].reason

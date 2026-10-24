@@ -28,7 +28,10 @@ logger = logging.getLogger(__name__)
 MEDIA_URL = "https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100"
 FILE_DATE = re.compile(r"1QB0\.5PPR4pt_(\d{8})\.png$")
 # WordPress.com turns away a client with no browser User-Agent.
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/130.0 Safari/537.36"
+)
 TIMEOUT_SECONDS = 60
 # Every PNG file starts with these eight bytes. An error page served with a 200 status does not.
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"

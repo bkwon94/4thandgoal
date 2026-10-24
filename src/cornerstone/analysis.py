@@ -68,7 +68,8 @@ class AnalysisOut(BaseModel):
 
 
 class Analysis(BaseModel):
-    """The breakdowns and the code verdict, with the final letters, the analysis per side, and the verdict that stands."""
+    """The breakdowns and the code verdict, with the final letters, the analysis per side,
+    and the verdict that stands."""
 
     breakdowns: tuple[Breakdown, Breakdown]
     code_verdict: Verdict

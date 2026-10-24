@@ -66,7 +66,8 @@ def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):
 
 
 def recap_facts(week, history=None, trades=None):
-    """The sides, impact, swing, and late facts of each trade, kept for the trade analyzer, by ID. The weekly sheet leaves them out, so these tests call the builder."""
+    """The sides, impact, swing, and late facts of each trade, kept for the trade analyzer, by ID.
+    The weekly sheet leaves them out, so these tests call the builder."""
     return {f.id: f for f in trade_facts(Context(week, lambda pid: [], history, trades))}
 
 
@@ -91,7 +92,7 @@ def _decisive_trade(week):
     """
     for m in week.matchups:
         winner, loser = (m.a, m.b) if m.a.points > m.b.points else (m.b, m.a)
-        big = max((l for l in winner.lines if l.started), key=lambda l: l.points)
+        big = max((line for line in winner.lines if line.started), key=lambda line: line.points)
         if big.points > winner.points - loser.points:
             trade = Trade(transaction_id="decisive", created=datetime(2026, 10, 14, tzinfo=ET),
                           roster_ids=[loser.roster_id, winner.roster_id],

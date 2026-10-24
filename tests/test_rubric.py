@@ -34,7 +34,8 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6):
 
 @pytest.fixture
 def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
-    """The week 6 snapshot with the slow sources from the nflverse fixture: the depth chart, the id map, and the injuries."""
+    """The week 6 snapshot with the slow sources from the nflverse fixture: the depth chart, the id map,
+    and the injuries."""
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
@@ -42,7 +43,8 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
 
 
 def _trade(a: int, a_gives: list[str], b: int, b_gives: list[str], asker: int | None = None) -> ProposedTrade:
-    return ProposedTrade(season=2026, sides=(TradeSide(roster_id=a, gives=a_gives), TradeSide(roster_id=b, gives=b_gives)),
+    return ProposedTrade(season=2026,
+                         sides=(TradeSide(roster_id=a, gives=a_gives), TradeSide(roster_id=b, gives=b_gives)),
                          asker=a if asker is None else asker)
 
 
@@ -199,7 +201,8 @@ def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_st
         "The best lineup gains after the trade, but not every player it gets starts.")
 
 
-# Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots, and roster 9 in the sixth has 5 wins.
+# Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
+# and roster 9 in the sixth has 5 wins.
 # Roster 4 has 1 win, four games out, so it is a seller.
 # Rosters 7, 8, 10, 11, and 12 have 4 wins, one game out, so they are in the middle.
 WICKS, JACOBS, SMITH_NJIGBA = "9486", "5850", "9488"
@@ -265,7 +268,8 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
     standing = _adjuster(fourth, "standing")
     assert standing.step == -1
     assert standing.reason == (
-        "The team is out of the playoff race, but it gives the highest-value player in the trade for a lineup gain now.")
+        "The team is out of the playoff race, but it gives the highest-value player in the trade "
+        "for a lineup gain now.")
 
 
 def test_the_adjusters_show_in_rubric_order(snap):
@@ -681,7 +685,8 @@ def test_schedule_leans_for_the_side_that_gets_softer_playoff_opponents_and_agai
     assert (against_fifth.step, against_fifth.lean) == (0, "against")
     assert against_fifth.reason == (
         "The players it gets and the players it gives have the same count of byes left, "
-        "and the players it gets face harder playoff opponents at their positions. The schedule leans against this side.")
+        "and the players it gets face harder playoff opponents at their positions. "
+        "The schedule leans against this side.")
 
 
 def _with_bye(snap, team: str, week: int):
@@ -714,7 +719,8 @@ def test_schedule_leans_on_the_byes_alone_when_the_playoff_opponents_are_even(sl
 
 
 def test_a_kicker_does_not_count_in_the_byes_left(slow_snap):
-    # Saquon Barkley's PHI bye in week 10 is still left. As a kicker, he has no points allowed rank, so he counts on neither signal.
+    # Saquon Barkley's PHI bye in week 10 is still left. As a kicker, he has no points allowed rank,
+    # so he counts on neither signal.
     players = dict(slow_snap.players)
     players[SAQUON] = players[SAQUON].model_copy(update={"position": "K"})
     kicker_snap = slow_snap.model_copy(update={"players": players})

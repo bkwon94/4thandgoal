@@ -28,7 +28,7 @@ def test_negative_air_yards_count_as_zero(nfl_week6, fixture_raw_dir):
 
 def test_drop_lines_sum_value_and_end_zone(nfl_week6, fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
-    golden = next(l for l in drop_lines(wk, nfl_week6) if l.player_id == "12501")
+    golden = next(line for line in drop_lines(wk, nfl_week6) if line.player_id == "12501")
     assert (golden.drops, golden.targets, golden.value, golden.end_zone) == (3, 13, 14.2, 1)
 
 
@@ -73,7 +73,7 @@ def test_stale_nflverse_week_degrades(fixture_nflverse_dir, fixture_raw_dir, tmp
     stale = nflverse_week(2026, 7, [], raw["players"], cache, fetch=lambda url: b"")
     assert stale.drops is None
     lines = drop_lines(parse_week(raw), stale)
-    assert lines and all(l.value is None and l.end_zone is None for l in lines)
+    assert lines and all(line.value is None and line.end_zone is None for line in lines)
 
 
 def test_no_drops_gives_source_none(fixture_raw_dir):
@@ -126,7 +126,7 @@ def test_one_drop_is_one_pass(fixture_raw_dir):
     # Sleeper counts one drop and no targets for one starter, and no drop for any other.
     wk = parse_week(load_raw(fixture_raw_dir))
     side = wk.matchups[0].a
-    line = next(l for l in side.lines if l.started)
+    line = next(line for line in side.lines if line.started)
     stats = {p: {k: v for k, v in s.items() if k not in ("rec_drop", "rec_tgt")} for p, s in wk.stats.items()}
     stats[line.player_id] = {**stats.get(line.player_id, {}), "rec_drop": 1}
     week = wk.model_copy(update={"stats": stats})

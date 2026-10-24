@@ -265,7 +265,6 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
     located = _located_lines(week)
     started = [x for x in located if x[0].started]
     projections_up = any(x[0].projection is not None for x in started)
-    margins = {f.matchup_id: f.margin for f in mfacts}
 
     # Each ranking lists (located line, reason) from best to worst.
     rankings: list[tuple[str, list[tuple[tuple[PlayerLine, int, int], str]]]] = []
@@ -318,7 +317,11 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
         rankings.append((
             "underperformer",
             [
-                (x, f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, {sub(x[0].projection, x[0].points)} under.")
+                (
+                    x,
+                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                    f"{sub(x[0].projection, x[0].points)} under.",
+                )
                 for x in sorted(
                     (x for x in with_projection if x[0].projection >= UNDERPERFORMER_MIN_PROJECTION),
                     key=lambda x: sub(x[0].projection, x[0].points),
@@ -329,7 +332,11 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
         rankings.append((
             "overachiever",
             [
-                (x, f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, {sub(x[0].points, x[0].projection)} over.")
+                (
+                    x,
+                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                    f"{sub(x[0].points, x[0].projection)} over.",
+                )
                 for x in sorted(
                     with_projection,
                     key=lambda x: sub(x[0].points, x[0].projection),
@@ -388,8 +395,8 @@ def position_ranks(week: Week) -> list[PositionRank]:
     out = []
     for position, ordered in _started_by_position(week).items():
         out.extend(
-            PositionRank(player_id=l.player_id, position=position, rank=i + 1, of=len(ordered))
-            for i, (l, _) in enumerate(ordered)
+            PositionRank(player_id=line.player_id, position=position, rank=i + 1, of=len(ordered))
+            for i, (line, _) in enumerate(ordered)
         )
     return out
 
@@ -404,8 +411,8 @@ def position_leaders(week: Week) -> list[PositionLeader]:
     for position in LEADER_POSITIONS:
         ordered = groups[position]
         out.extend(
-            PositionLeader(line=l, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
-            for i, (l, rid) in enumerate(ordered[:3])
+            PositionLeader(line=line, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
+            for i, (line, rid) in enumerate(ordered[:3])
         )
     return out
 

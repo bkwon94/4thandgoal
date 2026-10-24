@@ -45,7 +45,8 @@ def research_players(board: WaiverBoard) -> list[WaiverPlayer]:
 
 
 def build_research_prompt(p: WaiverPlayer, board: WaiverBoard) -> tuple[str, str]:
-    """The system prompt and the user message of the search on one player. The facts let a claim back or dispute them."""
+    """The system prompt and the user message of the search on one player.
+    The facts let a claim back or dispute them."""
     lines = [
         f"Today is {board.built.date().isoformat()}.",
         f"Player: {p.name}, {p.position}, {p.team}.",
@@ -102,5 +103,7 @@ def research_board(board: WaiverBoard, call: SearchCall) -> WaiverBoard:
         buckets[key] = []
         for p in bucket:
             found = claims.get(p.player_id, [])
-            buckets[key].append(p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]}))
+            buckets[key].append(
+                p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
+            )
     return board.model_copy(update={"buckets": buckets, "experts_missing": missing})

@@ -76,7 +76,8 @@ class ProposedTrade(BaseModel):
 
 
 class Breakdown(BaseModel):
-    """The grade of one side: the start letter, the reason for it, each adjuster in rubric order, and the final letter."""
+    """The grade of one side: the start letter, the reason for it, each adjuster in rubric order,
+    and the final letter."""
 
     roster_id: int
     start_letter: Letter
@@ -169,7 +170,8 @@ def unlisted_players(snapshot: Snapshot, players: list[str], handcuffs: list[str
 def _start_letters(
     trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str],
 ) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
-    """The start letter and its reason for each side, as a pair, before any adjuster. A handcuff counts as zero in the sums."""
+    """The start letter and its reason for each side, as a pair, before any adjuster.
+    A handcuff counts as zero in the sums."""
     a, b = trade.sides
     if snapshot.chart is None:
         return _both_at_c(NO_CHART_REASON)
@@ -217,7 +219,8 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
 
 
 def _final_letter(start: Letter, adjusters: list[Adjuster]) -> Letter:
-    """The start letter moved by the sum of the steps. The sum clamps to CLAMP_STEPS either way, the letter to A to F."""
+    """The start letter moved by the sum of the steps. The sum clamps to CLAMP_STEPS either way,
+    the letter to A to F."""
     total = max(-CLAMP_STEPS, min(CLAMP_STEPS, sum(adjuster.step for adjuster in adjusters)))
     return LETTERS[max(0, min(len(LETTERS) - 1, LETTERS.index(start) - total))]
 

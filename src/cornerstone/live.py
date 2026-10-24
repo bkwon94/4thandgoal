@@ -175,7 +175,8 @@ def refresh_sources(
     # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
     trade_week = window_week(week.season_start, now)
     refreshed, stale = _refresh(nflverse_cache_dir(repo), season, fetch_nflverse, max_age_seconds)
-    # Past weeks never change, so the fetch gets only a week that is not saved. A failure leaves a gap that the facts skip.
+    # Past weeks never change, so the fetch gets only a week that is not saved.
+    # A failure leaves a gap that the facts skip.
     # The inputs end at the week before the trade week. The raw data of this run gives its own week, so no fetch does.
     try:
         saved = fetch_history(LEAGUE_ID, season, min(trade_week, week.week) - 1, history_root(repo, season),
