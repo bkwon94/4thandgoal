@@ -13,7 +13,7 @@ before the last is a short particle such as "St.", "Van", "De", or "Von". "Amon-
 
 **Status:** open
 
-- [ ] "Amon-Ra St. Brown" shortens to "St. Brown".
-- [ ] "Equanimeous St. Brown" and "Amon-Ra St. Brown" in one trade both show in full, as the shared-name rule says.
-- [ ] "Josh Jacobs" still shortens to "Jacobs". "Marvin Harrison Jr." still shortens to "Harrison".
-- [ ] Every existing names test passes unchanged.
+- [x] "Amon-Ra St. Brown" shortens to "St. Brown".
+- [x] "Equanimeous St. Brown" and "Amon-Ra St. Brown" in one trade both show in full, as the shared-name rule says.
+- [x] "Josh Jacobs" still shortens to "Jacobs". "Marvin Harrison Jr." still shortens to "Harrison".
+- [x] Every existing names test passes unchanged.
