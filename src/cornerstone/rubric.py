@@ -209,7 +209,8 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
     if all(pid in values for pid in players):
         worth = {pid: Decimal(str(values[pid])) for pid in players}
     else:
-        worth = {pid: lineup_value(snapshot, pid) for pid in players}
+        # A handcuff counts as zero here too, so a handcuff due back with a high projection is never the pick.
+        worth = {pid: Decimal(0) if pid in handcuffs else lineup_value(snapshot, pid) for pid in players}
     top = max(worth.values())
     leaders = [pid for pid, w in worth.items() if w == top]
     return leaders[0] if len(leaders) == 1 else None
