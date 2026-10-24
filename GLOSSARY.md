@@ -312,6 +312,10 @@ _Avoid_: target rate, target percent
 A player's share of his team's air yards in one game, from the nflverse weekly player file. It can be negative on a pass behind the line.
 _Avoid_: aDOT share, depth share
 
+**Carry share**:
+A player's share of his team's carries in one game, in percent, from our own count of the play by play.
+_Avoid_: rush share, touch share
+
 **WOPR**:
 Weighted opportunity rating: 1.5 times target share plus 0.7 times air yards share, per game, from the nflverse weekly player file. It is not a share, so it can pass 100 or go negative.
 _Avoid_: opportunity share, volume score
