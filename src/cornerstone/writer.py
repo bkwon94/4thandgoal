@@ -65,13 +65,13 @@ def _get_client() -> anthropic.Anthropic:
 
 def parse_call(
     content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
-    cache_ttl: str | None = None, effort: str = "high",
+    cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
 ) -> BaseModel:
     """One user message to Claude, parsed into the output model.
 
     Every Claude call in the tool goes through here. The system prompt goes out as
     one cached block. `cache_ttl` None keeps the default five-minute lifetime.
-    `effort` sets the depth of the answer.
+    `effort` sets the depth of the answer. `tools` adds server tools, such as web search.
     """
     # The chart read has no system prompt, so the argument goes out only when there is one.
     extra = {}
@@ -82,6 +82,9 @@ def parse_call(
         extra["system"] = [
             {"type": "text", "text": system, "cache_control": cache_control}
         ]
+    # Only the research call searches the web, so every other call sends no tools.
+    if tools is not None:
+        extra["tools"] = tools
     response = _get_client().messages.parse(
         model=MODEL,
         max_tokens=16000,

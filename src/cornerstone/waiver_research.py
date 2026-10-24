@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from cornerstone.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS
-from cornerstone.writer import RefusalError, WriterError, load_prompt
+from cornerstone.writer import RefusalError, WriterError, load_prompt, parse_call
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +22,19 @@ SearchCall = Callable[[str, str], ResearchOut]
 # The drops bucket holds rostered players. A take on a player to drop is not a waiver take, so he gets no search.
 DROPS = "drops"
 
+# The dynamic filter version keeps only the relevant parts of each page in the context, so a call reads fewer
+# tokens. Three searches find the Yahoo pages and one wider search, and they cap the cost of one player.
+WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_uses": 3}
+# A waiver take is a short lookup, not a deep analysis, so the call trades depth for speed and cost.
+RESEARCH_EFFORT = "low"
+
 # A claim cites its source by URL, so a claim with no web URL has no citation.
 WEB_URL = re.compile(r"^https?://\S+$")
+
+
+def search_call(system: str, user: str) -> ResearchOut:
+    """The real search: one Claude call with the web search tool, parsed into the claims on one player."""
+    return parse_call(user, ResearchOut, system, effort=RESEARCH_EFFORT, tools=[WEB_SEARCH_TOOL])
 
 
 def research_players(board: WaiverBoard) -> list[WaiverPlayer]:

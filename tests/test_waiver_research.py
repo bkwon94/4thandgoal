@@ -6,12 +6,13 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import anthropic
+import pytest
 import httpx2
 
 from cornerstone.models import BoardScores, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.verifier import without_urls
-from cornerstone.waiver_research import research_board
+from cornerstone.waiver_research import build_research_prompt, research_board
 from cornerstone.writer import WriterError
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
@@ -97,3 +98,43 @@ def test_each_claim_lands_in_the_facts_with_its_url_as_the_citation():
     assert first.players == ["Tre Tucker"]
     # Every digit outside the URL is in the numbers. The URL digits are the citation, not a claim.
     assert set(NUMBER_TOKEN.findall(without_urls(first.text))) == set(first.numbers) == {"31"}
+
+
+def test_the_prompt_names_the_yahoo_writers_before_the_wider_web_and_keeps_to_7_days():
+    system, user = build_research_prompt(_player("1"), _board())
+    order = [system.index(s) for s in ("https://sports.yahoo.com/author/josh-norris/",
+                                       "https://sports.yahoo.com/author/hayden-winks/",
+                                       "https://sports.yahoo.com/author/matt-harmon/",
+                                       "https://sports.yahoo.com/fantasy/article/",
+                                       "The wider web")]
+    assert order == sorted(order)
+    assert "Use only takes and news from the last 7 days before today's date." in system
+    assert user.startswith("Today is 2026-10-20.")
+
+
+@pytest.mark.live
+def test_the_real_search_returns_cited_claims_for_one_player(monkeypatch):
+    """One real Claude call with web search for one player. It prints the claims and the usage of the call."""
+    from cornerstone import writer
+    from cornerstone.models import Fact
+    from cornerstone.waiver_research import search_call
+
+    responses = []
+    client = writer._get_client()
+
+    class Recorder:
+        def parse(self, **kwargs):
+            responses.append(client.messages.parse(**kwargs))
+            return responses[-1]
+
+    monkeypatch.setattr(writer, "_get_client", lambda: type("Client", (), {"messages": Recorder()})())
+    player = _player("12345", "Tre Tucker")
+    player.facts = [Fact(id="W.usage.12345", text="Tre Tucker played 88% of snaps and took 9 targets last week.",
+                         numbers=["88", "9"], teams=[], players=["Tre Tucker"])]
+    board = research_board(_board(best_adds=[player]), search_call)
+    claims = board.buckets["best_adds"][0].research
+    usage = responses[0].usage
+    print("claims:", [c.model_dump() for c in claims])
+    print("usage:", usage)
+    assert not board.experts_missing
+    assert all(c.url.startswith("http") for c in claims)
