@@ -10,6 +10,8 @@ from cornerstone.models import UsageWeek
 from cornerstone.nflverse_rows import _number, _rows
 
 # The positions the usage covers. A defender can draw a target on a trick play, but he has no usage.
+# The Sleeper position map is the real gate, because only its skill players have a Sleeper ID in the gsis map.
+# This filter only trims the file.
 PLAYER_POSITIONS = ("QB", "RB", "WR", "TE")
 
 
@@ -51,7 +53,7 @@ def read_player_weeks(path: Path, first_week: int, week: int,
 
 def with_player_weeks(usage: dict[str, list[UsageWeek]],
                       player_weeks: dict[tuple[str, int], PlayerWeek]) -> dict[str, list[UsageWeek]]:
-    """The usage with the targets, the target share, and the two new shares of the file where it has a row.
+    """The usage with the targets, the target share, the air yards share, and the WOPR of the file where it has a row.
 
     A week with no row in the file keeps our count, and its air yards share and WOPR stay None.
     """

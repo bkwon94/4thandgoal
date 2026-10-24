@@ -1,6 +1,7 @@
 """
 Tests for the reader of the nflverse weekly player file and the switch of the usage targets to it.
-They read a cut of the real 2026 file: the week 6 fixture players over the season and six full team weeks.
+They read a cut of the real 2026 file: the week 6 fixture players over the season and the targeted
+players of six team weeks.
 """
 import csv
 import gzip
@@ -41,7 +42,7 @@ def test_the_reader_keeps_the_window_the_skill_positions_and_the_mapped_players(
 
 
 def test_a_file_with_no_row_for_the_week_gives_none():
-    # The cut holds weeks 1 to 7, so week 8 has no row.
+    # The cut holds weeks 1 to 6, so week 8 has no row.
     assert read_player_weeks(STATS_PLAYER, 5, 8, {GOLDEN_GSIS: GOLDEN}) is None
 
 
@@ -66,10 +67,6 @@ def test_the_week_extract_takes_the_targets_from_the_file(nfl_week6):
     assert nfl_week6.sources["nflverse_stats_player"] is True
 
 
-def _no_network(url):
-    raise AssertionError(f"network call to {url}")
-
-
 def _cache_without_the_file(tmp_path: Path) -> Path:
     for f in FIXTURES.iterdir():
         if f.name != STATS_PLAYER.name:
@@ -90,8 +87,9 @@ def test_with_the_file_gone_the_usage_keeps_our_count_and_the_flag_is_false(tmp_
     assert nfl.sources["nflverse_pbp"] is True
 
 
-def test_a_player_with_no_gsis_id_keeps_our_count_and_has_no_new_shares():
-    # The map has no gsis id for Golden, so the file cannot name him and our count stays.
+def test_a_player_with_no_gsis_id_keeps_our_count_and_has_no_air_yards_share_or_wopr():
+    # The map has no gsis id for Golden, so the file cannot name him and our count stays. In a real build such a
+    # player has at most snap-only rows from his PFR ID, and the file leaves them as they are.
     file_weeks = read_player_weeks(STATS_PLAYER, 6, 6, {"00-0036358": "6786"})
     golden = with_player_weeks({GOLDEN: [_usage(6, 4, 100)]}, file_weeks)[GOLDEN][0]
     assert (golden.targets, golden.target_share, golden.air_yards_share, golden.wopr) == (4, 100, None, None)

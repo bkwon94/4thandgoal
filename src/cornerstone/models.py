@@ -453,8 +453,10 @@ class UsageWeek(BaseModel):
     # The targets and the carries at the opponent's 20-yard line or closer.
     red_zone_touches: int
     # From the nflverse weekly player file. None when the file is missing or has no row for him that week.
+    # A real value can be negative or above 100, because a target behind the line of scrimmage has negative air yards.
     air_yards_share: int | None = None
     # Weighted opportunity rating, 1.5 times the target share plus 0.7 times the air yards share. None as above.
+    # It is a weighted sum and not a share, so a real value can be negative or above 100.
     wopr: int | None = None
 
 

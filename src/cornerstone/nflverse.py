@@ -242,7 +242,7 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     stats_player = get(STATS_PLAYER_URL)
     player_weeks = (nflverse_players.read_player_weeks(stats_player, first_week, week, sleeper_of_gsis)
                     if stats_player else None)
-    # The file counts targets as nflverse does, so it replaces our count wherever it has a row.
+    # The file is the nflverse count of targets, so it replaces our count wherever it has a row.
     if usage is not None and player_weeks is not None:
         usage = nflverse_players.with_player_weeks(usage, player_weeks)
     environment = None if plays is None else nflverse_usage.read_environment(plays)
