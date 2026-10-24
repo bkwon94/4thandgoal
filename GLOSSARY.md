@@ -303,6 +303,8 @@ K, K over DEF.
 **Waiver pool**:
 Every player with a team, active, at QB, RB, WR, TE, K, or DEF, who is on no roster in this league.
 Sleeper gives a defense no status, so an active defense counts on its active flag.
+Sleeper gives an IR player the status Inactive. An active player with that status and an out injury status
+joins the pool for stashes only. Every other bucket skips a player who is out.
 Use "pool" in code and "free agents" on the page.
 _Avoid_: free agent list, waiver wire (alone; that is the page)
 
@@ -333,18 +335,18 @@ beats him: the difference over weeks N+1 to 17, divided by the count of those we
 _Avoid_: gap (that is the swing's difference between a win and a loss), edge
 
 **Sneaky add**:
-A pool player at QB, RB, WR, or TE whose usage trend score is in the top quarter and whose projection score
-is in the bottom half, or who sits one depth chart slot below a player who is out. The bucket ranks by usage
-trend, with the shared cap. A player in best adds is not a sneaky add. The reason code is `usage_rise` or
-`behind_injury`.
-_Avoid_: sleeper (that is the league app), deep add
+A healthy pool player at QB, RB, WR, or TE whose usage trend score is in the top quarter and whose
+projection score is in the bottom half, or who sits one depth chart slot below a player who is out. The
+bucket ranks by usage trend, with the shared cap. A player in best adds is not a sneaky add. The reason code
+is `usage_rise` or `behind_injury`.
+_Avoid_: sleeper, deep add. Sleeper is the league app.
 
 **Stash**:
 A pool player at QB, RB, WR, or TE who is out with a return week inside the season and a rest of season
 projection in the top half of his position. The returns file gives the return week first, the injury report
-second. A handcuff counts too: a player one slot below a healthy starter who is in the top half of the
-position when the starter's rest of season projection counts as his. The bucket ranks by rest of season
-projection, with the shared cap. The reason code is `return` or `handcuff`.
+second. A handcuff counts too: an RB one slot below a healthy starter whose rest of season projection is in
+the top half of every RB, rostered or not. A stash needs a rest of season projection above 0. The bucket
+ranks by rest of season projection, with the shared cap. The reason code is `return` or `handcuff`.
 _Avoid_: IR stash (alone), hold
 
 **Story fact**:

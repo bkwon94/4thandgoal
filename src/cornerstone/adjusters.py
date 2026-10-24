@@ -279,10 +279,14 @@ def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "selle
     return "middle"
 
 
+def back_inside(week: int | None, after: int, by: int) -> bool:
+    """True when a return week falls after week `after` and by week `by`. No return week is never inside."""
+    return week is not None and after < week <= by
+
+
 def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player due back after the last completed week and by RETURN_BY_WEEK."""
-    week = snapshot.returns.get(player_id)
-    return week is not None and snapshot.as_of.stats_through < week <= RETURN_BY_WEEK
+    return back_inside(snapshot.returns.get(player_id), snapshot.as_of.stats_through, RETURN_BY_WEEK)
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
