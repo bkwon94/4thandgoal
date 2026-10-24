@@ -18,7 +18,9 @@ import pytest
 from cornerstone.history import HISTORY_FILES, history_dir, history_root
 from pathlib import Path
 
-from cornerstone.models import BuildRecord, NflverseWeek, Sentence, Verdict, VerifyFile, VerifyOut
+from cornerstone.models import (
+    BuildRecord, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyFile, VerifyOut,
+)
 from cornerstone.nflverse import nflverse_week
 from cornerstone.pipeline import (
     BuildStopped, _write_rankings, make_bundle, read_verify, run_build, run_page_json, run_rankings, run_rewrite,
@@ -27,6 +29,7 @@ from cornerstone.pipeline import (
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.sheet import read_bundle
+from cornerstone.writer import WriterError
 
 ET = ZoneInfo("America/New_York")
 
@@ -70,7 +73,11 @@ def _forbidden_nflverse(season, week, player_ids, players, teams):
     raise AssertionError("the saved extract must not be fetched again")
 
 
-OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes, "nflverse": _fixture_nflverse}
+def _no_claims(system, user):
+    return ResearchOut(claims=[])
+
+
+OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes, "nflverse": _fixture_nflverse, "research": _no_claims}
 
 
 def _repo(tmp_path, fixture_raw_dir):
@@ -387,6 +394,60 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
     monkeypatch.setattr("cornerstone.pipeline.waiver_board", no_engine)
     run_rewrite(repo, 2026, 6, "next_week", _fake, **OFFLINE)
     assert _waiver(repo) == built
+
+
+def _repo_with_free_agent(tmp_path, fixture_raw_dir):
+    """The week 6 repo with one free agent WR, so the pool and the best adds bucket hold one player."""
+    repo = _repo(tmp_path, fixture_raw_dir)
+    raw = week_dir(repo, 2026, 6) / "raw"
+    players = json.loads((raw / "players.json").read_text())
+    players["80001"] = {"position": "WR", "team": "LV", "status": "Active", "active": True, "full_name": "Free Agent"}
+    (raw / "players.json").write_text(json.dumps(players))
+    ahead = json.loads((raw / "projections_ahead.json").read_text())
+    for entry in ahead:
+        entry["projections"]["80001"] = 8.0
+    (raw / "projections_ahead.json").write_text(json.dumps(ahead))
+    return repo
+
+
+def _one_claim(asked):
+    def call(system, user):
+        asked.append(user)
+        return ResearchOut(claims=[ResearchClaim(
+            text="He is the WR2 now.", url="https://sports.yahoo.com/fantasy/article/x-141451458.html",
+            source="Yahoo Fantasy", date="2026-10-20", stance="news")])
+    return call
+
+
+def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path, fixture_raw_dir):
+    repo = _repo_with_free_agent(tmp_path, fixture_raw_dir)
+    asked = []
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "research": _one_claim(asked)})
+    assert len(asked) == 1 and "Free Agent" in asked[0]
+    player = _waiver(repo)["buckets"]["best_adds"][0]
+    assert [c["text"] for c in player["research"]] == ["He is the WR2 now."]
+    saved = read_bundle(week_dir(repo, 2026, 6) / "facts.json").waiver.buckets["best_adds"][0]
+    assert "WV.research.80001.1" in {f.id for f in saved.facts}
+    built = _waiver(repo)
+
+    def no_search(system, user):
+        raise AssertionError("a rewrite ran the search")
+
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**OFFLINE, "research": no_search})
+    assert _waiver(repo) == built
+
+
+def test_a_search_failure_for_every_player_flags_the_missing_experts_and_the_build_completes(tmp_path, fixture_raw_dir):
+    repo = _repo_with_free_agent(tmp_path, fixture_raw_dir)
+
+    def down(system, user):
+        raise WriterError("no parsed output")
+
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "research": down})
+    assert page.exists()
+    body = _waiver(repo)
+    assert body["experts_missing"] is True
+    assert body["buckets"]["best_adds"][0]["research"] == []
 
 
 def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):

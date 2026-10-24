@@ -37,6 +37,7 @@ from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history
+from cornerstone.waiver_research import SearchCall, research_board, search_call
 from cornerstone.writer import ClaudeCall
 
 log = logging.getLogger(__name__)
@@ -258,6 +259,7 @@ def run_build(
     news: NewsFetcher = fetch_news,
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
+    research: SearchCall | None = None,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_dir = directory / "raw"
@@ -274,6 +276,10 @@ def run_build(
     bundle, record = make_bundle(
         repo, season, week, news, fetched=first_fetch.fetched if first_fetch else None,
         nflverse=nflverse or fetch_nflverse(repo))
+    # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
+    # No argument means the real search. A test passes a fake one.
+    if bundle.waiver is not None:
+        bundle.waiver = research_board(bundle.waiver, research or search_call)
     write_bundle(bundle, directory / "facts.json")
 
     blurbs: dict[str, Blurb] = {}
@@ -339,9 +345,10 @@ def run_rewrite(
     news: NewsFetcher = fetch_news,
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
+    research: SearchCall | None = None,
 ) -> Path:
-    # The news and nflverse arguments keep the signature the same as run_build.
-    # A rewrite reads the saved facts, so it needs neither news nor a fetch.
+    # The news, nflverse, and research arguments keep the signature the same as run_build.
+    # A rewrite reads the saved facts and the saved claims, so it needs no news, no fetch, and no search.
     directory = week_dir(repo, season, week)
     bundle, blurbs = _load_saved_week(repo, season, week)
     chosen = next((c for c in bundle.sheet.chapters if c.key == chapter), None)
