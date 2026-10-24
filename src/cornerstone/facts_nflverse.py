@@ -21,7 +21,8 @@ class GapLine(NamedTuple):
     gap: float
 
 
-# The glossary defines a shootout over the last 3 weeks, so one odd game does not make a team lean pass.
+# A shootout reads the last 3 games a team played, so one odd game does not decide the rate. A team with fewer
+# games uses all of them.
 SHOOTOUT_GAMES = 3
 
 
@@ -106,7 +107,7 @@ def expected_awards(
 
 
 def _recent_rate(weeks: list[TeamWeek]) -> tuple[float, int] | None:
-    """The pass rate over expected over the last SHOOTOUT_GAMES weeks a team has, and the count of those weeks."""
+    """The pass rate over expected over the last SHOOTOUT_GAMES games a team played, and the count of those games."""
     recent = weeks[-SHOOTOUT_GAMES:]
     plays = sum(w.plays for w in recent)
     if not plays:

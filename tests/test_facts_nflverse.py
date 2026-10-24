@@ -256,14 +256,21 @@ def _shootout_bundle(fixture_raw_dir, environment, next_games=(("KC", "SEA"), ("
     return build_bundle(wk, news=lambda pid: [], nfl=nfl)
 
 
-# KC leans pass over its last 3 games, though week 3 ran hard: 1530 over 300 plays is 5.1.
-# SEA has 2 games, so its rate is 640 over 200 plays, 3.2. PHI sits at 0, and NYG has no games.
+# KC has a positive pass rate over expected over its last 3 games, though week 3 had many runs: 1530 over 300
+# plays is 5.1. SEA has 2 games, so its rate is 640 over 200 plays, 3.2. PHI sits at 0, ARI is under 0, and NYG
+# has no games. No week 6 starter plays for MIA or MIN.
 SHOOTOUT_ENVIRONMENT = {
     "KC": _team_weeks((3, 100, -9000.0), (4, 100, 600.0), (5, 100, 300.0), (6, 100, 630.0)),
     "SEA": _team_weeks((5, 100, 400.0), (6, 100, 240.0)),
     "DAL": _team_weeks((4, 100, 500.0), (5, 100, 500.0), (6, 100, 500.0)),
     "PHI": _team_weeks((4, 100, 100.0), (5, 100, -200.0), (6, 100, 100.0)),
     "HOU": _team_weeks((6, 100, 800.0)),
+    "DEN": _team_weeks((6, 100, 300.0)),
+    "ARI": _team_weeks((6, 100, -150.0)),
+    "SF": _team_weeks((6, 100, 200.0)),
+    "LAR": _team_weeks((6, 100, 100.0)),
+    "MIA": _team_weeks((6, 100, 400.0)),
+    "MIN": _team_weeks((6, 100, 404.0)),
 }
 
 
@@ -271,11 +278,11 @@ def _shootout_ids(bundle) -> list[str]:
     return [fid for fid in bundle.sheet.facts if fid.startswith("NX.shootout.")]
 
 
-def test_a_game_where_both_teams_lean_pass_is_a_shootout(fixture_raw_dir):
+def test_a_game_where_both_teams_have_a_positive_pass_rate_over_expected_is_a_shootout(fixture_raw_dir):
     f = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT).sheet.facts["NX.shootout.KCvSEA"]
     assert f.text == (
-        "KC at SEA next week is a shootout: KC's pass rate over expected is 5.1 over its last 3 games, "
-        "and SEA's is 3.2 over its last 2 games. League starters in that game: "
+        "KC at SEA next week is a shootout. KC's pass rate over expected is 5.1 percentage points over its last "
+        "3 games. SEA's is 3.2 over its last 2 games. 8 league starters on 6 rosters: "
         "Lil Fridge (Travis Kelce, Jaxon Smith-Njigba); Amon-Ra Dawg Your Team (Emanuel Wilson); "
         "Bo Girds (Kenneth Walker); "
         "London Cooking (Seattle Seahawks); To Infinity and Bijan (Patrick Mahomes); "
@@ -289,10 +296,29 @@ def test_a_game_with_a_team_at_or_under_zero_or_with_no_games_is_no_shootout(fix
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT)) == ["NX.shootout.KCvSEA"]
 
 
+def test_a_game_with_one_team_under_zero_is_no_shootout(fixture_raw_dir):
+    bundle = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, [("DEN", "ARI"), ("ARI", "DEN")])
+    assert _shootout_ids(bundle) == []
+
+
+def test_a_sheet_with_a_shootout_and_no_league_starter_says_so(fixture_raw_dir):
+    f = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, [("MIA", "MIN")]).sheet.facts["NX.shootout.MIAvMIN"]
+    assert f.text == (
+        "MIA at MIN next week is a shootout. MIA's pass rate over expected is 4.0 percentage points over its last "
+        "game. MIN's is 4.0 over its last game. No league starter plays in that game.")
+    assert f.teams == [] and f.players == [] and f.numbers == ["4.0", "4.0"]
+
+
+def test_a_shootout_names_at_most_8_starters(fixture_raw_dir):
+    f = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, [("SF", "LAR")]).sheet.facts["NX.shootout.SFvLAR"]
+    assert f.text.endswith("; and 2 more.")
+    assert " 10 league starters on 7 rosters: " in f.text and len(f.players) == 8
+
+
 def test_a_team_with_one_game_reads_as_its_last_game(fixture_raw_dir):
     games = [("NYG", "HOU"), ("HOU", "KC")]
     f = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, games).sheet.facts
-    assert "HOU's pass rate over expected is 8 over its last game" in f["NX.shootout.HOUvKC"].text
+    assert "HOU's pass rate over expected is 8.0 percentage points over its last game." in f["NX.shootout.HOUvKC"].text
 
 
 def test_every_number_token_in_a_shootout_fact_is_in_its_numbers(fixture_raw_dir):
@@ -300,8 +326,8 @@ def test_every_number_token_in_a_shootout_fact_is_in_its_numbers(fixture_raw_dir
     text = f.text
     for name in sorted([*f.teams, *f.players], key=len, reverse=True):
         text = text.replace(name, "")
-    assert set(re.findall(r"\d+(?:\.\d+)?", text)) == {"5.1", "3", "3.2", "2"}
-    assert {"5.1", "3", "3.2", "2"} <= set(f.numbers)
+    assert set(re.findall(r"\d+(?:\.\d+)?", text)) == {"5.1", "3", "3.2", "2", "8", "6"}
+    assert {"5.1", "3", "3.2", "2", "8", "6"} <= set(f.numbers)
 
 
 def test_only_the_next_week_chapter_cites_the_shootout_facts(fixture_raw_dir):
@@ -310,7 +336,7 @@ def test_only_the_next_week_chapter_cites_the_shootout_facts(fixture_raw_dir):
         assert cited == (chapter.key == "next_week"), chapter.key
 
 
-def test_a_chapter_with_the_environment_missing_has_no_shootout_fact(fixture_raw_dir):
+def test_a_sheet_with_the_environment_missing_has_no_shootout_fact(fixture_raw_dir):
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, None)) == []
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, next_games=None)) == []
     wk = parse_week(load_raw(fixture_raw_dir))

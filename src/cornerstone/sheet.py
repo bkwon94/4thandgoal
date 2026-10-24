@@ -655,8 +655,23 @@ def next_facts(c: Context) -> list[Fact]:
     return out
 
 
+# The writer reads one number to pick a shootout, so a long list of names adds no value past this cap.
+SHOOTOUT_NAMES_MAX = 8
+
+
 def _last_games(count: int, n: Nums) -> str:
     return "its last game" if count == 1 else f"its last {n(count)} games"
+
+
+def _one_decimal(x: float, n: Nums) -> str:
+    # One decimal is enough for a rate in percentage points, and a fixed form keeps "4.0" from reading as a count.
+    s = f"{_round_half_up(x, 1):.1f}"
+    n.seen.append(s)
+    return s
+
+
+def _plural(count: int, word: str, n: Nums) -> str:
+    return f"{n(count)} {word}" + ("" if count == 1 else "s")
 
 
 def shootout_facts(c: Context) -> list[Fact]:
@@ -667,24 +682,32 @@ def shootout_facts(c: Context) -> list[Fact]:
     out = []
     for s in shootouts(c.nfl):
         n = Nums()
+        # Short sentences, and the unit once, so the writer cannot turn the rate into a percent.
         text = (
-            f"{s.away} at {s.home} next week is a shootout: {s.away}'s pass rate over expected is "
-            f"{n(s.away_rate)} over {_last_games(s.away_games, n)}, and {s.home}'s is {n(s.home_rate)} over "
-            f"{_last_games(s.home_games, n)}."
+            f"{s.away} at {s.home} next week is a shootout. {s.away}'s pass rate over expected is "
+            f"{_one_decimal(s.away_rate, n)} percentage points over {_last_games(s.away_games, n)}. "
+            f"{s.home}'s is {_one_decimal(s.home_rate, n)} over {_last_games(s.home_games, n)}."
         )
-        starters: dict[int, list[str]] = {}
-        for m in c.week.matchups:
-            for side in (m.a, m.b):
-                for line in side.lines:
-                    if line.started and line.nfl_team in (s.away, s.home):
-                        starters.setdefault(side.roster_id, []).append(line.name)
+        starters = [
+            (side.roster_id, line.name)
+            for m in c.week.matchups for side in (m.a, m.b) for line in side.lines
+            if line.started and line.nfl_team in (s.away, s.home)
+        ]
+        shown: dict[int, list[str]] = {}
+        for rid, name in starters[:SHOOTOUT_NAMES_MAX]:
+            shown.setdefault(rid, []).append(name)
         if starters:
-            text += " League starters in that game: " + "; ".join(
-                f"{c.team(rid)} ({', '.join(names)})" for rid, names in starters.items()) + "."
+            rosters = {rid for rid, _ in starters}
+            text += (
+                f" {_plural(len(starters), 'league starter', n)} on {_plural(len(rosters), 'roster', n)}: "
+                + "; ".join(f"{c.team(rid)} ({', '.join(names)})" for rid, names in shown.items())
+            )
+            more = len(starters) - SHOOTOUT_NAMES_MAX
+            text += f"; and {n(more)} more." if more > 0 else "."
         else:
             text += " No league starter plays in that game."
-        out.append(fact(f"NX.shootout.{s.away}v{s.home}", text, n, [c.team(rid) for rid in starters],
-                        [name for names in starters.values() for name in names]))
+        out.append(fact(f"NX.shootout.{s.away}v{s.home}", text, n, [c.team(rid) for rid in shown],
+                        [name for names in shown.values() for name in names]))
     return out
 
 
