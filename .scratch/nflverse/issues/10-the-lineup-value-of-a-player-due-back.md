@@ -13,12 +13,12 @@ is missing, and then the adjuster grades as today. The live API refresh must hav
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] A side that gets a player due back with 0 games in the last 4 weeks and a projection of 18 a game gains the best lineup, and the reason names him, his return week, and the 18.
-- [ ] A player not due back keeps his recent points per game, whatever his projection.
-- [ ] A player due back with no projection row counts as 0, as today.
-- [ ] With the projections file missing, every grade equals today's grade, and the reason says the projections are not available only when a due-back player is in the trade.
-- [ ] The projection weeks skip the bye and stop at the last regular week, and a return week after the last regular week gives 0.
-- [ ] The finder picks up the change through the grade and needs no edit.
-- [ ] Every existing rubric test passes unchanged.
+- [x] A side that gets a player due back with 0 games in the last 4 weeks and a projection of 18 a game gains the best lineup, and the reason names him, his return week, and the 18.
+- [x] A player not due back keeps his recent points per game, whatever his projection.
+- [x] A player due back with no projection row counts as 0, as today.
+- [x] With the projections file missing, every grade equals today's grade, and the reason says the projections are not available only when a due-back player is in the trade.
+- [x] The projection weeks skip the bye and stop at the last regular week, and a return week after the last regular week gives 0.
+- [x] The finder picks up the change through the grade and needs no edit.
+- [x] Every existing rubric test passes unchanged.
