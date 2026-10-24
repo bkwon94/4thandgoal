@@ -66,17 +66,24 @@ def price_players(players: list[WaiverPlayer], raw: dict[str, object], claims: l
     rivals = _rivals(raw)
     # Only the dedicated slots count. A FLEX slot takes any of several positions, so no one position needs it.
     slots = Counter(raw["league"]["roster_positions"])
-    return [p.model_copy(update={"price": _price(p, rivals, slots[p.position])}) for p in players]
+    return [p.model_copy(update={"price": _price(p, rivals, slots[p.position], claims)}) for p in players]
 
 
-def _price(player: WaiverPlayer, rivals: list[Rival], slots: int) -> WaiverPrice:
+def _price(player: WaiverPlayer, rivals: list[Rival], slots: int, claims: list[WaiverClaim]) -> WaiverPrice:
     top = max((_expected_bid(r, player.position, slots) for r in rivals), key=lambda b: b.amount)
-    # The smallest whole dollar above the top expected bid.
-    bid = math.floor(top.amount) + 1
+    past = max((c.bid for c in claims if c.won and c.position == player.position), default=None)
+    ceiling = max(r.budget_left for r in rivals)
+    # The smallest whole dollar above the top expected bid, and above the top past win at the position.
+    floor = max(math.floor(top.amount), past if past is not None else 0) + 1
+    bid = min(floor, ceiling)
     n = Nums()
     text = (f"Bid ${n(bid)} to win {player.name}. The top rival bid is about ${n(top.amount)}, "
             f"from {top.rival.team} with ${n(top.rival.budget_left)} left")
     text += f" and a need at {player.position}." if top.need else "."
+    if past is not None:
+        text += f" The top winning {player.position} claim this season is ${n(past)}."
+    if bid < floor:
+        text += f" No rival has more than ${n(ceiling)} left."
     return WaiverPrice(bid=bid, fact=fact(f"waiver_price_{player.player_id}", text, n, [top.rival.team], [player.name]))
 
 

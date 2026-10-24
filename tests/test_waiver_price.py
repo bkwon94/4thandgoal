@@ -62,3 +62,23 @@ def test_a_rival_with_a_need_at_the_position_raises_the_price_more_than_one_with
     assert _bid(covered) == 8
     # No roster needs a WR, so the WR price stays at $8 in both leagues.
     assert _bid(needy, "WR") == 8
+
+
+def _claim(position: str, bid: int, week: int = 3, won: bool = True, roster_id: int = 1) -> WaiverClaim:
+    return WaiverClaim(player_id=f"7{week}{bid}", roster_id=roster_id, position=position, week=week, bid=bid, won=won)
+
+
+def test_a_past_winning_claim_at_the_position_raises_the_floor_to_that_bid_plus_1():
+    raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
+    # A $20 RB win raises the RB floor to $21. A lost $30 RB claim and a won $50 WR claim leave the RB floor.
+    claims = [_claim("RB", 20), _claim("RB", 30, won=False), _claim("WR", 50)]
+    assert _bid(raw, "RB", claims) == 21
+    assert _bid(raw, "WR", claims) == 51
+
+
+def test_the_price_never_exceeds_the_highest_rival_budget_left_and_is_a_whole_dollar():
+    raw = _league([(40, [None, "Out"]), (60, [None, None]), (20, [None, None])])
+    # A $70 RB win sets the floor at $71, but no rival has more than $60 left.
+    bid = _bid(raw, "RB", [_claim("RB", 70)])
+    assert bid == 60
+    assert isinstance(bid, int)
