@@ -15,12 +15,14 @@ from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
+from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
 
 # The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
 # another position, such as a linebacker, is never in the pool.
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
+DROPS = "drops"
 
 
 def waiver_board(
@@ -62,6 +64,8 @@ def waiver_board(
     prices = {p.player_id: p.price for p in price_players(list(ranked.values()), raw, list(claims), week)}
     buckets = {key: [p.model_copy(update={"price": prices[p.player_id]}) for p in bucket]
                for key, bucket in buckets.items()}
+    # Drops come after the price step, so a drop never carries a price.
+    buckets[DROPS] = _capped(drop_candidates(raw, week, usage_rows, players))
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 

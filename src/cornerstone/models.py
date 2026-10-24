@@ -393,7 +393,8 @@ class WaiverBoard(BaseModel):
     """The board of one week: the buckets by key, each in rank order, and the budget table in roster order."""
     week: int
     built: datetime
-    buckets: dict[str, list[WaiverPlayer]]
+    # A drop entry is a DropPlayer, so the saved board keeps the roster that holds him.
+    buckets: dict[str, list["DropPlayer | WaiverPlayer"]]
     budgets: list[BudgetRow]
 
 
@@ -433,6 +434,20 @@ class WaiverClaim(BaseModel):
     week: int
     bid: int
     won: bool
+
+
+class DropPlayer(WaiverPlayer):
+    """One rostered player of the drops bucket, the roster that holds him, and the pool player who beats him."""
+    roster_id: int
+    # The team name of the roster that holds him.
+    holder: str
+    # The rule that put him in the bucket.
+    reason: str = "three_falls"
+    # The best pool player at his position by rest of season projection.
+    beaten_by: str
+    beaten_by_name: str
+    # The rest of season projection of beaten_by minus his, per remaining week, to one decimal.
+    gap: float
 
 
 class Bundle(BaseModel):

@@ -149,3 +149,7 @@ NEED_SHARE = {"need": 0.35, "covered": 0.12}
 # The count of weeks, N-2 to N, whose most recent winning claim at a position sets the price floor. One old
 # big win, such as $41 for an RB in week 3, must not set the price of every RB all season.
 FLOOR_WEEKS = 3
+# The count of falls in a row of a rostered player's snap share that make him a drop candidate. 3 falls take
+# USAGE_SAVED_WEEKS (4) weeks, each lower than the one before. One or two falls can be a game script or a
+# blowout, and three is a role that shrinks.
+DROP_WEEKS = 3
