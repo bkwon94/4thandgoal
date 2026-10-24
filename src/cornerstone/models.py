@@ -355,6 +355,8 @@ class WaiverPlayer(BaseModel):
     board_score: float
     # The adds across all Sleeper leagues in the last day. 0 when he is not in the trending file.
     trending_count: int = 0
+    # The facts of the player. Every digit in a fact's text is in its numbers.
+    facts: list[Fact] = []
 
 
 class BudgetRow(BaseModel):

@@ -77,3 +77,14 @@ def test_a_week_with_no_trending_file_gives_an_empty_bucket(fixture_raw_dir):
     raw = _raw(fixture_raw_dir, {"80001": _player("WR", "Free Agent")}, {})
     del raw["trending"]
     assert _trending(raw) == []
+
+
+def test_every_trending_count_is_a_fact_with_the_digits_in_its_numbers(fixture_raw_dir):
+    players = {"80001": _player("WR", "Hot Hand"), "80002": _player("K", "Big Leg")}
+    trending = waiver_board(_raw(fixture_raw_dir, players, {"80001": 41200, "80002": 7}), 6, BUILT).buckets["trending"]
+    assert [(p.trending_count, [f.model_dump() for f in p.facts]) for p in trending] == [
+        (41200, [{"id": "WV.trending.80001", "text": "Hot Hand was added in 41200 Sleeper leagues in the last day.",
+                  "numbers": ["41200"], "teams": [], "players": ["Hot Hand"]}]),
+        (7, [{"id": "WV.trending.80002", "text": "Big Leg was added in 7 Sleeper leagues in the last day.",
+              "numbers": ["7"], "teams": [], "players": ["Big Leg"]}]),
+    ]

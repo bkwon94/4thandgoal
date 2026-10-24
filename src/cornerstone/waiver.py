@@ -4,7 +4,7 @@ Pure code: no network and no Claude, so the same raw data gives the same board.
 """
 from datetime import datetime
 
-from cornerstone.models import BoardScores, BudgetRow, WaiverBoard, WaiverPlayer, r2
+from cornerstone.models import BoardScores, BudgetRow, Fact, WaiverBoard, WaiverPlayer, r2
 from cornerstone.parse import player_name
 from cornerstone.tunables import BEST_ADDS_POSITIONS, BOARD_WEIGHTS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION
 
@@ -31,7 +31,8 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime) -> WaiverBo
     ]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BEST_ADDS_POSITIONS), key=_rank_key))
-    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}, budgets=_budgets(raw))
+    return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
+                       budgets=_budgets(raw))
 
 
 def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
@@ -118,11 +119,25 @@ def _trending_counts(raw: dict[str, object]) -> dict[str, int]:
 
 def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:
     """The players with the trending count of each. A player with no count keeps 0."""
-    return [p.model_copy(update={"trending_count": counts[p.player_id]}) if p.player_id in counts else p
+    return [p.model_copy(update={"trending_count": counts[p.player_id],
+                                 "facts": [*p.facts, _trending_fact(p, counts[p.player_id])]})
+            if p.player_id in counts else p
             for p in players]
 
 
+def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
+    """The count fact of a trending player. The count is written plain, as a comma would split it into two numbers."""
+    # The sheet module imports the Sleeper client, which imports this module, so the fact skips its Nums helper.
+    # The one number goes into the text and the numbers from the same string.
+    number = str(count)
+    text = f"{p.name} was added in {number} Sleeper leagues in the last day."
+    return Fact(id=f"WV.trending.{p.player_id}", text=text, numbers=[number], teams=[], players=[p.name])
+
+
 def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
-    """The pool players with a trending count, the most adds first. The player ID breaks a tie, so a tie has one order."""
+    """The pool players with a trending count, the most adds first.
+
+    The player ID breaks a tie, so a tie has one order.
+    """
     return _capped(sorted((p for p in players if p.trending_count),
                           key=lambda p: (-p.trending_count, p.player_id)))
