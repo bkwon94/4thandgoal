@@ -318,7 +318,8 @@ def run_build(
 
     blurbs: dict[str, Blurb] = {}
     verify: dict[str, list[VerifyResult]] = {}
-    # "lucky" and "unlucky" each appear once per page, so each chapter gets the words that earlier chapters used.
+    # "lucky" and "unlucky" each appear at most once per page, so each chapter gets the words that earlier chapters
+    # used and the award words it does not own.
     used: set[str] = set()
     for chapter in bundle.sheet.chapters:
         reserved = reserved_words(chapter.key, bundle.sheet)

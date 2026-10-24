@@ -78,7 +78,7 @@ def test_retry_sets_attempt_two_and_passes_feedback(fixture_raw_dir):
         seen["user"] = user
         return model(sentences=[Sentence(text="x", fact_ids=["MED.value"])])
 
-    b = write_blurb(ch, sheet, fake, feedback="Fix sentence 1.")
+    b = write_blurb(ch, sheet, fake, feedback="Fix sentence 1.", attempt=2)
     assert b.attempt == 2 and "Fix sentence 1." in seen["user"]
 
 

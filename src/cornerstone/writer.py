@@ -23,6 +23,8 @@ MOTW_HEADLINE_NOTE = (
     "Note: the Matchup of the Week chapter and its recap already told this game's headline: the score, "
     "the upset, and the player who won it. Lead with a different fact. Never repeat a sentence from those chapters."
 )
+# The header of the words that other chapters of the page already say. Rule 14 of the writer prompt names it.
+PAGE_WORDS_HEADER = "Words this page already uses:"
 
 # (system, user, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ClaudeCall = Callable[[str, str, type[BaseModel]], BaseModel]
@@ -157,7 +159,7 @@ def load_prompt(name: str) -> str:
 
 
 def build_writer_prompt(
-    chapter: Chapter, sheet: FactSheet, feedback: str | None
+    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None
 ) -> tuple[str, str]:
     system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
     lines = [
@@ -171,15 +173,22 @@ def build_writer_prompt(
         lines += ["", f"Cite each of these facts in its team's sentences: {', '.join(chapter.required)}."]
     if repeats_motw_headline(chapter, sheet):
         lines += ["", MOTW_HEADLINE_NOTE]
+    if page_words is not None:
+        lines += ["", PAGE_WORDS_HEADER, page_words]
     if feedback is not None:
         lines += ["", "Feedback from the last attempt:", feedback]
     return system, "\n".join(lines)
 
 
 def write_blurb(
-    chapter: Chapter, sheet: FactSheet, call: ClaudeCall, feedback: str | None = None
+    chapter: Chapter,
+    sheet: FactSheet,
+    call: ClaudeCall,
+    feedback: str | None = None,
+    page_words: str | None = None,
+    attempt: int = 1,
 ) -> Blurb:
-    system, user = build_writer_prompt(chapter, sheet, feedback)
+    system, user = build_writer_prompt(chapter, sheet, feedback, page_words)
     out = call(system, user, WriterOut)
     # Any call, real or injected, can come back empty. That is a failed attempt, not a blurb.
     if out is None:
@@ -187,7 +196,7 @@ def write_blurb(
     return Blurb(
         chapter=chapter.key,
         sentences=out.sentences,
-        attempt=1 if feedback is None else 2,
+        attempt=attempt,
         fallback=False,
     )
 

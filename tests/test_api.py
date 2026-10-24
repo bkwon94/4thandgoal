@@ -562,6 +562,18 @@ def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(setting
     assert cache_key(trade, _with_week_rows(snapshot, {rostered: 9}, {rostered: {8: 13.5}})) == key
 
 
+def test_the_cache_key_ignores_the_projection_rows_of_a_player_already_back(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    past = snapshot.as_of.stats_through
+    # The returns file keeps a past return week, but a player already back keeps his recent points.
+    key = cache_key(trade, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 12.5}}))
+    assert cache_key(trade, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 13.5}})) == key
+    assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 12.5}})) == (
+        finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 13.5}})))
+
+
 def test_the_cache_key_tells_no_projections_file_from_no_rostered_rows(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)
