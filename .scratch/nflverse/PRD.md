@@ -104,14 +104,20 @@ zone touches. Before any of that, the target count drops two-point tries, as its
   and minus one per interception where the file pays minus two. Fumbles have no expected column
   and stay out. The reader reads the reception and interception weights from the league scoring,
   so a scoring change never silently breaks the rescale.
-- The reader returns expected points and the expected gap per player per game, and the week it
-  reads through.
+- The reader returns expected points per player per game, and the week it reads through. It does
+  not return the file's actual points. The file charges a lost fumble but not a fumble kept, and it
+  has no return touchdowns, so its actual never matches the box score. The expected gap is the
+  league's own points from Sleeper minus the expected points, computed where the points are at
+  hand: the sheet for the report, the snapshot for the rubric.
 - The file rebuilds the whole season on Tuesday morning. The last four uploads landed between
   06:26 and 08:57 ET, and two of four landed after the 08:00 build. The reader checks the file for
   the Monday night game id of week N. When it is there, the facts read week N. When it is not,
   the facts read through week N-1 and say so. No wait and no build move.
 - The expected window is the last 3 games a player played. A player with fewer than 2 games in
   it has no gap. A game he did not play is not in the window.
+- A lagged file sets the source flag false, which the build record defines as missing or
+  incomplete, and the extract is not saved. The expected data in memory still carries the week it
+  reads through, so the facts can say "through week N-1".
 
 ### Team EPA and pass rate over expected
 

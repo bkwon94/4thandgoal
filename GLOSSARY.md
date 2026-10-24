@@ -317,7 +317,7 @@ What a player's volume should have scored in one game, from ffopportunity, resca
 _Avoid_: xFP, projected points (that is the Sleeper projection, before the game)
 
 **Expected gap**:
-A player's actual points minus his expected points, per game. Positive is over expected, negative is under.
+A player's points in this league minus his expected points, per game. Positive is over expected, negative is under.
 _Avoid_: luck, regression, variance
 
 **Expected window**:

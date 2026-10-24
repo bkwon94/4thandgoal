@@ -9,6 +9,9 @@ when no starter clears the floor. When the expected points read through week N-1
 week N. The writer gets a one-line rule per award, as the other awards have, and the verifier rejects an
 uncited number as today.
 
+The expected data gives expected points per game only. The gap is the starter's points in this league, the
+Sleeper points the sheet already holds for week N, minus his expected points for that game.
+
 **Blocked by:** 03 Expected points and the expected gap.
 
 **Status:** ready-for-agent

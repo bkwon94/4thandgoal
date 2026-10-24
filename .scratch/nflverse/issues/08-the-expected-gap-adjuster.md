@@ -9,6 +9,9 @@ and their gaps. Handcuffs and players due back do not count, by the same rule th
 that rule lives in one place. The adjuster sits behind a tunable that starts off, so no live breakdown
 shows it until a real trade checks out. The snapshot the API refreshes carries the window gap per player.
 
+The expected data gives expected points per game only. The window gap takes the player's games and his
+weekly points from the snapshot's Sleeper stats, the same points the trend adjuster reads.
+
 **Blocked by:** 03 Expected points and the expected gap.
 
 **Status:** ready-for-agent
