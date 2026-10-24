@@ -301,6 +301,12 @@ def test_a_game_with_one_team_under_zero_is_no_shootout(fixture_raw_dir):
     assert _shootout_ids(bundle) == []
 
 
+def test_a_rate_that_rounds_to_zero_is_no_shootout(fixture_raw_dir):
+    # MIA's rate is 4 over 100 plays, 0.04, which the fact would show as 0.0.
+    environment = {**SHOOTOUT_ENVIRONMENT, "MIA": _team_weeks((6, 100, 4.0))}
+    assert _shootout_ids(_shootout_bundle(fixture_raw_dir, environment, [("MIA", "MIN")])) == []
+
+
 def test_a_sheet_with_a_shootout_and_no_league_starter_says_so(fixture_raw_dir):
     f = _shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, [("MIA", "MIN")]).sheet.facts["NX.shootout.MIAvMIN"]
     assert f.text == (

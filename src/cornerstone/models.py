@@ -234,7 +234,7 @@ class Shootout(BaseModel):
     """An NFL game of week N+1 by Sleeper team codes, with the recent pass rate over expected of each team."""
     away: str
     home: str
-    # The rates are in percentage points, from the last games of each team up to SHOOTOUT_GAMES.
+    # The rates are in percentage points to one decimal, from the last games of each team up to SHOOTOUT_GAMES.
     away_rate: float
     home_rate: float
     away_games: int
