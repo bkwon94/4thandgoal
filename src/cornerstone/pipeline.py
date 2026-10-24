@@ -195,10 +195,13 @@ def _nflverse_for_week(
                      ", ".join(missing))
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
         nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
+        # The check reads the fresh flags, not the merged ones. A merged extract has every key, so a saved one
+        # would never be fetched again, though a degraded source cut its rows.
+        complete = all(nfl.sources.get(key) for key in NFLVERSE_SOURCES)
         if saved is not None:
             nfl = _with_saved(nfl, saved)
         # A degraded extract is not saved, so the next build tries the sources again.
-        if all(nfl.sources.get(key) for key in NFLVERSE_SOURCES):
+        if complete:
             _save_nflverse(raw_dir / "nflverse.json", nfl)
         return nfl
     except Exception as err:  # noqa: BLE001 - the outer guard: the module catches only HTTP errors

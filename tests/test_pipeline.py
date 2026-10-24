@@ -864,12 +864,12 @@ def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_ra
 
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    saved_drops = json.loads(_nflverse_path(repo).read_text())["drops"]
-    _old_extract(repo)
+    before = _old_extract(repo).read_text()
     bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=no_ftn)
     assert bundle.data.drop_source == "nflverse" and record.sources["nflverse_ftn"] is True
-    rewritten = json.loads(_nflverse_path(repo).read_text())
-    assert rewritten["drops"] == saved_drops and rewritten["usage"]
+    assert record.sources["nflverse_snaps"] is True
+    # The fresh extract is degraded, so the file keeps the old content and the next build fetches again.
+    assert _nflverse_path(repo).read_text() == before
 
 
 def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, caplog):
