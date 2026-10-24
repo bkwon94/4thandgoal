@@ -27,3 +27,8 @@ the bid, the player, the position, the week, and whether it won.
 - [x] The outbid count per budget level is right for a viewer at 51 and at 9 on the week 6 budgets.
 - [x] Every price is a fact with its inputs in the numbers. `NEED_SHARE` is a tunable.
 - [x] Glossary gains **Bid to win** and **Last like him**.
+
+## Comments
+
+- The last like him matches on position alone, because a past claim has no bucket tier.
+- The rival list holds every roster, the viewer's too, so a viewer's own need can raise his own price. This is a known limit.
