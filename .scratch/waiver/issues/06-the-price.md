@@ -19,11 +19,11 @@ the bid, the player, the position, the week, and whether it won.
 
 **Status:** ready-for-agent
 
-- [ ] The bid history across the saved weeks holds every claim with its bid and its result.
-- [ ] A rival with a positional need raises the price more than a rival without one.
-- [ ] A past winning claim at the position raises the floor to that bid plus one.
-- [ ] The price never exceeds the highest rival budget left, and it is a whole dollar.
-- [ ] The last like him names the team and the week, and it is empty when the history has none.
-- [ ] The outbid count per budget level is right for a viewer at 51 and at 9 on the week 6 budgets.
-- [ ] Every price is a fact with its inputs in the numbers. `NEED_SHARE` is a tunable.
-- [ ] Glossary gains **Bid to win** and **Last like him**.
+- [x] The bid history across the saved weeks holds every claim with its bid and its result.
+- [x] A rival with a positional need raises the price more than a rival without one.
+- [x] A past winning claim at the position raises the floor to that bid plus one.
+- [x] The price never exceeds the highest rival budget left, and it is a whole dollar.
+- [x] The last like him names the team and the week, and it is empty when the history has none.
+- [x] The outbid count per budget level is right for a viewer at 51 and at 9 on the week 6 budgets.
+- [x] Every price is a fact with its inputs in the numbers. `NEED_SHARE` is a tunable.
+- [x] Glossary gains **Bid to win** and **Last like him**.
