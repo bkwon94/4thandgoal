@@ -101,14 +101,14 @@ class StubAnalyzer:
         self.calls += 1
         breakdowns = grade(trade, snapshot)
         letters = self.claude_letters or [b.final_letter for b in breakdowns]
-        far = any(abs(LETTERS.index(l) - LETTERS.index(b.final_letter)) > 1 for l, b in zip(letters, breakdowns))
+        far = any(abs(LETTERS.index(letter) - LETTERS.index(b.final_letter)) > 1 for letter, b in zip(letters, breakdowns))
         if far:
             return code_only(trade, snapshot)
         code = verdict(trade, breakdowns)
-        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=l,
-                                   reason=None if l == b.final_letter else "Claude reads it one step off.",
+        sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=letter,
+                                   reason=None if letter == b.final_letter else "Claude reads it one step off.",
                                    analysis="Nico Collins leads the trade in points per game.", cited=[])
-                      for l, b in zip(letters, breakdowns))
+                      for letter, b in zip(letters, breakdowns))
         return Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=code,
                         verdict_differs=False, fallback=False)
 

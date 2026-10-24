@@ -323,11 +323,11 @@ class Context:
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
         self.line_owner = {
-            l.player_id: s.roster_id
-            for m in week.matchups for s in (m.a, m.b) for l in s.lines
+            line.player_id: s.roster_id
+            for m in week.matchups for s in (m.a, m.b) for line in s.lines
         }
         self.lines = {
-            l.player_id: l for m in week.matchups for s in (m.a, m.b) for l in s.lines
+            line.player_id: line for m in week.matchups for s in (m.a, m.b) for line in s.lines
         }
 
     def team(self, roster_id: int) -> str:
@@ -471,9 +471,9 @@ def _result_facts(c, f, m) -> list[Fact]:
         text = f"{a} and {b} tied at {n(f.score_w)}."
         teams = [a, b]
     else:
-        w, l = c.team(f.winner), c.team(f.loser)
-        text = f"{w} beat {l} {n(f.score_w)} to {n(f.score_l)}, a margin of {n(f.margin)}."
-        teams = [w, l]
+        w, loser = c.team(f.winner), c.team(f.loser)
+        text = f"{w} beat {loser} {n(f.score_w)} to {n(f.score_l)}, a margin of {n(f.margin)}."
+        teams = [w, loser]
     out = [fact(f"{mid}.result", text, n, teams, [])]
     for rid, line in f.top_scorer.items():
         n = Nums()
@@ -561,12 +561,12 @@ def _context_facts(c, f, m) -> list[Fact]:
     out = []
     if f.winner is not None and c.before[f.winner] > c.before[f.loser]:
         n = Nums()
-        w, l = c.team(f.winner), c.team(f.loser)
+        w, loser = c.team(f.winner), c.team(f.loser)
         text = (
             f"This was an upset: {w} was {n.ord(c.before[f.winner])} before this week "
-            f"and {l} was {n.ord(c.before[f.loser])}."
+            f"and {loser} was {n.ord(c.before[f.loser])}."
         )
-        out.append(fact(f"{mid}.upset", text, n, [w, l], []))
+        out.append(fact(f"{mid}.upset", text, n, [w, loser], []))
     n = Nums()
     parts = []
     for rid in (m.a.roster_id, m.b.roster_id):
@@ -1171,7 +1171,7 @@ def _need_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact:
     team = c.team(rid)
     side = next(s for m in c.week.matchups for s in (m.a, m.b) if s.roster_id == rid)
     positions = sorted({c.lines[pid].position for pid in (*trade.adds, *trade.drops) if pid in c.lines})
-    depth = [f"{n(sum(l.position == pos for l in side.lines))} {pos}" for pos in positions]
+    depth = [f"{n(sum(line.position == pos for line in side.lines))} {pos}" for pos in positions]
     spots = max(0, c.week.roster_slots - len(side.lines))
     text = (
         f"{team} has {_join(depth)} after the trade and "
@@ -1201,15 +1201,15 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
     gave = [c.lines[pid] for pid in _moved(trade, rid, False) if pid in c.lines]
     # A later trade can move a player on, so a line counts only for the roster that holds it in the lineup.
     # The roster that got him must own the line. The roster that got him from the giver must own it for "gave".
-    got_started = [l for l in got if l.started and c.line_owner[l.player_id] == rid]
+    got_started = [line for line in got if line.started and c.line_owner[line.player_id] == rid]
     gave_started = [
-        l for l in gave if l.started and c.line_owner[l.player_id] == trade.adds[l.player_id]
+        line for line in gave if line.started and c.line_owner[line.player_id] == trade.adds[line.player_id]
     ]
     if not got_started and not gave_started:
         return None
     n = Nums()
-    x = sum((Decimal(str(l.points)) for l in got_started), Decimal(0))
-    y = sum((Decimal(str(l.points)) for l in gave_started), Decimal(0))
+    x = sum((Decimal(str(line.points)) for line in got_started), Decimal(0))
+    y = sum((Decimal(str(line.points)) for line in gave_started), Decimal(0))
     f = next(f for f, m in zip(c.mfacts, c.week.matchups) if rid in (m.a.roster_id, m.b.roster_id))
     # A tie is neither a win nor a loss, and any gap would change it. No "decisive" or
     # "not enough" sentence is true for a tie, so a tied matchup gets no swing fact.
@@ -1234,7 +1234,7 @@ def _swing_fact(c: Context, i: int, trade: Trade, rid: int) -> Fact | None:
             "not enough to change the result."
         )
     teams = [team, *(c.team(r) for r in others)] if len(others) == 1 else [team]
-    return fact(f"T{i}.{rid}.swing", text, n, teams, [l.name for l in (*got_started, *gave_started)])
+    return fact(f"T{i}.{rid}.swing", text, n, teams, [line.name for line in (*got_started, *gave_started)])
 
 
 def _share_fact(c: Context, i: int, pid: str, kind: str, share: UsageShare | None) -> Fact | None:
@@ -1509,15 +1509,15 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
 
     def players_of(rosters) -> list[str]:
         return [
-            l.name
-            for m in week.matchups for s in (m.a, m.b) if s.roster_id in rosters for l in s.lines
+            line.name
+            for m in week.matchups for s in (m.a, m.b) if s.roster_id in rosters for line in s.lines
         ]
 
     def started_ids(rosters) -> list[str]:
         return [
-            l.player_id
+            line.player_id
             for m in week.matchups for s in (m.a, m.b) if s.roster_id in rosters
-            for l in s.lines if l.started
+            for line in s.lines if line.started
         ]
 
     def make(key, title, ids, rosters, rng, players=None) -> Chapter:
@@ -1573,7 +1573,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         "position_leaders", "Position Leaders",
         _with_prefix(facts, "LEAD."),
         all_rosters, "position_leaders",
-        players=[l.line.name for l in c.leaders],
+        players=[leader.line.name for leader in c.leaders],
     ))
     for mid, pair in roster_ids.items():
         title = " vs ".join(c.team(r) for r in pair)

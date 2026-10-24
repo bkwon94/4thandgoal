@@ -166,7 +166,7 @@ def test_awards_show_four_tiles_for_a_bundle_with_drops(dbundle):
 
 def test_trade_cards_name_every_traded_player(tbundle, fixture_raw_dir, tmp_path):
     week = parse_week(load_raw(fixture_raw_dir))
-    names = {l.player_id: l.name for m in week.matchups for side in (m.a, m.b) for l in side.lines}
+    names = {line.player_id: line.name for m in week.matchups for side in (m.a, m.b) for line in side.lines}
     data = _page(render_week(tbundle, _blurbs(tbundle), tmp_path, _fake_png))
     for card, trade in zip(data["trades"], tbundle.data.trades):
         listed = {p["name"] for side in card["sides"] for p in side["players"]}
@@ -195,7 +195,7 @@ def test_build_context_has_five_leader_boards(fixture_raw_dir):
 
 def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
-    b.data.leaders = [l for l in b.data.leaders if l.position != "DEF"]
+    b.data.leaders = [leader for leader in b.data.leaders if leader.position != "DEF"]
     boards = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))["leaders"]
     assert len(boards) == 5
     assert boards[-1] == {"position": "DEF", "rows": []}
@@ -241,9 +241,9 @@ def test_headshots_are_fetched_once_per_player_and_saved_next_to_the_page(fixtur
                      or "sleepercdn.com/images/team_logos/nfl/" in u]
     lines = {line.player_id: line for line in _headshot_players(b)}
     assert len(headshot_urls) == len(set(headshot_urls)) == len(lines)
-    wr = next(l for l in lines.values() if l.position == "WR")
+    wr = next(line for line in lines.values() if line.position == "WR")
     assert f"https://sleepercdn.com/content/nfl/players/{wr.player_id}.jpg" in headshot_urls
-    defense = next(l for l in lines.values() if l.position == "DEF")
+    defense = next(line for line in lines.values() if line.position == "DEF")
     assert f"https://sleepercdn.com/images/team_logos/nfl/{defense.player_id.lower()}.png" in headshot_urls
     assert defense.player_id != defense.player_id.lower()
     saved = _page(page)["headshots"]
@@ -255,7 +255,7 @@ def test_headshots_are_fetched_once_per_player_and_saved_next_to_the_page(fixtur
 def test_failed_headshot_uses_the_default_silhouette(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     lines = {line.player_id: line for line in _headshot_players(b)}
-    failed = next(l for l in lines.values() if l.position == "WR")
+    failed = next(line for line in lines.values() if line.position == "WR")
     failed_url = f"https://sleepercdn.com/content/nfl/players/{failed.player_id}.jpg"
     page = render_week(b, _blurbs(b), tmp_path, lambda url: None if url == failed_url else PNG_BYTES)
     saved = _page(page)["headshots"]

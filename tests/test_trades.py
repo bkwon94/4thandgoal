@@ -112,7 +112,7 @@ def test_swing_with_three_teams_names_the_trade_partners(fixture_raw_dir):
     from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     a, b, c = week.matchups[0].a, week.matchups[0].b, week.matchups[1].a
-    pa, pb = (next(l for l in s.lines if l.started) for s in (a, b))
+    pa, pb = (next(line for line in s.lines if line.started) for s in (a, b))
     trade = Trade(transaction_id="x", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[a.roster_id, b.roster_id, c.roster_id],
                   adds={pa.player_id: a.roster_id, pb.player_id: b.roster_id},
                   drops={pa.player_id: c.roster_id, pb.player_id: a.roster_id}, draft_picks=[])
@@ -165,7 +165,7 @@ def test_swing_counts_a_line_only_for_the_roster_that_owns_it(fixture_raw_dir):
     from cornerstone.models import Trade
     week = parse_week(load_raw(fixture_raw_dir))
     owner = week.matchups[0].a
-    star = next(l for l in owner.lines if l.started)
+    star = next(line for line in owner.lines if line.started)
     first, second = [r for r in week.teams if r != owner.roster_id][:2]
     made = datetime(2026, 10, 16, tzinfo=ET)
     trades = [
@@ -200,7 +200,7 @@ def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
     m = week.matchups[0]
     tied = m.model_copy(update={"b": m.b.model_copy(update={"points": m.a.points})})
     week = week.model_copy(update={"matchups": [tied, *week.matchups[1:]]})
-    star = next(l for l in m.a.lines if l.started)
+    star = next(line for line in m.a.lines if line.started)
     trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET), roster_ids=[m.b.roster_id, m.a.roster_id],
                   adds={star.player_id: m.a.roster_id}, drops={star.player_id: m.b.roster_id}, draft_picks=[])
     assert "tied" in build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts["M1.result"].text

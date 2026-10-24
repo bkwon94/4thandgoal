@@ -387,8 +387,8 @@ def position_ranks(week: Week) -> list[PositionRank]:
     out = []
     for position, ordered in _started_by_position(week).items():
         out.extend(
-            PositionRank(player_id=l.player_id, position=position, rank=i + 1, of=len(ordered))
-            for i, (l, _) in enumerate(ordered)
+            PositionRank(player_id=line.player_id, position=position, rank=i + 1, of=len(ordered))
+            for i, (line, _) in enumerate(ordered)
         )
     return out
 
@@ -403,8 +403,8 @@ def position_leaders(week: Week) -> list[PositionLeader]:
     for position in LEADER_POSITIONS:
         ordered = groups[position]
         out.extend(
-            PositionLeader(line=l, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
-            for i, (l, rid) in enumerate(ordered[:3])
+            PositionLeader(line=line, position=position, rank=i + 1, of=len(ordered), roster_id=rid)
+            for i, (line, rid) in enumerate(ordered[:3])
         )
     return out
 

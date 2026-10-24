@@ -29,7 +29,7 @@ def test_closest_matchup_facts(fixture_raw_dir):
     assert (f.score_w, f.score_l, f.margin) == (114.95, 109.61, 5.34)
     bo = next(r for r in f.top_scorer if wk.teams[r].name == "Bo Girds")
     assert f.top_scorer[bo].name == "Tyler Shough"
-    assert "Kyren Williams" in {l.name for l in f.drivers}
+    assert "Kyren Williams" in {line.name for line in f.drivers}
 
 
 def test_blowout_top_scorer_is_purdy_not_defense(fixture_raw_dir):
@@ -44,7 +44,7 @@ def test_no_projection_never_drives(fixture_raw_dir):
     wk = _wk(fixture_raw_dir)
     for m in wk.matchups:
         f = matchup_facts(m, wk.moves, 6)
-        assert all(l.projection is not None for l in f.drivers)
+        assert all(line.projection is not None for line in f.drivers)
 
 
 def test_median(fixture_raw_dir):
@@ -65,7 +65,7 @@ def _matchup_4(fixture_raw_dir):
 def test_bench_regret_only_on_losing_side(fixture_raw_dir):
     _, m, f = _matchup_4(fixture_raw_dir)
     loser = next(s for s in (m.a, m.b) if s.roster_id == f.loser)
-    loser_ids = {l.player_id for l in loser.lines}
+    loser_ids = {line.player_id for line in loser.lines}
     for bench, starter in f.bench_regret:
         assert bench.player_id in loser_ids and starter.player_id in loser_ids
         assert not bench.started and starter.started
@@ -76,20 +76,20 @@ def test_bench_regret_only_on_losing_side(fixture_raw_dir):
 def test_swing_is_winning_side_above_margin(fixture_raw_dir):
     _, m, f = _matchup_4(fixture_raw_dir)
     winner = next(s for s in (m.a, m.b) if s.roster_id == f.winner)
-    winner_ids = {l.player_id for l in winner.lines if l.started}
+    winner_ids = {line.player_id for line in winner.lines if line.started}
     assert f.swing
-    assert all(l.player_id in winner_ids and l.points > f.margin for l in f.swing)
+    assert all(line.player_id in winner_ids and line.points > f.margin for line in f.swing)
 
 
 def test_drivers_are_started_lines(fixture_raw_dir):
     wk = _wk(fixture_raw_dir)
     for m in wk.matchups:
-        assert all(l.started for l in matchup_facts(m, wk.moves, 6).drivers)
+        assert all(line.started for line in matchup_facts(m, wk.moves, 6).drivers)
 
 
 def test_recent_moves_are_started_players_on_the_side(fixture_raw_dir):
     wk, m, f = _matchup_4(fixture_raw_dir)
-    started = {(s.roster_id, l.player_id) for s in (m.a, m.b) for l in s.lines if l.started}
+    started = {(s.roster_id, line.player_id) for s in (m.a, m.b) for line in s.lines if line.started}
     assert f.recent_moves
     assert all((mv.roster_id, mv.player_id) in started for mv in f.recent_moves)
     assert all(mv.week in (6, 5) for mv in f.recent_moves)

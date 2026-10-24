@@ -305,20 +305,20 @@ def test_week_five_add_is_a_recent_add(hbundle, bundle):
 
 def test_position_leaders_are_the_top_three_started_at_each_position(bundle):
     leaders = bundle.data.leaders
-    positions = [l.position for l in leaders]
+    positions = [leader.position for leader in leaders]
     assert positions == [p for p in ("QB", "RB", "WR", "TE", "DEF") for _ in range(3)]
     for p in ("QB", "RB", "WR", "TE", "DEF"):
-        board = [l for l in leaders if l.position == p]
-        assert [l.rank for l in board] == [1, 2, 3]
+        board = [leader for leader in leaders if leader.position == p]
+        assert [leader.rank for leader in board] == [1, 2, 3]
         assert all(a.line.points >= b.line.points for a, b in zip(board, board[1:]))
-    assert all(l.line.started for l in leaders)
-    rbs = [(l.line.name, l.of, bundle.data.teams[l.roster_id].name) for l in leaders if l.position == "RB"]
+    assert all(leader.line.started for leader in leaders)
+    rbs = [(leader.line.name, leader.of, bundle.data.teams[leader.roster_id].name) for leader in leaders if leader.position == "RB"]
     assert rbs == [
         ("Kenneth Walker", 31, "Bo Girds"),
         ("Christian McCaffrey", 31, "Lil Fridge"),
         ("James Cook", 31, "London Cooking"),
     ]
-    assert [l.line.name for l in leaders if l.position == "DEF"] == [
+    assert [leader.line.name for leader in leaders if leader.position == "DEF"] == [
         "Pittsburgh Steelers", "Kansas City Chiefs", "Denver Broncos",
     ]
 
@@ -342,7 +342,7 @@ def test_position_leaders_chapter_sits_after_awards(request, name):
     assert len(ch.fact_ids) == 15
     assert (ch.min_sentences, ch.max_sentences) == (2, 4)
     assert set(ch.scope_teams) == {t.name for t in b.data.teams.values()}
-    assert {l.line.name for l in b.data.leaders} == set(ch.scope_players)
+    assert {leader.line.name for leader in b.data.leaders} == set(ch.scope_players)
     assert keys.index("position_leaders") == keys.index("awards") + 1
 
 
@@ -356,7 +356,7 @@ def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw
                     line.points = 10.0
     b = build_bundle(week, news=lambda pid: [])
     rank_of = {r.player_id: r.rank for r in b.data.ranks}
-    leads = [l for l in b.data.leaders if l.position == "RB"]
+    leads = [leader for leader in b.data.leaders if leader.position == "RB"]
     assert len(leads) == 3
     for lead in leads:
         assert rank_of[lead.line.player_id] == lead.rank

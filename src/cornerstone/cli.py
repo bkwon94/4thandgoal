@@ -328,7 +328,7 @@ def run_chart(repo: Path, season: int, week: int) -> int:
     if raw is None:
         print(f"No raw data for week {week}, so no player match.")
         return 0
-    lines = {l.player_id: l for l in week_lines(league)}
+    lines = {line.player_id: line for line in week_lines(league)}
     values = match_chart(check.chart, lines.values()).values
     print(f"Matched {len(values)} of {len(check.chart.rows)} chart rows")
     traded = {pid for t in parse_trades(raw["transactions"]) for pid in t.adds}
