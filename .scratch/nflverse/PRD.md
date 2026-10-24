@@ -137,8 +137,9 @@ zone touches. Before any of that, the target count drops two-point tries, as its
   for an RB, in week N, with his rank on it at the position league wide. None for a QB, a K, or a
   DEF. The position leaders chapter may cite them.
 - `NX.shootout.{game}`: one per NFL game of week N+1 where both teams have a positive pass rate
-  over expected over the last 3 weeks, with the league starters in that game by roster. The next
-  week chapter may cite them. The writer picks the one to mention.
+  over expected over the last 3 games each played, with the league starters of week N in that
+  game, the count first and the names capped at 8. The rate shows in percentage points to one
+  decimal. The next week chapter may cite them. The writer picks the one with the most starters.
 - When the expected points read through week N-1, there is no unlucky or lucky award fact for
   week N, and the awards chapter builds without them. The leader and shootout facts do not
   depend on that file.

@@ -333,7 +333,7 @@ How much more or less a team passes than the nflverse model expects, given down,
 _Avoid_: PROE, pass lean, neutral pass rate (that is the waiver board's older measure)
 
 **Shootout**:
-A next-week NFL game where both teams have a positive pass rate over expected over the last 3 weeks.
+A next-week NFL game where both teams have a positive pass rate over expected over the last 3 games each played. A team with fewer games uses all of them.
 _Avoid_: high-scoring game, fun matchup
 
 **Unlucky award**:
