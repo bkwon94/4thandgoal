@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Found in the ticket 02 review on 2026-10-23.
 
-**Status:** needs-triage
+**Status:** done
 
-- [ ] `nflverse_usage.py` does not import `nflverse.py`, or the reverse, and neither comment about the cycle remains.
-- [ ] The suite passes with no test change beyond import paths.
+- [x] `nflverse_usage.py` does not import `nflverse.py`, or the reverse, and neither comment about the cycle remains.
+- [x] The suite passes with no test change beyond import paths.
