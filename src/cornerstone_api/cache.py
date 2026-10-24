@@ -12,6 +12,7 @@ from typing import NamedTuple
 
 from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
+from cornerstone.tunables import LAST_REGULAR_WEEK
 
 
 # The shape of the stored result document. A change of shape bumps it, so the key changes and a result stored on
@@ -49,6 +50,8 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     The week rows are the return week and the projections ahead of each rostered player. A new injuries file lands
     daily and moves return weeks, and `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
     Only the rows of the two rosters go in, so a change to any other player keeps the hit.
+    Sleeper moves projections daily, so the key holds only the projection rows the grade can read: the rows of a
+    player due back, from his return week through LAST_REGULAR_WEEK. Every other row would miss with no new grade.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -58,12 +61,19 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
             "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
             "returns": {player: snapshot.returns[player] for player in snapshot.rosters[roster_id]
                         if player in snapshot.returns},
-            "projections_ahead": {player: projections_ahead[player] for player in snapshot.rosters[roster_id]
-                                  if player in projections_ahead},
+            "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), snapshot.returns[player])
+                                  for player in snapshot.rosters[roster_id] if player in snapshot.returns},
         }
         for roster_id in roster_ids
     }
+    # With no projections file every player keeps his recent points, so None and an empty file grade apart.
+    content = {"has_projections_ahead": snapshot.projections_ahead is not None, "rosters": content}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
+
+
+def _rows_read(rows: dict[int, float], return_week: int) -> dict[int, float]:
+    """The projection rows of one player that the projection ahead reads, from the return week through the last."""
+    return {week: points for week, points in rows.items() if return_week <= week <= LAST_REGULAR_WEEK}
 
 
 def finder_cache_key(season: int, asker: int, partner: int, snapshot: Snapshot) -> str:
