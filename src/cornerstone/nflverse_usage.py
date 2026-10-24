@@ -13,8 +13,8 @@ from cornerstone.nflverse_rows import _number, _rows, _sleeper_team, _yardline
 # The play types of an offensive play. A kneel, a spike, a penalty with no play, and a kick are not plays.
 PLAY_TYPES = ("pass", "run")
 # The play by play columns the two readers use. A play keeps only these, so the plays of a season fit in memory.
-PLAY_COLUMNS = ("week", "posteam", "pass", "rush", "receiver_player_id", "rusher_player_id", "yardline_100",
-                "success", "down", "score_differential", "qtr", "game_seconds_remaining")
+PLAY_COLUMNS = ("week", "posteam", "two_point_attempt", "pass", "rush", "receiver_player_id", "rusher_player_id",
+                "yardline_100", "success", "down", "score_differential", "qtr", "game_seconds_remaining")
 # A target or a carry at this yard line or closer to the end zone is a red zone touch.
 RED_ZONE_YARDS = 20
 # A neutral down: the score is within this many points either way.
@@ -76,14 +76,15 @@ def read_usage(plays: list[dict[str, str]], snaps: dict[tuple[str, int], SnapWee
 
     The plays give the targets and the carries, and the snap counts give the snaps. A player with no Sleeper
     ID in the gsis map has no targets or carries. A share is of the team's targets, carries, or snaps that
-    week. A carry is a designed run: a scramble is a pass play in nflverse, so it is no carry.
+    week. A carry is a designed run: a scramble is a pass play in nflverse, so it is no carry. A two-point try
+    is no target, no carry, and no red zone touch, as in the nflverse target count.
     """
     counts: dict[tuple[str, int], Counter] = {}
     teams: dict[tuple[str, int], str] = {}
     team_totals: dict[tuple[str, int], Counter] = {}
     for play in plays:
         play_week = int(play["week"])
-        if play_week < first_week:
+        if play_week < first_week or _number(play["two_point_attempt"]) == 1:
             continue
         team = _sleeper_team(play["posteam"])
         for column, kind in (("receiver_player_id", "targets"), ("rusher_player_id", "carries")):
