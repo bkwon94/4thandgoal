@@ -316,6 +316,12 @@ The bucket of the pool players with the best board score, at QB, RB, WR, or TE o
 in the pool but never land in it.
 _Avoid_: top adds, pickups
 
+**Trending**:
+The bucket of the pool players with the most adds across all Sleeper leagues in the last day, from
+the trending file of the week fetch. The count of adds is the trending count, and each player
+carries it as a fact. A week with no trending file has an empty bucket.
+_Avoid_: hot, buzz, most added
+
 **Budget table**:
 One row per roster with its FAAB budget left and its waiver order. The budget left is the league
 budget minus the budget the roster used.
