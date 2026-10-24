@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value
+from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
 from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
@@ -371,15 +371,17 @@ def _bench_id(fixture_raw_dir, position: str) -> str:
 @pytest.fixture
 def vbundle(fixture_raw_dir):
     usage = {
-        # Wide receivers: Lamb ties Nabers, and the name puts Lamb first. Golden has no WOPR, so no rank.
+        # Wide receivers: Lamb ties Nabers, so both take the same rank. Golden has no WOPR, so no rank.
         "10213": [_usage(wopr=60)],
         "11632": [_usage(wopr=85)],
         "6786": [_usage(wopr=85)],
         "12501": [_usage(wopr=None)],
+        # A leader with a row but no WOPR.
+        "13274": [_usage(wopr=None)],
         # A bench receiver and an earlier week do not count.
         _bench_id(fixture_raw_dir, "WR"): [_usage(wopr=140)],
         "2449": [_usage(week=5, wopr=120), _usage(wopr=10)],
-        # Running backs: Henry ties Walker, and the name puts Henry first.
+        # Running backs: Henry ties Walker, so both take the same rank.
         "4034": [_usage(carry_share=80)],
         "3198": [_usage(carry_share=72)],
         "8151": [_usage(carry_share=72)],
@@ -393,21 +395,28 @@ def vbundle(fixture_raw_dir):
 
 def test_a_wr_leader_holds_his_wopr_and_its_rank_among_started_wrs(vbundle):
     f = vbundle.sheet.facts
-    assert f["LEAD.WR.2.volume"].text == "Malik Nabers's WOPR in week 6 is 85, 2nd among started wide receivers."
-    assert f["LEAD.WR.1.volume"].text == "Tre Tucker's WOPR in week 6 is 60, 3rd among started wide receivers."
+    assert f["LEAD.WR.2.volume"].text == "Malik Nabers (WR, NYG) had a WOPR of 85, 1st among started WRs this week."
+    assert f["LEAD.WR.1.volume"].text == "Tre Tucker (WR, LV) had a WOPR of 60, 3rd among started WRs this week."
     assert f["LEAD.WR.1.volume"].teams == f["LEAD.WR.1"].teams
     assert f["LEAD.WR.1.volume"].players == ["Tre Tucker"]
-    assert f["LEAD.TE.1.volume"].text == "Isaiah Likely's WOPR in week 6 is -5, 1st among started tight ends."
+    assert f["LEAD.TE.1.volume"].text == "Isaiah Likely (TE, NYG) had a WOPR of -5, 1st among started TEs this week."
 
 
 def test_an_rb_leader_holds_his_carry_share_and_its_rank_among_started_rbs(vbundle):
     f = vbundle.sheet.facts
     assert f["LEAD.RB.2.volume"].text == (
-        "Christian McCaffrey's carry share in week 6 is 80 percent, 1st among started running backs.")
+        "Christian McCaffrey (RB, SF) had a carry share of 80 percent, 1st among started RBs this week.")
     assert f["LEAD.RB.1.volume"].text == (
-        "Kenneth Walker's carry share in week 6 is 72 percent, 3rd among started running backs.")
+        "Kenneth Walker (RB, KC) had a carry share of 72 percent, 2nd among started RBs this week.")
     assert f["LEAD.RB.3.volume"].text == (
-        "James Cook's carry share in week 6 is 50 percent, 4th among started running backs.")
+        "James Cook (RB, BUF) had a carry share of 50 percent, 4th among started RBs this week.")
+
+
+def test_equal_volumes_share_a_rank_and_the_next_rank_skips(fixture_raw_dir):
+    wk = parse_week(load_raw(fixture_raw_dir))
+    usage = {pid: [_usage(wopr=76)] for pid in ("10213", "11632", "6786")} | {"2133": [_usage(wopr=50)]}
+    nfl = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, usage=usage)
+    assert volume_ranks(wk, nfl, "WR") == {"10213": (76, 1), "11632": (76, 1), "6786": (76, 1), "2133": (50, 4)}
 
 
 def test_a_qb_or_def_leader_has_no_volume_fact(vbundle):
@@ -417,8 +426,13 @@ def test_a_qb_or_def_leader_has_no_volume_fact(vbundle):
 
 def test_a_leader_with_no_usage_row_has_no_volume_fact(vbundle):
     f = vbundle.sheet.facts
-    assert "LEAD.WR.3" in f and "LEAD.WR.3.volume" not in f
     assert "LEAD.TE.2" in f and "LEAD.TE.2.volume" not in f
+
+
+def test_a_leader_with_no_wopr_has_no_volume_fact_and_the_others_keep_theirs(vbundle):
+    f = vbundle.sheet.facts
+    assert "LEAD.WR.3" in f and "LEAD.WR.3.volume" not in f
+    assert "LEAD.WR.1.volume" in f and "LEAD.WR.2.volume" in f
 
 
 @pytest.mark.parametrize("usage", [None, {}])
@@ -426,7 +440,8 @@ def test_the_chapter_builds_without_usage(fixture_raw_dir, usage):
     b = _volume_facts(fixture_raw_dir, usage)
     assert not any(fid.endswith(".volume") for fid in b.sheet.facts)
     ch = next(c for c in b.sheet.chapters if c.key == "position_leaders")
-    assert len(ch.fact_ids) == 15
+    leads = {fid for fid in b.sheet.facts if fid.startswith("LEAD.") and not fid.endswith(".volume")}
+    assert set(ch.fact_ids) == leads
 
 
 def test_only_the_position_leaders_chapter_cites_the_volume_facts(vbundle):
@@ -441,3 +456,12 @@ def test_every_number_in_a_volume_fact_text_is_in_its_numbers(vbundle):
     for fid, f in vbundle.sheet.facts.items():
         if fid.endswith(".volume"):
             assert set(NUMBER_TOKEN.findall(f.text)) <= set(f.numbers), fid
+
+
+def test_the_vocabulary_lines_define_wopr_and_carry_share():
+    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    wopr = next(line for line in vocabulary.splitlines() if line.startswith("- **WOPR**"))
+    carry = next(line for line in vocabulary.splitlines() if line.startswith("- **carry share**"))
+    assert "1.5 times target share plus 0.7 times air yards share" in wopr
+    assert "never a percent" in wopr and "pass 100 or go negative" in wopr
+    assert "in percent" in carry

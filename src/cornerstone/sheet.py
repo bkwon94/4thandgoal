@@ -837,21 +837,17 @@ def leader_facts(c: Context) -> list[Fact]:
     return out
 
 
-# The volume label and the plural position name of each position with a volume line.
-VOLUME_LABELS = {"RB": ("carry share", "running backs"), "WR": ("WOPR", "wide receivers"), "TE": ("WOPR", "tight ends")}
+# The volume label and its unit at each position with a volume line.
+# WOPR is a weighted sum and not a share, so only the carry share carries a percent.
+VOLUME_LABELS = {"RB": ("carry share", " percent"), "WR": ("WOPR", ""), "TE": ("WOPR", "")}
 
 
 def _volume_fact(c: Context, fid: str, position: str, line: PlayerLine, team: str, volume: tuple[int, int]) -> Fact:
     """The week N volume of one position leader and its rank among the started players at his position."""
     value, rank = volume
-    label, plural = VOLUME_LABELS[position]
+    label, unit = VOLUME_LABELS[position]
     n = Nums()
-    # WOPR is a weighted sum and not a share, so only the carry share reads as a percent.
-    unit = " percent" if label == "carry share" else ""
-    text = (
-        f"{line.name}'s {label} in week {n(c.week.week)} is {n(value)}{unit}, "
-        f"{n.ord(rank)} among started {plural}."
-    )
+    text = f"{c.who(line)} had a {label} of {n(value)}{unit}, {n.ord(rank)} among started {position}s this week."
     return fact(fid, text, n, [team], [line.name])
 
 

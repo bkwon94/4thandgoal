@@ -36,6 +36,8 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **drop**: a pass the FTN charting flags as a drop. With nflverse down, the count is Sleeper's `rec_drop`.
 - **drop value**: an estimate. One reception at the league rate, plus the air yards at the per-yard rate, plus a touchdown when the throw reached the end zone.
 - **drop swing**: the losing side's drop value is at least the margin. Only then may the writer say the drops cost the game.
+- **WOPR**: weighted opportunity rating, 1.5 times target share plus 0.7 times air yards share; a weighted sum and not a share, so never a percent; it can pass 100 or go negative.
+- **carry share**: his share of his team's carries, in percent.
 
 ## Banned words
 

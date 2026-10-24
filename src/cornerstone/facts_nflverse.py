@@ -136,9 +136,10 @@ VOLUME_FIELDS = {"RB": "carry_share", "WR": "wopr", "TE": "wopr"}
 
 
 def volume_ranks(week: Week, nfl: NflverseWeek | None, position: str) -> dict[str, tuple[int, int]]:
-    """The week N volume and its rank of each started player at the position, by Sleeper ID.
+    """Each started player's week N volume at the position and his rank on it, by Sleeper ID.
 
-    The rank is league wide at the position, the higher volume first, then the name.
+    The rank is league wide at the position, the higher volume first. Equal volumes share a rank, and the next
+    rank skips past them, as in 1, 1, 3. The name orders the list only.
     A player with no usage row for week N, or with no value in it, has no entry and takes no rank.
     """
     field = VOLUME_FIELDS.get(position)
@@ -155,4 +156,5 @@ def volume_ranks(week: Week, nfl: NflverseWeek | None, position: str) -> dict[st
                 if value is not None:
                     found.append((-value, line.name, line.player_id, value))
     found.sort()
-    return {pid: (value, i + 1) for i, (_, _, pid, value) in enumerate(found)}
+    # Standard competition rank: a player's rank is one more than the count of players with a higher volume.
+    return {pid: (value, 1 + sum(other > value for *_, other in found)) for _, _, pid, value in found}
