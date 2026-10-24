@@ -876,3 +876,12 @@ def test_a_cited_research_claim_still_fails_on_a_banned_word():
     sheet, ch = _claim_sheet()
     b = _blurb("waiver", _s(f"Tre Tucker is the best add, per Yahoo Fantasy: {CLAIM_URL}", "WV.research.7.1"))
     assert "[0] banned word 'best'" in code_check(b, ch, sheet)
+
+
+def test_in_scope_two_word_last_name_does_not_name_an_out_of_scope_player(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    # recap_3 has Amon-Ra St. Brown in scope. A.J. Brown is in the league but not in recap_3.
+    ch = _ch(sheet, "recap_3")
+    assert "Amon-Ra St. Brown" in ch.scope_players
+    b = _blurb("recap_3", _s("St. Brown also played.", "M3.result"), _s("They won.", "M3.result"))
+    assert not any("player A.J. Brown" in m for m in code_check(b, ch, sheet))
