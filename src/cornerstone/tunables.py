@@ -152,3 +152,7 @@ NEED_SHARE = {"need": 0.35, "covered": 0.12}
 # The count of weeks, N-2 to N, whose most recent winning claim at a position sets the price floor. One old
 # big win, such as $41 for an RB in week 3, must not set the price of every RB all season.
 FLOOR_WEEKS = 3
+# The least usage score of a sneaky add: the top quarter of the risers at his position.
+SNEAKY_USAGE_FLOOR = 0.75
+# The least projection score in the top half of a position. A score under it is in the bottom half.
+TOP_HALF = 0.5

@@ -382,6 +382,8 @@ class WaiverPlayer(BaseModel):
     price: WaiverPrice | None = None
     # The roster that holds a drop candidate and the pool player who beats him. None for a pool player.
     drop: "DropInfo | None" = None
+    # The code of the rule that put him in the bucket, such as usage_rise. None in best adds and trending.
+    reason: str | None = None
 
 
 class BudgetRow(BaseModel):

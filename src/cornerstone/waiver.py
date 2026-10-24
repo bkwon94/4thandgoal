@@ -15,6 +15,7 @@ from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
+from cornerstone.waiver_buckets import sneaky_and_stashes
 from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
 from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
@@ -57,6 +58,7 @@ def waiver_board(
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
+    buckets |= {key: _capped(ranked) for key, ranked in sneaky_and_stashes(players, best_adds).items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
     # gets one price, so the price runs once per player.
     ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
