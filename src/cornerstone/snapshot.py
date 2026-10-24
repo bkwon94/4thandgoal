@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # The sources the snapshot lacks without a SlowSources, in the names of load_slow_sources.
 # Each one is None and its name is in Snapshot.missing.
 # Snap, target, and red-zone use need no source of their own: the history helpers read them from the stats.
-SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "injuries")
+SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "injuries", "expected_points", "player_weeks")
 
 
 class SnapshotPlayer(BaseModel):

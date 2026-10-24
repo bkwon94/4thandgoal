@@ -245,7 +245,7 @@ def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
     # Week 6 is the trade week, so the stats end at week 5.
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
     # The repo has no nflverse cache. The points allowed come from the history, so they are present.
-    assert "Sources missing: schedules, depth charts, id map." in out
+    assert "Sources missing: schedules, depth charts, id map, injuries, expected points, player weeks." in out
     # The trade values 46.5, 31.5, and 27.5, their sum, and the ratio never print.
     for number in ("46.5", "31.5", "27.5", "59", "47.2", "1.0"):
         assert number not in out
@@ -263,7 +263,36 @@ def test_analyze_names_the_sources_it_has_from_the_cache(
                      "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
 
     assert code == 0
-    assert "Sources: schedules, depth charts, points allowed.\n" in capsys.readouterr().out
+    assert ("Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.\n"
+            in capsys.readouterr().out)
+
+
+def test_analyze_names_the_one_source_the_cache_lacks(
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    import shutil
+
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    cache = tmp_path / "data" / "cache" / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    (cache / "ep_weekly_2026.csv").unlink()
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
+
+    assert code == 0
+    assert "Sources missing: expected points.\n" in capsys.readouterr().out
+
+
+def test_the_source_names_are_the_names_of_the_refreshed_sources():
+    from cornerstone import cli
+    from cornerstone.live import REFRESHED_SOURCES
+    from cornerstone.snapshot import SLOW_SOURCES
+
+    # The line names each slow source the snapshot can miss, by the key the snapshot gives it.
+    assert set(cli._SOURCE_NAMES) == set(SLOW_SOURCES)
+    # The line and the refresh name each nflverse file with the same words.
+    assert {name for name, _ in REFRESHED_SOURCES} <= set(cli._SOURCE_NAMES.values())
 
 
 def _set_back_the_jacobs_trade(tmp_path):

@@ -15,6 +15,6 @@ when its file is absent.
 
 **Status:** open
 
-- [ ] A grade with every file reads "Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks."
-- [ ] A grade with no expected points file reads "Sources missing: expected points."
+- [x] A grade with every file reads "Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks."
+- [x] A grade with no expected points file reads "Sources missing: expected points."
 - [ ] Every existing cli test passes unchanged.

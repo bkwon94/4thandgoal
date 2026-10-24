@@ -59,10 +59,12 @@ def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_hi
     assert snap.depth_charts is None
     assert snap.points_allowed is None
     assert snap.id_map is None
-    assert snap.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries"]
+    assert snap.expected is None and snap.wopr is None
+    assert snap.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries", "expected_points",
+                            "player_weeks"]
 
 
-def test_slow_sources_fill_the_snapshot_and_none_stay_missing(
+def test_slow_sources_fill_the_snapshot_and_only_the_files_not_in_the_cache_stay_missing(
         fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
     cache = tmp_path / "nflverse"
     cache.mkdir()
@@ -75,7 +77,8 @@ def test_slow_sources_fill_the_snapshot_and_none_stay_missing(
     assert snap.id_map == slow.id_map and snap.id_map
     assert snap.points_allowed == slow.points_allowed and snap.points_allowed
     assert snap.injuries == slow.injuries and snap.injuries
-    assert snap.missing == []
+    # The cache holds neither the expected points file nor the weekly player file, so only those two are missing.
+    assert snap.missing == ["expected_points", "player_weeks"]
 
 
 def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history_root):

@@ -1,7 +1,7 @@
 """
 Loads the slow sources of the snapshot: the schedules, the depth charts, the id map, the points allowed, injuries,
 the expected points, and the WOPR. A source that is not there is None, so the build never stops on one.
-`missing` names each source that is not there, except the expected points and the WOPR.
+`missing` names each source that is not there. The expected points and the WOPR go by the names of their files.
 """
 import csv
 import logging
@@ -33,10 +33,11 @@ class SlowSources(BaseModel):
     # The injury report status by gsis_id and week. `id_map` joins it to Sleeper ids, as for the depth chart.
     injuries: dict[str, dict[int, str]] | None = None
     # The expected window of each player by Sleeper id. Only the expected gap adjuster reads it.
-    # That adjuster says in its own reason when the data is not there, so a None here is not in `missing`.
+    # That adjuster says in its own reason when the data is not there. A None here is "expected_points" in `missing`,
+    # so the sources line shows that the grade did not read the file.
     expected: ExpectedPoints | None = None
     # The WOPR by Sleeper id and week. Only the trend adjuster reads it, as a tiebreak before red-zone use.
-    # Without it, red-zone use breaks the tie, so a None here is not in `missing`.
+    # Without it, red-zone use breaks the tie. A None here is "player_weeks" in `missing`, the name of its file.
     wopr: dict[str, dict[int, int]] | None = None
     missing: list[str] = []
 
@@ -83,8 +84,10 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     wopr = None
     if sleeper_of_gsis and stats_player_path.exists():
         wopr = _read("wopr", _read_wopr, stats_player_path, week - 1, sleeper_of_gsis)
+    # The two go by the names of their files in `missing`, because the sources line names the files the grade read.
+    named = {**sources, "expected_points": expected, "player_weeks": wopr}
     return SlowSources(**sources, expected=expected, wopr=wopr,
-                       missing=[name for name, source in sources.items() if source is None])
+                       missing=[name for name, source in named.items() if source is None])
 
 
 def _read_wopr(path: Path, through: int, sleeper_of_gsis: dict[str, str]) -> dict[str, dict[int, int]] | None:

@@ -17,9 +17,13 @@ def _cache(fixture_nflverse_dir, tmp_path):
     return cache
 
 
-def test_load_slow_sources_gives_every_source(fixture_nflverse_dir, fixture_history_root, tmp_path):
+# The two sources that `_cache` leaves out. Each test that needs one copies it in.
+NOT_IN_CACHE = ["expected_points", "player_weeks"]
+
+
+def test_load_slow_sources_gives_every_source_in_the_cache(fixture_nflverse_dir, fixture_history_root, tmp_path):
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root)
-    assert sources.missing == []
+    assert sources.missing == NOT_IN_CACHE
     assert sources.schedules["SF"].bye_week == 8
     assert sources.depth_charts["SF"]["RB"][0] == "00-0033280"
     assert sources.points_allowed["NO"]["RB"].rank == 1
@@ -32,7 +36,7 @@ def test_load_slow_sources_without_a_cache_names_each_missing_source(tmp_path):
     sources = load_slow_sources(tmp_path / "none", 2026, 6, tmp_path / "no-history")
     assert (sources.schedules, sources.depth_charts, sources.id_map, sources.points_allowed, sources.injuries) == (
         None,) * 5
-    assert sources.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries"]
+    assert sources.missing == ["schedules", "depth_charts", "id_map", "points_allowed", "injuries", *NOT_IN_CACHE]
 
 
 def test_load_slow_sources_without_the_ffids_file_misses_only_the_id_map(
@@ -40,14 +44,14 @@ def test_load_slow_sources_without_the_ffids_file_misses_only_the_id_map(
     cache = _cache(fixture_nflverse_dir, tmp_path)
     (cache / "db_playerids.csv").unlink()
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.id_map is None and sources.missing == ["id_map"]
+    assert sources.id_map is None and sources.missing == ["id_map", *NOT_IN_CACHE]
 
 
 def test_load_slow_sources_misses_a_source_independently(fixture_nflverse_dir, fixture_history_root, tmp_path):
     cache = _cache(fixture_nflverse_dir, tmp_path)
     (cache / "games.csv").unlink()
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.missing == ["schedules"] and sources.depth_charts is not None
+    assert sources.missing == ["schedules", *NOT_IN_CACHE] and sources.depth_charts is not None
 
 
 def test_load_slow_sources_with_a_broken_file_does_not_raise(fixture_nflverse_dir, fixture_history_root, tmp_path):
@@ -55,7 +59,7 @@ def test_load_slow_sources_with_a_broken_file_does_not_raise(fixture_nflverse_di
     (cache / "games.csv").write_text("not,the,columns\n1,2,3\n")
     (cache / "depth_charts_2026.csv.gz").write_bytes(b"not gzip")
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.missing == ["schedules", "depth_charts"]
+    assert sources.missing == ["schedules", "depth_charts", *NOT_IN_CACHE]
 
 
 def test_load_slow_sources_without_the_injuries_file_misses_only_the_injuries(
@@ -63,7 +67,7 @@ def test_load_slow_sources_without_the_injuries_file_misses_only_the_injuries(
     cache = _cache(fixture_nflverse_dir, tmp_path)
     (cache / "injuries_2026.csv.gz").unlink()
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.injuries is None and sources.missing == ["injuries"]
+    assert sources.injuries is None and sources.missing == ["injuries", *NOT_IN_CACHE]
 
 
 def test_load_slow_sources_with_the_league_scoring_gives_the_expected_points(
@@ -76,14 +80,14 @@ def test_load_slow_sources_with_the_league_scoring_gives_the_expected_points(
     assert sources.expected.through_week == 5
     assert sources.expected.players and all(game.week <= 5 for games in sources.expected.players.values()
                                             for game in games)
-    assert sources.missing == []
+    assert sources.missing == ["player_weeks"]
 
 
-def test_load_slow_sources_without_the_expected_points_file_gives_none_and_misses_nothing(
+def test_load_slow_sources_without_the_expected_points_file_gives_none_and_names_it_as_missing(
         fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
     scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root, scoring)
-    assert sources.expected is None and sources.missing == []
+    assert sources.expected is None and sources.missing == NOT_IN_CACHE
 
 
 def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_week_before(
@@ -93,14 +97,15 @@ def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
     # Matthew Golden's WOPR by week. The trade week is 6, so week 6 is not in it.
     assert sources.wopr["12501"] == {1: 65, 2: 57, 3: 71, 4: 64, 5: 58}
-    assert sources.missing == []
+    assert sources.missing == ["expected_points"]
 
 
-def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no_wopr_and_misses_nothing(
+def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no_wopr_and_names_it_as_missing(
         fixture_nflverse_dir, fixture_history_root, tmp_path):
     cache = _cache(fixture_nflverse_dir, tmp_path)
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    assert sources.wopr is None and sources.missing == []
+    assert sources.wopr is None and sources.missing == NOT_IN_CACHE
     shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
     (cache / "db_playerids.csv").unlink()
-    assert load_slow_sources(cache, 2026, 6, fixture_history_root).wopr is None
+    without_id_map = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    assert without_id_map.wopr is None and without_id_map.missing == ["id_map", *NOT_IN_CACHE]
