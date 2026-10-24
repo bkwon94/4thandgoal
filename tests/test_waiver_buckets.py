@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.models import NflverseWeek, UsageWeek
 from cornerstone.sleeper import load_raw
+from cornerstone.slow_sources import SlowSources
 from cornerstone.waiver import waiver_board
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
@@ -52,3 +53,29 @@ def test_a_rising_snap_share_with_a_flat_projection_lands_in_sneaky_and_not_in_b
     sneaky = board.buckets["sneaky"]
     assert _ids(sneaky) == ["80001"]
     assert sneaky[0].reason == "usage_rise"
+
+
+def _depth(charts, injuries=None):
+    """The slow sources with `charts`, team to position to Sleeper IDs, written as the gsis_ids of _raw."""
+    return SlowSources(depth_charts={team: {pos: [f"G{pid}" for pid in ids] for pos, ids in by_pos.items()}
+                                     for team, by_pos in charts.items()},
+                       id_map={}, injuries=injuries)
+
+
+def _top_backs():
+    """Three RBs of another team who project the most of the pool, so they fill the RB places of best adds."""
+    return {f"8090{i}": _player("RB", f"Top Back {i}", team="BUF") for i in range(3)}
+
+
+def test_a_player_one_slot_below_an_injured_starter_lands_in_sneaky_with_the_story_fact(fixture_raw_dir):
+    # The starter is rostered by no one here, but his status comes from the players file all the same.
+    players = {"80001": _player("RB", "Michael Pittman", injury="Out"), "80002": _player("RB", "Jake Bernard"),
+               "80003": _player("RB", "Third Guy")} | _top_backs()
+    raw = _raw(fixture_raw_dir, players, {"80001": 12.0, "80002": 6.0, "80003": 3.0} | dict.fromkeys(_top_backs(), 30.0))
+    board = waiver_board(raw, 6, BUILT, slow=_depth({"KC": {"RB": ["80001", "80002", "80003"]}}))
+    sneaky = board.buckets["sneaky"]
+    assert _ids(sneaky) == ["80002"]
+    assert sneaky[0].reason == "behind_injury"
+    story = sneaky[0].facts[-1]
+    assert story.text == "Michael Pittman is out, and Jake Bernard is next on the depth chart."
+    assert "Michael Pittman" in story.players

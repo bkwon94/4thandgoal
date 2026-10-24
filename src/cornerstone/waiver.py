@@ -12,6 +12,7 @@ from cornerstone.models import (
 )
 from cornerstone.parse import player_name
 from cornerstone.sheet import Nums, fact
+from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
@@ -29,13 +30,14 @@ DROPS = "drops"
 
 def waiver_board(
     raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
-    claims: Sequence[WaiverClaim] = (),
+    claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None,
 ) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
     `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
     score and an environment score of 0. `claims` is the bid history of the season, the input of the price
-    floor and the last like him.
+    floor and the last like him. `slow` gives the depth charts and the injury report of the sneaky and stash
+    buckets. None leaves out every rule that needs them.
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
@@ -58,7 +60,7 @@ def waiver_board(
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)}
-    buckets |= {key: _capped(ranked) for key, ranked in sneaky_and_stashes(players, best_adds).items()}
+    buckets |= {key: _capped(ranked) for key, ranked in sneaky_and_stashes(players, best_adds, raw, slow).items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
     # gets one price, so the price runs once per player.
     ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
