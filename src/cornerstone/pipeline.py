@@ -215,7 +215,7 @@ def make_bundle(
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
-    bundle.waiver = waiver_board(raw, week, started)
+    bundle.waiver = waiver_board(raw, week, started, nfl)
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),

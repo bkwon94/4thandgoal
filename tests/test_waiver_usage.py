@@ -3,6 +3,7 @@ Tests for the usage and environment of the waiver board.
 They read a small play by play at the usage seam and feed hand-set usage at the engine seam.
 """
 import csv
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -148,3 +149,39 @@ def test_the_environment_ranks_passers_by_pace_and_neutral_passes_and_backs_by_r
     best = [p.player_id for p in _best_adds(raw, _nfl({}, environment))]
     assert best.index("80002") < best.index("80001")
     assert best.index("80004") < best.index("80003")
+
+
+def test_a_player_carries_a_usage_fact_and_an_environment_fact_with_their_numbers(fixture_raw_dir):
+    players = {"80001": _player("WR", name="Riser Guy"), "80002": _player("RB", name="Back Guy")}
+    raw = _raw(fixture_raw_dir, players, {"80001": 5.0, "80002": 5.0})
+    environment = {"KC": _team(plays=70, neutral_passes=26, rush_successes=11), "BUF": _team(plays=72)}
+    nfl = _nfl({"80001": [_usage(5, 48, targets=2), _usage(6, 71, targets=5)],
+                "80002": [_usage(5, 60, carries=12), _usage(6, 55, carries=9)]}, environment)
+    facts = {p.player_id: [f.text for f in p.facts] for p in _best_adds(raw, nfl)}
+    assert facts["80001"] == [
+        "Riser Guy played 71% of snaps and took 5 targets last week, up from 48% and 2.",
+        "KC runs the 2nd fastest offense and passes on 65% of neutral downs."]
+    assert facts["80002"] == [
+        "Back Guy played 55% of snaps and took 9 carries last week, down from 60% and 12.",
+        "KC runs the 2nd fastest offense and succeeds on 44% of runs."]
+
+
+def test_every_digit_of_a_fact_is_in_its_numbers(fixture_raw_dir):
+    players = {f"8000{i}": _player(pos) for i, pos in enumerate(("QB", "RB", "WR", "TE"), start=1)}
+    raw = _raw(fixture_raw_dir, players, {pid: 5.0 for pid in players})
+    nfl = _nfl({pid: [_usage(5, 40, targets=3, carries=4), _usage(6, 40, targets=3, carries=4)] for pid in players})
+    best = _best_adds(raw, nfl)
+    assert len(best) == 4 and all(len(p.facts) == 2 for p in best)
+    for fact in (f for p in best for f in p.facts):
+        assert set(re.findall(r"\d+", fact.text)) <= set(fact.numbers), fact.text
+
+
+def test_a_player_with_no_usage_rows_scores_0_and_has_no_usage_fact(fixture_raw_dir):
+    # A rookie in week 1 or a player on a bye has no row for one of the two weeks.
+    players = {"80001": _player("WR"), "80002": _player("WR"), "80003": _player("WR")}
+    raw = _raw(fixture_raw_dir, players, {pid: 5.0 for pid in players})
+    best = {p.player_id: p for p in _best_adds(raw, _nfl({"80002": [_usage(6, 71, targets=5)]}))}
+    for pid in players:
+        assert best[pid].scores.usage == 0
+        assert [f.id for f in best[pid].facts] == [f"W.env.{pid}"]
+    assert _best_adds(raw, None)[0].facts == []

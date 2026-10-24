@@ -3,6 +3,7 @@ The waiver board engine: it ranks the waiver pool into buckets and builds the bu
 Pure code: no network and no Claude, so the same raw data gives the same board.
 """
 from datetime import datetime
+from decimal import ROUND_HALF_UP, Decimal
 from typing import NamedTuple
 
 from cornerstone.models import (
@@ -41,6 +42,9 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
                                  projection=projection[pid]))
         for pid, entry in pool.items()
     ]
+    for p in players:
+        if p.position in BUCKET_POSITIONS:
+            p.facts = [*p.facts, *_player_facts(p, ((nfl.usage if nfl else None) or {}).get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
@@ -255,3 +259,39 @@ def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
         return 0.0
     second = ranks.rush_success if entry["position"] == "RB" else ranks.neutral_pass
     return round((ranks.pace + second) / 2, 4)
+
+
+def _percent(fraction: float) -> int:
+    """The fraction as a whole percent, rounded half up as every number on the page."""
+    return int(Decimal(str(100 * fraction)).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+
+
+def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamRanks], week: int) -> list[Fact]:
+    """The usage fact and the environment fact of a QB, RB, WR, or TE. Each one drops when its input is missing."""
+    # The sheet imports the Sleeper module, which imports this module, so a top-level import is a cycle.
+    from cornerstone.sheet import Nums, fact
+
+    facts = []
+    window = _usage_window(rows, week)
+    if window is not None:
+        before, last = window
+        n = Nums()
+        count, _, word = _opportunities(p.position, last)
+        before_count = _opportunities(p.position, before)[0]
+        if last.snap_share == before.snap_share:
+            direction = "level with"
+        else:
+            direction = "up from" if last.snap_share > before.snap_share else "down from"
+        text = (f"{p.name} played {n(last.snap_share)}% of snaps and took {n(count)} {word} last week, "
+                f"{direction} {n(before.snap_share)}% and {n(before_count)}.")
+        facts.append(fact(f"W.usage.{p.player_id}", text, n, [], [p.name]))
+    ranks = teams.get(p.team)
+    if ranks is not None:
+        n = Nums()
+        text = f"{p.team} runs the {n.ord(ranks.pace_place)} fastest offense and "
+        if p.position == "RB":
+            text += f"succeeds on {n(_percent(ranks.rates.rush_success))}% of runs."
+        else:
+            text += f"passes on {n(_percent(ranks.rates.neutral_pass_rate))}% of neutral downs."
+        facts.append(fact(f"W.env.{p.player_id}", text, n, [], [p.name]))
+    return facts
