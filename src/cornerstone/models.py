@@ -401,6 +401,17 @@ class TeamWeek(BaseModel):
     neutral_passes: int
 
 
+class WaiverClaim(BaseModel):
+    """One waiver claim of the season: the bid, the player, his position, the week, and whether the claim won."""
+    player_id: str
+    roster_id: int
+    # None when the players file has no row for the player.
+    position: str | None
+    week: int
+    bid: int
+    won: bool
+
+
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
