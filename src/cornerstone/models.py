@@ -459,6 +459,18 @@ class TeamWeek(BaseModel):
     rush_successes: int
     neutral_plays: int
     neutral_passes: int
+    # The sums over the plays of nflverse epa and pass_oe. A week extract saved without them reads them as 0.
+    epa: float = 0.0
+    pass_oe: float = 0.0
+
+    @property
+    def epa_per_play(self) -> float:
+        return self.epa / self.plays if self.plays else 0.0
+
+    @property
+    def pass_rate_over_expected(self) -> float:
+        """The mean pass_oe of the plays, in percent points over the dropback rate the nflverse model expects."""
+        return self.pass_oe / self.plays if self.plays else 0.0
 
 
 class ExpectedGame(BaseModel):

@@ -14,7 +14,8 @@ from cornerstone.nflverse_rows import _number, _rows, _sleeper_team, _yardline
 PLAY_TYPES = ("pass", "run")
 # The play by play columns the two readers use. A play keeps only these, so the plays of a season fit in memory.
 PLAY_COLUMNS = ("week", "posteam", "two_point_attempt", "pass", "rush", "receiver_player_id", "rusher_player_id",
-                "yardline_100", "success", "down", "score_differential", "qtr", "game_seconds_remaining")
+                "yardline_100", "success", "down", "score_differential", "qtr", "game_seconds_remaining", "epa",
+                "pass_oe")
 # A target or a carry at this yard line or closer to the end zone is a red zone touch.
 RED_ZONE_YARDS = 20
 # A neutral down: the score is within this many points either way.
@@ -128,9 +129,14 @@ def _is_neutral(play: dict[str, str]) -> bool:
 
 
 def read_environment(plays: list[dict[str, str]]) -> dict[str, list[TeamWeek]]:
-    """The offense counts of each week of the plays by Sleeper team code, in week order."""
+    """The offense counts and the EPA and pass_oe sums of each week of the plays by Sleeper team code, in week order.
+
+    A two-point try is not a down, so it adds nothing. It also has no pass_oe, so every play left has both columns.
+    """
     counts: dict[tuple[str, int], Counter] = {}
     for play in plays:
+        if _number(play["two_point_attempt"]) == 1:
+            continue
         team = counts.setdefault((_sleeper_team(play["posteam"]), int(play["week"])), Counter())
         passed, rushed = bool(_number(play["pass"])), bool(_number(play["rush"]))
         team["plays"] += 1
@@ -140,11 +146,14 @@ def read_environment(plays: list[dict[str, str]]) -> dict[str, list[TeamWeek]]:
         if _is_neutral(play):
             team["neutral_plays"] += 1
             team["neutral_passes"] += passed
+        team["epa"] += _number(play["epa"])
+        team["pass_oe"] += _number(play["pass_oe"])
     environment: dict[str, list[TeamWeek]] = {}
     for (team, team_week), c in sorted(counts.items()):
         environment.setdefault(team, []).append(TeamWeek(
             week=team_week, plays=c["plays"], passes=c["passes"], rushes=c["rushes"],
-            rush_successes=c["rush_successes"], neutral_plays=c["neutral_plays"], neutral_passes=c["neutral_passes"]))
+            rush_successes=c["rush_successes"], neutral_plays=c["neutral_plays"], neutral_passes=c["neutral_passes"],
+            epa=c["epa"], pass_oe=c["pass_oe"]))
     return environment
 
 

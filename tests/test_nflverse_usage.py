@@ -17,18 +17,21 @@ from cornerstone.nflverse_usage import read_environment, read_plays, read_snaps,
 FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "two_point_attempt", "pass", "rush",
               "receiver_player_id", "rusher_player_id", "yardline_100", "success", "down", "score_differential",
-              "qtr", "game_seconds_remaining")
+              "qtr", "game_seconds_remaining", "epa", "pass_oe")
 SNAP_FIELDS = ("game_type", "week", "pfr_player_id", "team", "offense_snaps", "offense_pct")
 
 
 def _play(week, team="KC", kind="pass", receiver="", rusher="", yardline=50, success=0, down=1, score=0, qtr=1,
-          seconds=3000, two_point=0):
-    """One play by play row. A pass with no receiver is a sack or a throw away; a run has a rusher."""
+          seconds=3000, two_point=0, epa=0.25, pass_oe=-12.5):
+    """One play by play row. A pass with no receiver is a sack or a throw away; a run has a rusher.
+
+    The default epa and pass_oe are hand-set values in the range of real plays, not values from a real play.
+    """
     return {"game_id": f"2026_{week:02d}_{team}", "season_type": "REG", "week": week, "posteam": team,
             "play_type": kind, "two_point_attempt": two_point, "pass": int(kind == "pass"), "rush": int(kind == "run"),
             "receiver_player_id": receiver, "rusher_player_id": rusher, "yardline_100": yardline,
             "success": success, "down": down, "score_differential": score, "qtr": qtr,
-            "game_seconds_remaining": seconds}
+            "game_seconds_remaining": seconds, "epa": epa, "pass_oe": pass_oe}
 
 
 def _csv(path, fields, rows):
@@ -116,6 +119,31 @@ def test_the_environment_reader_counts_plays_neutral_passes_and_rush_successes(t
     assert (week.week, week.plays, week.passes, week.rushes, week.rush_successes) == (6, 9, 6, 3, 2)
     assert (week.neutral_plays, week.neutral_passes) == (4, 2)
     assert set(environment) == {"KC", "BUF"}
+
+
+def test_the_environment_reader_sums_epa_and_pass_rate_over_expected(tmp_path):
+    plays = [_play(6, receiver="00-W", epa=1.5, pass_oe=40.0), _play(6, epa=-2.0, pass_oe=10.0),
+             _play(6, kind="run", rusher="00-R", epa=0.5, pass_oe=-30.0)]
+    # A two-point try, a kneel, a spike, and a kick add nothing. A try has no down, so its pass_oe is empty.
+    not_plays = [_play(6, receiver="00-W", two_point=1, down="", epa=3.0, pass_oe=""),
+                 _play(6, kind="run", rusher="00-R", two_point=1, down="", epa=-1.0, pass_oe=""),
+                 _play(6, kind="qb_kneel", epa=-0.4, pass_oe=""), _play(6, kind="qb_spike", epa=-0.1, pass_oe=""),
+                 _play(6, kind="punt", epa=0.8, pass_oe="")]
+    pbp = _csv(tmp_path / "pbp.csv", PBP_FIELDS, plays + not_plays)
+    week = read_environment(read_plays(pbp, 6))["KC"][0]
+    assert (week.plays, week.passes, week.rushes) == (3, 2, 1)
+    assert (week.epa, week.pass_oe) == (0.0, 20.0)
+    assert (week.epa_per_play, week.pass_rate_over_expected) == (0.0, 20.0 / 3)
+
+
+def test_the_environment_reader_gives_the_dallas_week_6_by_hand():
+    # Worked by hand from the fixture rows: 70 pass and run plays with the one two-point pass left out.
+    # The EPA sum is -8.46435826329979 and the pass_oe sum is 357.572077214718.
+    plays = read_plays(FIXTURES / "play_by_play_2026_week6_six_teams.csv.gz", 6)
+    week = read_environment(plays)["DAL"][0]
+    assert (week.week, week.plays, week.passes, week.rushes) == (6, 70, 56, 14)
+    assert round(week.epa_per_play, 4) == -0.1209
+    assert round(week.pass_rate_over_expected, 4) == 5.1082
 
 
 def test_the_week_extract_carries_the_usage_and_the_environment(nfl_week6):
