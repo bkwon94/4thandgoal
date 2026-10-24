@@ -17,7 +17,7 @@ from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
 from cornerstone.history import history_root
-from cornerstone.live import live_snapshot
+from cornerstone.live import REFRESHED_SOURCES, live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.pipeline import (
@@ -130,16 +130,24 @@ def _names(snapshot: Snapshot, pids: list[str]) -> str:
 
 
 # The plain name of each slow source that the as-of line shows, in print order.
+# The refreshed nflverse files take their names from REFRESHED_SOURCES, so the line and the refresh cannot drift.
+# The points allowed come from the history, not from a refresh, so the line puts them after the depth charts.
+# Each key is its name in Snapshot.missing, which is the plain name with underscores.
+_REFRESHED_NAMES = [name for name, _ in REFRESHED_SOURCES]
 _SOURCE_NAMES = {
-    "schedules": "schedules", "depth_charts": "depth charts", "points_allowed": "points allowed", "id_map": "id map",
+    name.replace(" ", "_"): name
+    for name in [*_REFRESHED_NAMES[:2], "points allowed", *_REFRESHED_NAMES[2:]]
 }
+# The id map only joins the ids of the other files, so the line names it when it is missing but not when it is there.
+_JOIN_ONLY = "id_map"
 
 
 def _sources_line(snapshot: Snapshot) -> str:
     """One line that names the slow sources the grade has, or the ones it lacks."""
     missing = [name for key, name in _SOURCE_NAMES.items() if key in snapshot.missing]
     if not missing:
-        return "Sources: schedules, depth charts, points allowed."
+        present = [name for key, name in _SOURCE_NAMES.items() if key != _JOIN_ONLY]
+        return f"Sources: {', '.join(present)}."
     return f"Sources missing: {', '.join(missing)}."
 
 
