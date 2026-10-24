@@ -374,6 +374,33 @@ class WaiverBoard(BaseModel):
     budgets: list[BudgetRow]
 
 
+class UsageWeek(BaseModel):
+    """The usage of one player in one week, from the play by play and the snap counts. A share is in percent."""
+    week: int
+    # The Sleeper code of the team he played for.
+    team: str
+    # None when the snap counts have no row for him, such as a player with no PFR ID in the id map.
+    snaps: int | None
+    snap_share: int | None
+    targets: int
+    target_share: int
+    carries: int
+    carry_share: int
+    # The targets and the carries at the opponent's 20-yard line or closer.
+    red_zone_touches: int
+
+
+class TeamWeek(BaseModel):
+    """The counts of one team's offense in one week. The environment rates come from the sums of these counts."""
+    week: int
+    plays: int
+    passes: int
+    rushes: int
+    rush_successes: int
+    neutral_plays: int
+    neutral_passes: int
+
+
 class Bundle(BaseModel):
     data: WeekData
     sheet: FactSheet
