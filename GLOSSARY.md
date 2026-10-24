@@ -197,7 +197,7 @@ _Avoid_: anchor, base grade
 
 **Adjuster**:
 One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
-trend and usage, injury history, handcuff, or schedule.
+trend and usage, injury history, handcuff, schedule, or expected gap.
 
 **Breakdown**:
 The start letter, every adjuster with its step, and the final letter, for one side.
@@ -297,6 +297,48 @@ The backup to a roster's own starting running back. Insurance, never a player wi
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
 K, K over DEF.
+
+### Player data from nflverse
+
+**Target**:
+A pass play with a receiver, two-point tries left out. The nflverse rule, which our count follows.
+_Avoid_: look, pass attempt to
+
+**Target share**:
+A player's share of his team's targets in one game, from the nflverse weekly player file.
+_Avoid_: target rate, target percent
+
+**WOPR**:
+Weighted opportunity rating: 1.5 times target share plus 0.7 times air yards share, per game, from the nflverse weekly player file.
+_Avoid_: opportunity share, volume score
+
+**Expected points**:
+What a player's volume should have scored in one game, from ffopportunity, rescaled to the league's half-PPR scoring.
+_Avoid_: xFP, projected points (that is the Sleeper projection, before the game)
+
+**Expected gap**:
+A player's actual points minus his expected points, per game. Positive is over expected, negative is under.
+_Avoid_: luck, regression, variance
+
+**Expected window**:
+The last 3 games a player played, the span the expected gap averages over for the rubric. A player with fewer than 2 games in it has no gap.
+_Avoid_: recent games, sample
+
+**Pass rate over expected**:
+How much more or less a team passes than the nflverse model expects, given down, distance, and score, per game.
+_Avoid_: PROE, pass lean, neutral pass rate (that is the waiver board's older measure)
+
+**Shootout**:
+A next-week NFL game where both teams have a positive pass rate over expected over the last 3 weeks.
+_Avoid_: high-scoring game, fun matchup
+
+**Unlucky award**:
+The weekly award to the started player with the largest expected gap under zero, at least 5 points under. No award when no starter clears the floor.
+_Avoid_: regression candidate
+
+**Lucky award**:
+The weekly award to the started player with the largest expected gap over zero, at least 5 points over. No award when no starter clears the floor.
+_Avoid_: fluke, outlier
 
 ### The waiver page
 
