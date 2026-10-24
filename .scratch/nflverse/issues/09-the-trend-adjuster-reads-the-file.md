@@ -1,4 +1,4 @@
-# 09 — The trend adjuster reads the file
+# 09 — The WOPR tiebreak in the trend adjuster
 
 Spec: `.scratch/nflverse/PRD.md`.
 
