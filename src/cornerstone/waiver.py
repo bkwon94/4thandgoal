@@ -3,13 +3,14 @@ The waiver board engine: it ranks the waiver pool into buckets and builds the bu
 Pure code: no network and no Claude, so the same raw data gives the same board.
 """
 from datetime import datetime
-from decimal import ROUND_HALF_UP, Decimal
 from typing import NamedTuple
 
+from cornerstone.history import _round_half_up
 from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverPlayer, r2,
 )
 from cornerstone.parse import player_name
+from cornerstone.sheet import Nums, fact
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, LAST_SEASON_WEEK, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
 )
@@ -33,7 +34,7 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
     ros = {pid: r2(sum(ahead.get(w, {}).get(pid, 0.0) for w in range(week + 1, LAST_SEASON_WEEK + 1)))
            for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
-    projection = _projection_scores(positions, ros)
+    projection = _rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
@@ -80,21 +81,22 @@ def _in_pool(entry: dict, rostered: set[str], player_id: str) -> bool:
     return entry.get("status") == "Active"
 
 
-def _projection_scores(positions: dict[str, str], ros: dict[str, float]) -> dict[str, float]:
-    """The projection score of each player: his rest of season rank inside the position, from 1 for the best to 0.
+def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[str, float]:
+    """The rank score of each key: the rank of its value inside its group, from 1 for the highest to 0.
 
-    Players with the same projection share the better rank.
+    The group is the position for a player and one group for every team. Keys with the same value share the
+    better rank.
     """
     by_position: dict[str, list[float]] = {}
     for pid, position in positions.items():
-        by_position.setdefault(position, []).append(ros[pid])
-    for values in by_position.values():
-        values.sort(reverse=True)
+        by_position.setdefault(position, []).append(values[pid])
+    for ranked in by_position.values():
+        ranked.sort(reverse=True)
     scores = {}
     for pid, position in positions.items():
-        values = by_position[position]
-        ahead_of = values.index(ros[pid])
-        scores[pid] = 1.0 if len(values) == 1 else round(1 - ahead_of / (len(values) - 1), 4)
+        ranked = by_position[position]
+        ahead_of = ranked.index(values[pid])
+        scores[pid] = 1.0 if len(ranked) == 1 else round(1 - ahead_of / (len(ranked) - 1), 4)
     return scores
 
 
@@ -174,14 +176,31 @@ def _usage_window(rows: list[UsageWeek], week: int) -> tuple[UsageWeek, UsageWee
     return (before, last) if before and last else None
 
 
-def _opportunities(position: str, u: UsageWeek) -> tuple[int, int, str]:
-    """The count, the share, and the word of the touches that count for the position.
+class PositionKinds(NamedTuple):
+    """The touch and the second environment rank that count for one position. The first environment rank is pace."""
+    # The UsageWeek count field. It is also the word of the usage fact.
+    touch: str
+    # The UsageWeek share field of the touch.
+    touch_share: str
+    # The TeamRanks field of the second environment rank, and the TeamRates field of the environment fact.
+    environment: str
+    rate: str
 
-    A WR or a TE earns targets. An RB or a QB earns carries: a QB's targets are near none.
-    """
-    if position in ("WR", "TE"):
-        return u.targets, u.target_share, "targets"
-    return u.carries, u.carry_share, "carries"
+
+# A WR or a TE earns targets and gains from passes. An RB earns carries and gains from runs that work.
+# A QB earns carries, as his targets are near none, and gains from passes.
+POSITION_KINDS = {
+    "QB": PositionKinds("carries", "carry_share", "neutral_pass", "neutral_pass_rate"),
+    "RB": PositionKinds("carries", "carry_share", "rush_success", "rush_success"),
+    "WR": PositionKinds("targets", "target_share", "neutral_pass", "neutral_pass_rate"),
+    "TE": PositionKinds("targets", "target_share", "neutral_pass", "neutral_pass_rate"),
+}
+
+
+def _opportunities(position: str, u: UsageWeek) -> tuple[int, int, str]:
+    """The count, the share, and the word of the touches that count for the position."""
+    kinds = POSITION_KINDS[position]
+    return getattr(u, kinds.touch), getattr(u, kinds.touch_share), kinds.touch
 
 
 def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], week: int) -> dict[str, float]:
@@ -200,8 +219,7 @@ def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], 
                 + _opportunities(position, last)[1] - _opportunities(position, before)[1])
         if rise > 0:
             rises[pid] = rise
-    # The projection rank is a rank inside the position, which is the scale the usage needs too.
-    return _projection_scores({pid: positions[pid] for pid in rises}, rises)
+    return _rank_scores({pid: positions[pid] for pid in rises}, rises)
 
 
 class TeamRates(NamedTuple):
@@ -238,11 +256,10 @@ def _team_rates(environment: dict[str, list[TeamWeek]], week: int) -> dict[str, 
 
 
 def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
-    # The projection rank is a rank inside a group. Here one group holds every team.
     every = dict.fromkeys(rates, "NFL")
-    pace = _projection_scores(every, {t: r.plays_per_game for t, r in rates.items()})
-    neutral = _projection_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
-    rush = _projection_scores(every, {t: r.rush_success for t, r in rates.items()})
+    pace = _rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
+    neutral = _rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
+    rush = _rank_scores(every, {t: r.rush_success for t, r in rates.items()})
     faster = sorted((r.plays_per_game for r in rates.values()), reverse=True)
     return {t: TeamRanks(rates=r, pace=pace[t], neutral_pass=neutral[t], rush_success=rush[t],
                          pace_place=faster.index(r.plays_per_game) + 1)
@@ -250,28 +267,23 @@ def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
 
 
 def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
-    """The mean of two team rank scores: pace and neutral passes for a QB, WR, or TE, rush success and pace for an RB.
+    """The mean of two team rank scores: pace and the second rank of POSITION_KINDS for the position.
 
-    A pass catcher and a passer gain from more plays and more passes. A back gains from more plays and from
-    runs that work. A kicker, a defense, or a team with no environment gets 0.
+    A kicker, a defense, or a team with no environment gets 0.
     """
     ranks = teams.get(entry["team"])
     if ranks is None or entry["position"] not in BUCKET_POSITIONS:
         return 0.0
-    second = ranks.rush_success if entry["position"] == "RB" else ranks.neutral_pass
-    return round((ranks.pace + second) / 2, 4)
+    return round((ranks.pace + getattr(ranks, POSITION_KINDS[entry["position"]].environment)) / 2, 4)
 
 
 def _percent(fraction: float) -> int:
     """The fraction as a whole percent, rounded half up as every number on the page."""
-    return int(Decimal(str(100 * fraction)).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+    return int(_round_half_up(100 * fraction))
 
 
 def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamRanks], week: int) -> list[Fact]:
     """The usage fact and the environment fact of a QB, RB, WR, or TE. Each one drops when its input is missing."""
-    # The sheet imports the Sleeper module, which imports this module, so a top-level import is a cycle.
-    from cornerstone.sheet import Nums, fact
-
     facts = []
     window = _usage_window(rows, week)
     if window is not None:
@@ -289,10 +301,12 @@ def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamR
     ranks = teams.get(p.team)
     if ranks is not None:
         n = Nums()
+        kinds = POSITION_KINDS[p.position]
+        rate = n(_percent(getattr(ranks.rates, kinds.rate)))
         text = f"{p.team} runs the {n.ord(ranks.pace_place)} fastest offense and "
-        if p.position == "RB":
-            text += f"succeeds on {n(_percent(ranks.rates.rush_success))}% of runs."
+        if kinds.environment == "rush_success":
+            text += f"succeeds on {rate}% of runs."
         else:
-            text += f"passes on {n(_percent(ranks.rates.neutral_pass_rate))}% of neutral downs."
+            text += f"passes on {rate}% of neutral downs."
         facts.append(fact(f"W.env.{p.player_id}", text, n, [], [p.name]))
     return facts
