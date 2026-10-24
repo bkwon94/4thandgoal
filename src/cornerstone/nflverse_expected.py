@@ -4,7 +4,7 @@ The reader checks the file for the games of the last game day of week N. A file 
 """
 from pathlib import Path
 
-from cornerstone.models import ExpectedGame, ExpectedPoints
+from cornerstone.models import ExpectedGame, ExpectedPoints, r2
 from cornerstone.nflverse_rows import _number, _rows
 
 # The file scores full PPR: 1 point per reception and -2 per interception.
@@ -58,7 +58,7 @@ def read_expected(path: Path, games: Path, season: int, week: int, scoring: dict
         if pid is None or int(row["week"]) > through:
             continue
         played.setdefault(pid, []).append(ExpectedGame(
-            week=int(row["week"]), game_id=row["game_id"], expected=round(_expected(row, scoring), 2)))
+            week=int(row["week"]), game_id=row["game_id"], expected=r2(_expected(row, scoring))))
     # The file lists the games of a player out of week order. The reader alone cuts the window to the last games.
     return ExpectedPoints(through_week=through, players={
         pid: sorted(player, key=lambda g: g.week)[-WINDOW_GAMES:] for pid, player in sorted(played.items())})
@@ -74,4 +74,4 @@ def window_gap(games: list[ExpectedGame], actual: dict[int, float]) -> float | N
     gaps = [actual[g.week] - g.expected for g in games if g.week in actual]
     if len(gaps) < WINDOW_MIN_GAMES:
         return None
-    return round(sum(gaps) / len(gaps), 2)
+    return r2(sum(gaps) / len(gaps))
