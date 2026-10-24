@@ -1,11 +1,12 @@
 """
-Drop value and drop lines from the nflverse drop plays and the Sleeper stats, and the unlucky and lucky starters.
+Drop value and drop lines from the nflverse drop plays and the Sleeper stats, the unlucky and lucky starters,
+and the shootouts of next week.
 The fact text lives in sheet.py with the other facts.
 """
 from decimal import Decimal
 from typing import NamedTuple
 
-from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Week, sub
+from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Shootout, TeamWeek, Week, sub
 
 # The fewest points a starter must score under or over his expected points to win the unlucky or lucky award.
 # A smaller gap in one game is noise, so a quiet week gives no award. The commissioner tunes it.
@@ -18,6 +19,10 @@ class GapLine(NamedTuple):
     roster_id: int
     expected: float
     gap: float
+
+
+# The glossary defines a shootout over the last 3 weeks, so one odd game does not make a team lean pass.
+SHOOTOUT_GAMES = 3
 
 
 def _drop_value(play: DropPlay, scoring: dict[str, float]) -> Decimal:
@@ -98,3 +103,26 @@ def expected_awards(
     if lucky is not None and lucky.gap >= EXPECTED_AWARD_FLOOR:
         out["lucky"] = lucky
     return out
+
+
+def _recent_rate(weeks: list[TeamWeek]) -> tuple[float, int] | None:
+    """The pass rate over expected over the last SHOOTOUT_GAMES weeks a team has, and the count of those weeks."""
+    recent = weeks[-SHOOTOUT_GAMES:]
+    plays = sum(w.plays for w in recent)
+    if not plays:
+        return None
+    # The sums weigh each play the same, so a week with few plays does not count as much as a full one.
+    return sum(w.pass_oe for w in recent) / plays, len(recent)
+
+
+def shootouts(nfl: NflverseWeek | None) -> list[Shootout]:
+    """The NFL games of week N+1 where both teams have a positive recent pass rate over expected, in schedule order."""
+    if nfl is None or nfl.environment is None or nfl.next_games is None:
+        return []
+    found = []
+    for away, home in nfl.next_games:
+        a, h = _recent_rate(nfl.environment.get(away, [])), _recent_rate(nfl.environment.get(home, []))
+        if a is None or h is None or a[0] <= 0 or h[0] <= 0:
+            continue
+        found.append(Shootout(away=away, home=home, away_rate=a[0], home_rate=h[0], away_games=a[1], home_games=h[1]))
+    return found

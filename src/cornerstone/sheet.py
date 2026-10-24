@@ -25,7 +25,7 @@ from cornerstone.facts_league import (
     standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.facts_nflverse import drop_lines, expected_awards
+from cornerstone.facts_nflverse import drop_lines, expected_awards, shootouts
 from cornerstone.history import (
     _round_half_up,
     player_trend,
@@ -652,6 +652,39 @@ def next_facts(c: Context) -> list[Fact]:
         if nx.must_watch:
             text += f" Must Watch: {n.text(nx.reason)}."
         out.append(fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
+    return out
+
+
+def _last_games(count: int, n: Nums) -> str:
+    return "its last game" if count == 1 else f"its last {n(count)} games"
+
+
+def shootout_facts(c: Context) -> list[Fact]:
+    """One fact per shootout of next week, with the league starters in that game by roster.
+
+    The lineups of next week are not set yet, so a starter is a player in a starting lineup of this week.
+    """
+    out = []
+    for s in shootouts(c.nfl):
+        n = Nums()
+        text = (
+            f"{s.away} at {s.home} next week is a shootout: {s.away}'s pass rate over expected is "
+            f"{n(s.away_rate)} over {_last_games(s.away_games, n)}, and {s.home}'s is {n(s.home_rate)} over "
+            f"{_last_games(s.home_games, n)}."
+        )
+        starters: dict[int, list[str]] = {}
+        for m in c.week.matchups:
+            for side in (m.a, m.b):
+                for line in side.lines:
+                    if line.started and line.nfl_team in (s.away, s.home):
+                        starters.setdefault(side.roster_id, []).append(line.name)
+        if starters:
+            text += " League starters in that game: " + "; ".join(
+                f"{c.team(rid)} ({', '.join(names)})" for rid, names in starters.items()) + "."
+        else:
+            text += " No league starter plays in that game."
+        out.append(fact(f"NX.shootout.{s.away}v{s.home}", text, n, [c.team(rid) for rid in starters],
+                        [name for names in starters.values() for name in names]))
     return out
 
 
@@ -1540,6 +1573,7 @@ def build_bundle(
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
+        shootout_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
         drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
         rank_why_facts(c.history, c.power, c.before, c.team),
