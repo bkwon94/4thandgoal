@@ -14,6 +14,6 @@ highest-value player when the chart is missing.
 
 **Status:** open
 
-- [ ] With no chart, a trade of a player due back with a projection of 18 a game for a player at 10 a game names the due-back player as the highest-value player.
-- [ ] With a chart that lists every player, the grade does not change.
-- [ ] Every existing rubric test passes unchanged.
+- [x] With no chart, a trade of a player due back with a projection of 18 a game for a player at 10 a game names the due-back player as the highest-value player.
+- [x] With a chart that lists every player, the grade does not change.
+- [x] Every existing rubric test passes unchanged.
