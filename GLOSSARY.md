@@ -400,3 +400,12 @@ The most recent winning waiver claim at a pool player's position this season, wi
 team, the week, and the bid. Empty when no claim at the position won. The match is on position alone,
 because a past claim has no bucket tier.
 _Avoid_: comp, last comparable
+
+**Research claim**:
+One sentence from a web source about a ranked pool player, with its URL, the source name, the date, and
+a stance: it backs the engine's facts, disputes them, or is plain news. The search reads only the last
+7 days, Yahoo Fantasy first. A claim with no URL is dropped. Each player keeps at most
+`CLAIMS_PER_PLAYER`, and at most `RESEARCH_PLAYERS` players get a search. The claims save as the fact
+family `WV.research.{player_id}.{n}`, with the URL as the citation. When the search fails for every
+player, the board sets `experts_missing`. Use "experts" on the page.
+_Avoid_: expert take (alone), quote, rumor

@@ -21,13 +21,23 @@ player with the web search tool. A claim with no URL is dropped.
 
 **Status:** ready-for-agent
 
-- [ ] `research.md` names the real Yahoo sources and the search cost per call with the price page URL and the date.
-- [ ] A fake search call that returns a claim with no URL leaves that claim out.
-- [ ] The per-player cap and the player cap hold.
-- [ ] A failure for one player leaves the other players' claims in place.
-- [ ] A failure for every player sets the missing-experts flag and the build completes.
-- [ ] A claim sentence with a URL passes the verifier; the same sentence with no URL fails it.
-- [ ] A claim with a banned word fails the code check as any blurb does.
-- [ ] One prompt text test pins the source order and the 7-day rule.
-- [ ] The research runs once per build after the engine, and a rewrite never calls the search.
-- [ ] Glossary gains **Research claim**.
+- [x] `research.md` names the real Yahoo sources and the search cost per call with the price page URL and the date.
+- [x] A fake search call that returns a claim with no URL leaves that claim out.
+- [x] The per-player cap and the player cap hold.
+- [x] A failure for one player leaves the other players' claims in place.
+- [x] A failure for every player sets the missing-experts flag and the build completes.
+- [x] A claim sentence with a URL passes the verifier; the same sentence with no URL fails it.
+- [x] A claim with a banned word fails the code check as any blurb does.
+- [x] One prompt text test pins the source order and the 7-day rule.
+- [x] The research runs once per build after the engine, and a rewrite never calls the search.
+- [x] Glossary gains **Research claim**.
+
+**Notes from the build:**
+
+- The Yahoo writers are Josh Norris, Hayden Winks, and Matt Harmon. Justin Boone writes the weekly
+  waiver column. See `.scratch/waiver/research.md`.
+- The search call takes `(system, user)` and gives a `ResearchOut`, as the writer's call does.
+- A blurb sentence with a URL is cited by every chapter fact that carries the same URL. Its digits
+  must still come from those facts. A URL with no matching fact gives the sentence no numbers.
+- `web_search_20260209` with `messages.parse` works on Opus 5.5. The live call on 2026-10-23 used
+  1 search and returned 1 claim.
