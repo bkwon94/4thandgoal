@@ -12,6 +12,6 @@ rounds through `Decimal` with `ROUND_HALF_UP`, as the rest of the facts do, so a
 
 **Status:** open
 
-- [ ] An expected value of 16.805 rounds to 16.81.
-- [ ] A mean gap of 5.125 rounds to 5.13.
-- [ ] Every existing expected points test passes unchanged.
+- [x] An expected value of 16.805 rounds to 16.81.
+- [x] A mean gap of 5.125 rounds to 5.13.
+- [x] Every existing expected points test passes unchanged.

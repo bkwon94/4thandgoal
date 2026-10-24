@@ -2,9 +2,10 @@
 Read the expected points of each player per game from the ffopportunity weekly file, rescaled to the league scoring.
 The reader checks the file for the games of the last game day of week N. A file without them reads through week N-1.
 """
+from decimal import Decimal
 from pathlib import Path
 
-from cornerstone.models import ExpectedGame, ExpectedPoints
+from cornerstone.models import ExpectedGame, ExpectedPoints, r2
 from cornerstone.nflverse_rows import _number, _rows
 
 # The file scores full PPR: 1 point per reception and -2 per interception.
@@ -27,14 +28,17 @@ def _last_games(games: Path, season: int, week: int) -> set[str]:
     return days[max(days)] if days else set()
 
 
-def _expected(row: dict[str, str], scoring: dict[str, float]) -> float:
+def _expected(row: dict[str, str], scoring: dict[str, float]) -> Decimal:
     """The full-PPR expected total of the row, rescaled to the league weights for receptions and interceptions.
 
-    The expected points have no fumble term, so fumbles stay out.
+    The expected points have no fumble term, so fumbles stay out. The rescale runs on exact decimals, because
+    float math can land a half just under it, and then the half rounds down.
     """
-    return (_number(row["total_fantasy_points_exp"])
-            - (FILE_REC - scoring.get("rec", 0.0)) * _number(row["receptions_exp"])
-            + (scoring.get("pass_int", 0.0) - FILE_PASS_INT) * _number(row["pass_interception_exp"]))
+    rec = Decimal(str(FILE_REC)) - Decimal(str(scoring.get("rec", 0.0)))
+    pass_int = Decimal(str(scoring.get("pass_int", 0.0))) - Decimal(str(FILE_PASS_INT))
+    return (Decimal(str(_number(row["total_fantasy_points_exp"])))
+            - rec * Decimal(str(_number(row["receptions_exp"])))
+            + pass_int * Decimal(str(_number(row["pass_interception_exp"]))))
 
 
 def read_expected(path: Path, games: Path, season: int, week: int, scoring: dict[str, float],
@@ -58,7 +62,7 @@ def read_expected(path: Path, games: Path, season: int, week: int, scoring: dict
         if pid is None or int(row["week"]) > through:
             continue
         played.setdefault(pid, []).append(ExpectedGame(
-            week=int(row["week"]), game_id=row["game_id"], expected=round(_expected(row, scoring), 2)))
+            week=int(row["week"]), game_id=row["game_id"], expected=r2(float(_expected(row, scoring)))))
     # The file lists the games of a player out of week order. The reader alone cuts the window to the last games.
     return ExpectedPoints(through_week=through, players={
         pid: sorted(player, key=lambda g: g.week)[-WINDOW_GAMES:] for pid, player in sorted(played.items())})
@@ -71,7 +75,8 @@ def window_gap(games: list[ExpectedGame], actual: dict[int, float]) -> float | N
     league's actual points of the player by week. A game with no actual points does not count, and fewer than
     WINDOW_MIN_GAMES games with them give None.
     """
-    gaps = [actual[g.week] - g.expected for g in games if g.week in actual]
+    # The gaps sum on exact decimals, so float drift cannot pull a half under it before the round.
+    gaps = [Decimal(str(actual[g.week])) - Decimal(str(g.expected)) for g in games if g.week in actual]
     if len(gaps) < WINDOW_MIN_GAMES:
         return None
-    return round(sum(gaps) / len(gaps), 2)
+    return r2(float(sum(gaps, Decimal(0)) / len(gaps)))

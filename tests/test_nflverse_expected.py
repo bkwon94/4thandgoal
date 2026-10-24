@@ -47,6 +47,23 @@ def test_the_rescale_takes_the_reception_weight_from_the_league(ep, games, scori
     assert full.expected == 34.12
 
 
+def test_an_expected_value_on_a_half_cent_rounds_half_up(ep, games, scoring, tmp_path):
+    # 16.775 - 0.5 * 0.02 + 1 * 0.04 = 16.805. Float math gives 16.804999999999996, so the rescale runs on
+    # exact decimals and the half rounds up.
+    half = tmp_path / "ep_weekly_2026.csv"
+    half.write_text(ep.read_text().replace("2026,6,2026_06_DAL_GB,00-0033077,Dak Prescott,QB,0,1.16,25.19",
+                                           "2026,6,2026_06_DAL_GB,00-0033077,Dak Prescott,QB,0.02,0.04,16.775"))
+    assert read_expected(half, games, 2026, 6, scoring, SLEEPER_OF_GSIS).players["3294"][-1].expected == 16.81
+
+
+def test_a_half_ppr_rescale_on_a_half_cent_rounds_half_up(ep, games, scoring, tmp_path):
+    # A real week 6 row: 8.44 - 0.5 * 2.65 = 7.115. Float math gives 7.114999999999999.
+    half = tmp_path / "ep_weekly_2026.csv"
+    half.write_text(ep.read_text().replace("2026,6,2026_06_DAL_GB,00-0033077,Dak Prescott,QB,0,1.16,25.19",
+                                           "2026,6,2026_06_DAL_GB,00-0033077,Dak Prescott,QB,2.65,0,8.44"))
+    assert read_expected(half, games, 2026, 6, scoring, SLEEPER_OF_GSIS).players["3294"][-1].expected == 7.12
+
+
 def test_the_monday_night_game_in_the_file_reads_week_n(ep, games, scoring):
     expected = read_expected(ep, games, 2026, 6, scoring, SLEEPER_OF_GSIS)
     assert expected.through_week == 6
@@ -101,6 +118,19 @@ def test_a_game_with_no_actual_points_is_not_in_the_window_gap():
     games_ = [ExpectedGame(week=w, game_id=f"2026_{w:02d}_X", expected=10.0) for w in (4, 5, 6)]
     assert window_gap(games_, {5: 13.0, 6: 9.0}) == 1.0
     assert window_gap(games_, {6: 9.0}) is None
+
+
+def test_a_window_gap_on_a_half_cent_rounds_half_up():
+    # round() gives 5.12 for 5.125, because it rounds half to even. The gap rounds half up.
+    games_ = [ExpectedGame(week=w, game_id=f"2026_{w:02d}_X", expected=10.0) for w in (5, 6)]
+    assert window_gap(games_, {5: 15.125, 6: 15.125}) == 5.13
+
+
+def test_a_window_gap_with_float_drift_rounds_half_up():
+    # (4.0 - 19.09 + 25.4 - 6.38) / 2 = 1.965. Float math gives 1.9649999999999999.
+    games_ = [ExpectedGame(week=5, game_id="2026_05_X", expected=19.09),
+              ExpectedGame(week=6, game_id="2026_06_X", expected=6.38)]
+    assert window_gap(games_, {5: 4.0, 6: 25.4}) == 1.97
 
 
 def test_the_window_gap_on_the_fixture_takes_the_league_points(ep, games, scoring):
