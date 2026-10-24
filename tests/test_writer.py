@@ -409,6 +409,10 @@ def test_vocabulary_has_one_rule_line_for_the_unlucky_and_lucky_awards(fixture_r
             "Say \"unlucky\" only in a sentence that cites `AW.unlucky`.") in system
     assert ("- **Lucky**: the starter with the largest gap above his expected points, at least 5 over. "
             "Say \"lucky\" for it only in a sentence that cites `AW.lucky`.") in system
+    # The prose names the award and says in plain words what it measures.
+    assert '- **Lucky award in prose**: name it "the Lucky award", never a bare "Lucky".' in system
+    assert '- **Unlucky award in prose**: name it "the Unlucky award", never a bare "Unlucky".' in system
+    assert 'Plain phrase: "what his stat line usually scores".' in system
 
 
 def test_the_game_changer_and_awards_get_the_motw_note_when_the_game_changer_is_in_it(hbundle):

@@ -130,6 +130,20 @@ def test_banned_phrase_fails(fixture_raw_dir):
     assert "[0] banned phrase 'a lot to hang on'" in code_check(b, ch, sheet)
 
 
+def test_wopr_fails_as_a_banned_word(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("He had a big WOPR.", ch.fact_ids[0]), _s("They won.", "M4.result"))
+    assert "[0] banned word 'WOPR'" in code_check(b, ch, sheet)
+
+
+def test_expected_points_fails_as_a_banned_phrase(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4")
+    b = _blurb("recap_4", _s("He beat his Expected Points.", ch.fact_ids[0]), _s("They won.", "M4.result"))
+    assert "[0] banned phrase 'expected points'" in code_check(b, ch, sheet)
+
+
 def test_two_which_tails_fail(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "median")
@@ -518,7 +532,8 @@ def test_vocabulary_has_the_banned_phrases_line():
     from importlib import resources
 
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
-    line = "Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say."
+    line = ("Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say, "
+            "expected points.")
     assert "## Banned phrases\n\n" + line in text
     assert text.index("## Banned words") < text.index("## Banned phrases")
 
