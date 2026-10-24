@@ -3,6 +3,7 @@ Tests for the waiver price: the bid history, the bid to win, the last like him, 
 They feed a small hand-built league at the price seam, and the fixture history at the bid history seam.
 """
 from cornerstone.models import BoardScores, WaiverClaim, WaiverPlayer
+from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.sleeper import load_raw
 from cornerstone.waiver_price import bid_history, price_players
 
@@ -106,3 +107,16 @@ def test_the_last_like_him_is_the_latest_winning_claim_at_the_position_with_the_
 def test_the_last_like_him_is_empty_when_the_history_has_no_win_at_the_position():
     raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
     assert _last_like(raw, "TE", [_claim("RB", 9), _claim("TE", 4, won=False)]) is None
+
+
+def test_every_number_in_the_price_fact_text_is_in_its_numbers():
+    raw = _league([(41, [None, "IR"]), (60, [None, None]), (20, [None, None])])
+    # The fact names the need, the past win, and the cap, so every part of the text is in play.
+    price = price_players([_free_agent("900", "RB")], raw, [_claim("RB", 70)])[0].price
+    assert price.fact.text == ("Bid $60 to win Player 900. The top rival bid is about $14.35, from Team 1 with $41 left"
+                               " and a need at RB. The top winning RB claim this season is $70."
+                               " No rival has more than $60 left.")
+    # The digits of the names in this hand-built league are names, not numbers.
+    text = price.fact.text.replace("Player 900", "").replace("Team 1", "")
+    assert set(NUMBER_TOKEN.findall(text)) == set(price.fact.numbers)
+    assert price.fact.teams == ["Team 1"]
