@@ -163,11 +163,13 @@ def _played_teams(week: Week) -> set[str]:
 
 
 def _with_saved(nfl: NflverseWeek, saved: NflverseWeek) -> NflverseWeek:
-    """The refetched extract, with each None field filled from the saved one. A source true in either is true."""
-    filled = {key: getattr(saved, key) for key in saved.model_fields_set if getattr(nfl, key) is None}
-    sources = {key: nfl.sources.get(key, False) or saved.sources.get(key, False)
-               for key in nfl.sources.keys() | saved.sources.keys()}
-    return nfl.model_copy(update={**filled, "sources": sources})
+    """The saved extract, with each key it lacks filled from the refetch.
+
+    A down source can give smaller dicts, not None, so the saved value wins for every key the file holds. The
+    flags of the saved file cover its keys, and the fresh flags cover the keys the refetch fills.
+    """
+    kept = {key: getattr(saved, key) for key in saved.model_fields_set}
+    return nfl.model_copy(update={**kept, "sources": {**nfl.sources, **saved.sources}})
 
 
 def _nflverse_for_week(
@@ -177,9 +179,8 @@ def _nflverse_for_week(
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
 
     A saved extract that lacks a key of NflverseWeek comes from an older build, so the build fetches it again.
-    The refetch rewrites every key, not only the absent ones. The facts of a past week read only rows of that
-    week or earlier, so the data of today gives the same facts. A field the refetch cannot fill keeps the saved
-    value, so a source that is down now never costs the rebuild a fact it had.
+    The refetch fills only the keys the file lacks, and every saved key keeps its value. So a source that is
+    down now never costs the rebuild a fact it had. The file is rewritten only when the refetch is complete.
     """
     saved = None
     try:

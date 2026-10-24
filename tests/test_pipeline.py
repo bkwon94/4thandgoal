@@ -24,11 +24,12 @@ from cornerstone.models import (
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.pipeline import (
-    BuildStopped, _write_rankings, make_bundle, read_verify, run_build, run_page_json, run_rankings, run_rewrite,
-    week_dir,
+    BuildStopped, _nflverse_for_week, _write_rankings, make_bundle, read_verify, run_build, run_page_json,
+    run_rankings, run_rewrite, week_dir,
 )
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
+from cornerstone.sleeper import load_raw
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
 
@@ -869,6 +870,28 @@ def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_ra
     assert bundle.data.drop_source == "nflverse" and record.sources["nflverse_ftn"] is True
     assert record.sources["nflverse_snaps"] is True
     # The fresh extract is degraded, so the file keeps the old content and the next build fetches again.
+    assert _nflverse_path(repo).read_text() == before
+
+
+def test_a_refetch_without_ffverse_keeps_the_saved_keys(tmp_path, fixture_raw_dir):
+    # With no ID map the refetch still runs, but it matches fewer players, so its dicts are smaller, not None.
+    def no_ffverse(season, week, player_ids, players, teams, scoring):
+        cache = Path(tempfile.mkdtemp())
+        for f in NFLVERSE_FIXTURES.iterdir():
+            if f.name != "db_playerids.csv":
+                shutil.copy(f, cache / f.name)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_bytes_nflverse,
+                             scoring=scoring)
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    full = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
+    before = _old_extract(repo).read_text()
+    raw_dir = week_dir(repo, 2026, 6) / "raw"
+    nfl = _nflverse_for_week(raw_dir, load_raw(raw_dir), 2026, 6, no_ffverse, set())
+    assert nfl.gsis == full.gsis and nfl.drops == full.drops and nfl.sources["ffverse"] is True
+    # Without the ID map, the fixture usage maps no player. The fresh keys still arrive.
+    assert nfl.usage == {} and nfl.environment and nfl.sources["nflverse_snaps"] is True
     assert _nflverse_path(repo).read_text() == before
 
 
