@@ -125,8 +125,8 @@ one like him cost, and how many teams can outbid you.
   rate, pass rate, and rush success rate. Both read through the existing cache with the same max
   age. The depth chart slot and the injury status come from the files already pulled.
 - The bid history reads the waiver claims of every week in the history, with the bid, the player,
-  the position, the week, and whether the claim won. The week 6 history holds a handful of claims
-  with the largest at $2, so the price model leans on budgets and need until the history fills.
+  the position, the week, and whether the claim won. The season history through week 6 holds 158 claims and 74
+  wins, with the largest win at $41 for an RB in week 3, so the floor has real data behind it.
 
 ### The board engine
 
@@ -175,11 +175,12 @@ one like him cost, and how many teams can outbid you.
   the last `FLOOR_WEEKS` (3) weeks raises the floor to that bid plus one. Not the season's largest:
   one $41 win in week 3 must not price every RB at $42 all season. The price never exceeds the
   highest budget left among the rivals. Every price is a fact with the inputs in its numbers.
-- The last like him: the most recent winning claim of the same position and the same bucket tier
-  this season, with the team and the week. Empty when none.
-- Can outbid you: the count of rivals whose budget left exceeds the price. It uses the viewer's
-  pick only on the site. The file holds the count per budget level, so the site computes it with
-  no engine call.
+- The last like him: the most recent winning claim of the same position this season, with the
+  team and the week. Empty when none. A past claim has no bucket tier, so the match is on
+  position alone.
+- Can outbid you: per budget level in the league, the count of other rosters whose budget left
+  exceeds the lower of the price and that level. The engine subtracts the viewer at that level, so
+  the site only looks the value up by the viewer's budget left.
 - The engine runs in the facts step of the build from the first week it ships. A rewrite reads
   the saved board and never reruns it. The random parts are none, so the same raw gives the same
   board.
