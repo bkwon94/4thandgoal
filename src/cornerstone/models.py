@@ -435,7 +435,11 @@ class WaiverBoard(BaseModel):
 
 
 class UsageWeek(BaseModel):
-    """The usage of one player in one week, from the play by play and the snap counts. A share is in percent."""
+    """The usage of one player in one week, from the play by play, the snap counts, and the weekly player file.
+
+    A share is in percent. The targets and the target share come from the weekly player file when it has a row
+    for him that week, and from our count of the play by play when it does not.
+    """
     week: int
     # The Sleeper code of the team he played for.
     team: str
@@ -448,6 +452,10 @@ class UsageWeek(BaseModel):
     carry_share: int
     # The targets and the carries at the opponent's 20-yard line or closer.
     red_zone_touches: int
+    # From the nflverse weekly player file. None when the file is missing or has no row for him that week.
+    air_yards_share: int | None = None
+    # Weighted opportunity rating, 1.5 times the target share plus 0.7 times the air yards share. None as above.
+    wopr: int | None = None
 
 
 class TeamWeek(BaseModel):

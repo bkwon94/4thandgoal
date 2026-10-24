@@ -11,7 +11,7 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel
 
-from cornerstone import nflverse_expected, nflverse_usage
+from cornerstone import nflverse_expected, nflverse_players, nflverse_usage
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import DropPlay, NflverseWeek
 from cornerstone.nflverse_rows import NFLVERSE_TEAM, SLEEPER_TEAM, _number, _rows, _sleeper_team, _yardline
@@ -26,6 +26,8 @@ INJURIES_URL = "https://github.com/nflverse/nflverse-data/releases/download/inju
 SCHEDULES_URL = "https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv"
 DEPTH_CHARTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_{season}.csv.gz"
 SNAP_COUNTS_URL = "https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{season}.csv"
+STATS_PLAYER_URL = ("https://github.com/nflverse/nflverse-data/releases/download/stats_player/"
+                    "stats_player_week_{season}.csv.gz")
 FFIDS_URL = "https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv"
 FFOPPORTUNITY_URL = "https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_{season}.csv"
 
@@ -237,6 +239,12 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     snap_weeks = nflverse_usage.read_snaps(snaps, first_week, week, sleeper_of_pfr) if snaps else {}
     plays = nflverse_usage.read_plays(pbp, week) if pbp else None
     usage = None if plays is None else nflverse_usage.read_usage(plays, snap_weeks, week, first_week, sleeper_of_gsis)
+    stats_player = get(STATS_PLAYER_URL)
+    player_weeks = (nflverse_players.read_player_weeks(stats_player, first_week, week, sleeper_of_gsis)
+                    if stats_player else None)
+    # The file counts targets as nflverse does, so it replaces our count wherever it has a row.
+    if usage is not None and player_weeks is not None:
+        usage = nflverse_players.with_player_weeks(usage, player_weeks)
     environment = None if plays is None else nflverse_usage.read_environment(plays)
     ep_path = get(FFOPPORTUNITY_URL)
     expected = (nflverse_expected.read_expected(ep_path, schedules, season, week, scoring, sleeper_of_gsis)
@@ -249,7 +257,8 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
                  "nflverse_snaps": snaps is not None and usage is not None,
                  # A file that reads through week N-1 is incomplete, so the build does not save the extract. The
                  # cache keeps the lagged file for a day, so a build after the cache ages out reads a fresh file.
-                 "ffopportunity": expected is not None and expected.through_week == week},
+                 "ffopportunity": expected is not None and expected.through_week == week,
+                 "nflverse_stats_player": player_weeks is not None},
         gsis=gsis,
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
         injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},

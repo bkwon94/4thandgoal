@@ -92,9 +92,12 @@ def test_the_target_count_equals_the_nflverse_count_for_every_team_week():
         for u in weeks:
             ours[(u.team, u.week)] += u.targets
     theirs = Counter()
-    with open(FIXTURES / "stats_player_week_2026_targets.csv", encoding="utf-8", newline="") as f:
+    # The player file also holds other weeks and teams of the week 6 fixture players, so only the cut's teams count.
+    teams = {play["posteam"] for play in plays}
+    with gzip.open(FIXTURES / "stats_player_week_2026.csv.gz", "rt", encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
-            theirs[(_sleeper_team(row["team"]), int(row["week"]))] += int(row["targets"])
+            if row["week"] == "6" and row["team"] in teams:
+                theirs[(_sleeper_team(row["team"]), int(row["week"]))] += int(row["targets"])
     assert len(theirs) == 6
     assert ours == theirs
 
@@ -149,9 +152,10 @@ def test_the_environment_reader_matches_the_dallas_week_6_sums():
 
 def test_the_week_extract_carries_the_usage_and_the_environment(nfl_week6):
     # Matthew Golden takes all 4 Packers targets of the fixture, one at the 9, and plays 83% of the snaps.
+    # The weekly player file replaces the targets and the target share with its own: 13 at 33%.
     golden = nfl_week6.usage["12501"]
     assert [(u.week, u.team, u.snaps, u.snap_share, u.targets, u.target_share, u.red_zone_touches)
-            for u in golden] == [(6, "GB", 52, 83, 4, 100, 1)]
+            for u in golden] == [(6, "GB", 52, 83, 13, 33, 1)]
     assert nfl_week6.environment["GB"][0].plays == 4 and "LAR" in nfl_week6.environment
     assert nfl_week6.sources["nflverse_snaps"]
 

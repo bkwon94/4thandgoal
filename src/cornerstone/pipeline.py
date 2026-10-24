@@ -49,7 +49,8 @@ BytesFetcher = Callable[[str], bytes | None]
 # The fetch takes the season, the week, the rostered player IDs, the players file, the Sleeper
 # codes of the NFL teams whose started players played, and the league scoring.
 NflverseFetcher = Callable[[int, int, list[str], dict, set[str], dict], NflverseWeek]
-NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity")
+NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity",
+                    "nflverse_stats_player")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
 HISTORY_GAP = "The history is missing a week from 1 to {week}. Run cornerstone history --through {week}."

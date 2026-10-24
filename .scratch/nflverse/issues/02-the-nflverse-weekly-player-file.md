@@ -11,9 +11,9 @@ from our count when it is not, and the build record says which. A missing file n
 
 **Status:** ready-for-agent
 
-- [ ] The usage week has `air_yards_share` and `wopr`, in percent as the other shares are, None when the file is missing.
-- [ ] With the file present, a player's targets and target share equal the file's row. With it missing, they equal our count.
-- [ ] A player with no gsis id in the id map keeps our count and the two new shares are None.
-- [ ] The build record has a source flag for the file, true on the fixture and false with the file gone.
-- [ ] The file reads through the cache with the same max age as the other nflverse files, so a rebuild makes no network call.
-- [ ] A small fixture of the file covers the week 6 fixture players, and the reader test runs on it.
+- [x] The usage week has `air_yards_share` and `wopr`, in percent as the other shares are, None when the file is missing.
+- [x] With the file present, a player's targets and target share equal the file's row. With it missing, they equal our count.
+- [x] A player with no gsis id in the id map keeps our count and the two new shares are None.
+- [x] The build record has a source flag for the file, true on the fixture and false with the file gone.
+- [x] The file reads through the cache with the same max age as the other nflverse files, so a rebuild makes no network call.
+- [x] A small fixture of the file covers the week 6 fixture players, and the reader test runs on it.
