@@ -13,7 +13,9 @@ import pytest
 
 from cornerstone.history import save_week_to_history
 from cornerstone.live import live_snapshot
-from cornerstone.nflverse import DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, SCHEDULES_URL, cache_path
+from cornerstone.nflverse import (
+    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, cache_path,
+)
 from cornerstone.sleeper import load_raw
 
 ET = ZoneInfo("America/New_York")
@@ -259,3 +261,44 @@ def test_a_chart_read_that_raises_gives_no_chart_and_notes_it_stale(live_repo, s
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=read_chart)
     assert snap.chart is None
     assert "chart" in snap.stale
+
+
+def test_the_live_snapshot_carries_the_expected_points_from_the_cache(live_repo, sleeper, chart_week6):
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.expected is not None and snap.expected.players
+    assert snap.expected.through_week == snap.week - 1
+
+
+def test_the_refresh_downloads_a_missing_expected_points_file_and_the_snapshot_carries_it(
+        live_repo, sleeper, chart_week6, fixture_nflverse_dir):
+    # On Fly no weekly build fills the cache, so the seed cache has no expected points file.
+    path = cache_path(live_repo / "data" / "cache" / "nflverse", FFOPPORTUNITY_URL, 2026)
+    path.unlink()
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / path.name).read_bytes()
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
+                         read_chart=ChartRecorder(chart_week6))
+    assert asked == [FFOPPORTUNITY_URL.format(season=2026)]
+    assert path.exists()
+    assert snap.expected is not None and snap.expected.players
+    assert snap.stale == []
+
+
+def test_the_live_snapshot_without_the_expected_points_file_and_a_failed_fetch_still_builds(
+        live_repo, sleeper, chart_week6):
+    cache_path(live_repo / "data" / "cache" / "nflverse", FFOPPORTUNITY_URL, 2026).unlink()
+
+    def fetch(url):
+        raise httpx.ConnectError("down")
+
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.expected is None and snap.stale == ["expected points"]

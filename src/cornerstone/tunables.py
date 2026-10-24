@@ -53,6 +53,14 @@ RETURN_WINDOW_WEEKS = 2
 # Set this number by hand. The commissioner tunes it.
 SCHEDULE_RANK_GAP = 4
 
+# Expected gap: the league points of the players it gets and gives against their expected points over the window.
+# The mean gap, in points per game, at or past which a group counts, either way, for the gets and for the gives.
+# Gets under or gives over step a side up. Gets over or gives under step it down.
+# The value is a first guess, and the commissioner tunes it.
+EXPECTED_GAP = Decimal("3.0")
+# The expected gap adjuster is off until a real trade checks out, so no live breakdown shows an untried adjuster.
+EXPECTED_ADJUSTER_ON = False
+
 # The chart ratio picks the start letter. The sum of the adjuster steps clamps to this many steps either way,
 # so a side that starts at C never ends at A or F, and the chart weighs more than the adjusters.
 CLAMP_STEPS = 1
