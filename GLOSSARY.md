@@ -305,7 +305,7 @@ A pass play with a receiver, two-point tries left out. The nflverse rule, which 
 _Avoid_: look, pass attempt to
 
 **Target share**:
-A player's share of his team's targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks.
+A player's share of his team's targets in one game, from the nflverse weekly player file. Our own count is the fallback for a week the file lacks. The trade rubric reads the Sleeper share, which holds the same counts.
 _Avoid_: target rate, target percent
 
 **Air yards share**:
