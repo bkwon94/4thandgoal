@@ -15,7 +15,8 @@ from pydantic import TypeAdapter
 
 from cornerstone.facts_league import season_records, standings_order
 from cornerstone.history import (
-    fetch_history, history_dir, history_root, load_history, load_saved_weeks, save_week_to_history, saved_through,
+    fetch_history, history_dir, history_root, load_history, load_saved_weeks, returns_path, save_week_to_history,
+    saved_through,
 )
 from cornerstone.models import (
     Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
@@ -30,6 +31,8 @@ from cornerstone.sheet import (
     required_why_ids, write_bundle,
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
+from cornerstone.slow_sources import load_slow_sources
+from cornerstone.snapshot import load_returns
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import write_and_verify
 from cornerstone.waiver import waiver_board
@@ -216,7 +219,11 @@ def make_bundle(
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
-    bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(repo, season), raw, week))
+    # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
+    # with week + 1. They read the cache the nflverse fetch fills, with no network call.
+    slow = load_slow_sources(nflverse_cache_dir(repo), season, week + 1, history_root(repo, season))
+    bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(repo, season), raw, week),
+                                 slow=slow, returns=load_returns(returns_path(repo, season)))
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),
