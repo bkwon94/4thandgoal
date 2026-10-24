@@ -4,23 +4,28 @@ They read a small hand-built play by play and snap counts file, and the week ext
 """
 import csv
 import gzip
+from collections import Counter
+from pathlib import Path
 
 import httpx
 
 from cornerstone.nflverse import nflverse_week
+from cornerstone.nflverse_rows import _sleeper_team
 from cornerstone.nflverse_usage import read_environment, read_plays, read_snaps, read_usage
 
-PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "pass", "rush", "receiver_player_id",
+FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
+PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "two_point_attempt", "pass", "rush",
+              "receiver_player_id",
               "rusher_player_id", "yardline_100", "success", "down", "score_differential", "qtr",
               "game_seconds_remaining")
 SNAP_FIELDS = ("game_type", "week", "pfr_player_id", "team", "offense_snaps", "offense_pct")
 
 
 def _play(week, team="KC", kind="pass", receiver="", rusher="", yardline=50, success=0, down=1, score=0, qtr=1,
-          seconds=3000):
+          seconds=3000, two_point=0):
     """One play by play row. A pass with no receiver is a sack or a throw away; a run has a rusher."""
     return {"game_id": f"2026_{week:02d}_{team}", "season_type": "REG", "week": week, "posteam": team,
-            "play_type": kind, "pass": int(kind == "pass"), "rush": int(kind == "run"),
+            "play_type": kind, "two_point_attempt": two_point, "pass": int(kind == "pass"), "rush": int(kind == "run"),
             "receiver_player_id": receiver, "rusher_player_id": rusher, "yardline_100": yardline,
             "success": success, "down": down, "score_differential": score, "qtr": qtr,
             "game_seconds_remaining": seconds}
@@ -59,6 +64,36 @@ def test_the_usage_reader_gives_snaps_targets_carries_and_shares_per_week(tmp_pa
     assert (back.week, back.carries, back.carry_share, back.red_zone_touches, back.snap_share) == (6, 3, 100, 1, 60)
     # 00-X has no Sleeper ID in the map, so he is not in the usage.
     assert set(usage) == {"100", "200"}
+
+
+def test_a_two_point_try_is_no_target_no_carry_and_no_red_zone_touch(tmp_path):
+    # nflverse counts a target only on a play with a receiver and no two-point try. Each try is at the 2.
+    plays = [_play(6, receiver="00-W", yardline=10), _play(6, receiver="00-X"),
+             _play(6, receiver="00-W", yardline=2, two_point=1), _play(6, kind="run", rusher="00-R"),
+             _play(6, kind="run", rusher="00-R", yardline=2, two_point=1)]
+    pbp = _csv(tmp_path / "pbp.csv", PBP_FIELDS, plays)
+    usage = read_usage(read_plays(pbp, 6), {}, 6, 6, {"00-W": "100", "00-R": "200"})
+    receiver, back = usage["100"][0], usage["200"][0]
+    assert (receiver.targets, receiver.target_share, receiver.red_zone_touches) == (1, 50, 1)
+    assert (back.carries, back.carry_share, back.red_zone_touches) == (1, 100, 0)
+
+
+def test_the_target_count_equals_the_nflverse_count_for_every_team_week():
+    # The play by play holds every week 6 play of six teams, and the weekly player file holds the nflverse targets
+    # of the same team weeks. Both are cut from the real 2026 files. The DAL week has a two-point pass with a receiver.
+    plays = read_plays(FIXTURES / "play_by_play_2026_week6_full_games.csv.gz", 6)
+    receivers = {play["receiver_player_id"] for play in plays if play["receiver_player_id"]}
+    usage = read_usage(plays, {}, 6, 6, {gsis: gsis for gsis in receivers})
+    ours = Counter()
+    for weeks in usage.values():
+        for u in weeks:
+            ours[(u.team, u.week)] += u.targets
+    theirs = Counter()
+    with open(FIXTURES / "stats_player_week_2026_targets.csv", encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            theirs[(_sleeper_team(row["team"]), int(row["week"]))] += int(row["targets"])
+    assert len(theirs) == 6
+    assert ours == theirs
 
 
 def test_a_week_with_no_play_by_play_rows_gives_no_plays(tmp_path):
