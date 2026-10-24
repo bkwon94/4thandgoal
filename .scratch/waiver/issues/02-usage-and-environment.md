@@ -17,11 +17,22 @@ environment 0.3, projection 0.2, scaled by position as the spec says.
 
 **Blocked by:** 01 The week file, thin.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The nflverse reader returns usage per player per week and environment per team per week from a small play by play fixture.
-- [ ] A player with a rising snap share and a flat projection outranks a player with a higher projection and flat usage.
-- [ ] A QB, WR, or TE environment score uses plays per game and neutral pass rate; an RB uses rush success and plays per game.
-- [ ] Every player in the file carries a usage fact and an environment fact, with every digit in the numbers.
-- [ ] A player with no usage rows, a rookie in week 1 or a player on a bye, gets a usage score of 0 and no usage fact, and the build does not stop.
-- [ ] The weights and `USAGE_WEEKS` are tunables.
+- [x] The nflverse reader returns usage per player per week and environment per team per week from a small play by play fixture.
+- [x] A player with a rising snap share and a flat projection outranks a player with a higher projection and flat usage.
+- [x] A QB, WR, or TE environment score uses plays per game and neutral pass rate; an RB uses rush success and plays per game.
+- [x] Every player in the file carries a usage fact and an environment fact, with every digit in the numbers.
+- [x] A player with no usage rows, a rookie in week 1 or a player on a bye, gets a usage score of 0 and no usage fact, and the build does not stop.
+- [x] The weights and `USAGE_WEEKS` are tunables.
+
+## Comments
+
+2026-10-23, decisions the ticket left open:
+- The snap share is real: the nflverse snap counts file joins on the PFR ID from the ffverse id map.
+- The FTN charting has no routes column, so the usage has no routes.
+- The usage trend compares week N with week N - `USAGE_WEEKS` + 1. A player with no row or no snap share in either week has no window: usage 0 and no usage fact.
+- Only a rise scores. A flat or a falling usage scores 0, and the risers rank inside the position from 1 to 0.
+- The touches that count are targets for a WR or a TE and carries for an RB or a QB.
+- The environment uses the season to date. An RB's environment fact names the rush success, not the neutral pass rate.
+- `nflverse_snaps` joins the sources that gate the save of the extract, so a failed snap fetch tries again on the next build.

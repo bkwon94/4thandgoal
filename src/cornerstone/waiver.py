@@ -34,7 +34,8 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
            for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = _projection_scores(positions, ros)
-    usage = _usage_scores(positions, (nfl.usage if nfl else None) or {}, week)
+    usage_rows = (nfl.usage if nfl else None) or {}
+    usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
     players = [
         _pool_player(pid, entry, r2(ahead.get(week + 1, {}).get(pid, 0.0)), ros[pid],
@@ -44,7 +45,7 @@ def waiver_board(raw: dict[str, object], week: int, built: datetime, nfl: Nflver
     ]
     for p in players:
         if p.position in BUCKET_POSITIONS:
-            p.facts = [*p.facts, *_player_facts(p, ((nfl.usage if nfl else None) or {}).get(p.player_id, []), teams, week)]
+            p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
     players = _with_trending(players, _trending_counts(raw))
     best_adds = _capped(sorted((p for p in players if p.position in BUCKET_POSITIONS), key=_rank_key))
     return WaiverBoard(week=week, built=built, buckets={BEST_ADDS: best_adds, TRENDING: _trending_bucket(players)},
