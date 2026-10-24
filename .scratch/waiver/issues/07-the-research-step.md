@@ -37,7 +37,9 @@ player with the web search tool. A claim with no URL is dropped.
 - The Yahoo writers are Josh Norris, Hayden Winks, and Matt Harmon. Justin Boone writes the weekly
   waiver column. See `.scratch/waiver/research.md`.
 - The search call takes `(system, user)` and gives a `ResearchOut`, as the writer's call does.
-- A blurb sentence with a URL is cited by every chapter fact that carries the same URL. Its digits
-  must still come from those facts. A URL with no matching fact gives the sentence no numbers.
+- The PRD line "the verifier treats a sentence with a URL as cited" now reads: the citation is the
+  fact ID, and the URL is text the page shows. A research fact is cited by its ID like any fact. The
+  number check runs on the text without URLs, so a digit inside a URL never counts as a claim. A
+  sentence with a URL and no fact ID is still a reaction sentence.
 - `web_search_20260209` with `messages.parse` works on Opus 5.5. The live call on 2026-10-23 used
   1 search and returned 1 claim.
