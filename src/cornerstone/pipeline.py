@@ -166,11 +166,19 @@ def _nflverse_for_week(
     raw_dir: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
     teams: set[str],
 ) -> NflverseWeek | None:
-    """The saved extract, or a fresh fetch. A failure of any kind never stops the build."""
+    """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
+
+    A saved extract that lacks a key of NflverseWeek comes from an older build, so the build fetches it again.
+    """
+    saved = None
     try:
         saved = load_nflverse(raw_dir)
-        if saved is not None or nflverse is None:
+        # A key the file does not hold loads as None, so only the set fields tell an old file from a new one.
+        missing = sorted(set(NflverseWeek.model_fields) - saved.model_fields_set) if saved is not None else []
+        if (saved is not None and not missing) or nflverse is None:
             return saved
+        if missing:
+            log.info("nflverse.json lacks %s, so the build fetches the extract again", ", ".join(missing))
         rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
         nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
         # A degraded extract is not saved, so the next build tries the sources again.
@@ -178,6 +186,10 @@ def _nflverse_for_week(
             _save_nflverse(raw_dir / "nflverse.json", nfl)
         return nfl
     except Exception as err:  # noqa: BLE001 - the outer guard: the module catches only HTTP errors
+        # The saved file stays as it was, and the build goes on with the facts it holds.
+        if saved is not None:
+            log.warning("nflverse refetch failed, build goes on with the saved extract: %s", err)
+            return saved
         log.warning("nflverse unavailable, build goes on without it: %s", err)
         return None
 

@@ -831,6 +831,42 @@ def test_a_failed_save_keeps_the_fetched_extract(tmp_path, fixture_raw_dir, capl
     assert "nflverse.json" in caplog.text
 
 
+def _old_extract(repo):
+    """Cut the saved extract down to the four keys of the first version, as in the saved week 6 file."""
+    path = _nflverse_path(repo)
+    saved = json.loads(path.read_text())
+    path.write_text(json.dumps({key: saved[key] for key in ("sources", "gsis", "drops", "injuries")}))
+    return path
+
+
+def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, fixture_raw_dir, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    path = _old_extract(repo)
+    with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
+        bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+    saved = json.loads(path.read_text())
+    assert saved["usage"] and saved["expected"] and saved["next_games"]
+    assert record.sources["nflverse_stats_player"] is True
+    assert "nflverse.json lacks" in caplog.text and "usage" in caplog.text
+
+
+def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, caplog):
+    def crash(season, week, player_ids, players, teams, scoring):
+        raise OSError("disk gone")
+
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    path = _old_extract(repo)
+    before = path.read_bytes()
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": crash})
+    assert page.exists() and path.read_bytes() == before
+    # The build goes on with the drops of the saved extract.
+    bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
+    assert bundle.data.drop_source == "nflverse"
+    assert "nflverse refetch failed" in caplog.text
+
+
 def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fixture_raw_dir, monkeypatch):
     from cornerstone import cli
 

@@ -13,7 +13,7 @@ extract needs, the build fetches that source again and rewrites the file. The bu
 
 **Status:** open
 
-- [ ] A rebuild of a saved week whose extract lacks `usage` fetches the player weeks file and writes the key.
-- [ ] A rebuild of a saved week with every key fetches nothing.
-- [ ] A refetch that fails leaves the file as it was and the build continues with the facts it can make.
-- [ ] Every existing build test passes unchanged.
+- [x] A rebuild of a saved week whose extract lacks `usage` fetches the player weeks file and writes the key.
+- [x] A rebuild of a saved week with every key fetches nothing.
+- [x] A refetch that fails leaves the file as it was and the build continues with the facts it can make.
+- [x] Every existing build test passes unchanged.
