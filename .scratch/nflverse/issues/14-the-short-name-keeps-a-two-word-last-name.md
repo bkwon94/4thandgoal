@@ -11,7 +11,7 @@ before the last is a short particle such as "St.", "Van", "De", or "Von". "Amon-
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] "Amon-Ra St. Brown" shortens to "St. Brown".
 - [x] "Equanimeous St. Brown" and "Amon-Ra St. Brown" in one trade both show in full, as the shared-name rule says.

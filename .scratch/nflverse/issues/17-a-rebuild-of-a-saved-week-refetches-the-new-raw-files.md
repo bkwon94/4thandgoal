@@ -11,7 +11,7 @@ extract needs, the build fetches that source again and rewrites the file. The bu
 
 **Blocked by:** None. Week 7 and later build fresh and do not need this.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] A rebuild of a saved week whose extract lacks `usage` fetches the player weeks file and writes the key.
 - [x] A rebuild of a saved week with every key fetches nothing.

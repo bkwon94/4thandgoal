@@ -10,7 +10,7 @@ rounds through `Decimal` with `ROUND_HALF_UP`, as the rest of the facts do, so a
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] An expected value of 16.805 rounds to 16.81.
 - [x] A mean gap of 5.125 rounds to 5.13.

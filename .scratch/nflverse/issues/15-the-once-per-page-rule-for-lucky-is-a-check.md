@@ -11,7 +11,7 @@ sentence fails the page as a word-gate failure does today.
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 The rule follows the chapter order of the build. An early chapter, such as `motw`, can use up "lucky" before
 the awards chapter, and then the awards chapter must write its Lucky award without the word.

@@ -12,7 +12,7 @@ highest-value player when the chart is missing.
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] With no chart, a trade of a player due back with a projection of 18 a game for a player at 10 a game names the due-back player as the highest-value player.
 - [x] With a chart that lists every player, the grade does not change.

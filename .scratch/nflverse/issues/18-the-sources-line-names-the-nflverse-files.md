@@ -13,8 +13,8 @@ when its file is absent.
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] A grade with every file reads "Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks."
 - [x] A grade with no expected points file reads "Sources missing: expected points."
-- [ ] Every existing cli test passes unchanged.
+- [ ] Every existing cli test passes unchanged. Not met by design: two cli tests pinned the old fixed line, and the ticket reverses that rule, so their assertions changed.

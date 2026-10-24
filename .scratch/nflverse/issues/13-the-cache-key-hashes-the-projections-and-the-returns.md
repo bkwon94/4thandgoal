@@ -12,7 +12,7 @@ return week of every player on the two rosters. The finder key shares `_content_
 
 **Blocked by:** None.
 
-**Status:** open
+**Status:** done 2026-10-24
 
 - [x] Two snapshots that differ only in one rostered player's return week give two different keys.
 - [x] Two snapshots that differ only in one rostered player's projection ahead give two different keys.
