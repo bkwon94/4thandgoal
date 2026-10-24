@@ -1,6 +1,6 @@
 """
-The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, handcuff, and schedule.
-It also holds what they read of one side: the best lineup before and after the trade, and the handcuffs.
+The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, handcuff, schedule, and
+expected gap. It also holds what they read of one side: the best lineup before and after the trade, and the handcuffs.
 """
 from __future__ import annotations
 
@@ -14,8 +14,11 @@ from pydantic import BaseModel
 from cornerstone.history import player_points, red_zone, snap_share, target_share
 from cornerstone.names import last_name
 from cornerstone.nflverse import TeamSchedule
+from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
+    EXPECTED_ADJUSTER_ON,
+    EXPECTED_GAP,
     FIT_THRESHOLD,
     INJURY_WEEKS,
     LINEUP_WEEKS,
@@ -29,7 +32,7 @@ if TYPE_CHECKING:
     # The rubric module imports this one, so the trade model is a name for the type checker only.
     from cornerstone.rubric import ProposedTrade
 
-# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, and schedule.
+# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, schedule, and expected gap.
 
 
 Lean = Literal["for", "against", "even"]
@@ -234,6 +237,7 @@ TREND = "trend and usage"
 INJURY = "injury"
 HANDCUFF = "handcuff"
 SCHEDULE = "schedule"
+EXPECTED = "expected gap"
 
 
 def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
@@ -398,25 +402,32 @@ def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     return week is not None and week > snapshot.as_of.stats_through
 
 
+def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], list[str]]:
+    """The handcuffs and the players due back in the trade, and a note for each group that says his `what` does not
+    count. The trend and the expected gap both read this, so the two leave out the same players.
+    """
+    traded = side.gets + side.gives
+    handcuffs = [pid for pid in traded if pid in side.handcuffs]
+    due_back = [pid for pid in traded if pid not in side.handcuffs and _due_back(snapshot, pid)]
+    notes = []
+    if handcuffs:
+        notes.append(named(snapshot, handcuffs, f"is a handcuff, so his {what} does not count.",
+                            f"are handcuffs, so their {what} does not count."))
+    if due_back:
+        notes.append(named(snapshot, due_back, f"is due back, so his {what} does not count.",
+                            f"are due back, so their {what} does not count."))
+    return set(handcuffs + due_back), notes
+
+
 def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Trend and usage: the snap and target share directions of the players it gets against the players it gives.
 
     A handcuff's use does not count on either side, so the trend never steps a side down because of him.
     A player due back has no recent use to compare, so his use does not count on either side either.
     """
-    traded = side.gets + side.gives
-    handcuffs = [pid for pid in traded if pid in side.handcuffs]
-    due_back = [pid for pid in traded if pid not in side.handcuffs and _due_back(snapshot, pid)]
-    left_out = set(handcuffs + due_back)
+    left_out, notes = _left_out(snapshot, side, "use")
     adjuster = _trend_step(snapshot, [pid for pid in side.gets if pid not in left_out],
                            [pid for pid in side.gives if pid not in left_out])
-    notes = []
-    if handcuffs:
-        notes.append(named(snapshot, handcuffs, "is a handcuff, so his use does not count.",
-                            "are handcuffs, so their use does not count."))
-    if due_back:
-        notes.append(named(snapshot, due_back, "is due back, so his use does not count.",
-                            "are due back, so their use does not count."))
     if not notes:
         return adjuster
     return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
@@ -582,6 +593,68 @@ def _schedule(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=SCHEDULE, step=0, lean=lean, reason=f"{byes}, and {playoffs}. {verdict}")
 
 
+def _league_points(snapshot: Snapshot, player_id: str) -> dict[int, float]:
+    """The league points of the player in each week he played, as recent_points_per_game reads them."""
+    # Sleeper leaves out a stat whose value is 0. A game with no points entry is a game of 0 points.
+    return {week: player_points(past, player_id) or 0.0 for week, past in snapshot.stats.weeks.items()
+            if (past.stats.get(player_id) or {}).get("gp", 0) > 0}
+
+
+def _mean_gap(gaps: list[Decimal]) -> Decimal | None:
+    return sum(gaps, Decimal(0)) / len(gaps) if gaps else None
+
+
+def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
+    """Expected gap: the players it gets against their expected points, and the players it gives against theirs.
+
+    Points under expected tend to rise and points over expected tend to fall. So gets that run under expected are
+    a step up, and gives that run over expected are a step up. The two at once cancel to no step.
+    Handcuffs and players due back do not count, by the rule the trend reads.
+    """
+    if snapshot.expected is None:
+        return Adjuster(name=EXPECTED, step=0, reason="The expected points are not available, so no gap check ran.")
+    left_out, notes = _left_out(snapshot, side, "gap")
+    gets = [pid for pid in side.gets if pid not in left_out]
+    gives = [pid for pid in side.gives if pid not in left_out]
+    gaps: dict[str, Decimal] = {}
+    weeks: dict[str, list[int]] = {}
+    for pid in gets + gives:
+        games, points = snapshot.expected.players.get(pid, []), _league_points(snapshot, pid)
+        gap = window_gap(games, points)
+        if gap is not None:
+            # The gap is rounded to cents, so a Decimal of its text compares with EXPECTED_GAP exactly.
+            gaps[pid], weeks[pid] = Decimal(str(gap)), [game.week for game in games if game.week in points]
+    got = _mean_gap([gaps[pid] for pid in gets if pid in gaps])
+    gave = _mean_gap([gaps[pid] for pid in gives if pid in gaps])
+    got_under = got is not None and got <= -EXPECTED_GAP
+    gave_over = gave is not None and gave >= EXPECTED_GAP
+    if got_under and gave_over:
+        step, lead = 0, ("The players it gets run under expected and the players it gives run over it, "
+                         "so the two cancel.")
+    elif got_under:
+        step, lead = 1, "The players it gets run under their expected points, so their points can rise."
+    elif gave_over:
+        step, lead = 1, "The players it gives run over their expected points, so their points can fall."
+    elif gaps:
+        step, lead = 0, "The players it gets and the players it gives run near their expected points."
+    else:
+        step, lead = 0, "No player in the trade has an expected gap."
+    names = _short_names(snapshot, list(gaps))
+    sentences = [f"{names[pid]}: {gap:+.2f} points per game against expected, over {_weeks_text(weeks[pid])}."
+                 for pid, gap in gaps.items()]
+    # A defense or a kicker has no expected points, so only a player with games in the file but no gap is named.
+    no_gap = [pid for pid in gets + gives if pid not in gaps and snapshot.expected.players.get(pid)]
+    if no_gap:
+        sentences.append(named(
+            snapshot, no_gap, f"has fewer than {WINDOW_MIN_GAMES} games in the expected window, so he has no gap.",
+            f"have fewer than {WINDOW_MIN_GAMES} games in the expected window, so they have no gap."))
+    return Adjuster(name=EXPECTED, step=step, reason=" ".join([lead, *sentences, *notes]))
+
+
+def rubric_adjusters(expected_on: bool) -> tuple[Callable[[Snapshot, _Side], Adjuster], ...]:
+    """The adjusters in rubric order. The expected gap comes last, and only when `expected_on` is True."""
+    return (_fit, _standing, _trend, _injury, _handcuff, _schedule) + ((_expected_gap,) if expected_on else ())
+
+
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.
-ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = (
-    _fit, _standing, _trend, _injury, _handcuff, _schedule)
+ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = rubric_adjusters(EXPECTED_ADJUSTER_ON)

@@ -259,3 +259,19 @@ def test_a_chart_read_that_raises_gives_no_chart_and_notes_it_stale(live_repo, s
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=read_chart)
     assert snap.chart is None
     assert "chart" in snap.stale
+
+
+def test_the_live_snapshot_carries_the_expected_points_from_the_cache(live_repo, sleeper, chart_week6):
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.expected is not None and snap.expected.players
+    assert snap.expected.through_week == snap.week - 1
+
+
+def test_the_live_snapshot_without_the_expected_points_file_still_builds(live_repo, sleeper, chart_week6):
+    (live_repo / "data" / "cache" / "nflverse" / "ep_weekly_2026.csv").unlink()
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.expected is None and snap.stale == []

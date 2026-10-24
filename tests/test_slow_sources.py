@@ -5,6 +5,7 @@ It reads the cache and the history, so no test needs the network.
 import shutil
 
 from cornerstone.nflverse import read_id_map
+from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
 
 
@@ -63,3 +64,23 @@ def test_load_slow_sources_without_the_injuries_file_misses_only_the_injuries(
     (cache / "injuries_2026.csv.gz").unlink()
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
     assert sources.injuries is None and sources.missing == ["injuries"]
+
+
+def test_load_slow_sources_with_the_league_scoring_gives_the_expected_points(
+        fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    shutil.copy(fixture_nflverse_dir / "ep_weekly_2026.csv", cache / "ep_weekly_2026.csv")
+    scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
+    sources = load_slow_sources(cache, 2026, 6, fixture_history_root, scoring)
+    # The trade week is 6, so the expected window ends at week 5, as every other grade input does.
+    assert sources.expected.through_week == 5
+    assert sources.expected.players and all(game.week <= 5 for games in sources.expected.players.values()
+                                            for game in games)
+    assert sources.missing == []
+
+
+def test_load_slow_sources_without_the_expected_points_file_gives_none_and_misses_nothing(
+        fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
+    scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
+    sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root, scoring)
+    assert sources.expected is None and sources.missing == []

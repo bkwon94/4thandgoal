@@ -162,7 +162,7 @@ def _build_live(
         chart: ChartValues | None, stale: list[str]) -> Snapshot:
     """The snapshot of the raw Sleeper data, with the slow sources and the returns read from the disk."""
     root = history_root(repo, season)
-    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root)
+    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root, raw["league"]["scoring_settings"])
     returns = load_returns(returns_path(repo, season))
     return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns)
 

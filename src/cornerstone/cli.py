@@ -155,7 +155,8 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
     history = history_root(repo, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
-    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history)
+    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
+                             load_raw(raw_dir)["league"]["scoring_settings"])
     return load_snapshot(raw_dir, history, chart, slow)
 
 

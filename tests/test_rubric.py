@@ -9,7 +9,9 @@ import pytest
 
 from conftest import strip_trend_numbers
 
-from cornerstone.adjusters import TREND, _byes_left
+from cornerstone import rubric
+from cornerstone.adjusters import TREND, _byes_left, rubric_adjusters
+from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
 )
@@ -941,3 +943,84 @@ def test_each_real_week_6_trade_grades_as_worked_by_hand(slow_snap, index):
         assert _adjuster(breakdown, "schedule").lean == lean
         assert breakdown.final_letter == final
     assert verdict(trade, result).choice == choice
+
+
+# The expected gap adjuster sits behind EXPECTED_ADJUSTER_ON, so these tests turn it on in the rubric.
+@pytest.fixture
+def expected_on(monkeypatch):
+    monkeypatch.setattr(rubric, "ADJUSTERS", rubric_adjusters(expected_on=True))
+
+
+def _with_expected(snap, players: dict[str, list[tuple[int, float, float]]]):
+    """The snapshot with hand-set games for each player: the week, his league points, and his expected points."""
+    weeks = dict(snap.stats.weeks)
+    for pid, games in players.items():
+        for week, actual, _ in games:
+            past = weeks[week]
+            line = {**(past.stats.get(pid) or {}), "gp": 1.0}
+            weeks[week] = past.model_copy(
+                update={"points": {**past.points, pid: actual}, "stats": {**past.stats, pid: line}})
+    expected = ExpectedPoints(through_week=5, players={
+        pid: [ExpectedGame(week=week, game_id=f"2026_{week:02d}_{pid}", expected=exp) for week, _, exp in games]
+        for pid, games in players.items()})
+    return snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks}), "expected": expected})
+
+
+# Each game runs 4 points per game under or over expected.
+UNDER = [(3, 10.0, 14.0), (4, 12.0, 16.0), (5, 8.0, 12.0)]
+OVER = [(3, 14.0, 10.0), (4, 16.0, 12.0), (5, 12.0, 8.0)]
+
+
+def test_expected_gap_steps_up_for_a_side_that_gets_a_player_under_expected(snap, expected_on):
+    tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == 1
+    assert "Cook: -4.00 points per game against expected, over weeks 3, 4 and 5." in gap.reason
+    assert _adjuster(fifth, "expected gap").step == 0
+
+
+def test_expected_gap_steps_up_for_a_side_that_gives_a_player_over_expected(snap, expected_on):
+    tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: OVER}))
+    assert _adjuster(fifth, "expected gap").step == 1
+    assert _adjuster(tenth, "expected gap").step == 0
+
+
+def test_expected_gap_under_on_the_gets_and_over_on_the_gives_cancel(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER, SAQUON: OVER}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == 0
+    assert "Barkley: +4.00" in gap.reason and "Cook: -4.00" in gap.reason
+
+
+def test_expected_gap_of_a_handcuff_does_not_count(slow_snap, expected_on):
+    snap = _with_expected(_with_ids(slow_snap, NE_IDS), {HENDERSON: UNDER})
+    seventh, _ = grade(_trade(7, [CAR_DEF], 8, [HENDERSON]), snap)
+    gap = _adjuster(seventh, "expected gap")
+    assert gap.step == 0
+    assert gap.reason.endswith("TreVeyon Henderson is a handcuff, so his gap does not count.")
+
+
+def test_expected_gap_of_a_player_due_back_does_not_count(snap, expected_on):
+    snap = _with_expected(_before_the_jacobs_trade(snap), {JACOBS: UNDER})
+    eleventh, _ = grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), snap)
+    gap = _adjuster(eleventh, "expected gap")
+    assert gap.step == 0
+    assert gap.reason.endswith("Josh Jacobs is due back, so his gap does not count.")
+
+
+def test_a_player_with_one_game_in_the_window_has_no_expected_gap(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER[-1:]}))
+    gap = _adjuster(tenth, "expected gap")
+    assert gap.step == 0
+    assert gap.reason.endswith("James Cook has fewer than 2 games in the expected window, so he has no gap.")
+
+
+def test_expected_gap_without_the_expected_points_says_no_check_ran(snap, expected_on):
+    tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
+    gap = _adjuster(tenth, "expected gap")
+    assert (gap.step, gap.reason) == (0, "The expected points are not available, so no gap check ran.")
+
+
+def test_with_the_tunable_off_no_breakdown_holds_the_expected_gap(snap):
+    for side in grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER})):
+        assert "expected gap" not in [a.name for a in side.adjusters]

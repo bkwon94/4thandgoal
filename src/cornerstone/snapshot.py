@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from cornerstone.facts_league import standings
 from cornerstone.history import load_saved_weeks
-from cornerstone.models import ChartValues, History, Standing, Team
+from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, Team
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
@@ -75,6 +75,8 @@ class Snapshot(BaseModel):
     id_map: dict[str, str] | None = None
     # The points each defense allows to a position, by NFL team and position.
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
+    # The expected window of each player by Sleeper id, from ffopportunity. None when the file is not in the cache.
+    expected: ExpectedPoints | None = None
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.
     returns: dict[str, int] = {}
@@ -165,6 +167,7 @@ def build_snapshot(
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
         injuries=slow.injuries if slow else None,
+        expected=slow.expected if slow else None,
         returns=returns or {},
         missing=missing,
         stale=stale,
