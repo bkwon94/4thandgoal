@@ -2,9 +2,10 @@
 
 Spec: `.scratch/nflverse/PRD.md`.
 
-**What to build:** The trade rubric gains a seventh adjuster, expected gap, last in the order. A side whose
-gets run under expected by the gap tunable or more over the expected window steps up one. A side whose
-gives run over expected by the same steps up one. The two cancel to no step. The reason names the players
+**What to build:** The trade rubric gains a seventh adjuster, expected gap, last in the order. A side steps up
+one when its gets run under expected by the gap tunable or more over the expected window, or its gives run
+over by the same. A side steps down one when its gets run over by the gap, or its gives run under. An up
+case and a down case together give no step. The reason names the players
 and their gaps. Handcuffs and players due back do not count, by the same rule the trend adjuster uses, and
 that rule lives in one place. The adjuster sits behind a tunable that starts off, so no live breakdown
 shows it until a real trade checks out. The snapshot the API refreshes carries the window gap per player.
@@ -18,7 +19,8 @@ weekly points from the snapshot's Sleeper stats, the same points the trend adjus
 
 - [ ] With the tunable on, a side that gets a player 4 under expected steps up, and the reason names him and the gap.
 - [ ] A side that gives a player 4 over expected steps up.
-- [ ] A side that gets one 4 under and gives one 4 over takes no step.
+- [ ] A side that gets a player 4 over expected steps down, and a side that gives a player 4 under steps down.
+- [ ] A side that gets one 4 under and gets another 4 over, or gets under and gives under, takes no step.
 - [ ] A handcuff's gap and a due-back player's gap do not count, and the reason says so as the trend adjuster does.
 - [ ] A player with fewer than 2 games in the window has no gap and does not count.
 - [ ] With the tunable off, no breakdown holds the adjuster and every existing rubric test passes unchanged.

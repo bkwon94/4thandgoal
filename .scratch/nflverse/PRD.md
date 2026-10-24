@@ -146,11 +146,12 @@ zone touches. Before any of that, the target count drops two-point tries, as its
 
 ### The trade rubric
 
-- A new adjuster, expected gap, last in the adjuster order. The gap of a side is the mean per-game
-  expected gap over the expected window of the players it gets minus the players it gives. A side
-  whose gets run under expected by `EXPECTED_GAP` or more steps up one. A side whose gives run over
-  expected by the same steps up one. The two cancel to no step. The reason names the players and
-  their gaps.
+- A new adjuster, expected gap, last in the adjuster order. It reads the mean per-game expected
+  gap over the expected window of the players a side gets, and the same for the players it gives.
+  A side steps up one when its gets run under expected by `EXPECTED_GAP` or more, or its gives run
+  over by the same: it buys low or sells high. A side steps down one when its gets run over
+  expected by the gap, or its gives run under: it buys high or sells low. An up case and a down
+  case together give no step. The reason names the players and their gaps.
 - Handcuffs and players due back do not count, the same rule as the trend adjuster, and the
   shared rule lives in one place.
 - `EXPECTED_GAP` starts at 3 points per game. `EXPECTED_ADJUSTER_ON` starts false, so the
