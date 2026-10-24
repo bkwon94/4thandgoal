@@ -12,6 +12,8 @@ from cornerstone.verifier import (
     claude_verify,
     code_check,
     opener_failures,
+    page_words,
+    reserved_words,
     verify_blurb,
     write_and_verify,
 )
@@ -885,3 +887,123 @@ def test_in_scope_two_word_last_name_does_not_name_an_out_of_scope_player(fixtur
     assert "Amon-Ra St. Brown" in ch.scope_players
     b = _blurb("recap_3", _s("St. Brown also played.", "M3.result"), _s("They won.", "M3.result"))
     assert not any("player A.J. Brown" in m for m in code_check(b, ch, sheet))
+
+
+def _awards_with_luck(fixture_raw_dir):
+    """The awards chapter with AW.lucky and AW.unlucky facts, so the word gate passes and only the count is tested."""
+    sheet = _sheet(fixture_raw_dir).model_copy(deep=True)
+    ch = _ch(sheet, "awards")
+    for fid in ("AW.lucky", "AW.unlucky"):
+        sheet.facts[fid] = sheet.facts[ch.fact_ids[0]].model_copy(update={"id": fid})
+        ch.fact_ids.append(fid)
+    return sheet, ch
+
+
+def test_lucky_in_two_sentences_fails_and_names_both(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Lucky award goes out.", "AW.lucky"),
+        _s("Again.", ch.fact_ids[0]),
+        _s("That was LUCKY.", "AW.lucky"),
+    )
+    assert code_check(b, ch, sheet) == ["[2] sentences [0] and [2] say 'lucky'; a page may say it once"]
+
+
+def test_unlucky_in_two_sentences_fails(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Unlucky award goes out.", "AW.unlucky"),
+        _s("That was unlucky.", "AW.unlucky"),
+    )
+    assert code_check(b, ch, sheet) == ["[1] sentences [0] and [1] say 'unlucky'; a page may say it once"]
+
+
+def test_lucky_once_and_unlucky_once_pass(fixture_raw_dir):
+    # "unlucky" holds "lucky" inside it, but the whole-word match does not count it as "lucky".
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb(
+        "awards",
+        _s("The Lucky award goes out.", "AW.lucky"),
+        _s("The Unlucky award goes out.", "AW.unlucky"),
+    )
+    assert code_check(b, ch, sheet) == []
+
+
+def test_lucky_after_an_earlier_chapter_said_it_fails(fixture_raw_dir):
+    # Chapter A said "lucky", so the build passes the word in; chapter B fails on its own "lucky".
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb("awards", _s("Again.", ch.fact_ids[0]), _s("The Lucky award goes out.", "AW.lucky"))
+    assert code_check(b, ch, sheet, used_words={"lucky"}) == [
+        "[1] says 'lucky', but another chapter of this page already did"
+    ]
+
+
+def test_unlucky_after_an_earlier_lucky_passes(fixture_raw_dir):
+    # Chapter A said "lucky" once and chapter B says "unlucky" once: each word is used once on the page.
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    b = _blurb("awards", _s("The Unlucky award goes out.", "AW.unlucky"), _s("Again.", ch.fact_ids[0]))
+    assert code_check(b, ch, sheet, used_words={"lucky"}) == []
+
+
+def test_page_words_skips_a_team_name_and_unlucky(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "recap_4").model_copy(deep=True)
+    ch.scope_teams.append("Lucky Lambs")
+    b = _blurb("recap_4", _s("Lucky Lambs played.", ch.fact_ids[0]), _s("That was unlucky.", ch.fact_ids[0]))
+    assert page_words(b, ch) == {"unlucky"}
+    assert page_words(b, None) == {"lucky", "unlucky"}
+
+
+def test_write_and_verify_sends_the_page_word_failure_to_the_rewrite(fixture_raw_dir):
+    sheet, ch = _awards_with_luck(fixture_raw_dir)
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
+        users.append(user)
+        return WriterOut(sentences=[_s("The Lucky award goes out.", "AW.lucky"), _s("Again.", ch.fact_ids[0])])
+
+    blurb, results = write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert blurb.fallback and len(results) == 2
+    assert "another chapter of this page already did" in users[1]
+
+
+def test_the_awards_chapter_owns_lucky_when_the_sheet_has_the_lucky_award(fixture_raw_dir):
+    # The award must always be named, so every other chapter starts with "lucky" used, even the first one.
+    sheet, awards = _awards_with_luck(fixture_raw_dir)
+    assert reserved_words("motw", sheet) == {"lucky", "unlucky"}
+    assert reserved_words("awards", sheet) == set()
+    motw = _ch(sheet, "motw")
+    b = _blurb("motw", _s("That was lucky.", *motw.fact_ids[:1]), _s("Again.", *motw.fact_ids[:1]))
+    assert "[0] says 'lucky', but another chapter of this page already did" in code_check(
+        b, motw, sheet, used_words=reserved_words("motw", sheet)
+    )
+    b = _blurb("awards", _s("The Lucky award goes out.", "AW.lucky"), _s("Again.", awards.fact_ids[0]))
+    assert code_check(b, awards, sheet, used_words=reserved_words("awards", sheet)) == []
+
+
+def test_no_award_fact_reserves_no_word(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    assert "AW.lucky" not in sheet.facts
+    assert reserved_words("motw", sheet) == set()
+
+
+def test_the_first_writer_call_hears_the_used_words(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "median")
+    users = []
+
+    def fake(system, user, model):
+        if model.__name__ == "VerifyOut":
+            return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
+        users.append(user)
+        return _good_writer_out()
+
+    write_and_verify(ch, sheet, fake, used_words={"lucky"})
+    assert "Do not say 'lucky'. Another chapter of this page already does." in users[0]
+    users.clear()
+    write_and_verify(ch, sheet, fake)
+    assert "Do not say" not in users[0]

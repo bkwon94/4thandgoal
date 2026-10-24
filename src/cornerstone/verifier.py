@@ -5,6 +5,7 @@ A failed blurb is rewritten once with feedback, then replaced by a template sent
 import logging
 import re
 import string
+from collections.abc import Collection
 from importlib import resources
 
 import anthropic
@@ -35,6 +36,11 @@ GATED_WORDS: list[tuple[list[str], tuple[str, ...]]] = [
     (["unlucky"], ("AW.unlucky",)),
     (["because", "thanks to", "cost", "sank", "carried"], (".driver", ".swing", ".dropswing")),
 ]
+# Each of these words may appear in one sentence only.
+ONCE_PER_PAGE_WORDS = ["lucky", "unlucky"]
+# The awards chapter owns the word of each award the sheet holds, so the award can always be named.
+AWARD_WORDS = {"lucky": "AW.lucky", "unlucky": "AW.unlucky"}
+AWARDS_CHAPTER = "awards"
 # A number written as a word escapes the digit check, so it must come from a cited fact's text.
 # "one" is left out: it is too common as a pronoun.
 NUMBER_WORDS = [
@@ -110,6 +116,33 @@ def _banned(heading: str) -> list[str]:
     text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     line = text.split(heading, 1)[1].strip().splitlines()[0]
     return [w.strip().rstrip(".") for w in line.split(":", 1)[1].split(",")]
+
+
+def once_words(bare: str) -> set[str]:
+    """The once-per-page words in one sentence. The whole-word match keeps "unlucky" out of "lucky"."""
+    return {word for word in ONCE_PER_PAGE_WORDS if whole_word(word, bare)}
+
+
+def page_words(blurb: Blurb, chapter: Chapter | None) -> set[str]:
+    """The once-per-page words that a blurb says. The chapter names are removed first, as in the code check.
+
+    The chapter is None for a saved blurb whose chapter the saved facts no longer hold, so no names are removed.
+    """
+    names = [*chapter.scope_teams, *chapter.scope_players] if chapter is not None else []
+    return {word for s in blurb.sentences for word in once_words(remove_names(without_urls(s.text), names))}
+
+
+def reserved_words(chapter_key: str, sheet: FactSheet) -> set[str]:
+    """The award words that the awards chapter owns, so any other chapter starts with them used."""
+    if chapter_key == AWARDS_CHAPTER:
+        return set()
+    return {word for word, fid in AWARD_WORDS.items() if fid in sheet.facts}
+
+
+def page_word_feedback(used_words: Collection[str]) -> str | None:
+    """The first-attempt feedback for the used words, so the writer does not spend an attempt on a known failure."""
+    lines = [f"Do not say '{w}'. Another chapter of this page already does." for w in sorted(used_words)]
+    return "\n".join(lines) or None
 
 
 def remove_names(text: str, names: list[str]) -> str:
@@ -252,7 +285,10 @@ def opener_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[st
     return failures
 
 
-def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
+def code_check(
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, used_words: Collection[str] = frozenset()
+) -> list[str]:
+    """The code rules on one blurb. `used_words` are the once-per-page words that another chapter already said."""
     failures: list[str] = []
     in_chapter = set(chapter.fact_ids)
     league_teams = {t for f in sheet.facts.values() for t in f.teams}
@@ -331,6 +367,17 @@ def code_check(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[str]:
                     needs = " or ".join(markers)
                     failures.append(f"[{i}] '{word}' needs a cited {needs} fact")
 
+    # The writer prompt allows "lucky" once per page; a prompt rule holds most weeks, a count holds every week.
+    # The count reads the text with names removed, and the whole-word match keeps "unlucky" out of "lucky".
+    for word in ONCE_PER_PAGE_WORDS:
+        said = [i for i, bare in enumerate(bares) if word in once_words(bare)]
+        if len(said) > 1:
+            where = ", ".join(f"[{i}]" for i in said[:-1]) + f" and [{said[-1]}]"
+            failures.append(f"[{said[1]}] sentences {where} say '{word}'; a page may say it once")
+        # The build writes the chapters one at a time, so it passes in the words that the other chapters used.
+        if said and word in used_words:
+            failures.append(f"[{said[0]}] says '{word}', but another chapter of this page already did")
+
     # The 12-team chapters name many teams, so only a chapter about one or two teams gets this check.
     if two_team_chapter(chapter.key):
         for i, team, mentions in repeated_teams([s.text for s in blurb.sentences], chapter.scope_teams):
@@ -404,9 +451,9 @@ def claude_verify(
 
 
 def verify_blurb(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
 ) -> VerifyResult:
-    failures = code_check(blurb, chapter, sheet)
+    failures = code_check(blurb, chapter, sheet, used_words)
     # A code failure is final, so skip the paid Claude call.
     if failures:
         return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False)
@@ -429,10 +476,10 @@ def _feedback(result: VerifyResult) -> str:
 
 
 def write_and_verify(
-    chapter: Chapter, sheet: FactSheet, call: ClaudeCall
+    chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
 ) -> tuple[Blurb, list[VerifyResult]]:
     results: list[VerifyResult] = []
-    feedback: str | None = None
+    feedback = page_word_feedback(used_words)
     for _ in range(2):
         try:
             blurb = write_blurb(chapter, sheet, call, feedback)
@@ -447,7 +494,7 @@ def write_and_verify(
             )
         else:
             try:
-                result = verify_blurb(blurb, chapter, sheet, call)
+                result = verify_blurb(blurb, chapter, sheet, call, used_words)
             except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)

@@ -13,7 +13,10 @@ sentence fails the page as a word-gate failure does today.
 
 **Status:** open
 
-- [ ] A page with "lucky" in two sentences fails the verify step and the failure names both sentences.
-- [ ] A page with "lucky" once and "unlucky" once passes.
-- [ ] "Unlucky" does not count as "lucky".
-- [ ] Every existing verify test passes unchanged.
+The rule follows the chapter order of the build. An early chapter, such as `motw`, can use up "lucky" before
+the awards chapter, and then the awards chapter must write its Lucky award without the word.
+
+- [x] A page with "lucky" in two sentences fails the verify step and the failure names both sentences.
+- [x] A page with "lucky" once and "unlucky" once passes.
+- [x] "Unlucky" does not count as "lucky".
+- [x] Every existing verify test passes unchanged.
