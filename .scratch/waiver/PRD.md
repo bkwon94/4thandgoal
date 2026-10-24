@@ -111,8 +111,10 @@ one like him cost, and how many teams can outbid you.
 ### The pool and the data
 
 - The pool is every player in the players file with a team, status active, and a position of QB,
-  RB, WR, TE, K, or DEF, who is on no roster in this league. The drops bucket draws from the
-  rostered players instead.
+  RB, WR, TE, K, or DEF, who is on no roster in this league. A player with a team whose Sleeper
+  status is inactive because he is on IR or PUP also joins the pool, for the stashes bucket only,
+  since Sleeper marks an IR player inactive. Every bucket but stashes skips a player whose own
+  injury status keeps him out. The drops bucket draws from the rostered players instead.
 - The projections ahead fetch lifts its roster filter, so the raw file holds every player with a
   projection. Rest of season projection is the sum from week N+1 to week 17 with the bye as 0.
 - The week fetch gains one call to Sleeper's trending adds endpoint, lookback 24 hours, top 50,
@@ -154,11 +156,15 @@ one like him cost, and how many teams can outbid you.
   Top 8 by usage trend. A player in best adds is not sneaky.
 - Stashes: the pool players with an injury status of out or IR, a return week inside the season
   from the hand-kept returns file or the injury file, and a rest of season projection in the top
-  half of their position. Plus the handcuff rule: a player one slot below a starter on the depth
-  chart whose rest of season projection on that starter's injury would be in the top half. Top 8
-  by rest of season projection.
+  half of their position. Plus the handcuff rule, RB only as the glossary defines it: a running back one slot below a
+  starter whose rest of season projection is in the top half of all running backs, rostered too.
+  A stash needs a rest of season projection above zero. Top 8 by rest of season projection. Tina
+  narrowed the handcuff rule on 2026-10-23 after a real-data check put eight healthy backups,
+  three of them quarterbacks, in the bucket.
 - Drops: the rostered players whose snap share fell for `DROP_WEEKS` (3) weeks in a row and whose
-  rest of season projection is below the best pool player at their position. Top 8 by the gap.
+  rest of season projection is below the best pool player at their position. Top 8 by the margin,
+  with no per-position cap, since one roster can hold five RB drop candidates. The drop data is a
+  sub-object on the player, not a subclass, so the JSON needs no type tag.
   Each row names the roster that holds him. A manager with a team pick sees his own drops first.
 - A player's facts: one usage fact, "{name} played {share}% of snaps and took {targets} targets
   last week, up from {share_before}% and {targets_before}". One environment fact, "{team} runs
