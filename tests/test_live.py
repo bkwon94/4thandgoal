@@ -12,11 +12,12 @@ import httpx
 import pytest
 
 from cornerstone.history import save_week_to_history
-from cornerstone.live import live_snapshot
+from cornerstone.live import ProjectionsCache, live_rosters_snapshot, live_snapshot
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
 from cornerstone.sleeper import load_raw
+from cornerstone.tunables import TEAMS_CACHE_SECONDS
 
 ET = ZoneInfo("America/New_York")
 FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ET)
@@ -322,3 +323,55 @@ def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_car
     assert path.exists()
     assert snap.wopr and all(week < snap.week for weeks in snap.wopr.values() for week in weeks)
     assert snap.stale == []
+
+
+@pytest.fixture
+def sleeper_now(fixture_raw_dir):
+    """The Sleeper fetch as fetch_live_raw gives it: the raw data with no projections ahead."""
+    def fetch(league_id, players_cache):
+        raw = load_raw(fixture_raw_dir)
+        raw.pop("projections_ahead")
+        return raw, FETCHED
+    return fetch
+
+
+class ProjectionsRecorder:
+    def __init__(self):
+        self.calls = []
+
+    def __call__(self, season, week):
+        self.calls.append((season, week))
+        return [{"week": 7, "projections": {"5850": 18.0}}]
+
+
+class Clock:
+    def __init__(self):
+        self.now = 1000.0
+
+    def __call__(self):
+        return self.now
+
+
+def test_the_live_snapshot_fetches_the_projections_ahead_once_in_the_cache_window(live_repo, sleeper_now):
+    fetch, clock = ProjectionsRecorder(), Clock()
+    cache = ProjectionsCache(TEAMS_CACHE_SECONDS, clock=clock)
+
+    def snapshot():
+        return live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper_now,
+                             fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch, read_chart=None,
+                             fetch_projections=fetch, projections=cache)
+
+    assert snapshot().projections_ahead["5850"][7] == 18.0
+    clock.now += TEAMS_CACHE_SECONDS - 1
+    snapshot()
+    assert fetch.calls == [(2026, 6)]
+    clock.now += 1
+    snapshot()
+    assert fetch.calls == [(2026, 6), (2026, 6)]
+
+
+def test_the_rosters_snapshot_fetches_no_projections_ahead(live_repo, sleeper_now):
+    # The teams route never grades, so it never waits on the projections.
+    snap = live_rosters_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                                 fetch_sleeper=sleeper_now)
+    assert snap.projections_ahead is None

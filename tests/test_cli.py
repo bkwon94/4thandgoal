@@ -306,7 +306,8 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
         "  Unsolicited Dak Picks: It gets far more trade value than it gives.\n"
-        "  Amon-Ra Dawg Your Team: The best lineup gains after the trade.\n")
+        "  Amon-Ra Dawg Your Team: The best lineup gains after the trade. "
+        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 12.2 a game.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out

@@ -223,7 +223,8 @@ def test_a_contender_steps_up_for_a_lineup_gain_now(snap):
 def test_a_contender_steps_up_for_a_player_due_back_by_the_last_regular_season_week(snap):
     # Wicks sits on roster 3's bench and Jacobs has no games in the last four weeks, so the lineup holds.
     # The returns file has Jacobs back in week 7.
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    # His projection ahead would start him on roster 3, so this case drops the projections to reach the return bet.
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"projections_ahead": None}))
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
@@ -1138,3 +1139,72 @@ def test_expected_gap_without_the_expected_points_says_no_check_ran(snap, expect
 def test_with_the_tunable_off_no_breakdown_holds_the_expected_gap(snap):
     for side in grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER})):
         assert "expected gap" not in [a.name for a in side.adjusters]
+
+
+# The lineup value of a player due back. Jacobs has no games in weeks 2 to 5, and the returns file has him back in
+# week 7. Wicks sits on roster 3's bench, so a trade of Wicks for Jacobs moves only the value of Jacobs.
+def _with_projections(snap, projections: dict[str, dict[int, float]] | None):
+    return snap.model_copy(update={"projections_ahead": projections})
+
+
+def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reason_names_it(snap):
+    snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}})
+    third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    fit = _adjuster(third, "roster fit")
+    assert fit.step == 1
+    assert fit.reason == (
+        "The best lineup gains after the trade. Josh Jacobs is due back in week 7, "
+        "so he counts for his projection ahead of 18.0 a game.")
+    assert _adjuster(eleventh, "roster fit").step == -1
+
+
+def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(snap):
+    today = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, None))
+    projected = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}}))
+    assert projected == today
+
+
+def test_a_player_due_back_with_no_projection_row_counts_as_0(snap):
+    snap = _with_projections(snap, {COOK: {7: 18.0}})
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    fit = _adjuster(third, "roster fit")
+    assert fit.reason.startswith("The best lineup stays about the same.")
+    assert fit.reason.endswith(
+        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 0.0 a game.")
+
+
+def test_without_the_projections_every_grade_is_as_by_recent_points_and_the_reason_says_so(snap):
+    missing = _with_projections(snap, None)
+    third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), missing)
+    # With no return week, Jacobs is not due back, so the grade uses his recent points of 0.
+    by_recent = grade(_trade(3, [WICKS], 11, [JACOBS]), missing.model_copy(update={"returns": {}}))
+    for side, today in zip((third, eleventh), by_recent):
+        assert _adjuster(side, "roster fit").step == _adjuster(today, "roster fit").step
+        assert _adjuster(side, "roster fit").reason == (
+            _adjuster(today, "roster fit").reason
+            + " The projections ahead are not available, so Josh Jacobs counts for his recent points per game.")
+    # A trade with no player due back says nothing of the projections.
+    for side in grade(_trade(10, [SAQUON], 5, [COOK]), missing):
+        assert "projections" not in _adjuster(side, "roster fit").reason
+
+
+def test_the_projection_skips_the_bye_and_stops_at_the_last_regular_week(snap):
+    # Week 11 is before his return, week 13 is his bye, and week 15 is after the last regular week.
+    snap = _with_projections(snap, {JACOBS: {11: 99.0, 12: 16.0, 14: 20.0, 15: 99.0}})
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 12}}))
+    assert _adjuster(third, "roster fit").reason.endswith(
+        "Josh Jacobs is due back in week 12, so he counts for his projection ahead of 18.0 a game.")
+
+
+def test_a_return_after_the_last_regular_week_gives_0(snap):
+    snap = _with_projections(snap, {JACOBS: {15: 99.0, 16: 99.0}})
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 15}}))
+    assert _adjuster(third, "roster fit").reason.endswith(
+        "Josh Jacobs is due back in week 15, so he counts for his projection ahead of 0.0 a game.")
+
+
+def test_a_player_due_back_in_the_trade_week_counts_for_that_week(snap):
+    snap = _with_projections(snap, {JACOBS: {6: 24.0, 7: 12.0}})
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 6}}))
+    assert _adjuster(third, "roster fit").reason.endswith(
+        "Josh Jacobs is due back in week 6, so he counts for his projection ahead of 18.0 a game.")

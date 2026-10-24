@@ -84,6 +84,10 @@ class Snapshot(BaseModel):
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.
     returns: dict[str, int] = {}
+    # The Sleeper projection of each player by Sleeper id and week, from the week after the raw week on.
+    # The raw week's own projection is here too, so a player due back in that week counts for it.
+    # A week with no row is a bye or no game. It is None when the raw data has no projections ahead file.
+    projections_ahead: dict[str, dict[int, float]] | None = None
     # The names of the sources the snapshot lacks, so the breakdown can say what it could not use.
     missing: list[str] = []
     # The sources whose refresh failed, so the cache is older than a day or absent.
@@ -96,6 +100,24 @@ def load_returns(path: Path) -> dict[str, int] | None:
     if not path.exists():
         return None
     return {pid: int(week) for pid, week in json.loads(path.read_text(encoding="utf-8")).items()}
+
+
+def _projections_by_player(raw: dict[str, object], week: int) -> dict[str, dict[int, float]] | None:
+    """The half-PPR projections of the raw week and the weeks ahead by player id and week.
+
+    It is None when the raw data has no projections ahead.
+    """
+    if "projections_ahead" not in raw:
+        return None
+    by_player: dict[str, dict[int, float]] = {}
+    for item in raw["projections"]:
+        points = (item.get("stats") or {}).get("pts_half_ppr")
+        if points is not None:
+            by_player.setdefault(item["player_id"], {})[week] = float(points)
+    for entry in raw["projections_ahead"]:
+        for pid, points in entry["projections"].items():
+            by_player.setdefault(pid, {})[int(entry["week"])] = float(points)
+    return by_player
 
 
 def load_snapshot(
@@ -174,6 +196,7 @@ def build_snapshot(
         expected=slow.expected if slow else None,
         wopr=slow.wopr if slow else None,
         returns=returns or {},
+        projections_ahead=_projections_by_player(raw, week.week),
         missing=missing,
         stale=stale,
     )

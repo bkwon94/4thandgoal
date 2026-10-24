@@ -157,3 +157,15 @@ def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "projections_ahead.json").unlink()
     assert "projections_ahead" not in load_raw(raw_dir)
+
+
+def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
+    # The trade grade reads no week after the last regular week, so the live fetch skips those calls.
+    from cornerstone import sleeper
+
+    calls: list[str] = []
+    monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
+    ahead = sleeper.fetch_projections_ahead(2026, 6)
+    assert [entry["week"] for entry in ahead] == list(range(7, 15))
+    assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
+    assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
