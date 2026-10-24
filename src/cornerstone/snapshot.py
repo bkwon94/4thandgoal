@@ -75,7 +75,7 @@ class Snapshot(BaseModel):
     id_map: dict[str, str] | None = None
     # The points each defense allows to a position, by NFL team and position.
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
-    # The expected window of each player by Sleeper id, from ffopportunity. None when the file is not in the cache.
+    # The expected window of each player by Sleeper id, from ffopportunity. None when the slow sources cannot read it.
     expected: ExpectedPoints | None = None
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.

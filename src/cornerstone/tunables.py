@@ -54,7 +54,8 @@ RETURN_WINDOW_WEEKS = 2
 SCHEDULE_RANK_GAP = 4
 
 # Expected gap: the league points of the players it gets and gives against their expected points over the window.
-# The mean gap, in points per game, that makes the gets run under expected or the gives run over it.
+# The mean gap, in points per game, at or past which a group counts, either way, for the gets and for the gives.
+# Gets under or gives over step a side up. Gets over or gives under step it down.
 # The value is a first guess, and the commissioner tunes it.
 EXPECTED_GAP = Decimal("3.0")
 # The expected gap adjuster is off until a real trade checks out, so no live breakdown shows an untried adjuster.

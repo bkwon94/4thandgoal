@@ -31,8 +31,8 @@ class SlowSources(BaseModel):
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The injury report status by gsis_id and week. `id_map` joins it to Sleeper ids, as for the depth chart.
     injuries: dict[str, dict[int, str]] | None = None
-    # The expected window of each player by Sleeper id. Only the expected gap adjuster reads it, and that adjuster
-    # says in its own reason when the data is not there, so a None here is not in `missing`.
+    # The expected window of each player by Sleeper id. Only the expected gap adjuster reads it.
+    # That adjuster says in its own reason when the data is not there, so a None here is not in `missing`.
     expected: ExpectedPoints | None = None
     missing: list[str] = []
 

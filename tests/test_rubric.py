@@ -1045,7 +1045,16 @@ def test_a_player_with_one_game_in_the_window_has_no_expected_gap(snap, expected
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER[-1:]}))
     gap = _adjuster(tenth, "expected gap")
     assert gap.step == 0
-    assert gap.reason.endswith("James Cook has fewer than 2 games in the expected window, so he has no gap.")
+    # Barkley has no rows in the expected file, so he has no gap either, and the reason names him too.
+    assert gap.reason.endswith(
+        "James Cook and Saquon Barkley have fewer than 2 games in the expected window, so they have no gap.")
+
+
+def test_expected_gap_reason_gives_the_players_it_gets_before_the_players_it_gives(snap, expected_on):
+    tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), _with_expected(snap, {COOK: UNDER, SAQUON: OVER}))
+    tenth_gap, fifth_gap = _adjuster(tenth, "expected gap"), _adjuster(fifth, "expected gap")
+    assert tenth_gap.reason.index("Cook: -4.00") < tenth_gap.reason.index("Barkley: +4.00")
+    assert fifth_gap.reason.index("Barkley: +4.00") < fifth_gap.reason.index("Cook: -4.00")
 
 
 def test_expected_gap_without_the_expected_points_says_no_check_ran(snap, expected_on):

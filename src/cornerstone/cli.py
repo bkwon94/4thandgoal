@@ -149,14 +149,15 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
         return None
     raw_dir = week_dir(repo, args.season, args.week) / "raw"
+    raw = load_raw(raw_dir)
     if args.chart is not None:
         chart = _given_chart(args.chart)
     else:
-        chart = _saved_chart_values(repo, args.week, load_raw(raw_dir))
+        chart = _saved_chart_values(repo, args.week, raw)
     history = history_root(repo, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
-                             load_raw(raw_dir)["league"]["scoring_settings"])
+                             raw["league"]["scoring_settings"])
     return load_snapshot(raw_dir, history, chart, slow)
 
 

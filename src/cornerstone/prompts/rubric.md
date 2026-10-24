@@ -48,8 +48,8 @@ one. A handcuff with no chart row keeps the start letter. See the handcuff secti
 
 After the start letter, each adjuster moves a side by one step at most: up, down, or not at all.
 The breakdown lists every adjuster in this order, with its step and a one-line reason: roster
-fit, standing, trend and usage, injury, handcuff, and schedule. Schedule shows a lean in place of a
-step.
+fit, standing, trend and usage, injury, handcuff, schedule, and expected gap. Expected gap runs only
+when its tunable is on. Schedule shows a lean in place of a step.
 
 ## Roster fit
 

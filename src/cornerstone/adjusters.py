@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from cornerstone.history import player_points, red_zone, snap_share, target_share
 from cornerstone.names import last_name
-from cornerstone.nflverse import TeamSchedule
+from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -32,7 +32,8 @@ if TYPE_CHECKING:
     # The rubric module imports this one, so the trade model is a name for the type checker only.
     from cornerstone.rubric import ProposedTrade
 
-# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, schedule, and expected gap.
+# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, schedule, and expected gap
+# when its tunable is on.
 
 
 Lean = Literal["for", "against", "even"]
@@ -622,7 +623,7 @@ def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
         games, points = snapshot.expected.players.get(pid, []), _league_points(snapshot, pid)
         gap = window_gap(games, points)
         if gap is not None:
-            # The gap is rounded to cents, so a Decimal of its text compares with EXPECTED_GAP exactly.
+            # window_gap rounds the gap to cents, so a Decimal of its text compares with EXPECTED_GAP exactly.
             gaps[pid], weeks[pid] = Decimal(str(gap)), [game.week for game in games if game.week in points]
     got = _mean_gap([gaps[pid] for pid in gets if pid in gaps])
     gave = _mean_gap([gaps[pid] for pid in gives if pid in gaps])
@@ -648,10 +649,12 @@ def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
     else:
         step, lead = 0, "No player in the trade has an expected gap."
     names = _short_names(snapshot, list(gaps))
-    sentences = [f"{names[pid]}: {gap:+.2f} points per game against expected, over {_weeks_text(weeks[pid])}."
-                 for pid, gap in gaps.items()]
-    # A defense or a kicker has no expected points, so only a player with games in the file but no gap is named.
-    no_gap = [pid for pid in gets + gives if pid not in gaps and snapshot.expected.players.get(pid)]
+    # The players it gets come before the players it gives, so the reader can tell the two groups apart.
+    sentences = [f"{names[pid]}: {gaps[pid]:+.2f} points per game against expected, over {_weeks_text(weeks[pid])}."
+                 for pid in gets + gives if pid in gaps]
+    # A defense or a kicker has no expected points, so the reason names only a QB, RB, WR, or TE with no gap.
+    no_gap = [pid for pid in gets + gives
+              if pid not in gaps and snapshot.players[pid].position in SKILL_POSITIONS]
     if no_gap:
         sentences.append(named(
             snapshot, no_gap, f"has fewer than {WINDOW_MIN_GAMES} games in the expected window, so he has no gap.",
