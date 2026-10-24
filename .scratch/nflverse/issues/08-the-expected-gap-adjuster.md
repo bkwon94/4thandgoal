@@ -15,14 +15,14 @@ weekly points from the snapshot's Sleeper stats, the same points the trend adjus
 
 **Blocked by:** 03 Expected points and the expected gap.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] With the tunable on, a side that gets a player 4 under expected steps up, and the reason names him and the gap.
-- [ ] A side that gives a player 4 over expected steps up.
-- [ ] A side that gets a player 4 over expected steps down, and a side that gives a player 4 under steps down.
-- [ ] A side that gets one 4 under and gets another 4 over, or gets under and gives under, takes no step.
-- [ ] A handcuff's gap and a due-back player's gap do not count, and the reason says so as the trend adjuster does.
-- [ ] A player with fewer than 2 games in the window has no gap and does not count.
-- [ ] With the tunable off, no breakdown holds the adjuster and every existing rubric test passes unchanged.
-- [ ] The gap tunable starts at 3 points per game, and both tunables carry a reason comment.
-- [ ] The glossary's adjuster entry lists expected gap. It does already; keep it so.
+- [x] With the tunable on, a side that gets a player 4 under expected steps up, and the reason names him and the gap.
+- [x] A side that gives a player 4 over expected steps up.
+- [x] A side that gets a player 4 over expected steps down, and a side that gives a player 4 under steps down.
+- [x] A side that gets one 4 under and gets another 4 over, or gets under and gives under, takes no step.
+- [x] A handcuff's gap and a due-back player's gap do not count, and the reason says so as the trend adjuster does.
+- [x] A player with fewer than 2 games in the window has no gap and does not count.
+- [x] With the tunable off, no breakdown holds the adjuster and every existing rubric test passes unchanged.
+- [x] The gap tunable starts at 3 points per game, and both tunables carry a reason comment.
+- [x] The glossary's adjuster entry lists expected gap. It does already; keep it so.

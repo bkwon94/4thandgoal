@@ -11,13 +11,13 @@ Fly downloads it. The swing is its own tunable, about 8 WOPR points.
 
 **Blocked by:** 02 The nflverse weekly player file.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] The target share direction reads the Sleeper share as before; no code path changes it.
-- [ ] The snapshot carries WOPR per player per week from the cached file, None when the file is missing, and the API refresh downloads the file.
-- [ ] A flat trade where the players a side gets have WOPR up steps up, with a reason that says so, before red zone touches are read.
-- [ ] A flat trade with WOPR flat falls through to red zone touches as today.
-- [ ] The WOPR direction counts only when all 4 window weeks have a value, and a WOPR that points both ways falls through to red zone touches.
-- [ ] The WOPR swing is a tunable with a reason comment.
-- [ ] An RB's WOPR never decides, since his touches are carries.
-- [ ] The existing rubric tests pass unchanged.
+- [x] The target share direction reads the Sleeper share as before; no code path changes it.
+- [x] The snapshot carries WOPR per player per week from the cached file, None when the file is missing, and the API refresh downloads the file.
+- [x] A flat trade where the players a side gets have WOPR up steps up, with a reason that says so, before red zone touches are read.
+- [x] A flat trade with WOPR flat falls through to red zone touches as today.
+- [x] The WOPR direction counts only when all 4 window weeks have a value, and a WOPR that points both ways falls through to red zone touches.
+- [x] The WOPR swing is a tunable with a reason comment.
+- [x] An RB's WOPR never decides, since his touches are carries.
+- [x] The existing rubric tests pass unchanged.

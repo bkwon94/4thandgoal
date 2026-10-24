@@ -11,12 +11,12 @@ fewer than 2 games in it has no window gap. A missing file never stops the build
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] The rescale is the file's full-PPR total minus half a point per expected reception plus one point per expected interception, with the reception and interception weights read from the league scoring, not hard-coded.
-- [ ] One hand-computed row in the test pins the rescale.
-- [ ] With the Monday night game id of week N in the file, the result reads through week N. Without it, through week N-1, and the result carries that week.
-- [ ] The window gap is the mean per-game gap over the last 3 games played. One game gives no gap. A bye week is not a game.
-- [ ] The build record has a source flag for the file.
-- [ ] The nflverse week carries the expected data by Sleeper id, None when the file is missing, as it carries the usage.
-- [ ] A small fixture of the file covers the week 6 fixture players, and the reader test runs on it.
+- [x] The rescale is the file's full-PPR total minus half a point per expected reception plus one point per expected interception, with the reception and interception weights read from the league scoring, not hard-coded.
+- [x] One hand-computed row in the test pins the rescale.
+- [x] With the Monday night game id of week N in the file, the result reads through week N. Without it, through week N-1, and the result carries that week.
+- [x] The window gap is the mean per-game gap over the last 3 games played. One game gives no gap. A bye week is not a game.
+- [x] The build record has a source flag for the file.
+- [x] The nflverse week carries the expected data by Sleeper id, None when the file is missing, as it carries the usage.
+- [x] A small fixture of the file covers the week 6 fixture players, and the reader test runs on it.

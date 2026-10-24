@@ -9,11 +9,11 @@ writer can say "first among tight ends on WOPR" as a fact.
 
 **Blocked by:** 02 The nflverse weekly player file.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] A WR leader's fact holds his WOPR and his WOPR rank among the started WRs of the week.
-- [ ] An RB leader's fact holds his carry share and his rank among the started RBs.
-- [ ] A QB leader has no volume fact.
-- [ ] A leader with no usage row has no volume fact, and the chapter builds without it.
-- [ ] The position leaders chapter may cite the facts and no other chapter may.
-- [ ] Every number in each fact's text is in its numbers.
+- [x] A WR leader's fact holds his WOPR and his WOPR rank among the started WRs of the week.
+- [x] An RB leader's fact holds his carry share and his rank among the started RBs.
+- [x] A QB leader has no volume fact.
+- [x] A leader with no usage row has no volume fact, and the chapter builds without it.
+- [x] The position leaders chapter may cite the facts and no other chapter may.
+- [x] Every number in each fact's text is in its numbers.

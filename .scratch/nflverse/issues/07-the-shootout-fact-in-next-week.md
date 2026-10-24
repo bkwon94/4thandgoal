@@ -9,11 +9,11 @@ either team leans run.
 
 **Blocked by:** 04 Team EPA and pass rate over expected.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] On the fixture with hand-set rates, a game with both teams positive yields one fact with both rates and the league starters in it.
-- [ ] A game with one team at or under zero yields no fact.
-- [ ] A team with fewer than 3 weeks of plays uses the weeks it has, and a team with none yields no fact.
-- [ ] The next week chapter may cite the facts and no other chapter may.
-- [ ] A chapter with the environment missing builds with no shootout fact.
-- [ ] Every number in each fact's text is in its numbers.
+- [x] On the fixture with hand-set rates, a game with both teams positive yields one fact with both rates and the league starters in it.
+- [x] A game with one team at or under zero yields no fact.
+- [x] A team with fewer than 3 weeks of plays uses the weeks it has, and a team with none yields no fact.
+- [x] The next week chapter may cite the facts and no other chapter may.
+- [x] A chapter with the environment missing builds with no shootout fact.
+- [x] Every number in each fact's text is in its numbers.

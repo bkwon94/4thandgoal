@@ -1,6 +1,6 @@
 # Player data from nflverse in the report and the analyzer
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24, tickets 01-09 on main `5a1d6ab`
 **Date:** 2026-10-24
 
 ## Problem Statement

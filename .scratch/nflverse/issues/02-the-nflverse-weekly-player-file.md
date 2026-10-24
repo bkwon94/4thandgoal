@@ -9,7 +9,7 @@ from our count when it is not, and the build record says which. A missing file n
 
 **Blocked by:** 01 The target count drops two-point tries.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
 - [x] The usage week has `air_yards_share` and `wopr`, in percent as the other shares are, None when the file is missing.
 - [x] With the file present, a player's targets and target share equal the file's row. With it missing, they equal our count.

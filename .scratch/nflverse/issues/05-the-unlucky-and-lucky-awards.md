@@ -14,13 +14,13 @@ Sleeper points the sheet already holds for week N, minus his expected points for
 
 **Blocked by:** 03 Expected points and the expected gap.
 
-**Status:** ready-for-agent
+**Status:** done 2026-10-24
 
-- [ ] On the fixture with hand-set gaps, the unlucky fact names the starter with the largest gap under, with his actual, expected, and gap.
-- [ ] The lucky fact does the same for the largest gap over.
-- [ ] A week where no starter clears 5 points has no fact, and the chapter builds without it.
-- [ ] A lagged file gives no award fact for week N.
-- [ ] A bench player never gets either award.
-- [ ] The awards chapter may cite the two facts and no other chapter may.
-- [ ] The awards prompt has one rule line per award, and a prompt text test pins both.
-- [ ] Every number in each fact's text is in its numbers.
+- [x] On the fixture with hand-set gaps, the unlucky fact names the starter with the largest gap under, with his actual, expected, and gap.
+- [x] The lucky fact does the same for the largest gap over.
+- [x] A week where no starter clears 5 points has no fact, and the chapter builds without it.
+- [x] A lagged file gives no award fact for week N.
+- [x] A bench player never gets either award.
+- [x] The awards chapter may cite the two facts and no other chapter may.
+- [x] The awards prompt has one rule line per award, and a prompt text test pins both.
+- [x] Every number in each fact's text is in its numbers.
