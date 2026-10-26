@@ -15,7 +15,8 @@ from conftest import strip_trend_numbers
 from cornerstone import rubric
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
-    TREND, _byes_left, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
+    TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game,
+    rubric_adjusters,
 )
 from cornerstone.history import points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
@@ -310,6 +311,69 @@ def test_the_return_bet_of_a_known_games_week_reads_the_completed_week_bound(kno
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+
+
+def _with_known_game(snap, player: str, **fields):
+    """The snapshot with `fields` set on the player's stat line of the known-games week.
+
+    The roster points come first in the points reader, so a points field sets his roster points too.
+    """
+    week_n = snap.stats.weeks[snap.as_of.stats_through]
+    stats = {**week_n.stats, player: {**(week_n.stats.get(player) or {}), **fields}}
+    points = {**week_n.points, player: fields["pts_half_ppr"]} if "pts_half_ppr" in fields else week_n.points
+    weeks = {**snap.stats.weeks, week_n.week: week_n.model_copy(update={"stats": stats, "points": points})}
+    return snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
+
+
+def _jacobs_back_in_week_6(known_snap, **fields):
+    """The known-games snapshot with Jacobs due back in week 6, the trade week, and `fields` on his week 6 line."""
+    snap = known_snap.model_copy(update={"returns": {JACOBS: 6}, "projections_ahead": {JACOBS: {6: 24.0, 7: 12.0}}})
+    return _with_known_game(snap, JACOBS, **fields)
+
+
+def test_a_player_due_back_in_the_trade_week_who_played_counts_for_his_recent_points_with_no_return_note(known_snap):
+    # Jacobs has no game in weeks 3 to 5, so his recent points per game are his week 6 game alone.
+    snap = _jacobs_back_in_week_6(known_snap, gp=1.0, pts_half_ppr=21.0)
+    assert due_back_week(snap, JACOBS) is None
+    assert lineup_value(snap, JACOBS) == recent_points_per_game(snap, JACOBS) == 21
+    third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    for side in (third, eleventh):
+        assert "Josh Jacobs" not in _adjuster(side, "roster fit").reason
+
+
+def test_a_player_due_back_in_the_trade_week_with_no_game_yet_counts_for_his_projection_ahead(known_snap):
+    # His week 6 line shows him active with no game played, so the mean of 24.0 and 12.0 from week 6 holds.
+    snap = _jacobs_back_in_week_6(known_snap)
+    assert due_back_week(snap, JACOBS) == 6
+    assert lineup_value(snap, JACOBS) == 18
+
+
+def test_a_known_game_keeps_a_later_return_week_and_the_rule_for_an_out_player_with_no_row(known_snap):
+    played = _with_known_game(known_snap, JACOBS, gp=1.0, pts_half_ppr=21.0)
+    # A returns row past the trade week is a return still ahead.
+    assert due_back_week(played.model_copy(update={"returns": {JACOBS: 7}}), JACOBS) == 7
+    # Jacobs is NA. With no returns row he is the player hurt in his game, so he counts as back at week 14.
+    assert played.players[JACOBS].injury_status == "NA"
+    assert due_back_week(played.model_copy(update={"returns": {}}), JACOBS) == 14
+
+
+def test_a_known_game_ends_the_trend_exemption_of_a_player_due_back_in_the_trade_week(known_snap):
+    before = _jacobs_back_in_week_6(known_snap)
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), before)
+    assert "Josh Jacobs is due back, so his use does not count." in _adjuster(third, TREND).reason
+    played = _jacobs_back_in_week_6(known_snap, gp=1.0, pts_half_ppr=21.0, off_snp=50.0, rec_tgt=4.0)
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), played)
+    # His one game gives a share with no direction yet, so the reason has no sentence for him and no note either.
+    assert "due back" not in _adjuster(third, TREND).reason
+    assert snap_share(played.stats, JACOBS, 6).weeks_used == [6]
+
+
+def test_a_known_game_ends_the_return_bet_of_a_player_due_back_in_the_trade_week(known_snap):
+    played = _jacobs_back_in_week_6(known_snap, gp=1.0, pts_half_ppr=0.0).model_copy(
+        update={"projections_ahead": None})
+    assert not _return_bet(played, JACOBS)
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), played)
+    assert "Josh Jacobs" not in _adjuster(third, "standing").reason
 
 
 def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_completed_week_bound(snap):

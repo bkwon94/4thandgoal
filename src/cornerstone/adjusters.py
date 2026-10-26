@@ -89,9 +89,7 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     So a player's points per game move only when he plays. A player with no game in the window has 0.
     """
     last = snapshot.as_of.stats_through
-    known = snapshot.stats.weeks.get(last)
-    if last > snapshot.as_of.completed_through and (
-            known is None or (known.stats.get(player_id) or {}).get("gp", 0) <= 0):
+    if last > snapshot.as_of.completed_through and not _has_known_game(snapshot, player_id):
         last = snapshot.as_of.completed_through
     played = [
         snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
@@ -368,8 +366,12 @@ def back_inside(week: int | None, after: int, by: int) -> bool:
 
 
 def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
-    """True when the returns file has the player due back after the last completed week and by RETURN_BY_WEEK."""
-    return back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
+    """True when the returns file has the player due back after the last completed week and by RETURN_BY_WEEK.
+
+    A player who played in the known games of his return week is back, so he is no return bet.
+    """
+    return (back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
+            and not _back_in_a_known_game(snapshot, player_id))
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
@@ -544,13 +546,33 @@ def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
     return sum(sum(red_zone(snapshot.stats, pid, through) or (0, 0)) for pid in players)
 
 
+def _has_known_game(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player has a game played in the known games of the trade week."""
+    if snapshot.as_of.stats_through <= snapshot.as_of.completed_through:
+        return False
+    known = snapshot.stats.weeks.get(snapshot.as_of.stats_through)
+    return known is not None and (known.stats.get(player_id) or {}).get("gp", 0) > 0
+
+
+def _back_in_a_known_game(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the returns file has the player back by the trade week and he played in its known games.
+
+    A player out with no row who played is the player hurt in his game, so his known game does not end his absence.
+    """
+    week = snapshot.returns.get(player_id)
+    return week is not None and week <= snapshot.as_of.stats_through and _has_known_game(snapshot, player_id)
+
+
 def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     """The week the player counts as back, or None when he is not due back.
 
     The returns file gives the week. A player out with no row counts as back at RETURN_BY_WEEK, the week the standing
     adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must start at that week.
     A week through the last completed week is no return ahead, so he is not due back.
+    A player with a returns row by the trade week who played in its known games is back, so he is not due back.
     """
+    if _back_in_a_known_game(snapshot, player_id):
+        return None
     week = snapshot.returns.get(player_id)
     if week is None and snapshot.players[player_id].injury_status in OUT_STATUSES:
         week = RETURN_BY_WEEK
@@ -560,8 +582,10 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player back after the last completed week, so he is out now."""
     # The trend and the expected gap read only the returns file, so an out player with no row keeps his use.
+    # A known game shows his use again, so it ends the exemption, as it ends due back in due_back_week.
     week = snapshot.returns.get(player_id)
-    return week is not None and week > snapshot.as_of.completed_through
+    return week is not None and week > snapshot.as_of.completed_through and not _back_in_a_known_game(
+        snapshot, player_id)
 
 
 def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], list[str]]:
