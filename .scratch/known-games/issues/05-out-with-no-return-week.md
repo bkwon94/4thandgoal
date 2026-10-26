@@ -20,4 +20,5 @@ player with a week in the returns file grades as today. A player with a healthy 
 - [ ] A player tagged Questionable keeps his recent points per game.
 - [ ] With no projections file, the Out player keeps his recent points per game and the fit reason says the projections are not available.
 - [ ] The cache key changes when a rostered player's status moves into the out set, because the content hash reads the rows the grade now reads.
-- [ ] Every existing rubric test passes unchanged.
+- [ ] A rubric test whose subject is lineup value, roster fit, or injury pins the new grade when its fixture has an out player with no returns row, and the build report names the old and the new value for each.
+- [ ] A rubric test whose subject is something else keeps its grade, with a setup change so its premise holds when the old setup had an out player with no returns row.
