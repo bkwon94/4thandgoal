@@ -318,13 +318,41 @@ player before the sides count as even.
 **Handcuff**:
 The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
 takes 25% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
-his own, so every adjuster and the finder grade him as any running back. This gate reads his carries over
+his own, so every adjuster and the finder grade him as any running back. A handcuff blocks a lineup loss
+in roster fit, never a hole. This gate reads his carries over
 those 3 games from the Sleeper stat lines, not the one-game carry share from the play by play. With fewer
 than 2 played games, or with no carry data, the depth chart alone decides.
 
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
 K, K over DEF.
+
+**Position rank**:
+A player's place at his position among every player with a stat line in the known games, rostered or
+not, by lineup value. RB24 is the 24th running back in the league, not on the 12 rosters. A player with
+no game in the window ranks last.
+_Avoid_: positional rank, tier (alone), ranking
+
+**The line**:
+The last position rank a starter can hold: 36 at RB and WR, 24 at QB and TE. A flex slot reads the
+line of the player's own position. K and DEF have no line.
+_Avoid_: replacement level, floor, cutoff
+
+**Hole**:
+A starting slot that, after a trade, holds a player below the line or holds no player. A bye hole is a
+slot whose starter has his bye in the next 3 weeks and no bench player above the line can cover. A hole
+that exists before the trade too is not new.
+_Avoid_: gap, weakness, need
+
+**Depth**:
+The count of a side's players at one position, starters and bench, above the line. It reads QB, RB,
+WR, and TE, before and after a trade.
+_Avoid_: bench strength, room
+
+**Strength**:
+How many of a side's RB1, RB2, WR1, and WR2 starters hold a position rank of 24 or better. A starter
+outside the top 24 but above the line is weak, not a hole.
+_Avoid_: quality, power, tier (alone)
 
 ### Start or sit
 
