@@ -129,10 +129,11 @@ reader gets the natural read. K and DEF stay out of the three new reads.
   N+1 to N+2, and no bench player at an allowed position above the line is free to cover him. A
   starter due back after N+2 is below the line for this read, whatever his projection ahead ranks.
   A FLEX slot reads the line of the player's own position. K and DEF slots are never holes.
-- **The step.** A lineup loss steps down, with the handcuff block as today. A new hole steps down
-  always. A new hole blocks the step up for a lineup gain and for the highest-value rule. The
-  one-for-two rule stays. When both a loss and a new hole apply, the step is one down and the reason
-  names the hole.
+- **The step.** A lineup loss steps down, with the handcuff block as today. A new hole with no
+  lineup gain steps down, and the handcuff block never covers it. A lineup gain that opens a new hole
+  is no step, and the reason names the gain and the hole. A new hole blocks the highest-value rule,
+  and that case is no step too. The one-for-two rule stays. When both a loss and a new hole apply,
+  the step is one down and the reason names the hole.
 - **The fit reason.** One sentence from the code with the fact that drove the step. A new hole:
   "RB2 is a hole after the trade: Spears is RB38." A loss, a gain, the highest-value rule, the
   handcuff block, and the one-for-two rule keep today's sentences. The due-back notes stay. A rank
