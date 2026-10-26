@@ -139,8 +139,14 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
 
 def _week_fact(snapshot: Snapshot) -> Fact:
     n = Nums()
-    text = (f"The trade is in week {n(snapshot.week)} of the {n(snapshot.season)} season. "
-            f"Every stat runs through week {n(snapshot.as_of.stats_through)}.")
+    as_of = snapshot.as_of
+    text = f"The trade is in week {n(snapshot.week)} of the {n(snapshot.season)} season. "
+    # On a game day the player stats read the known games of week N, but the record ends at week N-1.
+    if as_of.stats_through > as_of.completed_through:
+        text += (f"Player stats run through the known games of week {n(as_of.stats_through)}. "
+                 f"The record runs through week {n(as_of.completed_through)}.")
+    else:
+        text += f"Every stat runs through week {n(as_of.stats_through)}."
     return fact("trade.week", text, n, [], [])
 
 

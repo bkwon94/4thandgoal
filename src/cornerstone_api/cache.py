@@ -24,7 +24,7 @@ STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 6
+DOCUMENT_VERSION = 7
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -49,7 +49,7 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 
 
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
-    """The hash of the players, the record, the week rows, and the week N lines of each roster.
+    """The hash of the players, the record, the week rows, and the week N lines and WOPR rows of each roster.
 
     The analyze key and the find key share it.
 
@@ -62,6 +62,9 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
+    The known-games block of the stamp goes in, because the document shows its counts. A stale stats fetch goes in,
+    because a failed week N fetch grades from the completed week. The week N WOPR rows of the two rosters go in,
+    because the trend step reads them once the player file posts them.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -70,6 +73,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     rostered = {player for roster_id in roster_ids for player in snapshot.rosters[roster_id]}
     due_back = {player: week for player in rostered if (week := due_back_week(snapshot, player)) is not None}
     week_n_lines = _week_n_lines(snapshot)
+    week_n_wopr = _week_n_wopr(snapshot)
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),
@@ -82,13 +86,17 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
                                   for player in snapshot.rosters[roster_id] if player in due_back},
             "week_n_lines": {player: week_n_lines[player] for player in sorted(snapshot.rosters[roster_id])
                              if player in week_n_lines},
+            "week_n_wopr": {player: week_n_wopr[player] for player in sorted(snapshot.rosters[roster_id])
+                            if player in week_n_wopr},
         }
         for roster_id in roster_ids
     }
     # With no projections file every player keeps his recent points, so None and an empty file grade apart.
     content = {"has_projections_ahead": snapshot.projections_ahead is not None, "rosters": content,
                # A reason says "game in progress" only while the game is on, so a final game must miss that grade.
-               "in_progress_teams": sorted(snapshot.in_progress_teams)}
+               "in_progress_teams": sorted(snapshot.in_progress_teams),
+               "known_games": snapshot.as_of.known_games.model_dump() if snapshot.as_of.known_games else None,
+               "stats_stale": "stats" in snapshot.stale}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
 
 
@@ -104,6 +112,15 @@ def _week_n_lines(snapshot: Snapshot) -> dict[str, dict[str, float]]:
     lines = snapshot.stats.weeks[as_of.stats_through].stats
     reduced = {player: {field: line[field] for field in STAT_FIELDS if field in line} for player, line in lines.items()}
     return {player: line for player, line in reduced.items() if line}
+
+
+def _week_n_wopr(snapshot: Snapshot) -> dict[str, int]:
+    """The week N WOPR row of each player in the nflverse player file. Empty with no known games or no file."""
+    as_of = snapshot.as_of
+    if as_of.stats_through <= as_of.completed_through or snapshot.wopr is None:
+        return {}
+    return {player: weeks[as_of.stats_through] for player, weeks in snapshot.wopr.items()
+            if as_of.stats_through in weeks}
 
 
 def _rows_read(rows: dict[int, float], return_week: int) -> dict[int, float]:

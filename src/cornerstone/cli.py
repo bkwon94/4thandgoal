@@ -201,9 +201,11 @@ def _print_as_of(snapshot: Snapshot) -> None:
     stamps = snapshot.as_of
     chart_text = f"Chart week {stamps.chart_week}" if stamps.chart_week is not None else "No chart"
     fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
-    print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
-          f"Rosters fetched {fetched}.")
     known = stamps.known_games
+    # With known games the next line counts week N, so this line names the completed week to count it once.
+    through = stamps.completed_through if known is not None and known.games else stamps.stats_through
+    print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {through}. "
+          f"Rosters fetched {fetched}.")
     if known is not None:
         pending = ", ".join(f"{name} {count} game{'' if count == 1 else 's'}" for name, count in known.pending.items())
         print(f"Known games of week {known.week}: {known.games} read, {known.in_progress} in progress"

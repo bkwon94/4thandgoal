@@ -1527,7 +1527,47 @@ def test_the_cache_key_of_a_week_with_no_known_games_adds_no_week_n_line(setting
     assert _both_keys(trade, past) == _both_keys(trade, empty)
 
 
-def test_the_document_version_is_6():
+def test_the_cache_key_changes_with_the_known_games_block(settings, sources):
+    # The document shows the block, so a stored grade must not show an old pending count.
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    known = snapshot.as_of.known_games
+    assert known is not None
+    fewer = known.model_copy(update={"pending": {**known.pending, "snaps": 3}})
+    assert _both_keys(trade, _with_as_of(snapshot, known_games=fewer)) != _both_keys(trade, snapshot)
+    without = _both_keys(trade, _with_as_of(snapshot, known_games=None))
+    assert without[0] != cache_key(trade, snapshot)
+    assert without[1] != finder_cache_key(2026, 4, 12, snapshot)
+
+
+def test_the_cache_key_changes_when_the_stats_are_stale(settings, sources):
+    # A failed week N fetch on a Sunday must not serve the document from before the games.
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    assert "stats" not in snapshot.stale
+    stale = snapshot.model_copy(update={"stale": [*snapshot.stale, "stats"]})
+    assert cache_key(trade, stale) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, stale) != finder_cache_key(2026, 4, 12, snapshot)
+
+
+def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(settings, sources):
+    # The trend step reads the week N row when the player file brings it in.
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    week = snapshot.as_of.stats_through
+    assert week > snapshot.as_of.completed_through
+    rostered = snapshot.rosters[4][0]
+    wopr = {**(snapshot.wopr or {}), rostered: {week - 1: 40}}
+    before = snapshot.model_copy(update={"wopr": wopr})
+    posted = snapshot.model_copy(update={"wopr": {**wopr, rostered: {week - 1: 40, week: 55}}})
+    assert cache_key(trade, posted) != cache_key(trade, before)
+    assert finder_cache_key(2026, 4, 12, posted) != finder_cache_key(2026, 4, 12, before)
+    outside = _outside_player(snapshot, [4, 12])
+    other = before.model_copy(update={"wopr": {**wopr, outside: {week: 55}}})
+    assert _both_keys(trade, other) == _both_keys(trade, before)
+
+
+def test_the_document_version_is_7():
     import cornerstone_api.cache as cache_module
 
-    assert cache_module.DOCUMENT_VERSION == 6
+    assert cache_module.DOCUMENT_VERSION == 7

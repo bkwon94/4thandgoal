@@ -426,7 +426,8 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
 
     out = capsys.readouterr().out
     assert code == 0
-    assert ("Week 6 of 2026. Chart week 6. Stats through week 6. Rosters fetched 2026-10-19T09:30-04:00.\n"
+    # The first line names the completed week, so the known-games line alone counts week 6.
+    assert ("Week 6 of 2026. Chart week 6. Stats through week 5. Rosters fetched 2026-10-19T09:30-04:00.\n"
             "Known games of week 6: 14 read, 0 in progress, pending: usage 8 games.\n") in out
     assert "Refresh failed" not in out
     assert "Nico Collins" in out
