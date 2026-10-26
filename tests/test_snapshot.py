@@ -176,16 +176,45 @@ def test_the_standings_of_a_known_games_week_count_the_games_of_weeks_1_to_5_onl
     assert known.standings == saved.standings
 
 
-def test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_names_the_stats_stale(
+def test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_reads_zero_games(
         fixture_raw_dir, fixture_history_root, chart_week6):
+    # A good fetch before the first week 6 game gives an empty list. Nothing failed, so nothing is stale.
     raw = load_raw(fixture_raw_dir)
     raw["stats"] = []
     snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
     assert snap.as_of.stats_through == 5
     assert snap.as_of.completed_through == 5
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
-    assert snap.as_of.known_games is None
-    assert snap.stale == ["stats"]
+    assert snap.as_of.known_games == KnownGames(week=6, games=0)
+    assert snap.stale == []
+
+
+def test_a_trade_week_with_only_lines_of_active_players_keeps_the_bound_at_the_week_before(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # Before a kickoff Sleeper posts a line with only gms_active for each active player, and no game is played.
+    raw = load_raw(fixture_raw_dir)
+    for row in raw["stats"]:
+        row["stats"] = {"gms_active": 1.0}
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
+    assert snap.as_of.stats_through == 5
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    assert snap.as_of.known_games == KnownGames(week=6, games=0)
+    assert snap.stale == []
+
+
+def test_a_failed_stats_fetch_keeps_the_bound_at_the_week_before_and_names_the_stats_stale(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # The fetch gives no stats when the call fails, and a raw can also lack the key.
+    failed = load_raw(fixture_raw_dir)
+    failed["stats"] = None
+    absent = load_raw(fixture_raw_dir)
+    del absent["stats"]
+    for raw in (failed, absent):
+        snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
+        assert snap.as_of.stats_through == 5
+        assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+        assert snap.as_of.known_games is None
+        assert snap.stale == ["stats"]
 
 
 def test_on_the_tuesday_roll_the_raw_week_joins_the_history_and_the_new_trade_week_has_no_known_games(

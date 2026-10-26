@@ -167,3 +167,63 @@ Smith-Njigba had 12 targets in week 7.
 5. The returns file has Jacobs back in week 7, and his week 7 line has 17.6 points. The due-back rule still gives him his projection ahead, because the rule reads `completed_through` (6). Ticket 05 owns that rule.
 6. The cache key keys on `stats_through` only. During week N a repeat grade can serve old numbers until ticket 06 hashes the stat lines.
 7. The find fixture keeps `stats_through: 5` and `known_games: null`, and the analyze fixture has `stats_through: 6` with a 14-game block. The site repo copy of both fixtures needs the same field (ticket 08).
+
+## Fix round 1
+
+This round follows the review rulings. Build concerns 1 and 4 are closed.
+
+What I changed:
+1. The gate. Week N joins the player stats only when the count of games with a played line (`gp > 0`) is above 0. With only `gms_active` lines, `stats_through` stays N-1 and the block is `KnownGames(week=N, games=0)`.
+2. The window. `recent_points_per_game` ends at N for a player with a week N line where `gp > 0`, and at `completed_through` for every other player. So a player's points per game move only when he plays. The test now uses McCaffrey, who played every week from 1 to 5. With his week 6 line removed, his value is 17.625 on both snapshots.
+3. Failed or empty. `fetch_live_raw` fetches the stats with a new `_get_or_none`, so a failed call gives `stats: None` and a good empty call gives `[]`. `fetch_past_week` and `_get_or_empty` do not change.
+   - `build_snapshot` reads `raw.get("stats")`. It passes a raw with `[]` to the parses, so a missing key or None raises no error.
+   - `parse_week` reads `raw.get("stats") or []`, because `fetch_current_week` parses the live raw before the snapshot.
+   - None or a missing key: the block is None and `"stats"` is stale.
+   - `[]`: the block has 0 games and nothing is stale.
+   - The find fixture now has the 0-game block.
+4. The `build_snapshot` docstring states the contract: a saved week passes no trade week and never counts its own games. Only the live path passes one.
+5. `test_the_player_stat_readers_of_a_known_games_week_read_its_games` now also checks for "over weeks 5 and 6" in the trend reason. It also checks for "Every stat runs through week 6." in the `trade.week` fact.
+6. `from decimal import Decimal` is now in the stdlib group.
+
+The Tuesday roll does not change. The block is None then.
+
+Files: `src/cornerstone/snapshot.py`, `src/cornerstone/sleeper.py`, `src/cornerstone/parse.py`, `src/cornerstone/adjusters.py`, `tests/test_snapshot.py`, `tests/test_rubric.py`, `tests/test_sleeper.py`, `tests/fixtures/api/find-response.json`.
+
+RED:
+```
+uv run pytest -q tests/test_snapshot.py tests/test_rubric.py tests/test_sleeper.py
+E       AssertionError: assert None == KnownGames(week=6, games=0, in_progress=0, pending={})
+E       AssertionError: assert 6 == 5
+E       TypeError: 'NoneType' object is not iterable
+E       AssertionError: assert Decimal('16.63333333333333333333333333') == Decimal('17.625')
+E       assert [] is None
+FAILED tests/test_snapshot.py::test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_reads_zero_games
+FAILED tests/test_snapshot.py::test_a_trade_week_with_only_lines_of_active_players_keeps_the_bound_at_the_week_before
+FAILED tests/test_snapshot.py::test_a_failed_stats_fetch_keeps_the_bound_at_the_week_before_and_names_the_stats_stale
+FAILED tests/test_rubric.py::test_a_player_with_no_known_game_keeps_his_points_per_game_and_no_zero_game
+FAILED tests/test_sleeper.py::test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_empty_list
+5 failed, 166 passed, 3 deselected in 12.25s
+```
+The item 5 checks passed before the fix. They guard a share reader against the wrong bound.
+
+GREEN:
+```
+uv run pytest -q tests/test_snapshot.py tests/test_rubric.py tests/test_sleeper.py
+171 passed, 3 deselected in 12.47s
+uv run pytest -q tests/test_live.py tests/test_api.py tests/test_cli.py
+156 passed in 93.95s (0:01:33)
+uv run ruff check src tests
+RUFF_OK (no findings)
+uv run pytest -q
+1102 passed, 9 deselected in 223.82s (0:03:43)
+```
+
+Real-data recheck, 2026-10-26 11:10 ET:
+```
+make analyze A=11:5859 B=3:9488 ASKER=3
+Week 7 of 2026. Chart week 7. Stats through week 7. Rosters fetched 2026-10-26T11:10-04:00.
+Known games of week 7: 13 read, 0 in progress.
+  Trend and usage: one step up. ... Jaxon Smith-Njigba: target share 38%, up, over weeks 6 and 7.
+```
+
+Open concerns: 5, 6, and 7 from the build stand. These are the Jacobs due-back rule (ticket 05), the cache key (ticket 06), and the site fixture copy (ticket 08).

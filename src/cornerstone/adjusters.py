@@ -85,9 +85,14 @@ BENCH_SLOTS = frozenset({"BN", "IR", "TAXI"})
 def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     """The points per game over the last weeks through the player stat bound, LINEUP_WEEKS at most.
 
-    The window ends at the known games. A player with no game in it has 0.
+    The window ends at the known games for a player who played in week N, and at the last completed week otherwise.
+    So a player's points per game move only when he plays. A player with no game in the window has 0.
     """
     last = snapshot.as_of.stats_through
+    known = snapshot.stats.weeks.get(last)
+    if last > snapshot.as_of.completed_through and (
+            known is None or (known.stats.get(player_id) or {}).get("gp", 0) <= 0):
+        last = snapshot.as_of.completed_through
     played = [
         snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
         if week in snapshot.stats.weeks

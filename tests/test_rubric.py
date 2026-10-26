@@ -4,14 +4,13 @@ They feed a proposed trade and the week 6 snapshot at the grade seam.
 """
 import re
 import shutil
+from decimal import Decimal
 
 import pytest
 
 from conftest import strip_trend_numbers
 
 from cornerstone import rubric
-from decimal import Decimal
-
 from cornerstone.adjusters import (
     TREND, _byes_left, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
 )
@@ -23,6 +22,7 @@ from cornerstone.rubric import (
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
+from cornerstone.trade_facts import trade_fact_sheet
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -328,6 +328,11 @@ def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap
     assert recent_points_per_game(at_week_5, MCCAFFREY) == Decimal("17.625")
     trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
     assert grade(trade, known_snap) != grade(trade, at_week_5)
+    # The share readers take the same bound, so the trend reason names week 6 and the fact sheet says so too.
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
+    assert "over weeks 5 and 6" in _adjuster(first, TREND).reason
+    sheet = trade_fact_sheet(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
+    assert "Every stat runs through week 6." in sheet["trade.week"].text
 
 
 # Nico Collins on roster 4 scored 8.1 in week 5 and 27.3 in week 4, and played no game in weeks 2 and 3.
@@ -365,13 +370,23 @@ def test_a_30_point_known_game_counts_in_the_recent_points_per_game_and_moves_th
     assert _lineup_points(big, 4) - _lineup_points(none, 4) == Decimal("4.1")
 
 
+def _no_week_6_line(player_id: str):
+    """An edit of the raw data that takes out the week 6 stat line and the week 6 points of the player."""
+    def edit(raw):
+        raw["stats"] = [row for row in raw["stats"] if row["player_id"] != player_id]
+        for entry in raw["matchups"]:
+            (entry.get("players_points") or {}).pop(player_id, None)
+    return edit
+
+
 def test_a_player_with_no_known_game_keeps_his_points_per_game_and_no_zero_game(
         snap, fixture_raw_dir, fixture_history_root, chart_week6):
-    known = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _collins_week_6(None))
+    # McCaffrey played every week from 1 to 5, so a window that slid to weeks 3 to 6 would drop his week 2 game.
+    known = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _no_week_6_line(MCCAFFREY))
     assert known.as_of.stats_through == 6
-    # A zero game in week 6 would give (27.3 + 8.1 + 0) / 3, which is 11.8.
-    assert recent_points_per_game(known, COLLINS) == Decimal("17.7")
-    assert points_per_game(known.stats, COLLINS, 6) == points_per_game(snap.stats, COLLINS, 5)
+    # Weeks 2 to 5 give (20.6 + 19.6 + 14.5 + 15.8) / 4, as before week 6.
+    assert recent_points_per_game(known, MCCAFFREY) == recent_points_per_game(snap, MCCAFFREY) == Decimal("17.625")
+    assert points_per_game(known.stats, MCCAFFREY, 6) == points_per_game(snap.stats, MCCAFFREY, 5)
 
 
 def test_trend_reads_the_known_game_shares_and_names_its_week(known_snap):

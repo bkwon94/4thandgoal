@@ -61,7 +61,7 @@ class AsOf(BaseModel):
     completed_through: int
     # None when the saved raw data has no fetch time.
     rosters_fetched: datetime | None
-    # None when the raw data holds no week N stat lines, as for a saved week or a failed week N fetch.
+    # None for a saved week, a failed week N fetch, or a raw week that is not the trade week.
     known_games: KnownGames | None = None
 
 
@@ -111,7 +111,7 @@ class Snapshot(BaseModel):
     missing: list[str] = []
     # The sources whose refresh failed, so the cache is older than a day or absent.
     # "history" is here when the history lacks week N-1, on a live or a saved build.
-    # "stats" is here when the raw data of the trade week has no stat lines, so the known games are unknown.
+    # "stats" is here when the stats fetch of the trade week failed, so the known games are unknown.
     stale: list[str] = []
 
 
@@ -163,8 +163,13 @@ def build_snapshot(
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
+    A saved week passes no trade week and never counts its own games. Only the live path passes one, so only a
+    fetch on a game day reads the known games of week N.
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
     """
+    # A failed live stats fetch gives None, and a raw can lack the key. The parses then read no lines.
+    stats_lines = raw.get("stats")
+    raw = {**raw, "stats": stats_lines or []}
     week = parse_week(raw)
     stale = list(stale or [])
     # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. The standings end there.
@@ -185,15 +190,19 @@ def build_snapshot(
     stats_through = completed_through
     known_games = None
     # A fetch on a game day of week N holds the week N stat lines, so those games join the player stats.
-    # An empty list is a failed fetch or a week with no game yet, so the grade reads the week before.
+    # A week with no played line yet has zero known games, and the grade reads the week before.
+    # A failed fetch has no stats, so the stamp names them stale.
     # A gap in the history keeps week N out too, so the player stats never skip a week.
     if graded_now and week.week == trade_week and completed_through == through:
-        if raw["stats"]:
-            weeks[trade_week] = parse_past_week(raw, trade_week)
-            stats_through = trade_week
-            known_games = KnownGames(week=trade_week, games=_games_with_a_stat_line(raw["stats"]))
-        elif "stats" not in stale:
-            stale.append("stats")
+        if stats_lines is None:
+            if "stats" not in stale:
+                stale.append("stats")
+        else:
+            games = _games_with_a_stat_line(stats_lines)
+            known_games = KnownGames(week=trade_week, games=games)
+            if games > 0:
+                weeks[trade_week] = parse_past_week(raw, trade_week)
+                stats_through = trade_week
     history = History(week=stats_through, weeks=weeks)
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
     entries = raw["players"]
