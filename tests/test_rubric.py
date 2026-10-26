@@ -263,6 +263,95 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
     assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
 
 
+# Jordan Addison sits on the bench of roster 2 at WR53. He is Out with no return week, so a note names him.
+ADDISON = "9756"
+
+
+def test_a_side_that_gets_a_back_who_fills_a_hole_at_rb2_and_gains_in_the_lineup_steps_up(snap):
+    # With Jones and Jeanty off roster 2, Charbonnet RB27 is RB1 and Miller RB55 holds RB2, a hole.
+    # Hampton RB26 at 9.70 takes RB1 and Charbonnet moves to RB2, a gain of 5.43. Addison was on the bench.
+    rosters = {**snap.rosters, 2: [pid for pid in snap.rosters[2] if pid not in (JONES, JEANTY)]}
+    second, _ = grade(_trade(2, [ADDISON], 12, [HAMPTON]), snap.model_copy(update={"rosters": rosters}))
+    fit = _adjuster(second, "roster fit")
+    assert fit.step == 1
+    assert fit.reason.startswith("The best lineup gains after the trade.")
+    assert "hole" not in fit.reason
+
+
+# Roster 10 starts Emeka Egbuka WR37 at WR2, a hole, and Deebo Samuel WR41 at FLEX2. Keenan Allen sits on its bench.
+KEENAN_ALLEN = "1479"
+
+
+def test_a_side_with_the_same_hole_before_and_after_gets_no_step_for_it(snap):
+    # Tuten RB15 takes RB2, Judkins and Monangai take the flex spots, and Deebo Samuel sits, a gain of 4.16.
+    # Egbuka holds WR2 before and after, so his hole is not new and the gain steps up.
+    tenth, _ = grade(_trade(10, [KEENAN_ALLEN], 12, [TUTEN]), snap)
+    fit = _adjuster(tenth, "roster fit")
+    assert fit.step == 1
+    assert fit.reason == "The best lineup gains after the trade."
+
+
+def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_step_up(snap):
+    # St. Brown at 90.0 is the highest-value player, and roster 2 gets him. Its RB2 slot opens a hole at Miller RB55.
+    snap = _with_values(snap, {ST_BROWN: 90.0})
+    second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
+    fit = _adjuster(second, "roster fit")
+    assert fit.step == -1
+    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
+
+
+def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_down(slow_snap):
+    # Roster 12 gives Tuten, Emanuel Wilson, and Pollard for Mitchell, who backs up Hampton at LAC.
+    # Hampton RB26 moves up to RB1 and Mitchell RB39 takes RB2. The handcuff blocks the loss, never the hole.
+    twelfth, _ = grade(_trade(12, [TUTEN, E_WILSON, POLLARD], 11, [MITCHELL]), _lac_snap(slow_snap))
+    assert _adjuster(twelfth, "handcuff").reason == (
+        "Keaton Mitchell backs up the team's own starter, so he counts as insurance.")
+    fit = _adjuster(twelfth, "roster fit")
+    assert fit.step == -1
+    assert fit.reason == "RB2 is a hole after the trade: Keaton Mitchell is RB39."
+
+
+# Roster 1 starts Davante Adams WR20 at FLEX2, with Jordyn Tyson WR44 at 7.76 next on its bench.
+# Roster 6 starts Pat Freiermuth TE10 at FLEX2, with Malik Washington WR38 and Blake Corum RB42 on its bench.
+# Hunter Henry sits on the bench of roster 4 at TE20.
+E_WILSON, ADAMS, FREIERMUTH, CORUM, HUNTER_HENRY = "11435", "2133", "7600", "11586", "3214"
+
+
+def test_a_flex_slot_with_a_wr_below_36_is_a_hole(snap):
+    # Tyson takes FLEX2, a loss of 4.72. With a loss and a new hole, the step is one down and the reason names the hole.
+    first, _ = grade(_trade(1, [ADAMS], 2, [ADDISON]), snap)
+    fit = _adjuster(first, "roster fit")
+    assert fit.step == -1
+    assert fit.reason.startswith("FLEX2 is a hole after the trade: Jordyn Tyson is WR44.")
+    assert "The best lineup loses" not in fit.reason
+
+
+def test_a_flex_slot_with_a_te_at_20_is_not_a_hole(snap):
+    # Henry takes FLEX2 at 6.78, a change of -2.65, about the same. TE20 is above the line at TE, so he is no hole.
+    sixth, _ = grade(_trade(6, [FREIERMUTH, M_WASHINGTON, CORUM], 4, [HUNTER_HENRY]), snap)
+    fit = _adjuster(sixth, "roster fit")
+    assert fit.step == 0
+    assert fit.reason == "The best lineup stays about the same."
+
+
+def test_a_def_slot_never_makes_a_hole(snap):
+    # Roster 1 gives its only defense, so the DEF slot is empty, a loss of 5.36. The loss steps down, not a hole.
+    # Roster 2 has no defense before or after, and its DEF slot makes no hole either.
+    first, second = grade(_trade(1, ["TB"], 2, [ADDISON]), snap)
+    assert _adjuster(first, "roster fit").step == -1
+    assert _adjuster(first, "roster fit").reason.startswith("The best lineup loses after the trade.")
+    assert "hole" not in _adjuster(second, "roster fit").reason
+
+
+def test_a_starting_slot_with_no_player_is_a_hole_and_each_new_hole_is_named(snap):
+    # Roster 2 gives all five of its backs, so no player can fill RB1 or RB2.
+    second, _ = grade(_trade(2, [JONES, JEANTY, CHARBONNET, LOVE, MILLER], 12, ["6801"]), snap)
+    fit = _adjuster(second, "roster fit")
+    assert fit.step == -1
+    assert fit.reason.startswith("RB1 is a hole after the trade: no player fills it. "
+                                 "RB2 is a hole after the trade: no player fills it.")
+
+
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
 # and roster 9 in the sixth has 5 wins.
 # Roster 4 has 1 win, four games out, so it is a seller.
@@ -1859,6 +1948,17 @@ def test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team
     assert snap.stats.weeks[6].nfl_teams[ODUNZE] == "CHI"
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
     assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in _adjuster(first, TREND).reason
+
+
+def test_the_hole_reason_of_a_player_whose_known_game_is_in_progress_ends_with_the_label(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # Roster 6 gives Freiermuth, Malik Washington, and Corum for Odunze, who takes FLEX2 at WR61.
+    trade = _trade(6, [FREIERMUTH, M_WASHINGTON, CORUM], 4, [ODUNZE])
+    on, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2))
+    off, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5))
+    assert _adjuster(on, "roster fit").reason == (
+        "FLEX2 is a hole after the trade: Rome Odunze is WR61, game in progress.")
+    assert _adjuster(off, "roster fit").reason == "FLEX2 is a hole after the trade: Rome Odunze is WR61."
 
 
 def test_the_adjuster_steps_are_the_same_with_the_label_on_and_off(fixture_raw_dir, fixture_history_root, chart_week6):
