@@ -74,7 +74,7 @@ def _report_weeks(snapshot: Snapshot, pid: str) -> int | None:
     if snapshot.injuries is None or snapshot.id_map is None or pid not in snapshot.id_map:
         return None
     weeks = snapshot.injuries.get(snapshot.id_map[pid], {})
-    return sum(1 for week in weeks if week <= snapshot.as_of.stats_through)
+    return sum(1 for week in weeks if week <= snapshot.as_of.completed_through)
 
 
 def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:

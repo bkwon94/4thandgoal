@@ -281,8 +281,8 @@ schedule lean for the schedule adjuster. Use "step" in code and "factor lean" on
 The exact two sides, in roster order, each once, that an analysis response must hold.
 
 **Before the trade**:
-Weeks 1 to N-1, for a proposed trade in week N. The standings and the chart week end there. Player stats
-end at the known games.
+Weeks 1 to N-1, for a proposed trade in week N. The standings, the chart week, the due-back rule, and the
+injury report end there. Player stats end at the known games.
 
 **Known games**:
 Weeks 1 to N-1, plus every week N game that has a stat line on Sleeper, final or in progress. Every player

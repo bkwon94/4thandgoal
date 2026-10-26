@@ -28,6 +28,7 @@ def test_week_6_snapshot_is_the_trade_week_and_its_inputs_end_at_week_5(
     assert snap.chart == chart_week6
     assert snap.as_of.chart_week == 6
     assert snap.as_of.stats_through == 5
+    assert snap.as_of.completed_through == 5
     # The raw week 6 is the trade week, so its games stay out of the history.
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
     assert snap.stale == []
@@ -48,6 +49,7 @@ def test_a_history_without_week_5_stamps_the_last_week_it_holds_and_notes_it(
     snap = load_snapshot(fixture_raw_dir, root, chart_week6)
     assert snap.week == 6
     assert snap.as_of.stats_through == 4
+    assert snap.as_of.completed_through == 4
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4]
     assert snap.stale == ["history"]
 
