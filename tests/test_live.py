@@ -12,7 +12,7 @@ import httpx
 import pytest
 
 from cornerstone.history import save_week_to_history
-from cornerstone.live import ProjectionsCache, live_rosters_snapshot, live_snapshot
+from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
@@ -251,6 +251,73 @@ def test_the_live_path_keeps_a_file_one_hour_old(live_repo, sleeper, chart_week6
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
                          read_chart=ChartRecorder(chart_week6))
     assert snap.stale == []
+
+
+def _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, url, seconds, max_age_seconds=DAY, fail=False):
+    """Age one source, run the refresh with no chart read, and give the result and the fetched urls."""
+    path = _age(live_repo, url, seconds)
+    asked = []
+
+    def fetch(asked_url):
+        asked.append(asked_url)
+        if fail:
+            raise httpx.ConnectError("down")
+        return (fixture_nflverse_dir / path.name).read_bytes()
+
+    _, _, week = fetch_current_week(live_repo, sleeper)
+    result = refresh_sources(live_repo, 2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
+                             fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
+                             max_age_seconds=max_age_seconds)
+    return result, asked
+
+
+def test_an_injuries_file_seven_hours_old_refreshes_and_is_named(live_repo, sleeper, fixture_nflverse_dir):
+    result, asked = _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, INJURIES_URL, 7 * 60 * 60)
+    assert asked == [INJURIES_URL.format(season=2026)]
+    assert result.refreshed == ["injuries"]
+
+
+def test_a_player_weeks_file_seven_hours_old_refreshes(live_repo, sleeper, fixture_nflverse_dir):
+    result, asked = _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, STATS_PLAYER_URL, 7 * 60 * 60)
+    assert asked == [STATS_PLAYER_URL.format(season=2026)]
+    assert result.refreshed == ["player weeks"]
+
+
+def test_a_schedules_file_seven_hours_old_stays_and_one_25_hours_old_refreshes(
+        live_repo, sleeper, fixture_nflverse_dir):
+    result, asked = _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, SCHEDULES_URL, 7 * 60 * 60)
+    assert asked == []
+    assert result.refreshed == []
+    result, asked = _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, SCHEDULES_URL, 25 * 60 * 60)
+    assert asked == [SCHEDULES_URL.format(season=2026)]
+    assert result.refreshed == ["schedules"]
+
+
+def test_a_failed_six_hour_refresh_keeps_the_file_and_does_not_name_it_stale(
+        live_repo, sleeper, fixture_nflverse_dir):
+    path = cache_path(live_repo / "data" / "cache" / "nflverse", INJURIES_URL, 2026)
+    before = path.read_bytes()
+    result, asked = _refresh_at_age(
+        live_repo, sleeper, fixture_nflverse_dir, INJURIES_URL, 7 * 60 * 60, fail=True)
+    assert asked == [INJURIES_URL.format(season=2026)]
+    assert path.read_bytes() == before
+    assert result.stale == []
+    assert result.refreshed == []
+
+
+def test_a_forced_refresh_fetches_every_source(live_repo, sleeper, fixture_nflverse_dir):
+    _, _, week = fetch_current_week(live_repo, sleeper)
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return (fixture_nflverse_dir / url.rsplit("/", 1)[-1]).read_bytes()
+
+    result = refresh_sources(live_repo, 2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
+                             fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
+                             max_age_seconds=0)
+    assert len(asked) == 6
+    assert len(result.refreshed) == 6
 
 
 def test_no_chart_reader_skips_the_chart_and_notes_no_stale_chart(live_repo, sleeper):

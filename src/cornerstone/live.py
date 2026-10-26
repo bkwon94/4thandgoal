@@ -26,7 +26,7 @@ from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
 from cornerstone.snapshot import Snapshot, build_snapshot, load_returns
 from cornerstone.trades import default_cutoff
-from cornerstone.tunables import TEAMS_CACHE_SECONDS
+from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,8 @@ REFRESHED_SOURCES = (
     ("schedules", SCHEDULES_URL), ("depth charts", DEPTH_CHARTS_URL), ("id map", FFIDS_URL),
     ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL), ("player weeks", STATS_PLAYER_URL),
 )
+# The sources that change on game days, so they refresh sooner than the others.
+FAST_SOURCES = ("injuries", "player weeks")
 # The last week of the NFL regular season. No trade window opens after its cutoff.
 LAST_REGULAR_SEASON_WEEK = 18
 
@@ -61,7 +63,9 @@ def _mtime(path: Path) -> float | None:
 def _refresh(
         cache_dir: Path, season: int, fetch: Callable[[str], bytes],
         max_age_seconds: int) -> tuple[list[str], list[str]]:
-    """Refresh each source whose cache is older than `max_age_seconds`.
+    """Refresh each source whose cache is older than its max age.
+
+    A game day source uses the smaller of `max_age_seconds` and its own age, so a forced refresh of 0 fetches all.
 
     Return the names refreshed and the names still older than a day.
     """
@@ -71,7 +75,10 @@ def _refresh(
         # A changed time on the file shows a fetch that wrote it. A failed fetch leaves the time as it was.
         before = _mtime(path)
         # download keeps a fresh file, and on a failure it keeps the stale one, so the old cache stays in place.
-        kept = download(url.format(season=season), path, max_age_seconds=max_age_seconds, fetch=fetch)
+        source_max_age = max_age_seconds
+        if name in FAST_SOURCES:
+            source_max_age = min(max_age_seconds, FAST_SOURCES_MAX_AGE_SECONDS)
+        kept = download(url.format(season=season), path, max_age_seconds=source_max_age, fetch=fetch)
         # The age is of the file on disk, so it uses the clock of the disk and not the `now` of the request.
         # Stale always means older than a day, so a forced refresh that fails on a newer file is not stale.
         if kept is None or not is_fresh(path):
