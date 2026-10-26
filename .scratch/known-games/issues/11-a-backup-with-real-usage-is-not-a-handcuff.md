@@ -7,7 +7,7 @@ fit sums, no step up from the trend adjuster, and never in a finder trade. He ha
 **What to build:** A running back is a handcuff only when his own usage is thin. The handcuff test gains one
 gate: his carry share over his last 3 played games, which count the known games. At or above the gate he is
 not a handcuff, and every adjuster and the finder grade him as any running back. Below it he is insurance, as
-today. The gate is a tunable, 30 percent of his team's carries to start, with a why comment. A player with
+today. The gate is a tunable, 25 percent of his team's carries to start, with a why comment. A player with
 fewer than 2 played games, or with no carry data, keeps the depth chart answer. The handcuff reason names the
 share when the gate frees a backup: "Corum backs up the team's own starter but takes 38% of the carries, so he
 counts as a running back." The glossary entry "Handcuff" says what a handcuff is with the gate.
