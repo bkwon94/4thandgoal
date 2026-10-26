@@ -930,6 +930,17 @@ def test_a_handcuff_with_a_chart_row_counts_as_zero_in_the_sums(slow_snap):
     assert _adjuster(eleventh, "handcuff").reason.startswith("No player it gets is a handcuff.")
 
 
+def test_a_freed_backup_with_a_chart_row_counts_in_the_sums(slow_snap):
+    # Mitchell takes 25.5% of the LAC carries, so he counts. At 10.0 for Pollard at 9.0, roster 12 starts at B
+    # and roster 11 at C.
+    snap = _with_values(_with_ids(slow_snap, LAC_IDS), {MITCHELL: 10.0})
+    twelfth, eleventh = grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)
+    assert _letters([twelfth, eleventh]) == ["B", "C"]
+    assert _adjuster(twelfth, "handcuff").reason == (
+        "Keaton Mitchell backs up the team's own starter but takes 26% of the carries, "
+        "so he counts as a running back.")
+
+
 def test_a_handcuff_with_no_chart_row_keeps_the_start_letter(slow_snap):
     # Mitchell has no trade value. As a handcuff he counts as zero, so no side starts at C for him.
     twelfth, eleventh = grade(_trade(12, [POLLARD], 11, [MITCHELL]), _lac_snap(slow_snap))
@@ -954,6 +965,14 @@ def test_fit_never_steps_down_because_of_a_handcuff(slow_snap):
     assert fit.step == 0
     assert fit.reason == (
         "The best lineup loses after the trade, but Keaton Mitchell is a handcuff, so the loss does not count.")
+
+
+def test_fit_can_step_down_for_a_freed_backup(slow_snap):
+    # Mitchell takes 25.5% of the LAC carries, so he is no handcuff, and the lineup loss counts.
+    twelfth, _ = grade(_trade(12, [ST_BROWN], 11, [MITCHELL]), _with_ids(slow_snap, LAC_IDS))
+    fit = _adjuster(twelfth, "roster fit")
+    assert fit.step == -1
+    assert "handcuff" not in fit.reason
 
 
 # The NE depth chart: Rhamondre Stevenson on roster 7 first, then TreVeyon Henderson on roster 8.

@@ -318,8 +318,9 @@ player before the sides count as even.
 **Handcuff**:
 The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
 takes 25% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
-his own, so every adjuster and the finder grade him as any running back. With fewer than 2 played games, or
-with no carry data, the depth chart alone decides.
+his own, so every adjuster and the finder grade him as any running back. This gate reads his carries over
+those 3 games from the Sleeper stat lines, not the one-game carry share from the play by play. With fewer
+than 2 played games, or with no carry data, the depth chart alone decides.
 
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over

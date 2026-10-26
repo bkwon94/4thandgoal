@@ -147,3 +147,41 @@ week 6 known games. Through week 5 alone he is at 22.5%, so he stays a handcuff 
 - `uv run pytest -q`: `1153 passed, 9 deselected in 226.40s`.
 - `uv run ruff check src tests`: the first run found two lines over 120. I wrapped them, and that changed only the
   layout. Ruff is now clean, exit 0, and the two files pass again (`184 passed`).
+
+## Fix round 2
+
+### What changed
+
+1. `src/cornerstone/prompts/rubric.md`, Handcuff section: a new paragraph states the gate. A backup who takes 25
+   percent or more of his team's carries over his last 3 games counts as a running back. It reads the Sleeper stat
+   lines, and the known games count. With fewer than 2 played games, or with no carry data, the depth chart
+   decides. I checked the banned words in `vocabulary.md` and `analysis.py`. The text uses "carries", never
+   "carried", and has no other banned word.
+2. Two new tests in `tests/test_rubric.py`, with Mitchell at his real 25.5%:
+   - `test_a_freed_backup_with_a_chart_row_counts_in_the_sums`: at 10.0 for Pollard at 9.0, the letters are
+     roster 12 B and roster 11 C. A handcuff gives F and A. The reason names 26%.
+   - `test_fit_can_step_down_for_a_freed_backup`: roster 12 gives St. Brown for Mitchell. Fit steps -1, and the
+     reason does not name a handcuff. A handcuff gives step 0.
+3. `GLOSSARY.md` "Handcuff": the gate reads his carries over his last 3 games from the Sleeper stat lines. It is
+   not the one-game "Carry share" from the play by play.
+4. `_carry_share` has a docstring. The `_behind_a_starter` docstring now closes on its own line, like its
+   neighbors.
+
+### TDD evidence
+
+The gate already frees Mitchell, so the two new tests passed at once (`2 passed`). To show that they test the
+gate, I set `HANDCUFF_CARRY_SHARE = 101` for one run. That made Mitchell a handcuff again, and both tests failed:
+
+```
+E       AssertionError: assert ['F', 'A'] == ['B', 'C']
+E       AssertionError: assert 0 == -1
+2 failed, 164 deselected
+```
+
+Then I set it back to 25.
+
+### Runs
+
+- `tests/test_rubric.py tests/test_finder.py tests/test_verifier.py`: `286 passed`.
+- `uv run ruff check src tests`: clean, exit 0.
+- `uv run pytest -q`, after every edit: `1155 passed, 9 deselected in 157.53s`.

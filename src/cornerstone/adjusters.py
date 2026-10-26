@@ -263,6 +263,7 @@ def _backs_up_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -
 
 
 def _carry_share(snapshot: Snapshot, player_id: str) -> float | None:
+    """The exact percent of his team's carries that the player took, through the player stat bound."""
     return carry_share(snapshot.stats, player_id, snapshot.as_of.stats_through)
 
 
@@ -276,8 +277,10 @@ def _carries_the_ball(snapshot: Snapshot, player_id: str) -> bool:
 
 
 def _behind_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -> bool:
-    """The depth chart part of the handcuff test: the player is second or lower on his RB depth chart, and the
-    first is on the roster."""
+    """The depth chart part of the handcuff test.
+
+    The player is second or lower on his RB depth chart, and the first is on the roster.
+    """
     if not _has_depth_chart(snapshot):
         return False
     id_map = snapshot.id_map

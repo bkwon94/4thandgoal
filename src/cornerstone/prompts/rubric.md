@@ -130,6 +130,11 @@ A handcuff is a running back the side gets who is second or lower on his NFL tea
 when the first on that chart is on the side's roster after the trade. He is insurance for the
 team's own starter.
 
+A backup who takes 25 percent or more of his team's carries over his last 3 games counts as a
+running back, not a handcuff. The count reads his carries from the Sleeper stat lines, and the
+known games count. Every adjuster grades him as any running back, and the handcuff reason names
+his share. With fewer than 2 played games, or with no carry data, the depth chart alone decides.
+
 - He counts as zero in the start letter sums.
 - Roster fit cannot step down for a side that gets a handcuff. This block is broad: any lineup
   loss in that trade does not count.
