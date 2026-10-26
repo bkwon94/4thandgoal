@@ -633,6 +633,50 @@ def test_the_cache_key_ignores_a_player_on_neither_roster(settings, sources):
         finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {outside: 9}, {outside: {7: 13.5}})))
 
 
+def _unrostered_with_a_game(snapshot, position):
+    """A player at `position` on no roster, with a game in the last week of the player stats."""
+    week = snapshot.stats.weeks[snapshot.as_of.stats_through]
+    rostered = {player for players in snapshot.rosters.values() for player in players}
+    return next(player for player, line in sorted(week.stats.items())
+                if week.positions.get(player) == position and player not in rostered and line.get("gp", 0) > 0)
+
+
+def _with_points(snapshot, player, points, position=None):
+    """The snapshot with new points on the player's stat line in the last week of the player stats.
+
+    With a `position`, the line is a played line at that position, so a test can add a player the fixture lacks.
+    """
+    through = snapshot.as_of.stats_through
+    week = snapshot.stats.weeks[through]
+    line = {**week.stats.get(player, {"gp": 1.0}), "pts_half_ppr": points}
+    positions = {**week.positions, player: position} if position else week.positions
+    weeks = {**snapshot.stats.weeks, through: week.model_copy(
+        update={"stats": {**week.stats, player: line}, "positions": positions})}
+    return snapshot.model_copy(update={"stats": snapshot.stats.model_copy(update={"weeks": weeks})})
+
+
+def test_a_changed_stat_line_of_an_unrostered_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    back = _unrostered_with_a_game(snapshot, "RB")
+    # The position rank pool holds every back with a stat line, so his points can move the rank of a traded back.
+    assert cache_key(trade, _with_points(snapshot, back, 30.0)) != cache_key(trade, _with_points(snapshot, back, 3.0))
+    assert finder_cache_key(2026, 4, 12, _with_points(snapshot, back, 30.0)) != finder_cache_key(
+        2026, 4, 12, _with_points(snapshot, back, 3.0))
+
+
+def test_a_changed_stat_line_of_an_unrostered_k_changes_neither_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    # The fixture has no K line, so the test adds one for a kicker on no roster.
+    kicker = "unrostered-kicker"
+    # K has no position rank, so no grade reads his line.
+    assert cache_key(trade, _with_points(snapshot, kicker, 30.0, "K")) == cache_key(
+        trade, _with_points(snapshot, kicker, 3.0, "K"))
+    assert finder_cache_key(2026, 4, 12, _with_points(snapshot, kicker, 30.0, "K")) == finder_cache_key(
+        2026, 4, 12, _with_points(snapshot, kicker, 3.0, "K"))
+
+
 def _strings(value):
     """Every string in a document, at any depth."""
     if isinstance(value, dict):
@@ -1586,7 +1630,8 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_7():
+def test_the_document_version_is_8():
     import cornerstone_api.cache as cache_module
 
-    assert cache_module.DOCUMENT_VERSION == 7
+    # The position rank enters the facts, so a document stored before it must never serve.
+    assert cache_module.DOCUMENT_VERSION == 8
