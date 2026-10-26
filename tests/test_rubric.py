@@ -316,6 +316,13 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
     assert tunables.BYE_WINDOW == 3
 
 
+def test_the_rubric_prompt_states_that_depth_and_strength_are_facts_and_never_move_the_step():
+    fit = _prompt_section("Roster fit")
+    assert "Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of " \
+           "`STRENGTH_RANK` or better." in fit
+    assert "Depth and strength are facts for the analysis. They never move the step." in fit
+
+
 def test_no_roster_fit_reason_or_prompt_section_uses_replacement_tier_floor_or_gap(snap):
     assert not FIT_BANNED.search(_prompt_section("Roster fit"))
     assert not FIT_BANNED.search(_prompt_section("Handcuff"))
