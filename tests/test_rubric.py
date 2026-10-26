@@ -12,7 +12,7 @@ import pytest
 
 from conftest import strip_trend_numbers, with_carries
 
-from cornerstone import rubric
+from cornerstone import rubric, tunables
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
     TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game,
@@ -27,6 +27,7 @@ from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 from cornerstone.trade_facts import trade_fact_sheet
+from cornerstone.writer import load_prompt
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -261,6 +262,39 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
     fit = _adjuster(second, "roster fit")
     assert fit.step == -1
     assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
+
+
+def _prompt_section(heading: str) -> str:
+    """One section of the rubric prompt, from its heading to the next, with the line breaks joined."""
+    text = load_prompt("rubric.md")
+    section = text.split(f"## {heading}\n", 1)[1].split("\n## ", 1)[0]
+    return " ".join(section.split())
+
+
+# The words GLOSSARY.md bans for the line and a hole.
+FIT_BANNED = re.compile(r"\b(replacements?|tiers?|floors?|gaps?)\b", re.IGNORECASE)
+
+
+def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block():
+    fit, handcuff = _prompt_section("Roster fit"), _prompt_section("Handcuff")
+    assert "`LINE_RB_WR` at RB and WR, and `LINE_QB_TE` at QB and TE" in fit
+    assert "A hole is a starting slot that holds a player below the line, or holds no player." in fit
+    assert "A new hole is one step down." in fit
+    assert "one step up when the trade opens no new hole" in fit
+    assert "with no lineup loss and no new hole, gets one step up" in fit
+    assert "The block covers a lineup loss only. A new hole still steps down." in handcuff
+    assert "broad" not in handcuff
+    assert tunables.LINE_RB_WR == 36 and tunables.LINE_QB_TE == 24
+
+
+def test_no_roster_fit_reason_or_prompt_section_uses_replacement_tier_floor_or_gap(snap):
+    assert not FIT_BANNED.search(_prompt_section("Roster fit"))
+    assert not FIT_BANNED.search(_prompt_section("Handcuff"))
+    trades = [_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), _trade(1, [ADAMS], 2, [ADDISON]),
+              _trade(2, [JONES, JEANTY, CHARBONNET, LOVE, MILLER], 12, ["6801"]), _trade(10, [SAQUON], 5, [COOK])]
+    for trade in trades:
+        for breakdown in grade(trade, snap):
+            assert not FIT_BANNED.search(_adjuster(breakdown, "roster fit").reason)
 
 
 # Jordan Addison sits on the bench of roster 2 at WR53. He is Out with no return week, so a note names him.
