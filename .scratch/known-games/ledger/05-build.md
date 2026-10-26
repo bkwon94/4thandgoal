@@ -214,3 +214,39 @@ Status: DONE. One commit with the five review fixes and this report.
 
 - With a mix of players in `_gain_when`, some with a returns row and some without, the text uses the "counts as
   back" form for all of them. The fixture has no such case.
+
+---
+
+# Fix round 2
+
+Status: DONE. The branch was at `7b14df8` after the rebase onto main with ticket 01. I did not rebase again.
+
+## Fix
+
+1. `due_back_week` in `src/cornerstone/adjusters.py` now reads `snapshot.as_of.completed_through`, as `_due_back`
+   and `_return_bet` do. A return week of N is then still ahead when `stats_through` moves to N.
+   - `src/cornerstone_api/cache.py`: my lines read no bound. `_content_hash` reads the bound through
+     `due_back_week`, so the key follows the same read. The `stats_through` entries at lines 42 and 102 are not
+     mine, and I did not change them.
+   - I added no other read of either bound.
+2. A test sits beside the return bet bound test:
+   `test_the_lineup_value_of_a_player_due_back_reads_the_completed_week_bound_and_not_the_player_stat_bound`.
+   With `stats_through` 7 and `completed_through` 5, Jacobs, back in week 7, still has `due_back_week` 7 and a
+   `lineup_value` of 18. The fit note still names him as due back in week 7.
+
+## TDD evidence
+
+RED, `uv run pytest -q tests/test_rubric.py -k "lineup_value_of_a_player_due_back_reads"`:
+
+```
+E       AssertionError: assert None == 7
+1 failed, 140 deselected in 0.28s
+```
+
+GREEN, `uv run pytest -q tests/test_rubric.py tests/test_api.py`: `247 passed in 93.66s`.
+
+## Verification
+
+- `uv run pytest -q`: `1097 passed, 9 deselected in 222.37s`.
+- `uv run ruff check src tests`: exit 0. The first run flagged the longer `cornerstone.adjusters` import in
+  `tests/test_rubric.py`, so the import now sits in parentheses.

@@ -526,7 +526,7 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     week = snapshot.returns.get(player_id)
     if week is None and snapshot.players[player_id].injury_status in OUT_STATUSES:
         week = RETURN_BY_WEEK
-    return week if week is not None and week > snapshot.as_of.stats_through else None
+    return week if week is not None and week > snapshot.as_of.completed_through else None
 
 
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:

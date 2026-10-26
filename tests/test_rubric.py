@@ -10,7 +10,9 @@ import pytest
 from conftest import strip_trend_numbers
 
 from cornerstone import rubric
-from cornerstone.adjusters import TREND, _byes_left, lineup_value, recent_points_per_game, rubric_adjusters
+from cornerstone.adjusters import (
+    TREND, _byes_left, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
+)
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
@@ -264,6 +266,17 @@ def test_the_return_bet_reads_the_completed_week_bound_and_not_the_player_stat_b
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+
+
+def test_the_lineup_value_of_a_player_due_back_reads_the_completed_week_bound_and_not_the_player_stat_bound(snap):
+    # The returns file has Jacobs back in week 7. A player stat bound of 7 alone must not put his return behind us,
+    # so he still counts for his projection ahead from week 7.
+    snap = _with_bounds(snap.model_copy(update={"projections_ahead": {JACOBS: {7: 18.0}}}), stats_through=7)
+    assert due_back_week(snap, JACOBS) == 7
+    assert lineup_value(snap, JACOBS) == 18
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    assert _adjuster(third, "roster fit").reason.endswith(
+        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 18.0 a game.")
 
 
 def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_completed_week_bound(snap):
