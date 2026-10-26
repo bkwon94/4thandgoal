@@ -205,7 +205,9 @@ def _print_as_of(snapshot: Snapshot) -> None:
           f"Rosters fetched {fetched}.")
     known = stamps.known_games
     if known is not None:
-        print(f"Known games of week {known.week}: {known.games} read, {known.in_progress} in progress.")
+        pending = ", ".join(f"{name} {count} game{'' if count == 1 else 's'}" for name, count in known.pending.items())
+        print(f"Known games of week {known.week}: {known.games} read, {known.in_progress} in progress"
+              f"{', pending: ' + pending if pending else ''}.")
     print(_sources_line(snapshot))
     if snapshot.stale:
         print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")

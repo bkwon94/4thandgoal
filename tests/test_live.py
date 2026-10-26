@@ -428,7 +428,9 @@ def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_car
                          read_chart=ChartRecorder(chart_week6))
     assert asked == [STATS_PLAYER_URL.format(season=2026)]
     assert path.exists()
-    assert snap.wopr and all(week < snap.week for weeks in snap.wopr.values() for week in weeks)
+    # The file has rows of the trade week, so the known games read them.
+    assert snap.wopr and all(week <= snap.week for weeks in snap.wopr.values() for week in weeks)
+    assert any(snap.week in weeks for weeks in snap.wopr.values())
     assert snap.stale == []
 
 

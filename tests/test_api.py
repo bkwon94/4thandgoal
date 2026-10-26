@@ -357,9 +357,10 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
     # The fetch on Monday holds the week 6 stat lines, so the player stats read the 14 known games of week 6.
+    # The fixture player file has week 6 rows for 6 of those games, so the usage of 8 games is pending.
     assert doc["as_of"] == {"chart_week": 6, "stats_through": 6, "completed_through": 5,
                             "rosters_fetched": "2026-10-19T09:30:00-04:00",
-                            "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {}}}
+                            "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}}}
     assert doc["fallback"] is False
 
 
@@ -978,7 +979,7 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
 # The fairness block's gives_more is a roster id.
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
-               "season", "week", "games", "in_progress"}
+               "season", "week", "games", "in_progress", "snaps", "usage"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -1187,7 +1188,7 @@ def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(sett
     # The finder reads the same bounds and the same known games as the grade.
     assert doc["as_of"]["stats_through"] == 6
     assert doc["as_of"]["completed_through"] == 5
-    assert doc["as_of"]["known_games"] == {"week": 6, "games": 14, "in_progress": 0, "pending": {}}
+    assert doc["as_of"]["known_games"] == {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}}
 
 
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):
