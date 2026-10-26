@@ -2,7 +2,7 @@
 The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team and need.
 Every player stat ends at the known games and every record at week N-1. Each fact carries every number in its text.
 """
-from cornerstone.adjusters import team_race
+from cornerstone.adjusters import due_back_week, team_race
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
 from cornerstone.rubric import ProposedTrade
@@ -21,7 +21,8 @@ def _plural(count: int, one: str, many: str) -> str:
 
 
 def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The points per game and the position rank of a traded player, through the player stat bound only."""
+    """The points per game and the season rank of a traded player, through the player stat bound only, and his
+    position rank by lineup value. GLOSSARY.md, "Position rank"."""
     n = Nums()
     player = snapshot.players[pid]
     through = snapshot.as_of.stats_through
@@ -38,6 +39,13 @@ def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
         if rank is not None:
             text += f", position rank {n(rank[0])} of {n(rank[1])} by season points"
         text += "."
+    # The position rank is a league rank by lineup value, so the analysis can say "RB15" and the reader can check it.
+    # The number goes through Nums, so the analysis checker accepts the rank in the prose.
+    rank = snapshot.position_rank(pid)
+    if rank is not None:
+        by = ("his projection ahead" if snapshot.projections_ahead is not None and due_back_week(snapshot, pid)
+              is not None else "points per game")
+        text += f" {player.name} is {player.position}{n(rank)} by {by}."
     return fact(f"{pid}.ppg", text, n, [], [player.name])
 
 

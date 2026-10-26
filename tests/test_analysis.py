@@ -208,6 +208,20 @@ def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
     assert len(fake.calls) == 1
 
 
+def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
+    # The hand count of the RB lines in weeks 2 to 5 puts Tuten 15th. Jacobs is due back, so his projection ahead
+    # of weeks 7 to 14 puts him 16th.
+    fake = FakeClaude(_response(eleven=_side(11, analysis=(
+        "Bhayshul Tuten is RB15 by points per game. His snap share went up. He moves to a new roster."),
+        cited=[f"{TUTEN}.ppg"])))
+    result = analyze(trade, snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert "Bhayshul Tuten is RB15 by points per game." in facts[f"{TUTEN}.ppg"]
+    assert "Josh Jacobs is RB16 by his projection ahead." in facts[f"{JACOBS}.ppg"]
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
 def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):
     # The trend reason of roster 11 gives Tuten's snap share of 64% over weeks 4 and 5. No cited fact holds 64.
     text = ("Garrett Wilson scored 14.2 points per game before the trade. "
