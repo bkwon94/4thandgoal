@@ -29,6 +29,12 @@ LINEUP_WEEKS = 4
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
+# The line: the last position rank a starter can hold. GLOSSARY.md, "The line". A starting slot with a player
+# below the line is a hole. The league has 12 teams. Each starts 2 RB and 2 WR, and the 2 flex spots take about
+# one more of each, so 36 backs and 36 receivers start each week.
+LINE_RB_WR = 36
+# Each of the 12 teams starts 1 QB and 1 TE. Rank 24 covers one starter and one backup per team.
+LINE_QB_TE = 24
 
 # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
 # The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.

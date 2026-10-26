@@ -27,6 +27,8 @@ from cornerstone.tunables import (
     HANDCUFF_CARRY_SHARE,
     INJURY_WEEKS,
     LAST_REGULAR_WEEK,
+    LINE_QB_TE,
+    LINE_RB_WR,
     LINEUP_WEEKS,
     RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
@@ -185,6 +187,17 @@ def pick_lineup(
     The fixed slots fill first, so a flex slot takes the player with the most points that no fixed slot took.
     It reads plain dicts, so a caller with no Snapshot, such as the odds inputs, can rank by projections.
     """
+    return [pid for _, pid in fill_slots(roster, slots, positions, points) if pid is not None]
+
+
+def fill_slots(
+        roster: list[str], slots: list[str], positions: dict[str, str], points: dict[str, Decimal | float]
+    ) -> list[tuple[str, str | None]]:
+    """Each starting slot with the player of the best lineup in it, or None when no player can fill it.
+
+    The slots come in fill order: the fixed slots first, then the flex slots. pick_lineup reads this, so the two
+    always agree on the lineup.
+    """
     def position(pid: str) -> str:
         return positions[pid]
 
@@ -194,20 +207,65 @@ def pick_lineup(
         return (-points[pid], order, pid)
 
     pool = sorted(roster, key=rank)
-    starters: list[str] = []
+    filled: list[tuple[str, str | None]] = []
     fixed = [slot for slot in slots if slot not in BENCH_SLOTS and slot not in FLEX_SLOTS]
     flex = [slot for slot in slots if slot in FLEX_SLOTS]
     for slot in fixed + flex:
         allowed = FLEX_SLOTS.get(slot, frozenset({slot}))
-        pick = next((pid for pid in pool if pid not in starters and position(pid) in allowed), None)
-        if pick is not None:
-            starters.append(pick)
-    return starters
+        taken = {pid for _, pid in filled}
+        filled.append((slot, next((pid for pid in pool if pid not in taken and position(pid) in allowed), None)))
+    return filled
 
 
-def _lineup_total(roster: list[str], snapshot: Snapshot) -> Decimal:
-    return sum((lineup_value(snapshot, pid)
-                for pid in best_lineup(roster, snapshot.roster_positions, snapshot)), Decimal(0))
+# The line at each ranked position. GLOSSARY.md, "The line". K and DEF have no line, so their slots are never holes.
+LINES = {"QB": LINE_QB_TE, "RB": LINE_RB_WR, "WR": LINE_RB_WR, "TE": LINE_QB_TE}
+
+
+class StartingSlot(NamedTuple):
+    """One starting slot of a best lineup: its name, such as "RB2", its player or None, and his position rank."""
+
+    name: str
+    player: str | None
+    rank: int | None
+    # The roster slot it fills, such as "RB" or "FLEX". A FLEX slot reads the line of its player's position.
+    slot: str
+
+    def is_hole(self, snapshot: Snapshot) -> bool:
+        """True when the slot holds a player below the line for his own position, or holds no player.
+
+        GLOSSARY.md, "Hole". A K or DEF slot is never a hole. A player at a ranked position with no rank is below
+        the line, because he has no stat line to start on.
+        """
+        if self.slot not in FLEX_SLOTS and self.slot not in LINES:
+            return False
+        if self.player is None:
+            return True
+        line = LINES.get(snapshot.players[self.player].position)
+        return line is not None and (self.rank is None or self.rank > line)
+
+
+def lineup_slots(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
+    """The starting slots of the roster's best lineup, each with its player and his position rank, in fill order.
+
+    A slot that appears more than once gets a number, such as RB1 and RB2, so the reason can name it.
+    RB1 holds the back with the most points per game, because the fixed slots fill in that order.
+    """
+    positions = {pid: snapshot.players[pid].position for pid in roster}
+    filled = fill_slots(roster, snapshot.roster_positions, positions,
+                        {pid: lineup_value(snapshot, pid) for pid in roster})
+    counts = {slot: sum(1 for each, _ in filled if each == slot) for slot, _ in filled}
+    seen: dict[str, int] = {}
+    starting = []
+    for slot, pid in filled:
+        seen[slot] = seen.get(slot, 0) + 1
+        name = f"{slot}{seen[slot]}" if counts[slot] > 1 else slot
+        starting.append(StartingSlot(name=name, player=pid, rank=None if pid is None else snapshot.position_rank(pid),
+                                     slot=slot))
+    return starting
+
+
+def _lineup_total(starting: list[StartingSlot], snapshot: Snapshot) -> Decimal:
+    return sum((lineup_value(snapshot, slot.player) for slot in starting if slot.player is not None), Decimal(0))
 
 
 class _Side(BaseModel):
@@ -217,6 +275,9 @@ class _Side(BaseModel):
     gets: list[str]
     gives: list[str]
     starters_after: list[str]
+    # The starting slots of the best lineup before and after the trade, each with its player and his position rank.
+    slots_before: list[StartingSlot] = []
+    slots_after: list[StartingSlot] = []
     # The best lineup's total after the trade minus the total before.
     lineup_change: Decimal
     # True when the side gets the single highest-value player in the trade.
@@ -238,6 +299,25 @@ class _Side(BaseModel):
     def lineup_loses(self) -> bool:
         return -self.lineup_change >= FIT_THRESHOLD
 
+    def new_holes(self, snapshot: Snapshot) -> list[StartingSlot]:
+        """The holes after the trade in a slot that was no hole before it. GLOSSARY.md, "Hole".
+
+        A hole both before and after is the side's roster, not the trade, so it is not new. The match is by roster
+        slot, such as RB or FLEX, and not by slot name: a better flex player can push a hole from FLEX1 to FLEX2, and
+        that hole is still the same one. Only the holes past the count before are new. A slot whose player was no
+        hole before is named first, because his slot is the one the trade emptied.
+        """
+        before = [slot for slot in self.slots_before if slot.is_hole(snapshot)]
+        after = [slot for slot in self.slots_after if slot.is_hole(snapshot)]
+        new: list[StartingSlot] = []
+        for kind in dict.fromkeys(slot.slot for slot in after):
+            was = [slot for slot in before if slot.slot == kind]
+            now = [slot for slot in after if slot.slot == kind]
+            held = {slot.player for slot in was}
+            fresh = [slot for slot in now if slot.player not in held] + [slot for slot in now if slot.player in held]
+            new += fresh[:max(0, len(now) - len(was))]
+        return [slot for slot in after if slot in new]
+
 
 def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str]) -> list[str]:
     return [pid for pid in snapshot.rosters[roster_id] if pid not in gives] + gets
@@ -245,11 +325,12 @@ def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: li
 
 def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None,
           handcuffs: list[str]) -> _Side:
-    before = snapshot.rosters[roster_id]
-    after = _roster_after(snapshot, roster_id, gives, gets)
+    before = lineup_slots(snapshot.rosters[roster_id], snapshot)
+    after = lineup_slots(_roster_after(snapshot, roster_id, gives, gets), snapshot)
     return _Side(
         roster_id=roster_id, gets=gets, gives=gives,
-        starters_after=best_lineup(after, snapshot.roster_positions, snapshot),
+        starters_after=[slot.player for slot in after if slot.player is not None],
+        slots_before=before, slots_after=after,
         lineup_change=_lineup_total(after, snapshot) - _lineup_total(before, snapshot),
         gets_highest_value=top in gets,
         gives_highest_value=top in gives,
@@ -381,8 +462,31 @@ def _due_back_note(snapshot: Snapshot, player_id: str) -> str:
     return f"{name} is due back in week {week}, so he counts for his projection ahead of {ahead} a game."
 
 
+def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
+    """The sentence that names a new hole: the slot, the player, and his position rank.
+
+    A rank that reads a week N game in progress ends with "game in progress", because it can still move.
+    """
+    lead = f"{slot.name} is a hole after the trade:"
+    if slot.player is None:
+        return f"{lead} no player fills it."
+    player = snapshot.players[slot.player]
+    if slot.rank is None:
+        return f"{lead} {player.name} has no position rank."
+    # A player due back ranks by his projection ahead, so his rank reads no game.
+    weeks = [] if due_back_week(snapshot, slot.player) is not None else [
+        past.week for past in _played_weeks(snapshot, slot.player)]
+    label = IN_PROGRESS_LABEL if _reads_a_game_in_progress(snapshot, slot.player, weeks) else ""
+    return f"{lead} {player.name} is {player.position}{slot.rank}{label}."
+
+
 def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
-    """The roster fit step and its reason, from the change in the side's best lineup."""
+    """The roster fit step and its reason, from the new holes and the change in the side's best lineup."""
+    # A new hole is one step down whatever the lineup does. It blocks every step up, and a handcuff never hides it,
+    # because a missing starter costs the side on Sunday. With a lineup loss too, the hole is the reason.
+    holes = side.new_holes(snapshot)
+    if holes:
+        return Adjuster(name=ROSTER_FIT, step=-1, reason=" ".join(_hole_sentence(snapshot, slot) for slot in holes))
     if side.lineup_loses:
         # A handcuff is insurance that sits on the bench, so a lineup loss in a trade for him does not count.
         if side.gets_handcuffs:

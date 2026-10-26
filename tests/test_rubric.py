@@ -247,6 +247,22 @@ def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_st
         "The best lineup gains after the trade, but not every player it gets starts.")
 
 
+# Position ranks by lineup value on the week 6 fixture. The line is RB36 and WR36, QB24 and TE24.
+# Roster 2 starts Aaron Jones RB13 and Ashton Jeanty RB21, with Zach Charbonnet RB27 at flex.
+# Its bench backs are Kendre Miller RB55 at 4.27 and Jeremiyah Love RB75 at 0.
+# Roster 12 starts Amon-Ra St. Brown WR11 and Garrett Wilson WR12, each at 15.00.
+JONES, JEANTY, CHARBONNET, MILLER = "4199", "12527", "9753", "9757"
+
+
+def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_steps_down(snap):
+    # Roster 2 after: Charbonnet moves up to RB1 and Miller at RB55 takes RB2. St. Brown and Wilson take both flex
+    # spots, so the best lineup changes by 0.35, about the same. The new hole alone steps it down.
+    second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
+    fit = _adjuster(second, "roster fit")
+    assert fit.step == -1
+    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
+
+
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
 # and roster 9 in the sixth has 5 wins.
 # Roster 4 has 1 win, four games out, so it is a seller.
@@ -383,8 +399,17 @@ def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_complete
         assert recent_points_per_game(moved, pid) == recent_points_per_game(snap, pid)
     trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
     for before, after in zip(grade(trade, snap), grade(trade, moved)):
-        assert _adjuster(after, "roster fit") == _adjuster(before, "roster fit")
+        # The position rank reads every player in the league. A bound of 0 puts each player with no week 5 game
+        # last, so a rank in the hole sentence can move. The step and every other word must not.
+        fit_after, fit_before = _adjuster(after, "roster fit"), _adjuster(before, "roster fit")
+        assert fit_after.step == fit_before.step
+        assert _without_ranks(fit_after.reason) == _without_ranks(fit_before.reason)
         assert _adjuster(after, TREND) == _adjuster(before, TREND)
+
+
+def _without_ranks(reason: str) -> str:
+    """The reason with each position rank, such as "RB38", cut to its position."""
+    return re.sub(r"\b(QB|RB|WR|TE)\d+\b", r"\1", reason)
 
 
 def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap):
@@ -1461,7 +1486,16 @@ HAND_WORKED = [
 ]
 
 
-@pytest.mark.parametrize("index", range(len(REAL_TRADES)))
+# A new hole moves these rows. Each waits for Brian's word before HAND_WORKED changes.
+HOLE_MOVES = {
+    0: "Roster 8 gives Malik Nabers, so WR2 is a hole: Carnell Tate is WR47. Fit 0 to -1, final A to B, still accept.",
+    3: "Roster 4 gives Rhamondre Stevenson, so FLEX2 is a hole: Xavier Worthy is WR45. Fit +1 to -1, final stays A.",
+}
+
+
+@pytest.mark.parametrize("index", [
+    pytest.param(index, marks=pytest.mark.xfail(strict=True, reason=HOLE_MOVES[index])) if index in HOLE_MOVES
+    else index for index in range(len(REAL_TRADES))])
 def test_each_real_week_6_trade_grades_as_worked_by_hand(slow_snap, index):
     a, a_gives, b, b_gives, asker = REAL_TRADES[index]
     trade = _trade(a, a_gives, b, b_gives, asker=asker)
