@@ -151,9 +151,10 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
                 assert not re.search(r"ratio|sum|peaked|(?<!depth )chart", reason, re.IGNORECASE)
 
 
-# Points per game over weeks 2 to 5, the last four completed weeks of the week 6 snapshot.
-# Roster 10, in the middle at 4-6: Saquon Barkley 3.83 on the bench, Monangai 12.47 and Judkins 10.32 at RB,
-# Egbuka 8.50 and Ferguson 8.03 at flex.
+# Lineup values in the week 6 snapshot: points per game over the last completed weeks, or the projection ahead from
+# week 14 for a player out with no return week.
+# Roster 10, in the middle at 4-6: Saquon Barkley 12.64 and Judkins 8.94 at RB, Monangai 8.44 and Deebo Samuel 8.32
+# at flex, Ferguson 8.03 on the bench. All four are Out with no return week.
 # Roster 5, a contender: James Cook 19.10, Hubbard 17.27, and Javonte Williams 16.20 at RB and flex,
 # Denzel Boston 12.03 at the last flex spot, Michael Wilson 10.37, Woody Marks 8.32, and Metcalf 8.03 on the bench.
 SAQUON, COOK, HUBBARD, MARKS = "4866", "8138", "7594", "12474"
@@ -167,8 +168,8 @@ def _adjuster(breakdown, name: str):
 
 
 def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
-    # Cook takes an RB spot on roster 10 and Judkins moves to flex for Ferguson, a gain of 11.07.
-    # Roster 5 loses Cook, and Michael Wilson takes the last flex spot, a loss of 8.73.
+    # Cook takes the RB spot of Saquon Barkley on roster 10, a gain of 6.46.
+    # Roster 5 loses Cook, and Saquon Barkley takes his RB spot, a loss of 6.46.
     # Saquon Barkley is Out with no return week, so both sides name the projection he counts for.
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
@@ -177,13 +178,14 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     assert _adjuster(fifth, "roster fit").reason == "The best lineup loses after the trade. " + SAQUON_NOTE
 
 
-# Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70 at the last flex spot.
+# Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70. DJ Moore, Out with no return week, holds the
+# last flex spot at 12.20.
 POLLARD = "5967"
 
 
 def test_fit_steps_up_for_the_highest_value_player_in_the_trade_with_no_lineup_loss(snap):
     # Saquon Barkley counts as back in week 14 at 12.6 a game. Roster 12's lineup does not lose with him.
-    # Roster 10 loses his 12.6 for Pollard at 8.95, a loss past the fit threshold.
+    # Roster 10 loses his 12.6 for Pollard at 8.95, a loss of 3.69, past the fit threshold.
     snap = _with_values(snap, {SAQUON: 30.0})
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(twelfth, "roster fit").step == 1
@@ -201,7 +203,8 @@ def test_an_unlisted_player_makes_points_per_game_pick_the_highest_value_player_
 
 
 def test_fit_holds_at_one_step_when_the_gain_is_large_and_the_side_gets_the_highest_value_player(snap):
-    # Cook and Hubbard take both RB spots on roster 10, and Monangai and Judkins move to flex, a gain of 19.84.
+    # Cook and Hubbard take both RB spots on roster 10, Judkins and Monangai move to flex, and Deebo Samuel moves to
+    # the bench, a gain of 15.41.
     # Saquon Barkley has no trade value, so points per game make Cook the highest-value player in the trade.
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, HUBBARD]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
@@ -275,7 +278,8 @@ def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_complete
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):
-    # Roster 3 loses McCaffrey at RB. Dobbins moves to RB, and Meyers at 7.17 takes the last flex spot, a loss of 10.45.
+    # Roster 3 loses McCaffrey at 17.63. Saquon Barkley counts for 12.64 from week 14 and takes his RB spot, a loss
+    # of 4.99.
     # Saquon Barkley is Out and has no row in the returns file.
     third, _ = grade(_trade(3, [MCCAFFREY], 10, [SAQUON]), snap)
     standing = _adjuster(third, "standing")
@@ -370,7 +374,7 @@ MAHOMES, LAMAR = "4046", "4881"
 
 def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_value_player_step(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    # With stats through week 5, the lineup of roster 7 gains 8.48, so the gain alone earns the step.
+    # With stats through week 5, the lineup of roster 7 gains 4.15, so the gain alone earns the step.
     # This case grades the trade on the Tuesday after week 6, so points per game cover weeks 3 to 6.
     # Mahomes at 15.14 takes the QB spot from Lamar Jackson at 19.66, and Brian Robinson starts at flex.
     # The best lineup of roster 7 changes by about -0.60, which is less than the fit threshold.
@@ -989,11 +993,11 @@ HAND_WORKED = [
     # Three for four is no consolidation. Roster 7: 62.0 over 78.5 is 0.790, D. Roster 8: 1.266, A.
     # Breece Hall at 41.0 is the highest-value player.
     # Roster 7: Breece Hall is out with no return week, so he counts as back in week 14 at 11.7 a game. The lineup
-    # does not lose, and it gets the highest-value player, fit up. Middle, no standing step. Gets up shares only,
-    # gives up and down shares, so trend is mixed. Breece Hall is out with no return week, injury down. Byes left:
-    # four got against three gave, against. Playoff opponent mean rank 18.58 got against 16.67 gave, inside the
-    # gap, even. Schedule against. Sum zero, D stays D.
-    # Roster 8: the lineup gains 2.67, under the threshold, and it gives the highest-value player, no fit step.
+    # changes by minus 2.18, no loss, and it gets the highest-value player, fit up. Middle, no standing step. Gets
+    # up shares only, gives up and down shares, so trend is mixed. Breece Hall is out with no return week, injury
+    # down. Byes left: four got against three gave, against. Playoff opponent mean rank 18.58 got against 16.67
+    # gave, inside the gap, even. Schedule against. Sum zero, D stays D.
+    # Roster 8: the lineup gains 0.34, under the threshold, and it gives the highest-value player, no fit step.
     # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
     # Roster 8 asked and grades A: accept.
     (("D", [1, 0, 0, -1, 0, 0], "against", "D"), ("A", [0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
@@ -1001,10 +1005,10 @@ HAND_WORKED = [
     # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
     # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.
     # Jacobs is due back in week 7, so his use does not count, and week 7 is inside the return window of week 8.
-    # Roster 11: the lineup loses 11.60, fit down. Middle. Gets Vele, flat, and gives Tuten and Wilson, each with
+    # Roster 11: the lineup loses 6.94, fit down. Middle. Gets Vele, flat, and gives Tuten and Wilson, each with
     # one share up, so trend down. No injury step. Byes two and two, even. Playoff mean rank 13.83 got against
     # 16.83 gave, a gap of 3.0, inside the gap, even. Schedule even. Sum minus two, clamped to minus one, A to B.
-    # Roster 12: the lineup gains 9.20, fit up. Middle. Trend up. No injury step. Schedule even.
+    # Roster 12: the lineup gains 5.57, fit up. Middle. Trend up. No injury step. Schedule even.
     # Sum plus two, clamped to plus one, F to D.
     # Roster 12 asked and grades D, with roster 11 at B: decline.
     (("A", [-1, 0, -1, 0, 0, 0], "even", "B"), ("F", [1, 0, 1, 0, 0, 0], "even", "D"), "decline"),
@@ -1012,28 +1016,28 @@ HAND_WORKED = [
     # One for two: the depth sum counts as 37.5 over 1.25, which is 30.0. Roster 6: 7.0 over 30.0 is 0.233, F.
     # Roster 7: 4.29, A. Brian Robinson at 22.0 is the highest-value player.
     # Roster 6: Lamar Jackson is out with no return week, so he counts as back in week 14 at 22.7 a game. The
-    # lineup stays about the same, no fit step. A contender with no lineup gain and no return bet, no standing step.
-    # Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is out with no return week,
-    # injury down. Byes one left and one left, even. Playoff mean rank 19.67 got against 22.17 gave, inside the gap,
-    # even. Schedule even. Sum minus one, F stays F.
-    # Roster 7: the lineup gains 8.48 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
+    # lineup changes by minus 0.22, about the same, no fit step. A contender with no lineup gain and no return bet,
+    # no standing step. Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is out with no
+    # return week, injury down. Byes one left and one left, even. Playoff mean rank 19.67 got against 22.17 gave,
+    # inside the gap, even. Schedule even. Sum minus one, F stays F.
+    # Roster 7: the lineup gains 4.15 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
     # Schedule even. Sum plus one, A stays A.
     # Roster 7 asked and grades A: accept.
     (("F", [0, 0, 0, -1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0], "even", "A"), "accept"),
     # Roster 4 gives Ladd McConkey 4.5 and Rhamondre Stevenson 2.5, a sum of 7.0.
     # Roster 7 gives Cam Skattebo 18.0 and Nico Collins 46.5, a sum of 64.5. Two for two, no consolidation.
     # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
-    # Roster 4: the lineup gains 7.38, fit up. A seller that gets the highest-value player, standing up.
+    # Roster 4: the lineup gains 4.75, fit up. A seller that gets the highest-value player, standing up.
     # Gets one share down, gives shares up and down, so trend is mixed. No injury step. Byes two and two, even.
     # Playoff mean rank 14.00 got against 19.67 gave, a gap of 5.67, for. Schedule for.
     # Sum plus two, clamped to plus one, A stays A.
-    # Roster 7: the lineup loses 9.42, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week,
+    # Roster 7: the lineup loses 4.63, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week,
     # injury down. Schedule against. Sum minus two, clamped to minus one, F stays F.
     # Roster 7 asked and grades F: decline.
     (("A", [1, 1, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, -1, 0, 0], "against", "F"), "decline"),
     # Roster 7 gives Dalton Kincaid 31.5. Roster 12 gives Kenyon Sadiq, with no row on the chart, so both start at C.
     # Points per game pick the highest-value player: Kincaid at 6.55 against Sadiq at 5.50.
-    # Roster 7: the lineup changes by minus 0.50, no loss, and it gives Kincaid, no fit step. Middle. Each player
+    # Roster 7: the lineup changes by minus 1.05, no loss, and it gives Kincaid, no fit step. Middle. Each player
     # has one share down, so trend is mixed. Sadiq is healthy. Byes one and one, even. Playoff mean rank 17.67
     # got against 13.67 gave, a gap of exactly 4, against. Schedule against. Sum zero, C.
     # Roster 12: no lineup change, and it gets Kincaid, fit up. Middle. Trend mixed. Kincaid is Questionable,
@@ -1044,12 +1048,11 @@ HAND_WORKED = [
     # Roster 12 gives Jacory Croskey-Merritt 24.0 and David Montgomery 12.5, a sum of 36.5.
     # Roster 4: 36.5 over 77.5 is 0.471, F. Roster 12: 2.12, A. Omarion Hampton is the highest-value player.
     # Roster 4: Croskey-Merritt and David Montgomery are out with no return week, so they count as back in week 14
-    # at 6.8 and 10.3 a game. The lineup stays about the same, no fit step. A seller that gives the highest-value
-    # player with no lineup gain, no standing step. Gets shares up and down, so trend is mixed. Croskey-Merritt is
-    # on IR with no return week, injury down. Byes two and two, even. Playoff mean rank 23.17 got against 10.67
-    # gave, against.
-    # Schedule against. Sum minus one, F stays F.
-    # Roster 12: the lineup gains 2.75, under the threshold, and it gets Hampton, fit up. Middle. Trend mixed.
+    # at 6.8 and 10.3 a game. The lineup changes by 0.14, about the same, no fit step. A seller that gives the
+    # highest-value player with no lineup gain, no standing step. Gets shares up and down, so trend is mixed.
+    # Croskey-Merritt is on IR with no return week, injury down. Byes two and two, even. Playoff mean rank 23.17
+    # got against 10.67 gave, against. Schedule against. Sum minus one, F stays F.
+    # Roster 12: the lineup changes by minus 0.59, no loss, and it gets Hampton, fit up. Middle. Trend mixed.
     # No injury step. Schedule for. Sum plus one, A stays A.
     # Roster 12 asked and grades A: accept.
     (("F", [0, 0, 0, -1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0], "for", "A"), "accept"),
@@ -1318,13 +1321,23 @@ def test_a_player_out_with_no_return_week_counts_for_his_projection_ahead_from_w
     assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
 
 
+def test_a_contender_whose_lineup_gain_comes_from_a_player_out_with_no_return_week_says_he_counts_as_back(snap):
+    # Roster 3 holds a playoff spot. Saquon Barkley starts there at 20.0 a game, but only from week 14.
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), _with_projections(snap, {SAQUON: SAQUON_AHEAD}))
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == (
+        "The team holds a playoff spot, and the best lineup gains from week 14, when Saquon Barkley counts as back.")
+
+
 def test_a_player_out_with_a_return_week_counts_from_that_week(snap):
-    snap = _with_projections(snap, {SAQUON: {**SAQUON_AHEAD, **{week: 16.0 for week in range(9, 15)}}})
+    # Week 14 holds 40.0, so the mean from week 9 differs from the mean from week 14.
+    snap = _with_projections(snap, {SAQUON: {**SAQUON_AHEAD, **{week: 16.0 for week in range(9, 14)}, 14: 40.0}})
     snap = snap.model_copy(update={"returns": {**snap.returns, SAQUON: 9}})
-    assert lineup_value(snap, SAQUON) == 16
+    assert lineup_value(snap, SAQUON) == 20
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "roster fit").reason.endswith(
-        "Saquon Barkley is due back in week 9, so he counts for his projection ahead of 16.0 a game.")
+        "Saquon Barkley is due back in week 9, so he counts for his projection ahead of 20.0 a game.")
 
 
 def test_a_questionable_player_keeps_his_recent_points_whatever_his_projection(snap):

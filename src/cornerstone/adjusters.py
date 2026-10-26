@@ -390,11 +390,14 @@ def _gain_when(snapshot: Snapshot, side: _Side) -> str:
     The text is "now" when the side gets no starter who is due back.
     A player due back does not play this week, so a gain he makes in the lineup comes after his return, not now.
     The text names each player due back that the side gets and starts. It gives the latest return week of them.
+    A player out with no returns row has no known return, so the text says he counts as back, as the fit note does.
     """
     due_back = [pid for pid in side.gets if pid in side.starters_after and due_back_week(snapshot, pid) is not None]
     if not due_back:
         return "now"
     week = max(due_back_week(snapshot, pid) for pid in due_back)
+    if any(pid not in snapshot.returns for pid in due_back):
+        return f"from week {week}, when " + named(snapshot, due_back, "counts as back", "count as back")
     returns = named(snapshot, due_back, "returns", "return")
     return f"after {returns} in week {week}"
 
@@ -528,6 +531,7 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
 
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player back after the last completed week, so he is out now."""
+    # The trend and the expected gap read only the returns file, so an out player with no row keeps his use.
     week = snapshot.returns.get(player_id)
     return week is not None and week > snapshot.as_of.completed_through
 

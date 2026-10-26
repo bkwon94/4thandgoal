@@ -165,3 +165,52 @@ nothing of its own rule:
    keeps his recent points of about 0. A player with a past returns row does the same today.
 5. `DOCUMENT_VERSION` does not bump. The keys of affected rosters change through the content hash, so no stale
    grade serves. The PRD bumps the version in the cache key ticket.
+
+---
+
+# Fix round 1
+
+Status: DONE. One commit with the five review fixes and this report.
+
+## Fixes
+
+1. Important. The lineup numbers in the test comments. I checked every one with a probe that calls `build_side` and
+   `lineup_value` on the fixture snapshots. The reviewer's numbers match. The fix also covers lines the review did
+   not name:
+   - Roster 10: Saquon 12.64 and Judkins 8.94 at RB, Monangai 8.44 and Deebo Samuel 8.32 at flex, Ferguson 8.03 on
+     the bench.
+   - The Cook trade: a gain of 6.46 and a loss of 6.46. Cook takes Saquon's RB spot, and Saquon takes Cook's.
+   - Cook and Hubbard: a gain of 15.41. Deebo Samuel moves to the bench.
+   - Roster 12: DJ Moore, Out with no row, holds the last flex spot at 12.20. Hampton 9.70 and Pollard 8.95 sit.
+   - The Pollard trade: roster 10 loses 3.69.
+   - The McCaffrey trade (not in the review): a loss of 4.99, not 10.45. Saquon at 12.64 takes McCaffrey's spot at
+     17.63.
+   - HAND_WORKED: trade 0, roster 7 -2.18 and roster 8 0.34. Trade 1 (not in the review): roster 11 -6.94 and
+     roster 12 5.57. Trade 2: roster 6 -0.22 and roster 7 4.15. Trade 3 (not in the review): roster 4 4.75 and
+     roster 7 -4.63. Trade 4 (not in the review): roster 7 -1.05. Trade 5: roster 4 0.14 and roster 12 -0.59.
+   - The fit threshold test: "gains 8.48" is now "gains 4.15". Its week 7 change of -0.60 holds with Lamar healthy.
+2. `_due_back` has a comment line: "The trend and the expected gap read only the returns file, so an out player
+   with no row keeps his use."
+3. `test_a_player_out_with_a_return_week_counts_from_that_week`: week 14 is now 40.0. The mean from week 9 is 20.0.
+   The mean from week 14 would be 40.0, so the test can tell the two rules apart.
+4. `_gain_when`: when a due-back starter has no returns row, the text is "from week 14, when Saquon Barkley counts
+   as back". The returns-row text stays the same. The test came first:
+   `test_a_contender_whose_lineup_gain_comes_from_a_player_out_with_no_return_week_says_he_counts_as_back`.
+   - RED: `uv run pytest -q tests/test_rubric.py -k "says_he_counts_as_back or a_player_out_with_a_return_week"`
+     gave `1 failed, 1 passed`, with
+     `+ eup gains after Saquon Barkley returns in week 14.` against `- eup gains from week 14, when Saquon Barkley counts as back.`
+   - GREEN: the rubric file gives `138 passed`.
+5. HAND_WORKED trade 5: the comment lines are joined. I also rewrapped the trade 0 and trade 2 comments, because
+   they went past 120 characters.
+
+## Verification
+
+- `uv run pytest -q tests/test_rubric.py tests/test_api.py`: `244 passed in 94.30s`.
+- `uv run pytest -q`: `1089 passed, 9 deselected in 217.71s`.
+- `uv run ruff check src tests`: exit 0. The last ruff fix changed only the wrap of a comment, and
+  `tests/test_rubric.py` then gave `138 passed`.
+
+## Concern
+
+- With a mix of players in `_gain_when`, some with a returns row and some without, the text uses the "counts as
+  back" form for all of them. The fixture has no such case.
