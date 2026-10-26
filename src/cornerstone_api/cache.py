@@ -15,13 +15,16 @@ from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import LAST_REGULAR_WEEK
 
+# The stat fields the grade reads from a week N line. A change to any other field keeps the hit.
+STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_att")
+
 
 # The shape of the stored result document. A change of shape bumps it, so the key changes and a result stored on
 # the volume in an old shape never serves again.
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 5
+DOCUMENT_VERSION = 6
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -46,12 +49,16 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 
 
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
-    """The hash of the players, the record, and the week rows of each roster. The analyze key and the find key share it.
+    """The hash of the players, the record, the week rows, and the week N lines of each roster.
+
+    The analyze key and the find key share it.
 
     The week rows are the due-back week and the projections ahead of each rostered player due back. The commissioner
     edits the returns file by hand, Sleeper moves projections daily, and a move into the out set makes a player due
     back. `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
-    Only the rows of the two rosters go in, so a change to any other player keeps the hit.
+    The week N lines are the stat lines of a known-games week, cut to the fields the grade reads. A new fetch with a
+    new number for a rostered player is a new key. A week with no known games adds none.
+    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     """
@@ -61,6 +68,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     # The grade reads the due-back week through the same rule, so the key and the grade agree on who is due back.
     rostered = {player for roster_id in roster_ids for player in snapshot.rosters[roster_id]}
     due_back = {player: week for player in rostered if (week := due_back_week(snapshot, player)) is not None}
+    week_n_lines = _week_n_lines(snapshot)
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),
@@ -71,12 +79,28 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
                               if player in due_back and player in snapshot.returns),
             "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player])
                                   for player in snapshot.rosters[roster_id] if player in due_back},
+            "week_n_lines": {player: week_n_lines[player] for player in sorted(snapshot.rosters[roster_id])
+                             if player in week_n_lines},
         }
         for roster_id in roster_ids
     }
     # With no projections file every player keeps his recent points, so None and an empty file grade apart.
     content = {"has_projections_ahead": snapshot.projections_ahead is not None, "rosters": content}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
+
+
+def _week_n_lines(snapshot: Snapshot) -> dict[str, dict[str, float]]:
+    """The week N stat line of each player, cut to the fields the grade reads. Empty with no known games.
+
+    Week N is in the player stats when the stat bound is past the completed week. A player with no line, or a line
+    with none of the fields, has no entry, so no lines and empty lines give one key.
+    """
+    as_of = snapshot.as_of
+    if as_of.stats_through <= as_of.completed_through or as_of.stats_through not in snapshot.stats.weeks:
+        return {}
+    lines = snapshot.stats.weeks[as_of.stats_through].stats
+    reduced = {player: {field: line[field] for field in STAT_FIELDS if field in line} for player, line in lines.items()}
+    return {player: line for player, line in reduced.items() if line}
 
 
 def _rows_read(rows: dict[int, float], return_week: int) -> dict[int, float]:
