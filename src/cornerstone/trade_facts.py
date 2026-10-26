@@ -4,11 +4,12 @@ need, and the roster fit reads. Every player stat ends at the known games and ev
 Each fact carries every number in its text.
 """
 from cornerstone.adjusters import (
-    FLEX_SLOTS, LINES, RANKED_POSITIONS, STRENGTH_SLOTS, StartingSlot, _hole_sentence, _Side, due_back_week, team_race,
+    FLEX_SLOTS, STRENGTH_SLOTS, Side, StartingSlot, allowed_positions, due_back_week, hole_sentence, team_race,
     trade_handcuffs,
 )
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
+from cornerstone.ranks import LINES, RANKED_POSITIONS
 from cornerstone.rubric import ProposedTrade, build_sides
 from cornerstone.sheet import Nums, fact
 from cornerstone.snapshot import Snapshot
@@ -151,7 +152,7 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     return fact(f"{rid}.need", text, n, [team], [])
 
 
-def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
+def _slot_fact(snapshot: Snapshot, side: Side, pid: str) -> Fact:
     """The starting slot a player the side gets takes after the trade, and the player who held it before.
 
     The holder before moves to another slot, sits on the bench, or leaves in the trade. A player in no slot sits on the
@@ -178,7 +179,7 @@ def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
     return fact(f"{pid}.slot", text, n, [], players)
 
 
-def _depth_fact(snapshot: Snapshot, side: _Side, position: str) -> Fact | None:
+def _depth_fact(snapshot: Snapshot, side: Side, position: str) -> Fact | None:
     """The depth of a side at a position before and after the trade, or None when the count does not change."""
     before, after = side.depth(snapshot, position)
     if before == after:
@@ -189,7 +190,7 @@ def _depth_fact(snapshot: Snapshot, side: _Side, position: str) -> Fact | None:
     return fact(f"{side.roster_id}.depth.{position.lower()}", text, n, [team], [])
 
 
-def _strength_fact(snapshot: Snapshot, side: _Side) -> Fact | None:
+def _strength_fact(snapshot: Snapshot, side: Side) -> Fact | None:
     """The strength of a side before and after the trade, or None when the count does not change.
 
     "Top 24" carries no hyphen, because the number rule reads "-24" as a negative number.
@@ -205,7 +206,7 @@ def _strength_fact(snapshot: Snapshot, side: _Side) -> Fact | None:
     return fact(f"{side.roster_id}.strength", text, n, [team], [])
 
 
-def _hole_fact(snapshot: Snapshot, side: _Side, slot: StartingSlot) -> Fact:
+def _hole_fact(snapshot: Snapshot, side: Side, slot: StartingSlot) -> Fact:
     """A new hole of a side: the hole sentence of the fit reason, and the best free agent at the hole's position with
     his position rank. GLOSSARY.md, "Hole".
 
@@ -214,14 +215,13 @@ def _hole_fact(snapshot: Snapshot, side: _Side, slot: StartingSlot) -> Fact:
     """
     n = Nums()
     team = snapshot.teams[side.roster_id].name
-    if slot.player is not None and slot.slot in FLEX_SLOTS:
+    if slot.player is not None and slot.roster_slot in FLEX_SLOTS:
         positions = [snapshot.players[slot.player].position]
     else:
-        allowed = FLEX_SLOTS.get(slot.slot, frozenset({slot.slot}))
-        positions = [position for position in RANKED_POSITIONS if position in allowed]
+        positions = [position for position in RANKED_POSITIONS if position in allowed_positions(slot.roster_slot)]
     where = positions[0] if len(positions) == 1 else ", ".join(positions[:-1]) + f", or {positions[-1]}"
     # The hole sentence carries the slot, the week, and the rank as digits, so Nums records each one.
-    text = f"For {team}, {n.text(_hole_sentence(snapshot, slot))}"
+    text = f"For {team}, {n.text(hole_sentence(snapshot, slot))}"
     players = [] if slot.player is None else [snapshot.players[slot.player].name]
     best = snapshot.best_free_agent(positions)
     if best is None:
@@ -270,9 +270,9 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
         facts.append(_team_fact(snapshot, side.roster_id))
         facts.append(_need_fact(snapshot, trade, side.roster_id))
     # The sides come from the grade's own call, so the slot facts name the slots the roster fit step reads.
-    for read in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
-        facts += [_slot_fact(snapshot, read, pid) for pid in read.gets]
-        facts += [_hole_fact(snapshot, read, slot) for slot in read.new_holes(snapshot)]
-        facts += [_depth_fact(snapshot, read, position) for position in LINES]
-        facts.append(_strength_fact(snapshot, read))
+    for graded in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
+        facts += [_slot_fact(snapshot, graded, pid) for pid in graded.gets]
+        facts += [_hole_fact(snapshot, graded, slot) for slot in graded.new_holes(snapshot)]
+        facts += [_depth_fact(snapshot, graded, position) for position in LINES]
+        facts.append(_strength_fact(snapshot, graded))
     return {f.id: f for f in facts if f is not None}

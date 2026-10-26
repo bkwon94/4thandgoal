@@ -22,13 +22,14 @@ from fastapi.testclient import TestClient
 
 from conftest import strip_trend_numbers
 
-from cornerstone.adjusters import ROSTER_FIT, TREND, recent_points_per_game
+from cornerstone.adjusters import ROSTER_FIT, TREND
 from cornerstone.analysis import (
     Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
 )
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from cornerstone.ranks import recent_points_per_game
 from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw

@@ -15,11 +15,12 @@ from conftest import strip_trend_numbers, with_carries, with_free_agents
 from cornerstone import rubric, tunables
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
-    TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game,
+    TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value,
     rubric_adjusters,
 )
 from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
+from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
 )

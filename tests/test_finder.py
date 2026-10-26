@@ -11,8 +11,9 @@ import pytest
 
 from conftest import with_carries
 
-from cornerstone.adjusters import Adjuster, due_back_week, recent_points_per_game
+from cornerstone.adjusters import Adjuster, due_back_week
 from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
+from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import load_raw

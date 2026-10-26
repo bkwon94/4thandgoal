@@ -18,7 +18,10 @@ from cornerstone.history import (
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
-from cornerstone.models import PastWeek
+from cornerstone.ranks import (
+    LINES, OUT_STATUSES, POSITION_ORDER, _back_in_a_known_game, _played_weeks, due_back_week, lineup_value,
+    projection_ahead,
+)
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     BYE_WINDOW,
@@ -27,10 +30,6 @@ from cornerstone.tunables import (
     FIT_THRESHOLD,
     HANDCUFF_CARRY_SHARE,
     INJURY_WEEKS,
-    LAST_REGULAR_WEEK,
-    LINE_QB_TE,
-    LINE_RB_WR,
-    LINEUP_WEEKS,
     RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
     STRENGTH_RANK,
@@ -75,8 +74,6 @@ def named(snapshot: Snapshot, players: list[str], one: str, many: str) -> str:
     return f"{names} {one if len(players) == 1 else many}"
 
 
-# The tie rule at equal points per game. A position not in the order ranks last.
-POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 # The positions each flex slot takes. Any other slot takes its own position only.
 FLEX_SLOTS: dict[str, frozenset[str]] = {
     "FLEX": frozenset({"RB", "WR", "TE"}),
@@ -84,92 +81,15 @@ FLEX_SLOTS: dict[str, frozenset[str]] = {
     "REC_FLEX": frozenset({"WR", "TE"}),
     "SUPER_FLEX": frozenset({"QB", "RB", "WR", "TE"}),
 }
+
+
+def allowed_positions(roster_slot: str) -> frozenset[str]:
+    """The positions a roster slot takes: the set of a flex slot, or its own position for any other slot."""
+    return FLEX_SLOTS.get(roster_slot, frozenset({roster_slot}))
+
+
 # Slots that hold players who do not start.
 BENCH_SLOTS = frozenset({"BN", "IR", "TAXI"})
-
-
-def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
-    """The points per game over the last weeks through the player stat bound, LINEUP_WEEKS at most.
-
-    The window ends at the known games for a player who played in week N, and at the last completed week otherwise.
-    So a player's points per game move only when he plays. A player with no game in the window has 0.
-    """
-    played = _played_weeks(snapshot, player_id)
-    if not played:
-        return Decimal(0)
-    # Sleeper leaves out a stat whose value is 0. A game with no points entry is a game of 0 points.
-    total = sum((Decimal(str(player_points(past, player_id) or 0)) for past in played), Decimal(0))
-    return total / len(played)
-
-
-def _played_weeks(snapshot: Snapshot, player_id: str) -> list[PastWeek]:
-    """The weeks the player played in the window of his recent points per game, LINEUP_WEEKS at most."""
-    last = snapshot.as_of.stats_through
-    if last > snapshot.as_of.completed_through and not _has_known_game(snapshot, player_id):
-        last = snapshot.as_of.completed_through
-    return [
-        snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
-        if week in snapshot.stats.weeks
-        and (snapshot.stats.weeks[week].stats.get(player_id) or {}).get("gp", 0) > 0
-    ]
-
-
-def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
-    """The mean of the player's weekly projections from his due-back week through LAST_REGULAR_WEEK.
-
-    A week with no projection row, such as a bye, is no game. With no row in those weeks, he counts for 0.
-    """
-    rows = snapshot.projections_ahead.get(player_id, {})
-    weeks = [rows[week] for week in range(due_back_week(snapshot, player_id), LAST_REGULAR_WEEK + 1) if week in rows]
-    if not weeks:
-        return Decimal(0)
-    return sum((Decimal(str(points)) for points in weeks), Decimal(0)) / len(weeks)
-
-
-def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
-    """The points per game the player counts for in a best lineup.
-
-    A player due back has no recent games, so his projection ahead gives his lineup value.
-    Recent points show current play, so every other player keeps them. With no projections file, all players keep them.
-    """
-    if snapshot.projections_ahead is not None and due_back_week(snapshot, player_id) is not None:
-        return projection_ahead(snapshot, player_id)
-    return recent_points_per_game(snapshot, player_id)
-
-
-# The positions with a position rank. K and DEF have none. GLOSSARY.md, "Position rank".
-RANKED_POSITIONS = ("QB", "RB", "WR", "TE")
-
-
-def rank_table(snapshot: Snapshot) -> dict[str, list[str]]:
-    """The player ids at each of QB, RB, WR, and TE in position rank order, first to last.
-
-    GLOSSARY.md, "Position rank". The index in the list plus one is the rank.
-
-    The pool is every player with a stat line in the known games, rostered or not, plus every rostered player.
-    A rostered player due back can have no stat line, and his projection ahead still gives him a lineup value.
-    The order is lineup value, then the position order, then the player id. A player with no game in the window
-    ranks last. His lineup value is 0, but so is the value of a player who scored 0, so the value alone cannot
-    put him last. A due-back player ranks by his projection ahead, so he never counts as a player with no game.
-    Snapshot.position_rank reads this table, so it builds once per snapshot. The finder grades about a thousand
-    trades per call and must not rank the league per side.
-    """
-    # The known games end at the player stat bound, and a player is in the pool only with a stat line there.
-    positions = {pid: past.positions[pid] for week, past in snapshot.stats.weeks.items()
-                 if week <= snapshot.as_of.stats_through for pid in past.stats if pid in past.positions}
-    # The players file is the source for a rostered player, as best_lineup reads it. A stat line gives the rest.
-    positions.update({pid: player.position for pid, player in snapshot.players.items()})
-    pool = [pid for pid, position in positions.items() if position in RANKED_POSITIONS]
-
-    def due_back(pid: str) -> bool:
-        return snapshot.projections_ahead is not None and due_back_week(snapshot, pid) is not None
-
-    def order(pid: str) -> tuple[bool, Decimal, int, str]:
-        no_game = not due_back(pid) and not _played_weeks(snapshot, pid)
-        return (no_game, -lineup_value(snapshot, pid), POSITION_ORDER.index(positions[pid]), pid)
-
-    return {position: sorted((pid for pid in pool if positions[pid] == position), key=order)
-            for position in RANKED_POSITIONS}
 
 
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:
@@ -213,14 +133,12 @@ def fill_slots(
     fixed = [slot for slot in slots if slot not in BENCH_SLOTS and slot not in FLEX_SLOTS]
     flex = [slot for slot in slots if slot in FLEX_SLOTS]
     for slot in fixed + flex:
-        allowed = FLEX_SLOTS.get(slot, frozenset({slot}))
+        allowed = allowed_positions(slot)
         taken = {pid for _, pid in filled}
         filled.append((slot, next((pid for pid in pool if pid not in taken and position(pid) in allowed), None)))
     return filled
 
 
-# The line at each ranked position. GLOSSARY.md, "The line". K and DEF have no line, so their slots are never holes.
-LINES = {"QB": LINE_QB_TE, "RB": LINE_RB_WR, "WR": LINE_RB_WR, "TE": LINE_QB_TE}
 # The starting slots that strength reads. GLOSSARY.md, "Strength". The flex slots and QB and TE stay out of it.
 STRENGTH_SLOTS = ("RB1", "RB2", "WR1", "WR2")
 
@@ -240,7 +158,7 @@ class StartingSlot(NamedTuple):
     player: str | None
     rank: int | None
     # The roster slot it fills, such as "RB" or "FLEX". A FLEX slot reads the line of its player's position.
-    slot: str
+    roster_slot: str
     # His bye in the bye window, or his return after the trade week. None when he misses no week of the window.
     absence: Absence | None = None
 
@@ -251,7 +169,7 @@ class StartingSlot(NamedTuple):
         GLOSSARY.md, "Hole". A K or DEF slot is never a hole. A player at a ranked position with no rank is below
         the line, because he has no stat line to start on.
         """
-        if self.slot not in FLEX_SLOTS and self.slot not in LINES:
+        if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
             return False
         if self.player is None:
             return True
@@ -277,7 +195,7 @@ def lineup_slots(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
         seen[slot] = seen.get(slot, 0) + 1
         name = f"{slot}{seen[slot]}" if counts[slot] > 1 else slot
         starting.append(StartingSlot(name=name, player=pid, rank=None if pid is None else snapshot.position_rank(pid),
-                                     slot=slot))
+                                     roster_slot=slot))
     return _with_absences(starting, [pid for pid in roster if pid not in {slot.player for slot in starting}],
                           snapshot)
 
@@ -330,16 +248,15 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
             continue
         # The hole read and the lineup value read the same return week, so a player out with no return week counts
         # as back at RETURN_BY_WEEK, past the window, and his slot is a hole.
-        back = due_back_week(snapshot, slot.player)
-        if back is not None and back > snapshot.week:
+        if _out_now(snapshot, slot.player):
             kind: Literal["bye", "due back"] = "due back"
-            week: int | None = back
+            week: int | None = due_back_week(snapshot, slot.player)
         else:
             kind, week = "bye", _bye_in_window(snapshot, slot.player)
         if week is None:
             marked.append(slot)
             continue
-        allowed = FLEX_SLOTS.get(slot.slot, frozenset({slot.slot}))
+        allowed = allowed_positions(slot.roster_slot)
         cover = None if week > _last_window_week(snapshot) else next(
             (pid for pid in free
              if snapshot.players[pid].position in allowed
@@ -356,7 +273,7 @@ def _lineup_total(starting: list[StartingSlot], snapshot: Snapshot) -> Decimal:
     return sum((lineup_value(snapshot, slot.player) for slot in starting if slot.player is not None), Decimal(0))
 
 
-class _Side(BaseModel):
+class Side(BaseModel):
     """What the adjusters read of one side: the players it gets and gives, and its lineup before and after."""
 
     roster_id: int
@@ -398,12 +315,13 @@ class _Side(BaseModel):
         before = [slot for slot in self.slots_before if slot.is_hole(snapshot)]
         after = [slot for slot in self.slots_after if slot.is_hole(snapshot)]
         new: list[StartingSlot] = []
-        for kind in dict.fromkeys(slot.slot for slot in after):
-            was = [slot for slot in before if slot.slot == kind]
-            now = [slot for slot in after if slot.slot == kind]
-            held = {slot.player for slot in was}
-            fresh = [slot for slot in now if slot.player not in held] + [slot for slot in now if slot.player in held]
-            new += fresh[:max(0, len(now) - len(was))]
+        for kind in dict.fromkeys(slot.roster_slot for slot in after):
+            holes_before = [slot for slot in before if slot.roster_slot == kind]
+            holes_after = [slot for slot in after if slot.roster_slot == kind]
+            players_before = {slot.player for slot in holes_before}
+            emptied_first = ([slot for slot in holes_after if slot.player not in players_before]
+                             + [slot for slot in holes_after if slot.player in players_before])
+            new += emptied_first[:max(0, len(holes_after) - len(holes_before))]
         return [slot for slot in after if slot in new]
 
     def depth(self, snapshot: Snapshot, position: str) -> tuple[int, int]:
@@ -435,10 +353,10 @@ def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: li
 
 
 def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None,
-          handcuffs: list[str]) -> _Side:
+          handcuffs: list[str]) -> Side:
     before = lineup_slots(snapshot.rosters[roster_id], snapshot)
     after = lineup_slots(_roster_after(snapshot, roster_id, gives, gets), snapshot)
-    return _Side(
+    return Side(
         roster_id=roster_id, gets=gets, gives=gives,
         starters_after=[slot.player for slot in after if slot.player is not None],
         slots_before=before, slots_after=after,
@@ -537,7 +455,7 @@ EXPECTED = "expected gap"
 NO_SCHEDULES = "The schedule sources are not available."
 
 
-def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _fit(snapshot: Snapshot, side: Side) -> Adjuster:
     """Roster fit: the change in the side's best lineup, with a note for each player due back in the trade.
 
     The note gives the lineup value of a player due back, because his recent points do not show it.
@@ -550,7 +468,7 @@ def _fit(snapshot: Snapshot, side: _Side) -> Adjuster:
     return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
 
 
-def _due_back_notes(snapshot: Snapshot, side: _Side) -> list[str]:
+def _due_back_notes(snapshot: Snapshot, side: Side) -> list[str]:
     """One sentence per player due back in the trade with the projection he counts for, or one sentence that says
     the projections are not available.
     """
@@ -577,7 +495,7 @@ def _due_back_note(snapshot: Snapshot, player_id: str) -> str:
     return f"{name} is due back in week {week}, so he counts for his projection ahead of {ahead} a game."
 
 
-def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
+def hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     """The sentence that names a new hole: the slot, the player, and his position rank.
 
     A rank that reads a week N game in progress ends with "game in progress", because it can still move.
@@ -605,12 +523,12 @@ def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     return f"{lead} {player.name} is {player.position}{slot.rank}{label}."
 
 
-def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _fit_step(snapshot: Snapshot, side: Side) -> Adjuster:
     """The roster fit step and its reason, from the new holes and the change in the side's best lineup."""
     # A new hole costs the side on Sunday, so it blocks every step up, and a handcuff never hides it.
     # A lineup gain or the highest-value player cancels the hole to no step, and the reason names both.
     # With no gain, the hole is one step down. With a lineup loss too, the hole is the reason.
-    holes = " ".join(_hole_sentence(snapshot, slot) for slot in side.new_holes(snapshot))
+    holes = " ".join(hole_sentence(snapshot, slot) for slot in side.new_holes(snapshot))
     if holes:
         if side.lineup_gains:
             return Adjuster(name=ROSTER_FIT, step=0, reason=f"The best lineup gains after the trade. {holes}")
@@ -642,12 +560,6 @@ def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
         return Adjuster(name=ROSTER_FIT, step=1,
                         reason="It gets the highest-value player in the trade, and the best lineup does not lose.")
     return Adjuster(name=ROSTER_FIT, step=0, reason="The best lineup stays about the same.")
-
-
-# Injury report statuses that keep a player out of games. A player with one of them and no row in the
-# returns file has no known return, so the standing adjuster counts him as back after RETURN_BY_WEEK.
-# The lineup value counts him as due back at RETURN_BY_WEEK, so his projection ahead gives his value.
-OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 
 def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "seller", "middle"]:
@@ -685,7 +597,7 @@ def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
     return None
 
 
-def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
+def _credited_return_bets(snapshot: Snapshot, side: Side) -> list[str]:
     """The players the standing adjuster credits as a return bet: a contender with no lineup gain gets them.
 
     The injury adjuster reads this too, so a player the standing step counts in favor never counts against.
@@ -695,7 +607,7 @@ def _credited_return_bets(snapshot: Snapshot, side: _Side) -> list[str]:
     return [pid for pid in side.gets if _return_bet(snapshot, pid)]
 
 
-def _gain_when(snapshot: Snapshot, side: _Side) -> str:
+def _gain_when(snapshot: Snapshot, side: Side) -> str:
     """The function gives the time of the side's lineup gain.
 
     The text is "now" when the side gets no starter who is due back.
@@ -713,7 +625,7 @@ def _gain_when(snapshot: Snapshot, side: _Side) -> str:
     return f"after {returns} in week {week}"
 
 
-def _standing(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _standing(snapshot: Snapshot, side: Side) -> Adjuster:
     """Standing: a contender's win-now move or return bet, and a seller's bet on the future."""
     race = team_race(snapshot, side.roster_id)
     if race == "contender":
@@ -847,41 +759,6 @@ def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
     return sum(sum(red_zone(snapshot.stats, pid, through) or (0, 0)) for pid in players)
 
 
-def _has_known_game(snapshot: Snapshot, player_id: str) -> bool:
-    """True when the player has a game played in the known games of the trade week."""
-    if snapshot.as_of.stats_through <= snapshot.as_of.completed_through:
-        return False
-    known = snapshot.stats.weeks.get(snapshot.as_of.stats_through)
-    return known is not None and (known.stats.get(player_id) or {}).get("gp", 0) > 0
-
-
-def _back_in_a_known_game(snapshot: Snapshot, player_id: str) -> bool:
-    """True when the returns file has the player back by the trade week and he played in its known games.
-
-    A player out with no row who played is the player hurt in his game, so his known game does not end his absence.
-    """
-    week = snapshot.returns.get(player_id)
-    return week is not None and week <= snapshot.as_of.stats_through and _has_known_game(snapshot, player_id)
-
-
-def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
-    """The week the player counts as back, or None when he is not due back.
-
-    The returns file gives the week. A player out with no row counts as back at RETURN_BY_WEEK, the week the standing
-    adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must start at that week.
-    A week through the last completed week is no return ahead, so he is not due back.
-    A player with a returns row by the trade week who played in its known games is back, so he is not due back.
-    """
-    if _back_in_a_known_game(snapshot, player_id):
-        return None
-    week = snapshot.returns.get(player_id)
-    # The position rank reads players on no roster, and the snapshot holds no injury status for them.
-    player = snapshot.players.get(player_id)
-    if week is None and player is not None and player.injury_status in OUT_STATUSES:
-        week = RETURN_BY_WEEK
-    return week if week is not None and week > snapshot.as_of.completed_through else None
-
-
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player back after the last completed week, so he is out now."""
     # The trend and the expected gap read only the returns file, so an out player with no row keeps his use.
@@ -891,7 +768,7 @@ def _due_back(snapshot: Snapshot, player_id: str) -> bool:
         snapshot, player_id)
 
 
-def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], list[str]]:
+def _left_out(snapshot: Snapshot, side: Side, what: str) -> tuple[set[str], list[str]]:
     """The handcuffs and the players due back in the trade, and a note for each group that says his `what` does not
     count. The trend and the expected gap both read this, so the two leave out the same players.
     """
@@ -908,7 +785,7 @@ def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], lis
     return set(handcuffs + due_back), notes
 
 
-def _trend(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _trend(snapshot: Snapshot, side: Side) -> Adjuster:
     """Trend and usage: the snap and target share directions of the players it gets against the players it gives.
 
     When every share is flat, the WOPR direction of a WR or TE breaks the tie first, and red-zone use breaks it next.
@@ -996,7 +873,7 @@ def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
     return sum(1 for week in weeks if week <= snapshot.as_of.completed_through)
 
 
-def _injury(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
     """Injury: a player it gets who is out with no near return, or who was on the report in many weeks."""
     exempt = set(_credited_return_bets(snapshot, side))
     for pid in side.gets:
@@ -1016,7 +893,7 @@ def _injury(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=INJURY, step=0, reason=reason)
 
 
-def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
     """Handcuff: a backup to the roster's own starting running back is insurance.
 
     It never moves the letter itself. A handcuff counts as zero in the sums, and the fit and trend
@@ -1086,7 +963,7 @@ def _playoff_rank(snapshot: Snapshot, players: list[str]) -> Fraction | None:
     return sum(means, Fraction(0)) / len(means) if means else None
 
 
-def _schedule(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _schedule(snapshot: Snapshot, side: Side) -> Adjuster:
     """Schedule: the byes left and the playoff opponents of the players it gets against the players it gives.
 
     It shows a lean for, against, or even, and never moves the letter.
@@ -1131,7 +1008,7 @@ def _mean_gap(gaps: list[Decimal]) -> Decimal | None:
     return sum(gaps, Decimal(0)) / len(gaps) if gaps else None
 
 
-def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
+def _expected_gap(snapshot: Snapshot, side: Side) -> Adjuster:
     """Expected gap: the players it gets against their expected points, and the players it gives against theirs.
 
     Points under expected tend to rise and points over expected tend to fall. So the side steps up when it buys low
@@ -1188,10 +1065,10 @@ def _expected_gap(snapshot: Snapshot, side: _Side) -> Adjuster:
     return Adjuster(name=EXPECTED, step=step, reason=" ".join([lead, *sentences, *notes]))
 
 
-def rubric_adjusters(expected_on: bool) -> tuple[Callable[[Snapshot, _Side], Adjuster], ...]:
+def rubric_adjusters(expected_on: bool) -> tuple[Callable[[Snapshot, Side], Adjuster], ...]:
     """The adjusters in rubric order. The expected gap comes last, and only when `expected_on` is True."""
     return (_fit, _standing, _trend, _injury, _handcuff, _schedule) + ((_expected_gap,) if expected_on else ())
 
 
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.
-ADJUSTERS: tuple[Callable[[Snapshot, _Side], Adjuster], ...] = rubric_adjusters(EXPECTED_ADJUSTER_ON)
+ADJUSTERS: tuple[Callable[[Snapshot, Side], Adjuster], ...] = rubric_adjusters(EXPECTED_ADJUSTER_ON)

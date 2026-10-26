@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 
 from cornerstone.adjusters import (
-    ADJUSTERS, SCHEDULE, Adjuster, Lean, _Side, build_side, lineup_value, named, trade_handcuffs,
+    ADJUSTERS, SCHEDULE, Adjuster, Lean, Side, build_side, lineup_value, named, trade_handcuffs,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -225,7 +225,7 @@ def _final_letter(start: Letter, adjusters: list[Adjuster]) -> Letter:
     return LETTERS[max(0, min(len(LETTERS) - 1, LETTERS.index(start) - total))]
 
 
-def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[_Side, _Side]:
+def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[Side, Side]:
     """The reads of each side, in the order of trade.sides: the best lineup, its slots, and the holes.
 
     The grade and the trade fact sheet both read the sides here, so the facts name the same slots the grade reads.

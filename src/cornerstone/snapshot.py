@@ -16,6 +16,7 @@ from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, T
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
+from cornerstone.ranks import RANKED_POSITIONS, in_pool, rank_table
 from cornerstone.slow_sources import SlowSources
 from cornerstone.sleeper import load_raw, read_fetch_time
 from cornerstone.tunables import IN_PROGRESS_MINUTES
@@ -134,8 +135,6 @@ class Snapshot(BaseModel):
         The table builds once per snapshot, so the finder's thousand trades and every reader share one ranking.
         """
         if self._rank_table is None:
-            # The adjusters module imports this one, so the import waits for the first read.
-            from cornerstone.adjusters import rank_table
             self._rank_table = rank_table(self)
             self._position_ranks = {pid: rank for players in self._rank_table.values()
                                     for rank, pid in enumerate(players, start=1)}
@@ -226,13 +225,10 @@ def _free_agents(entries: dict[str, dict], rosters: dict[int, list[str]]) -> dic
     The saved path and the live path both build here from the raw players file, so a Saturday grade and the Tuesday
     build read the same free agents.
     """
-    # The adjusters module and the waiver module import this one, so the imports wait for the build.
-    from cornerstone.adjusters import RANKED_POSITIONS
-    from cornerstone.waiver import _in_pool
     rostered = {pid for pids in rosters.values() for pid in pids}
     free_agents: dict[str, list[SnapshotPlayer]] = {position: [] for position in RANKED_POSITIONS}
     for pid, entry in sorted(entries.items()):
-        if entry.get("position") in free_agents and _in_pool(entry, rostered, pid):
+        if entry.get("position") in free_agents and in_pool(entry, rostered, pid):
             free_agents[entry["position"]].append(_snapshot_player(pid, entry))
     return free_agents
 
