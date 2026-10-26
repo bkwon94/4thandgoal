@@ -89,6 +89,8 @@ def _as_of(snapshot: Snapshot) -> dict:
         "stats_through": stamps.stats_through,
         "completed_through": stamps.completed_through,
         "rosters_fetched": stamps.rosters_fetched.isoformat() if stamps.rosters_fetched else None,
+        # The week N games that the player stats read. None when the grade reads no week N game.
+        "known_games": stamps.known_games.model_dump() if stamps.known_games else None,
     }
 
 

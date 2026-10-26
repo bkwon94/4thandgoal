@@ -166,9 +166,15 @@
   ],
   "as_of": {
     "chart_week": 6,
-    "stats_through": 5,
+    "stats_through": 6,
     "completed_through": 5,
-    "rosters_fetched": "2026-10-19T09:30:00-04:00"
+    "rosters_fetched": "2026-10-19T09:30:00-04:00",
+    "known_games": {
+      "week": 6,
+      "games": 14,
+      "in_progress": 0,
+      "pending": {}
+    }
   },
   "fallback": false,
   "missing": [

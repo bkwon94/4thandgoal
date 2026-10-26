@@ -356,8 +356,10 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
-    assert doc["as_of"] == {"chart_week": 6, "stats_through": 5, "completed_through": 5,
-                            "rosters_fetched": "2026-10-19T09:30:00-04:00"}
+    # The fetch on Monday holds the week 6 stat lines, so the player stats read the 14 known games of week 6.
+    assert doc["as_of"] == {"chart_week": 6, "stats_through": 6, "completed_through": 5,
+                            "rosters_fetched": "2026-10-19T09:30:00-04:00",
+                            "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {}}}
     assert doc["fallback"] is False
 
 
@@ -591,7 +593,8 @@ def test_the_cache_key_ignores_the_projection_rows_of_a_player_already_back(sett
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)
     rostered = snapshot.rosters[4][0]
-    past = snapshot.as_of.stats_through
+    # A return week at the last completed week is past. The player stat bound can be the trade week itself.
+    past = snapshot.as_of.completed_through
     # The returns file keeps a past return week, but a player already back keeps his recent points.
     key = cache_key(trade, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 12.5}}))
     assert cache_key(trade, _with_week_rows(snapshot, {rostered: past}, {rostered: {past + 1: 13.5}})) == key
@@ -965,7 +968,7 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
 # The fairness block's gives_more is a roster id.
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
-               "season"}
+               "season", "week", "games", "in_progress"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -1094,8 +1097,17 @@ FIND = {"season": 2026, "asker": 2, "partner": 3}
 
 
 @pytest.fixture
-def find_sources(settings, sources, chart_week6):
-    """The sources with a chart row for every RB, WR, TE, and QB of rosters 2 and 3, at his recent points per game."""
+def find_sources(settings, sources, chart_week6, fixture_raw_dir):
+    """The sources with a chart row for every RB, WR, TE, and QB of rosters 2 and 3, at his recent points per game.
+
+    The fetch has no week 6 stat lines, as before the first week 6 game, so the trades match the find fixture.
+    """
+    def before_kickoff(league_id, players_cache):
+        raw = load_raw(fixture_raw_dir)
+        raw["stats"] = []
+        return raw, FETCHED
+
+    sources = dataclasses.replace(sources, fetch_sleeper=before_kickoff)
     snapshot = sources.snapshot(settings.repo, 2026)
     rows = {pid: float(max(1, round(recent_points_per_game(snapshot, pid))))
             for roster_id in (2, 3) for pid in snapshot.rosters[roster_id]
@@ -1162,6 +1174,10 @@ def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(sett
     assert doc["empty"] == "No swap between these rosters is good for both."
     assert doc["fallback"] is False
     assert fake.calls == []
+    # The finder reads the same bounds and the same known games as the grade.
+    assert doc["as_of"]["stats_through"] == 6
+    assert doc["as_of"]["completed_through"] == 5
+    assert doc["as_of"]["known_games"] == {"week": 6, "games": 14, "in_progress": 0, "pending": {}}
 
 
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):

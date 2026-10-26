@@ -4,8 +4,9 @@ They build it from the recorded week 6 data and the week 6 trade values, with no
 """
 import shutil
 
+from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
-from cornerstone.snapshot import load_snapshot
+from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot
 
 
 def test_week_6_snapshot_holds_rosters_teams_standings_and_slots(fixture_raw_dir, fixture_history_root, chart_week6):
@@ -29,8 +30,9 @@ def test_week_6_snapshot_is_the_trade_week_and_its_inputs_end_at_week_5(
     assert snap.as_of.chart_week == 6
     assert snap.as_of.stats_through == 5
     assert snap.as_of.completed_through == 5
-    # The raw week 6 is the trade week, so its games stay out of the history.
+    # A saved week grades from the saved history only, so the raw week 6 games stay out of it.
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    assert snap.as_of.known_games is None
     assert snap.stale == []
 
 
@@ -139,3 +141,59 @@ def test_a_week_with_no_projections_ahead_file_has_none(fixture_raw_dir, fixture
     assert snap.projections_ahead is None
     # The missing list stays as it is. The fit reason says the projections are not available when a player is due back.
     assert "projections_ahead" not in snap.missing and "projections" not in snap.missing
+
+
+# The game of the Bills and the Dolphins in week 6. A raw without its stat lines holds 13 games of 26 teams.
+BUF_MIA = "202610602"
+
+
+def _known_games_raw(fixture_raw_dir, drop_game=None):
+    """The week 6 raw as a fetch on a game day of week 6 gives it, with the stat lines of `drop_game` left out."""
+    raw = load_raw(fixture_raw_dir)
+    raw["stats"] = [row for row in raw["stats"] if row.get("game_id") != drop_game]
+    return raw
+
+
+def test_a_trade_week_with_stat_lines_reads_its_known_games_and_keeps_the_standings_at_the_week_before(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    raw = _known_games_raw(fixture_raw_dir, drop_game=BUF_MIA)
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
+    assert snap.week == 6
+    assert snap.as_of.stats_through == 6
+    assert snap.as_of.completed_through == 5
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
+    assert len({row["team"] for row in raw["stats"]}) == 26
+    assert snap.as_of.known_games == KnownGames(week=6, games=13, in_progress=0, pending={})
+    assert snap.stale == []
+
+
+def test_the_standings_of_a_known_games_week_count_the_games_of_weeks_1_to_5_only(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    known = build_snapshot(_known_games_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6)
+    assert sum(s.wins + s.losses for s in known.standings) == 5 * 2 * 12
+    # The week 6 scores would move the records and the points for, so the same standings show week 6 is left out.
+    assert known.standings == saved.standings
+
+
+def test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_names_the_stats_stale(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    raw = load_raw(fixture_raw_dir)
+    raw["stats"] = []
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
+    assert snap.as_of.stats_through == 5
+    assert snap.as_of.completed_through == 5
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    assert snap.as_of.known_games is None
+    assert snap.stale == ["stats"]
+
+
+def test_on_the_tuesday_roll_the_raw_week_joins_the_history_and_the_new_trade_week_has_no_known_games(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7)
+    assert snap.week == 7
+    assert snap.as_of.stats_through == 6
+    assert snap.as_of.completed_through == 6
+    assert sum(s.wins + s.losses for s in snap.standings) == 6 * 2 * 12
+    assert snap.as_of.known_games is None
+    assert snap.stale == []

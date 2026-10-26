@@ -1,6 +1,6 @@
 """
 The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team and need.
-Every number ends at week N-1, and each fact carries every number in its text, as the weekly fact sheet does.
+Every player stat ends at the known games and every record at week N-1. Each fact carries every number in its text.
 """
 from cornerstone.adjusters import team_race
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
@@ -21,7 +21,7 @@ def _plural(count: int, one: str, many: str) -> str:
 
 
 def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The points per game and the position rank of a traded player, from weeks 1 to N-1 only."""
+    """The points per game and the position rank of a traded player, through the player stat bound only."""
     n = Nums()
     player = snapshot.players[pid]
     through = snapshot.as_of.stats_through
@@ -146,7 +146,8 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race and the roster need. Every number ends at week N-1."""
+    trade value, and per side the team record and race and the roster need.
+    Every player stat ends at the known games, and the record and the race end at week N-1."""
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
     for side in trade.sides:

@@ -10,16 +10,19 @@ import pytest
 from conftest import strip_trend_numbers
 
 from cornerstone import rubric
+from decimal import Decimal
+
 from cornerstone.adjusters import (
-    TREND, _byes_left, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
+    TREND, _byes_left, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
 )
+from cornerstone.history import points_per_game
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
 )
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import build_snapshot, load_snapshot
+from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -32,6 +35,23 @@ HARRISON, B_ROBINSON, BIJAN = "11628", "8154", "9509"
 @pytest.fixture
 def snap(fixture_raw_dir, fixture_history_root, chart_week6):
     return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+
+
+def _known_games_snap(raw_dir, history_root, chart, edit=None):
+    """The week 6 snapshot of a game day in week 6, so the week 6 stat lines are the known games.
+
+    `edit` changes the raw data first, as a test needs.
+    """
+    raw = load_raw(raw_dir)
+    if edit is not None:
+        edit(raw)
+    return build_snapshot(raw, history_root, chart, trade_week=6,
+                          returns=load_returns(history_root.parent / "returns.json"))
+
+
+@pytest.fixture
+def known_snap(fixture_raw_dir, fixture_history_root, chart_week6):
+    return _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6)
 
 
 @pytest.fixture
@@ -279,6 +299,16 @@ def test_the_lineup_value_of_a_player_due_back_reads_the_completed_week_bound_an
         "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 18.0 a game.")
 
 
+def test_the_return_bet_of_a_known_games_week_reads_the_completed_week_bound(known_snap):
+    # The player stat bound is 6 and the completed week bound is 5. A return in week 6 is still ahead.
+    snap = known_snap.model_copy(update={"projections_ahead": None, "returns": {JACOBS: 6}})
+    assert (snap.as_of.stats_through, snap.as_of.completed_through) == (6, 5)
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+
+
 def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_completed_week_bound(snap):
     # A completed week bound of 0 alone must not move any number that reads the player stats.
     moved = _with_bounds(snap, completed_through=0)
@@ -288,6 +318,66 @@ def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_complete
     for before, after in zip(grade(trade, snap), grade(trade, moved)):
         assert _adjuster(after, "roster fit") == _adjuster(before, "roster fit")
         assert _adjuster(after, TREND) == _adjuster(before, TREND)
+
+
+def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap):
+    # The two bounds differ here, so a reader on the completed week bound gives the numbers of the week before.
+    at_week_5 = _with_bounds(known_snap, stats_through=5)
+    # McCaffrey scored 26.2 in week 6, so weeks 3 to 6 give (19.6 + 14.5 + 15.8 + 26.2) / 4.
+    assert recent_points_per_game(known_snap, MCCAFFREY) == Decimal("19.025")
+    assert recent_points_per_game(at_week_5, MCCAFFREY) == Decimal("17.625")
+    trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
+    assert grade(trade, known_snap) != grade(trade, at_week_5)
+
+
+# Nico Collins on roster 4 scored 8.1 in week 5 and 27.3 in week 4, and played no game in weeks 2 and 3.
+def _collins_week_6(points: float | None):
+    """An edit of the raw data that gives Collins `points` in week 6, or no week 6 line at all for None."""
+    def edit(raw):
+        if points is None:
+            raw["stats"] = [row for row in raw["stats"] if row["player_id"] != COLLINS]
+        for row in raw["stats"]:
+            if row["player_id"] == COLLINS:
+                row["stats"]["pts_half_ppr"] = points
+        for entry in raw["matchups"]:
+            players_points = entry.get("players_points") or {}
+            if COLLINS in players_points:
+                if points is None:
+                    del players_points[COLLINS]
+                else:
+                    players_points[COLLINS] = points
+    return edit
+
+
+def _lineup_points(snap, roster_id: int) -> Decimal:
+    roster = snap.rosters[roster_id]
+    return sum((lineup_value(snap, pid) for pid in best_lineup(roster, snap.roster_positions, snap)), Decimal(0))
+
+
+def test_a_30_point_known_game_counts_in_the_recent_points_per_game_and_moves_the_best_lineup(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    big = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _collins_week_6(30.0))
+    none = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _collins_week_6(None))
+    # Weeks 3 to 6 give (27.3 + 8.1 + 30) / 3 with the week 6 game, and (27.3 + 8.1) / 2 without it.
+    assert recent_points_per_game(big, COLLINS) == Decimal("21.8")
+    assert recent_points_per_game(none, COLLINS) == Decimal("17.7")
+    assert COLLINS in best_lineup(big.rosters[4], big.roster_positions, big)
+    assert _lineup_points(big, 4) - _lineup_points(none, 4) == Decimal("4.1")
+
+
+def test_a_player_with_no_known_game_keeps_his_points_per_game_and_no_zero_game(
+        snap, fixture_raw_dir, fixture_history_root, chart_week6):
+    known = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _collins_week_6(None))
+    assert known.as_of.stats_through == 6
+    # A zero game in week 6 would give (27.3 + 8.1 + 0) / 3, which is 11.8.
+    assert recent_points_per_game(known, COLLINS) == Decimal("17.7")
+    assert points_per_game(known.stats, COLLINS, 6) == points_per_game(snap.stats, COLLINS, 5)
+
+
+def test_trend_reads_the_known_game_shares_and_names_its_week(known_snap):
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
+    trend = _adjuster(first, TREND)
+    assert "over weeks 5 and 6" in trend.reason
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):
