@@ -281,7 +281,23 @@ schedule lean for the schedule adjuster. Use "step" in code and "factor lean" on
 The exact two sides, in roster order, each once, that an analysis response must hold.
 
 **Before the trade**:
-Weeks 1 to N-1, for a proposed trade in week N. Every grade input ends there.
+Weeks 1 to N-1, for a proposed trade in week N. The standings and the chart week end there. Player stats
+end at the known games.
+
+**Known games**:
+Weeks 1 to N-1, plus every week N game that has a stat line on Sleeper, final or in progress. Every player
+stat a grade reads ends there: points, snap share, target share, red zone touches, and the WOPR window.
+_Avoid_: partial week, live stats, current week
+
+**In progress**:
+A week N game past its kickoff by less than 4 hours 30 minutes. The as-of stamp counts them, and every
+factor reason that reads one says so.
+_Avoid_: live game, ongoing
+
+**Pending**:
+A known game whose stat line lacks a count the grade wants, such as snaps on a Sunday night. The grade
+skips that count for that game and never reads it as zero. The as-of stamp names what is pending.
+_Avoid_: missing, late
 
 **Trade value**:
 A player's worth on the half-PPR redraft trade value chart for the week of the trade. It feeds the
@@ -305,6 +321,30 @@ The backup to a roster's own starting running back. Insurance, never a player wi
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over
 K, K over DEF.
+
+### Start or sit
+
+**Pair**:
+Two players on one roster that fit one lineup slot, which the manager asks the analyzer to compare for the
+game week. QB with QB, K with K, DEF with DEF, and any mix of RB, WR, and TE.
+_Avoid_: matchup (that is a player against a defense), duo
+
+**Game week**:
+The first week of the season with no scores. A start or sit decision is always for the game week.
+_Avoid_: next week, upcoming week, current week
+
+**Before the game**:
+Weeks 1 to N-1, for a decision in game week N. Every fact on the start or sit fact sheet ends there.
+
+**Either**:
+The start or sit answer when the two players are too close to split: play either one. The other two answers
+name the player to start.
+_Avoid_: toss-up, close call, coin flip
+
+**Source**:
+The plain name of the dataset a fact came from, its week span, and a URL. Code writes every source. The page
+shows one under each factor.
+_Avoid_: citation, reference
 
 ### Player data from nflverse
 
