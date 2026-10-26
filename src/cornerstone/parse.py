@@ -196,7 +196,8 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         roster_positions=raw["league"]["roster_positions"],
         rosters=_rosters(raw),
         scoring=raw["league"]["scoring_settings"],
-        stats={item["player_id"]: item["stats"] for item in raw["stats"]},
+        # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
+        stats={item["player_id"]: item["stats"] for item in raw.get("stats") or []},
     )
 
 

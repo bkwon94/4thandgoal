@@ -203,6 +203,9 @@ def _print_as_of(snapshot: Snapshot) -> None:
     fetched = stamps.rosters_fetched.isoformat(timespec="minutes") if stamps.rosters_fetched else "unknown"
     print(f"Week {snapshot.week} of {snapshot.season}. {chart_text}. Stats through week {stamps.stats_through}. "
           f"Rosters fetched {fetched}.")
+    known = stamps.known_games
+    if known is not None:
+        print(f"Known games of week {known.week}: {known.games} read, {known.in_progress} in progress.")
     print(_sources_line(snapshot))
     if snapshot.stale:
         print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")

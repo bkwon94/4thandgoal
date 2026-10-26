@@ -146,7 +146,7 @@ def test_a_season_that_is_not_in_progress_stops_the_build(live_repo, sleeper):
                       fetch_nflverse=_no_network, read_chart=ChartRecorder(None))
 
 
-def test_on_monday_night_the_raw_week_is_the_trade_week_and_stays_out_of_the_history(
+def test_on_monday_night_the_raw_week_is_the_trade_week_and_its_known_games_stay_out_of_the_saved_history(
         live_repo, sleeper, chart_week6):
     # Monday 2026-10-19 is before the week 7 cutoff, so the chart week is 6. Sleeper shows week 6 too.
     chart = ChartRecorder(chart_week6)
@@ -154,9 +154,13 @@ def test_on_monday_night_the_raw_week_is_the_trade_week_and_stays_out_of_the_his
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart)
     assert [week for _, week in chart.weeks] == [6]
     assert snap.week == 6
-    assert snap.as_of.stats_through == 5
-    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
+    # The week 6 stat lines are the known games, so the player stats read them and the standings do not.
+    assert snap.as_of.stats_through == 6
+    assert snap.as_of.completed_through == 5
+    assert snap.as_of.known_games is not None and snap.as_of.known_games.games == 14
+    assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
     assert sum(s.wins + s.losses for s in snap.standings) == 5 * 2 * 12
+    assert not (live_repo / "data" / "2026" / "history" / "week-06").exists()
     assert snap.stale == []
 
 
@@ -184,7 +188,9 @@ def test_a_failed_history_fetch_keeps_the_saved_weeks_and_notes_it(live_repo, sl
                          fetch_history_week=fetch, fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6))
     assert asked == [5]
     assert snap.stale == ["history"]
+    # A gap at week 5 keeps the week 6 games out too, so the known games never skip a week.
     assert snap.as_of.stats_through == 4
+    assert snap.as_of.known_games is None
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4]
 
 

@@ -37,6 +37,19 @@ class SnapshotPlayer(BaseModel):
     injury_status: str | None = None
 
 
+class KnownGames(BaseModel):
+    """The week N games that the player stats read, as the as-of stamp counts them. GLOSSARY.md, "Known games"."""
+
+    # The trade week N.
+    week: int
+    # The count of distinct week N games with a stat line of a player who played.
+    games: int
+    # The count of those games in progress.
+    in_progress: int = 0
+    # The game count of each count that Sleeper has not posted yet, by the name of the count.
+    pending: dict[str, int] = {}
+
+
 class AsOf(BaseModel):
     """The stamps that say how fresh the snapshot is. The result shows them to the manager."""
 
@@ -48,13 +61,15 @@ class AsOf(BaseModel):
     completed_through: int
     # None when the saved raw data has no fetch time.
     rosters_fetched: datetime | None
+    # None for a saved week, a failed week N fetch, or a raw week that is not the trade week.
+    known_games: KnownGames | None = None
 
 
 class Snapshot(BaseModel):
     """Everything the grade reads. A slow source that is not loaded is None and is named in missing."""
 
     season: int
-    # The trade week N. Every stat input ends at week N-1.
+    # The trade week N. Every player stat ends at the known games, and the standings end at week N-1.
     week: int
     # The players on each roster now, by roster id.
     rosters: dict[int, list[str]]
@@ -65,7 +80,8 @@ class Snapshot(BaseModel):
     roster_positions: list[str]
     players: dict[str, SnapshotPlayer]
     chart: ChartValues | None
-    # Season stats from week 1 through as_of.stats_through, which is week N-1 when the history holds it.
+    # Season stats from week 1 through as_of.stats_through, the player stat bound.
+    # That is week N when the raw data holds week N stat lines, and week N-1 when only the history holds it.
     stats: History
     as_of: AsOf
     # The injury report status, by gsis_id and week. The id map joins it to Sleeper ids.
@@ -95,7 +111,13 @@ class Snapshot(BaseModel):
     missing: list[str] = []
     # The sources whose refresh failed, so the cache is older than a day or absent.
     # "history" is here when the history lacks week N-1, on a live or a saved build.
+    # "stats" is here when the stats fetch of the trade week failed, so the known games are unknown.
     stale: list[str] = []
+
+
+def _games_with_a_stat_line(stats: list[dict]) -> int:
+    """The count of distinct games with a stat line of a player who played. A line of an inactive player has no gp."""
+    return len({row["game_id"] for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0})
 
 
 def load_returns(path: Path) -> dict[str, int] | None:
@@ -141,13 +163,19 @@ def build_snapshot(
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
+    A saved week passes no trade week and never counts its own games. Only the live path passes one, so only a
+    fetch on a game day reads the known games of week N.
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
     """
+    # A failed live stats fetch gives None, and a raw can lack the key. The parses then read no lines.
+    stats_lines = raw.get("stats")
+    raw = {**raw, "stats": stats_lines or []}
     week = parse_week(raw)
     stale = list(stale or [])
     # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. The standings end there.
-    # Player stats end at the known games. The history holds no week N game, so both bounds are N-1.
-    # So the history and the standings stop at N-1, and the games of week N never count, even when they are final.
+    # Player stats end at the known games: weeks 1 to N-1, plus the week N games with a stat line.
+    # A saved week passes no trade week, so it grades from the saved history only, as the weekly build does.
+    graded_now = trade_week is not None
     trade_week = week.week if trade_week is None else trade_week
     through = trade_week - 1
     weeks = load_saved_weeks(history_root, through)
@@ -156,11 +184,26 @@ def build_snapshot(
     if week.week == through:
         weeks[through] = parse_past_week(raw, through)
     # Sleeper may not have scored week N-1 yet, or its fetch failed. The stamp then shows the last week held.
-    stats_through = through if through in weeks else max(weeks, default=0)
-    if stats_through < through and "history" not in stale:
+    completed_through = through if through in weeks else max(weeks, default=0)
+    if completed_through < through and "history" not in stale:
         stale.append("history")
+    stats_through = completed_through
+    known_games = None
+    # A fetch on a game day of week N holds the week N stat lines, so those games join the player stats.
+    # A week with no played line yet has zero known games, and the grade reads the week before.
+    # A failed fetch has no stats, so the stamp names them stale.
+    # A gap in the history keeps week N out too, so the player stats never skip a week.
+    if graded_now and week.week == trade_week and completed_through == through:
+        if stats_lines is None:
+            if "stats" not in stale:
+                stale.append("stats")
+        else:
+            games = _games_with_a_stat_line(stats_lines)
+            known_games = KnownGames(week=trade_week, games=games)
+            if games > 0:
+                weeks[trade_week] = parse_past_week(raw, trade_week)
+                stats_through = trade_week
     history = History(week=stats_through, weeks=weeks)
-    completed_through = stats_through
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
     entries = raw["players"]
     players = {
@@ -182,9 +225,11 @@ def build_snapshot(
         week=trade_week,
         rosters=rosters,
         teams=week.teams,
-        # The standings run through the same week as the stats. Before week 1 the rosters give the records.
+        # The standings run through the last completed week, so the scores of the known games never count.
+        # The history passes with that bound too, so its check for a full season stops there.
+        # Before week 1 the rosters give the records.
         standings=standings(week.model_copy(update={"week": completed_through}),
-                            history if completed_through else None),
+                            history.model_copy(update={"week": completed_through}) if completed_through else None),
         roster_positions=raw["league"]["roster_positions"],
         players=players,
         chart=chart,
@@ -194,6 +239,7 @@ def build_snapshot(
             stats_through=stats_through,
             completed_through=completed_through,
             rosters_fetched=rosters_fetched,
+            known_games=known_games,
         ),
         schedules=slow.schedules if slow else None,
         depth_charts=slow.depth_charts if slow else None,

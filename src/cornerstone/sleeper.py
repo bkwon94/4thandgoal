@@ -68,6 +68,15 @@ def _get_or_empty(client: httpx.Client, url: str, params=None) -> list:
         return []
 
 
+def _get_or_none(client: httpx.Client, url: str, params=None) -> list | None:
+    """The body of an unofficial endpoint, or None when the call fails, so a failure differs from an empty body."""
+    try:
+        return _get(client, url, params)
+    except (httpx.HTTPError, ValueError) as error:
+        logger.warning("Sleeper endpoint failed: %s (%s)", url, error)
+        return None
+
+
 def _write_json(path: Path, obj) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(obj, f, indent=None)
@@ -220,7 +229,10 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         rosters = _get(client, f"{league}/rosters")
         # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
         fetched = datetime.now(ZoneInfo("America/New_York"))
-        data = _league_raw(client, league, season, week, players_cache, {"state": state, "rosters": rosters})
+        # The stats are None on a failed call, so the snapshot names them stale. An empty list is no game yet.
+        stats = _get_or_none(client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params())
+        data = _league_raw(client, league, season, week, players_cache,
+                           {"state": state, "rosters": rosters, "stats": stats})
     return data, fetched
 
 

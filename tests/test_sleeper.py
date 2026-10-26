@@ -169,3 +169,31 @@ def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
     assert [entry["week"] for entry in ahead] == list(range(7, 15))
     assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
     assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
+
+
+def _live_get(stats):
+    """A fake of sleeper._get for fetch_live_raw. The stats call gives `stats`, or raises when it is an error."""
+    def get(client, url, params=None):
+        if "/stats/nfl/" in url:
+            if isinstance(stats, Exception):
+                raise stats
+            return stats
+        if url.endswith("/state/nfl"):
+            return {"season": "2026", "display_week": 7}
+        return {} if url.endswith("/league/1") else []
+    return get
+
+
+def test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_empty_list(tmp_path, monkeypatch):
+    import httpx
+
+    from cornerstone import sleeper
+
+    monkeypatch.setattr(sleeper, "_players", lambda client, cache: {})
+    # The snapshot names the stats as stale only for a failed fetch, so the two cases must differ in the raw.
+    monkeypatch.setattr(sleeper, "_get", _live_get(httpx.ConnectError("down")))
+    failed, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
+    assert failed["stats"] is None
+    monkeypatch.setattr(sleeper, "_get", _live_get([]))
+    empty, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
+    assert empty["stats"] == []
