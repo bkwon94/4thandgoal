@@ -3,7 +3,10 @@ The fact sheet of a proposed trade: per traded player the grade inputs and the t
 need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
 Each fact carries every number in its text.
 """
-from cornerstone.adjusters import LINES, STRENGTH_SLOTS, _Side, due_back_week, team_race, trade_handcuffs
+from cornerstone.adjusters import (
+    FLEX_SLOTS, LINES, RANKED_POSITIONS, STRENGTH_SLOTS, StartingSlot, _hole_sentence, _Side, due_back_week, team_race,
+    trade_handcuffs,
+)
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
 from cornerstone.rubric import ProposedTrade, build_sides
@@ -202,6 +205,34 @@ def _strength_fact(snapshot: Snapshot, side: _Side) -> Fact | None:
     return fact(f"{side.roster_id}.strength", text, n, [team], [])
 
 
+def _hole_fact(snapshot: Snapshot, side: _Side, slot: StartingSlot) -> Fact:
+    """A new hole of a side: the hole sentence of the fit reason, and the best free agent at the hole's position with
+    his position rank. GLOSSARY.md, "Hole".
+
+    The free agent tells the reader whether waivers fix the hole. He feeds this fact only, never the step.
+    A FLEX hole reads the position of the player who holds it. An empty FLEX hole reads every position the slot allows.
+    """
+    n = Nums()
+    team = snapshot.teams[side.roster_id].name
+    if slot.player is not None and slot.slot in FLEX_SLOTS:
+        positions = [snapshot.players[slot.player].position]
+    else:
+        allowed = FLEX_SLOTS.get(slot.slot, frozenset({slot.slot}))
+        positions = [position for position in RANKED_POSITIONS if position in allowed]
+    where = positions[0] if len(positions) == 1 else ", ".join(positions[:-1]) + f", or {positions[-1]}"
+    # The hole sentence carries the slot, the week, and the rank as digits, so Nums records each one.
+    text = f"For {team}, {n.text(_hole_sentence(snapshot, slot))}"
+    players = [] if slot.player is None else [snapshot.players[slot.player].name]
+    best = snapshot.best_free_agent(positions)
+    if best is None:
+        text += f" No free agent at {where} has a position rank."
+    else:
+        player, rank = best
+        text += f" The best free agent at {where} is {player.name}, {player.position}{n(rank)}."
+        players.append(player.name)
+    return fact(f"{side.roster_id}.hole.{slot.name.lower()}", text, n, [team], players)
+
+
 def _week_fact(snapshot: Snapshot) -> Fact:
     n = Nums()
     as_of = snapshot.as_of
@@ -217,8 +248,9 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race, the roster need, the slot each player it gets takes, the
-    depth at each position whose count changes, and the strength when its count changes.
+    trade value, and per side the team record and race, the roster need, the slot each player it gets takes, each
+    new hole with the best free agent at its position, the depth at each position whose count changes, and the
+    strength when its count changes.
     Every player stat ends at the known games, and the record and the race end at week N-1."""
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
@@ -240,6 +272,7 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     # The sides come from the grade's own call, so the slot facts name the slots the roster fit step reads.
     for read in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
         facts += [_slot_fact(snapshot, read, pid) for pid in read.gets]
+        facts += [_hole_fact(snapshot, read, slot) for slot in read.new_holes(snapshot)]
         facts += [_depth_fact(snapshot, read, position) for position in LINES]
         facts.append(_strength_fact(snapshot, read))
     return {f.id: f for f in facts if f is not None}

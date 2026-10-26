@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from conftest import strip_trend_numbers, with_carries
+from conftest import strip_trend_numbers, with_carries, with_free_agents
 
 from cornerstone import rubric, tunables
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
@@ -599,6 +599,61 @@ def test_a_trade_that_drops_the_top_24_starter_count_from_four_to_three_gives_a_
     assert {"24", "4", "3"} <= set(sheet["2.strength"].numbers)
     assert "12.strength" not in sheet
     assert tunables.STRENGTH_RANK == 24
+
+
+@pytest.fixture
+def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6):
+    """The week 6 snapshot with the hand-set free agents of conftest. Bigsby RB51 is the best free agent at RB and
+    Darren Waller TE9 the best at TE. No free agent at QB or WR has a position rank."""
+    return build_snapshot(with_free_agents(load_raw(fixture_raw_dir)), fixture_history_root, chart_week6,
+                          returns=load_returns(fixture_history_root.parent / "returns.json"))
+
+
+def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_rank(fa_snap):
+    # Roster 2 gives Jones and Jeanty, so Miller RB55 takes RB2 and Charbonnet, due back in week 14, takes RB1.
+    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), fa_snap)
+    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, RB2 is a hole after the trade: Kendre Miller is "
+                                        "RB55. The best free agent at RB is Tank Bigsby, RB51.")
+    assert sheet["2.hole.rb1"].text == ("For All You Need Is Love, RB1 is a hole after the trade: Zach Charbonnet is "
+                                        "due back in week 14. The best free agent at RB is Tank Bigsby, RB51.")
+    # The rank goes through Nums, so the analysis checker accepts "RB51" in the prose.
+    assert {"2", "55", "51"} <= set(sheet["2.hole.rb2"].numbers)
+    assert sheet["2.hole.rb2"].players == ["Kendre Miller", "Tank Bigsby"]
+    # Roster 12 gives St. Brown and Wilson, so DJ Moore, due back in week 14, takes WR2. No free agent at WR has a rank.
+    assert sheet["12.hole.wr2"].text == ("For Amon-Ra Dawg Your Team, WR2 is a hole after the trade: DJ Moore is due "
+                                         "back in week 14. No free agent at WR has a position rank.")
+
+
+def test_a_hole_with_no_free_agent_with_a_rank_gets_a_fact_that_says_so(snap):
+    # The week 6 players file holds no free agent.
+    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
+    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, RB2 is a hole after the trade: Kendre Miller is "
+                                        "RB55. No free agent at RB has a position rank.")
+
+
+def test_a_flex_hole_reads_the_position_of_the_player_who_holds_it(fa_snap):
+    # Tyson WR44 takes FLEX2, as in the flex hole test of the step. The free agents at RB and TE do not count for him.
+    snap = fa_snap.model_copy(update={"returns": {**fa_snap.returns, ADAMS: 6, RICE: 6}})
+    sheet = trade_fact_sheet(_trade(1, [ADAMS], 2, [ADDISON]), snap)
+    assert sheet["1.hole.flex2"].text == ("For Brock ‘N’ Roll, FLEX2 is a hole after the trade: Jordyn Tyson is WR44. "
+                                          "No free agent at WR has a position rank.")
+
+
+def test_an_empty_flex_hole_reads_the_best_free_agent_at_every_position_the_slot_allows(fa_snap):
+    # Roster 2 keeps only Burrow, Chase, Olave, and Strange and gets a defense, so no player fills FLEX1.
+    # FLEX2 held Charbonnet, due back in week 14, so it was a hole before and only FLEX1 is new.
+    # Waller TE9 ranks better than Bigsby RB51.
+    gives = [JONES, JEANTY, CHARBONNET, LOVE, MILLER, "10213", "8126", ADDISON, "12517"]
+    sheet = trade_fact_sheet(_trade(2, gives, 12, ["NE"]), fa_snap)
+    assert sheet["2.hole.flex1"].text == ("For All You Need Is Love, FLEX1 is a hole after the trade: no player fills "
+                                          "it. The best free agent at RB, WR, or TE is Darren Waller, TE9.")
+    assert "2.hole.flex2" not in sheet
+
+
+def test_the_hole_fact_never_says_replacement_floor_or_tier(fa_snap):
+    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), fa_snap)
+    holes = [f.text for fid, f in sheet.items() if ".hole." in fid]
+    assert holes and not any(FIT_BANNED.search(text) for text in holes)
 
 
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
