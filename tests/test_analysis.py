@@ -186,6 +186,9 @@ def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sent
     ("He gives twice the production.", "twice"),
     ("He gives double the production.", "double"),
     ("He ranks high on the PIHS list.", "pihs"),
+    ("Kendre Miller is a replacement back.", "replacement"),
+    ("Kendre Miller is below the floor.", "floor"),
+    ("The trade leaves a gap at RB.", "gap"),
 ])
 def test_a_banned_word_fails(trade, snap, sentence, word):
     text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."

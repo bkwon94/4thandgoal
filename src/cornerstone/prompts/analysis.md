@@ -40,6 +40,7 @@ Then give a verdict for the side that asked, with one reason.
 8. Name each team in the trade at most once in a side's analysis. After that, write "this side",
    "they", or the player names.
 9. Never name a letter grade in the analysis or the verdict reason. Never write the word letter.
+10. For roster fit, say position rank, the line, and hole. Never write replacement, tier, floor, or gap.
 
 ## Trade value
 
