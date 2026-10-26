@@ -71,12 +71,14 @@ A hole is a starting slot that holds a player below the line, or holds no player
 is never a hole. A hole that exists before the trade too is not new. A hole can move to another
 slot of the same kind, such as from one flex slot to the other. It is still not new.
 
-- A new hole is one step down. The reason names the slot, the player, and his position rank.
+- A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
+  position rank.
 - A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
   still one down, and the reason names the hole.
-- A lineup gain of `FIT_THRESHOLD` or more is one step up when the trade opens no new hole.
-- The side that gets the single highest-value player in the trade, with no lineup loss and no new
-  hole, gets one step up. A lineup change smaller than `FIT_THRESHOLD` is no lineup loss. Trade
+- A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no
+  step, because the two cancel. The reason names the gain and the hole.
+- The side that gets the single highest-value player in the trade, with no lineup loss, gets one
+  step up. A new hole blocks this step too, and the step is none. A lineup change smaller than `FIT_THRESHOLD` is no lineup loss. Trade
   value picks that player. When the week has no chart or a traded player is unlisted, points per
   game pick him.
 - In a trade of one player for two or more, the side that gets two or more gets the step up only

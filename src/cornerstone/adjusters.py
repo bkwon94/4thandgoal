@@ -482,11 +482,18 @@ def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
 
 def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
     """The roster fit step and its reason, from the new holes and the change in the side's best lineup."""
-    # A new hole is one step down whatever the lineup does. It blocks every step up, and a handcuff never hides it,
-    # because a missing starter costs the side on Sunday. With a lineup loss too, the hole is the reason.
-    holes = side.new_holes(snapshot)
+    # A new hole costs the side on Sunday, so it blocks every step up, and a handcuff never hides it.
+    # A lineup gain or the highest-value player cancels the hole to no step, and the reason names both.
+    # With no gain, the hole is one step down. With a lineup loss too, the hole is the reason.
+    holes = " ".join(_hole_sentence(snapshot, slot) for slot in side.new_holes(snapshot))
     if holes:
-        return Adjuster(name=ROSTER_FIT, step=-1, reason=" ".join(_hole_sentence(snapshot, slot) for slot in holes))
+        if side.lineup_gains:
+            return Adjuster(name=ROSTER_FIT, step=0, reason=f"The best lineup gains after the trade. {holes}")
+        if side.gets_highest_value and not side.lineup_loses:
+            return Adjuster(name=ROSTER_FIT, step=0,
+                            reason="It gets the highest-value player in the trade, and the best lineup does not "
+                                   f"lose. {holes}")
+        return Adjuster(name=ROSTER_FIT, step=-1, reason=holes)
     if side.lineup_loses:
         # A handcuff is insurance that sits on the bench, so a lineup loss in a trade for him does not count.
         if side.gets_handcuffs:

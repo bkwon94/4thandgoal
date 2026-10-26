@@ -279,9 +279,9 @@ def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block(
     fit, handcuff = _prompt_section("Roster fit"), _prompt_section("Handcuff")
     assert "`LINE_RB_WR` at RB and WR, and `LINE_QB_TE` at QB and TE" in fit
     assert "A hole is a starting slot that holds a player below the line, or holds no player." in fit
-    assert "A new hole is one step down." in fit
-    assert "one step up when the trade opens no new hole" in fit
-    assert "with no lineup loss and no new hole, gets one step up" in fit
+    assert "A new hole with no lineup gain is one step down." in fit
+    assert "A gain that opens a new hole is no step, because the two cancel." in fit
+    assert "A new hole blocks this step too, and the step is none." in fit
     assert "The block covers a lineup loss only. A new hole still steps down." in handcuff
     assert "broad" not in handcuff
     assert tunables.LINE_RB_WR == 36 and tunables.LINE_QB_TE == 24
@@ -327,11 +327,24 @@ def test_a_side_with_the_same_hole_before_and_after_gets_no_step_for_it(snap):
 
 def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_step_up(snap):
     # St. Brown at 90.0 is the highest-value player, and roster 2 gets him. Its RB2 slot opens a hole at Miller RB55.
-    snap = _with_values(snap, {ST_BROWN: 90.0})
+    # Jones and Jeanty get chart rows, so trade value picks St. Brown. The hole blocks the step up, and the two
+    # cancel to no step.
+    snap = _with_values(snap, {ST_BROWN: 90.0, JONES: 10.0, JEANTY: 10.0})
     second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
     fit = _adjuster(second, "roster fit")
-    assert fit.step == -1
-    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
+    assert fit.step == 0
+    assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose. "
+                          "RB2 is a hole after the trade: Kendre Miller is RB55.")
+
+
+def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_snap):
+    # Hand-worked trade 3: roster 4 gives McConkey and Stevenson for Skattebo and Collins, a gain of 4.75.
+    # Stevenson RB23 held FLEX2, and Worthy WR45 takes it. The gain and the hole cancel.
+    fourth, _ = grade(_trade(4, ["11635", "7611"], 7, ["12481", COLLINS], asker=7), _before_real_trade(slow_snap, 3))
+    fit = _adjuster(fourth, "roster fit")
+    assert fit.step == 0
+    assert fit.reason.startswith(
+        "The best lineup gains after the trade. FLEX2 is a hole after the trade: Xavier Worthy is WR45.")
 
 
 def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_down(slow_snap):
@@ -1612,7 +1625,8 @@ HAND_WORKED = [
 # A new hole moves these rows. Each waits for Brian's word before HAND_WORKED changes.
 HOLE_MOVES = {
     0: "Roster 8 gives Malik Nabers, so WR2 is a hole: Carnell Tate is WR47. Fit 0 to -1, final A to B, still accept.",
-    3: "Roster 4 gives Rhamondre Stevenson, so FLEX2 is a hole: Xavier Worthy is WR45. Fit +1 to -1, final stays A.",
+    3: "Roster 4 gives Rhamondre Stevenson, so FLEX2 is a hole: Xavier Worthy is WR45. The gain and the hole "
+       "cancel: fit +1 to 0, final stays A, still decline.",
 }
 
 

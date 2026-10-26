@@ -33,7 +33,7 @@ For each trade, give the trade number, the reason, and the cited fact IDs.
 10. Never write the words chart, tier, twice, double, or triple. "Depth chart" and "trade value"
     are fine. Never name the source of the trade values.
 11. Never write win-win, lopsided, or fair. Write "good for both" if you need to.
-12. For roster fit, say position rank, the line, and hole. Never write replacement, tier, floor, or gap.
+12. For roster fit, say position rank, the line, and hole. Never write replacement, tier, or floor.
 
 ## Tone
 
