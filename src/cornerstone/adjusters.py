@@ -163,11 +163,11 @@ class StartingSlot(NamedTuple):
     absence: Absence | None = None
 
     def is_hole(self, snapshot: Snapshot) -> bool:
-        """True when the slot holds a player below the line for his own position, holds no player, or holds a
-        player who misses a week of the bye window with no cover.
+        """True when the slot is a hole. GLOSSARY.md, "Hole".
 
-        GLOSSARY.md, "Hole". A K or DEF slot is never a hole. A player at a ranked position with no rank is below
-        the line, because he has no stat line to start on.
+        A hole holds no player or a player below the line for his own position. A starter who misses a week of the
+        bye window with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
+        no rank is below the line, because he has no stat line to start on.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
             return False

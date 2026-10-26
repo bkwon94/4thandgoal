@@ -58,8 +58,8 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     back. `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
     The week N lines are the stat lines of a known-games week, cut to the fields the grade reads. A new fetch with a
     new number for a rostered player is a new key. A week with no known games adds none.
-    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit, unless it
-    moves a position rank.
+    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit. A change that
+    moves a position rank is the one exception.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
@@ -68,7 +68,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     because the trend step reads them once the player file posts them.
     The rank table goes in: the player ids per position in position rank order. A rank reads every player at the
     position, rostered or not, so a line of a free agent or of a third roster can move it. The table itself is
-    the exact input: a line that moves a rank misses, and a line that moves none, such as a K line, keeps the hit.
+    the exact input. A line that moves a rank misses. A line that moves none, such as a K line, keeps the hit.
     The free agent ids per position go in, because the hole fact names the best free agent. The rank table
     already covers their stat lines, so a new free agent or one who leaves the pool is the only change left.
     """

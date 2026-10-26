@@ -83,15 +83,17 @@ Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a positi
 `STRENGTH_RANK` or better. Depth and strength are facts for the analysis. They never move the step.
 
 - A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
-  position rank. For a starter with no cover, it names the week of his bye or his return.
+  position rank. For a starter with no cover, it names the week of his bye or his return and says
+  that no bench player covers him. For a starter out with no return week on file, it says so and
+  names no week.
 - A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
   still one down, and the reason names the hole.
 - A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no
   step, because the two cancel. The reason names the gain and the hole.
 - The side that gets the single highest-value player in the trade, with no lineup loss, gets one
-  step up. A new hole blocks this step too, and the step is none. A lineup change smaller than `FIT_THRESHOLD` is no lineup loss. Trade
-  value picks that player. When the week has no chart or a traded player is unlisted, points per
-  game pick him.
+  step up. A new hole blocks this step too, and the step is none. A lineup change smaller than
+  `FIT_THRESHOLD` is no lineup loss. Trade value picks that player. When the week has no chart or a
+  traded player is unlisted, points per game pick him.
 - In a trade of one player for two or more, the side that gets two or more gets the step up only
   when every player it gets starts in its best lineup after the trade.
 

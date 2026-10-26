@@ -314,7 +314,8 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
     assert "A starter who misses a week with no cover is a hole too." in fit
     assert "The bye window is `BYE_WINDOW` weeks from the trade week." in fit
     assert "A starter due back after the window is a hole, whatever his rank." in fit
-    assert "it names the week of his bye or his return." in fit
+    assert "it names the week of his bye or his return and says that no bench player covers him." in fit
+    assert "For a starter out with no return week on file, it says so and names no week." in fit
     assert tunables.BYE_WINDOW == 3
 
 
