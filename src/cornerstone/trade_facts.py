@@ -3,7 +3,7 @@ The fact sheet of a proposed trade: per traded player the grade inputs and the t
 need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
 Each fact carries every number in its text.
 """
-from cornerstone.adjusters import _Side, due_back_week, team_race, trade_handcuffs
+from cornerstone.adjusters import LINES, _Side, due_back_week, team_race, trade_handcuffs
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
 from cornerstone.rubric import ProposedTrade, build_sides
@@ -171,6 +171,17 @@ def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
     return fact(f"{pid}.slot", text, n, [], players)
 
 
+def _depth_fact(snapshot: Snapshot, side: _Side, position: str) -> Fact | None:
+    """The depth of a side at a position before and after the trade, or None when the count does not change."""
+    before, after = side.depth(snapshot, position)
+    if before == after:
+        return None
+    n = Nums()
+    team = snapshot.teams[side.roster_id].name
+    text = f"For {team}, {position} depth above the line goes from {n(before)} to {n(after)}."
+    return fact(f"{side.roster_id}.depth.{position.lower()}", text, n, [team], [])
+
+
 def _week_fact(snapshot: Snapshot) -> Fact:
     n = Nums()
     as_of = snapshot.as_of
@@ -186,7 +197,8 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race, the roster need, and the slot each player it gets takes.
+    trade value, and per side the team record and race, the roster need, the slot each player it gets takes, and
+    the depth at each position whose count changes.
     Every player stat ends at the known games, and the record and the race end at week N-1."""
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
@@ -208,4 +220,5 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     # The sides come from the grade's own call, so the slot facts name the slots the roster fit step reads.
     for read in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
         facts += [_slot_fact(snapshot, read, pid) for pid in read.gets]
+        facts += [_depth_fact(snapshot, read, position) for position in LINES]
     return {f.id: f for f in facts if f is not None}

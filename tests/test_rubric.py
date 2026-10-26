@@ -559,6 +559,29 @@ def test_a_player_who_takes_an_empty_slot_says_the_slot_was_empty(snap):
     assert sheet["NE.slot"].text == "New England Patriots takes DEF, which was empty before the trade."
 
 
+# Roster 2 holds Jones RB13, Jeanty RB21, and Charbonnet RB27 above the line at RB, with Miller RB55 and Love RB75
+# below it. At WR it holds Chase WR8, Olave WR14, Tucker WR31, and Wan'Dale Robinson WR36, with Addison WR53 below.
+# Roster 12 holds Tuten RB15, Emanuel Wilson RB17, Hampton RB26, and Pollard RB30 above the line at RB, and
+# Higgins WR15, DJ Moore WR22, and Luther Burden WR32 at WR beside St. Brown and Wilson.
+def test_a_trade_that_drops_a_sides_rb_depth_from_three_to_one_gives_a_depth_fact_with_both_counts(snap):
+    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
+    assert sheet["2.depth.rb"].text == "For All You Need Is Love, RB depth above the line goes from 3 to 1."
+    assert sheet["2.depth.rb"].numbers == ["3", "1"]
+    assert sheet["2.depth.wr"].text == "For All You Need Is Love, WR depth above the line goes from 4 to 6."
+    assert sheet["12.depth.rb"].text == "For Amon-Ra Dawg Your Team, RB depth above the line goes from 4 to 6."
+    assert sheet["12.depth.wr"].text == "For Amon-Ra Dawg Your Team, WR depth above the line goes from 5 to 3."
+
+
+def test_a_position_whose_depth_count_does_not_change_gets_no_depth_fact(snap):
+    # Hampton RB26 for Jeanty RB21 keeps 3 backs above the line on roster 2 and 4 on roster 12.
+    sheet = trade_fact_sheet(_trade(2, [JEANTY], 12, [HAMPTON]), snap)
+    assert not [fid for fid in sheet if ".depth." in fid]
+    # QB and TE do not change in the trade of backs for receivers, so they get no depth fact either.
+    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
+    assert sorted(fid for fid in sheet if ".depth." in fid) == [
+        "12.depth.rb", "12.depth.wr", "2.depth.rb", "2.depth.wr"]
+
+
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
 # and roster 9 in the sixth has 5 wins.
 # Roster 4 has 1 win, four games out, so it is a seller.

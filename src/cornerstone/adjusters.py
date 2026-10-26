@@ -403,6 +403,18 @@ class _Side(BaseModel):
             new += fresh[:max(0, len(now) - len(was))]
         return [slot for slot in after if slot in new]
 
+    def depth(self, snapshot: Snapshot, position: str) -> tuple[int, int]:
+        """The depth at a position before and after the trade. GLOSSARY.md, "Depth".
+
+        Depth counts every player at the position, starters and bench, at or above the line. It is a fact for the
+        analysis, never a step, so a bench player above the line counts the same as a starter.
+        """
+        def count(roster: list[str]) -> int:
+            return sum(1 for pid in roster
+                       if snapshot.players[pid].position == position and _above_the_line(snapshot, pid))
+        return (count(snapshot.rosters[self.roster_id]),
+                count(_roster_after(snapshot, self.roster_id, self.gives, self.gets)))
+
 
 def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str]) -> list[str]:
     return [pid for pid in snapshot.rosters[roster_id] if pid not in gives] + gets
