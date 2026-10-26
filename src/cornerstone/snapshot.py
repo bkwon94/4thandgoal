@@ -118,23 +118,33 @@ class Snapshot(BaseModel):
     # The Sleeper codes of the NFL teams whose known game of week N is in progress. A reason that quotes a week N
     # number of one of their players says "game in progress". Empty for a saved week.
     in_progress_teams: set[str] = set()
-    # The position rank of each player, built on the first read. GLOSSARY.md, "Position rank".
+    # The player ids per position in position rank order, and the rank of each player, built on the first read.
+    # GLOSSARY.md, "Position rank".
+    _rank_table: dict[str, list[str]] | None = PrivateAttr(default=None)
     _position_ranks: dict[str, int] | None = PrivateAttr(default=None)
 
-    def position_rank(self, player_id: str) -> int | None:
-        """The player's position rank, or None for a K, a DEF, or a player outside the rank pool.
+    def rank_table(self) -> dict[str, list[str]]:
+        """The player ids at each of QB, RB, WR, and TE in position rank order, first to last.
 
         The table builds once per snapshot, so the finder's thousand trades and every reader share one ranking.
         """
-        if self._position_ranks is None:
+        if self._rank_table is None:
             # The adjusters module imports this one, so the import waits for the first read.
-            from cornerstone.adjusters import position_ranks
-            self._position_ranks = position_ranks(self)
+            from cornerstone.adjusters import rank_table
+            self._rank_table = rank_table(self)
+            self._position_ranks = {pid: rank for players in self._rank_table.values()
+                                    for rank, pid in enumerate(players, start=1)}
+        return self._rank_table
+
+    def position_rank(self, player_id: str) -> int | None:
+        """The player's position rank, or None for a K, a DEF, or a player outside the rank pool."""
+        self.rank_table()
         return self._position_ranks.get(player_id)
 
     def model_copy(self, *, update: dict | None = None, deep: bool = False) -> "Snapshot":
         """A copy with no rank table, so a copy with new rosters, returns, or stats ranks from its own data."""
         copy = super().model_copy(update=update, deep=deep)
+        copy._rank_table = None
         copy._position_ranks = None
         return copy
 

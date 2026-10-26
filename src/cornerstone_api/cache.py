@@ -10,11 +10,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.adjusters import RANKED_POSITIONS, due_back_week
-from cornerstone.history import player_points
+from cornerstone.adjusters import due_back_week
 from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
-from cornerstone.tunables import LAST_REGULAR_WEEK, LINEUP_WEEKS
+from cornerstone.tunables import LAST_REGULAR_WEEK
 
 # The stat fields the grade reads from a week N line. A change to any other field keeps the hit.
 STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_att")
@@ -59,14 +58,17 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     back. `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
     The week N lines are the stat lines of a known-games week, cut to the fields the grade reads. A new fetch with a
     new number for a rostered player is a new key. A week with no known games adds none.
-    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit.
+    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit, unless it
+    moves a position rank.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
     The known-games block of the stamp goes in, because the document shows its counts. A stale stats fetch goes in,
     because a failed week N fetch grades from the completed week. The week N WOPR rows of the two rosters go in,
     because the trend step reads them once the player file posts them.
-    The rank pool lines of players on no roster go in, because the position rank reads free agents too.
+    The rank table goes in: the player ids per position in position rank order. A rank reads every player at the
+    position, rostered or not, so a line of a free agent or of a third roster can move it. The table itself is
+    the exact input: a line that moves a rank misses, and a line that moves none, such as a K line, keeps the hit.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -99,7 +101,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
                "in_progress_teams": sorted(snapshot.in_progress_teams),
                "known_games": snapshot.as_of.known_games.model_dump() if snapshot.as_of.known_games else None,
                "stats_stale": "stats" in snapshot.stale,
-               "rank_pool_lines": _rank_pool_lines(snapshot)}
+               "rank_table": snapshot.rank_table()}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
 
 
@@ -115,29 +117,6 @@ def _week_n_lines(snapshot: Snapshot) -> dict[str, dict[str, float]]:
     lines = snapshot.stats.weeks[as_of.stats_through].stats
     reduced = {player: {field: line[field] for field in STAT_FIELDS if field in line} for player, line in lines.items()}
     return {player: line for player, line in reduced.items() if line}
-
-
-def _rank_pool_lines(snapshot: Snapshot) -> dict[int, dict[str, list]]:
-    """The inputs of lineup value that the position rank reads from the stat lines of players on no roster.
-
-    GLOSSARY.md, "Position rank". Each line gives the position, the games played, and the points, at QB, RB, WR,
-    and TE only, so a K line never moves the key. The weeks are the window of recent points per game. A player
-    with a known game reads through week N and every other player through week N-1, so the weeks cover both.
-    A free agent who scores more moves the rank of a traded player, so his line must move the key. The lines of
-    the two rosters go in through their week N lines, and the lines of a third roster stay out of the key.
-    """
-    as_of = snapshot.as_of
-    rostered = {player for players in snapshot.rosters.values() for player in players}
-    first = max(1, as_of.completed_through - LINEUP_WEEKS + 1)
-    lines = {}
-    for week in range(first, as_of.stats_through + 1):
-        past = snapshot.stats.weeks.get(week)
-        if past is None:
-            continue
-        lines[week] = {player: [past.positions[player], line.get("gp", 0), player_points(past, player)]
-                       for player, line in past.stats.items()
-                       if player not in rostered and past.positions.get(player) in RANKED_POSITIONS}
-    return lines
 
 
 def _week_n_wopr(snapshot: Snapshot) -> dict[str, int]:

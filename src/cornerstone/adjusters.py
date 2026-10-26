@@ -137,8 +137,10 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
 RANKED_POSITIONS = ("QB", "RB", "WR", "TE")
 
 
-def position_ranks(snapshot: Snapshot) -> dict[str, int]:
-    """The position rank of each player at QB, RB, WR, and TE, by player id. GLOSSARY.md, "Position rank".
+def rank_table(snapshot: Snapshot) -> dict[str, list[str]]:
+    """The player ids at each of QB, RB, WR, and TE in position rank order, first to last.
+
+    GLOSSARY.md, "Position rank". The index in the list plus one is the rank.
 
     The pool is every player with a stat line in the known games, rostered or not, plus every rostered player.
     A rostered player due back can have no stat line, and his projection ahead still gives him a lineup value.
@@ -148,7 +150,9 @@ def position_ranks(snapshot: Snapshot) -> dict[str, int]:
     Snapshot.position_rank reads this table, so it builds once per snapshot. The finder grades about a thousand
     trades per call and must not rank the league per side.
     """
-    positions = {pid: position for past in snapshot.stats.weeks.values() for pid, position in past.positions.items()}
+    # The known games end at the player stat bound, and a player is in the pool only with a stat line there.
+    positions = {pid: past.positions[pid] for week, past in snapshot.stats.weeks.items()
+                 if week <= snapshot.as_of.stats_through for pid in past.stats if pid in past.positions}
     # The players file is the source for a rostered player, as best_lineup reads it. A stat line gives the rest.
     positions.update({pid: player.position for pid, player in snapshot.players.items()})
     pool = [pid for pid, position in positions.items() if position in RANKED_POSITIONS]
@@ -160,11 +164,8 @@ def position_ranks(snapshot: Snapshot) -> dict[str, int]:
         no_game = not due_back(pid) and not _played_weeks(snapshot, pid)
         return (no_game, -lineup_value(snapshot, pid), POSITION_ORDER.index(positions[pid]), pid)
 
-    ranks: dict[str, int] = {}
-    for position in RANKED_POSITIONS:
-        at_position = sorted((pid for pid in pool if positions[pid] == position), key=order)
-        ranks.update({pid: rank for rank, pid in enumerate(at_position, start=1)})
-    return ranks
+    return {position: sorted((pid for pid in pool if positions[pid] == position), key=order)
+            for position in RANKED_POSITIONS}
 
 
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:

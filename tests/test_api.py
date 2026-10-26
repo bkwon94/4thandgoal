@@ -529,9 +529,12 @@ def _with_week_rows(snapshot, returns, projections_ahead):
 
 
 def _outside_player(snapshot, roster_ids):
-    """A player on a roster outside `roster_ids`, so no grade of those rosters reads his rows."""
+    """A player on a roster outside `roster_ids`, so no grade of those rosters reads his rows.
+
+    He is a DEF, which has no position rank, so a change to his rows or lines moves no rank of a traded player.
+    """
     return next(player for roster_id, players in snapshot.rosters.items() if roster_id not in roster_ids
-                for player in players)
+                for player in players if snapshot.players[player].position == "DEF")
 
 
 def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
@@ -1554,6 +1557,27 @@ def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(setti
     outside = _outside_player(snapshot, [4, 12])
     changed = _with_week_n_line(snapshot, outside, pts_half_ppr=31.5, gp=1.0, rec_tgt=9.0)
     assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
+
+
+def test_a_third_roster_line_that_moves_a_traded_players_rank_changes_the_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    collins = "7569"
+    week_n = snapshot.stats.weeks[snapshot.as_of.stats_through].stats
+    # A healthy receiver who played in week N, so he is not due back and his recent points read the week N line.
+    receiver = next(player for roster_id, players in sorted(snapshot.rosters.items()) if roster_id not in (4, 12)
+                    for player in players if snapshot.players[player].position == "WR"
+                    and snapshot.players[player].injury_status is None and week_n.get(player, {}).get("gp", 0) > 0
+                    and snapshot.position_rank(player) > snapshot.position_rank(collins))
+    # 200 points in his week N game lift the receiver above Collins, so Collins drops one rank.
+    # The roster points of a rostered player come before his stat line, so both change.
+    lined = _with_week_n_line(snapshot, receiver, gp=1.0, pts_half_ppr=200.0)
+    week = lined.stats.weeks[lined.as_of.stats_through]
+    weeks = {**lined.stats.weeks, week.week: week.model_copy(update={"points": {**week.points, receiver: 200.0}})}
+    moved = lined.model_copy(update={"stats": lined.stats.model_copy(update={"weeks": weeks})})
+    assert moved.position_rank(collins) == snapshot.position_rank(collins) + 1
+    assert cache_key(trade, moved) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, moved) != finder_cache_key(2026, 4, 12, snapshot)
 
 
 def test_the_cache_key_ignores_a_week_n_field_the_grade_never_reads(settings, sources):
