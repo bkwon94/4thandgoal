@@ -317,7 +317,7 @@ player before the sides count as even.
 
 **Handcuff**:
 The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
-takes 30% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
+takes 25% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
 his own, so every adjuster and the finder grade him as any running back. With fewer than 2 played games, or
 with no carry data, the depth chart alone decides.
 

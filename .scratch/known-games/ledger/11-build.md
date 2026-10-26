@@ -84,3 +84,66 @@ cases pass. The handcuff reasons are the same before and after.
 3. The gate compares the rounded percent, so 29.5% rounds to 30% and frees the backup. The reason shows the same
    number, so the two agree.
 4. `waiver_buckets.py` has its own handcuff list for stashes. I did not change it. It is outside this ticket.
+
+## Fix round 1
+
+### What changed
+
+1. The gate is 25 percent. `HANDCUFF_CARRY_SHARE = 25` in `tunables.py`, with a new why comment: a pure backup sits
+   near 15%, and a backup with a real role, such as Corum at 28%, sits above 25%. The glossary "Handcuff" entry
+   now says 25%.
+2. The gate compares the exact share. `carry_share` now returns the unrounded percent as a float.
+   `_carries_the_ball` compares it to the gate. The reason text rounds it half up, so 25.8% shows as "26%".
+
+### Fixture backups at 25
+
+The week 6 fixture has three RBs behind a rostered starter with a gsis_id. The id map fixture lacks many players,
+so the tests join these ids by hand.
+
+| Backup | Starter roster | Share, weeks 3 to 5 | At 30 | At 25 |
+| --- | --- | --- | --- | --- |
+| Keaton Mitchell, LAC | 12 | 25.5% | handcuff | freed |
+| Kimani Vidal, LAC | 12 | 14.9% | handcuff | handcuff |
+| TreVeyon Henderson, NE | 7 | 32.9% | freed | freed |
+
+Mitchell is now freed. Five tests use him as the LAC handcuff. They now set him to 4 carries a game in weeks 3
+to 5, or 12 of 82 (15%), through `_lac_snap` in `test_rubric.py` and an inline `with_carries` in `test_finder.py`.
+The Henderson 15% fixtures stay.
+
+The known-games test changed. Henderson's real weeks 4 to 6 give 25 of 96, or 26%, so at 25 he is no handcuff.
+The test now sets him to 3 carries in weeks 4 and 5 (13 of 84, 15%). The 20-carry week 6 breakout gives 26 of 97,
+or 27%, and the reason names 27%.
+
+`test_the_carry_share_reads_the_last_3_played_games` now pins the exact shares with `pytest.approx`.
+
+### Edge test
+
+`test_the_gate_compares_the_exact_share_and_the_reason_rounds_it`: Stevenson at 29 carries in weeks 3 to 5. At 16
+carries Henderson takes 16 of 65, or 24.6%, so he stays a handcuff. At 17 he takes 17 of 66, or 25.8%. He is
+freed, and the reason says "26%".
+
+RED with a rounded compare (`_round_half_up(share) >= HANDCUFF_CARRY_SHARE`):
+
+```
+E       AssertionError: assert [] == ['12529']
+1 failed, 163 deselected
+```
+
+GREEN with the exact compare: `184 passed` on `tests/test_rubric.py` and `tests/test_finder.py`.
+
+### Hand-worked week 6 trades
+
+No grade and no reason changed at 25. No traded RB in the six trades is behind a starter on the roster that gets
+him. All six cases pass. The letters and steps match `HAND_WORKED`, for example trade 1 is roster 11 A to B and
+roster 12 F to D, as before.
+
+### Brian's case on the real data
+
+In `data/2026`, Corum takes 19 of 68 LAR carries in weeks 4 to 6, or 27.9%. At 25 the gate frees him on the
+week 6 known games. Through week 5 alone he is at 22.5%, so he stays a handcuff on a week 5 bound.
+
+### Suite and ruff
+
+- `uv run pytest -q`: `1153 passed, 9 deselected in 226.40s`.
+- `uv run ruff check src tests`: the first run found two lines over 120. I wrapped them, and that changed only the
+  layout. Ruff is now clean, exit 0, and the two files pass again (`184 passed`).

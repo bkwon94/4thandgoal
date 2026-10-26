@@ -205,7 +205,9 @@ def test_a_handcuff_on_his_own_roster_is_never_a_candidate(slow_snap):
     # Mitchell moves to roster 12, so he backs up Hampton on his own roster.
     rosters = {**slow_snap.rosters, 11: [p for p in slow_snap.rosters[11] if p != MITCHELL],
                12: slow_snap.rosters[12] + [MITCHELL]}
-    snap = _with_ids(slow_snap).model_copy(update={"rosters": rosters})
+    # At 4 carries a game in weeks 3 to 5, Mitchell takes 15% of the LAC carries, below the gate.
+    snap = with_carries(_with_ids(slow_snap), MITCHELL, {3: 4.0, 4: 4.0, 5: 4.0})
+    snap = snap.model_copy(update={"rosters": rosters})
     assert MITCHELL not in _traded(candidates(12, 4, snap))
     # With no depth chart, no player is a handcuff, so Mitchell is a candidate.
     assert MITCHELL in _traded(candidates(12, 4, snap.model_copy(update={"depth_charts": None})))

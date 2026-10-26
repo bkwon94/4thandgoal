@@ -262,7 +262,7 @@ def _backs_up_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -
     return _behind_a_starter(snapshot, player_id, roster) and not _carries_the_ball(snapshot, player_id)
 
 
-def _carry_share(snapshot: Snapshot, player_id: str) -> int | None:
+def _carry_share(snapshot: Snapshot, player_id: str) -> float | None:
     return carry_share(snapshot.stats, player_id, snapshot.as_of.stats_through)
 
 
@@ -751,8 +751,10 @@ def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
                            "back up the team's own starters, so they count as insurance."))
     after = _roster_after(snapshot, side.roster_id, side.gives, side.gets)
     freed = [pid for pid in side.gets if pid not in side.handcuffs and _behind_a_starter(snapshot, pid, after)]
+    # The gate compares the exact share. The reason shows it rounded, as every other percent in a reason.
     parts.extend(f"{snapshot.players[pid].name} backs up the team's own starter but takes "
-                 f"{_carry_share(snapshot, pid)}% of the carries, so he counts as a running back." for pid in freed)
+                 f"{int(_round_half_up(_carry_share(snapshot, pid)))}% of the carries, so he counts as a running back."
+                 for pid in freed)
     reason = " ".join(parts) if parts else "No player it gets is a handcuff."
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.
     unmapped = _not_in_id_map(snapshot, [pid for pid in side.gets if snapshot.players[pid].position == "RB"])

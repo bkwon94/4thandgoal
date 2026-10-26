@@ -255,8 +255,9 @@ def target_share(history: History, player_id: str, through: int) -> UsageShare |
     )
 
 
-def carry_share(history: History, player_id: str, through: int) -> int | None:
-    """The percent of his NFL team's carries that the player took in his last HANDCUFF_CARRY_GAMES played games.
+def carry_share(history: History, player_id: str, through: int) -> float | None:
+    """The exact percent of his NFL team's carries that the player took in his last HANDCUFF_CARRY_GAMES played
+    games. It is not rounded, so a gate can compare it.
 
     None with fewer than HANDCUFF_MIN_GAMES played games, with a gap in the stats, or with no team carries.
     """
@@ -270,7 +271,7 @@ def carry_share(history: History, player_id: str, through: int) -> int | None:
     if team == 0:
         return None
     carries = sum(past.stats[player_id].get("rush_att", 0.0) for past in recent)
-    return int(_round_half_up(100 * carries / team))
+    return 100 * carries / team
 
 
 def red_zone(history: History, player_id: str, through: int) -> tuple[int, int] | None:
