@@ -6,6 +6,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 
 def _no_nflverse(season, week, player_ids, players):
     raise AssertionError("no test downloads an nflverse file")
@@ -425,9 +427,26 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
     out = capsys.readouterr().out
     assert code == 0
     assert ("Week 6 of 2026. Chart week 6. Stats through week 6. Rosters fetched 2026-10-19T09:30-04:00.\n"
-            "Known games of week 6: 14 read, 0 in progress.\n") in out
+            "Known games of week 6: 14 read, 0 in progress, pending: usage 8 games.\n") in out
     assert "Refresh failed" not in out
     assert "Nico Collins" in out
+
+
+@pytest.mark.parametrize("pending, line", [
+    ({}, "Known games of week 6: 14 read, 0 in progress.\n"),
+    ({"snaps": 9, "usage": 13},
+     "Known games of week 6: 14 read, 0 in progress, pending: snaps 9 games, usage 13 games.\n"),
+    ({"snaps": 1}, "Known games of week 6: 14 read, 0 in progress, pending: snaps 1 game.\n"),
+])
+def test_the_known_games_line_names_each_pending_count(
+        fixture_raw_dir, fixture_history_root, chart_week6, capsys, pending, line):
+    from cornerstone import cli
+    from cornerstone.snapshot import KnownGames, load_snapshot
+
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    known = KnownGames(week=6, games=14, pending=pending)
+    cli._print_as_of(snap.model_copy(update={"as_of": snap.as_of.model_copy(update={"known_games": known})}))
+    assert line in capsys.readouterr().out
 
 
 def test_analyze_without_week_names_a_failed_refresh(

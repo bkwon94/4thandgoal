@@ -83,7 +83,8 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     expected_path = cache_path(cache_dir, FFOPPORTUNITY_URL, season)
     expected = None
     if scoring is not None and sleeper_of_gsis and expected_path.exists() and schedules_path.exists():
-        # Every grade input ends at the week before `week`, so the expected window does too.
+        # The expected window ends at the week before `week`, so it never reads the known games of `week`.
+        # The expected points file is a Tuesday source: it keeps its weekly lag, unlike the WOPR.
         expected = _read("expected", read_expected, expected_path, schedules_path, season, week - 1, scoring,
                          sleeper_of_gsis)
     stats_player_path = cache_path(cache_dir, STATS_PLAYER_URL, season)

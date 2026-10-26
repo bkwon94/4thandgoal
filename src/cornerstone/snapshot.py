@@ -149,6 +149,8 @@ def _pending(stats: list[dict], week: int, wopr: dict[str, dict[int, int]] | Non
     snaps of a game together, and a final line can lack the player's own snaps because Sleeper leaves out a 0.
     A game is pending for usage when no player who played in it has a WOPR row for the week. A missing file is a
     missing source, not a pending count.
+    The usage count is per game, but the WOPR window is per player. A WR who played with no row keeps a window
+    that ends at N-1, even when a teammate's row keeps his game out of the count.
     """
     played = [row for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0]
     games = {row["game_id"] for row in played}

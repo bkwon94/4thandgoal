@@ -95,3 +95,36 @@ uv run pytest -q
 4. The `load_slow_sources` comment "Every grade input ends at the week before `week`, so the expected window does too." is no longer true of every input. I kept it: the expected window part holds, and it is outside this ticket.
 5. The `analyze-response.json` fixture now has `pending: {"usage": 8}`. The site repo copy needs the same change (ticket 08).
 6. The `_wopr` read costs a second pass of the player file when the file lacks the trade week.
+
+## Fix round 1
+
+The review approved the ticket and asked for three small items.
+
+1. `src/cornerstone/cli.py` `_print_as_of`: the known-games line now names each pending count, for example `Known games of week 6: 14 read, 0 in progress, pending: snaps 9 games, usage 13 games.` A count of 1 says "1 game". With nothing pending, the line stops after the in-progress count.
+2. `src/cornerstone/slow_sources.py`: the comment on the expected window is now scoped to that window. It says the window ends at the week before `week`, so it never reads the known games. It also says the expected points file is a Tuesday source and keeps its weekly lag (PRD story 24), unlike the WOPR.
+3. `src/cornerstone/snapshot.py` `_pending`: one more docstring line for the per-game against per-player edge. A WR who played with no row keeps a window that ends at N-1, even when a teammate's row keeps his game out of the usage count.
+
+Tests:
+- `test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line` now expects `pending: usage 8 games.` on the line.
+- New: `test_the_known_games_line_names_each_pending_count`, with three cases: nothing pending, snaps and usage, and one game.
+
+RED:
+```
+uv run pytest -q tests/test_cli.py -k "known_games_line or as_of_line"
+FAILED tests/test_cli.py::test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
+FAILED tests/test_cli.py::test_the_known_games_line_names_each_pending_count[pending1-...]
+FAILED tests/test_cli.py::test_the_known_games_line_names_each_pending_count[pending2-...]
+3 failed, 1 passed, 23 deselected in 2.29s
+```
+
+GREEN:
+```
+uv run ruff check src tests && echo RUFF_OK
+RUFF_OK
+
+uv run pytest -q tests/test_cli.py tests/test_snapshot.py
+50 passed in 6.52s
+
+uv run pytest -q
+1122 passed, 9 deselected in 224.03s (0:03:44)
+```
