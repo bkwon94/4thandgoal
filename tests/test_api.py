@@ -553,6 +553,28 @@ def test_the_cache_key_changes_with_a_projection_ahead_of_a_rostered_player_due_
         finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 13.5}})))
 
 
+def _with_status(snapshot, player, status):
+    return snapshot.model_copy(update={"players": {
+        **snapshot.players, player: snapshot.players[player].model_copy(update={"injury_status": status})}})
+
+
+def test_the_cache_key_changes_when_a_rostered_player_moves_into_the_out_set(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = next(player for player in snapshot.rosters[4] if snapshot.players[player].injury_status is None)
+    # A player out with no return week counts for his projection ahead from week 14, so the grade reads new rows.
+    healthy = _with_week_rows(snapshot, {}, {rostered: {14: 12.5}})
+    out = _with_status(healthy, rostered, "Out")
+    assert cache_key(trade, out) != cache_key(trade, healthy)
+    assert finder_cache_key(2026, 4, 12, out) != finder_cache_key(2026, 4, 12, healthy)
+    # A move between two statuses outside the out set keeps the hit.
+    assert cache_key(trade, _with_status(healthy, rostered, "Questionable")) == cache_key(trade, healthy)
+    # His rows from week 14 on reach the grade now, so a change to them must miss.
+    assert cache_key(trade, _with_week_rows(out, {}, {rostered: {14: 13.5}})) != cache_key(trade, out)
+    # A returns row of week 14 gives the same week, but the reason says he is due back, so the key must miss.
+    assert cache_key(trade, _with_week_rows(out, {rostered: 14}, {rostered: {14: 12.5}})) != cache_key(trade, out)
+
+
 def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)
