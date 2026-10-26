@@ -1535,6 +1535,17 @@ def test_the_trend_reason_of_a_player_whose_known_game_is_in_progress_ends_with_
     assert "Watson: snap share 85%, up, over weeks 5 and 6." in trend.reason
 
 
+def test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # Sleeper now lists Odunze on the Packers, but his week 6 stat row is with the Bears, whose game is on.
+    snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    moved = snap.players[ODUNZE].model_copy(update={"nfl_team": "GB"})
+    snap = snap.model_copy(update={"players": {**snap.players, ODUNZE: moved}})
+    assert snap.stats.weeks[6].nfl_teams[ODUNZE] == "CHI"
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in _adjuster(first, TREND).reason
+
+
 def test_the_adjuster_steps_are_the_same_with_the_label_on_and_off(fixture_raw_dir, fixture_history_root, chart_week6):
     on = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
     off = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5)

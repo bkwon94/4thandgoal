@@ -129,6 +129,7 @@ def _teams_in_progress(stats: list[dict], kickoffs: dict[str, datetime], now: da
 
     A game is in progress when `now` is past its kickoff by less than IN_PROGRESS_MINUTES.
     A team with no kickoff has a game that counts as final.
+    `now` must be an aware datetime, because the kickoffs carry the Eastern time zone.
     """
     length = timedelta(minutes=IN_PROGRESS_MINUTES)
     teams = {}

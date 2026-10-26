@@ -61,6 +61,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
+    The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -85,7 +86,9 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
         for roster_id in roster_ids
     }
     # With no projections file every player keeps his recent points, so None and an empty file grade apart.
-    content = {"has_projections_ahead": snapshot.projections_ahead is not None, "rosters": content}
+    content = {"has_projections_ahead": snapshot.projections_ahead is not None, "rosters": content,
+               # A reason says "game in progress" only while the game is on, so a final game must miss that grade.
+               "in_progress_teams": sorted(snapshot.in_progress_teams)}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
 
 

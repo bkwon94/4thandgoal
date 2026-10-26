@@ -115,3 +115,41 @@ Monday 2026-10-26, 11:30 ET. `read_kickoffs` on the real schedules cache for wee
 2. A player who changed NFL teams after his week N game: the label reads his Sleeper player team, not the team of his week N stat row. This is rare. The fix is a set of player ids from the stat rows instead of team codes.
 3. The grade cache key does not hold the in-progress count. A grade cached while a game is in progress can serve the label after the game ends, until the cache entry expires or the stat lines change. Ticket 06 owns the key. Adding `as_of.known_games` to the key would close it.
 4. The trade facts (for example "Every stat runs through week 6.") get no label. They are facts, not reasons, so the ticket does not cover them.
+
+## Fix round 1
+
+This round follows the review. Build concerns 2 and 3 are closed.
+
+What I changed:
+1. The team of the label. `_reads_a_game_in_progress` reads the team on the week N stat row first, with `snapshot.stats.weeks[snapshot.week].nfl_teams.get(pid)`. It reads the Sleeper team only when the row gives no team. New test: `test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team`. In that test, Sleeper lists Odunze on GB, and his week 6 row says CHI.
+2. The cache key. `_content_hash` in `src/cornerstone_api/cache.py` adds `"in_progress_teams": sorted(snapshot.in_progress_teams)`. The finder key shares the hash. New test: `test_the_cache_key_changes_with_a_team_in_progress` in `tests/test_api.py`. The docstring of `_content_hash` names the new field.
+3. The no-schedule-row test now runs at kickoff plus 2 hours. It checks `in_progress == 1`, and that BAL and CLE are not in the set.
+4. `_teams_in_progress` has one more docstring line: `now` must be an aware datetime.
+5. `IN_PROGRESS_LABEL` now sits above `_share_sentences`.
+
+Files: `src/cornerstone/adjusters.py`, `src/cornerstone/snapshot.py`, `src/cornerstone_api/cache.py`, `tests/test_snapshot.py`, `tests/test_rubric.py`, `tests/test_api.py`.
+
+RED:
+```
+uv run pytest -q tests/test_snapshot.py tests/test_rubric.py tests/test_api.py -k "no_schedule_row or stat_row_before or team_in_progress"
+E       AssertionError: assert 'Odunze: snap share 97%, up, over weeks 5 and 6, game in progress.' in 'The snap and target shares point both ways. Odunze: snap share 97%, up, over weeks 5 and 6. Watson: snap share 85%, up, over weeks 5 and 6.'
+E       AssertionError: assert '5958ca46...bebaa' != '5958ca46...bebaa'
+FAILED tests/test_rubric.py::test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team
+FAILED tests/test_api.py::test_the_cache_key_changes_with_a_team_in_progress
+2 failed, 1 passed, 278 deselected in 3.06s
+```
+The changed no-schedule-row test passed before the fix. It makes the old check stronger, so it does not test new code.
+
+GREEN:
+```
+uv run pytest -q tests/test_snapshot.py tests/test_rubric.py tests/test_api.py
+281 passed in 101.72s (0:01:41)
+
+uv run ruff check src tests
+RUFF_EXIT=0 (no findings)
+
+uv run pytest -q
+1122 passed, 9 deselected in 220.72s (0:03:40)
+```
+
+Open concerns: build concerns 1 (no label on roster fit) and 4 (no label on the trade facts) stand. The cache change goes against this branch. Main also changes `_content_hash` for ticket 06, so expect a small conflict at the merge.

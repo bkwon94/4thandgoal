@@ -243,10 +243,11 @@ def test_a_game_5_hours_after_its_kickoff_is_final_and_the_block_counts_zero_in_
 
 def test_a_game_with_no_schedule_row_is_final(fixture_raw_dir, fixture_history_root, chart_week6):
     # The schedules hold only the Bears and the Falcons, so the 1 pm game of the Ravens and the Browns has no row.
+    # At 3 pm both 1 pm games are on, but only the game with a row counts as in progress.
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
-                          now=CHI_ATL_KICKOFF + timedelta(hours=5))
-    assert snap.as_of.known_games.in_progress == 0
-    assert "BAL" not in snap.in_progress_teams
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2))
+    assert snap.as_of.known_games.in_progress == 1
+    assert "BAL" not in snap.in_progress_teams and "CLE" not in snap.in_progress_teams
 
 
 def test_a_saved_week_has_no_game_in_progress(fixture_raw_dir, fixture_history_root, chart_week6):

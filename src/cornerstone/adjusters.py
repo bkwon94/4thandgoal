@@ -492,6 +492,10 @@ def _weeks_text(weeks: list[int]) -> str:
     return "week " + str(weeks[0]) if len(weeks) == 1 else "weeks " + _join([str(week) for week in weeks])
 
 
+# The phrase that ends the sentence of a player whose quoted number reads a week N game in progress.
+IN_PROGRESS_LABEL = ", game in progress"
+
+
 def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
     """One sentence per player with a snap or target share that moved: the percent and direction of each moved share.
 
@@ -521,16 +525,15 @@ def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
     return sentences
 
 
-# The phrase that ends the sentence of a player whose quoted number reads a week N game in progress.
-IN_PROGRESS_LABEL = ", game in progress"
-
-
 def _reads_a_game_in_progress(snapshot: Snapshot, player_id: str, weeks: list[int]) -> bool:
     """True when the weeks hold the trade week and the player's NFL team plays its week N game now.
 
     GLOSSARY.md, "In progress". A saved week has no game in progress, so it is always False there.
+    The team on his week N stat row comes first, because a player can change teams after his game.
     """
-    return snapshot.week in weeks and snapshot.players[player_id].nfl_team in snapshot.in_progress_teams
+    known = snapshot.stats.weeks.get(snapshot.week)
+    team = (known.nfl_teams.get(player_id) if known is not None else None) or snapshot.players[player_id].nfl_team
+    return snapshot.week in weeks and team in snapshot.in_progress_teams
 
 
 def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
