@@ -541,9 +541,9 @@ def _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse
 
 
 # The fixture chart lists 25 players, mostly stars, so no pair of the week 6 snapshot has a win-win on it.
-# These rows add a running back of roster 2 and a quarterback and a receiver of roster 3, at their recent points
-# per game, so rosters 2 and 3 have one win-win.
-FIND_ROWS = {"12527": 11.0, "11560": 8.0, "5947": 7.0}
+# These rows add the quarterback of roster 2 and a quarterback of roster 3, at the trade values the API find
+# rows give them, so rosters 2 and 3 have one win-win.
+FIND_ROWS = {"6770": 22.0, "9228": 20.0}
 
 
 def _chart_with_rows(tmp_path) -> str:
@@ -566,14 +566,14 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
     out = capsys.readouterr().out
     assert code == 0
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
-    # Rosters 2 and 3 have one win-win with these rows: roster 2 gives one player for two.
+    # Rosters 2 and 3 have one win-win with these rows: a swap of quarterbacks.
     assert out.endswith(
-        "\n1. All You Need Is Love gives: Ashton Jeanty\n"
-        "   Lil Fridge gives: Caleb Williams, Jakobi Meyers\n"
+        "\n1. All You Need Is Love gives: Joe Burrow\n"
+        "   Lil Fridge gives: Bryce Young\n"
         "Fairness: Good for both\n"
         "  All You Need Is Love: The players it gets gain snap or target share, and the players it gives lose it. "
-        "Jeanty: snap share 61%, down, over weeks 4 and 5.\n"
-        "  Lil Fridge: The best lineup gains after the trade.\n")
+        "Young: snap share 100%, up, over weeks 3 and 4.\n"
+        "  Lil Fridge: It gets the highest-value player in the trade, and the best lineup does not lose.\n")
     assert "\n2. " not in out
 
 

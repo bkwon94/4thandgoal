@@ -11,7 +11,7 @@ import pytest
 
 from conftest import with_carries
 
-from cornerstone.adjusters import Adjuster, recent_points_per_game
+from cornerstone.adjusters import Adjuster, due_back_week, recent_points_per_game
 from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
 from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from cornerstone.slow_sources import load_slow_sources
@@ -56,6 +56,21 @@ def _roster_rows(snap, *roster_ids):
 RB_2, QB_3, WR_3 = "12527", "11560", "5947"
 
 
+def _no_absences(snap):
+    """The snapshot with no starter of rosters 2 and 3 away in the bye window.
+
+    Each bye in weeks 6 to 8 moves to week 12, and each player due back on the two rosters is healthy. The count
+    tests are about the finder, not the holes, and the bye and late-return holes of the pair leave too few win-wins.
+    A bye still falls in the trade week or later, so the schedule adjuster counts the same byes left.
+    """
+    schedules = {team: schedule.model_copy(update={"bye_week": 12}) if schedule.bye_week in (6, 7, 8) else schedule
+                 for team, schedule in snap.schedules.items()}
+    out = [pid for roster_id in (2, 3) for pid in snap.rosters[roster_id] if due_back_week(snap, pid) is not None]
+    players = {**snap.players, **{pid: snap.players[pid].model_copy(update={"injury_status": None}) for pid in out}}
+    returns = {pid: week for pid, week in snap.returns.items() if pid not in out}
+    return snap.model_copy(update={"schedules": schedules, "players": players, "returns": returns})
+
+
 def _win_wins(asker, partner, snap) -> list[FinderTrade]:
     """Every win-win candidate, ranked, with no cut to three."""
     found = []
@@ -72,7 +87,7 @@ def _players(item) -> set[str]:
 
 
 def test_a_pair_with_three_or_more_win_wins_returns_three_ranked(slow_snap):
-    found = find_win_wins(2, 3, _roster_rows(slow_snap, 2, 3))
+    found = find_win_wins(2, 3, _roster_rows(_no_absences(slow_snap), 2, 3))
     assert len(found) == 3
     assert all(item.fairness.state == "win_win" for item in found)
     assert all(item.trade.asker == 2 and item.trade.sides[0].roster_id == 2 for item in found)
@@ -80,7 +95,7 @@ def test_a_pair_with_three_or_more_win_wins_returns_three_ranked(slow_snap):
 
 
 def test_the_three_trades_share_no_player_when_the_best_win_wins_do(slow_snap):
-    snap = _roster_rows(slow_snap, 2, 3)
+    snap = _roster_rows(_no_absences(slow_snap), 2, 3)
     every = _win_wins(2, 3, snap)
     # The data proves a skip: four or more win-wins, and a plain cut to the best three repeats a player.
     assert len(every) >= 4
@@ -93,7 +108,7 @@ def test_the_three_trades_share_no_player_when_the_best_win_wins_do(slow_snap):
 
 
 def test_a_pair_with_one_win_win_returns_one(slow_snap):
-    found = find_win_wins(2, 3, _with_rows(slow_snap, [RB_2, QB_3, WR_3]))
+    found = find_win_wins(2, 3, _with_rows(_no_absences(slow_snap), [RB_2, QB_3, WR_3]))
     assert len(found) == 1
     assert [b.roster_id for b in found[0].breakdowns] == [2, 3]
 
@@ -104,7 +119,7 @@ def test_a_pair_with_no_win_win_returns_the_empty_list(slow_snap):
 
 def test_a_two_for_one_appears_in_both_directions(slow_snap):
     # The one win-win has roster 3 give two players. With roster 3 as the asker, it gives two.
-    snap = _with_rows(slow_snap, [RB_2, QB_3, WR_3])
+    snap = _with_rows(_no_absences(slow_snap), [RB_2, QB_3, WR_3])
     gets_two = find_win_wins(2, 3, snap)[0].trade
     gives_two = find_win_wins(3, 2, snap)[0].trade
     assert [len(side.gives) for side in gets_two.sides] == [1, 2]
