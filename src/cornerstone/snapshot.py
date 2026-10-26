@@ -16,7 +16,7 @@ from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, T
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
-from cornerstone.ranks import RANKED_POSITIONS, in_pool, rank_table
+from cornerstone.ranks import RANKED_POSITIONS, in_pool, lineup_value, rank_table
 from cornerstone.slow_sources import SlowSources
 from cornerstone.sleeper import load_raw, read_fetch_time
 from cornerstone.tunables import IN_PROGRESS_MINUTES
@@ -146,18 +146,18 @@ class Snapshot(BaseModel):
         return self._position_ranks.get(player_id)
 
     def best_free_agent(self, positions: Iterable[str]) -> tuple[SnapshotPlayer, int] | None:
-        """The free agent at any of `positions` with the best position rank, and his rank.
+        """The free agent at any of `positions` with the most lineup value, and his rank at his own position.
 
-        A free agent with no stat line has no rank, so he is never the best. The player id breaks a tie of ranks at
-        two positions. None when no free agent at the positions has a rank.
+        A free agent with no stat line has no rank, so he is never the best. At one position, the most lineup value is
+        the best position rank. The rank, then the player id, breaks a tie of lineup values.
+        None when no free agent at the positions has a rank.
         """
-        ranked = [(rank, player.player_id, player) for position in positions
-                  for player in self.free_agents.get(position, [])
+        ranked = [(player, rank) for position in positions for player in self.free_agents.get(position, [])
                   if (rank := self.position_rank(player.player_id)) is not None]
         if not ranked:
             return None
-        rank, _, player = min(ranked, key=lambda each: each[:2])
-        return player, rank
+        # Each position ranks its own pool, so RB51 and TE9 do not compare. The lineup value compares across positions.
+        return min(ranked, key=lambda each: (-lineup_value(self, each[0].player_id), each[1], each[0].player_id))
 
     def model_copy(self, *, update: dict | None = None, deep: bool = False) -> "Snapshot":
         """A copy with no rank table, so a copy with new rosters, returns, or stats ranks from its own data."""

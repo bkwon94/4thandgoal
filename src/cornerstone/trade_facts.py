@@ -207,9 +207,11 @@ def _strength_fact(snapshot: Snapshot, side: Side) -> Fact | None:
 
 
 def _hole_fact(snapshot: Snapshot, side: Side, slot: StartingSlot) -> Fact:
-    """A new hole of a side: the hole sentence of the fit reason, and the best free agent at the hole's position with
-    his position rank. GLOSSARY.md, "Hole".
+    """A new hole of a side: the hole sentence of the fit reason, the player the trade took from a slot of its kind,
+    and the best free agent at the hole's position with his position rank. GLOSSARY.md, "Hole".
 
+    The player who left tells the reader what the trade cost. He is the player the side gives who held a slot of the
+    same roster slot before the trade, and the one who held the hole's own slot comes first. With none, no sentence.
     The free agent tells the reader whether waivers fix the hole. He feeds this fact only, never the step.
     A FLEX hole reads the position of the player who holds it. An empty FLEX hole reads every position the slot allows.
     """
@@ -223,6 +225,13 @@ def _hole_fact(snapshot: Snapshot, side: Side, slot: StartingSlot) -> Fact:
     # The hole sentence carries the slot, the week, and the rank as digits, so Nums records each one.
     text = f"For {team}, {n.text(hole_sentence(snapshot, slot))}"
     players = [] if slot.player is None else [snapshot.players[slot.player].name]
+    left = sorted((before for before in side.slots_before
+                   if before.player in side.gives and before.roster_slot == slot.roster_slot),
+                  key=lambda before: before.name != slot.name)
+    if left:
+        name = snapshot.players[left[0].player].name
+        text += f" {name} held {n.text(left[0].name)} before the trade."
+        players.append(name)
     best = snapshot.best_free_agent(positions)
     if best is None:
         text += f" No free agent at {where} has a position rank."

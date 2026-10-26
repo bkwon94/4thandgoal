@@ -272,7 +272,8 @@ def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_a
     result = analyze(trade, fa_snap, call=fake)
     facts = _facts(fake.calls[0][1])
     assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, WR2 is a hole after the trade: Devaughn Vele is WR40. "
-                                    "The best free agent at WR is Rashod Bateman, WR33.")
+                                    "Garrett Wilson held WR1 before the trade. The best free agent at WR is Rashod "
+                                    "Bateman, WR33.")
     assert not result.fallback
     assert len(fake.calls) == 1
 
