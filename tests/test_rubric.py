@@ -188,6 +188,8 @@ SAQUON, COOK, HUBBARD, MARKS = "4866", "8138", "7594", "12474"
 # Saquon Barkley is Out with no return week, so he counts as back in week 14 at his fixture projection ahead.
 SAQUON_NOTE = ("Saquon Barkley has no return week on file, so he counts as back in week 14 "
                "for his projection ahead of 12.6 a game.")
+# The `snap` fixture has no schedule map, so no bye hole reads and each fit reason on it says so after the step.
+NO_SCHEDULES = " The schedule sources are not available."
 
 
 def _adjuster(breakdown, name: str):
@@ -200,9 +202,11 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     # Saquon Barkley is Out with no return week, so both sides name the projection he counts for.
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
-    assert _adjuster(tenth, "roster fit").reason == "The best lineup gains after the trade. " + SAQUON_NOTE
+    assert _adjuster(tenth, "roster fit").reason == (
+        "The best lineup gains after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
     assert _adjuster(fifth, "roster fit").step == -1
-    assert _adjuster(fifth, "roster fit").reason == "The best lineup loses after the trade. " + SAQUON_NOTE
+    assert _adjuster(fifth, "roster fit").reason == (
+        "The best lineup loses after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
 
 
 # Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70. DJ Moore, Out with no return week, holds the
@@ -217,7 +221,8 @@ def test_fit_steps_up_for_the_highest_value_player_in_the_trade_with_no_lineup_l
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(twelfth, "roster fit").step == 1
     assert _adjuster(twelfth, "roster fit").reason == (
-        "It gets the highest-value player in the trade, and the best lineup does not lose. " + SAQUON_NOTE)
+        "It gets the highest-value player in the trade, and the best lineup does not lose." + NO_SCHEDULES + " "
+        + SAQUON_NOTE)
     assert _adjuster(tenth, "roster fit").step == -1
 
 
@@ -245,7 +250,7 @@ def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_st
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, MARKS]), snap)
     assert _adjuster(tenth, "roster fit").step == 0
     assert _adjuster(tenth, "roster fit").reason == (
-        "The best lineup gains after the trade, but not every player it gets starts.")
+        "The best lineup gains after the trade, but not every player it gets starts." + NO_SCHEDULES)
 
 
 # Position ranks by lineup value on the week 6 fixture. The line is RB36 and WR36, QB24 and TE24.
@@ -261,7 +266,7 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
     second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
     fit = _adjuster(second, "roster fit")
     assert fit.step == -1
-    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55."
+    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES
 
 
 def _prompt_section(heading: str) -> str:
@@ -322,7 +327,7 @@ def test_a_side_with_the_same_hole_before_and_after_gets_no_step_for_it(snap):
     tenth, _ = grade(_trade(10, [KEENAN_ALLEN], 12, [TUTEN]), snap)
     fit = _adjuster(tenth, "roster fit")
     assert fit.step == 1
-    assert fit.reason == "The best lineup gains after the trade."
+    assert fit.reason == "The best lineup gains after the trade." + NO_SCHEDULES
 
 
 def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_step_up(snap):
@@ -334,7 +339,7 @@ def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_
     fit = _adjuster(second, "roster fit")
     assert fit.step == 0
     assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose. "
-                          "RB2 is a hole after the trade: Kendre Miller is RB55.")
+                          "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES)
 
 
 def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_snap):
@@ -350,12 +355,16 @@ def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_sn
 def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_down(slow_snap):
     # Roster 12 gives Tuten, Emanuel Wilson, and Pollard for Mitchell, who backs up Hampton at LAC.
     # Hampton RB26 moves up to RB1 and Mitchell RB39 takes RB2. The handcuff blocks the loss, never the hole.
+    # Hampton and Mitchell of LAC share the bye in week 7, so Mitchell cannot cover Hampton. Hampton covered the bye
+    # of Tee Higgins in week 6 from the bench before, and now he starts, so two bye holes open too.
     twelfth, _ = grade(_trade(12, [TUTEN, E_WILSON, POLLARD], 11, [MITCHELL]), _lac_snap(slow_snap))
     assert _adjuster(twelfth, "handcuff").reason == (
         "Keaton Mitchell backs up the team's own starter, so he counts as insurance.")
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == -1
-    assert fit.reason == "RB2 is a hole after the trade: Keaton Mitchell is RB39."
+    assert fit.reason == ("RB1 is a hole after the trade: Omarion Hampton has his bye in week 7 and no cover. "
+                          "RB2 is a hole after the trade: Keaton Mitchell is RB39. "
+                          "FLEX1 is a hole after the trade: Tee Higgins has his bye in week 6 and no cover.")
 
 
 # Roster 1 starts Davante Adams WR20 at FLEX2, with Jordyn Tyson WR44 at 7.76 next on its bench.
@@ -378,7 +387,7 @@ def test_a_flex_slot_with_a_te_at_20_is_not_a_hole(snap):
     sixth, _ = grade(_trade(6, [FREIERMUTH, M_WASHINGTON, CORUM], 4, [HUNTER_HENRY]), snap)
     fit = _adjuster(sixth, "roster fit")
     assert fit.step == 0
-    assert fit.reason == "The best lineup stays about the same."
+    assert fit.reason == "The best lineup stays about the same." + NO_SCHEDULES
 
 
 def test_a_def_slot_never_makes_a_hole(snap):
@@ -397,6 +406,96 @@ def test_a_starting_slot_with_no_player_is_a_hole_and_each_new_hole_is_named(sna
     assert fit.step == -1
     assert fit.reason.startswith("RB1 is a hole after the trade: no player fills it. "
                                  "RB2 is a hole after the trade: no player fills it.")
+
+
+# Bye weeks from the nflverse fixture. The trade week is 6, so the bye window is weeks 6 to 8.
+# Roster 5 has no hole before a trade. Each of its starters with a bye in the window has a bench cover: Stafford QB6
+# covers Daniels, Woody Marks RB34 covers Cook, and Gesicki TE17 covers Kittle. Michael Wilson WR25, bye week 14,
+# sits on its bench free to cover a receiver.
+# Roster 6 starts Parker Washington WR18 of JAX, bye week 7, and roster 5 starts Denzel Boston WR23 of CLE, bye week 11.
+P_WASHINGTON, BOSTON, MICHAEL_WILSON, DEVONTA_SMITH = "9487", "13346", "10232", "7525"
+
+
+def _without(snap, roster_id: int, player: str):
+    return snap.model_copy(update={"rosters": {**snap.rosters, roster_id: [
+        pid for pid in snap.rosters[roster_id] if pid != player]}})
+
+
+def _with_bye(snap, team: str, week: int):
+    schedules = {**snap.schedules, team: snap.schedules[team].model_copy(update={"bye_week": week})}
+    return snap.model_copy(update={"schedules": schedules})
+
+
+def _washington_for_boston(snap):
+    # Boston gets the higher trade value, so roster 5 does not get the highest-value player and a new hole steps down.
+    fifth, _ = grade(_trade(5, [BOSTON], 6, [P_WASHINGTON]), _with_values(snap, {BOSTON: 30.0, P_WASHINGTON: 20.0}))
+    return _adjuster(fifth, "roster fit")
+
+
+def test_a_starter_with_his_bye_in_week_n_plus_1_and_a_bench_cover_above_the_line_is_no_hole(slow_snap):
+    # Parker Washington takes a flex spot on roster 5, and Michael Wilson WR25 covers his bye in week 7.
+    fit = _washington_for_boston(slow_snap)
+    assert "hole" not in fit.reason
+
+
+def test_a_starter_with_his_bye_in_week_n_plus_1_and_no_bench_cover_is_a_hole_that_names_the_week(slow_snap):
+    # With Michael Wilson gone, no bench receiver above the line covers Parker Washington in week 7.
+    fit = _washington_for_boston(_without(slow_snap, 5, MICHAEL_WILSON))
+    assert fit.step == -1
+    assert fit.reason == "FLEX2 is a hole after the trade: Parker Washington has his bye in week 7 and no cover."
+
+
+def test_a_starter_with_his_bye_in_week_n_plus_3_is_no_hole(slow_snap):
+    # JAX moves its bye to week 9, past the window, so Parker Washington needs no cover.
+    fit = _washington_for_boston(_with_bye(_without(slow_snap, 5, MICHAEL_WILSON), "JAX", 9))
+    assert "hole" not in fit.reason
+
+
+def test_two_starters_with_byes_in_the_window_and_one_bench_cover_give_one_hole(slow_snap):
+    # PHI moves its bye to week 7, so DeVonta Smith at WR1 and Parker Washington both miss week 7.
+    # Michael Wilson covers one slot only. WR1 fills first, so he covers Smith, and Washington's slot is the hole.
+    fit = _washington_for_boston(_with_bye(slow_snap, "PHI", 7))
+    assert fit.step == -1
+    assert fit.reason == "FLEX2 is a hole after the trade: Parker Washington has his bye in week 7 and no cover."
+
+
+def test_a_starter_due_back_in_week_n_plus_2_reads_as_a_bye_and_needs_cover(slow_snap):
+    # The returns file has Parker Washington back in week 8. JAX moves its bye to week 9, so only his return reads.
+    snap = _with_bye(_without(slow_snap, 5, MICHAEL_WILSON), "JAX", 9)
+    fit = _washington_for_boston(snap.model_copy(update={"returns": {**snap.returns, P_WASHINGTON: 8}}))
+    assert fit.reason.startswith(
+        "FLEX2 is a hole after the trade: Parker Washington is due back in week 8 and no cover.")
+    covered = _washington_for_boston(_with_bye(slow_snap, "JAX", 9).model_copy(
+        update={"returns": {**slow_snap.returns, P_WASHINGTON: 8}}))
+    assert "hole" not in covered.reason
+
+
+def test_a_starter_due_back_in_week_n_plus_6_is_a_hole(slow_snap):
+    # Back in week 12 is past the window, so his slot is a hole even with Michael Wilson on the bench to cover.
+    snap = slow_snap.model_copy(update={"returns": {**slow_snap.returns, P_WASHINGTON: 12}})
+    fit = _washington_for_boston(snap)
+    assert fit.reason.startswith("FLEX2 is a hole after the trade: Parker Washington is due back in week 12.")
+
+
+# Roster 12 starts Bhayshul Tuten RB15 of JAX, bye week 7. Its bench backs are Omarion Hampton RB26 of LAC, bye week 7
+# too, Tony Pollard RB30 of TEN, bye week 9, and Tyjae Spears RB61. Pollard is the only back who can cover Tuten.
+# Josh Downs WR46 sits on the bench of roster 11.
+DOWNS = "9500"
+
+
+def test_a_trade_that_gives_away_the_only_bench_cover_for_a_bye_opens_a_new_hole_and_steps_down(slow_snap):
+    # The best lineup of roster 12 does not change, so the new hole alone steps it down.
+    twelfth, _ = grade(_trade(12, [POLLARD], 11, [DOWNS]), slow_snap)
+    fit = _adjuster(twelfth, "roster fit")
+    assert fit.step == -1
+    assert fit.reason == "RB1 is a hole after the trade: Bhayshul Tuten has his bye in week 7 and no cover."
+
+
+def test_with_no_schedule_map_no_bye_hole_reads_and_the_reason_names_the_missing_schedules(slow_snap):
+    twelfth, _ = grade(_trade(12, [POLLARD], 11, [DOWNS]), slow_snap.model_copy(update={"schedules": None}))
+    fit = _adjuster(twelfth, "roster fit")
+    assert fit.step == 0
+    assert fit.reason == "The best lineup stays about the same. The schedule sources are not available."
 
 
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
@@ -816,7 +915,8 @@ def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_valu
     _, seventh = grade(_trade(6, [MAHOMES, B_ROBINSON], 7, [LAMAR]), snap)
     fit = _adjuster(seventh, "roster fit")
     assert fit.step == 1
-    assert fit.reason == "It gets the highest-value player in the trade, and the best lineup does not lose."
+    assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose."
+                          + NO_SCHEDULES)
 
 
 # Snap and target share directions through week 5, the last two weeks against the two before.
@@ -1121,7 +1221,9 @@ ST_BROWN = "7547"
 
 
 def test_fit_never_steps_down_because_of_a_handcuff(slow_snap):
-    twelfth, _ = grade(_trade(12, [ST_BROWN], 11, [MITCHELL]), _lac_snap(slow_snap))
+    # LAC moves its bye to week 12, past the window. Otherwise Hampton starts at FLEX2 with his bye in week 7 and no
+    # cover, and that hole steps down, as a handcuff never blocks a hole.
+    twelfth, _ = grade(_trade(12, [ST_BROWN], 11, [MITCHELL]), _with_bye(_lac_snap(slow_snap), "LAC", 12))
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == 0
     assert fit.reason == (
@@ -1627,6 +1729,10 @@ HOLE_MOVES = {
     0: "Roster 8 gives Malik Nabers, so WR2 is a hole: Carnell Tate is WR47. Fit 0 to -1, final A to B, still accept.",
     3: "Roster 4 gives Rhamondre Stevenson, so FLEX2 is a hole: Xavier Worthy is WR45. The gain and the hole "
        "cancel: fit +1 to 0, final stays A, still decline.",
+    2: "Roster 6 gives Brian Robinson, so Pat Freiermuth leaves the bench for FLEX2. He covered the bye of Parker "
+       "Washington in week 7, so FLEX1 is a hole. Fit 0 to -1, final stays F, still accept.",
+    5: "Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2 with his bye in week 8 and "
+       "no cover. Fit 0 to -1, final stays F, still accept.",
 }
 
 
@@ -1779,10 +1885,13 @@ def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reas
     snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}})
     third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     fit = _adjuster(third, "roster fit")
-    assert fit.step == 1
+    # Jacobs takes RB2 and is due back in week 7, inside the bye window. Roster 3 has no bench back above the line to
+    # cover him, so his slot is a new hole, and the gain and the hole cancel to no step.
+    assert fit.step == 0
     assert fit.reason == (
-        "The best lineup gains after the trade. Josh Jacobs is due back in week 7, "
-        "so he counts for his projection ahead of 18.0 a game.")
+        "The best lineup gains after the trade. RB2 is a hole after the trade: Josh Jacobs is due back in week 7 and "
+        "no cover." + NO_SCHEDULES + " Josh Jacobs is due back in week 7, so he counts for his projection ahead of "
+        "18.0 a game.")
     assert _adjuster(eleventh, "roster fit").step == -1
 
 
@@ -2005,8 +2114,8 @@ def test_the_hole_reason_of_a_player_whose_known_game_is_in_progress_ends_with_t
     on, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2))
     off, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5))
     assert _adjuster(on, "roster fit").reason == (
-        "FLEX2 is a hole after the trade: Rome Odunze is WR61, game in progress.")
-    assert _adjuster(off, "roster fit").reason == "FLEX2 is a hole after the trade: Rome Odunze is WR61."
+        "FLEX2 is a hole after the trade: Rome Odunze is WR61, game in progress." + NO_SCHEDULES)
+    assert _adjuster(off, "roster fit").reason == "FLEX2 is a hole after the trade: Rome Odunze is WR61." + NO_SCHEDULES
 
 
 def test_the_adjuster_steps_are_the_same_with_the_label_on_and_off(fixture_raw_dir, fixture_history_root, chart_week6):
