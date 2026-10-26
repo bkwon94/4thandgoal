@@ -1436,3 +1436,87 @@ def test_the_find_fixture_names_no_letter_and_no_number_outside_ids():
         for side in item["fairness"]["sides"]:
             side["reason"] = strip_trend_numbers(side["reason"])
     assert _digits_outside_ids(fixture) == []
+
+
+WEEK_N_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_att")
+
+
+def _with_week_n_stats(snapshot, stats):
+    """The snapshot with week N holding `stats`, by player id."""
+    week_n = snapshot.stats.weeks[snapshot.as_of.stats_through]
+    reworked = week_n.model_copy(update={"stats": stats})
+    weeks = {**snapshot.stats.weeks, week_n.week: reworked}
+    return snapshot.model_copy(update={"stats": snapshot.stats.model_copy(update={"weeks": weeks})})
+
+
+def _with_week_n_line(snapshot, player, **fields):
+    """The snapshot with `fields` set on the week N stat line of `player`."""
+    stats = snapshot.stats.weeks[snapshot.as_of.stats_through].stats
+    return _with_week_n_stats(snapshot, {**stats, player: {**stats.get(player, {}), **fields}})
+
+
+def _both_keys(trade, snapshot):
+    return cache_key(trade, snapshot), finder_cache_key(2026, 4, 12, snapshot)
+
+
+def test_the_cache_key_changes_with_a_week_n_line_of_a_rostered_player(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    assert snapshot.as_of.stats_through > snapshot.as_of.completed_through
+    rostered = snapshot.rosters[4][0]
+    points = snapshot.stats.weeks[snapshot.as_of.stats_through].stats.get(rostered, {}).get("pts_half_ppr", 0.0)
+    # Six more points is a new fetch with a new number, so the stored grade must miss.
+    scored = _with_week_n_line(snapshot, rostered, pts_half_ppr=points + 6)
+    assert cache_key(trade, scored) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, scored) != finder_cache_key(2026, 4, 12, snapshot)
+    for field in WEEK_N_FIELDS:
+        moved = _with_week_n_line(snapshot, rostered, **{field: 77.0})
+        assert cache_key(trade, moved) != cache_key(trade, snapshot), field
+
+
+def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    outside = _outside_player(snapshot, [4, 12])
+    changed = _with_week_n_line(snapshot, outside, pts_half_ppr=31.5, gp=1.0, rec_tgt=9.0)
+    assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
+
+
+def test_the_cache_key_ignores_a_week_n_field_the_grade_never_reads(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    changed = _with_week_n_line(snapshot, rostered, pass_yd=412.0)
+    assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
+
+
+def test_the_cache_key_tells_empty_week_n_lines_from_any_line(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    outside = _outside_player(snapshot, [4, 12])
+    empty = _with_week_n_stats(snapshot, {})
+    # An empty line of a rostered player reads as no line.
+    assert _both_keys(trade, _with_week_n_stats(snapshot, {rostered: {}})) == _both_keys(trade, empty)
+    assert _both_keys(trade, _with_week_n_stats(snapshot, {outside: {"gp": 1.0}})) == _both_keys(trade, empty)
+    assert cache_key(trade, _with_week_n_line(empty, rostered, gp=1.0)) != cache_key(trade, empty)
+    assert finder_cache_key(2026, 4, 12, _with_week_n_line(empty, rostered, gp=1.0)) != finder_cache_key(
+        2026, 4, 12, empty)
+
+
+def test_the_cache_key_of_a_week_with_no_known_games_adds_no_week_n_line(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    # With no week N in the player stats the bound is the completed week, and the key adds nothing.
+    completed = snapshot.as_of.completed_through
+    weeks = {week: past for week, past in snapshot.stats.weeks.items() if week <= completed}
+    past = _with_as_of(snapshot.model_copy(update={"stats": snapshot.stats.model_copy(update={"weeks": weeks})}),
+                       stats_through=completed)
+    empty = _with_as_of(_with_week_n_stats(snapshot, {}), stats_through=completed)
+    assert _both_keys(trade, past) == _both_keys(trade, empty)
+
+
+def test_the_document_version_is_6():
+    import cornerstone_api.cache as cache_module
+
+    assert cache_module.DOCUMENT_VERSION == 6
