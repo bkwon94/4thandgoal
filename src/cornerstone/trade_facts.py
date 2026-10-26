@@ -37,7 +37,8 @@ def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
                 f"{_plural(profile[1], 'game', 'games')} before the trade")
         rank = season_rank(snapshot.stats, pid, through)
         if rank is not None:
-            text += f", position rank {n(rank[0])} of {n(rank[1])} by season points"
+            # "Position rank" is the league rank by lineup value, so this rank by season points has its own words.
+            text += f", season rank {n(rank[0])} of {n(rank[1])} by season points"
         text += "."
     # The position rank is a league rank by lineup value, so the analysis can say "RB15" and the reader can check it.
     # The number goes through Nums, so the analysis checker accepts the rank in the prose.

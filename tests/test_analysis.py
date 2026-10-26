@@ -82,8 +82,9 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
     analyze(trade, snap, call=fake)
     system, user = fake.calls[0]
     facts = _facts(user)
-    # Points per game and position rank, before the trade only.
-    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "position rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    # Points per game and season rank, before the trade only.
+    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "season rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    assert "position rank" not in facts[f"{WILSON}.ppg"]
     assert f"{WILSON}.usage" in facts and f"{WILSON}.targets" in facts and f"{WILSON}.redzone" in facts
     # Jacobs is suspended, and the returns file has him back in week 7.
     assert "week 7" in facts[f"{JACOBS}.injury"]
