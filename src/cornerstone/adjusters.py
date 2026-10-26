@@ -12,8 +12,8 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.history import (
-    SHARE_DIRECTION_WEEKS, _round_half_up, player_points, red_zone, scored_weeks, snap_share, stats_complete,
-    target_share,
+    SHARE_DIRECTION_WEEKS, _round_half_up, carry_share, player_points, red_zone, scored_weeks, snap_share,
+    stats_complete, target_share,
 )
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
@@ -23,6 +23,7 @@ from cornerstone.tunables import (
     EXPECTED_ADJUSTER_ON,
     EXPECTED_GAP,
     FIT_THRESHOLD,
+    HANDCUFF_CARRY_SHARE,
     INJURY_WEEKS,
     LAST_REGULAR_WEEK,
     LINEUP_WEEKS,
@@ -239,7 +240,8 @@ def trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
     """The running backs in the trade who back up a starter on the roster that gets them.
 
     A handcuff is second or lower on his NFL team's RB depth chart, and the first on that chart is on the
-    getting roster after the trade. With no depth chart, no player is a handcuff.
+    getting roster after the trade. A backup who takes HANDCUFF_CARRY_SHARE percent or more of his team's
+    carries is no handcuff. With no depth chart, no player is a handcuff.
     """
     if not _has_depth_chart(snapshot):
         return []
@@ -256,7 +258,26 @@ def is_handcuff(snapshot: Snapshot, player_id: str, roster_id: int) -> bool:
 
 
 def _backs_up_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -> bool:
-    """The one handcuff test: the player is second or lower on his RB depth chart, and the first is on the roster."""
+    """The one handcuff test: the player is behind a starter on the roster, and he takes few of the carries."""
+    return _behind_a_starter(snapshot, player_id, roster) and not _carries_the_ball(snapshot, player_id)
+
+
+def _carry_share(snapshot: Snapshot, player_id: str) -> int | None:
+    return carry_share(snapshot.stats, player_id, snapshot.as_of.stats_through)
+
+
+def _carries_the_ball(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player takes enough of his team's carries to score points of his own.
+
+    With no share to read, this is False, so the depth chart answer stands.
+    """
+    share = _carry_share(snapshot, player_id)
+    return share is not None and share >= HANDCUFF_CARRY_SHARE
+
+
+def _behind_a_starter(snapshot: Snapshot, player_id: str, roster: list[str]) -> bool:
+    """The depth chart part of the handcuff test: the player is second or lower on his RB depth chart, and the
+    first is on the roster."""
     if not _has_depth_chart(snapshot):
         return False
     id_map = snapshot.id_map
@@ -717,17 +738,22 @@ def _handcuff(snapshot: Snapshot, side: _Side) -> Adjuster:
     """Handcuff: a backup to the roster's own starting running back is insurance.
 
     It never moves the letter itself. A handcuff counts as zero in the sums, and the fit and trend
-    adjusters cannot step down because of him.
+    adjusters cannot step down because of him. A backup with a real share of the carries is no handcuff,
+    and the reason names his share.
     """
     if snapshot.depth_charts is None:
         return Adjuster(name=HANDCUFF, step=0, reason="The depth chart is not available, so no handcuff check ran.")
     if snapshot.id_map is None:
         return Adjuster(name=HANDCUFF, step=0, reason="The id map is not available, so no handcuff check ran.")
+    parts = []
     if side.gets_handcuffs:
-        reason = named(snapshot, side.gets_handcuffs, "backs up the team's own starter, so he counts as insurance.",
-                        "back up the team's own starters, so they count as insurance.")
-    else:
-        reason = "No player it gets is a handcuff."
+        parts.append(named(snapshot, side.gets_handcuffs, "backs up the team's own starter, so he counts as insurance.",
+                           "back up the team's own starters, so they count as insurance."))
+    after = _roster_after(snapshot, side.roster_id, side.gives, side.gets)
+    freed = [pid for pid in side.gets if pid not in side.handcuffs and _behind_a_starter(snapshot, pid, after)]
+    parts.extend(f"{snapshot.players[pid].name} backs up the team's own starter but takes "
+                 f"{_carry_share(snapshot, pid)}% of the carries, so he counts as a running back." for pid in freed)
+    reason = " ".join(parts) if parts else "No player it gets is a handcuff."
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.
     unmapped = _not_in_id_map(snapshot, [pid for pid in side.gets if snapshot.players[pid].position == "RB"])
     if unmapped:

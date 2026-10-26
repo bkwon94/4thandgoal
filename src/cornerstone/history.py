@@ -14,7 +14,7 @@ from cornerstone.facts_league import TREND_WEEKS
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.parse import parse_past_week
 from cornerstone.sleeper import fetch_past_week
-from cornerstone.tunables import SHARE_WEEKS
+from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
@@ -235,22 +235,42 @@ def snap_share(history: History, player_id: str, through: int) -> UsageShare | N
     )
 
 
+def _team_total(past: PastWeek, player_id: str, stat: str) -> float:
+    """The sum of one stat over every player of the player's NFL team in one week. No team gives 0."""
+    team = past.nfl_teams.get(player_id)
+    if team is None:
+        return 0.0
+    return sum(
+        past.stats.get(pid, {}).get(stat, 0.0)
+        for pid, nfl_team in past.nfl_teams.items() if nfl_team == team
+    )
+
+
 def target_share(history: History, player_id: str, through: int) -> UsageShare | None:
     """The share of the targets of his NFL team that the player took."""
-    def team_targets(past: PastWeek) -> float:
-        team = past.nfl_teams.get(player_id)
-        if team is None:
-            return 0.0
-        return sum(
-            past.stats.get(pid, {}).get("rec_tgt", 0.0)
-            for pid, nfl_team in past.nfl_teams.items() if nfl_team == team
-        )
-
     return _usage_share(
         history, player_id, through,
         numerator=lambda past: past.stats[player_id].get("rec_tgt", 0.0),
-        denominator=team_targets,
+        denominator=lambda past: _team_total(past, player_id, "rec_tgt"),
     )
+
+
+def carry_share(history: History, player_id: str, through: int) -> int | None:
+    """The percent of his NFL team's carries that the player took in his last HANDCUFF_CARRY_GAMES played games.
+
+    None with fewer than HANDCUFF_MIN_GAMES played games, with a gap in the stats, or with no team carries.
+    """
+    if not stats_complete(history, through):
+        return None
+    weeks = scored_weeks(history, player_id, through)
+    if len(weeks) < HANDCUFF_MIN_GAMES:
+        return None
+    recent = [history.weeks[w] for w in weeks[-HANDCUFF_CARRY_GAMES:]]
+    team = sum(_team_total(past, player_id, "rush_att") for past in recent)
+    if team == 0:
+        return None
+    carries = sum(past.stats[player_id].get("rush_att", 0.0) for past in recent)
+    return int(_round_half_up(100 * carries / team))
 
 
 def red_zone(history: History, player_id: str, through: int) -> tuple[int, int] | None:

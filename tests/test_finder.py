@@ -9,6 +9,8 @@ from math import comb
 
 import pytest
 
+from conftest import with_carries
+
 from cornerstone.adjusters import Adjuster, recent_points_per_game
 from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
 from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
@@ -209,15 +211,25 @@ def test_a_handcuff_on_his_own_roster_is_never_a_candidate(slow_snap):
     assert MITCHELL in _traded(candidates(12, 4, snap.model_copy(update={"depth_charts": None})))
 
 
+# At 3 carries a game in weeks 3 to 5, Henderson takes 15% of the NE carries, below the gate.
+THIN = {3: 3.0, 4: 3.0, 5: 3.0}
+
+
 def test_a_player_who_is_a_handcuff_on_the_roster_that_gets_him_is_never_a_candidate(slow_snap):
     # Henderson backs up Stevenson, who is on roster 7. A trade of Henderson to roster 7 is a handcuff trade,
     # unless roster 7 gives Stevenson in the same trade.
-    snap = _with_ids(slow_snap)
+    snap = with_carries(_with_ids(slow_snap), HENDERSON, THIN)
     with_henderson = [trade for trade in candidates(8, 7, snap) if HENDERSON in trade.sides[0].gives]
     assert with_henderson
     assert all(STEVENSON in trade.sides[1].gives for trade in with_henderson)
     # Roster 4 has no NE starter, so Henderson is a candidate there.
     assert HENDERSON in _traded(candidates(8, 4, snap))
+
+
+def test_a_backup_with_real_carries_can_go_to_the_roster_of_his_starter(slow_snap):
+    # Henderson takes 26 of 79 NE carries in weeks 3 to 5, or 33%, so he is a running back and no handcuff.
+    with_henderson = [trade for trade in candidates(8, 7, _with_ids(slow_snap)) if HENDERSON in trade.sides[0].gives]
+    assert any(STEVENSON not in trade.sides[1].gives for trade in with_henderson)
 
 
 def test_the_candidates_are_every_one_for_one_and_every_two_for_one_in_both_directions(slow_snap):

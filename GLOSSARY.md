@@ -316,7 +316,10 @@ A trade of two or more players for one. The depth side's values must sum to a ma
 player before the sides count as even.
 
 **Handcuff**:
-The backup to a roster's own starting running back. Insurance, never a player with no stats.
+The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
+takes 30% or more of his team's carries over his last 3 played games is not a handcuff. He scores points of
+his own, so every adjuster and the finder grade him as any running back. With fewer than 2 played games, or
+with no carry data, the depth chart alone decides.
 
 **Position order**:
 The tie rule the rubric uses at equal rank and points: RB over WR, WR over TE, TE over QB, QB over

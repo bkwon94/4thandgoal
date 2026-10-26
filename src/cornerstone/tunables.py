@@ -53,6 +53,15 @@ INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
 RETURN_WINDOW_WEEKS = 2
 
+# Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
+# A backup who takes 30% of his team's carries scores points of his own, so he counts as a running back.
+# A lead back takes about half of the carries, so 30% is a real share of the work and not garbage time.
+HANDCUFF_CARRY_SHARE = 30
+# The carry share reads his last 3 played games, so one big game cannot free him alone.
+HANDCUFF_CARRY_GAMES = 3
+# With fewer played games than this, the share is too thin to read, so the depth chart answer stands.
+HANDCUFF_MIN_GAMES = 2
+
 # Schedule: byes left and the playoff opponents of the players it gets against the players it gives.
 # It never moves a letter.
 # The gap in the mean rank of the week 15 to 17 opponents, in points allowed to the position, that makes a lean.

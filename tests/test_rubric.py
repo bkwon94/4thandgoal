@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from conftest import strip_trend_numbers
+from conftest import strip_trend_numbers, with_carries
 
 from cornerstone import rubric
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
@@ -18,7 +18,7 @@ from cornerstone.adjusters import (
     TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game,
     rubric_adjusters,
 )
-from cornerstone.history import points_per_game, red_zone, snap_share, target_share
+from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
@@ -952,6 +952,79 @@ def test_fit_never_steps_down_because_of_a_handcuff(slow_snap):
 # Henderson's snap share is down through week 5. The Carolina defense has no share direction and no red-zone use.
 STEVENSON, HENDERSON, CAR_DEF = "7611", "12529", "CAR"
 NE_IDS = {STEVENSON: "00-0036875", HENDERSON: "00-0040734"}
+# The other NE backs take 11, 21, and 21 carries in weeks 3 to 5. Henderson takes 26 of 79, or 33%.
+# At 3 carries a game he takes 9 of 62, or 15%. At 11 a game he takes 33 of 86, or 38%.
+THIN, REAL = {3: 3.0, 4: 3.0, 5: 3.0}, {3: 11.0, 4: 11.0, 5: 11.0}
+
+
+def _ne_snap(slow_snap, carries=THIN):
+    """The week 5 bound snapshot with the NE gsis_ids, and Henderson at `carries` in weeks 3 to 5."""
+    return with_carries(_with_ids(slow_snap, NE_IDS), HENDERSON, carries)
+
+
+def test_the_carry_share_reads_the_last_3_played_games(slow_snap):
+    assert carry_share(slow_snap.stats, HENDERSON, 5) == 33
+    assert carry_share(_ne_snap(slow_snap).stats, HENDERSON, 5) == 15
+    assert carry_share(_ne_snap(slow_snap, REAL).stats, HENDERSON, 5) == 38
+    # Henderson played no game in week 1, so through week 2 he has 1 played game and no share.
+    assert carry_share(slow_snap.stats, HENDERSON, 2) is None
+
+
+def test_a_backup_at_38_percent_of_the_carries_is_no_handcuff(slow_snap):
+    snap = _ne_snap(slow_snap, REAL)
+    trade = _trade(7, [CAR_DEF], 8, [HENDERSON])
+    assert rubric.trade_handcuffs(trade, snap) == []
+    seventh, _ = grade(trade, snap)
+    assert _adjuster(seventh, "handcuff").reason == (
+        "TreVeyon Henderson backs up the team's own starter but takes 38% of the carries, "
+        "so he counts as a running back.")
+    # His falling snap share counts now, so the trend steps roster 7 down as for any running back.
+    trend = _adjuster(seventh, "trend and usage")
+    assert trend.step == -1
+    assert "handcuff" not in trend.reason
+
+
+def test_a_backup_at_15_percent_of_the_carries_is_a_handcuff(slow_snap):
+    snap = _ne_snap(slow_snap)
+    trade = _trade(7, [CAR_DEF], 8, [HENDERSON])
+    assert rubric.trade_handcuffs(trade, snap) == [HENDERSON]
+    seventh, _ = grade(trade, snap)
+    assert _adjuster(seventh, "handcuff").reason == (
+        "TreVeyon Henderson backs up the team's own starter, so he counts as insurance.")
+
+
+def test_a_backup_with_1_played_game_or_no_carry_data_keeps_the_depth_chart_answer(slow_snap):
+    trade = _trade(7, [CAR_DEF], 8, [HENDERSON])
+    # Through week 2 Henderson has 1 played game, at 16 of 26 carries.
+    one_game = _with_bounds(_with_ids(slow_snap, NE_IDS), stats_through=2)
+    assert rubric.trade_handcuffs(trade, one_game) == [HENDERSON]
+    # With no carries in any stat line, no team has carry data.
+    snap = _with_ids(slow_snap, NE_IDS)
+    weeks = {week: past.model_copy(update={"stats": {pid: {k: v for k, v in line.items() if k != "rush_att"}
+                                                     for pid, line in past.stats.items()}})
+             for week, past in snap.stats.weeks.items()}
+    no_carries = snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
+    assert carry_share(no_carries.stats, HENDERSON, 5) is None
+    assert rubric.trade_handcuffs(trade, no_carries) == [HENDERSON]
+
+
+def test_a_known_game_can_lift_a_backup_over_the_carry_gate(fixture_raw_dir, fixture_history_root, chart_week6,
+                                                            fixture_nflverse_dir, tmp_path):
+    # Henderson takes 7 of 36 NE carries in week 6, so weeks 4 to 6 give 25 of 96, or 26%.
+    cache = tmp_path / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    known = _with_ids(_known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, slow=slow), NE_IDS)
+    assert (known.as_of.stats_through, known.as_of.completed_through) == (6, 5)
+    trade = _trade(7, [CAR_DEF], 8, [HENDERSON])
+    assert rubric.trade_handcuffs(trade, known) == [HENDERSON]
+    # A breakout of 20 carries in a Thursday game gives 38 of 109, or 35%, before the week is complete.
+    breakout = with_carries(known, HENDERSON, {6: 20.0})
+    assert rubric.trade_handcuffs(trade, breakout) == []
+    seventh, _ = grade(trade, breakout)
+    assert _adjuster(seventh, "handcuff").reason == (
+        "TreVeyon Henderson backs up the team's own starter but takes 35% of the carries, "
+        "so he counts as a running back.")
 
 
 def test_trend_never_steps_down_because_of_a_handcuff(snap, slow_snap):
@@ -959,7 +1032,7 @@ def test_trend_never_steps_down_because_of_a_handcuff(snap, slow_snap):
     # With no depth chart, Henderson is no handcuff, and his falling share steps roster 7 down.
     seventh, _ = grade(trade, snap)
     assert _adjuster(seventh, "trend and usage").step == -1
-    seventh, _ = grade(trade, _with_ids(slow_snap, NE_IDS))
+    seventh, _ = grade(trade, _ne_snap(slow_snap))
     trend = _adjuster(seventh, "trend and usage")
     assert trend.step == 0
     assert trend.reason.endswith("TreVeyon Henderson is a handcuff, so his use does not count.")
@@ -1436,7 +1509,7 @@ def test_expected_gap_of_gets_under_and_gives_under_takes_no_step(snap, expected
 
 
 def test_expected_gap_of_a_handcuff_does_not_count(slow_snap, expected_on):
-    snap = _with_expected(_with_ids(slow_snap, NE_IDS), {HENDERSON: UNDER})
+    snap = _with_expected(_ne_snap(slow_snap), {HENDERSON: UNDER})
     seventh, _ = grade(_trade(7, [CAR_DEF], 8, [HENDERSON]), snap)
     gap = _adjuster(seventh, "expected gap")
     assert gap.step == 0
