@@ -335,7 +335,13 @@ def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
     assert "over weeks 5 and 6" in _adjuster(first, TREND).reason
     sheet = trade_fact_sheet(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
-    assert "Every stat runs through week 6." in sheet["trade.week"].text
+    # On a game day the record ends a week before the player stats, so the fact names both bounds.
+    assert ("Player stats run through the known games of week 6. The record runs through week 5."
+            in sheet["trade.week"].text)
+    assert "Every stat" not in sheet["trade.week"].text
+    # With the two bounds equal, one bound covers every stat.
+    equal = trade_fact_sheet(_trade(1, [WATSON], 4, [ODUNZE]), at_week_5)
+    assert "Every stat runs through week 5." in equal["trade.week"].text
 
 
 # Nico Collins on roster 4 scored 8.1 in week 5 and 27.3 in week 4, and played no game in weeks 2 and 3.
@@ -455,6 +461,24 @@ def test_the_wopr_window_of_a_known_games_week_ends_at_the_week_before_when_the_
     without_week_6 = known_snap.model_copy(update={"wopr": {NABERS: {2: 40, 3: 40, 4: 50, 5: 60}}})
     assert _wopr(without_week_6, NABERS).weeks_used == [4, 5]
     assert _wopr(without_week_6, NABERS).direction == "up"
+
+
+# Mike Evans, a WR on roster 1, and Wan'Dale Robinson, a WR on roster 2, played week 6 with flat shares.
+EVANS, W_ROBINSON = "2216", "8126"
+
+
+def test_the_trend_step_reads_a_week_n_wopr_row_when_the_file_has_it_and_ends_a_week_before_without_it(known_snap):
+    # Evans gains 15 points of WOPR in both windows, so the step holds and only the weeks in the reason move.
+    with_row = known_snap.model_copy(update={"wopr": {EVANS: {3: 40, 4: 40, 5: 55, 6: 55},
+                                                      W_ROBINSON: {week: 50 for week in range(1, 7)}}})
+    without_row = known_snap.model_copy(update={"wopr": {EVANS: {2: 40, 3: 40, 4: 55, 5: 55},
+                                                         W_ROBINSON: {week: 50 for week in range(1, 6)}}})
+    trade = _trade(1, [EVANS], 2, [W_ROBINSON])
+    _, second_with = grade(trade, with_row)
+    _, second_without = grade(trade, without_row)
+    assert _adjuster(second_with, TREND).step == _adjuster(second_without, TREND).step == 1
+    assert "Evans: WOPR 55, up, over weeks 5 and 6." in _adjuster(second_with, TREND).reason
+    assert "Evans: WOPR 55, up, over weeks 4 and 5." in _adjuster(second_without, TREND).reason
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):
@@ -776,6 +800,20 @@ def test_injury_steps_down_at_the_count_of_report_weeks_and_never_counts_the_tra
     third, _ = grade(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3, 4]))
     assert _adjuster(third, "injury").step == -1
     assert _adjuster(third, "injury").reason == "Chris Olave was on the injury report in many weeks this season."
+
+
+def test_the_injury_report_of_a_known_games_week_ends_at_the_completed_week(known_snap):
+    # The player stats run through week 6 here, but the injury report ends at week 5.
+    # Weeks 3, 4, and 6 are three report weeks, so a read through week 6 would step down.
+    assert known_snap.as_of.stats_through == 6
+    assert known_snap.as_of.completed_through == 5
+    snap = known_snap.model_copy(update={"id_map": {OLAVE: OLAVE_GSIS},
+                                         "injuries": {OLAVE_GSIS: {3: "Questionable", 4: "Questionable", 6: "Out"}}})
+    trade = _trade(3, [MEYERS], 2, [OLAVE])
+    third, _ = grade(trade, snap)
+    assert _adjuster(third, "injury").step == 0
+    assert "on the NFL injury report in 2 weeks this season before the trade." in (
+        trade_fact_sheet(trade, snap)[f"{OLAVE}.injury"].text)
 
 
 def test_injury_without_the_injury_report_says_no_count_ran(snap):
