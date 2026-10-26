@@ -22,7 +22,7 @@ from fastapi.testclient import TestClient
 
 from conftest import strip_trend_numbers
 
-from cornerstone.adjusters import TREND, recent_points_per_game
+from cornerstone.adjusters import ROSTER_FIT, TREND, recent_points_per_game
 from cornerstone.analysis import (
     Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
 )
@@ -47,7 +47,7 @@ NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
 PASSPHRASE = "cornerstone-test"
 # The response fixture shared with the site repo. The route's output must keep its shape.
 RESPONSE_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "analyze-response.json"
-# The finder response fixture shared with the site repo, with three trades.
+# The finder response fixture shared with the site repo, with two trades.
 FIND_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "find-response.json"
 HEADERS = {"X-League-Passphrase": PASSPHRASE}
 
@@ -350,8 +350,11 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     names = [f["name"] for f in doc["sides"][0]["factors"]]
     assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 6
     assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
+    # After the trade, roster 12's bench no longer covers the bye of Tee Higgins in week 6. The new hole blocks its
+    # highest-value step, so the two sides are about even.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
-                               "reason": "The other side does better, so ask for more.", "differs": False}
+                               "reason": "The two sides are about even, but the schedule leans against the asking "
+                                         "side, so ask for more.", "differs": False}
     # The document leads with the decision, and no letter or step reaches it.
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
@@ -1031,12 +1034,20 @@ NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
 
+# One hole sentence of the roster fit reason, from the slot name to the period that ends it.
+HOLE_SENTENCE = re.compile(r"\b[A-Z]+\d? is a hole after the trade: [^.]*\.")
+
+
 def _digits_outside_ids(value, key=None):
     """The numbers and the strings with digits under any key that may not hold them."""
     if isinstance(value, dict):
         if value.get("name") == TREND:
             # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
             value = {**value, "reason": strip_trend_numbers(value["reason"])}
+        if value.get("name") == ROSTER_FIT:
+            # A hole sentence names a slot, a position rank, and a week, such as "FLEX1 ... week 6". The code writes
+            # it, and this check guards Claude's prose, not the code's factor reasons. Any other number fails.
+            value = {**value, "reason": HOLE_SENTENCE.sub("", value["reason"])}
         return [found for k, item in value.items() for found in _digits_outside_ids(item, k)]
     if isinstance(value, list):
         return [found for item in value for found in _digits_outside_ids(item, key)]
@@ -1149,7 +1160,7 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
 
 # The find route. The fixture chart lists mostly stars, so no pair of the week 6 snapshot has a win-win on it.
 # The finder tests give chart rows to the players a test needs, and these tests do the same for rosters 2 and 3,
-# so the pair has three win-wins that share no player.
+# so the pair has two win-wins that share no player. The holes of the bye window rule out the rest.
 CHART_POSITIONS = frozenset({"RB", "WR", "TE", "QB"})
 FIND = {"season": 2026, "asker": 2, "partner": 3}
 
@@ -1205,7 +1216,7 @@ def _find_client(settings, sources, fake, clock=None):
     return client
 
 
-def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_sources):
+def test_find_returns_two_win_win_trades_with_one_reason_each(settings, find_sources):
     fake = FakeFinderClaude()
     response = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
     assert response.status_code == 200
@@ -1214,7 +1225,7 @@ def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_s
     assert doc["fallback"] is False
     assert doc["empty"] is None
     assert [team["roster_id"] for team in doc["trade_pair"].values()] == [2, 3]
-    assert len(doc["trades"]) == 3
+    assert len(doc["trades"]) == 2
     for item in doc["trades"]:
         assert item["fairness"]["state"] == "win_win"
         assert item["reason"] == FakeFinderClaude.TEXT
@@ -1362,7 +1373,7 @@ def test_a_failed_claude_call_retries_once_then_each_reason_is_empty(settings, f
     # The second attempt carries the failures of the first as feedback.
     assert "Feedback from the last attempt:" in fake.calls[1][1]
     assert doc["fallback"] is True
-    assert len(doc["trades"]) == 3
+    assert len(doc["trades"]) == 2
     for item in doc["trades"]:
         # The fairness block already holds the code's reasons, so the card shows the fairness line alone.
         assert item["reason"] is None
@@ -1377,12 +1388,12 @@ def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_
     doc = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS).json()
     assert len(fake.calls) == 2
     assert doc["fallback"] is False
-    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 3
+    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 2
 
 
 @pytest.fixture
 def found(settings, find_sources):
-    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3."""
+    """The week 6 snapshot with the extra chart rows, and the two trades the finder finds for rosters 2 and 3."""
     snapshot = find_sources.snapshot(settings.repo, 2026)
     return snapshot, find_win_wins(2, 3, snapshot)
 
@@ -1433,7 +1444,7 @@ def test_a_response_with_a_trade_left_out_fails_the_shape(found):
     snapshot, items = found
     out = FinderReasonsOut.model_validate({"reasons": [{"trade": 1, "reason": FakeFinderClaude.TEXT, "cited": []}]})
     assert check_reasons(out, items, snapshot, _sheets(snapshot, items)) == [
-        "the response must have exactly 3 reasons: trades 1, 2, 3 in order, each once; it had trades 1"]
+        "the response must have exactly 2 reasons: trades 1, 2 in order, each once; it had trades 1"]
 
 
 def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
@@ -1460,7 +1471,7 @@ def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
 def test_a_good_find_returns_the_document_in_the_fixture_shape(settings, find_sources):
     doc = _find_client(settings, find_sources, FakeFinderClaude()).post("/find", json=FIND, headers=HEADERS).json()
     fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
-    assert len(fixture["trades"]) == 3
+    assert len(fixture["trades"]) == 2
     assert _same_shape(doc, _shape(fixture))
     # Every trade has the shape of the fixture's first, so no item drops a key.
     for item in doc["trades"]:
