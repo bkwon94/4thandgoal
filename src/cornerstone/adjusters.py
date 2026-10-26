@@ -581,6 +581,7 @@ def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     """The sentence that names a new hole: the slot, the player, and his position rank.
 
     A rank that reads a week N game in progress ends with "game in progress", because it can still move.
+    A player out with no returns row has no known return, so the sentence names no week, as _due_back_note does.
     """
     lead = f"{slot.name} is a hole after the trade:"
     if slot.player is None:
@@ -588,11 +589,13 @@ def _hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     player = snapshot.players[slot.player]
     if slot.absence is not None and not slot.absence.covered:
         week = slot.absence.week
+        if slot.absence.kind == "due back" and slot.player not in snapshot.returns:
+            return f"{lead} {player.name} is out with no return week on file."
         if week > _last_window_week(snapshot):
             return f"{lead} {player.name} is due back in week {week}."
         if slot.absence.kind == "due back":
-            return f"{lead} {player.name} is due back in week {week} and no cover."
-        return f"{lead} {player.name} has his bye in week {week} and no cover."
+            return f"{lead} {player.name} is due back in week {week}, and no bench player covers him."
+        return f"{lead} {player.name} has his bye in week {week}, and no bench player covers him."
     if slot.rank is None:
         return f"{lead} {player.name} has no position rank."
     # A player due back ranks by his projection ahead, so his rank reads no game.
