@@ -6,7 +6,9 @@ A failure of any source never stops a build, so each read returns None for missi
 import logging
 import time
 from collections.abc import Callable, Collection
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 from pydantic import BaseModel
@@ -171,6 +173,26 @@ def read_games(path: Path, season: int, week: int) -> list[tuple[str, str]] | No
     games = [(_sleeper_team(row["away_team"]), _sleeper_team(row["home_team"])) for row in _rows(path)
              if row["season"] == str(season) and row["game_type"] == "REG" and row["week"] == str(week)]
     return games or None
+
+
+def read_kickoffs(path: Path, season: int, week: int) -> dict[str, datetime]:
+    """The kickoff of each regular-season game of the week by Sleeper team code, in Eastern time.
+
+    The file gives the date and the Eastern time of each kickoff. A row with no time gives no kickoff.
+    """
+    eastern = ZoneInfo("America/New_York")
+    kickoffs: dict[str, datetime] = {}
+    for row in _rows(path):
+        if row["season"] != str(season) or row["game_type"] != "REG" or row["week"] != str(week):
+            continue
+        # The schedules fixture and an old file can lack the column, so a missing time is no kickoff.
+        time_text = row.get("gametime") or ""
+        if time_text in ("", "NA"):
+            continue
+        kickoff = datetime.fromisoformat(f"{row['gameday']}T{time_text}").replace(tzinfo=eastern)
+        for side in ("away_team", "home_team"):
+            kickoffs[_sleeper_team(row[side])] = kickoff
+    return kickoffs
 
 
 def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:

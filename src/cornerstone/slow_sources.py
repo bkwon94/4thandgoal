@@ -5,6 +5,7 @@ the expected points, and the WOPR. A source that is not there is None, so the bu
 """
 import csv
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -12,7 +13,7 @@ from pydantic import BaseModel
 from cornerstone.models import ExpectedPoints
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, TeamSchedule,
-    cache_path, read_depth_charts, read_id_map, read_injuries, read_schedules,
+    cache_path, read_depth_charts, read_id_map, read_injuries, read_kickoffs, read_schedules,
 )
 from cornerstone.nflverse_expected import read_expected
 from cornerstone.nflverse_players import read_player_weeks
@@ -39,6 +40,9 @@ class SlowSources(BaseModel):
     # The WOPR by Sleeper id and week. Only the trend adjuster reads it, as a tiebreak before red-zone use.
     # Without it, red-zone use breaks the tie. A None here is "player_weeks" in `missing`, the name of its file.
     wopr: dict[str, dict[int, int]] | None = None
+    # The kickoff of each NFL team's game of `week`, from the schedules file. Only the in-progress label reads it.
+    # A team with no kickoff has a game that counts as final, so a None here is no source in `missing`.
+    kickoffs: dict[str, datetime] | None = None
     missing: list[str] = []
 
 
@@ -60,6 +64,7 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     before `week` too, so a file that ends earlier counts as missing.
     `scoring` is the league scoring. The expected points rescale to it, so without it they are None.
     The WOPR comes from the nflverse weekly player file and ends at the week before `week`.
+    The kickoffs are of the games of `week`, so the snapshot can tell a game in progress from a final one.
     """
     schedules_path = cache_path(cache_dir, SCHEDULES_URL, season)
     depth_path = cache_path(cache_dir, DEPTH_CHARTS_URL, season)
@@ -84,9 +89,10 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     wopr = None
     if sleeper_of_gsis and stats_player_path.exists():
         wopr = _read("wopr", _read_wopr, stats_player_path, week - 1, sleeper_of_gsis)
+    kickoffs = _read("kickoffs", read_kickoffs, schedules_path, season, week) if schedules_path.exists() else None
     # The two go by the names of their files in `missing`, because the sources line names the files the grade read.
     named = {**sources, "expected_points": expected, "player_weeks": wopr}
-    return SlowSources(**sources, expected=expected, wopr=wopr,
+    return SlowSources(**sources, expected=expected, wopr=wopr, kickoffs=kickoffs,
                        missing=[name for name, source in named.items() if source is None])
 
 

@@ -2,6 +2,7 @@
 Tests for the live snapshot builder.
 Every fetch is a fixture-backed callable, so no test calls the network or Claude.
 """
+import csv
 import os
 import shutil
 import time
@@ -162,6 +163,30 @@ def test_on_monday_night_the_raw_week_is_the_trade_week_and_its_known_games_stay
     assert sum(s.wins + s.losses for s in snap.standings) == 5 * 2 * 12
     assert not (live_repo / "data" / "2026" / "history" / "week-06").exists()
     assert snap.stale == []
+
+
+def _with_kickoff(repo, game_id, gametime):
+    """Give the schedules cache a kickoff time column, with `gametime` for `game_id` and none for the rest."""
+    path = cache_path(repo / "data" / "cache" / "nflverse", SCHEDULES_URL, 2026)
+    with path.open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    for row in rows:
+        row["gametime"] = gametime if row["game_id"] == game_id else ""
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def test_on_monday_night_the_clock_of_the_request_puts_the_monday_game_in_progress(live_repo, sleeper, chart_week6):
+    # The Commanders at the 49ers kick off at 8:15 pm Eastern on Monday 2026-10-19, so 9 pm is in the game.
+    _with_kickoff(live_repo, "2026_06_WAS_SF", "20:15")
+    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    assert snap.as_of.known_games.games == 14
+    assert snap.as_of.known_games.in_progress == 1
+    assert snap.in_progress_teams == {"WAS", "SF"}
 
 
 def test_on_the_tuesday_before_the_roll_the_raw_week_joins_the_history(live_repo, sleeper, chart_week6):

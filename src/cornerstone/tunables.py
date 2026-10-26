@@ -190,3 +190,8 @@ RESEARCH_SEARCHES = 4
 # Injury status and snap counts change on game days, so a day-old file would miss Sunday on a Monday morning grade.
 # Every other nflverse source keeps the day of CACHE_MAX_AGE_SECONDS.
 FAST_SOURCES_MAX_AGE_SECONDS = 6 * 60 * 60
+
+# The known games: a week N game is in progress when the clock is past its kickoff by less than this.
+# An NFL game takes about 3 hours 15 minutes. Overtime and weather delays add more, so the extra time keeps
+# a long game in progress until it ends. GLOSSARY.md, "In progress".
+IN_PROGRESS_MINUTES = 4 * 60 + 30

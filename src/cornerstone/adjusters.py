@@ -498,6 +498,7 @@ def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
     The reader cannot check a bare direction, so each sentence gives the numbers and the weeks behind each percent.
     When the two moved shares of a player have the same weeks, the weeks come once at the end of his sentence.
     When they differ, the weeks come after each percent.
+    A share that reads a week N game in progress ends the sentence with "game in progress", because it can still move.
     """
     through = snapshot.as_of.stats_through
     names = _short_names(snapshot, players)
@@ -508,14 +509,28 @@ def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
                  if share is not None and share.direction in ("up", "down")]
         if not moved:
             continue
+        label = IN_PROGRESS_LABEL if _reads_a_game_in_progress(
+            snapshot, pid, [week for _, share in moved for week in share.weeks_used]) else ""
         if len({tuple(share.weeks_used) for _, share in moved}) == 1:
             shares = ", ".join(f"{kind} {share.percent}%, {share.direction}" for kind, share in moved)
-            sentences.append(f"{names[pid]}: {shares}, over {_weeks_text(moved[0][1].weeks_used)}.")
+            sentences.append(f"{names[pid]}: {shares}, over {_weeks_text(moved[0][1].weeks_used)}{label}.")
         else:
             shares = ", ".join(f"{kind} {share.percent}% ({_weeks_text(share.weeks_used)}), {share.direction}"
                                for kind, share in moved)
-            sentences.append(f"{names[pid]}: {shares}.")
+            sentences.append(f"{names[pid]}: {shares}{label}.")
     return sentences
+
+
+# The phrase that ends the sentence of a player whose quoted number reads a week N game in progress.
+IN_PROGRESS_LABEL = ", game in progress"
+
+
+def _reads_a_game_in_progress(snapshot: Snapshot, player_id: str, weeks: list[int]) -> bool:
+    """True when the weeks hold the trade week and the player's NFL team plays its week N game now.
+
+    GLOSSARY.md, "In progress". A saved week has no game in progress, so it is always False there.
+    """
+    return snapshot.week in weeks and snapshot.players[player_id].nfl_team in snapshot.in_progress_teams
 
 
 def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
