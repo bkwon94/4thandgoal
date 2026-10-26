@@ -188,6 +188,25 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
     assert live_ranks["12490"] == 15
 
 
+def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_the_same_raw(
+        live_repo, free_agent_raw_dir, fixture_history_root, chart_week6):
+    shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
+
+    def before_kickoff(league_id, players_cache):
+        raw = load_raw(free_agent_raw_dir)
+        raw["stats"] = []
+        return raw, FETCHED
+
+    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    saved = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    assert live.free_agents == saved.free_agents
+    # Perine, the back with no stat line, and Bigsby, in player id order, as the saved test reads them.
+    assert [p.player_id for p in live.free_agents["RB"]] == ["4147", "80001", "9225"]
+    assert live.best_free_agent(["RB"]) == saved.best_free_agent(["RB"])
+
+
 def _with_kickoff(repo, game_id, gametime):
     """Give the schedules cache a kickoff time column, with `gametime` for `game_id` and none for the rest."""
     path = cache_path(repo / "data" / "cache" / "nflverse", SCHEDULES_URL, 2026)

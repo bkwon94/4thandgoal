@@ -4,6 +4,7 @@ The builder reads saved raw Sleeper data, the saved history, trade values, and t
 """
 import json
 import logging
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -28,7 +29,7 @@ SLOW_SOURCES = ("schedules", "depth_charts", "id_map", "points_allowed", "injuri
 
 
 class SnapshotPlayer(BaseModel):
-    """What the analyzer shows of a rostered player: the name, the position, and the NFL team."""
+    """What the analyzer shows of a rostered player or a free agent: the name, the position, and the NFL team."""
 
     player_id: str
     name: str
@@ -118,6 +119,10 @@ class Snapshot(BaseModel):
     # The Sleeper codes of the NFL teams whose known game of week N is in progress. A reason that quotes a week N
     # number of one of their players says "game in progress". Empty for a saved week.
     in_progress_teams: set[str] = set()
+    # The free agents at each of QB, RB, WR, and TE in player id order: the players on no roster that the waiver
+    # pool reads. The hole fact names the best of them, and `players` holds rostered players only, so each one
+    # carries his name here. Empty when the raw data has no free agent.
+    free_agents: dict[str, list[SnapshotPlayer]] = {}
     # The player ids per position in position rank order, and the rank of each player, built on the first read.
     # GLOSSARY.md, "Position rank".
     _rank_table: dict[str, list[str]] | None = PrivateAttr(default=None)
@@ -140,6 +145,20 @@ class Snapshot(BaseModel):
         """The player's position rank, or None for a K, a DEF, or a player outside the rank pool."""
         self.rank_table()
         return self._position_ranks.get(player_id)
+
+    def best_free_agent(self, positions: Iterable[str]) -> tuple[SnapshotPlayer, int] | None:
+        """The free agent at any of `positions` with the best position rank, and his rank.
+
+        A free agent with no stat line has no rank, so he is never the best. The player id breaks a tie of ranks at
+        two positions. None when no free agent at the positions has a rank.
+        """
+        ranked = [(rank, player.player_id, player) for position in positions
+                  for player in self.free_agents.get(position, [])
+                  if (rank := self.position_rank(player.player_id)) is not None]
+        if not ranked:
+            return None
+        rank, _, player = min(ranked, key=lambda each: each[:2])
+        return player, rank
 
     def model_copy(self, *, update: dict | None = None, deep: bool = False) -> "Snapshot":
         """A copy with no rank table, so a copy with new rosters, returns, or stats ranks from its own data."""
@@ -189,6 +208,33 @@ def _pending(stats: list[dict], week: int, wopr: dict[str, dict[int, int]] | Non
         with_usage = {row["game_id"] for row in played if week in wopr.get(row["player_id"], {})}
         counts["usage"] = len(games - with_usage)
     return {name: count for name, count in counts.items() if count > 0}
+
+
+def _snapshot_player(pid: str, entry: dict) -> SnapshotPlayer:
+    return SnapshotPlayer(
+        player_id=pid,
+        name=player_name(pid, entry),
+        position=entry.get("position") or "?",
+        nfl_team=entry.get("team"),
+        injury_status=entry.get("injury_status"),
+    )
+
+
+def _free_agents(entries: dict[str, dict], rosters: dict[int, list[str]]) -> dict[str, list[SnapshotPlayer]]:
+    """The free agents at each of QB, RB, WR, and TE in player id order, by the waiver pool's rule.
+
+    The saved path and the live path both build here from the raw players file, so a Saturday grade and the Tuesday
+    build read the same free agents.
+    """
+    # The adjusters module and the waiver module import this one, so the imports wait for the build.
+    from cornerstone.adjusters import RANKED_POSITIONS
+    from cornerstone.waiver import _in_pool
+    rostered = {pid for pids in rosters.values() for pid in pids}
+    free_agents: dict[str, list[SnapshotPlayer]] = {position: [] for position in RANKED_POSITIONS}
+    for pid, entry in sorted(entries.items()):
+        if entry.get("position") in free_agents and _in_pool(entry, rostered, pid):
+            free_agents[entry["position"]].append(_snapshot_player(pid, entry))
+    return free_agents
 
 
 def load_returns(path: Path) -> dict[str, int] | None:
@@ -284,17 +330,7 @@ def build_snapshot(
     history = History(week=stats_through, weeks=weeks)
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
     entries = raw["players"]
-    players = {
-        pid: SnapshotPlayer(
-            player_id=pid,
-            name=player_name(pid, entry),
-            position=entry.get("position") or "?",
-            nfl_team=entry.get("team"),
-            injury_status=entry.get("injury_status"),
-        )
-        for pids in rosters.values() for pid in pids
-        for entry in [entries.get(pid) or {}]
-    }
+    players = {pid: _snapshot_player(pid, entries.get(pid) or {}) for pids in rosters.values() for pid in pids}
     # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
     slow_missing = list(SLOW_SOURCES) if slow is None else list(slow.missing)
     missing = ([] if chart is not None else ["chart"]) + slow_missing + ([] if returns is not None else ["returns"])
@@ -331,4 +367,5 @@ def build_snapshot(
         missing=missing,
         stale=stale,
         in_progress_teams=set(in_progress),
+        free_agents=_free_agents(entries, rosters),
     )
