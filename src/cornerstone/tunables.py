@@ -35,6 +35,9 @@ FIT_THRESHOLD = Decimal("3.0")
 LINE_RB_WR = 36
 # Each of the 12 teams starts 1 QB and 1 TE. Rank 24 covers one starter and one backup per team.
 LINE_QB_TE = 24
+# Strength: the position rank a RB1, RB2, WR1, or WR2 starter must hold or beat to count. GLOSSARY.md, "Strength".
+# The 12 teams each start 2 RB and 2 WR, so rank 24 is the last back or receiver an average team starts at RB2 or WR2.
+STRENGTH_RANK = 24
 # The bye window: the count of weeks from the trade week that a hole reads ahead. GLOSSARY.md, "Hole". A starter
 # with his bye in the window, or due back inside it, needs a bench player to cover him. Three weeks is the trade week
 # and the next two. A pickup or another trade can rarely fix a slot sooner.

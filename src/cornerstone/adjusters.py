@@ -33,6 +33,7 @@ from cornerstone.tunables import (
     LINEUP_WEEKS,
     RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
+    STRENGTH_RANK,
     SCHEDULE_RANK_GAP,
     SELLER_GAP,
     SHARE_WEEKS,
@@ -220,6 +221,8 @@ def fill_slots(
 
 # The line at each ranked position. GLOSSARY.md, "The line". K and DEF have no line, so their slots are never holes.
 LINES = {"QB": LINE_QB_TE, "RB": LINE_RB_WR, "WR": LINE_RB_WR, "TE": LINE_QB_TE}
+# The starting slots that strength reads. GLOSSARY.md, "Strength". The flex slots and QB and TE stay out of it.
+STRENGTH_SLOTS = ("RB1", "RB2", "WR1", "WR2")
 
 
 class Absence(NamedTuple):
@@ -414,6 +417,17 @@ class _Side(BaseModel):
                        if snapshot.players[pid].position == position and _above_the_line(snapshot, pid))
         return (count(snapshot.rosters[self.roster_id]),
                 count(_roster_after(snapshot, self.roster_id, self.gives, self.gets)))
+
+    def strength(self) -> tuple[int, int]:
+        """The count of RB1, RB2, WR1, and WR2 starters at or better than STRENGTH_RANK, before and after the trade.
+
+        GLOSSARY.md, "Strength". It is a fact for the analysis, never a step. A starter outside the top 24 but above
+        the line is weak, not a hole.
+        """
+        def count(slots: list[StartingSlot]) -> int:
+            return sum(1 for slot in slots
+                       if slot.name in STRENGTH_SLOTS and slot.rank is not None and slot.rank <= STRENGTH_RANK)
+        return count(self.slots_before), count(self.slots_after)
 
 
 def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str]) -> list[str]:

@@ -582,6 +582,18 @@ def test_a_position_whose_depth_count_does_not_change_gets_no_depth_fact(snap):
         "12.depth.rb", "12.depth.wr", "2.depth.rb", "2.depth.wr"]
 
 
+def test_a_trade_that_drops_the_top_24_starter_count_from_four_to_three_gives_a_strength_fact_with_both_counts(snap):
+    # Roster 2 starts Jones RB13, Jeanty RB21, Chase WR8, and Olave WR14, all four in the top 24. Hampton RB26 takes
+    # RB2 for Jeanty, so three are in the top 24 after. Roster 12 starts Tuten RB15 and Emanuel Wilson RB17 at RB
+    # before and after, so its count of 4 does not change and it gets no strength fact.
+    sheet = trade_fact_sheet(_trade(2, [JEANTY], 12, [HAMPTON]), snap)
+    assert sheet["2.strength"].text == ("For All You Need Is Love, the starters at RB1, RB2, WR1, and WR2 with a "
+                                        "position rank of 24 or better go from 4 to 3.")
+    assert {"24", "4", "3"} <= set(sheet["2.strength"].numbers)
+    assert "12.strength" not in sheet
+    assert tunables.STRENGTH_RANK == 24
+
+
 # Standings through week 5: rosters 3, 6, 5, 1, 2, and 9 hold the six playoff spots,
 # and roster 9 in the sixth has 5 wins.
 # Roster 4 has 1 win, four games out, so it is a seller.
