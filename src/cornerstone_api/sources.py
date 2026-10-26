@@ -53,6 +53,7 @@ class Sources:
         """Refresh the slow sources and the chart now, as the live snapshot does. It raises ValueError as snapshot does.
 
         Each nflverse file older than `max_age_seconds` is fetched again.
+        The injuries file and the player weeks file are fetched again after at most 6 hours.
         """
         _, _, week = fetch_live_week(repo, season, self.fetch_sleeper)
         return self._refresh_week(repo, week, max_age_seconds)
