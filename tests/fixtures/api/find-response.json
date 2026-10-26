@@ -25,20 +25,20 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
             },
             {
-              "player_id": "4199",
-              "name": "Aaron Jones",
-              "position": "RB",
-              "nfl_team": "MIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+              "player_id": "8126",
+              "name": "Wan'Dale Robinson",
+              "position": "WR",
+              "nfl_team": "TEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg"
             }
           ],
           "gets": [
             {
-              "player_id": "3198",
-              "name": "Derrick Henry",
-              "position": "RB",
-              "nfl_team": "BAL",
-              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+              "player_id": "2306",
+              "name": "Jameis Winston",
+              "position": "QB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
             }
           ]
         },
@@ -47,11 +47,11 @@
           "team": "Lil Fridge",
           "gives": [
             {
-              "player_id": "3198",
-              "name": "Derrick Henry",
-              "position": "RB",
-              "nfl_team": "BAL",
-              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+              "player_id": "2306",
+              "name": "Jameis Winston",
+              "position": "QB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
             }
           ],
           "gets": [
@@ -63,11 +63,11 @@
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
             },
             {
-              "player_id": "4199",
-              "name": "Aaron Jones",
-              "position": "RB",
-              "nfl_team": "MIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+              "player_id": "8126",
+              "name": "Wan'Dale Robinson",
+              "position": "WR",
+              "nfl_team": "TEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg"
             }
           ]
         }
@@ -78,15 +78,15 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The best lineup gains after the trade."
+            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
           },
           {
             "roster_id": 3,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Tucker: snap share 70%, up, over weeks 4 and 5. Jones: target share 28%, up, over weeks 4 and 5."
+            "reason": "The best lineup gains after the trade."
           }
         ]
       },
-      "reason": "All You Need Is Love gets Derrick Henry into its best lineup, and Lil Fridge gets Tre Tucker and Aaron Jones as their roles grow."
+      "reason": "All You Need Is Love gets Jameis Winston, the best player in the trade, with no loss to its lineup, and Lil Fridge gets Tre Tucker and Wan'Dale Robinson into its best lineup."
     },
     {
       "sides": [

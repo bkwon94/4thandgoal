@@ -98,12 +98,12 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
 
 
 def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
-    """The mean of the player's weekly projections from his return week through LAST_REGULAR_WEEK.
+    """The mean of the player's weekly projections from his due-back week through LAST_REGULAR_WEEK.
 
     A week with no projection row, such as a bye, is no game. With no row in those weeks, he counts for 0.
     """
     rows = snapshot.projections_ahead.get(player_id, {})
-    weeks = [rows[week] for week in range(snapshot.returns[player_id], LAST_REGULAR_WEEK + 1) if week in rows]
+    weeks = [rows[week] for week in range(due_back_week(snapshot, player_id), LAST_REGULAR_WEEK + 1) if week in rows]
     if not weeks:
         return Decimal(0)
     return sum((Decimal(str(points)) for points in weeks), Decimal(0)) / len(weeks)
@@ -115,7 +115,7 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
     A player due back has no recent games, so his projection ahead gives his lineup value.
     Recent points show current play, so every other player keeps them. With no projections file, all players keep them.
     """
-    if snapshot.projections_ahead is not None and _due_back(snapshot, player_id):
+    if snapshot.projections_ahead is not None and due_back_week(snapshot, player_id) is not None:
         return projection_ahead(snapshot, player_id)
     return recent_points_per_game(snapshot, player_id)
 
@@ -287,17 +287,27 @@ def _due_back_notes(snapshot: Snapshot, side: _Side) -> list[str]:
     """One sentence per player due back in the trade with the projection he counts for, or one sentence that says
     the projections are not available.
     """
-    due_back = [pid for pid in side.gets + side.gives if _due_back(snapshot, pid)]
+    due_back = [pid for pid in side.gets + side.gives if due_back_week(snapshot, pid) is not None]
     if not due_back:
         return []
     if snapshot.projections_ahead is None:
         return ["The projections ahead are not available, so " + named(
             snapshot, due_back, "counts for his recent points per game.", "count for their recent points per game.")]
+    return [_due_back_note(snapshot, pid) for pid in due_back]
+
+
+def _due_back_note(snapshot: Snapshot, player_id: str) -> str:
+    """The sentence that names a player due back, the week he counts as back, and the projection he counts for.
+
+    A player out with no returns row has no known return, so the sentence says he counts as back, not that he is due.
+    """
+    name, week = snapshot.players[player_id].name, due_back_week(snapshot, player_id)
     # The quantize keeps the Decimal exact. _round_half_up goes through a float, which can print a long tail.
-    return [f"{snapshot.players[pid].name} is due back in week {snapshot.returns[pid]}, so he counts for his "
-            f"projection ahead of {projection_ahead(snapshot, pid).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)}"
-            " a game."
-            for pid in due_back]
+    ahead = projection_ahead(snapshot, player_id).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+    if player_id not in snapshot.returns:
+        return (f"{name} has no return week on file, so he counts as back in week {week} "
+                f"for his projection ahead of {ahead} a game.")
+    return f"{name} is due back in week {week}, so he counts for his projection ahead of {ahead} a game."
 
 
 def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
@@ -329,6 +339,7 @@ def _fit_step(snapshot: Snapshot, side: _Side) -> Adjuster:
 
 # Injury report statuses that keep a player out of games. A player with one of them and no row in the
 # returns file has no known return, so the standing adjuster counts him as back after RETURN_BY_WEEK.
+# The lineup value counts him as due back at RETURN_BY_WEEK, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 
@@ -379,11 +390,14 @@ def _gain_when(snapshot: Snapshot, side: _Side) -> str:
     The text is "now" when the side gets no starter who is due back.
     A player due back does not play this week, so a gain he makes in the lineup comes after his return, not now.
     The text names each player due back that the side gets and starts. It gives the latest return week of them.
+    A player out with no returns row has no known return, so the text says he counts as back, as the fit note does.
     """
-    due_back = [pid for pid in side.gets if pid in side.starters_after and _due_back(snapshot, pid)]
+    due_back = [pid for pid in side.gets if pid in side.starters_after and due_back_week(snapshot, pid) is not None]
     if not due_back:
         return "now"
-    week = max(snapshot.returns[pid] for pid in due_back)
+    week = max(due_back_week(snapshot, pid) for pid in due_back)
+    if any(pid not in snapshot.returns for pid in due_back):
+        return f"from week {week}, when " + named(snapshot, due_back, "counts as back", "count as back")
     returns = named(snapshot, due_back, "returns", "return")
     return f"after {returns} in week {week}"
 
@@ -502,8 +516,22 @@ def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
     return sum(sum(red_zone(snapshot.stats, pid, through) or (0, 0)) for pid in players)
 
 
+def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
+    """The week the player counts as back, or None when he is not due back.
+
+    The returns file gives the week. A player out with no row counts as back at RETURN_BY_WEEK, the week the standing
+    adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must start at that week.
+    A week through the last completed week is no return ahead, so he is not due back.
+    """
+    week = snapshot.returns.get(player_id)
+    if week is None and snapshot.players[player_id].injury_status in OUT_STATUSES:
+        week = RETURN_BY_WEEK
+    return week if week is not None and week > snapshot.as_of.completed_through else None
+
+
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player back after the last completed week, so he is out now."""
+    # The trend and the expected gap read only the returns file, so an out player with no row keeps his use.
     week = snapshot.returns.get(player_id)
     return week is not None and week > snapshot.as_of.completed_through
 

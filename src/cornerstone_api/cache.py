@@ -10,6 +10,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import NamedTuple
 
+from cornerstone.adjusters import due_back_week
 from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import LAST_REGULAR_WEEK
@@ -47,9 +48,9 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     """The hash of the players, the record, and the week rows of each roster. The analyze key and the find key share it.
 
-    The week rows are the return week and the projections ahead of each rostered player due back. The commissioner
-    edits the returns file by hand, and Sleeper moves projections daily. `DOCUMENT_VERSION` covers a deploy only, so
-    the rows must be in the key.
+    The week rows are the due-back week and the projections ahead of each rostered player due back. The commissioner
+    edits the returns file by hand, Sleeper moves projections daily, and a move into the out set makes a player due
+    back. `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
     Only the rows of the two rosters go in, so a change to any other player keeps the hit.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
@@ -57,12 +58,17 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
     # The returns file keeps a return week after the player is back, but the grade reads only a week still ahead.
-    due_back = {player: week for player, week in snapshot.returns.items() if week > snapshot.as_of.completed_through}
+    # The grade reads the due-back week through the same rule, so the key and the grade agree on who is due back.
+    rostered = {player for roster_id in roster_ids for player in snapshot.rosters[roster_id]}
+    due_back = {player: week for player in rostered if (week := due_back_week(snapshot, player)) is not None}
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),
             "record": standings[roster_id].model_dump(mode="json") if roster_id in standings else None,
             "returns": {player: due_back[player] for player in snapshot.rosters[roster_id] if player in due_back},
+            # A player out with no returns row gets other words in the reason than a row of the same week.
+            "on_file": sorted(player for player in snapshot.rosters[roster_id]
+                              if player in due_back and player in snapshot.returns),
             "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player])
                                   for player in snapshot.rosters[roster_id] if player in due_back},
         }
