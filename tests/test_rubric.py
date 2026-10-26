@@ -535,7 +535,7 @@ def test_with_no_schedule_map_no_bye_hole_reads_and_the_reason_names_the_missing
 # empty. St. Brown WR11 and Garrett Wilson WR12 score 15.00 each, so St. Brown takes WR2 by the player ID tie rule.
 def test_the_fact_sheet_names_the_slot_each_player_takes_and_the_player_he_pushes_out(snap):
     sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
-    assert sheet[f"{ST_BROWN}.slot"].text == "Amon-Ra St. Brown takes WR2 and pushes Chris Olave to FLEX2."
+    assert sheet[f"{ST_BROWN}.slot"].text == "Amon-Ra St. Brown takes WR2, and Chris Olave moves to FLEX2."
     assert sheet[f"{WILSON}.slot"].text == "Garrett Wilson takes FLEX1 and pushes Tre Tucker to the bench."
     # The slot names carry digits, so the checker accepts "WR2" and "FLEX1" in the prose.
     assert set(sheet[f"{ST_BROWN}.slot"].numbers) >= {"2"}

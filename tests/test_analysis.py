@@ -225,6 +225,33 @@ def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accept
     assert len(fake.calls) == 1
 
 
+def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_strength_count(trade, snap):
+    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver above the line after, from 2.
+    # Tuten RB15 and Wilson leave its RB1, RB2, WR1, and WR2 starters, and Jacobs RB16 and Vele come in.
+    text = ("Josh Jacobs takes RB2 on this side. WR depth above the line goes from 2 to 1. "
+            "Its starters with a position rank of 24 or better go from 4 to 3.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text,
+                                             cited=[f"{JACOBS}.slot", "11.depth.wr", "11.strength"])))
+    result = analyze(trade, snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert facts[f"{JACOBS}.slot"] == "Josh Jacobs takes RB2, which Bhayshul Tuten held before the trade."
+    assert facts[f"{VELE}.slot"] == "Devaughn Vele takes WR2, and George Pickens moves to WR1."
+    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, WR depth above the line goes from 2 to 1."
+    assert facts["11.strength"] == ("For Unsolicited Dak Picks, the starters at RB1, RB2, WR1, and WR2 with a "
+                                    "position rank of 24 or better go from 4 to 3.")
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
+def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
+    # The depth fact of roster 11 holds 2 and 1, and no breakdown reason holds 38, so a count of 38 is a new number.
+    text = "Josh Jacobs takes RB2 on this side. WR depth above the line goes from 38 to 1. He starts."
+    bad = _response(eleven=_side(11, analysis=text, cited=[f"{JACOBS}.slot", "11.depth.wr"]))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert "number 38 is not in the cited facts" in fake.calls[1][1]
+
+
 def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):
     # The trend reason of roster 11 gives Tuten's snap share of 64% over weeks 4 and 5. No cited fact holds 64.
     text = ("Garrett Wilson scored 14.2 points per game before the trade. "

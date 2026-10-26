@@ -151,7 +151,7 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
 def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
     """The starting slot a player the side gets takes after the trade, and the player who held it before.
 
-    The holder before moves to another slot or to the bench, or leaves in the trade. A player in no slot sits on the
+    The holder before moves to another slot, sits on the bench, or leaves in the trade. A player in no slot sits on the
     bench. The slot names carry digits, such as RB2, so they go through Nums and the checker accepts them in prose.
     """
     n = Nums()
@@ -166,8 +166,11 @@ def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
     elif held in side.gives:
         text += f", which {snapshot.players[held].name} held before the trade."
     else:
+        # The holder can move up as well as down, as when the side gives its WR1, so a move says "moves to".
         moved = next((slot.name for slot in side.slots_after if slot.player == held), None)
-        text += f" and pushes {snapshot.players[held].name} to {'the bench' if moved is None else n.text(moved)}."
+        held_name = snapshot.players[held].name
+        text += (f" and pushes {held_name} to the bench." if moved is None
+                 else f", and {held_name} moves to {n.text(moved)}.")
     players = [name] if held is None else [name, snapshot.players[held].name]
     return fact(f"{pid}.slot", text, n, [], players)
 
