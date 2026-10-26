@@ -67,3 +67,4 @@ Ruling: 01, 05, 07 build in parallel in separate worktrees; 05 and 07 rebase ont
 - 11: review Needs fixes: 2 Important (rubric.md prompt teaches the old rule; no sums or fit test for a freed backup), 4 minors. Ruling: fix both Important and minors 1, 2; minors 3 (suite before the wrap, the next run covers it) and 4 (test name says Thursday) accepted. Fix round 2/5 sent.
 - 11: fix round 2/5 done 654feda, 1155 pass. Scoped re-review out (sonnet) on 69ca4bb..654feda.
 - 11: re-review round 2 clean. Task 11: complete (0c9940b..654feda rebased, review clean). Merged --no-ff into main, suite below. Push and deploy on Brian's standing word.
+- 2026-10-26 12:59: 09 and 11 merged and pushed, main ad0388a, 1162 tests. The deploy was denied by the permission classifier twice; Brian runs make deploy himself.
