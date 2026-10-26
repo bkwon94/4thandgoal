@@ -1,11 +1,12 @@
 """
-The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team and need.
-Every player stat ends at the known games and every record at week N-1. Each fact carries every number in its text.
+The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team, the
+need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
+Each fact carries every number in its text.
 """
-from cornerstone.adjusters import due_back_week, team_race
+from cornerstone.adjusters import _Side, due_back_week, team_race, trade_handcuffs
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
-from cornerstone.rubric import ProposedTrade
+from cornerstone.rubric import ProposedTrade, build_sides
 from cornerstone.sheet import Nums, fact
 from cornerstone.snapshot import Snapshot
 
@@ -146,6 +147,30 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     return fact(f"{rid}.need", text, n, [team], [])
 
 
+def _slot_fact(snapshot: Snapshot, side: _Side, pid: str) -> Fact:
+    """The starting slot a player the side gets takes after the trade, and the player who held it before.
+
+    The holder before moves to another slot or to the bench, or leaves in the trade. A player in no slot sits on the
+    bench. The slot names carry digits, such as RB2, so they go through Nums and the checker accepts them in prose.
+    """
+    n = Nums()
+    name = snapshot.players[pid].name
+    taken = next((slot for slot in side.slots_after if slot.player == pid), None)
+    if taken is None:
+        return fact(f"{pid}.slot", f"{name} sits on the bench.", n, [], [name])
+    held = next(slot.player for slot in side.slots_before if slot.name == taken.name)
+    text = f"{name} takes {n.text(taken.name)}"
+    if held is None:
+        text += ", which was empty before the trade."
+    elif held in side.gives:
+        text += f", which {snapshot.players[held].name} held before the trade."
+    else:
+        moved = next((slot.name for slot in side.slots_after if slot.player == held), None)
+        text += f" and pushes {snapshot.players[held].name} to {'the bench' if moved is None else n.text(moved)}."
+    players = [name] if held is None else [name, snapshot.players[held].name]
+    return fact(f"{pid}.slot", text, n, [], players)
+
+
 def _week_fact(snapshot: Snapshot) -> Fact:
     n = Nums()
     as_of = snapshot.as_of
@@ -161,7 +186,7 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race and the roster need.
+    trade value, and per side the team record and race, the roster need, and the slot each player it gets takes.
     Every player stat ends at the known games, and the record and the race end at week N-1."""
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
@@ -180,4 +205,7 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     for side in trade.sides:
         facts.append(_team_fact(snapshot, side.roster_id))
         facts.append(_need_fact(snapshot, trade, side.roster_id))
+    # The sides come from the grade's own call, so the slot facts name the slots the roster fit step reads.
+    for read in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
+        facts += [_slot_fact(snapshot, read, pid) for pid in read.gets]
     return {f.id: f for f in facts if f is not None}

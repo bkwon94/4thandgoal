@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 
 from cornerstone.adjusters import (
-    ADJUSTERS, SCHEDULE, Adjuster, Lean, build_side, lineup_value, named, trade_handcuffs,
+    ADJUSTERS, SCHEDULE, Adjuster, Lean, _Side, build_side, lineup_value, named, trade_handcuffs,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -225,15 +225,23 @@ def _final_letter(start: Letter, adjusters: list[Adjuster]) -> Letter:
     return LETTERS[max(0, min(len(LETTERS) - 1, LETTERS.index(start) - total))]
 
 
+def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[_Side, _Side]:
+    """The reads of each side, in the order of trade.sides: the best lineup, its slots, and the holes.
+
+    The grade and the trade fact sheet both read the sides here, so the facts name the same slots the grade reads.
+    """
+    a, b = trade.sides
+    top = _highest_value_player(trade, snapshot, handcuffs)
+    return (build_side(snapshot, a.roster_id, a.gives, b.gives, top, handcuffs),
+            build_side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
+
+
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
-    a, b = trade.sides
     # The handcuffs come first, because the start letter sums and the highest-value player count them at zero.
     handcuffs = trade_handcuffs(trade, snapshot)
-    top = _highest_value_player(trade, snapshot, handcuffs)
-    sides = (build_side(snapshot, a.roster_id, a.gives, b.gives, top, handcuffs),
-             build_side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
+    sides = build_sides(trade, snapshot, handcuffs)
     starts = _start_letters(trade, snapshot, handcuffs)
     breakdowns = []
     for trade_side, (letter, reason), side in zip(trade.sides, starts, sides):
