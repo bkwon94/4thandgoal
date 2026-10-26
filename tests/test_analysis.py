@@ -8,15 +8,19 @@ import shutil
 
 import pytest
 
+from conftest import with_free_agents
+
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
 from cornerstone.rubric import ProposedTrade, TradeSide
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import load_snapshot
+from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 # The week 6 Josh Jacobs trade: roster 11 gives Bhayshul Tuten and Garrett Wilson to roster 12
 # for Jacobs and Devaughn Vele. Roster 12 asked. Chart values: Tuten 3.0, Wilson 27.5, Jacobs 11.5, Vele 55.0.
 TUTEN, WILSON, JACOBS, VELE = "12490", "8146", "5850", "11834"
+BATEMAN = "7571"
 
 
 @pytest.fixture
@@ -26,6 +30,22 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
+    rosters = dict(snap.rosters)
+    rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
+    rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
+    return snap.model_copy(update={"rosters": rosters})
+
+
+@pytest.fixture
+def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
+    """The snapshot of the snap fixture with Rashod Bateman, a free agent receiver, in the players file."""
+    cache = tmp_path / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    raw = with_free_agents(load_raw(fixture_raw_dir), {BATEMAN: {
+        "full_name": "Rashod Bateman", "position": "WR", "team": "BAL", "status": "Active", "active": True}})
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, slow,
+                          returns=load_returns(fixture_history_root.parent / "returns.json"))
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -241,6 +261,29 @@ def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_stren
                                     "position rank of 24 or better go from 4 to 3.")
     assert not result.fallback
     assert len(fake.calls) == 1
+
+
+def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_agent(trade, fa_snap):
+    # Vele WR40 takes WR2 of roster 11, below the line. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
+    # 9.33 a game. 32 receivers have more lineup value, so he is WR33, the best free agent at WR.
+    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR33. "
+            "Waivers can fix the hole.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"])))
+    result = analyze(trade, fa_snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, WR2 is a hole after the trade: Devaughn Vele is WR40. "
+                                    "The best free agent at WR is Rashod Bateman, WR33.")
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
+def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
+    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR31. "
+            "Waivers can fix the hole.")
+    bad = _response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"]))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, fa_snap, call=fake).fallback
+    assert "number 31 is not in the cited facts" in fake.calls[1][1]
 
 
 def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
