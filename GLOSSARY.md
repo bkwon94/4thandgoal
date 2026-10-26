@@ -340,8 +340,10 @@ _Avoid_: replacement level, floor, cutoff
 
 **Hole**:
 A starting slot that, after a trade, holds a player below the line or holds no player. A bye hole is a
-slot whose starter has his bye in the next 3 weeks and no bench player above the line can cover. A hole
-that exists before the trade too is not new.
+slot whose starter has his bye in the bye window and no bench player above the line can cover. The bye
+window is the trade week and the next two weeks. A starter due back inside the window reads as a bye, and
+a starter due back after it is a hole. A starter out with no return week on file is a hole. A hole that
+exists before the trade too is not new.
 _Avoid_: gap, weakness, need
 
 **Depth**:
