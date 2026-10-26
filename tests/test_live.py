@@ -188,6 +188,25 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
     assert live_ranks["12490"] == 15
 
 
+def test_a_known_game_of_week_n_moves_a_live_position_rank_and_weeks_1_to_n_minus_1_rank_as_the_saved_week(
+        live_repo, sleeper, fixture_raw_dir, fixture_history_root, chart_week6):
+    # On Monday night the week 6 stat lines are known games. The saved week 6 never counts its own games.
+    shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
+    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert (live.as_of.stats_through, saved.as_of.stats_through) == (6, 5)
+    assert all(live.stats.weeks[week] == saved.stats.weeks[week] for week in range(1, 6))
+    # With the known games cut away, the live table is the saved table, so only week 6 moves a rank.
+    cut = live.model_copy(update={
+        "stats": live.stats.model_copy(update={"weeks": {w: past for w, past in live.stats.weeks.items() if w < 6}}),
+        "as_of": live.as_of.model_copy(update={"stats_through": 5})})
+    assert cut.rank_table() == saved.rank_table()
+    # Tuten's week 6 game lifts him from RB15 to RB12.
+    assert (saved.position_rank("12490"), live.position_rank("12490")) == (15, 12)
+
+
 def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_the_same_raw(
         live_repo, free_agent_raw_dir, fixture_history_root, chart_week6):
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")

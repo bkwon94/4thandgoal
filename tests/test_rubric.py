@@ -573,6 +573,20 @@ def test_a_player_who_takes_an_empty_slot_says_the_slot_was_empty(snap):
     assert sheet["NE.slot"].text == "New England Patriots takes DEF, which was empty before the trade."
 
 
+# Miller is RB55 at 4.27 a game, so his RB2 slot is a hole and he never counts toward depth. A hand count of the
+# saved weeks gives the 54 backs above him, by points per game of weeks 2 to 5. "ahead" marks a back out now who
+# counts for his projection ahead.
+# Jahmyr Gibbs 27.28, Kenneth Walker 23.83, Bijan Robinson 21.22, Kyren Williams 20.45, James Cook 19.10, Jaylen Warren
+# 18.92, Derrick Henry 18.25, Christian McCaffrey 17.62, Chuba Hubbard 17.27, Jonathan Taylor 16.82, Javonte Williams
+# 16.20, Bucky Irving 13.60, Aaron Jones 13.30, Saquon Barkley 12.64 ahead, Bhayshul Tuten 12.47, Josh Jacobs 12.21
+# ahead, Emanuel Wilson 11.82, Breece Hall 11.68 ahead, Ollie Gordon 11.38, Brian Robinson 11.38, Ashton Jeanty 10.98,
+# D'Andre Swift 10.48, Rhamondre Stevenson 10.32, David Montgomery 10.29 ahead, Travis Etienne 9.98 ahead, Omarion
+# Hampton 9.70, Zach Charbonnet 9.58 ahead, Chase Brown 9.18, Braelon Allen 9.00, Tony Pollard 8.95, Quinshon Judkins
+# 8.94 ahead, MarShawn Lloyd 8.50, Kyle Monangai 8.44 ahead, Woody Marks 8.32, Rachaad White 8.13, Jordan Mason 8.12
+# ahead, Alvin Kamara 7.80, Cam Skattebo 7.55, Keaton Mitchell 7.45, J.K. Dobbins 7.25, RJ Harvey 7.23, Blake Corum
+# 7.12, Jacory Croskey-Merritt 6.81 ahead, TreVeyon Henderson 6.38, Kimani Vidal 6.30, De'Von Achane 6.25, Jonathon
+# Brooks 5.58 ahead, Chris Rodriguez 5.53, Jadarian Price 5.52 ahead, Rico Dowdle 5.40, Tank Bigsby 5.10, Tyler Allgeier
+# 5.08, Samaje Perine 5.03, Kenny Gainwell 4.75.
 # Roster 2 holds Jones RB13, Jeanty RB21, and Charbonnet RB27 above the line at RB, with Miller RB55 and Love RB75
 # below it. At WR it holds Chase WR8, Olave WR14, Tucker WR31, and Wan'Dale Robinson WR36, with Addison WR53 below.
 # Roster 12 holds Tuten RB15, Emanuel Wilson RB17, Hampton RB26, and Pollard RB30 above the line at RB, and
