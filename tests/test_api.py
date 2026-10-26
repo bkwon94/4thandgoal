@@ -32,6 +32,7 @@ from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDU
 from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
 from cornerstone_api.cache import cache_key, finder_cache_key
@@ -681,6 +682,18 @@ def test_a_changed_stat_line_of_an_unrostered_k_changes_neither_key(settings, so
         trade, _with_points(snapshot, kicker, 3.0, "K"))
     assert finder_cache_key(2026, 4, 12, _with_points(snapshot, kicker, 30.0, "K")) == finder_cache_key(
         2026, 4, 12, _with_points(snapshot, kicker, 3.0, "K"))
+
+
+def test_a_new_free_agent_at_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    bigsby = SnapshotPlayer(player_id="9225", name="Tank Bigsby", position="RB", nfl_team="PHI")
+    added = snapshot.model_copy(update={"free_agents": {**snapshot.free_agents, "RB": [bigsby]}})
+    # His stat line is in the rank pool either way, so only the free agents tell the two keys apart. The hole fact
+    # names the best free agent, so a new one must miss.
+    assert added.rank_table() == snapshot.rank_table()
+    assert cache_key(trade, added) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, added) != finder_cache_key(2026, 4, 12, snapshot)
 
 
 def _strings(value):

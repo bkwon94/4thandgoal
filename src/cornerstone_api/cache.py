@@ -69,6 +69,8 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     The rank table goes in: the player ids per position in position rank order. A rank reads every player at the
     position, rostered or not, so a line of a free agent or of a third roster can move it. The table itself is
     the exact input: a line that moves a rank misses, and a line that moves none, such as a K line, keeps the hit.
+    The free agent ids per position go in, because the hole fact names the best free agent. The rank table
+    already covers their stat lines, so a new free agent or one who leaves the pool is the only change left.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -101,7 +103,9 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
                "in_progress_teams": sorted(snapshot.in_progress_teams),
                "known_games": snapshot.as_of.known_games.model_dump() if snapshot.as_of.known_games else None,
                "stats_stale": "stats" in snapshot.stale,
-               "rank_table": snapshot.rank_table()}
+               "rank_table": snapshot.rank_table(),
+               "free_agents": {position: [player.player_id for player in players]
+                               for position, players in snapshot.free_agents.items()}}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()
 
 
