@@ -58,3 +58,4 @@ Ruling: 01, 05, 07 build in parallel in separate worktrees; 05 and 07 rebase ont
 - Site final wave: re-review clean. Merged --no-ff into the site main, 288 pass, typecheck clean. Site main not pushed.
 - Pipeline final wave: built 5b935d7, 1146 pass, ruff clean. Concern 2 (the full known_games block in the key lowers the hit rate on a game day): accepted, a new game read must be a new grade. Scoped re-review out (opus).
 - Pipeline final wave: re-review clean. Merged --no-ff into main b53ca6e, 1146 pass, ruff clean. Branch complete in both repos, nothing pushed. Decisions for Brian: ticket 05 moved saved-week grades; no fit label; NA in the out set. Open checks: player file update time; in-progress real-data run.
+- 2026-10-26 12:23: Brian said push and deploy. Pushed pipeline main b53ca6e and site main 601e919. make deploy done, machine healthy. The first grade after the deploy is slow.
