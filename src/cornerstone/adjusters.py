@@ -325,8 +325,9 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
         if slot.player is None or not _above_the_line(snapshot, slot.player):
             marked.append(slot)
             continue
-        # The hole read takes the return week from the returns file only. GLOSSARY.md, "Due back".
-        back = snapshot.returns.get(slot.player) if _due_back(snapshot, slot.player) else None
+        # The hole read and the lineup value read the same return week, so a player out with no return week counts
+        # as back at RETURN_BY_WEEK, past the window, and his slot is a hole.
+        back = due_back_week(snapshot, slot.player)
         if back is not None and back > snapshot.week:
             kind: Literal["bye", "due back"] = "due back"
             week: int | None = back

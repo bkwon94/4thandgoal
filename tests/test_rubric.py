@@ -205,8 +205,9 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     assert _adjuster(tenth, "roster fit").reason == (
         "The best lineup gains after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
     assert _adjuster(fifth, "roster fit").step == -1
+    # Saquon Barkley takes FLEX1 on roster 5. He counts as back in week 14, past the bye window, so his slot is a hole.
     assert _adjuster(fifth, "roster fit").reason == (
-        "The best lineup loses after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
+        "FLEX1 is a hole after the trade: Saquon Barkley is due back in week 14." + NO_SCHEDULES + " " + SAQUON_NOTE)
 
 
 # Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70. DJ Moore, Out with no return week, holds the
@@ -214,22 +215,31 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
 POLLARD = "5967"
 
 
+def _saquon_back_in_week_7(snap):
+    """The snapshot with Saquon Barkley due back in week 7, inside the bye window.
+
+    Out with no return week, he counts as back in week 14, and a slot he takes is a hole. The highest-value tests
+    are about another rule, so they give him a return week. A bench back on roster 12 covers him.
+    """
+    return snap.model_copy(update={"returns": {**snap.returns, SAQUON: 7}})
+
+
 def test_fit_steps_up_for_the_highest_value_player_in_the_trade_with_no_lineup_loss(snap):
-    # Saquon Barkley counts as back in week 14 at 12.6 a game. Roster 12's lineup does not lose with him.
-    # Roster 10 loses his 12.6 for Pollard at 8.95, a loss of 3.69, past the fit threshold.
-    snap = _with_values(snap, {SAQUON: 30.0})
+    # Saquon Barkley is due back in week 7 at 12.7 a game. Roster 12's lineup does not lose with him.
+    # Roster 10 loses his 12.7 for Pollard at 8.95, a loss of 3.75, past the fit threshold.
+    snap = _with_values(_saquon_back_in_week_7(snap), {SAQUON: 30.0})
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(twelfth, "roster fit").step == 1
     assert _adjuster(twelfth, "roster fit").reason == (
-        "It gets the highest-value player in the trade, and the best lineup does not lose." + NO_SCHEDULES + " "
-        + SAQUON_NOTE)
+        "It gets the highest-value player in the trade, and the best lineup does not lose." + NO_SCHEDULES
+        + " Saquon Barkley is due back in week 7, so he counts for his projection ahead of 12.7 a game.")
     assert _adjuster(tenth, "roster fit").step == -1
 
 
 def test_an_unlisted_player_makes_points_per_game_pick_the_highest_value_player_in_the_trade(snap):
-    # Saquon Barkley has no trade value. He counts for 12.6 a game, more than Pollard at 8.95, so roster 12 gets the
-    # highest-value player. Roster 10 loses his 12.6 in its lineup.
-    tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
+    # Saquon Barkley has no trade value. He counts for 12.7 a game, more than Pollard at 8.95, so roster 12 gets the
+    # highest-value player. Roster 10 loses his 12.7 in its lineup.
+    tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), _saquon_back_in_week_7(snap))
     assert _adjuster(tenth, "roster fit").step == -1
     assert _adjuster(twelfth, "roster fit").step == 1
 
@@ -246,7 +256,9 @@ def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_st
     # Cook starts on roster 10, but Woody Marks at 8.32 sits on the bench, behind Egbuka at 8.50.
     # Roster 10 holds players out with no return week, and their projections ahead would change its lineup.
     # With no projections file, every player keeps his recent points. Saquon Barkley is healthy here, so no note shows.
-    snap = _with_status(_with_projections(snap, None), SAQUON, None)
+    # Judkins is healthy here too. Out with no return week, he would take a flex spot as a hole, and this test is
+    # about the one-for-two rule.
+    snap = _with_status(_with_status(_with_projections(snap, None), SAQUON, None), JUDKINS, None)
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, MARKS]), snap)
     assert _adjuster(tenth, "roster fit").step == 0
     assert _adjuster(tenth, "roster fit").reason == (
@@ -262,11 +274,14 @@ JONES, JEANTY, CHARBONNET, MILLER = "4199", "12527", "9753", "9757"
 
 def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_steps_down(snap):
     # Roster 2 after: Charbonnet moves up to RB1 and Miller at RB55 takes RB2. St. Brown and Wilson take both flex
-    # spots, so the best lineup changes by 0.35, about the same. The new hole alone steps it down.
+    # spots, so the best lineup changes by 0.35, about the same. The new holes alone step it down.
+    # Charbonnet is Out with no return week, so he counts as back in week 14 and RB1 is a hole too. His flex slot
+    # was a hole before, and that FLEX hole closes.
     second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
     fit = _adjuster(second, "roster fit")
     assert fit.step == -1
-    assert fit.reason == "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES
+    assert fit.reason == ("RB1 is a hole after the trade: Zach Charbonnet is due back in week 14. "
+                          "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES)
 
 
 def _prompt_section(heading: str) -> str:
@@ -348,13 +363,18 @@ def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_
     fit = _adjuster(second, "roster fit")
     assert fit.step == 0
     assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose. "
+                          "RB1 is a hole after the trade: Zach Charbonnet is due back in week 14. "
                           "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES)
 
 
 def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_snap):
     # Hand-worked trade 3: roster 4 gives McConkey and Stevenson for Skattebo and Collins, a gain of 4.75.
     # Stevenson RB23 held FLEX2, and Worthy WR45 takes it. The gain and the hole cancel.
-    fourth, _ = grade(_trade(4, ["11635", "7611"], 7, ["12481", COLLINS], asker=7), _before_real_trade(slow_snap, 3))
+    # McConkey is Out with no return week, so his FLEX1 slot is a hole before the trade, and Worthy's would not be
+    # new. The test is about a new hole, so McConkey is back in week 6 here.
+    snap = _before_real_trade(slow_snap, 3)
+    snap = snap.model_copy(update={"returns": {**snap.returns, "11635": 6}})
+    fourth, _ = grade(_trade(4, ["11635", "7611"], 7, ["12481", COLLINS], asker=7), snap)
     fit = _adjuster(fourth, "roster fit")
     assert fit.step == 0
     assert fit.reason.startswith(
@@ -380,10 +400,14 @@ def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_d
 # Roster 6 starts Pat Freiermuth TE10 at FLEX2, with Malik Washington WR38 and Blake Corum RB42 on its bench.
 # Hunter Henry sits on the bench of roster 4 at TE20.
 E_WILSON, ADAMS, FREIERMUTH, CORUM, HUNTER_HENRY = "11435", "2133", "7600", "11586", "3214"
+RICE, JUDKINS = "10229", "12512"
 
 
 def test_a_flex_slot_with_a_wr_below_36_is_a_hole(snap):
-    # Tyson takes FLEX2, a loss of 4.72. With a loss and a new hole, the step is one down and the reason names the hole.
+    # Tyson takes FLEX2, a loss of 3.98. With a loss and a new hole, the step is one down and the reason names the hole.
+    # Adams and Rashee Rice are back in week 6 here. Out with no return week, each holds a flex slot as a hole before
+    # the trade, so the hole at Tyson would not be new.
+    snap = snap.model_copy(update={"returns": {**snap.returns, ADAMS: 6, RICE: 6}})
     first, _ = grade(_trade(1, [ADAMS], 2, [ADDISON]), snap)
     fit = _adjuster(first, "roster fit")
     assert fit.step == -1
@@ -1735,13 +1759,13 @@ HAND_WORKED = [
 
 # A new hole moves these rows. Each waits for Brian's word before HAND_WORKED changes.
 HOLE_MOVES = {
-    0: "Roster 8 gives Malik Nabers, so WR2 is a hole: Carnell Tate is WR47. Fit 0 to -1, final A to B, still accept.",
-    3: "Roster 4 gives Rhamondre Stevenson, so FLEX2 is a hole: Xavier Worthy is WR45. The gain and the hole "
-       "cancel: fit +1 to 0, final stays A, still decline.",
-    2: "Roster 6 gives Brian Robinson, so Pat Freiermuth leaves the bench for FLEX2. He covered the bye of Parker "
-       "Washington in week 7, so FLEX1 is a hole. Fit 0 to -1, final stays F, still accept.",
-    5: "Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2 with his bye in week 8 and "
-       "no cover. Fit 0 to -1, final stays F, still accept.",
+    0: "Roster 7 gets Breece Hall, Out with no return week, so RB1 is a hole: he is due back in week 14. Malik Nabers "
+       "takes WR1 with his bye in week 8 and no cover. Fit +1 to 0, final D to F, still accept.",
+    2: "Roster 6 gets Lamar Jackson, Out with no return week, so QB is a hole: he is due back in week 14. Pat "
+       "Freiermuth leaves the bench for FLEX2, so no cover is left for the bye of Parker Washington in week 7. Fit 0 "
+       "to -1, final stays F, still accept.",
+    5: "Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2. He is Out with no return week, "
+       "so he is due back in week 14. Fit 0 to -1, final stays F, still accept.",
 }
 
 
@@ -1942,7 +1966,9 @@ def test_a_contender_whose_player_due_back_sits_on_the_bench_gains_now(snap):
 
 def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(snap):
     # Saquon Barkley is Out with no return week, so he would count as due back. Healthy, neither player is.
-    snap = _with_status(snap, SAQUON, None)
+    # Judkins is healthy too. With no projections, he counts by his recent points and takes a flex spot. Out with no
+    # return week, that slot would be a hole in one case and not the other.
+    snap = _with_status(_with_status(snap, SAQUON, None), JUDKINS, None)
     today = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, None))
     projected = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}}))
     assert projected == today
