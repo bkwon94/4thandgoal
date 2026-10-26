@@ -71,8 +71,15 @@ A hole is a starting slot that holds a player below the line, or holds no player
 is never a hole. A hole that exists before the trade too is not new. A hole can move to another
 slot of the same kind, such as from one flex slot to the other. It is still not new.
 
+A starter who misses a week with no cover is a hole too. The bye window is `BYE_WINDOW` weeks
+from the trade week. A starter with his bye in the window needs a cover. So does a starter due
+back after the trade week and inside the window. A cover is a bench player above the line at a
+position the slot allows. Each bench player covers one slot only. A bench player with his bye in
+the same week cannot cover. A starter due back after the window is a hole, whatever his rank.
+With no schedules, no bye hole reads, and the reason says that the schedules are not available.
+
 - A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
-  position rank.
+  position rank. For a starter with no cover, it names the week of his bye or his return.
 - A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
   still one down, and the reason names the hole.
 - A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no

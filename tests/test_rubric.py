@@ -292,6 +292,15 @@ def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block(
     assert tunables.LINE_RB_WR == 36 and tunables.LINE_QB_TE == 24
 
 
+def test_the_rubric_prompt_states_the_no_cover_hole():
+    fit = _prompt_section("Roster fit")
+    assert "A starter who misses a week with no cover is a hole too." in fit
+    assert "The bye window is `BYE_WINDOW` weeks from the trade week." in fit
+    assert "A starter due back after the window is a hole, whatever his rank." in fit
+    assert "it names the week of his bye or his return." in fit
+    assert tunables.BYE_WINDOW == 3
+
+
 def test_no_roster_fit_reason_or_prompt_section_uses_replacement_tier_floor_or_gap(snap):
     assert not FIT_BANNED.search(_prompt_section("Roster fit"))
     assert not FIT_BANNED.search(_prompt_section("Handcuff"))
