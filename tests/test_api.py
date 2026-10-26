@@ -544,6 +544,16 @@ def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
         2026, 4, 12, _with_week_rows(snapshot, {rostered: 9}, {}))
 
 
+def test_the_cache_key_changes_with_a_team_in_progress(settings, sources):
+    # A grade cached while a game is on says "game in progress", so the final game must miss that grade.
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    on = snapshot.model_copy(update={"in_progress_teams": {"CHI", "ATL"}})
+    off = snapshot.model_copy(update={"in_progress_teams": set()})
+    assert cache_key(trade, on) != cache_key(trade, off)
+    assert finder_cache_key(2026, 4, 12, on) != finder_cache_key(2026, 4, 12, off)
+
+
 def test_the_cache_key_changes_with_a_projection_ahead_of_a_rostered_player_due_back(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)

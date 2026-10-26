@@ -4,7 +4,7 @@ The builder reads saved raw Sleeper data, the saved history, trade values, and t
 """
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -17,6 +17,7 @@ from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
 from cornerstone.slow_sources import SlowSources
 from cornerstone.sleeper import load_raw, read_fetch_time
+from cornerstone.tunables import IN_PROGRESS_MINUTES
 
 logger = logging.getLogger(__name__)
 
@@ -113,11 +114,31 @@ class Snapshot(BaseModel):
     # "history" is here when the history lacks week N-1, on a live or a saved build.
     # "stats" is here when the stats fetch of the trade week failed, so the known games are unknown.
     stale: list[str] = []
+    # The Sleeper codes of the NFL teams whose known game of week N is in progress. A reason that quotes a week N
+    # number of one of their players says "game in progress". Empty for a saved week.
+    in_progress_teams: set[str] = set()
 
 
 def _games_with_a_stat_line(stats: list[dict]) -> int:
     """The count of distinct games with a stat line of a player who played. A line of an inactive player has no gp."""
     return len({row["game_id"] for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0})
+
+
+def _teams_in_progress(stats: list[dict], kickoffs: dict[str, datetime], now: datetime) -> dict[str, str]:
+    """The game id of each NFL team with a played line whose game is in progress at `now`. GLOSSARY.md, "In progress".
+
+    A game is in progress when `now` is past its kickoff by less than IN_PROGRESS_MINUTES.
+    A team with no kickoff has a game that counts as final.
+    `now` must be an aware datetime, because the kickoffs carry the Eastern time zone.
+    """
+    length = timedelta(minutes=IN_PROGRESS_MINUTES)
+    teams = {}
+    for row in stats:
+        team, kickoff = row.get("team"), kickoffs.get(row.get("team") or "")
+        if (row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0 and kickoff is not None
+                and kickoff <= now < kickoff + length):
+            teams[team] = row["game_id"]
+    return teams
 
 
 def load_returns(path: Path) -> dict[str, int] | None:
@@ -159,13 +180,15 @@ def load_snapshot(
 def build_snapshot(
         raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
-        trade_week: int | None = None, returns: dict[str, int] | None = None) -> Snapshot:
+        trade_week: int | None = None, returns: dict[str, int] | None = None,
+        now: datetime | None = None) -> Snapshot:
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
     A saved week passes no trade week and never counts its own games. Only the live path passes one, so only a
     fetch on a game day reads the known games of week N.
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
+    `now` is the clock of the request. With the kickoffs of the slow sources, it tells the known games in progress.
     """
     # A failed live stats fetch gives None, and a raw can lack the key. The parses then read no lines.
     stats_lines = raw.get("stats")
@@ -189,6 +212,7 @@ def build_snapshot(
         stale.append("history")
     stats_through = completed_through
     known_games = None
+    in_progress: dict[str, str] = {}
     # A fetch on a game day of week N holds the week N stat lines, so those games join the player stats.
     # A week with no played line yet has zero known games, and the grade reads the week before.
     # A failed fetch has no stats, so the stamp names them stale.
@@ -199,7 +223,10 @@ def build_snapshot(
                 stale.append("stats")
         else:
             games = _games_with_a_stat_line(stats_lines)
-            known_games = KnownGames(week=trade_week, games=games)
+            # The label changes no number, so a game in progress counts as a known game the same as a final one.
+            if now is not None and slow is not None and slow.kickoffs:
+                in_progress = _teams_in_progress(stats_lines, slow.kickoffs, now)
+            known_games = KnownGames(week=trade_week, games=games, in_progress=len(set(in_progress.values())))
             if games > 0:
                 weeks[trade_week] = parse_past_week(raw, trade_week)
                 stats_through = trade_week
@@ -252,4 +279,5 @@ def build_snapshot(
         projections_ahead=_projections_by_player(raw, week.week),
         missing=missing,
         stale=stale,
+        in_progress_teams=set(in_progress),
     )

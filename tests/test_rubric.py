@@ -4,13 +4,16 @@ They feed a proposed trade and the week 6 snapshot at the grade seam.
 """
 import re
 import shutil
+from datetime import datetime, timedelta
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import pytest
 
 from conftest import strip_trend_numbers
 
 from cornerstone import rubric
+from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
     TREND, _byes_left, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
 )
@@ -20,7 +23,7 @@ from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
 )
 from cornerstone.sleeper import load_raw
-from cornerstone.slow_sources import load_slow_sources
+from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 
@@ -37,16 +40,16 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6):
     return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
 
 
-def _known_games_snap(raw_dir, history_root, chart, edit=None):
+def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=None):
     """The week 6 snapshot of a game day in week 6, so the week 6 stat lines are the known games.
 
-    `edit` changes the raw data first, as a test needs.
+    `edit` changes the raw data first, as a test needs. `slow` and `now` give the kickoffs and the clock.
     """
     raw = load_raw(raw_dir)
     if edit is not None:
         edit(raw)
-    return build_snapshot(raw, history_root, chart, trade_week=6,
-                          returns=load_returns(history_root.parent / "returns.json"))
+    return build_snapshot(raw, history_root, chart, slow, trade_week=6,
+                          returns=load_returns(history_root.parent / "returns.json"), now=now)
 
 
 @pytest.fixture
@@ -1509,3 +1512,74 @@ def test_with_no_chart_a_handcuff_due_back_is_never_the_highest_value_player(slo
     handcuffs = rubric.trade_handcuffs(trade, snap)
     assert handcuffs == [MITCHELL]
     assert rubric._highest_value_player(trade, snap, handcuffs) == POLLARD
+
+
+# Odunze plays for the Bears, whose week 6 game at the Falcons kicks off at 1 pm Eastern on Sunday 2026-10-18.
+# Watson plays for the Packers, whose game has no kickoff here, so it counts as final.
+CHI_ATL_KICKOFF = datetime(2026, 10, 18, 13, 0, tzinfo=ZoneInfo("America/New_York"))
+CHI_ATL = SlowSources(kickoffs={"CHI": CHI_ATL_KICKOFF, "ATL": CHI_ATL_KICKOFF})
+
+
+def _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, hours: int):
+    """The week 6 snapshot with the clock `hours` after the kickoff of the Bears at the Falcons."""
+    return _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, slow=CHI_ATL,
+                             now=CHI_ATL_KICKOFF + timedelta(hours=hours))
+
+
+def test_the_trend_reason_of_a_player_whose_known_game_is_in_progress_ends_with_the_label(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    trend = _adjuster(first, TREND)
+    assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in trend.reason
+    assert "Watson: snap share 85%, up, over weeks 5 and 6." in trend.reason
+
+
+def test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # Sleeper now lists Odunze on the Packers, but his week 6 stat row is with the Bears, whose game is on.
+    snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    moved = snap.players[ODUNZE].model_copy(update={"nfl_team": "GB"})
+    snap = snap.model_copy(update={"players": {**snap.players, ODUNZE: moved}})
+    assert snap.stats.weeks[6].nfl_teams[ODUNZE] == "CHI"
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in _adjuster(first, TREND).reason
+
+
+def test_the_adjuster_steps_are_the_same_with_the_label_on_and_off(fixture_raw_dir, fixture_history_root, chart_week6):
+    on = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    off = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5)
+    assert on.as_of.known_games.in_progress == 1 and off.as_of.known_games.in_progress == 0
+    trade = _trade(1, [WATSON], 4, [ODUNZE])
+    for labeled, plain in zip(grade(trade, on), grade(trade, off)):
+        assert [a.step for a in labeled.adjusters] == [a.step for a in plain.adjusters]
+        assert labeled.final_letter == plain.final_letter
+        # The label is the only change to the reasons.
+        assert [a.reason.replace(", game in progress", "") for a in labeled.adjusters] == [
+            a.reason for a in plain.adjusters]
+
+
+def test_no_reason_and_no_stamp_of_a_game_in_progress_says_live_partial_or_current_week(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    breakdowns = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    texts = [_breakdown_text(breakdowns), snap.as_of.model_dump_json()]
+    for text in texts:
+        for word in ("live", "partial", "current week"):
+            assert not re.search(rf"\b{word}\b", text, re.IGNORECASE)
+
+
+def test_the_prose_checks_of_the_analysis_pass_on_a_reason_with_the_label(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
+    breakdowns = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    breakdown_text = _breakdown_text(breakdowns)
+    assert "game in progress" in breakdown_text
+    names = [*(t.name for t in snap.teams.values()), *(p.name for p in snap.players.values())]
+    allowed = _allowed({}, [], breakdown_text)
+    trend = _adjuster(breakdowns[0], TREND).reason
+    # The analysis can echo the label as a phrase joined by a comma.
+    prose = "Rome Odunze's snap share of 97% is up over weeks 5 and 6, game in progress."
+    for text in (trend, prose):
+        assert _prose_failures("roster 1 analysis", text, allowed, breakdown_text, names) == []
+        assert _letter_failures("roster 1 analysis", text) == []

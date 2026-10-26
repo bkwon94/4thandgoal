@@ -5,13 +5,15 @@ They read the fixtures cut from the real nflverse and ffverse files.
 import csv
 import gzip
 import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
 
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, PBP_URL, SCHEDULES_URL, download, gsis_id, http_get, nflverse_week,
-    read_depth_charts, read_drops, read_games, read_id_map, read_injuries, read_schedules,
+    read_depth_charts, read_drops, read_games, read_id_map, read_injuries, read_kickoffs, read_schedules,
 )
 from cornerstone.sleeper import load_raw
 
@@ -174,6 +176,29 @@ def test_read_games_gives_the_away_and_home_teams_of_the_week(fixture_nflverse_d
 
 def test_read_games_without_the_week_is_none(fixture_nflverse_dir):
     assert read_games(fixture_nflverse_dir / "games.csv", 2030, 7) is None
+
+
+def test_read_kickoffs_gives_the_eastern_kickoff_of_each_team_of_the_week(tmp_path):
+    path = tmp_path / "games.csv"
+    path.write_text(
+        "game_id,season,game_type,week,gameday,gametime,away_team,home_team\n"
+        "2026_07_NE_CHI,2026,REG,7,2026-10-22,20:15,NE,CHI\n"
+        "2026_07_ARI_LA,2026,REG,7,2026-10-25,16:25,ARI,LA\n"
+        "2026_07_SF_ATL,2026,REG,7,2026-10-25,NA,SF,ATL\n"
+        "2026_08_NE_BUF,2026,REG,8,2026-11-01,13:00,NE,BUF\n"
+        "2025_07_NE_CHI,2025,REG,7,2025-10-19,13:00,NE,CHI\n",
+        encoding="utf-8")
+    kickoffs = read_kickoffs(path, 2026, 7)
+    eastern = ZoneInfo("America/New_York")
+    assert kickoffs == {
+        "NE": datetime(2026, 10, 22, 20, 15, tzinfo=eastern), "CHI": datetime(2026, 10, 22, 20, 15, tzinfo=eastern),
+        "ARI": datetime(2026, 10, 25, 16, 25, tzinfo=eastern), "LAR": datetime(2026, 10, 25, 16, 25, tzinfo=eastern),
+    }
+
+
+def test_read_kickoffs_of_a_file_with_no_game_time_is_empty(fixture_nflverse_dir):
+    # A row with no kickoff time gives no kickoff, so its game counts as final.
+    assert read_kickoffs(fixture_nflverse_dir / "games.csv", 2026, 7) == {}
 
 
 def test_read_depth_charts_gives_the_backfield_in_order(fixture_nflverse_dir):

@@ -3,6 +3,8 @@ Tests for the snapshot the trade analyzer grades from.
 They build it from the recorded week 6 data and the week 6 trade values, with no network.
 """
 import shutil
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
@@ -215,6 +217,44 @@ def test_a_failed_stats_fetch_keeps_the_bound_at_the_week_before_and_names_the_s
         assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
         assert snap.as_of.known_games is None
         assert snap.stale == ["stats"]
+
+
+# The game of the Bears at the Falcons in week 6 kicks off at 1 pm Eastern on Sunday 2026-10-18.
+EASTERN = ZoneInfo("America/New_York")
+CHI_ATL_KICKOFF = datetime(2026, 10, 18, 13, 0, tzinfo=EASTERN)
+CHI_ATL = SlowSources(kickoffs={"CHI": CHI_ATL_KICKOFF, "ATL": CHI_ATL_KICKOFF})
+
+
+def test_a_game_2_hours_after_its_kickoff_is_in_progress_and_the_block_counts_it(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2))
+    assert snap.as_of.known_games == KnownGames(week=6, games=14, in_progress=1)
+    assert snap.in_progress_teams == {"CHI", "ATL"}
+
+
+def test_a_game_5_hours_after_its_kickoff_is_final_and_the_block_counts_zero_in_progress(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
+                          now=CHI_ATL_KICKOFF + timedelta(hours=5))
+    assert snap.as_of.known_games == KnownGames(week=6, games=14, in_progress=0)
+    assert snap.in_progress_teams == set()
+
+
+def test_a_game_with_no_schedule_row_is_final(fixture_raw_dir, fixture_history_root, chart_week6):
+    # The schedules hold only the Bears and the Falcons, so the 1 pm game of the Ravens and the Browns has no row.
+    # At 3 pm both 1 pm games are on, but only the game with a row counts as in progress.
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2))
+    assert snap.as_of.known_games.in_progress == 1
+    assert "BAL" not in snap.in_progress_teams and "CLE" not in snap.in_progress_teams
+
+
+def test_a_saved_week_has_no_game_in_progress(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL,
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2))
+    assert snap.as_of.known_games is None
+    assert snap.in_progress_teams == set()
 
 
 def test_on_the_tuesday_roll_the_raw_week_joins_the_history_and_the_new_trade_week_has_no_known_games(
