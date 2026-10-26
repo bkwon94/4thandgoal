@@ -237,7 +237,7 @@ def _with_bounds(snap, **bounds):
     return snap.model_copy(update={"as_of": snap.as_of.model_copy(update=bounds)})
 
 
-def test_the_return_bet_reads_the_standings_bound_and_not_the_player_stat_bound(snap):
+def test_the_return_bet_reads_the_completed_week_bound_and_not_the_player_stat_bound(snap):
     # The returns file has Jacobs back in week 7. A player stat bound of 7 alone must not put his return behind us.
     snap = _with_bounds(snap.model_copy(update={"projections_ahead": None}), stats_through=7)
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
@@ -246,9 +246,9 @@ def test_the_return_bet_reads_the_standings_bound_and_not_the_player_stat_bound(
     assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
 
 
-def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_standings_bound(snap):
-    # The standings bound of 0 alone must not move any number that reads the player stats.
-    moved = _with_bounds(snap, standings_through=0)
+def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_completed_week_bound(snap):
+    # A completed week bound of 0 alone must not move any number that reads the player stats.
+    moved = _with_bounds(snap, completed_through=0)
     for pid in (COLLINS, CROSKEY, MCCAFFREY):
         assert recent_points_per_game(moved, pid) == recent_points_per_game(snap, pid)
     trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])

@@ -350,7 +350,7 @@ def back_inside(week: int | None, after: int, by: int) -> bool:
 
 def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player due back after the last completed week and by RETURN_BY_WEEK."""
-    return back_inside(snapshot.returns.get(player_id), snapshot.as_of.standings_through, RETURN_BY_WEEK)
+    return back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
@@ -505,7 +505,7 @@ def _red_zone_touches(snapshot: Snapshot, players: list[str]) -> int:
 def _due_back(snapshot: Snapshot, player_id: str) -> bool:
     """True when the returns file has the player back after the last completed week, so he is out now."""
     week = snapshot.returns.get(player_id)
-    return week is not None and week > snapshot.as_of.standings_through
+    return week is not None and week > snapshot.as_of.completed_through
 
 
 def _left_out(snapshot: Snapshot, side: _Side, what: str) -> tuple[set[str], list[str]]:
@@ -608,9 +608,9 @@ def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
     if not _has_injury_report(snapshot) or player_id not in snapshot.id_map:
         return None
     weeks = snapshot.injuries.get(snapshot.id_map[player_id], {})
-    # GLOSSARY.md, "Before the trade": the report weeks end at N-1 with the standings.
+    # GLOSSARY.md, "Before the trade": the injury report ends at N-1, the last completed week.
     # So a report for the trade week itself does not count.
-    return sum(1 for week in weeks if week <= snapshot.as_of.standings_through)
+    return sum(1 for week in weeks if week <= snapshot.as_of.completed_through)
 
 
 def _injury(snapshot: Snapshot, side: _Side) -> Adjuster:

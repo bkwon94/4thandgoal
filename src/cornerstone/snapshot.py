@@ -44,8 +44,8 @@ class AsOf(BaseModel):
     chart_week: int | None
     # The player stat bound: the `through` week that every player stat reader takes.
     stats_through: int
-    # The standings bound: the last week the standings, the return weeks, and the injury report weeks count.
-    standings_through: int
+    # The last completed week before the trade week. The standings, the due-back rule, and the injury report end here.
+    completed_through: int
     # None when the saved raw data has no fetch time.
     rosters_fetched: datetime | None
 
@@ -160,7 +160,7 @@ def build_snapshot(
     if stats_through < through and "history" not in stale:
         stale.append("history")
     history = History(week=stats_through, weeks=weeks)
-    standings_through = stats_through
+    completed_through = stats_through
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
     entries = raw["players"]
     players = {
@@ -183,8 +183,8 @@ def build_snapshot(
         rosters=rosters,
         teams=week.teams,
         # The standings run through the same week as the stats. Before week 1 the rosters give the records.
-        standings=standings(week.model_copy(update={"week": standings_through}),
-                            history if standings_through else None),
+        standings=standings(week.model_copy(update={"week": completed_through}),
+                            history if completed_through else None),
         roster_positions=raw["league"]["roster_positions"],
         players=players,
         chart=chart,
@@ -192,7 +192,7 @@ def build_snapshot(
         as_of=AsOf(
             chart_week=chart.week if chart is not None else None,
             stats_through=stats_through,
-            standings_through=standings_through,
+            completed_through=completed_through,
             rosters_fetched=rosters_fetched,
         ),
         schedules=slow.schedules if slow else None,
