@@ -10,7 +10,7 @@ import pytest
 from conftest import strip_trend_numbers
 
 from cornerstone import rubric
-from cornerstone.adjusters import TREND, _byes_left, rubric_adjusters
+from cornerstone.adjusters import TREND, _byes_left, recent_points_per_game, rubric_adjusters
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
@@ -231,6 +231,30 @@ def test_a_contender_steps_up_for_a_player_due_back_by_the_last_regular_season_w
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+
+
+def _with_bounds(snap, **bounds):
+    return snap.model_copy(update={"as_of": snap.as_of.model_copy(update=bounds)})
+
+
+def test_the_return_bet_reads_the_standings_bound_and_not_the_player_stat_bound(snap):
+    # The returns file has Jacobs back in week 7. A player stat bound of 7 alone must not put his return behind us.
+    snap = _with_bounds(snap.model_copy(update={"projections_ahead": None}), stats_through=7)
+    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
+    standing = _adjuster(third, "standing")
+    assert standing.step == 1
+    assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+
+
+def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_standings_bound(snap):
+    # The standings bound of 0 alone must not move any number that reads the player stats.
+    moved = _with_bounds(snap, standings_through=0)
+    for pid in (COLLINS, CROSKEY, MCCAFFREY):
+        assert recent_points_per_game(moved, pid) == recent_points_per_game(snap, pid)
+    trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
+    for before, after in zip(grade(trade, snap), grade(trade, moved)):
+        assert _adjuster(after, "roster fit") == _adjuster(before, "roster fit")
+        assert _adjuster(after, TREND) == _adjuster(before, TREND)
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):

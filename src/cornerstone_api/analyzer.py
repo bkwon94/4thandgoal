@@ -87,6 +87,7 @@ def _as_of(snapshot: Snapshot) -> dict:
     return {
         "chart_week": stamps.chart_week,
         "stats_through": stamps.stats_through,
+        "standings_through": stamps.standings_through,
         "rosters_fetched": stamps.rosters_fetched.isoformat() if stamps.rosters_fetched else None,
     }
 

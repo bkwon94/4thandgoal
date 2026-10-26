@@ -356,7 +356,8 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
-    assert doc["as_of"] == {"chart_week": 6, "stats_through": 5, "rosters_fetched": "2026-10-19T09:30:00-04:00"}
+    assert doc["as_of"] == {"chart_week": 6, "stats_through": 5, "standings_through": 5,
+                            "rosters_fetched": "2026-10-19T09:30:00-04:00"}
     assert doc["fallback"] is False
 
 
@@ -941,7 +942,8 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
 # The fairness block's gives_more is a roster id.
-NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "season"}
+NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "standings_through",
+               "season"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -1127,6 +1129,8 @@ def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_s
         # The asker's side comes first, as in the analyze document.
         assert [side["roster_id"] for side in item["sides"]] == [2, 3]
     assert doc["as_of"]["chart_week"] == 6
+    assert doc["as_of"]["stats_through"] == 5
+    assert doc["as_of"]["standings_through"] == 5
 
 
 def test_find_with_no_win_win_gives_the_empty_line_and_makes_no_claude_call(settings, sources):

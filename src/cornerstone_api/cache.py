@@ -57,7 +57,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
     # The returns file keeps a return week after the player is back, but the grade reads only a week still ahead.
-    due_back = {player: week for player, week in snapshot.returns.items() if week > snapshot.as_of.stats_through}
+    due_back = {player: week for player, week in snapshot.returns.items() if week > snapshot.as_of.standings_through}
     content = {
         roster_id: {
             "players": sorted(snapshot.rosters[roster_id]),

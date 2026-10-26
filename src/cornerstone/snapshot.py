@@ -42,7 +42,10 @@ class AsOf(BaseModel):
 
     # None when the week has no chart values.
     chart_week: int | None
+    # The player stat bound: the `through` week that every player stat reader takes.
     stats_through: int
+    # The standings bound: the last week the standings, the return weeks, and the injury report weeks count.
+    standings_through: int
     # None when the saved raw data has no fetch time.
     rosters_fetched: datetime | None
 
@@ -142,7 +145,8 @@ def build_snapshot(
     """
     week = parse_week(raw)
     stale = list(stale or [])
-    # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. Every grade input ends there.
+    # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. The standings end there.
+    # Player stats end at the known games. The history holds no week N game, so both bounds are N-1.
     # So the history and the standings stop at N-1, and the games of week N never count, even when they are final.
     trade_week = week.week if trade_week is None else trade_week
     through = trade_week - 1
@@ -156,6 +160,7 @@ def build_snapshot(
     if stats_through < through and "history" not in stale:
         stale.append("history")
     history = History(week=stats_through, weeks=weeks)
+    standings_through = stats_through
     rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
     entries = raw["players"]
     players = {
@@ -178,7 +183,8 @@ def build_snapshot(
         rosters=rosters,
         teams=week.teams,
         # The standings run through the same week as the stats. Before week 1 the rosters give the records.
-        standings=standings(week.model_copy(update={"week": stats_through}), history if stats_through else None),
+        standings=standings(week.model_copy(update={"week": standings_through}),
+                            history if standings_through else None),
         roster_positions=raw["league"]["roster_positions"],
         players=players,
         chart=chart,
@@ -186,6 +192,7 @@ def build_snapshot(
         as_of=AsOf(
             chart_week=chart.week if chart is not None else None,
             stats_through=stats_through,
+            standings_through=standings_through,
             rosters_fetched=rosters_fetched,
         ),
         schedules=slow.schedules if slow else None,

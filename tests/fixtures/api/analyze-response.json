@@ -167,6 +167,7 @@
   "as_of": {
     "chart_week": 6,
     "stats_through": 5,
+    "standings_through": 5,
     "rosters_fetched": "2026-10-19T09:30:00-04:00"
   },
   "fallback": false,
