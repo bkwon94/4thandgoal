@@ -1485,6 +1485,25 @@ def test_the_cache_key_changes_with_a_week_n_line_of_a_rostered_player(settings,
         assert cache_key(trade, moved) != cache_key(trade, snapshot), field
 
 
+def test_the_cache_key_reads_a_first_known_game_after_a_return_through_the_due_back_rule(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    week_n = snapshot.as_of.stats_through
+    assert week_n > snapshot.as_of.completed_through
+    rostered = next(player for player in snapshot.rosters[4]
+                    if snapshot.stats.weeks[week_n].stats.get(player, {}).get("gp", 0) <= 0)
+    # Due back in week N with no game yet, he counts for his projection ahead, so a change to its rows must miss.
+    due = _with_week_rows(snapshot, {rostered: week_n}, {rostered: {week_n: 12.5}})
+    assert cache_key(trade, _with_week_rows(due, {rostered: week_n}, {rostered: {week_n: 13.5}})) != cache_key(
+        trade, due)
+    # His first week N game ends due back, so the key misses, and his projection rows no longer reach the grade.
+    played = _with_week_n_line(due, rostered, gp=1.0, pts_half_ppr=14.0)
+    assert _both_keys(trade, played) != _both_keys(trade, due)
+    moved = _with_week_n_line(_with_week_rows(due, {rostered: week_n}, {rostered: {week_n: 13.5}}),
+                              rostered, gp=1.0, pts_half_ppr=14.0)
+    assert _both_keys(trade, moved) == _both_keys(trade, played)
+
+
 def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)

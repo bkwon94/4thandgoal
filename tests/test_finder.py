@@ -13,7 +13,8 @@ from cornerstone.adjusters import Adjuster, recent_points_per_game
 from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
 from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import load_snapshot
+from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 
 @pytest.fixture
@@ -140,6 +141,29 @@ def test_an_out_player_with_no_return_week_is_never_a_candidate(slow_snap):
 def test_an_out_player_with_a_return_week_on_file_is_a_candidate(slow_snap):
     assert JACOBS in slow_snap.rosters[11]
     assert JACOBS in _traded(candidates(11, 7, _roster_rows(slow_snap, 11, 7)))
+
+
+def _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, returns):
+    """The snapshot of a game day in week 6, where NA-tagged Jacobs has a week 6 game and the returns rows given."""
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6, returns=returns)
+    assert snap.as_of.stats_through == 6 and snap.players[JACOBS].injury_status == "NA"
+    week_6 = snap.stats.weeks[6]
+    week_6 = week_6.model_copy(update={"stats": {**week_6.stats, JACOBS: {**week_6.stats[JACOBS], "gp": 1.0}},
+                                       "points": {**week_6.points, JACOBS: 21.0}})
+    snap = snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": {**snap.stats.weeks, 6: week_6}})})
+    return _roster_rows(snap, 11, 7)
+
+
+def test_an_out_player_back_in_a_known_game_is_a_candidate_and_one_with_no_return_week_is_not(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    returns = load_returns(fixture_history_root.parent / "returns.json")
+    # A returns row of week 6 and a week 6 game: he is back, though his tag still says out.
+    back = _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, {**returns, JACOBS: 6})
+    assert JACOBS in _traded(candidates(11, 7, back))
+    # With no returns row, his week 6 game is the game he was hurt in, so he stays out of every trade.
+    hurt = _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6,
+                                    {pid: week for pid, week in returns.items() if pid != JACOBS})
+    assert JACOBS not in _traded(candidates(11, 7, hurt))
 
 
 def test_an_unlisted_player_is_never_a_candidate(slow_snap):
