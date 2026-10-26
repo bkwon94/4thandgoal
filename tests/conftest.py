@@ -30,6 +30,16 @@ def strip_trend_numbers(reason: str) -> str:
     return _TREND_NUMBERS.sub("", reason)
 
 
+def with_carries(snap, player_id: str, carries: dict[int, float]):
+    """The snapshot with the player's carries set to `carries`, keyed by week. His team's carries change with his."""
+    weeks = dict(snap.stats.weeks)
+    for week, count in carries.items():
+        past = weeks[week]
+        stats = {**past.stats, player_id: {**past.stats[player_id], "rush_att": count}}
+        weeks[week] = past.model_copy(update={"stats": stats})
+    return snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
+
+
 @pytest.fixture
 def fixture_raw_dir() -> Path:
     return Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
