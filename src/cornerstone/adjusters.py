@@ -18,6 +18,7 @@ from cornerstone.history import (
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
+from cornerstone.models import PastWeek
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     EXPECTED_ADJUSTER_ON,
@@ -89,19 +90,24 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     The window ends at the known games for a player who played in week N, and at the last completed week otherwise.
     So a player's points per game move only when he plays. A player with no game in the window has 0.
     """
-    last = snapshot.as_of.stats_through
-    if last > snapshot.as_of.completed_through and not _has_known_game(snapshot, player_id):
-        last = snapshot.as_of.completed_through
-    played = [
-        snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
-        if week in snapshot.stats.weeks
-        and (snapshot.stats.weeks[week].stats.get(player_id) or {}).get("gp", 0) > 0
-    ]
+    played = _played_weeks(snapshot, player_id)
     if not played:
         return Decimal(0)
     # Sleeper leaves out a stat whose value is 0. A game with no points entry is a game of 0 points.
     total = sum((Decimal(str(player_points(past, player_id) or 0)) for past in played), Decimal(0))
     return total / len(played)
+
+
+def _played_weeks(snapshot: Snapshot, player_id: str) -> list[PastWeek]:
+    """The weeks the player played in the window of his recent points per game, LINEUP_WEEKS at most."""
+    last = snapshot.as_of.stats_through
+    if last > snapshot.as_of.completed_through and not _has_known_game(snapshot, player_id):
+        last = snapshot.as_of.completed_through
+    return [
+        snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
+        if week in snapshot.stats.weeks
+        and (snapshot.stats.weeks[week].stats.get(player_id) or {}).get("gp", 0) > 0
+    ]
 
 
 def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
@@ -125,6 +131,40 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
     if snapshot.projections_ahead is not None and due_back_week(snapshot, player_id) is not None:
         return projection_ahead(snapshot, player_id)
     return recent_points_per_game(snapshot, player_id)
+
+
+# The positions with a position rank. K and DEF have none. GLOSSARY.md, "Position rank".
+RANKED_POSITIONS = ("QB", "RB", "WR", "TE")
+
+
+def position_ranks(snapshot: Snapshot) -> dict[str, int]:
+    """The position rank of each player at QB, RB, WR, and TE, by player id. GLOSSARY.md, "Position rank".
+
+    The pool is every player with a stat line in the known games, rostered or not, plus every rostered player.
+    A rostered player due back can have no stat line, and his projection ahead still gives him a lineup value.
+    The order is lineup value, then the position order, then the player id. A player with no game in the window
+    ranks last. His lineup value is 0, but so is the value of a player who scored 0, so the value alone cannot
+    put him last. A due-back player ranks by his projection ahead, so he never counts as a player with no game.
+    Snapshot.position_rank reads this table, so it builds once per snapshot. The finder grades about a thousand
+    trades per call and must not rank the league per side.
+    """
+    positions = {pid: position for past in snapshot.stats.weeks.values() for pid, position in past.positions.items()}
+    # The players file is the source for a rostered player, as best_lineup reads it. A stat line gives the rest.
+    positions.update({pid: player.position for pid, player in snapshot.players.items()})
+    pool = [pid for pid, position in positions.items() if position in RANKED_POSITIONS]
+
+    def due_back(pid: str) -> bool:
+        return snapshot.projections_ahead is not None and due_back_week(snapshot, pid) is not None
+
+    def order(pid: str) -> tuple[bool, Decimal, int, str]:
+        no_game = not due_back(pid) and not _played_weeks(snapshot, pid)
+        return (no_game, -lineup_value(snapshot, pid), POSITION_ORDER.index(positions[pid]), pid)
+
+    ranks: dict[str, int] = {}
+    for position in RANKED_POSITIONS:
+        at_position = sorted((pid for pid in pool if positions[pid] == position), key=order)
+        ranks.update({pid: rank for rank, pid in enumerate(at_position, start=1)})
+    return ranks
 
 
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:
@@ -598,7 +638,9 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     if _back_in_a_known_game(snapshot, player_id):
         return None
     week = snapshot.returns.get(player_id)
-    if week is None and snapshot.players[player_id].injury_status in OUT_STATUSES:
+    # The position rank reads players on no roster, and the snapshot holds no injury status for them.
+    player = snapshot.players.get(player_id)
+    if week is None and player is not None and player.injury_status in OUT_STATUSES:
         week = RETURN_BY_WEEK
     return week if week is not None and week > snapshot.as_of.completed_through else None
 

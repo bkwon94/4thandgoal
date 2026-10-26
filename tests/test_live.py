@@ -18,6 +18,7 @@ from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
 from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import load_snapshot
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 
 ET = ZoneInfo("America/New_York")
@@ -163,6 +164,28 @@ def test_on_monday_night_the_raw_week_is_the_trade_week_and_its_known_games_stay
     assert sum(s.wins + s.losses for s in snap.standings) == 5 * 2 * 12
     assert not (live_repo / "data" / "2026" / "history" / "week-06").exists()
     assert snap.stale == []
+
+
+def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_for_the_same_raw(
+        live_repo, fixture_raw_dir, fixture_history_root, chart_week6):
+    # Before the first kickoff of week 6 Sleeper has no week 6 line, so both paths read the saved weeks 1 to 5.
+    shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
+
+    def before_kickoff(league_id, players_cache):
+        raw = load_raw(fixture_raw_dir)
+        raw["stats"] = []
+        return raw, FETCHED
+
+    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                         read_chart=ChartRecorder(chart_week6))
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert (live.week, live.as_of.stats_through) == (saved.week, saved.as_of.stats_through) == (6, 5)
+    pool = {pid for past in saved.stats.weeks.values() for pid in past.positions} | set(saved.players)
+    live_ranks = {pid: live.position_rank(pid) for pid in pool}
+    assert live_ranks == {pid: saved.position_rank(pid) for pid in pool}
+    # Tuten is RB15 on both paths, as the hand count on the saved weeks gives.
+    assert live_ranks["12490"] == 15
 
 
 def _with_kickoff(repo, game_id, gametime):

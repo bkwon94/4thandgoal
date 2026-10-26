@@ -313,3 +313,54 @@ def test_a_missing_player_file_is_a_missing_source_and_not_a_pending_count(
                           slow=SlowSources(missing=["player_weeks"]))
     assert snap.as_of.known_games.pending == {}
     assert "player_weeks" in snap.missing
+
+
+# The week 6 rank pool reads the saved weeks 1 to 5. Lineup value reads weeks 2 to 5, LINEUP_WEEKS of them.
+# The ranks below come from a hand count of the RB lines in the saved history, not from the code.
+TUTEN, JACOBS, FREE_AGENT_RB = "12490", "5850", "9226"
+NO_GAME_RBS = ("12476", "8205")
+
+
+def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Tuten scored about 12.48 points per game in 4 games of weeks 2 to 5. 14 backs have more.
+    assert snap.position_rank(TUTEN) == 15
+
+
+def test_a_player_with_no_game_in_the_window_ranks_after_every_player_with_a_game(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # 77 backs have a stat line in weeks 1 to 5 or a roster spot. The two with no game in weeks 2 to 5 are last.
+    assert sorted(snap.position_rank(pid) for pid in NO_GAME_RBS) == [76, 77]
+
+
+def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Jacobs has no game in weeks 2 to 5, so his recent points would rank him last. The returns file has him
+    # back in week 7, and his projections of weeks 7 to 14 give 12.21 per game.
+    assert snap.returns[JACOBS] == 7
+    assert snap.position_rank(JACOBS) == 16
+
+
+def test_a_free_agent_with_a_stat_line_ranks_in_the_pool(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # The back is on no roster. He scored 12.5 points in 2 games, 6.25 per game, so 45 backs rank above him.
+    assert all(FREE_AGENT_RB not in players for players in snap.rosters.values())
+    assert snap.position_rank(FREE_AGENT_RB) == 46
+
+
+def test_k_def_and_a_player_with_no_stat_line_and_no_roster_spot_have_no_rank(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    defense = next(pid for players in snap.rosters.values() for pid in players
+                   if snap.players[pid].position == "DEF")
+    assert snap.position_rank(defense) is None
+    assert snap.position_rank("no-such-player") is None
+
+
+def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert snap.position_rank(JACOBS) == 16
+    # With no projections file every player keeps his recent points. 6 backs then have no game in weeks 2 to 5,
+    # so they hold ranks 72 to 77 in player id order. Jacobs is the third of them.
+    assert snap.model_copy(update={"projections_ahead": None}).position_rank(JACOBS) == 74

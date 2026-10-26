@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 from cornerstone.facts_league import standings
 from cornerstone.history import load_saved_weeks
@@ -118,6 +118,25 @@ class Snapshot(BaseModel):
     # The Sleeper codes of the NFL teams whose known game of week N is in progress. A reason that quotes a week N
     # number of one of their players says "game in progress". Empty for a saved week.
     in_progress_teams: set[str] = set()
+    # The position rank of each player, built on the first read. GLOSSARY.md, "Position rank".
+    _position_ranks: dict[str, int] | None = PrivateAttr(default=None)
+
+    def position_rank(self, player_id: str) -> int | None:
+        """The player's position rank, or None for a K, a DEF, or a player outside the rank pool.
+
+        The table builds once per snapshot, so the finder's thousand trades and every reader share one ranking.
+        """
+        if self._position_ranks is None:
+            # The adjusters module imports this one, so the import waits for the first read.
+            from cornerstone.adjusters import position_ranks
+            self._position_ranks = position_ranks(self)
+        return self._position_ranks.get(player_id)
+
+    def model_copy(self, *, update: dict | None = None, deep: bool = False) -> "Snapshot":
+        """A copy with no rank table, so a copy with new rosters, returns, or stats ranks from its own data."""
+        copy = super().model_copy(update=update, deep=deep)
+        copy._position_ranks = None
+        return copy
 
 
 def _games_with_a_stat_line(stats: list[dict]) -> int:
