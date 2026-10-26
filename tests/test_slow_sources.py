@@ -90,14 +90,26 @@ def test_load_slow_sources_without_the_expected_points_file_gives_none_and_names
     assert sources.expected is None and sources.missing == NOT_IN_CACHE
 
 
-def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_week_before(
+def test_load_slow_sources_gives_the_wopr_of_the_weekly_player_file_through_the_trade_week_when_it_has_it(
         fixture_nflverse_dir, fixture_history_root, tmp_path):
     cache = _cache(fixture_nflverse_dir, tmp_path)
     shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    # Matthew Golden's WOPR by week. The trade week is 6, so week 6 is not in it.
-    assert sources.wopr["12501"] == {1: 65, 2: 57, 3: 71, 4: 64, 5: 58}
+    # Matthew Golden's WOPR by week. The trade week is 6 and the file has week 6, so the known games read it.
+    assert sources.wopr["12501"] == {1: 65, 2: 57, 3: 71, 4: 64, 5: 58, 6: 85}
     assert sources.missing == ["expected_points"]
+
+
+def test_load_slow_sources_gives_the_wopr_through_the_week_before_when_the_file_lacks_the_trade_week(
+        fixture_nflverse_dir, fixture_history_root, tmp_path):
+    cache = _cache(fixture_nflverse_dir, tmp_path)
+    shutil.copy(fixture_nflverse_dir / "stats_player_week_2026.csv.gz", cache / "stats_player_week_2026.csv.gz")
+    # The file ends at week 6. A trade week of 7 reads weeks 1 to 6.
+    assert load_slow_sources(cache, 2026, 7, fixture_history_root).wopr["12501"] == {
+        1: 65, 2: 57, 3: 71, 4: 64, 5: 58, 6: 85}
+    # A trade week of 8 needs week 7, so the file counts as missing.
+    late = load_slow_sources(cache, 2026, 8, fixture_history_root)
+    assert late.wopr is None and "player_weeks" in late.missing
 
 
 def test_load_slow_sources_without_the_weekly_player_file_or_the_id_map_gives_no_wopr_and_names_it_as_missing(

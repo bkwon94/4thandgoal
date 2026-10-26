@@ -266,3 +266,50 @@ def test_on_the_tuesday_roll_the_raw_week_joins_the_history_and_the_new_trade_we
     assert sum(s.wins + s.losses for s in snap.standings) == 6 * 2 * 12
     assert snap.as_of.known_games is None
     assert snap.stale == []
+
+
+# The game of the Packers in week 6.
+GB_GAME = "202610612"
+
+
+def _without_snaps(raw, game_ids):
+    """The raw with no snap count on the lines of `game_ids`, as Sleeper posts a Sunday game on Sunday night."""
+    for row in raw["stats"]:
+        if row.get("game_id") in game_ids:
+            row["stats"] = {key: value for key, value in row["stats"].items() if key not in ("off_snp", "tm_off_snp")}
+    return raw
+
+
+def test_a_known_game_with_no_snap_count_is_pending_for_snaps(fixture_raw_dir, fixture_history_root, chart_week6):
+    raw = _without_snaps(load_raw(fixture_raw_dir), {BUF_MIA, GB_GAME})
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
+    assert snap.as_of.stats_through == 6
+    assert snap.as_of.known_games == KnownGames(week=6, games=14, pending={"snaps": 2})
+
+
+def test_a_known_game_with_snap_counts_is_pending_for_nothing(fixture_raw_dir, fixture_history_root, chart_week6):
+    # A final week has lines of players with no offense snap, because Sleeper leaves out a 0. They are no pending game.
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6)
+    assert snap.as_of.known_games == KnownGames(week=6, games=14, pending={})
+
+
+def test_a_player_file_with_no_row_of_the_trade_week_names_usage_pending_for_each_game_it_lacks(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    # Watson of the Packers has a week 6 row, so only the Packers game has its WOPR.
+    # The usage of the other 13 games is pending.
+    wopr = {"8167": {5: 50, 6: 60}, "11620": {5: 70}}
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
+                          slow=SlowSources(wopr=wopr))
+    assert snap.as_of.known_games.pending == {"usage": 13}
+    no_week_6 = {"8167": {5: 50}, "11620": {5: 70}}
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
+                          slow=SlowSources(wopr=no_week_6))
+    assert snap.as_of.known_games.pending == {"usage": 14}
+
+
+def test_a_missing_player_file_is_a_missing_source_and_not_a_pending_count(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
+                          slow=SlowSources(missing=["player_weeks"]))
+    assert snap.as_of.known_games.pending == {}
+    assert "player_weeks" in snap.missing

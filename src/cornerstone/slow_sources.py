@@ -63,7 +63,8 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     because the stat lines of the current week are not final. The injury report must hold the week
     before `week` too, so a file that ends earlier counts as missing.
     `scoring` is the league scoring. The expected points rescale to it, so without it they are None.
-    The WOPR comes from the nflverse weekly player file and ends at the week before `week`.
+    The WOPR comes from the nflverse weekly player file. It ends at `week` when the file has it, else at the week
+    before.
     The kickoffs are of the games of `week`, so the snapshot can tell a game in progress from a final one.
     """
     schedules_path = cache_path(cache_dir, SCHEDULES_URL, season)
@@ -97,8 +98,14 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
 
 
 def _read_wopr(path: Path, through: int, sleeper_of_gsis: dict[str, str]) -> dict[str, dict[int, int]] | None:
-    """The WOPR by Sleeper id and week, from week 1 to `through`. None when the file has no row for `through`."""
-    rows = read_player_weeks(path, 1, through, sleeper_of_gsis)
+    """The WOPR by Sleeper id and week, from week 1 to `through`, plus the week after when the file has it.
+
+    The week after is the trade week, so the known games read its rows. None when the file has no row for `through`.
+    """
+    # nflverse adds the rows of the trade week some time after its games, so the file may end at `through`.
+    rows = read_player_weeks(path, 1, through + 1, sleeper_of_gsis)
+    if rows is None:
+        rows = read_player_weeks(path, 1, through, sleeper_of_gsis)
     if rows is None:
         return None
     out: dict[str, dict[int, int]] = {}

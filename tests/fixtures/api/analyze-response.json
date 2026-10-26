@@ -173,7 +173,9 @@
       "week": 6,
       "games": 14,
       "in_progress": 0,
-      "pending": {}
+      "pending": {
+        "usage": 8
+      }
     }
   },
   "fallback": false,

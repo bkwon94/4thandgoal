@@ -47,7 +47,8 @@ class KnownGames(BaseModel):
     games: int
     # The count of those games in progress.
     in_progress: int = 0
-    # The game count of each count that Sleeper has not posted yet, by the name of the count.
+    # The game count of each count that its source has not posted yet, by the name of the count.
+    # "snaps" is the Sleeper snap count. "usage" is the WOPR of the nflverse player file, a word the page can show.
     pending: dict[str, int] = {}
 
 
@@ -141,6 +142,24 @@ def _teams_in_progress(stats: list[dict], kickoffs: dict[str, datetime], now: da
     return teams
 
 
+def _pending(stats: list[dict], week: int, wopr: dict[str, dict[int, int]] | None) -> dict[str, int]:
+    """The game count of each pending count of the known games, GLOSSARY.md "Pending". A count of 0 is left out.
+
+    A game is pending for snaps when no line of a player who played has the team snap count. Sleeper posts the
+    snaps of a game together, and a final line can lack the player's own snaps because Sleeper leaves out a 0.
+    A game is pending for usage when no player who played in it has a WOPR row for the week. A missing file is a
+    missing source, not a pending count.
+    """
+    played = [row for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0]
+    games = {row["game_id"] for row in played}
+    with_snaps = {row["game_id"] for row in played if "tm_off_snp" in row["stats"]}
+    counts = {"snaps": len(games - with_snaps)}
+    if wopr is not None:
+        with_usage = {row["game_id"] for row in played if week in wopr.get(row["player_id"], {})}
+        counts["usage"] = len(games - with_usage)
+    return {name: count for name, count in counts.items() if count > 0}
+
+
 def load_returns(path: Path) -> dict[str, int] | None:
     """The return week by player id, or None when the season has no returns file."""
     if not path.exists():
@@ -226,7 +245,8 @@ def build_snapshot(
             # The label changes no number, so a game in progress counts as a known game the same as a final one.
             if now is not None and slow is not None and slow.kickoffs:
                 in_progress = _teams_in_progress(stats_lines, slow.kickoffs, now)
-            known_games = KnownGames(week=trade_week, games=games, in_progress=len(set(in_progress.values())))
+            known_games = KnownGames(week=trade_week, games=games, in_progress=len(set(in_progress.values())),
+                                     pending=_pending(stats_lines, trade_week, slow.wopr if slow else None))
             if games > 0:
                 weeks[trade_week] = parse_past_week(raw, trade_week)
                 stats_through = trade_week

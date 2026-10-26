@@ -15,9 +15,9 @@ from conftest import strip_trend_numbers
 from cornerstone import rubric
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
-    TREND, _byes_left, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
+    TREND, _byes_left, _wopr, best_lineup, due_back_week, lineup_value, recent_points_per_game, rubric_adjusters,
 )
-from cornerstone.history import points_per_game
+from cornerstone.history import points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
@@ -396,6 +396,65 @@ def test_trend_reads_the_known_game_shares_and_names_its_week(known_snap):
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
     trend = _adjuster(first, TREND)
     assert "over weeks 5 and 6" in trend.reason
+
+
+# Malik Nabers on roster 8 gains snap share and target share over weeks 5 and 6.
+NABERS = "11632"
+
+
+def _no_snaps_in_the_game_of(player_id: str):
+    """An edit of the raw data that takes the snap counts off every week 6 line of the game of the player.
+
+    Sleeper posts a Sunday game so on Sunday night: targets, points, and red zone touches, but no snaps.
+    """
+    def edit(raw):
+        game = next(row["game_id"] for row in raw["stats"] if row["player_id"] == player_id)
+        for row in raw["stats"]:
+            if row.get("game_id") == game:
+                for key in ("off_snp", "tm_off_snp"):
+                    row["stats"].pop(key, None)
+    return edit
+
+
+def test_a_known_game_with_no_snap_count_leaves_the_snap_share_at_the_games_before(
+        snap, known_snap, fixture_raw_dir, fixture_history_root, chart_week6):
+    pending = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _no_snaps_in_the_game_of(NABERS))
+    assert pending.as_of.known_games.pending == {"snaps": 1}
+    # The snap share skips the week 6 game and never reads it as zero snaps.
+    assert snap_share(pending.stats, NABERS, 6) == snap_share(snap.stats, NABERS, 5)
+    assert snap_share(pending.stats, NABERS, 6).weeks_used == [4, 5]
+    # The target share, the points, and the red zone touches read the week 6 line.
+    assert target_share(pending.stats, NABERS, 6) == target_share(known_snap.stats, NABERS, 6)
+    assert target_share(pending.stats, NABERS, 6).weeks_used == [5, 6]
+    assert recent_points_per_game(pending, NABERS) == recent_points_per_game(known_snap, NABERS)
+    assert recent_points_per_game(pending, NABERS) != recent_points_per_game(snap, NABERS)
+    assert red_zone(pending.stats, NABERS, 6) == red_zone(known_snap.stats, NABERS, 6)
+
+
+def test_the_trend_reason_names_the_weeks_of_each_share_when_the_snaps_are_pending(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    pending = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _no_snaps_in_the_game_of(NABERS))
+    eighth, _ = grade(_trade(8, [NABERS], 1, [WATSON]), pending)
+    assert re.search(r"Nabers: snap share \d+% \(weeks 4 and 5\), up, target share \d+% \(weeks 5 and 6\), up\.",
+                     _adjuster(eighth, TREND).reason)
+
+
+def test_a_known_game_with_snap_counts_moves_the_snap_share(snap, known_snap):
+    assert known_snap.as_of.known_games.pending == {}
+    assert snap_share(known_snap.stats, NABERS, 6).weeks_used == [5, 6]
+    assert snap_share(known_snap.stats, NABERS, 6) != snap_share(snap.stats, NABERS, 5)
+
+
+def test_the_wopr_window_of_a_known_games_week_reads_the_trade_week_row_when_the_file_has_it(known_snap):
+    with_week_6 = known_snap.model_copy(update={"wopr": {NABERS: {3: 40, 4: 40, 5: 50, 6: 60}}})
+    assert _wopr(with_week_6, NABERS).weeks_used == [5, 6]
+    assert _wopr(with_week_6, NABERS).value == 55
+
+
+def test_the_wopr_window_of_a_known_games_week_ends_at_the_week_before_when_the_file_lacks_the_trade_week(known_snap):
+    without_week_6 = known_snap.model_copy(update={"wopr": {NABERS: {2: 40, 3: 40, 4: 50, 5: 60}}})
+    assert _wopr(without_week_6, NABERS).weeks_used == [4, 5]
+    assert _wopr(without_week_6, NABERS).direction == "up"
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):

@@ -453,14 +453,16 @@ def _wopr(snapshot: Snapshot, player_id: str) -> _WoprWindow | None:
 
     WOPR measures receiver volume, so only a WR or TE has one that counts.
     The file can lack a row for one week, so a window with a week that has no WOPR is None.
+    A known game with no row yet is pending, so the window ends at the weeks before it.
     A stats outage leaves a week out of the played weeks, so a window that skips it is None too.
     """
     if snapshot.wopr is None or snapshot.players[player_id].position not in ("WR", "TE"):
         return None
     if not stats_complete(snapshot.stats, snapshot.as_of.stats_through):
         return None
-    weeks = scored_weeks(snapshot.stats, player_id, snapshot.as_of.stats_through)[-SHARE_DIRECTION_WEEKS:]
     by_week = snapshot.wopr.get(player_id, {})
+    weeks = [week for week in scored_weeks(snapshot.stats, player_id, snapshot.as_of.stats_through)
+             if week <= snapshot.as_of.completed_through or week in by_week][-SHARE_DIRECTION_WEEKS:]
     if len(weeks) < SHARE_DIRECTION_WEEKS or any(week not in by_week for week in weeks):
         return None
     recent = sum(by_week[week] for week in weeks[-SHARE_WEEKS:]) / SHARE_WEEKS
