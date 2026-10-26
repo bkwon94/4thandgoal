@@ -44,7 +44,7 @@ REFRESHED_SOURCES = (
     ("schedules", SCHEDULES_URL), ("depth charts", DEPTH_CHARTS_URL), ("id map", FFIDS_URL),
     ("injuries", INJURIES_URL), ("expected points", FFOPPORTUNITY_URL), ("player weeks", STATS_PLAYER_URL),
 )
-# The sources that change on game days, so they refresh sooner than the others.
+# The fast sources change on game days, so they refresh sooner than the others.
 FAST_SOURCES = ("injuries", "player weeks")
 # The last week of the NFL regular season. No trade window opens after its cutoff.
 LAST_REGULAR_SEASON_WEEK = 18
@@ -65,7 +65,7 @@ def _refresh(
         max_age_seconds: int) -> tuple[list[str], list[str]]:
     """Refresh each source whose cache is older than its max age.
 
-    A game day source uses the smaller of `max_age_seconds` and its own age, so a forced refresh of 0 fetches all.
+    A fast source uses the smaller of `max_age_seconds` and its own age, so a forced refresh of 0 fetches all.
 
     Return the names refreshed and the names still older than a day.
     """
@@ -171,7 +171,7 @@ def refresh_sources(
         fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
         read_chart: ChartReader | None = chart_values,
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
-    """Refresh the day-old nflverse sources, the history weeks not yet saved, and the chart of the trade window.
+    """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
 
     The live snapshot and the refresh route both call it, so the daily job and a request refresh the same way.
     A failed fetch logs and leaves the old cache in place.

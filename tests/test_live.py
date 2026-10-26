@@ -316,6 +316,8 @@ def test_a_forced_refresh_fetches_every_source(live_repo, sleeper, fixture_nflve
     result = refresh_sources(live_repo, 2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
                              fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
                              max_age_seconds=0)
+    assert set(asked) == {url.format(season=2026) for url in (
+        SCHEDULES_URL, DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, FFOPPORTUNITY_URL, STATS_PLAYER_URL)}
     assert len(asked) == 6
     assert len(result.refreshed) == 6
 

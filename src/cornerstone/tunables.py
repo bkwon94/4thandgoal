@@ -186,7 +186,7 @@ CLAIMS_PER_PLAYER = 2
 # author pages, the wider web, and one spare for a step that gave nothing. Each search costs $0.01.
 RESEARCH_SEARCHES = 4
 
-# The refresh: the seconds after which the injuries file and the player weeks file are fetched again.
+# The refresh: the seconds after which the refresh fetches the injuries file and the player weeks file again.
 # Injury status and snap counts change on game days, so a day-old file would miss Sunday on a Monday morning grade.
 # Every other nflverse source keeps the day of CACHE_MAX_AGE_SECONDS.
 FAST_SOURCES_MAX_AGE_SECONDS = 6 * 60 * 60
