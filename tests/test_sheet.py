@@ -545,7 +545,8 @@ def test_swing_fact_states_both_sides():
     teams = {3: _team_odds(3, 55, 5, 4, "open"), 8: _team_odds(8, 75, 10, 3, "open")}
     [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
     assert f.id == "SW.3v8"
-    assert f.text == "A win puts Lil Fridge at 71%, a loss at 38%. A win puts Bo Girds at 84%, a loss at 67%."
+    assert f.text == ("A win puts the playoff odds of Lil Fridge at 71%, a loss at 38%. "
+                "A win puts the playoff odds of Bo Girds at 84%, a loss at 67%.")
     assert f.numbers == ["71", "38", "84", "67"]
     assert f.teams == ["Lil Fridge", "Bo Girds"]
 
@@ -613,7 +614,8 @@ def test_a_flat_side_stays_near_its_odds_and_a_moving_side_keeps_its_swing():
     teams = {3: _team_odds(3, 60, 5, 5, "open"), 8: _team_odds(8, 75, 10, 3, "open")}
     names = {3: "Lil Fridge", 8: "Bo Girds"}
     [f] = swing_facts(OddsResult(teams=teams, swings=[swing]), [(3, 8)], names.get)
-    assert f.text == "Lil Fridge stays near 60% either way. A win puts Bo Girds at 84%, a loss at 67%."
+    assert f.text == ("The playoff odds of Lil Fridge stay near 60% either way. "
+                "A win puts the playoff odds of Bo Girds at 84%, a loss at 67%.")
     assert f.numbers == ["60", "84", "67"]
 
 

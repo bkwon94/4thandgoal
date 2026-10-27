@@ -64,6 +64,8 @@ NUMBERLESS_MIN_SENTENCES = 3
 # 110 and 180 read "a hundred and ...", so they keep "a".
 VOWEL_SOUND_NUMBER = r"8(?:[\d,.]*\d)?|1[18](?:\.\d+)?(?![\d,])"
 A_BEFORE_VOWEL_NUMBER = re.compile(rf"(?<!\w)a\s+({VOWEL_SOUND_NUMBER})", re.IGNORECASE)
+# A percent in prose, as "63%" or "63 percent". The odds-kind check reads these.
+ODDS_PERCENT = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)\s*(?:%|percent\b)")
 # "an" before any number; the number then must be one read with a vowel sound.
 AN_BEFORE_NUMBER = re.compile(r"(?<!\w)an\s+(\d(?:[\d,.]*\d)?)", re.IGNORECASE)
 
@@ -225,6 +227,26 @@ def article_failures(text: str) -> list[str]:
     return failures
 
 
+def odds_kind_failures(bare: str, text: str, fact_ids: list[str], sheet: FactSheet) -> list[str]:
+    """An odds number in prose must sit in a sentence that says "playoff odds" or "bye odds".
+
+    An odds number is a percent that a cited `ODDS.` or `SW.` fact holds. The seed and the why numbers are not odds.
+    """
+    if re.search(r"playoff odds|bye odds", text, re.IGNORECASE):
+        return []
+    odds = {
+        normalize_number(n)
+        for fid in fact_ids
+        if fid in sheet.facts and fid.startswith(("ODDS.", "SW.")) and not fid.endswith(".why")
+        for n in sheet.facts[fid].numbers
+    }
+    return [
+        f"odds number {token} needs 'playoff odds' or 'bye odds' in the same sentence"
+        for token in ODDS_PERCENT.findall(bare)
+        if normalize_number(token) in odds
+    ]
+
+
 def numberless_failures(bares: list[str]) -> list[str]:
     """A blurb of 3 or more sentences needs one sentence with no digit. The texts have the names removed."""
     if len(bares) < NUMBERLESS_MIN_SENTENCES or not all(re.search(r"\d", b) for b in bares):
@@ -335,6 +357,7 @@ def code_check(
             failures.append(f"[{i}] {message}{suffix}")
 
         failures += [f"[{i}] {m}" for m in article_failures(sentence.text)]
+        failures += [f"[{i}] {m}" for m in odds_kind_failures(bare, sentence.text, valid_ids, sheet)]
 
         # A fact ID belongs in fact_ids. Any bracket in the text is a leaked ID or a stray mark.
         if "[" in sentence.text:
