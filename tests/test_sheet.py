@@ -10,7 +10,7 @@ import pytest
 
 from cornerstone import sheet
 from cornerstone.history import load_history
-from cornerstone.models import History, PowerRow
+from cornerstone.models import History, NextMatchup, PowerRow, Standing, Storyline
 from cornerstone.odds import OddsResult, Swing, TeamOdds, playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
@@ -24,6 +24,7 @@ from cornerstone.sheet import (
     projected_totals,
     read_bundle,
     standings_facts,
+    storyline_facts,
     swing_facts,
     week_dates,
     write_bundle,
@@ -769,3 +770,93 @@ def test_rankings_chapter_lists_every_odds_why_fact(hbundle):
         f"ODDS.{rid}.why" for rid in hbundle.data.teams}
     median = next(c for c in hbundle.sheet.chapters if c.key == "median")
     assert not any(fid.endswith(".why") for fid in median.fact_ids)
+
+
+def test_every_storyline_of_week_6_has_a_fact_in_the_next_week_chapter(hbundle):
+    # The storylines of the week 6 fixture, as test_week_6_storylines_and_must_watch reads them by hand.
+    ids = {fid for fid in hbundle.sheet.facts if re.fullmatch(r"NX\.\d+v\d+\.\w+", fid)}
+    assert ids == {"NX.3v8.streak", "NX.3v8.cut", "NX.1v9.cut", "NX.10v11.streak", "NX.10v11.cut",
+                   "NX.5v12.streak", "NX.2v6.cut"}
+    ch = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
+    assert ids <= set(ch.fact_ids)
+    f = hbundle.sheet.facts["NX.3v8.streak"]
+    assert f.text == ("Return of T Mac has won 3 head-to-head games in a row, "
+                      "so the streak is on the line against Lil Fridge.")
+    assert f.numbers == ["3"] and f.teams == ["Lil Fridge", "Return of T Mac"]
+    assert hbundle.sheet.facts["NX.10v11.streak"].text == (
+        "Unsolicited Dak Picks has lost 3 head-to-head games in a row, so the streak is on the line against "
+        "behold the lamb.")
+    f = hbundle.sheet.facts["NX.1v9.cut"]
+    # Brock is at the cut and Maye is 1 game above it.
+    assert f.text == ("Brock ‘N’ Roll sits at the playoff cut. Maye d'force B with U sits 1 game above the playoff "
+                      "cut. The game is near the cut.")
+    assert f.numbers == ["1"]
+    # The Must Watch line keeps the reason.
+    assert hbundle.sheet.facts["NX.3v8"].text.endswith(
+        "Must Watch: Return of T Mac puts a 3-game win streak on the line and sits near the cut.")
+
+
+_NAMES = {1: "Brock ‘N’ Roll", 3: "Lil Fridge", 4: "Pukancun on 3", 6: "Bo Girds", 8: "Return of T Mac"}
+
+
+def _standing(rid, rank, from_cut):
+    return Standing(rank=rank, roster_id=rid, wins=0, losses=0, points_for=0.0, in_playoffs=rank <= 6,
+                    games_from_cut=from_cut, schedule_strength=None, strength_rank=None)
+
+
+def _story(kind, weight, **fields):
+    return Storyline(kind=kind, weight=weight, **fields)
+
+
+def test_storyline_facts_give_each_kind_its_numbers():
+    by_rank = {3: _standing(3, 1, 4), 6: _standing(6, 3, -1), 1: _standing(1, 6, 0), 4: _standing(4, 12, -5)}
+    games = [
+        NextMatchup(a=3, b=6, must_watch=True, reason="x", storylines=[
+            _story("cut", 3, teams=[6]),
+            _story("shootout", 2, totals=(123.0, 118.8)),
+            _story("table", 2),
+            _story("rematch", 1, roster_id=6, week=3, margin=12.4),
+            _story("revenge", 1, roster_id=3, week=3, margin=12.4),
+        ]),
+        NextMatchup(a=1, b=4, must_watch=False, reason=None, storylines=[
+            _story("streak", 3, roster_id=1, length=4),
+            _story("streak", 3, roster_id=4, length=-3),
+            _story("rematch", 1, roster_id=None, week=2, margin=0.0),
+        ]),
+    ]
+    facts = {f.id: f for f in storyline_facts(games, by_rank, _NAMES.get)}
+    assert list(facts) == ["NX.3v6.cut", "NX.3v6.shootout", "NX.3v6.table", "NX.3v6.rematch", "NX.3v6.revenge",
+                           "NX.1v4.streak", "NX.1v4.rematch"]
+    assert facts["NX.3v6.cut"].text == "Bo Girds sits 1 game below the playoff cut. The game is near the cut."
+    assert facts["NX.3v6.shootout"].text == (
+        "Lil Fridge projects 123.0 and Bo Girds projects 118.8 for next week. Both best lineups rank in the top four "
+        "of the league, so the game is a shootout.")
+    assert facts["NX.3v6.shootout"].numbers == ["123.0", "118.8"]
+    assert facts["NX.3v6.table"].text == (
+        "Lil Fridge (1st) and Bo Girds (3rd) both rank in the top four, so the game is at the top of the table.")
+    assert facts["NX.3v6.rematch"].text == (
+        "Lil Fridge and Bo Girds met in week 3, and Bo Girds won by 12.4. Next week is a rematch.")
+    assert facts["NX.3v6.rematch"].numbers == ["3", "12.4"]
+    assert facts["NX.3v6.revenge"].text == (
+        "Lil Fridge lost to Bo Girds by 12.4 in week 3, so next week is a chance at revenge.")
+    assert facts["NX.1v4.streak"].text == (
+        "Brock ‘N’ Roll has won 4 head-to-head games in a row, so the streak is on the line against Pukancun on 3. "
+        "Pukancun on 3 has lost 3 head-to-head games in a row, so the streak is on the line against Brock ‘N’ Roll.")
+    assert facts["NX.1v4.streak"].numbers == ["4", "3"]
+    assert facts["NX.1v4.rematch"].text == (
+        "Brock ‘N’ Roll and Pukancun on 3 met in week 2 and tied. Next week is a rematch.")
+    assert all(f.teams == [_NAMES[g.a], _NAMES[g.b]] for g in games for k, f in facts.items()
+               if k.startswith(f"NX.{g.a}v{g.b}."))
+
+
+def test_the_checker_accepts_a_cited_streak_length_and_projected_total():
+    from cornerstone.verifier import normalize_number, number_failures, remove_names
+    by_rank = {3: _standing(3, 1, 4), 6: _standing(6, 3, -1)}
+    game = NextMatchup(a=3, b=6, must_watch=True, reason="x", storylines=[
+        _story("streak", 3, roster_id=3, length=4), _story("shootout", 2, totals=(123.0, 118.8))])
+    facts = storyline_facts([game], by_rank, _NAMES.get)
+    cited = {normalize_number(x) for f in facts for x in f.numbers}
+    text = " ".join(f.text for f in facts)
+    prose = "Lil Fridge puts a 4-game win streak on the line, and Bo Girds projects 118.8 against 123 in a shootout."
+    assert number_failures(remove_names(prose, list(_NAMES.values())), cited, text) == []
+    assert number_failures("a 5-game win streak", cited, text) == ["number 5 is not in the cited facts"]

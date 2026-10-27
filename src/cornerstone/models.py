@@ -6,7 +6,7 @@ from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from cornerstone.odds import OddsResult
 
@@ -247,11 +247,31 @@ class Pick(BaseModel):
     scores: dict[str, float]
 
 
+class Storyline(BaseModel):
+    """One reason a next-week game matters. GLOSSARY.md, "Storyline", has the set of kinds."""
+    kind: Literal["streak", "shootout", "rematch", "revenge", "cut", "table"]
+    weight: int
+    # The team the storyline names: the streak team, the winner of the earlier game for a rematch,
+    # or the loser of it for revenge. None for a tie and for a storyline of both teams.
+    roster_id: int | None = None
+    # The streak: wins (positive) or losses (negative) in a row.
+    length: int = 0
+    # The week and the margin of the earlier game, for a rematch and for revenge.
+    week: int | None = None
+    margin: float | None = None
+    # The best projected lineups of side a and side b for next week, to one decimal, for a shootout.
+    totals: tuple[float, float] | None = None
+    # The teams within one game of the cut, for near the cut.
+    teams: list[int] = []
+
+
 class NextMatchup(BaseModel):
     a: int
     b: int
     must_watch: bool
     reason: str | None
+    # The facts read the storylines. The page does not, so they stay out of the page JSON.
+    storylines: list[Storyline] = Field(default=[], exclude=True)
 
 
 class SeasonHistory(BaseModel):

@@ -43,10 +43,12 @@ from cornerstone.models import (
     Fact,
     FactSheet,
     History,
+    NextMatchup,
     NflverseWeek,
     PlayerLine,
     PowerRow,
     Standing,
+    Storyline,
     Trade,
     UsageShare,
     Week,
@@ -308,7 +310,6 @@ class Context:
         self.chart = chart
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts)
-        self.next = next_week(week, self.table)
         self.season_history = season_history(week, history)
         # A gap in the history would shift every rank, so an incomplete history gives no power rankings.
         self.power = (
@@ -319,6 +320,8 @@ class Context:
         inputs = _odds_inputs(week, history)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = _odds(week, history, inputs, self.projected)
+        # The shootout storyline reads the same projected lineups as the odds.
+        self.next = next_week(week, self.table, history, self.projected)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
@@ -652,7 +655,61 @@ def next_facts(c: Context) -> list[Fact]:
         if nx.must_watch:
             text += f" Must Watch: {n.text(nx.reason)}."
         out.append(fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
+    return out + storyline_facts(c.next, c.by_rank, c.team)
+
+
+def storyline_facts(
+    games: list[NextMatchup], by_rank: dict[int, Standing], team: Callable[[int], str]
+) -> list[Fact]:
+    """One fact per storyline kind of each next-week game, id `NX.<a>v<b>.<kind>`. GLOSSARY.md, "Storyline".
+
+    Two streaks in one game share the streak fact, so each kind has one id per game.
+    """
+    out = []
+    for nx in games:
+        kinds = list(dict.fromkeys(s.kind for s in nx.storylines))
+        for kind in kinds:
+            n = Nums()
+            stories = [s for s in nx.storylines if s.kind == kind]
+            text = " ".join(_storyline_text(nx, s, by_rank, team, n) for s in stories)
+            out.append(fact(f"NX.{nx.a}v{nx.b}.{kind}", text, n, [team(nx.a), team(nx.b)], []))
     return out
+
+
+def _storyline_text(
+    nx: NextMatchup, s: Storyline, by_rank: dict[int, Standing], team: Callable[[int], str], n: Nums
+) -> str:
+    a, b = team(nx.a), team(nx.b)
+    if s.kind == "streak":
+        other = b if s.roster_id == nx.a else a
+        verb = "won" if s.length > 0 else "lost"
+        return (f"{team(s.roster_id)} has {verb} {n(abs(s.length))} head-to-head games in a row, "
+                f"so the streak is on the line against {other}.")
+    if s.kind == "cut":
+        sides = []
+        for rid in s.teams:
+            gap = by_rank[rid].games_from_cut
+            if gap == 0:
+                sides.append(f"{team(rid)} sits at the playoff cut.")
+            else:
+                side = "above" if gap > 0 else "below"
+                sides.append(f"{team(rid)} sits {n(abs(gap))} game {side} the playoff cut.")
+        return " ".join(sides) + " The game is near the cut."
+    if s.kind == "shootout":
+        x, y = s.totals
+        return (f"{a} projects {_one_decimal(x, n)} and {b} projects {_one_decimal(y, n)} for next week. "
+                "Both best lineups rank in the top four of the league, so the game is a shootout.")
+    if s.kind == "table":
+        return (f"{a} ({n.ord(by_rank[nx.a].rank)}) and {b} ({n.ord(by_rank[nx.b].rank)}) both rank in the top "
+                "four, so the game is at the top of the table.")
+    if s.kind == "rematch":
+        if s.roster_id is None:
+            return f"{a} and {b} met in week {n(s.week)} and tied. Next week is a rematch."
+        return (f"{a} and {b} met in week {n(s.week)}, and {team(s.roster_id)} won by {n(s.margin)}. "
+                "Next week is a rematch.")
+    winner = b if s.roster_id == nx.a else a
+    return (f"{team(s.roster_id)} lost to {winner} by {n(s.margin)} in week {n(s.week)}, "
+            "so next week is a chance at revenge.")
 
 
 # The writer reads one number to pick a shootout, so a long list of names adds no value past this cap.

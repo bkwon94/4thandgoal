@@ -502,6 +502,14 @@ def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir
     assert "A side that stays near one number has no swing. Say that it holds." in system
 
 
+def test_system_prompt_names_the_must_watch_reasons_and_the_best_other_storyline(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    assert ("An `NX.{a}v{b}.{kind}` fact gives one storyline of a next-week game. Name the reason of each Must Watch "
+            "game. For any other game, mention its best storyline only when it is a streak of 4 or more or an "
+            "`NX.{a}v{b}.shootout`.") in system
+
+
 def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)

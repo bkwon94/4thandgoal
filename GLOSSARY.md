@@ -63,7 +63,7 @@ One of the two next-week games with the highest storyline score. The page marks 
 _Avoid_: game of the week (that is this week's matchup of the week), featured game
 
 **Storyline**:
-One data-backed reason a next-week game matters, from a fixed set: streak on the line, shootout,
+One data-backed reason a next-week game matters, from a fixed set: streak on the line, projected shootout,
 rematch, revenge, near the cut, top of the table. Each has a weight. A game's storyline score is the sum.
 _Avoid_: angle, narrative, hook
 
@@ -71,9 +71,10 @@ _Avoid_: angle, narrative, hook
 A storyline: a team enters next week on 3 or more head-to-head wins or losses in a row. The median game
 does not count. The storyline names the length and the kind.
 
-**Shootout**:
-A storyline: both teams' best projected lineups for next week rank in the top four of the league.
-_Avoid_: high-scoring game, track meet
+**Projected shootout**:
+A storyline: both teams' best projected lineups for next week rank in the top four of the league. Not the
+NFL shootout, which is a real game with a high total.
+_Avoid_: shootout (alone, for the storyline), high-scoring game, track meet
 
 **Rematch**:
 A storyline: the two teams met earlier this season. The storyline names the week and the result. The

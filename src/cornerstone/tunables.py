@@ -1,6 +1,6 @@
 """
 The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds,
-and the waiver board.
+the waiver board, and the next-week storylines.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -224,3 +224,9 @@ FAST_SOURCES_MAX_AGE_SECONDS = 6 * 60 * 60
 # An NFL game takes about 3 hours 15 minutes. Overtime and weather delays add more, so the extra time keeps
 # a long game in progress until it ends. GLOSSARY.md, "In progress".
 IN_PROGRESS_MINUTES = 4 * 60 + 30
+
+# The next-week storylines: the weight of each kind. GLOSSARY.md, "Storyline". A game's storyline score is the sum,
+# and the two games with the highest score are Must Watch. Stakes and a streak count most, because a reader feels
+# them every week. A shootout and the top of the table count next. A rematch and revenge only add color.
+# The order is the order of the reason when two weights tie: a streak comes before near the cut.
+STORYLINE_WEIGHTS = {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
