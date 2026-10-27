@@ -29,6 +29,19 @@ LINEUP_WEEKS = 4
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
+# The line: the last position rank a starter can hold. GLOSSARY.md, "The line". A starting slot with a player
+# below the line is a hole. The league has 12 teams. Each starts 2 RB and 2 WR, and the 2 flex spots take about
+# one more of each, so 36 backs and 36 receivers start each week.
+LINE_RB_WR = 36
+# Each of the 12 teams starts 1 QB and 1 TE. Rank 24 covers one starter and one backup per team.
+LINE_QB_TE = 24
+# Strength: the position rank a RB1, RB2, WR1, or WR2 starter must hold or beat to count. GLOSSARY.md, "Strength".
+# The 12 teams each start 2 RB and 2 WR, so rank 24 is the last back or receiver an average team starts at RB2 or WR2.
+STRENGTH_RANK = 24
+# The bye window: the count of weeks from the trade week that a hole reads ahead. GLOSSARY.md, "Hole". A starter
+# with his bye in the window, or due back inside it, needs a bench player to cover him. Three weeks is the trade week
+# and the next two. A pickup or another trade can rarely fix a slot sooner.
+BYE_WINDOW = 3
 
 # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
 # The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.

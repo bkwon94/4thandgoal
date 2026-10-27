@@ -53,17 +53,48 @@ when its tunable is on. Schedule shows a lean in place of a step.
 
 ## Roster fit
 
-Find the side's best lineup before the trade and after it. The best lineup fills the league's
-roster slots with the players who have the most points per game over the last `LINEUP_WEEKS`
-completed weeks. The fixed slots fill first. Then each flex slot takes the player left with the
-most points per game who can play there. At equal points, the position order breaks the tie: RB
-over WR, WR over TE, TE over QB, QB over K, K over DEF.
+Roster fit reads two things of the side's roster, before the trade and after it: the best lineup
+and the holes.
 
-- A lineup loss of `FIT_THRESHOLD` or more is one step down.
-- A lineup gain of `FIT_THRESHOLD` or more is one step up.
+The best lineup fills the league's roster slots with the players who have the most points per game
+over the last `LINEUP_WEEKS` completed weeks. The fixed slots fill first. Then each flex slot takes
+the player left with the most points per game who can play there. At equal points, the position
+order breaks the tie: RB over WR, WR over TE, TE over QB, QB over K, K over DEF.
+
+A player's position rank is his place at his position among every player with a stat line in the
+known games, rostered or not. The order is the points per game he counts for in a best lineup.
+RB24 is the 24th running back in the league. The line is the last position rank a starter can hold:
+`LINE_RB_WR` at RB and WR, and `LINE_QB_TE` at QB and TE. A flex slot reads the line of its
+player's own position. K and DEF have no line.
+
+A hole is a starting slot that holds a player below the line, or holds no player. A K or DEF slot
+is never a hole. A hole that exists before the trade too is not new. A hole can move to another
+slot of the same kind, such as from one flex slot to the other. It is still not new.
+
+A starter who misses a week with no cover is a hole too. The bye window is `BYE_WINDOW` weeks
+from the trade week. A starter with his bye in the window needs a cover. So does a starter due
+back after the trade week and inside the window. A cover is a bench player above the line at a
+position the slot allows. Each bench player covers one slot only. A bench player with his bye in
+the same week cannot cover. A starter due back after the window is a hole, whatever his rank.
+With no schedules, no bye hole reads, and the reason says that the schedules are not available.
+
+Depth is the count of the side's players at a position, starters and bench, at or above the line.
+Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of
+`STRENGTH_RANK` or better. Depth and strength are facts for the analysis. They never move the step.
+
+- A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
+  position rank. For a starter with a bye or a return inside the window and no cover, it names the
+  week and says that no bench player covers him. For a starter due back after the window, it says
+  "X is due back in week W." with no cover phrase. For a starter out with no return week on file,
+  it says so and names no week.
+- A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
+  still one down, and the reason names the hole.
+- A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no
+  step, because the two cancel. The reason names the gain and the hole.
 - The side that gets the single highest-value player in the trade, with no lineup loss, gets one
-  step up. A lineup change smaller than `FIT_THRESHOLD` is no lineup loss. Trade value picks that
-  player. When the week has no chart or a traded player is unlisted, points per game pick him.
+  step up. A new hole blocks this step too, and the step is none. A lineup change smaller than
+  `FIT_THRESHOLD` is no lineup loss. Trade value picks that player. When the week has no chart or a
+  traded player is unlisted, points per game pick him.
 - In a trade of one player for two or more, the side that gets two or more gets the step up only
   when every player it gets starts in its best lineup after the trade.
 
@@ -136,8 +167,8 @@ known games count. Every adjuster grades him as any running back, and the handcu
 his share. With fewer than 2 played games, or with no carry data, the depth chart alone decides.
 
 - He counts as zero in the start letter sums.
-- Roster fit cannot step down for a side that gets a handcuff. This block is broad: any lineup
-  loss in that trade does not count.
+- Roster fit does not step down for a lineup loss when the side gets a handcuff. The block covers
+  a lineup loss only. A new hole still steps down.
 - Trend and usage leaves a handcuff on either side out of the comparison.
 
 The handcuff adjuster itself gives no step. It names the handcuff. When the depth chart or the id

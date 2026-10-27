@@ -2,6 +2,7 @@
 Shared pytest fixtures for the Cornerstone Weekly tests.
 They give tests the path to the recorded Sleeper data.
 """
+import json
 import re
 import shutil
 from datetime import date, datetime
@@ -38,6 +39,40 @@ def with_carries(snap, player_id: str, carries: dict[int, float]):
         stats = {**past.stats, player_id: {**past.stats[player_id], "rush_att": count}}
         weeks[week] = past.model_copy(update={"stats": stats})
     return snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
+
+
+# The week 6 players file holds the rostered players only, so the free agent tests add these. Each back has a stat
+# line in the saved weeks but 80001, so each but 80001 has a position rank. The status fields follow Sleeper.
+FREE_AGENTS = {
+    # Achane is Inactive with no out tag, so the waiver pool leaves him out.
+    "9226": {"full_name": "De'Von Achane", "position": "RB", "team": "MIA", "status": "Inactive", "active": True},
+    # Rodriguez is on injured reserve with no out tag, so the waiver pool leaves him out.
+    "10219": {"full_name": "Chris Rodriguez", "position": "RB", "team": "JAX", "status": "Injured Reserve",
+              "active": True},
+    "9225": {"full_name": "Tank Bigsby", "position": "RB", "team": "PHI", "status": "Active", "active": True},
+    # Perine is Inactive and out, so the waiver pool keeps him as a stash.
+    "4147": {"full_name": "Samaje Perine", "position": "RB", "team": "CIN", "status": "Inactive", "active": True,
+             "injury_status": "IR"},
+    # Gainwell has no NFL team, so the waiver pool leaves him out.
+    "7567": {"full_name": "Kenny Gainwell", "position": "RB", "team": None, "status": "Active", "active": True},
+    "80001": {"full_name": "No Line Back", "position": "RB", "team": "KC", "status": "Active", "active": True},
+    "2505": {"full_name": "Darren Waller", "position": "TE", "team": "CAR", "status": "Active", "active": True},
+}
+
+
+def with_free_agents(raw: dict, players: dict[str, dict] | None = None) -> dict:
+    """The raw data with FREE_AGENTS, or `players`, added to the players file."""
+    return {**raw, "players": {**raw["players"], **(FREE_AGENTS if players is None else players)}}
+
+
+@pytest.fixture
+def free_agent_raw_dir(tmp_path, fixture_raw_dir) -> Path:
+    """A copy of the week 6 raw folder with FREE_AGENTS in its players file."""
+    raw_dir = tmp_path / "raw"
+    shutil.copytree(fixture_raw_dir, raw_dir)
+    players = raw_dir / "players.json"
+    players.write_text(json.dumps(with_free_agents({"players": json.loads(players.read_text())})["players"]))
+    return raw_dir
 
 
 @pytest.fixture

@@ -13,10 +13,11 @@ from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
 )
 from cornerstone.parse import player_name
+from cornerstone.ranks import in_pool
 from cornerstone.sheet import Nums, fact
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
-    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, POOL_POSITIONS, USAGE_WEEKS,
+    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS,
 )
 from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
@@ -45,7 +46,7 @@ def waiver_board(
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
-    pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if _in_pool(entry, rostered, pid)}
+    pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if in_pool(entry, rostered, pid)}
     ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = _rank_scores(positions, ros)
@@ -111,22 +112,6 @@ def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
 def _rostered(raw: dict[str, object]) -> set[str]:
     # A roster with no players has None in rosters.json.
     return {pid for roster in raw["rosters"] for pid in roster.get("players") or []}
-
-
-def _in_pool(entry: dict, rostered: set[str], player_id: str) -> bool:
-    """A player with a team, active, at a pool position, and on no roster in the league.
-
-    A player with the status Inactive and an out injury status joins too, for stashes only.
-    """
-    if player_id in rostered or not entry.get("team") or entry.get("position") not in POOL_POSITIONS:
-        return False
-    # Sleeper gives a defense no status, only the active flag.
-    if entry["position"] == "DEF":
-        return entry.get("active") is True
-    # Sleeper gives an IR player the status Inactive. He is the classic stash, so he joins the pool.
-    if entry.get("status") == "Inactive" and entry.get("active") is True:
-        return entry.get("injury_status") in OUT_STATUSES
-    return entry.get("status") == "Active"
 
 
 def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[str, float]:

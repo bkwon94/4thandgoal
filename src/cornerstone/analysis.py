@@ -29,7 +29,10 @@ MIN_SENTENCES, MAX_SENTENCES = 3, 5
 # Peaked in High Skool site, so every form of its name is banned. A ratio word states a ratio of
 # trade values. "value" stays allowed because the breakdown reasons say "trade value"; the number
 # check keeps the values themselves out.
-BANNED_WORDS = ["tier", "tiers", "peaked", "skool", "pihs", "peakedinhighskool", "twice", "double", "triple"]
+# Roster fit says "position rank", "the line", and "hole". GLOSSARY.md bans "replacement" and "floor" for them, so
+# a reader meets one word per idea. "gap" stays allowed, because the expected gap adjuster owns it.
+BANNED_WORDS = ["tier", "tiers", "peaked", "skool", "pihs", "peakedinhighskool", "twice", "double", "triple",
+                "replacement", "replacements", "floor", "floors"]
 # "chart" is banned too, except in "depth chart", which the breakdown reasons use.
 CHART_WORD = re.compile(r"(?<!\w)(?<!depth )charts?(?!\w)", re.IGNORECASE)
 # The document gives a decision, not letters, so no letter grade reaches the prose a manager reads.

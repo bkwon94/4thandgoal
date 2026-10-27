@@ -313,3 +313,105 @@ def test_a_missing_player_file_is_a_missing_source_and_not_a_pending_count(
                           slow=SlowSources(missing=["player_weeks"]))
     assert snap.as_of.known_games.pending == {}
     assert "player_weeks" in snap.missing
+
+
+# The week 6 rank pool reads the saved weeks 1 to 5. Lineup value reads weeks 2 to 5, LINEUP_WEEKS of them.
+# The ranks below come from a hand count of the RB lines in the saved history, not from the code.
+TUTEN, JACOBS, FREE_AGENT_RB = "12490", "5850", "9226"
+NO_GAME_RBS = ("12476", "8205")
+
+
+def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Tuten scored 12.475 points per game in 4 games of weeks 2 to 5, which the ranks show as 12.47. 14 backs have more.
+    # The 14, by points per game of weeks 2 to 5. "ahead" marks a back out now who counts for his projection ahead.
+    # Jahmyr Gibbs 27.28, Kenneth Walker 23.83, Bijan Robinson 21.22, Kyren Williams 20.45, James Cook 19.10, Jaylen
+    # Warren 18.92, Derrick Henry 18.25, Christian McCaffrey 17.62, Chuba Hubbard 17.27, Jonathan Taylor 16.82, Javonte
+    # Williams 16.20, Bucky Irving 13.60, Aaron Jones 13.30, Saquon Barkley 12.64 ahead.
+    assert snap.position_rank(TUTEN) == 15
+
+
+def test_a_player_with_no_game_in_the_window_ranks_after_every_player_with_a_game(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # 77 backs have a stat line in weeks 1 to 5 or a roster spot. The two with no game in weeks 2 to 5 are last.
+    assert sorted(snap.position_rank(pid) for pid in NO_GAME_RBS) == [76, 77]
+
+
+def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # Jacobs has no game in weeks 2 to 5, so his recent points would rank him last. The returns file has him
+    # back in week 7, and his projections of weeks 7 to 14 give 12.21 per game.
+    assert snap.returns[JACOBS] == 7
+    assert snap.position_rank(JACOBS) == 16
+
+
+def test_a_free_agent_with_a_stat_line_ranks_in_the_pool(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    # The back is on no roster. He scored 12.5 points in 2 games, 6.25 per game, so 45 backs rank above him.
+    assert all(FREE_AGENT_RB not in players for players in snap.rosters.values())
+    assert snap.position_rank(FREE_AGENT_RB) == 46
+
+
+def test_k_def_and_a_player_with_no_stat_line_and_no_roster_spot_have_no_rank(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    defense = next(pid for players in snap.rosters.values() for pid in players
+                   if snap.players[pid].position == "DEF")
+    assert snap.position_rank(defense) is None
+    assert snap.position_rank("no-such-player") is None
+
+
+def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    assert snap.position_rank(JACOBS) == 16
+    # With no projections file every player keeps his recent points. 6 backs then have no game in weeks 2 to 5,
+    # so they hold ranks 72 to 77 in player id order. Jacobs is the third of them.
+    assert snap.model_copy(update={"projections_ahead": None}).position_rank(JACOBS) == 74
+
+
+ACHANE, RODRIGUEZ, BIGSBY, PERINE, GAINWELL, NO_LINE_BACK = "9226", "10219", "9225", "4147", "7567", "80001"
+
+
+def test_the_week_6_snapshot_lists_the_free_agents_the_waiver_pool_reads_at_rb(
+        free_agent_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    # Bigsby is Active, Perine is Inactive and out as a stash, and the back with no stat line is Active too.
+    # The list is in player id order.
+    assert [p.player_id for p in snap.free_agents["RB"]] == [PERINE, NO_LINE_BACK, BIGSBY]
+    assert snap.free_agents["RB"][2].name == "Tank Bigsby"
+    assert [p.player_id for p in snap.free_agents["TE"]] == ["2505"]
+    # A free agent is not a rostered player, so the readers of the rosters never see him.
+    assert BIGSBY not in snap.players
+
+
+def test_a_named_inactive_free_agent_is_not_in_the_free_agents(free_agent_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    # Achane is Inactive with no out tag. He still has a position rank, because his stat line is in the rank pool.
+    assert ACHANE not in {p.player_id for p in snap.free_agents["RB"]}
+    assert snap.position_rank(ACHANE) == 46
+
+
+def test_a_free_agent_on_injured_reserve_with_no_out_tag_and_one_with_no_team_are_not_in_the_free_agents(
+        free_agent_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    assert {RODRIGUEZ, GAINWELL}.isdisjoint(p.player_id for p in snap.free_agents["RB"])
+
+
+def test_the_best_free_agent_is_the_one_with_the_best_position_rank(
+        free_agent_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    # Bigsby scored 15.3 points in 3 games of weeks 2 to 5, 5.10 a game. Perine scored 20.1 in 4, 5.03 a game.
+    # 50 backs have more lineup value than Bigsby, so he is RB51. The back with no stat line has no rank.
+    player, rank = snap.best_free_agent(["RB"])
+    assert (player.name, rank) == ("Tank Bigsby", 51)
+    assert snap.position_rank(PERINE) == 53
+    assert snap.position_rank(NO_LINE_BACK) is None
+
+
+def test_a_position_with_no_free_agent_with_a_rank_has_no_best_free_agent(
+        free_agent_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    assert snap.best_free_agent(["QB"]) is None
+    only_no_line = snap.model_copy(update={"free_agents": {"RB": snap.free_agents["RB"][1:2]}})
+    assert only_no_line.best_free_agent(["RB"]) is None

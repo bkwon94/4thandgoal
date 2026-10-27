@@ -8,15 +8,19 @@ import shutil
 
 import pytest
 
+from conftest import with_free_agents
+
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
 from cornerstone.rubric import ProposedTrade, TradeSide
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import load_snapshot
+from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 # The week 6 Josh Jacobs trade: roster 11 gives Bhayshul Tuten and Garrett Wilson to roster 12
 # for Jacobs and Devaughn Vele. Roster 12 asked. Chart values: Tuten 3.0, Wilson 27.5, Jacobs 11.5, Vele 55.0.
 TUTEN, WILSON, JACOBS, VELE = "12490", "8146", "5850", "11834"
+BATEMAN = "7571"
 
 
 @pytest.fixture
@@ -26,6 +30,22 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
+    rosters = dict(snap.rosters)
+    rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
+    rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
+    return snap.model_copy(update={"rosters": rosters})
+
+
+@pytest.fixture
+def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_dir, tmp_path):
+    """The snapshot of the snap fixture with Rashod Bateman, a free agent receiver, in the players file."""
+    cache = tmp_path / "nflverse"
+    shutil.copytree(fixture_nflverse_dir, cache)
+    slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
+    raw = with_free_agents(load_raw(fixture_raw_dir), {BATEMAN: {
+        "full_name": "Rashod Bateman", "position": "WR", "team": "BAL", "status": "Active", "active": True}})
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, slow,
+                          returns=load_returns(fixture_history_root.parent / "returns.json"))
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -82,8 +102,9 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
     analyze(trade, snap, call=fake)
     system, user = fake.calls[0]
     facts = _facts(user)
-    # Points per game and position rank, before the trade only.
-    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "position rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    # Points per game and season rank, before the trade only.
+    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "season rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    assert "position rank" not in facts[f"{WILSON}.ppg"]
     assert f"{WILSON}.usage" in facts and f"{WILSON}.targets" in facts and f"{WILSON}.redzone" in facts
     # Jacobs is suspended, and the returns file has him back in week 7.
     assert "week 7" in facts[f"{JACOBS}.injury"]
@@ -185,6 +206,8 @@ def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sent
     ("He gives twice the production.", "twice"),
     ("He gives double the production.", "double"),
     ("He ranks high on the PIHS list.", "pihs"),
+    ("Kendre Miller is a replacement back.", "replacement"),
+    ("Kendre Miller is below the floor.", "floor"),
 ])
 def test_a_banned_word_fails(trade, snap, sentence, word):
     text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
@@ -206,6 +229,71 @@ def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
     fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
     assert not analyze(trade, snap, call=fake).fallback
     assert len(fake.calls) == 1
+
+
+def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
+    # The hand count of the RB lines in weeks 2 to 5 puts Tuten 15th. Jacobs is due back, so his projection ahead
+    # of weeks 7 to 14 puts him 16th.
+    fake = FakeClaude(_response(eleven=_side(11, analysis=(
+        "Bhayshul Tuten is RB15 by points per game. His snap share went up. He moves to a new roster."),
+        cited=[f"{TUTEN}.ppg"])))
+    result = analyze(trade, snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert "Bhayshul Tuten is RB15 by points per game." in facts[f"{TUTEN}.ppg"]
+    assert "Josh Jacobs is RB16 by his projection ahead." in facts[f"{JACOBS}.ppg"]
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
+def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_strength_count(trade, snap):
+    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver above the line after, from 2.
+    # Tuten RB15 and Wilson leave its RB1, RB2, WR1, and WR2 starters, and Jacobs RB16 and Vele come in.
+    text = ("Josh Jacobs takes RB2 on this side. WR depth above the line goes from 2 to 1. "
+            "Its starters with a position rank of 24 or better go from 4 to 3.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text,
+                                             cited=[f"{JACOBS}.slot", "11.depth.wr", "11.strength"])))
+    result = analyze(trade, snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert facts[f"{JACOBS}.slot"] == "Josh Jacobs takes RB2, which Bhayshul Tuten held before the trade."
+    assert facts[f"{VELE}.slot"] == "Devaughn Vele takes WR2, and George Pickens moves to WR1."
+    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, WR depth above the line goes from 2 to 1."
+    assert facts["11.strength"] == ("For Unsolicited Dak Picks, the starters at RB1, RB2, WR1, and WR2 with a "
+                                    "position rank of 24 or better go from 4 to 3.")
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
+def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_agent(trade, fa_snap):
+    # Vele WR40 takes WR2 of roster 11, below the line. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
+    # 9.33 a game. 32 receivers have more lineup value, so he is WR33, the best free agent at WR.
+    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR33. "
+            "Waivers can fix the hole.")
+    fake = FakeClaude(_response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"])))
+    result = analyze(trade, fa_snap, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, WR2 is a hole after the trade: Devaughn Vele is WR40. "
+                                    "Garrett Wilson held WR1 before the trade. The best free agent at WR is Rashod "
+                                    "Bateman, WR33.")
+    assert not result.fallback
+    assert len(fake.calls) == 1
+
+
+def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
+    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR31. "
+            "Waivers can fix the hole.")
+    bad = _response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"]))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, fa_snap, call=fake).fallback
+    assert "number 31 is not in the cited facts" in fake.calls[1][1]
+
+
+def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
+    # The depth fact of roster 11 holds 2 and 1, and no breakdown reason holds 38, so a count of 38 is a new number.
+    text = "Josh Jacobs takes RB2 on this side. WR depth above the line goes from 38 to 1. He starts."
+    bad = _response(eleven=_side(11, analysis=text, cited=[f"{JACOBS}.slot", "11.depth.wr"]))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert "number 38 is not in the cited facts" in fake.calls[1][1]
 
 
 def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):

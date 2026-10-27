@@ -6,9 +6,10 @@ moved less than the threshold while the RB2 slot fell to a player no one would s
 depth per position, strength per position, and the holes a trade opens. We now read all three against
 one line: the position rank, a player's place at his position among every player with a stat line,
 rostered or not, by lineup value. The line is rank 36 at RB and WR and rank 24 at QB and TE. A slot
-below the line is a hole. A new hole is one step down and blocks every step up. Depth and strength are
-facts for the reason and the analysis, never a step. The handcuff block narrows to a lineup loss, so a
-side that trades its starter for the backup and opens a hole steps down.
+below the line is a hole. A new hole with no lineup gain is one step down. A lineup gain that opens a new
+hole is no step, because the two cancel. The highest-value player step with a new hole is no step too.
+Depth and strength are facts for the reason and the analysis, never a step. The handcuff block narrows
+to a lineup loss, so a side that trades its starter for the backup and opens a hole steps down.
 
 ## Considered Options
 
@@ -32,4 +33,5 @@ side that trades its starter for the backup and opens a hole steps down.
 - The snapshot gains the free agents' status fields, which the live path drops today.
 - A starter due back inside the 3-week bye window reads as a bye until he returns. One due back later
   is a hole. His lineup value still counts his projection ahead.
+- A bench player whose own bye falls in the starter's bye week cannot cover him, because both miss that week.
 - The week 6 hand-worked trades can move. Each moved grade needs Brian's word before merge.

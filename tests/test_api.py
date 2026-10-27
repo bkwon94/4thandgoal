@@ -22,16 +22,18 @@ from fastapi.testclient import TestClient
 
 from conftest import strip_trend_numbers
 
-from cornerstone.adjusters import TREND, recent_points_per_game
+from cornerstone.adjusters import ROSTER_FIT, TREND
 from cornerstone.analysis import (
     Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
 )
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from cornerstone.ranks import recent_points_per_game
 from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
 from cornerstone_api.cache import cache_key, finder_cache_key
@@ -47,7 +49,7 @@ NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
 PASSPHRASE = "cornerstone-test"
 # The response fixture shared with the site repo. The route's output must keep its shape.
 RESPONSE_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "analyze-response.json"
-# The finder response fixture shared with the site repo, with three trades.
+# The finder response fixture shared with the site repo, with two trades.
 FIND_FIXTURE = Path(__file__).parent / "fixtures" / "api" / "find-response.json"
 HEADERS = {"X-League-Passphrase": PASSPHRASE}
 
@@ -350,8 +352,11 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     names = [f["name"] for f in doc["sides"][0]["factors"]]
     assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 6
     assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
+    # After the trade, roster 12's bench no longer covers the bye of Tee Higgins in week 6. The new hole blocks its
+    # highest-value step, so the two sides are about even.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
-                               "reason": "The other side does better, so ask for more.", "differs": False}
+                               "reason": "The two sides are about even, but the schedule leans against the asking "
+                                         "side, so ask for more.", "differs": False}
     # The document leads with the decision, and no letter or step reaches it.
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
     assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
@@ -529,9 +534,12 @@ def _with_week_rows(snapshot, returns, projections_ahead):
 
 
 def _outside_player(snapshot, roster_ids):
-    """A player on a roster outside `roster_ids`, so no grade of those rosters reads his rows."""
+    """A player on a roster outside `roster_ids`, so no grade of those rosters reads his rows.
+
+    He is a DEF, which has no position rank, so a change to his rows or lines moves no rank of a traded player.
+    """
     return next(player for roster_id, players in snapshot.rosters.items() if roster_id not in roster_ids
-                for player in players)
+                for player in players if snapshot.players[player].position == "DEF")
 
 
 def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
@@ -631,6 +639,62 @@ def test_the_cache_key_ignores_a_player_on_neither_roster(settings, sources):
     assert cache_key(trade, _with_week_rows(snapshot, {outside: 9}, {outside: {7: 13.5}})) == key
     assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {outside: 8}, {outside: {7: 12.5}})) == (
         finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {outside: 9}, {outside: {7: 13.5}})))
+
+
+def _unrostered_with_a_game(snapshot, position):
+    """A player at `position` on no roster, with a game in the last week of the player stats."""
+    week = snapshot.stats.weeks[snapshot.as_of.stats_through]
+    rostered = {player for players in snapshot.rosters.values() for player in players}
+    return next(player for player, line in sorted(week.stats.items())
+                if week.positions.get(player) == position and player not in rostered and line.get("gp", 0) > 0)
+
+
+def _with_points(snapshot, player, points, position=None):
+    """The snapshot with new points on the player's stat line in the last week of the player stats.
+
+    With a `position`, the line is a played line at that position, so a test can add a player the fixture lacks.
+    """
+    through = snapshot.as_of.stats_through
+    week = snapshot.stats.weeks[through]
+    line = {**week.stats.get(player, {"gp": 1.0}), "pts_half_ppr": points}
+    positions = {**week.positions, player: position} if position else week.positions
+    weeks = {**snapshot.stats.weeks, through: week.model_copy(
+        update={"stats": {**week.stats, player: line}, "positions": positions})}
+    return snapshot.model_copy(update={"stats": snapshot.stats.model_copy(update={"weeks": weeks})})
+
+
+def test_a_changed_stat_line_of_an_unrostered_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    back = _unrostered_with_a_game(snapshot, "RB")
+    # The position rank pool holds every back with a stat line, so his points can move the rank of a traded back.
+    assert cache_key(trade, _with_points(snapshot, back, 30.0)) != cache_key(trade, _with_points(snapshot, back, 3.0))
+    assert finder_cache_key(2026, 4, 12, _with_points(snapshot, back, 30.0)) != finder_cache_key(
+        2026, 4, 12, _with_points(snapshot, back, 3.0))
+
+
+def test_a_changed_stat_line_of_an_unrostered_k_changes_neither_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    # The fixture has no K line, so the test adds one for a kicker on no roster.
+    kicker = "unrostered-kicker"
+    # K has no position rank, so no grade reads his line.
+    assert cache_key(trade, _with_points(snapshot, kicker, 30.0, "K")) == cache_key(
+        trade, _with_points(snapshot, kicker, 3.0, "K"))
+    assert finder_cache_key(2026, 4, 12, _with_points(snapshot, kicker, 30.0, "K")) == finder_cache_key(
+        2026, 4, 12, _with_points(snapshot, kicker, 3.0, "K"))
+
+
+def test_a_new_free_agent_at_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    bigsby = SnapshotPlayer(player_id="9225", name="Tank Bigsby", position="RB", nfl_team="PHI")
+    added = snapshot.model_copy(update={"free_agents": {**snapshot.free_agents, "RB": [bigsby]}})
+    # His stat line is in the rank pool either way, so only the free agents tell the two keys apart. The hole fact
+    # names the best free agent, so a new one must miss.
+    assert added.rank_table() == snapshot.rank_table()
+    assert cache_key(trade, added) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, added) != finder_cache_key(2026, 4, 12, snapshot)
 
 
 def _strings(value):
@@ -984,12 +1048,20 @@ NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
 
+# One hole sentence of the roster fit reason, from the slot name to the period that ends it.
+HOLE_SENTENCE = re.compile(r"\b[A-Z]+\d? is a hole after the trade: [^.]*\.")
+
+
 def _digits_outside_ids(value, key=None):
     """The numbers and the strings with digits under any key that may not hold them."""
     if isinstance(value, dict):
         if value.get("name") == TREND:
             # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
             value = {**value, "reason": strip_trend_numbers(value["reason"])}
+        if value.get("name") == ROSTER_FIT:
+            # A hole sentence names a slot, a position rank, and a week, such as "FLEX1 ... week 6". The code writes
+            # it, and this check guards Claude's prose, not the code's factor reasons. Any other number fails.
+            value = {**value, "reason": HOLE_SENTENCE.sub("", value["reason"])}
         return [found for k, item in value.items() for found in _digits_outside_ids(item, k)]
     if isinstance(value, list):
         return [found for item in value for found in _digits_outside_ids(item, key)]
@@ -1102,7 +1174,7 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
 
 # The find route. The fixture chart lists mostly stars, so no pair of the week 6 snapshot has a win-win on it.
 # The finder tests give chart rows to the players a test needs, and these tests do the same for rosters 2 and 3,
-# so the pair has three win-wins that share no player.
+# so the pair has two win-wins that share no player. The holes of the bye window rule out the rest.
 CHART_POSITIONS = frozenset({"RB", "WR", "TE", "QB"})
 FIND = {"season": 2026, "asker": 2, "partner": 3}
 
@@ -1158,7 +1230,7 @@ def _find_client(settings, sources, fake, clock=None):
     return client
 
 
-def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_sources):
+def test_find_returns_two_win_win_trades_with_one_reason_each(settings, find_sources):
     fake = FakeFinderClaude()
     response = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS)
     assert response.status_code == 200
@@ -1167,7 +1239,7 @@ def test_find_returns_three_win_win_trades_with_one_reason_each(settings, find_s
     assert doc["fallback"] is False
     assert doc["empty"] is None
     assert [team["roster_id"] for team in doc["trade_pair"].values()] == [2, 3]
-    assert len(doc["trades"]) == 3
+    assert len(doc["trades"]) == 2
     for item in doc["trades"]:
         assert item["fairness"]["state"] == "win_win"
         assert item["reason"] == FakeFinderClaude.TEXT
@@ -1315,7 +1387,7 @@ def test_a_failed_claude_call_retries_once_then_each_reason_is_empty(settings, f
     # The second attempt carries the failures of the first as feedback.
     assert "Feedback from the last attempt:" in fake.calls[1][1]
     assert doc["fallback"] is True
-    assert len(doc["trades"]) == 3
+    assert len(doc["trades"]) == 2
     for item in doc["trades"]:
         # The fairness block already holds the code's reasons, so the card shows the fairness line alone.
         assert item["reason"] is None
@@ -1330,12 +1402,12 @@ def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_
     doc = _find_client(settings, find_sources, fake).post("/find", json=FIND, headers=HEADERS).json()
     assert len(fake.calls) == 2
     assert doc["fallback"] is False
-    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 3
+    assert [item["reason"] for item in doc["trades"]] == [FakeFinderClaude.TEXT] * 2
 
 
 @pytest.fixture
 def found(settings, find_sources):
-    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3."""
+    """The week 6 snapshot with the extra chart rows, and the two trades the finder finds for rosters 2 and 3."""
     snapshot = find_sources.snapshot(settings.repo, 2026)
     return snapshot, find_win_wins(2, 3, snapshot)
 
@@ -1386,7 +1458,7 @@ def test_a_response_with_a_trade_left_out_fails_the_shape(found):
     snapshot, items = found
     out = FinderReasonsOut.model_validate({"reasons": [{"trade": 1, "reason": FakeFinderClaude.TEXT, "cited": []}]})
     assert check_reasons(out, items, snapshot, _sheets(snapshot, items)) == [
-        "the response must have exactly 3 reasons: trades 1, 2, 3 in order, each once; it had trades 1"]
+        "the response must have exactly 2 reasons: trades 1, 2 in order, each once; it had trades 1"]
 
 
 def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
@@ -1413,7 +1485,7 @@ def test_the_finder_prompt_holds_the_reason_rules(settings, find_sources):
 def test_a_good_find_returns_the_document_in_the_fixture_shape(settings, find_sources):
     doc = _find_client(settings, find_sources, FakeFinderClaude()).post("/find", json=FIND, headers=HEADERS).json()
     fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
-    assert len(fixture["trades"]) == 3
+    assert len(fixture["trades"]) == 2
     assert _same_shape(doc, _shape(fixture))
     # Every trade has the shape of the fixture's first, so no item drops a key.
     for item in doc["trades"]:
@@ -1512,6 +1584,27 @@ def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(setti
     assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
 
 
+def test_a_third_roster_line_that_moves_a_traded_players_rank_changes_the_key(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    collins = "7569"
+    week_n = snapshot.stats.weeks[snapshot.as_of.stats_through].stats
+    # A healthy receiver who played in week N, so he is not due back and his recent points read the week N line.
+    receiver = next(player for roster_id, players in sorted(snapshot.rosters.items()) if roster_id not in (4, 12)
+                    for player in players if snapshot.players[player].position == "WR"
+                    and snapshot.players[player].injury_status is None and week_n.get(player, {}).get("gp", 0) > 0
+                    and snapshot.position_rank(player) > snapshot.position_rank(collins))
+    # 200 points in his week N game lift the receiver above Collins, so Collins drops one rank.
+    # The roster points of a rostered player come before his stat line, so both change.
+    lined = _with_week_n_line(snapshot, receiver, gp=1.0, pts_half_ppr=200.0)
+    week = lined.stats.weeks[lined.as_of.stats_through]
+    weeks = {**lined.stats.weeks, week.week: week.model_copy(update={"points": {**week.points, receiver: 200.0}})}
+    moved = lined.model_copy(update={"stats": lined.stats.model_copy(update={"weeks": weeks})})
+    assert moved.position_rank(collins) == snapshot.position_rank(collins) + 1
+    assert cache_key(trade, moved) != cache_key(trade, snapshot)
+    assert finder_cache_key(2026, 4, 12, moved) != finder_cache_key(2026, 4, 12, snapshot)
+
+
 def test_the_cache_key_ignores_a_week_n_field_the_grade_never_reads(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)
@@ -1586,7 +1679,8 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_7():
+def test_the_document_version_is_8():
     import cornerstone_api.cache as cache_module
 
-    assert cache_module.DOCUMENT_VERSION == 7
+    # The position rank enters the facts, so a document stored before it must never serve.
+    assert cache_module.DOCUMENT_VERSION == 8
