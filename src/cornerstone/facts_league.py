@@ -4,7 +4,7 @@ Every number comes from code, and every derived number is exact to two decimals.
 """
 import logging
 from collections import defaultdict
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
@@ -40,6 +40,8 @@ WEIGHTS = {"closeness": 0.4, "upset": 0.25, "table": 0.2, "stakes": 0.15}
 STREAK_ON_THE_LINE = 3
 # Both teams ranked this high or higher in the standings meet at the top of the table.
 TABLE_TOP = 4
+# Both best projected lineups for next week rank this high or higher of the 12 for a shootout. GLOSSARY.md, "Shootout".
+SHOOTOUT_TOP = 4
 REASONS = {
     "closeness": "Closest Finish",
     "upset": "Upset",
@@ -246,16 +248,24 @@ def matchup_of_the_week(
 
 def next_week(
     week: Week, table: list[Standing], history: History | None = None,
+    projected: dict[int, dict[int, float]] | None = None,
 ) -> list[NextMatchup]:
     """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
 
+    `projected` is the best projected lineup of each roster by week, as `projected_totals` gives it.
     A tie in the score goes to the smaller gap in the standings, then to the schedule order.
     """
     by_roster = {s.roster_id: s for s in table}
+    ahead = {rid: by_week[week.week + 1] for rid, by_week in (projected or {}).items() if week.week + 1 in by_week}
+    # A tie in the total goes to the lower roster id, so the top four is the same on every build.
+    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:SHOOTOUT_TOP])
     games = []
     for a_id, b_id in week.next_matchups:
         a, b = by_roster[a_id], by_roster[b_id]
-        games.append((a, b, _storylines(week, a, b, history)))
+        stories = _storylines(week, a, b, history)
+        if a_id in top and b_id in top:
+            stories.append(_story("shootout", totals=(_one_decimal(ahead[a_id]), _one_decimal(ahead[b_id]))))
+        games.append((a, b, _sorted_storylines(stories)))
     # sorted() is stable, so a tie in score and gap keeps the order of the schedule.
     ranked = sorted(
         range(len(games)),
@@ -273,7 +283,7 @@ def next_week(
 
 
 def _storylines(week: Week, a: Standing, b: Standing, history: History | None) -> list[Storyline]:
-    """The storylines of one next-week game, highest weight first. A tie in weight keeps the tunable order."""
+    """The storylines of one next-week game that read the history and the standings."""
     out = []
     if history is not None and history.complete():
         for side in (a, b):
@@ -286,8 +296,18 @@ def _storylines(week: Week, a: Standing, b: Standing, history: History | None) -
         out.append(_story("cut", teams=near))
     if a.rank <= TABLE_TOP and b.rank <= TABLE_TOP:
         out.append(_story("table"))
+    return out
+
+
+def _sorted_storylines(stories: list[Storyline]) -> list[Storyline]:
+    """Highest weight first. A tie in weight keeps the tunable order."""
     order = list(STORYLINE_WEIGHTS)
-    return sorted(out, key=lambda s: (-s.weight, order.index(s.kind)))
+    return sorted(stories, key=lambda s: (-s.weight, order.index(s.kind)))
+
+
+def _one_decimal(x: float) -> float:
+    """Round half up to one decimal. Python's round() gives 118.7 for 118.75."""
+    return float(Decimal(str(x)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
 def _story(kind: str, **fields) -> Storyline:
@@ -327,6 +347,9 @@ def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | N
         if len(s.teams) == 2:
             return None, "both sit near the cut"
         return name[s.teams[0]], "sits near the cut"
+    if s.kind == "shootout":
+        x, y = s.totals
+        return None, f"lineups project {x:.1f} and {y:.1f} in a shootout"
     hi, lo = sorted((a.rank, b.rank))
     return None, f"{_ordinal(hi)} and {_ordinal(lo)} meet at the top of the table"
 

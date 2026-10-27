@@ -308,7 +308,6 @@ class Context:
         self.chart = chart
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts)
-        self.next = next_week(week, self.table, history)
         self.season_history = season_history(week, history)
         # A gap in the history would shift every rank, so an incomplete history gives no power rankings.
         self.power = (
@@ -319,6 +318,8 @@ class Context:
         inputs = _odds_inputs(week, history)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = _odds(week, history, inputs, self.projected)
+        # The shootout storyline reads the same projected lineups as the odds.
+        self.next = next_week(week, self.table, history, self.projected)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
