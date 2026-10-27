@@ -126,6 +126,12 @@ TEAMS_CACHE_SECONDS = 300
 # A short list is one a manager reads, and three trades with no shared player each stand as a real choice.
 FINDER_TOP = 3
 
+# The form component counts two games a week, each with a weight in the record and the streak.
+# A head-to-head loss costs a game in the standings and a median loss does not, so the head-to-head game weighs more.
+# Both games still show how a team plays, so the median game stays in.
+FORM_HEAD_TO_HEAD_WEIGHT = 2
+FORM_MEDIAN_WEIGHT = 1
+
 # The power score is the weighted mean of the four components, keyed by component.
 # The weights are equal so the rank is one line to explain.
 POWER_WEIGHTS = {"standing": 0.25, "form": 0.25, "schedule_played": 0.25, "scoring": 0.25}
