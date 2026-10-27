@@ -857,6 +857,7 @@ def test_the_checker_accepts_a_cited_streak_length_and_projected_total():
     facts = storyline_facts([game], by_rank, _NAMES.get)
     cited = {normalize_number(x) for f in facts for x in f.numbers}
     text = " ".join(f.text for f in facts)
-    prose = "Lil Fridge puts a 4-game win streak on the line, and Bo Girds projects 118.8 against 123 in a shootout."
+    prose = ("Lil Fridge puts a 4-game win streak on the line, and Bo Girds projects 118.8 against 123 "
+             "in a projected shootout.")
     assert number_failures(remove_names(prose, list(_NAMES.values())), cited, text) == []
     assert number_failures("a 5-game win streak", cited, text) == ["number 5 is not in the cited facts"]
