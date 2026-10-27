@@ -1,0 +1,564 @@
+{
+  "build": {
+    "started": "2026-10-27T09:04:47.263205-04:00",
+    "sources": {
+      "history": true,
+      "nflverse_pbp": false,
+      "nflverse_ftn": false,
+      "nflverse_injuries": true,
+      "ffverse": true,
+      "nflverse_snaps": true,
+      "ffopportunity": true,
+      "nflverse_stats_player": true
+    },
+    "fetched": "2026-10-27T08:00:06.325280-04:00"
+  },
+  "chapters": {
+    "motw": [
+      {
+        "chapter": "motw",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.result gives the score and M1.upset confirms the upset over Lil Fridge, which was 1st before this week."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "RANK.9228 has Bryce Young 12 of 12 among started QBs, and M1.regret.11560 confirms Caleb Williams benched with 22.12 and that the swap would have flipped the result."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "This is a reaction with no factual claim."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "M1.move.9509 confirms the trade add, and M1.swing.9509 confirms 14.7 exceeded the 11.84 margin."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "M1.move.5045 confirms Sutton as a recent add for Lil Fridge, the losing side, with 6 points."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "M1.starter.3.4034 gives 19 points, S.1 has Lil Fridge 1st, and M1.inj.4034 gives the Questionable listing."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "game_changer": [
+      {
+        "chapter": "game_changer",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.move.13296 calls Douglas a recent add who scored 20 on a 6.25 projection."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.result gives the 106.12 to 91.65 score, and M3.upset says it was an upset."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.swing.13296 makes Douglas a swing player (20 over a 14.47 margin), so the loss phrasing is allowed."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "Lamb started for behold the lamb, the losing side, and scored 21.9; 'the lamb in question' is wordplay, not a factual claim."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "M3.inj.4866 lists Barkley as Questionable as of the Tuesday after the games, and he started for behold the lamb."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "awards": [
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.top_scorer gives Pollard as Top Scorer with 35, and W.adds lists him as a week 6 trade for Amon-Ra Dawg Your Team."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "AW.mvb says Dak Prescott scored the most of any bench player this week, for Unsolicited Dak Picks."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "AW.game_changer and W.adds show Douglas as a recent add (week 7 free agent) and Game Changer, scoring 20 on a 6.25 projection; 'anyway' is tone."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "AW.underperformer states Nico Collins scored 1.6 on a 14.46 projection for London Cooking."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "position_leaders": [
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "LEAD.RB.1 gives 35 points, 1st among started RBs, for Amon-Ra Dawg Your Team, and LEAD.RB.1.volume gives the 86 percent carry share."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "LEAD.QB.1 gives Burrow 1st among QBs at 28.88 for All You Need Is Love, and LEAD.TE.2 puts Loveland 2nd among TEs, behind McBride (LEAD.TE.1). The name pun is a joke, not a claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "LEAD.WR.1 puts him 1st in WR scoring for Lil Fridge, and LEAD.WR.1.volume puts him 1st among WRs in share of targets and air yards, which matches 'passing volume'."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "LEAD.TE.1 gives McBride 22.1 for Bo Girds, 1st among started TEs."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_1": [
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.regret.11560 gives Young 7.42, Williams 22.12 on the bench, and says the swap would have flipped the result."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M1.result and M1.upset show Return of T Mac won as an upset, and M1.inj.4034 lists McCaffrey of Lil Fridge as Questionable."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M1.move.9509 has Bijan Robinson traded in, scoring 14.7, and M1.move.5045 has Sutton as a free agent add, scoring 6, so both sides started a recent add."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_2": [
+      {
+        "chapter": "recap_2",
+        "code_failures": [
+          "[2] number 49 is not in the cited facts M2.driver.9221, M2.driver.11646, M2.driver.SF, M2.inj.7526",
+          "[0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "recap_2",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The score, the upset and both teams' season lows are all stated in M2.result, M2.upset, H.1.high and H.9.high."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Godwin (4.7) and the Jets (-0.55) are both recent adds for the winning side per their move facts; 'barely showed up' is tone."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Coker, Gibbs and the 49ers are margin drivers for the losing side, so 'blew it' fits; Waddle's Questionable status is cited from M2.inj.7526."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_3": [
+      {
+        "chapter": "recap_3",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Score and upset match M3.result and M3.upset; Dak Picks went from 10th to 9th while behold the lamb fell from 8th to 10th, so climbing past them is supported."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Douglas is a recent add and a swing player with 20; Jacobs is a recent add (trade) who scored 17.6."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Lamb scored 21.9, 7.68 over projection; Barkley is listed Questionable per M3.inj.4866."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_4": [
+      {
+        "chapter": "recap_4",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M4.result gives the score and M4.upset gives the 9th vs 2nd standings before the week, so the upset claim is supported."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Both players are recent adds by trade per the cited move facts, with the stated scores of 35 and 1.6."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "All three players are listed Questionable on Sleeper per the cited injury facts."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_5": [
+      {
+        "chapter": "recap_5",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Burrow's 28.88 exceeded the 11.36 margin per M5.swing.6770, All You Need Is Love won per M5.result, and M5.upset calls it an upset; the opening is a joke."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M5.move.11834 makes Vele a recent add who scored 13.9 for Bo Girds, the losing side per M5.result, and H.6.streak gives 3 straight losses."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Jones started for All You Need Is Love, the winning side, and M5.inj.4199 lists him Questionable as of the Tuesday after the games."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_6": [
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": false,
+            "reason": "The facts place Pukancun on 3 12th before the week but never give the league size, so 'dead last' is not stated. The score and upset are supported."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The Titans (-0.7) and Noel (0.7) are both recent adds on the losing side, and Noel is listed Questionable per M6.inj.12536."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Skattebo is a swing player (18.6 > 16.18), a recent add, and listed Questionable, all per the cited facts."
+          }
+        ],
+        "passed": false
+      },
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Score, winner, and upset all match M6.result and M6.upset; 'infinitely backwards' is wordplay, not a claim."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Titans were a free agent add who scored -0.7, and Noel was a recent add who scored 0.7 and is listed Questionable per the cited .move. and .inj. facts."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Skattebo was a trade add in week 6, is a swing player, and is listed Questionable per the cited .move., .swing., and .inj. facts."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "median": [
+      {
+        "chapter": "median",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Median 103.87 and season-high 148.13 for Amon-Ra Dawg Your Team are both stated in the facts."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "MED.closest states the 2.26 clear by Unsolicited Dak Picks and the 2.26 miss by Return of T Mac."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "H.9.high gives the 81.19 season low, and S.5 says the team is level with the last playoff spot."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "H.4.high confirms the season high, and S.12 has Pukancun on 3 in 12th of 12, which is last place."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "next_week": [
+      {
+        "chapter": "next_week",
+        "code_failures": [
+          "[0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "next_week",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "NX.3v9 names it a Must Watch, SW.3v9 gives 63%/38% for Maye d'force B with U, and Lil Fridge (1st per S.1) stays near 99% either way."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "NX.1v5 calls it a Must Watch, and SW.1v5 gives London Cooking near 99% either way and Brock 'N' Roll 62% with a win, 35% with a loss."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "S.12 puts Pukancun on 3 12th at 3-11 and S.8 puts Amon-Ra Dawg Your Team at 6-8; both are below the cut, NX.4v12 has them meeting, and 'awful' is tone."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "rankings": [
+      {
+        "chapter": "rankings",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "PR.3 states Lil Fridge is 1st with no move from last week."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "S.1 states a 10-4 record, 3 games above the cut."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "PR.3 states Lil Fridge is 1st in scoring; the cold line is a joke."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "PR.6 and PR.6.why state the move up to 2nd after an 11-point loss."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "H.6.streak gives 3 straight losses, and PR.6 gives the climb of 1 place."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "Sarcastic aside built on the stated streak and climb."
+          },
+          {
+            "index": 6,
+            "supported": true,
+            "reason": "PR.5 and PR.5.why state the drop to 3rd after a 50-point loss."
+          },
+          {
+            "index": 7,
+            "supported": true,
+            "reason": "H.5.trend gives 107.08 per week, down from 117.16."
+          },
+          {
+            "index": 8,
+            "supported": true,
+            "reason": "ODDS.5 gives a bye in 55% of runs."
+          },
+          {
+            "index": 9,
+            "supported": true,
+            "reason": "PR.2 states the rise of 2 places to 4th."
+          },
+          {
+            "index": 10,
+            "supported": true,
+            "reason": "PR.2.why states an 11-point win over Bo Girds, the 3rd-place team."
+          },
+          {
+            "index": 11,
+            "supported": true,
+            "reason": "ODDS.2.why gives the 2nd easiest remaining schedule; the rest is a joke."
+          },
+          {
+            "index": 12,
+            "supported": true,
+            "reason": "PR.8 states they held 5th, and H.8.streak gives 4 straight wins; PR.8.why ties the hold to recent results."
+          },
+          {
+            "index": 13,
+            "supported": true,
+            "reason": "ODDS.8 gives about 54%."
+          },
+          {
+            "index": 14,
+            "supported": true,
+            "reason": "PR.9 states the fall of 2 places to 6th."
+          },
+          {
+            "index": 15,
+            "supported": true,
+            "reason": "PR.9.why states a 5-point loss to Brock 'N' Roll, the 6th-place team."
+          },
+          {
+            "index": 16,
+            "supported": true,
+            "reason": "ODDS.9 gives about 49% of runs."
+          },
+          {
+            "index": 17,
+            "supported": true,
+            "reason": "PR.12 states the rise of 2 places to 7th."
+          },
+          {
+            "index": 18,
+            "supported": true,
+            "reason": "PR.12.why states a 50-point win over London Cooking, the 2nd-place team."
+          },
+          {
+            "index": 19,
+            "supported": true,
+            "reason": "S.8 gives 6-8, ODDS.12 gives 58%, and ODDS.12.why gives the easiest remaining schedule."
+          },
+          {
+            "index": 20,
+            "supported": true,
+            "reason": "PR.1 gives 8th with no move, and S.6 gives 6th in the standings."
+          },
+          {
+            "index": 21,
+            "supported": true,
+            "reason": "S.6 states they are in the last playoff spot."
+          },
+          {
+            "index": 22,
+            "supported": true,
+            "reason": "ODDS.1 gives about 42%."
+          },
+          {
+            "index": 23,
+            "supported": true,
+            "reason": "PR.11 states the rise of 1 place to 9th."
+          },
+          {
+            "index": 24,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 25,
+            "supported": true,
+            "reason": "ODDS.11 gives about 15%."
+          },
+          {
+            "index": 26,
+            "supported": true,
+            "reason": "PR.10 states the fall of 3 places to 10th."
+          },
+          {
+            "index": 27,
+            "supported": true,
+            "reason": "PR.10.why states a 14-point loss to Unsolicited Dak Picks, the 10th-place team."
+          },
+          {
+            "index": 28,
+            "supported": true,
+            "reason": "ODDS.10 gives about 6%."
+          },
+          {
+            "index": 29,
+            "supported": true,
+            "reason": "PR.4 states the rise of 1 place to 11th."
+          },
+          {
+            "index": 30,
+            "supported": true,
+            "reason": "S.12 gives 3-11, 4 games below the cut."
+          },
+          {
+            "index": 31,
+            "supported": true,
+            "reason": "ODDS.4.why gives the hardest remaining schedule."
+          },
+          {
+            "index": 32,
+            "supported": true,
+            "reason": "PR.7 states 12th, the last of 12 teams."
+          },
+          {
+            "index": 33,
+            "supported": true,
+            "reason": "H.7.trend gives 73.07 per week over the last 3 weeks; the rest is a joke."
+          }
+        ],
+        "passed": true
+      }
+    ]
+  }
+}
