@@ -58,6 +58,27 @@ the head-to-head game and the median game. The `ODDS.` fact also gives the bye o
 "Playoff %" on the page. The fact says "about" before the number.
 _Avoid_: chance, probability, projection (that is a player's projected points)
 
+**Must Watch**:
+One of the two next-week games with the highest storyline score. The page marks it and gives its reason.
+_Avoid_: game of the week (that is this week's matchup of the week), featured game
+
+**Storyline**:
+One data-backed reason a next-week game matters, from a fixed set: streak on the line, shootout,
+rematch, revenge, near the cut, top of the table. Each has a weight. A game's storyline score is the sum.
+_Avoid_: angle, narrative, hook
+
+**Streak on the line**:
+A storyline: a team enters next week on 3 or more head-to-head wins or losses in a row. The median game
+does not count. The storyline names the length and the kind.
+
+**Shootout**:
+A storyline: both teams' best projected lineups for next week rank in the top four of the league.
+_Avoid_: high-scoring game, track meet
+
+**Rematch**:
+A storyline: the two teams met earlier this season. The storyline names the week and the result. The
+loser of that game also gets the revenge storyline.
+
 **Swing**:
 The playoff odds of both sides of one Must Watch game of next week: each side's odds after a win and
 after a loss. The `SW.` fact gives it as "A win puts X at 71%, a loss at 38%."
