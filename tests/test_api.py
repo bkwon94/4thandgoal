@@ -1696,9 +1696,10 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_9():
+def test_the_document_version_is_10():
     import cornerstone_api.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
     # The as-of block says when the week has no chart, so a document stored before that must never serve.
-    assert cache_module.DOCUMENT_VERSION == 9
+    # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
+    assert cache_module.DOCUMENT_VERSION == 10
