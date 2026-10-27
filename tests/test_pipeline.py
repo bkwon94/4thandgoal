@@ -16,16 +16,18 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 
-from cornerstone.history import HISTORY_FILES, history_dir, history_root
+from cornerstone.history import HISTORY_FILES, history_dir, history_root, load_saved_weeks
+from cornerstone.models import History
 from pathlib import Path
 
 from cornerstone.models import (
     Blurb, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyOut,
 )
 from cornerstone.nflverse import nflverse_week
+from cornerstone.power_rankings import power_rankings
 from cornerstone.pipeline import (
-    BuildStopped, _nflverse_for_week, _write_rankings, make_bundle, read_verify, run_build, run_page_json,
-    run_rankings, run_rewrite, week_dir,
+    BuildStopped, _nflverse_for_week, _rankings_chapter, _write_rankings, make_bundle, read_verify, run_build,
+    run_page_json, run_rankings, run_rewrite, week_dir,
 )
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
@@ -85,6 +87,11 @@ def _no_claims(system, user):
 
 
 OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes, "nflverse": _fixture_nflverse, "research": _no_claims}
+
+
+def _ordinal(n):
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
 
 
 def _repo(tmp_path, fixture_raw_dir):
@@ -305,6 +312,28 @@ def test_rankings_command_lists_the_saved_odds_why_facts_in_an_older_saved_chapt
     for rid in bundle.data.teams:
         assert f"ODDS.{rid}.why" in chapter.fact_ids
         assert f"PR.{rid}.why" in chapter.fact_ids
+
+
+def test_a_saved_pr_fact_with_an_old_rank_is_rebuilt_from_the_history_and_the_rules(
+    tmp_path, fixture_raw_dir, fixture_history_root,
+):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
+    history = History(week=6, weeks=load_saved_weeks(history_root(repo, 2026), 6))
+    rows = power_rankings(history, 6)[6]
+    row = rows[0]
+    fresh = bundle.sheet.facts[f"PR.{row.roster_id}"]
+    # An earlier build ranked the team under other rules, so the saved fact names another rank.
+    old_rank = "99th"
+    current = f"is {_ordinal(row.power_rank)} in"
+    stale = fresh.model_copy(update={"text": fresh.text.replace(current, f"is {old_rank} in")})
+    assert stale.text != fresh.text
+    bundle.sheet.facts[stale.id] = stale
+
+    _rankings_chapter(bundle, history)
+    assert bundle.sheet.facts[stale.id].text == fresh.text
+    assert f"is {_ordinal(row.power_rank)} in the power rankings" in bundle.sheet.facts[stale.id].text
 
 
 def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root):

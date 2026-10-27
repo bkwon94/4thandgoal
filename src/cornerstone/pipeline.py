@@ -6,7 +6,7 @@ import contextlib
 import json
 import logging
 import subprocess
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -28,7 +28,7 @@ from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
-    required_why_ids, write_bundle,
+    write_bundle,
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.slow_sources import load_slow_sources
@@ -429,26 +429,14 @@ def run_page_json(repo: Path, season: int, week: int) -> Path:
     return render_page_json(bundle, blurbs, repo / "site")
 
 
-def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
-    """The rankings chapter of a saved week, and True when the bundle had to take it in.
+def _rankings_chapter(bundle: Bundle, history: History) -> Chapter:
+    """The rankings chapter of a saved week, built from the history and the current rules.
 
-    A saved week with no rankings chapter has no PR facts, so they come from the saved history.
-    A saved chapter that lacks a why family is built again, so the blurb can cite the rank why and the odds why.
+    The PR facts and the rank why facts derive from the history and the rules, never from the saved facts.
+    A rule change must reach the blurb, so the rows of rankings.json and the facts agree on every rank.
     Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
     """
-    chapter = next((c for c in bundle.sheet.chapters if c.key == RANKINGS_CHAPTER), None)
     rows = power_rankings(history, history.week)[history.week]
-
-    def has_why(prefix: str, ids: Iterable[str]) -> bool:
-        return any(fid.startswith(prefix) and fid.endswith(".why") for fid in ids)
-
-    if chapter is not None:
-        rank_why_ok = history.week < 2 or has_why("PR.", chapter.fact_ids)
-        odds_why_ok = not has_why("ODDS.", bundle.sheet.facts) or has_why("ODDS.", chapter.fact_ids)
-        if rank_why_ok and odds_why_ok:
-            # A saved chapter can predate the required list, so the list comes from the rows each time.
-            chapter.required = required_why_ids(bundle.sheet.facts, rows, bundle.data.table, bundle.odds)
-            return chapter, False
 
     def team(roster_id: int) -> str:
         return bundle.data.teams[roster_id].name
@@ -463,7 +451,7 @@ def _rankings_chapter(bundle: Bundle, history: History) -> tuple[Chapter, bool]:
     bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
     built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds)
     bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
-    return built, True
+    return built
 
 
 def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
@@ -475,10 +463,9 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     # The check comes before the writer call, so a missing week costs no Claude call.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))
-    chapter, added = _rankings_chapter(bundle, history)
-    if added:
-        # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
-        write_bundle(bundle, directory / "facts.json")
+    chapter = _rankings_chapter(bundle, history)
+    # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
+    write_bundle(bundle, directory / "facts.json")
     verify = read_verify(directory / "verify.json")
     used = _other_page_words(bundle, blurbs, chapter.key)
     blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used)
