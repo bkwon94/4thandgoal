@@ -374,6 +374,12 @@ def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | N
         if len(s.teams) == 2:
             return None, "both sit near the cut"
         return name[s.teams[0]], "sits near the cut"
+    if s.kind == "rematch":
+        if s.roster_id is None:
+            return None, f"a week {s.week} rematch that ended in a tie"
+        return None, f"a week {s.week} rematch {name[s.roster_id]} won by {s.margin:g}"
+    if s.kind == "revenge":
+        return name[s.roster_id], "seeks revenge"
     if s.kind == "shootout":
         x, y = s.totals
         return None, f"lineups project {x:.1f} and {y:.1f} in a shootout"
