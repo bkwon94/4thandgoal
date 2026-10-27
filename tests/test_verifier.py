@@ -687,9 +687,10 @@ def test_a_team_with_four_rankings_sentences_fails(fixture_raw_dir, fixture_hist
 def test_a_tagged_reaction_counts_toward_the_three(fixture_raw_dir, fixture_history_root):
     sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
     sentences = _good_rankings(sheet, ch)
-    rid = sentences[0].roster_id
+    # The first team's standing fact holds 721.96, and the fixture names one player 96, so the test uses the second.
+    rid = sentences[1].roster_id
     standing = _standing_id(sheet, ch, rid)
-    sentences[1:1] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    sentences[2:2] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
     assert code_check(_blurb("rankings", *sentences), ch, sheet) == []
 
 

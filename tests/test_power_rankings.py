@@ -211,3 +211,11 @@ def test_weight_change_moves_the_result(fixture_raw_dir, fixture_history_root, m
     rows = power_rankings(h, 6)[6]
     assert [r.roster_id for r in rows] != equal
     assert all(r.power_rank == r.ranks["standing"] for r in rows)
+
+
+def test_power_score_weighs_form_most_and_scoring_second(fixture_raw_dir, fixture_history_root):
+    # The league rule: standing 0.10, form 0.60, schedule played 0.10, scoring 0.20.
+    for row in power_rankings(_history(fixture_raw_dir, fixture_history_root), 6)[6]:
+        v = row.values
+        expected = 0.10 * v["standing"] + 0.60 * v["form"] + 0.10 * v["schedule_played"] + 0.20 * v["scoring"]
+        assert row.power_score == pytest.approx(expected)

@@ -383,7 +383,7 @@ def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
 def test_power_rank_fact_reads_plainly(hbundle):
     assert hbundle.sheet.facts["PR.1"].text == (
         "Brock ‘N’ Roll is 8th in the power rankings, down 4 places from last week: "
-        "6th in standing, 7th in results over the last 3 weeks, 11th in schedule played, 5th in scoring."
+        "6th in standing, 8th in results over the last 3 weeks, 11th in schedule played, 5th in scoring."
     )
 
 
@@ -427,7 +427,7 @@ def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):
 
 def test_a_mover_names_its_game_its_margin_and_the_component_that_moved(hbundle):
     assert hbundle.sheet.facts["PR.10.why"].text == (
-        "behold the lamb moved up 4 places after a 5-point win over Bo Girds, the 2nd-place team: "
+        "behold the lamb moved up 5 places after a 5-point win over Bo Girds, the 2nd-place team: "
         "schedule played rose from 8th to 2nd."
     )
     assert hbundle.sheet.facts["PR.1.why"].text == (
@@ -437,16 +437,16 @@ def test_a_mover_names_its_game_its_margin_and_the_component_that_moved(hbundle)
 
 
 def test_a_mover_of_one_place_reads_place(hbundle):
-    assert hbundle.sheet.facts["PR.9.why"].text.startswith("Maye d'force B with U moved up 1 place after a ")
+    assert hbundle.sheet.facts["PR.4.why"].text.startswith("Pukancun on 3 moved up 1 place after a ")
 
 
 def test_a_held_team_names_its_best_and_its_worst_component(hbundle):
     # Lil Fridge is 1st in three components. The tie goes to the first in component order: standing.
     assert hbundle.sheet.facts["PR.3.why"].text == (
-        "Lil Fridge held 1st: standing sits 1st, results over the last 3 weeks 3rd."
+        "Lil Fridge held 2nd: standing sits 1st, results over the last 3 weeks 3rd."
     )
-    assert hbundle.sheet.facts["PR.4.why"].text == (
-        "Pukancun on 3 held 12th: schedule played sits 10th, standing 12th."
+    assert hbundle.sheet.facts["PR.12.why"].text == (
+        "Amon-Ra Dawg Your Team held 9th: schedule played sits 3rd, standing 9th."
     )
 
 
@@ -697,9 +697,12 @@ def test_one_odds_why_fact_per_team(hbundle):
 
 def test_rankings_chapter_requires_the_why_of_each_mover_and_of_odds_against_the_record(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
-    # Teams 1, 10, and 8 moved 2 or more places. Team 12 is 4-8 at 32%, and team 2 is 7-5 at 21%.
+    # Teams 1, 6, 7, 8, 9, 10, and 11 moved 2 or more places. Team 12 is 4-8 at 32%, and team 2 is 7-5 at 21%.
     # Team 10 at 6-6 is at .500, so its odds of 26% require no odds why.
-    assert sorted(ch.required) == sorted(["PR.1.why", "PR.10.why", "PR.8.why", "ODDS.12.why", "ODDS.2.why"])
+    assert sorted(ch.required) == sorted([
+        "PR.1.why", "PR.6.why", "PR.7.why", "PR.8.why", "PR.9.why", "PR.10.why", "PR.11.why",
+        "ODDS.12.why", "ODDS.2.why",
+    ])
 
 
 def test_odds_why_paces_are_the_rounded_means_of_the_inputs(fixture_raw_dir, fixture_history_root):
