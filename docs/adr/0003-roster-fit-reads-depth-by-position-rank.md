@@ -32,6 +32,8 @@ to a lineup loss, so a side that trades its starter for the backup and opens a h
 - The grade cache key must hash the free-agent inputs the rank and the best-free-agent read use.
 - The snapshot gains the free agents' status fields, which the live path drops today.
 - A starter due back inside the 3-week bye window reads as a bye until he returns. One due back later
-  is a hole. His lineup value still counts his projection ahead.
+  is a hole. His lineup value still counts his projection ahead. Superseded by ADR 0004: the window is
+  the return window, and a bye is no longer a hole.
 - A bench player whose own bye falls in the starter's bye week cannot cover him, because both miss that week.
+  Superseded by ADR 0004: a bye needs no cover.
 - The week 6 hand-worked trades can move. Each moved grade needs Brian's word before merge.

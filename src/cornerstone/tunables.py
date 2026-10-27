@@ -38,10 +38,6 @@ LINE_QB_TE = 24
 # Strength: the position rank a RB1, RB2, WR1, or WR2 starter must hold or beat to count. GLOSSARY.md, "Strength".
 # The 12 teams each start 2 RB and 2 WR, so rank 24 is the last back or receiver an average team starts at RB2 or WR2.
 STRENGTH_RANK = 24
-# The bye window: the count of weeks from the trade week that a hole reads ahead. GLOSSARY.md, "Hole". A starter
-# with his bye in the window, or due back inside it, needs a bench player to cover him. Three weeks is the trade week
-# and the next two. A pickup or another trade can rarely fix a slot sooner.
-BYE_WINDOW = 3
 
 # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
 # The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.
@@ -64,6 +60,9 @@ WOPR_SWING = 8
 # The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
 INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
+# The hole read uses the same window, GLOSSARY.md "Return window", so a starter due back inside it needs a bench
+# player to cover him. Three weeks is the trade week and the next two. A pickup or another trade can rarely fix a
+# slot sooner.
 RETURN_WINDOW_WEEKS = 2
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
