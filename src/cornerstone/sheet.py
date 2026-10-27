@@ -1616,12 +1616,22 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
     if gc:
         pair = roster_ids[gc.matchup_id]
+        gc_pid = gc.line.player_id
+        # The chapter is about one player and what his points did for his team. From the matchup it keeps the
+        # result and the upset, plus each fact whose id ends in his player id: .starter.<rid>.<pid>,
+        # .driver.<pid>, .swing.<pid>, .regret.<pid>, .move.<pid>, and .inj.<pid>. Every other matchup fact
+        # names an opponent or a teammate, so the writer never sees those names. The scope lists only him,
+        # so the code check fails a sentence that names any other player.
+        matchup_ids = [
+            fid for fid in _with_prefix(facts, f"M{gc.matchup_id}.")
+            if fid in (f"M{gc.matchup_id}.result", f"M{gc.matchup_id}.upset") or fid.endswith(f".{gc_pid}")
+        ]
         out.append(make(
             "game_changer", "Game Changer",
-            ["AW.game_changer", "AW.game_changer.news"] + _with_prefix(facts, f"M{gc.matchup_id}.")
+            ["AW.game_changer", "AW.game_changer.news"] + matchup_ids
             + [f"RANK.{gc.line.player_id}"] + _history_ids(facts, [], (), [gc.line.player_id])
             + drop_ids(lambda d: d.player_id == gc.line.player_id) + injury_ids([gc.line.player_id]),
-            pair, "game_changer",
+            pair, "game_changer", players=[gc.line.name],
         ))
     out.append(make(
         "awards", "Awards",

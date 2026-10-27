@@ -86,6 +86,21 @@ def test_upset_fact_exists_for_matchup_4_only_when_the_lower_rank_won(bundle):
     assert "M1.upset" not in bundle.sheet.facts
 
 
+def test_game_changer_chapter_holds_only_his_own_facts(bundle):
+    chapter = next(c for c in bundle.sheet.chapters if c.key == "game_changer")
+    pid = "10213"
+    matchup = [fid for fid in chapter.fact_ids if fid.startswith("M6.")]
+    # The default bundle has no news item. The news test below checks that the news fact joins this chapter.
+    assert "AW.game_changer" in chapter.fact_ids
+    assert "M6.result" in matchup
+    assert f"M6.driver.{pid}" in matchup and f"M6.swing.{pid}" in matchup
+    # Every other matchup fact names an opponent or a teammate, so the chapter drops it.
+    assert all(fid in ("M6.result", "M6.upset") or fid.endswith(f".{pid}") for fid in matchup)
+    other_starters = [f for f in bundle.sheet.facts if f.startswith("M6.starter.") and not f.endswith(f".{pid}")]
+    assert other_starters and not set(other_starters) & set(chapter.fact_ids)
+    assert chapter.scope_players == ["Tre Tucker"]
+
+
 def test_median_closest_carries_the_gap(bundle):
     assert "2.79" in bundle.sheet.facts["MED.closest"].text
 
