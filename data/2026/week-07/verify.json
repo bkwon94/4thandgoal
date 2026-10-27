@@ -365,17 +365,17 @@
           {
             "index": 0,
             "supported": true,
-            "reason": "NX.3v9 names it a Must Watch, SW.3v9 gives 63%/38% for Maye d'force B with U, and Lil Fridge (1st per S.1) stays near 99% either way."
+            "reason": "SOS.9 ranks Maye d'force B with U's opponent 1 of 12, toughest first; NX.3v9 names Lil Fridge as that opponent; SW.3v9 gives 63%/38% and has Lil Fridge near 99% either way."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "NX.1v5 calls it a Must Watch, and SW.1v5 gives London Cooking near 99% either way and Brock 'N' Roll 62% with a win, 35% with a loss."
+            "reason": "NX.1v5 marks it a Must Watch; SW.1v5 gives Brock ‘N’ Roll 62% with a win and 35% with a loss, with London Cooking near 99% either way."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "S.12 puts Pukancun on 3 12th at 3-11 and S.8 puts Amon-Ra Dawg Your Team at 6-8; both are below the cut, NX.4v12 has them meeting, and 'awful' is tone."
+            "reason": "NX.4v12 confirms the matchup; S.12 has Pukancun on 3 12th (last) and S.8/S.12 put both below the cut; 'showdown of the awful' is tone."
           }
         ],
         "passed": true
@@ -384,177 +384,195 @@
     "rankings": [
       {
         "chapter": "rankings",
+        "code_failures": [
+          "[8] player Brenton Strange is not on a team in this chapter"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "rankings",
         "code_failures": [],
         "verdicts": [
           {
             "index": 0,
             "supported": true,
-            "reason": "PR.3 states Lil Fridge is 1st with no move from last week."
+            "reason": "PR.3 and S.1 give 1st place, a 10-4 record and 3 games above the cut."
           },
           {
             "index": 1,
             "supported": true,
-            "reason": "S.1 states a 10-4 record, 3 games above the cut."
+            "reason": "PR.3.why gives a 12-point loss to the 7th-place team and a rise of 1 place."
           },
           {
             "index": 2,
             "supported": true,
-            "reason": "PR.3 states Lil Fridge is 1st in scoring; the cold line is a joke."
+            "reason": "ODDS.3 gives about 99%; the rest is humor."
           },
           {
             "index": 3,
             "supported": true,
-            "reason": "PR.6 and PR.6.why state the move up to 2nd after an 11-point loss."
+            "reason": "PR.8 gives 2nd, up 1 place, and H.8.streak gives 4 straight wins."
           },
           {
             "index": 4,
             "supported": true,
-            "reason": "H.6.streak gives 3 straight losses, and PR.6 gives the climb of 1 place."
+            "reason": "S.7 gives 7-7, 1 spot outside the playoff spots."
           },
           {
             "index": 5,
             "supported": true,
-            "reason": "Sarcastic aside built on the stated streak and climb."
+            "reason": "ODDS.8 gives about 54%; 'coin flip' is a fair description."
           },
           {
             "index": 6,
             "supported": true,
-            "reason": "PR.5 and PR.5.why state the drop to 3rd after a 50-point loss."
+            "reason": "PR.6 gives up 2 places to 3rd, and H.6.streak gives 3 straight losses."
           },
           {
             "index": 7,
             "supported": true,
-            "reason": "H.5.trend gives 107.08 per week, down from 117.16."
+            "reason": "PR.6.why gives an 11-point loss and schedule played falling from 4th to 7th."
           },
           {
             "index": 8,
             "supported": true,
-            "reason": "ODDS.5 gives a bye in 55% of runs."
+            "reason": "No factual claim; a reaction."
           },
           {
             "index": 9,
             "supported": true,
-            "reason": "PR.2 states the rise of 2 places to 4th."
+            "reason": "PR.5 gives down 3 places to 4th."
           },
           {
             "index": 10,
             "supported": true,
-            "reason": "PR.2.why states an 11-point win over Bo Girds, the 3rd-place team."
+            "reason": "PR.5.why gives a 50-point loss to the 9th-place team."
           },
           {
             "index": 11,
             "supported": true,
-            "reason": "ODDS.2.why gives the 2nd easiest remaining schedule; the rest is a joke."
+            "reason": "H.5.trend gives 107.08 per week over the last 3 weeks, down from the season average."
           },
           {
             "index": 12,
             "supported": true,
-            "reason": "PR.8 states they held 5th, and H.8.streak gives 4 straight wins; PR.8.why ties the hold to recent results."
+            "reason": "PR.2 gives up 2 places to 5th, and H.2.streak gives 2 straight wins."
           },
           {
             "index": 13,
             "supported": true,
-            "reason": "ODDS.8 gives about 54%."
+            "reason": "PR.2.why gives a win over the 3rd-place team and recent results rising to 3rd."
           },
           {
             "index": 14,
             "supported": true,
-            "reason": "PR.9 states the fall of 2 places to 6th."
+            "reason": "ODDS.2.why gives the 2nd easiest remaining schedule."
           },
           {
             "index": 15,
             "supported": true,
-            "reason": "PR.9.why states a 5-point loss to Brock 'N' Roll, the 6th-place team."
+            "reason": "PR.9 gives down 2 places to 6th."
           },
           {
             "index": 16,
             "supported": true,
-            "reason": "ODDS.9 gives about 49% of runs."
+            "reason": "PR.9.why gives a 5-point loss and schedule played falling from 5th to 12th."
           },
           {
             "index": 17,
             "supported": true,
-            "reason": "PR.12 states the rise of 2 places to 7th."
+            "reason": "S.5 gives 7-7, level with the last playoff spot, and ODDS.9 gives about 49%."
           },
           {
             "index": 18,
             "supported": true,
-            "reason": "PR.12.why states a 50-point win over London Cooking, the 2nd-place team."
+            "reason": "PR.12 and PR.12.why give up 2 places to 7th after a 50-point win."
           },
           {
             "index": 19,
             "supported": true,
-            "reason": "S.8 gives 6-8, ODDS.12 gives 58%, and ODDS.12.why gives the easiest remaining schedule."
+            "reason": "S.8 gives 6-8, 1 game below the cut, and ODDS.12 gives about 58%."
           },
           {
             "index": 20,
             "supported": true,
-            "reason": "PR.1 gives 8th with no move, and S.6 gives 6th in the standings."
+            "reason": "ODDS.12.why gives the easiest remaining schedule."
           },
           {
             "index": 21,
             "supported": true,
-            "reason": "S.6 states they are in the last playoff spot."
+            "reason": "PR.1 gives 8th with no move from last week."
           },
           {
             "index": 22,
             "supported": true,
-            "reason": "ODDS.1 gives about 42%."
+            "reason": "S.6 gives the last playoff spot at 7-7, and ODDS.1 gives about 42%."
           },
           {
             "index": 23,
             "supported": true,
-            "reason": "PR.11 states the rise of 1 place to 9th."
+            "reason": "ODDS.1.why gives a projection of 110 against a 110 pace."
           },
           {
             "index": 24,
             "supported": true,
-            "reason": "A reaction with no factual claim."
+            "reason": "PR.11 gives up 3 places to 9th."
           },
           {
             "index": 25,
             "supported": true,
-            "reason": "ODDS.11 gives about 15%."
+            "reason": "PR.11.why gives a 14-point win over the 8th-place team."
           },
           {
             "index": 26,
             "supported": true,
-            "reason": "PR.10 states the fall of 3 places to 10th."
+            "reason": "ODDS.11 gives about 15%; the rest is humor."
           },
           {
             "index": 27,
             "supported": true,
-            "reason": "PR.10.why states a 14-point loss to Unsolicited Dak Picks, the 10th-place team."
+            "reason": "PR.4 gives 12th in standing and 10th in the rankings, up 1 place."
           },
           {
             "index": 28,
             "supported": true,
-            "reason": "ODDS.10 gives about 6%."
+            "reason": "PR.4 gives 2nd in recent results and 12th (last) in scoring."
           },
           {
             "index": 29,
             "supported": true,
-            "reason": "PR.4 states the rise of 1 place to 11th."
+            "reason": "ODDS.4.why gives the hardest remaining schedule."
           },
           {
             "index": 30,
             "supported": true,
-            "reason": "S.12 gives 3-11, 4 games below the cut."
+            "reason": "PR.10 gives down 5 places to 11th."
           },
           {
             "index": 31,
             "supported": true,
-            "reason": "ODDS.4.why gives the hardest remaining schedule."
+            "reason": "PR.10.why gives a 14-point loss to the 10th-place team; the rest is humor."
           },
           {
             "index": 32,
             "supported": true,
-            "reason": "PR.7 states 12th, the last of 12 teams."
+            "reason": "ODDS.10 gives about 6%."
           },
           {
             "index": 33,
             "supported": true,
-            "reason": "H.7.trend gives 73.07 per week over the last 3 weeks; the rest is a joke."
+            "reason": "PR.7 gives 12th, and H.7.streak gives 3 straight losses."
+          },
+          {
+            "index": 34,
+            "supported": true,
+            "reason": "PR.7.why gives a 16-point loss to the 12th-place team."
+          },
+          {
+            "index": 35,
+            "supported": true,
+            "reason": "H.7.trend gives 73.07 per week over the last 3 weeks, down from the season average."
           }
         ],
         "passed": true

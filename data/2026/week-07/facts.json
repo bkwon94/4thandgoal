@@ -10093,14 +10093,22 @@
       },
       "PR.3": {
         "id": "PR.3",
-        "text": "Lil Fridge is 1st in the power rankings, no move from last week: 1st in standing, 4th in results over the last 3 weeks, 1st in schedule played, 1st in scoring.",
+        "text": "Lil Fridge is 1st in the power rankings, up 1 place from last week: 1st in standing, 4th in results over the last 3 weeks, 1st in schedule played, 1st in scoring; 2-1 head-to-head and 2-1 at the median over the last 3 weeks.",
         "numbers": [
+          "1",
           "1",
           "1",
           "4",
           "3",
           "1",
-          "1"
+          "1",
+          "2",
+          "1",
+          "2-1",
+          "2",
+          "1",
+          "2-1",
+          "3"
         ],
         "teams": [
           "Lil Fridge"
@@ -10109,15 +10117,22 @@
       },
       "PR.6": {
         "id": "PR.6",
-        "text": "Bo Girds is 2nd in the power rankings, up 1 place from last week: 2nd in standing, 2nd in results over the last 3 weeks, 7th in schedule played, 2nd in scoring.",
+        "text": "Bo Girds is 3rd in the power rankings, up 2 places from last week: 2nd in standing, 7th in results over the last 3 weeks, 7th in schedule played, 2nd in scoring; 0-3 head-to-head and 3-0 at the median over the last 3 weeks.",
         "numbers": [
+          "3",
           "2",
-          "1",
           "2",
-          "2",
+          "7",
           "3",
           "7",
-          "2"
+          "2",
+          "0",
+          "3",
+          "0-3",
+          "3",
+          "0",
+          "3-0",
+          "3"
         ],
         "teams": [
           "Bo Girds"
@@ -10126,14 +10141,21 @@
       },
       "PR.5": {
         "id": "PR.5",
-        "text": "London Cooking is 3rd in the power rankings, down 1 place from last week: 3rd in standing, 8th in results over the last 3 weeks, 4th in schedule played, 3rd in scoring.",
+        "text": "London Cooking is 4th in the power rankings, down 3 places from last week: 3rd in standing, 8th in results over the last 3 weeks, 4th in schedule played, 3rd in scoring; 2-1 head-to-head and 2-1 at the median over the last 3 weeks.",
         "numbers": [
+          "4",
           "3",
-          "1",
           "3",
           "8",
           "3",
           "4",
+          "3",
+          "2",
+          "1",
+          "2-1",
+          "2",
+          "1",
+          "2-1",
           "3"
         ],
         "teams": [
@@ -10143,15 +10165,22 @@
       },
       "PR.2": {
         "id": "PR.2",
-        "text": "All You Need Is Love is 4th in the power rankings, up 2 places from last week: 4th in standing, 5th in results over the last 3 weeks, 6th in schedule played, 7th in scoring.",
+        "text": "All You Need Is Love is 5th in the power rankings, up 2 places from last week: 4th in standing, 3rd in results over the last 3 weeks, 6th in schedule played, 7th in scoring; 2-1 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
-          "4",
+          "5",
           "2",
           "4",
-          "5",
+          "3",
           "3",
           "6",
-          "7"
+          "7",
+          "2",
+          "1",
+          "2-1",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "All You Need Is Love"
@@ -10160,14 +10189,22 @@
       },
       "PR.8": {
         "id": "PR.8",
-        "text": "Return of T Mac is 5th in the power rankings, no move from last week: 7th in standing, 1st in results over the last 3 weeks, 3rd in schedule played, 8th in scoring.",
+        "text": "Return of T Mac is 2nd in the power rankings, up 1 place from last week: 7th in standing, 1st in results over the last 3 weeks, 3rd in schedule played, 8th in scoring; 3-0 head-to-head and 2-1 at the median over the last 3 weeks.",
         "numbers": [
-          "5",
+          "2",
+          "1",
           "7",
           "1",
           "3",
           "3",
-          "8"
+          "8",
+          "3",
+          "0",
+          "3-0",
+          "2",
+          "1",
+          "2-1",
+          "3"
         ],
         "teams": [
           "Return of T Mac"
@@ -10176,15 +10213,22 @@
       },
       "PR.9": {
         "id": "PR.9",
-        "text": "Maye d'force B with U is 6th in the power rankings, down 2 places from last week: 5th in standing, 6th in results over the last 3 weeks, 12th in schedule played, 4th in scoring.",
+        "text": "Maye d'force B with U is 6th in the power rankings, down 2 places from last week: 5th in standing, 5th in results over the last 3 weeks, 12th in schedule played, 4th in scoring; 2-1 head-to-head and 2-1 at the median over the last 3 weeks.",
         "numbers": [
           "6",
           "2",
           "5",
-          "6",
+          "5",
           "3",
           "12",
-          "4"
+          "4",
+          "2",
+          "1",
+          "2-1",
+          "2",
+          "1",
+          "2-1",
+          "3"
         ],
         "teams": [
           "Maye d'force B with U"
@@ -10193,15 +10237,22 @@
       },
       "PR.12": {
         "id": "PR.12",
-        "text": "Amon-Ra Dawg Your Team is 7th in the power rankings, up 2 places from last week: 8th in standing, 7th in results over the last 3 weeks, 2nd in schedule played, 6th in scoring.",
+        "text": "Amon-Ra Dawg Your Team is 7th in the power rankings, up 2 places from last week: 8th in standing, 6th in results over the last 3 weeks, 2nd in schedule played, 6th in scoring; 1-2 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
           "7",
           "2",
           "8",
-          "7",
+          "6",
           "3",
           "2",
-          "6"
+          "6",
+          "1",
+          "2",
+          "1-2",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -10210,14 +10261,21 @@
       },
       "PR.1": {
         "id": "PR.1",
-        "text": "Brock ‘N’ Roll is 8th in the power rankings, no move from last week: 6th in standing, 10th in results over the last 3 weeks, 9th in schedule played, 5th in scoring.",
+        "text": "Brock ‘N’ Roll is 8th in the power rankings, no move from last week: 6th in standing, 9th in results over the last 3 weeks, 9th in schedule played, 5th in scoring; 2-1 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
           "8",
           "6",
-          "10",
+          "9",
           "3",
           "9",
-          "5"
+          "5",
+          "2",
+          "1",
+          "2-1",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "Brock ‘N’ Roll"
@@ -10226,15 +10284,22 @@
       },
       "PR.11": {
         "id": "PR.11",
-        "text": "Unsolicited Dak Picks is 9th in the power rankings, up 1 place from last week: 9th in standing, 9th in results over the last 3 weeks, 8th in schedule played, 9th in scoring.",
+        "text": "Unsolicited Dak Picks is 9th in the power rankings, up 3 places from last week: 9th in standing, 10th in results over the last 3 weeks, 8th in schedule played, 9th in scoring; 1-2 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
           "9",
-          "1",
+          "3",
           "9",
-          "9",
+          "10",
           "3",
           "8",
-          "9"
+          "9",
+          "1",
+          "2",
+          "1-2",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "Unsolicited Dak Picks"
@@ -10243,15 +10308,22 @@
       },
       "PR.10": {
         "id": "PR.10",
-        "text": "behold the lamb is 10th in the power rankings, down 3 places from last week: 10th in standing, 11th in results over the last 3 weeks, 5th in schedule played, 10th in scoring.",
+        "text": "behold the lamb is 11th in the power rankings, down 5 places from last week: 10th in standing, 11th in results over the last 3 weeks, 5th in schedule played, 10th in scoring; 1-2 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
-          "10",
-          "3",
+          "11",
+          "5",
           "10",
           "11",
           "3",
           "5",
-          "10"
+          "10",
+          "1",
+          "2",
+          "1-2",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "behold the lamb"
@@ -10260,15 +10332,22 @@
       },
       "PR.4": {
         "id": "PR.4",
-        "text": "Pukancun on 3 is 11th in the power rankings, up 1 place from last week: 12th in standing, 3rd in results over the last 3 weeks, 11th in schedule played, 12th in scoring.",
+        "text": "Pukancun on 3 is 10th in the power rankings, up 1 place from last week: 12th in standing, 2nd in results over the last 3 weeks, 11th in schedule played, 12th in scoring; 2-1 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
-          "11",
+          "10",
           "1",
           "12",
-          "3",
+          "2",
           "3",
           "11",
-          "12"
+          "12",
+          "2",
+          "1",
+          "2-1",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "Pukancun on 3"
@@ -10277,15 +10356,22 @@
       },
       "PR.7": {
         "id": "PR.7",
-        "text": "To Infinity and Bijan is 12th in the power rankings, down 1 place from last week: 11th in standing, 12th in results over the last 3 weeks, 10th in schedule played, 11th in scoring.",
+        "text": "To Infinity and Bijan is 12th in the power rankings, down 2 places from last week: 11th in standing, 12th in results over the last 3 weeks, 10th in schedule played, 11th in scoring; 0-3 head-to-head and 1-2 at the median over the last 3 weeks.",
         "numbers": [
           "12",
-          "1",
+          "2",
           "11",
           "12",
           "3",
           "10",
-          "11"
+          "11",
+          "0",
+          "3",
+          "0-3",
+          "1",
+          "2",
+          "1-2",
+          "3"
         ],
         "teams": [
           "To Infinity and Bijan"
@@ -10294,28 +10380,30 @@
       },
       "PR.3.why": {
         "id": "PR.3.why",
-        "text": "Lil Fridge held 1st: standing sits 1st, results over the last 3 weeks 4th.",
+        "text": "Lil Fridge moved up 1 place after a 12-point loss to Return of T Mac, the 7th-place team: results over the last 3 weeks fell from 3rd to 4th.",
         "numbers": [
           "1",
-          "1",
+          "12",
+          "7",
+          "3",
           "3",
           "4"
         ],
         "teams": [
-          "Lil Fridge"
+          "Lil Fridge",
+          "Return of T Mac"
         ],
         "players": []
       },
       "PR.6.why": {
         "id": "PR.6.why",
-        "text": "Bo Girds moved up 1 place after a 11-point loss to All You Need Is Love, the 5th-place team: results over the last 3 weeks rose from 5th to 2nd.",
+        "text": "Bo Girds moved up 2 places after a 11-point loss to All You Need Is Love, the 5th-place team: schedule played fell from 4th to 7th.",
         "numbers": [
-          "1",
+          "2",
           "11",
           "5",
-          "3",
-          "5",
-          "2"
+          "4",
+          "7"
         ],
         "teams": [
           "Bo Girds",
@@ -10325,9 +10413,9 @@
       },
       "PR.5.why": {
         "id": "PR.5.why",
-        "text": "London Cooking moved down 1 place after a 50-point loss to Amon-Ra Dawg Your Team, the 9th-place team: schedule played rose from 12th to 4th.",
+        "text": "London Cooking moved down 3 places after a 50-point loss to Amon-Ra Dawg Your Team, the 9th-place team: schedule played rose from 12th to 4th.",
         "numbers": [
-          "1",
+          "3",
           "50",
           "9",
           "12",
@@ -10341,14 +10429,14 @@
       },
       "PR.2.why": {
         "id": "PR.2.why",
-        "text": "All You Need Is Love moved up 2 places after a 11-point win over Bo Girds, the 3rd-place team: results over the last 3 weeks rose from 8th to 5th.",
+        "text": "All You Need Is Love moved up 2 places after a 11-point win over Bo Girds, the 3rd-place team: results over the last 3 weeks rose from 7th to 3rd.",
         "numbers": [
           "2",
           "11",
           "3",
           "3",
-          "8",
-          "5"
+          "7",
+          "3"
         ],
         "teams": [
           "All You Need Is Love",
@@ -10358,15 +10446,17 @@
       },
       "PR.8.why": {
         "id": "PR.8.why",
-        "text": "Return of T Mac held 5th: results over the last 3 weeks sits 1st, scoring 8th.",
+        "text": "Return of T Mac moved up 1 place after a 12-point win over Lil Fridge, the 1st-place team: schedule played rose from 8th to 3rd.",
         "numbers": [
-          "5",
-          "3",
           "1",
-          "8"
+          "12",
+          "1",
+          "8",
+          "3"
         ],
         "teams": [
-          "Return of T Mac"
+          "Return of T Mac",
+          "Lil Fridge"
         ],
         "players": []
       },
@@ -10388,14 +10478,14 @@
       },
       "PR.12.why": {
         "id": "PR.12.why",
-        "text": "Amon-Ra Dawg Your Team moved up 2 places after a 50-point win over London Cooking, the 2nd-place team: results over the last 3 weeks rose from 9th to 7th.",
+        "text": "Amon-Ra Dawg Your Team moved up 2 places after a 50-point win over London Cooking, the 2nd-place team: results over the last 3 weeks rose from 9th to 6th.",
         "numbers": [
           "2",
           "50",
           "2",
           "3",
           "9",
-          "7"
+          "6"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team",
@@ -10405,12 +10495,12 @@
       },
       "PR.1.why": {
         "id": "PR.1.why",
-        "text": "Brock ‘N’ Roll held 8th: scoring sits 5th, results over the last 3 weeks 10th.",
+        "text": "Brock ‘N’ Roll held 8th: scoring sits 5th, results over the last 3 weeks 9th.",
         "numbers": [
           "8",
           "5",
           "3",
-          "10"
+          "9"
         ],
         "teams": [
           "Brock ‘N’ Roll"
@@ -10419,14 +10509,14 @@
       },
       "PR.11.why": {
         "id": "PR.11.why",
-        "text": "Unsolicited Dak Picks moved up 1 place after a 14-point win over behold the lamb, the 8th-place team: results over the last 3 weeks rose from 12th to 9th.",
+        "text": "Unsolicited Dak Picks moved up 3 places after a 14-point win over behold the lamb, the 8th-place team: results over the last 3 weeks rose from 12th to 10th.",
         "numbers": [
-          "1",
+          "3",
           "14",
           "8",
           "3",
           "12",
-          "9"
+          "10"
         ],
         "teams": [
           "Unsolicited Dak Picks",
@@ -10436,9 +10526,9 @@
       },
       "PR.10.why": {
         "id": "PR.10.why",
-        "text": "behold the lamb moved down 3 places after a 14-point loss to Unsolicited Dak Picks, the 10th-place team: results over the last 3 weeks fell from 6th to 11th.",
+        "text": "behold the lamb moved down 5 places after a 14-point loss to Unsolicited Dak Picks, the 10th-place team: results over the last 3 weeks fell from 6th to 11th.",
         "numbers": [
-          "3",
+          "5",
           "14",
           "10",
           "3",
@@ -10453,14 +10543,14 @@
       },
       "PR.4.why": {
         "id": "PR.4.why",
-        "text": "Pukancun on 3 moved up 1 place after a 16-point win over To Infinity and Bijan, the 11th-place team: results over the last 3 weeks rose from 11th to 3rd.",
+        "text": "Pukancun on 3 moved up 1 place after a 16-point win over To Infinity and Bijan, the 11th-place team: results over the last 3 weeks rose from 10th to 2nd.",
         "numbers": [
           "1",
           "16",
           "11",
           "3",
-          "11",
-          "3"
+          "10",
+          "2"
         ],
         "teams": [
           "Pukancun on 3",
@@ -10470,13 +10560,13 @@
       },
       "PR.7.why": {
         "id": "PR.7.why",
-        "text": "To Infinity and Bijan moved down 1 place after a 16-point loss to Pukancun on 3, the 12th-place team: results over the last 3 weeks fell from 10th to 12th.",
+        "text": "To Infinity and Bijan moved down 2 places after a 16-point loss to Pukancun on 3, the 12th-place team: results over the last 3 weeks fell from 11th to 12th.",
         "numbers": [
-          "1",
+          "2",
           "16",
           "12",
           "3",
-          "10",
+          "11",
           "12"
         ],
         "teams": [
@@ -12319,6 +12409,13 @@
           "H.3.trend",
           "ODDS.3",
           "ODDS.3.why",
+          "PR.8",
+          "PR.8.why",
+          "S.7",
+          "H.8.streak",
+          "H.8.trend",
+          "ODDS.8",
+          "ODDS.8.why",
           "PR.6",
           "PR.6.why",
           "S.2",
@@ -12339,13 +12436,6 @@
           "H.2.trend",
           "ODDS.2",
           "ODDS.2.why",
-          "PR.8",
-          "PR.8.why",
-          "S.7",
-          "H.8.streak",
-          "H.8.trend",
-          "ODDS.8",
-          "ODDS.8.why",
           "PR.9",
           "PR.9.why",
           "S.5",
@@ -12370,18 +12460,18 @@
           "H.11.trend",
           "ODDS.11",
           "ODDS.11.why",
-          "PR.10",
-          "PR.10.why",
-          "S.10",
-          "H.10.trend",
-          "ODDS.10",
-          "ODDS.10.why",
           "PR.4",
           "PR.4.why",
           "S.12",
           "H.4.trend",
           "ODDS.4",
           "ODDS.4.why",
+          "PR.10",
+          "PR.10.why",
+          "S.10",
+          "H.10.trend",
+          "ODDS.10",
+          "ODDS.10.why",
           "PR.7",
           "PR.7.why",
           "S.11",
@@ -12392,27 +12482,31 @@
         ],
         "scope_teams": [
           "Lil Fridge",
+          "Return of T Mac",
           "Bo Girds",
           "London Cooking",
           "All You Need Is Love",
-          "Return of T Mac",
           "Maye d'force B with U",
           "Amon-Ra Dawg Your Team",
           "Brock ‘N’ Roll",
           "Unsolicited Dak Picks",
-          "behold the lamb",
           "Pukancun on 3",
+          "behold the lamb",
           "To Infinity and Bijan"
         ],
         "scope_players": [],
         "min_sentences": 12,
         "max_sentences": 36,
         "required": [
+          "PR.6.why",
+          "PR.5.why",
           "PR.2.why",
           "PR.9.why",
           "PR.12.why",
           "ODDS.12.why",
-          "PR.10.why"
+          "PR.11.why",
+          "PR.10.why",
+          "PR.7.why"
         ]
       }
     ]

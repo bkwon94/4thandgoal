@@ -407,16 +407,16 @@
     "chapter": "next_week",
     "sentences": [
       {
-        "text": "Maye d'force B with U drew Lil Fridge in a Must Watch, where a win means 63% and a loss means 38%, while the league leaders hold either way.",
+        "text": "Maye d'force B with U drew the hardest opponent in the league next week in Lil Fridge, with playoff odds of 63% on a win and 38% on a loss, while Lil Fridge holds either way.",
         "fact_ids": [
           "NX.3v9",
           "SW.3v9",
-          "S.1"
+          "SOS.9"
         ],
         "roster_id": null
       },
       {
-        "text": "The other Must Watch puts Brock ‘N’ Roll against London Cooking, who hold steady no matter what, while Brock swings from 62% with a win to 35% with a loss.",
+        "text": "Brock ‘N’ Roll gets London Cooking in the other Must Watch, at 62% playoff odds with a win and 35% with a loss, and London Cooking holds regardless.",
         "fact_ids": [
           "NX.1v5",
           "SW.1v5"
@@ -424,11 +424,11 @@
         "roster_id": null
       },
       {
-        "text": "Down below the cut, last-place Pukancun on 3 meets Amon-Ra Dawg Your Team, both with losing records, in a showdown of the awful.",
+        "text": "Amon-Ra Dawg Your Team and the last-place Pukancun on 3, both below the cut, meet in a showdown of the awful.",
         "fact_ids": [
           "NX.4v12",
-          "S.12",
-          "S.8"
+          "S.8",
+          "S.12"
         ],
         "roster_id": null
       }
@@ -440,96 +440,29 @@
     "chapter": "rankings",
     "sentences": [
       {
-        "text": "Lil Fridge holds 1st again, untouched.",
+        "text": "Lil Fridge holds the top spot at 10-4, 3 games above the cut.",
         "fact_ids": [
           "PR.3",
-          "PR.3.why"
-        ],
-        "roster_id": 3
-      },
-      {
-        "text": "A 10-4 record sits 3 games above the cut.",
-        "fact_ids": [
           "S.1"
         ],
         "roster_id": 3
       },
       {
-        "text": "The fridge stays cold to everyone else, with the top scoring in the league.",
+        "text": "They lost by 12 to the 7th-place team and still climbed a spot.",
         "fact_ids": [
-          "PR.3"
+          "PR.3.why"
         ],
         "roster_id": 3
       },
       {
-        "text": "Bo Girds moved up to 2nd after an 11-point loss.",
+        "text": "Playoff odds sit at about 99%; the fridge stays stocked.",
         "fact_ids": [
-          "PR.6",
-          "PR.6.why"
+          "ODDS.3"
         ],
-        "roster_id": 6
+        "roster_id": 3
       },
       {
-        "text": "That is 3 straight losses, and they still climbed.",
-        "fact_ids": [
-          "H.6.streak",
-          "PR.6"
-        ],
-        "roster_id": 6
-      },
-      {
-        "text": "Losing streaks apparently pay around here.",
-        "fact_ids": [
-          "H.6.streak",
-          "PR.6.why"
-        ],
-        "roster_id": 6
-      },
-      {
-        "text": "London Cooking slid to 3rd after a 50-point beating.",
-        "fact_ids": [
-          "PR.5",
-          "PR.5.why"
-        ],
-        "roster_id": 5
-      },
-      {
-        "text": "The kitchen has cooled to 107.08 a week over the last 3 weeks.",
-        "fact_ids": [
-          "H.5.trend"
-        ],
-        "roster_id": 5
-      },
-      {
-        "text": "The oven is still on, with a bye in 55% of runs.",
-        "fact_ids": [
-          "ODDS.5"
-        ],
-        "roster_id": 5
-      },
-      {
-        "text": "All You Need Is Love rose 2 places to 4th.",
-        "fact_ids": [
-          "PR.2"
-        ],
-        "roster_id": 2
-      },
-      {
-        "text": "The jump came after an 11-point win over the 3rd-place team.",
-        "fact_ids": [
-          "PR.2.why"
-        ],
-        "roster_id": 2
-      },
-      {
-        "text": "Love and the 2nd easiest remaining schedule may be all they need.",
-        "fact_ids": [
-          "ODDS.2.why"
-        ],
-        "roster_id": 2
-      },
-      {
-        "text": "Return of T Mac held 5th on 4 straight wins.",
+        "text": "Return of T Mac jumps to 2nd on a 4-game win streak.",
         "fact_ids": [
           "PR.8",
           "H.8.streak"
@@ -537,155 +470,236 @@
         "roster_id": 8
       },
       {
-        "text": "The playoff odds sit near a coin flip, about 54%.",
+        "text": "The record is still only 7-7, parked just outside the playoff spots.",
+        "fact_ids": [
+          "S.7"
+        ],
+        "roster_id": 8
+      },
+      {
+        "text": "Playoff odds are a coin flip at about 54%.",
         "fact_ids": [
           "ODDS.8"
         ],
         "roster_id": 8
       },
       {
-        "text": "Maye d'force B with U fell 2 places to 6th.",
+        "text": "Bo Girds climbs 2 places to 3rd while losing 3 straight.",
+        "fact_ids": [
+          "PR.6",
+          "H.6.streak"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "The latest loss came by 11, and schedule played slid to 7th.",
+        "fact_ids": [
+          "PR.6.why"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "Rising while losing is a skill.",
+        "fact_ids": [],
+        "roster_id": 6
+      },
+      {
+        "text": "London Cooking falls 3 places to 4th.",
+        "fact_ids": [
+          "PR.5"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "They got smoked by 50 against the 9th-place team.",
+        "fact_ids": [
+          "PR.5.why"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "The oven has cooled to 107.08 a week over the last 3 weeks.",
+        "fact_ids": [
+          "H.5.trend"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "All You Need Is Love rises to 5th riding 2 straight wins.",
+        "fact_ids": [
+          "PR.2",
+          "H.2.streak"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "They knocked off the 3rd-place team, and recent results rose to 3rd.",
+        "fact_ids": [
+          "PR.2.why"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Their remaining schedule is one of the softest around.",
+        "fact_ids": [
+          "ODDS.2.why"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Maye d'force B with U slides 2 spots to 6th.",
         "fact_ids": [
           "PR.9"
         ],
         "roster_id": 9
       },
       {
-        "text": "The drop followed a 5-point loss to the 6th-place team.",
+        "text": "They lost by 5, and schedule played fell all the way to 12th.",
         "fact_ids": [
           "PR.9.why"
         ],
         "roster_id": 9
       },
       {
-        "text": "The force is with them in about 49% of runs.",
+        "text": "At 7-7 and level with the last playoff spot, the force is wobbling with playoff odds near 49%.",
         "fact_ids": [
+          "S.5",
           "ODDS.9"
         ],
         "roster_id": 9
       },
       {
-        "text": "Amon-Ra Dawg Your Team jumped 2 spots to 7th.",
+        "text": "Amon-Ra Dawg Your Team climbs to 7th, fresh off a 50-point beatdown.",
         "fact_ids": [
-          "PR.12"
-        ],
-        "roster_id": 12
-      },
-      {
-        "text": "The jump came off a 50-point win over the 2nd-place team.",
-        "fact_ids": [
+          "PR.12",
           "PR.12.why"
         ],
         "roster_id": 12
       },
       {
-        "text": "At 6-8, they still make the playoffs in about 58% of runs, with the easiest remaining schedule in the league.",
+        "text": "At 6-8 they sit below the cut, yet their playoff odds are about 58%.",
         "fact_ids": [
           "S.8",
-          "ODDS.12",
+          "ODDS.12"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "They also get the easiest remaining schedule in the league.",
+        "fact_ids": [
           "ODDS.12.why"
         ],
         "roster_id": 12
       },
       {
-        "text": "Brock ‘N’ Roll stayed 8th in the rankings while sitting 6th in the standings.",
+        "text": "Brock ‘N’ Roll stays put at 8th, with no move from last week.",
         "fact_ids": [
-          "PR.1",
-          "S.6"
+          "PR.1"
         ],
         "roster_id": 1
       },
       {
-        "text": "They still hold the last playoff spot.",
+        "text": "They hold the last playoff spot at 7-7, but their playoff odds are only about 42%.",
         "fact_ids": [
-          "S.6"
-        ],
-        "roster_id": 1
-      },
-      {
-        "text": "Even so, they get in only about 42% of runs.",
-        "fact_ids": [
+          "S.6",
           "ODDS.1"
         ],
         "roster_id": 1
       },
       {
-        "text": "Unsolicited Dak Picks crept up 1 place to 9th.",
+        "text": "They project to score exactly at their season pace from here.",
+        "fact_ids": [
+          "ODDS.1.why"
+        ],
+        "roster_id": 1
+      },
+      {
+        "text": "Unsolicited Dak Picks jumps 3 places to 9th.",
         "fact_ids": [
           "PR.11"
         ],
         "roster_id": 11
       },
       {
-        "text": "Nobody asked for this, either.",
-        "fact_ids": [],
+        "text": "They beat the 8th-place team by 14.",
+        "fact_ids": [
+          "PR.11.why"
+        ],
         "roster_id": 11
       },
       {
-        "text": "The playoffs show up in about 15% of runs.",
+        "text": "Playoff odds of about 15% are as welcome as the picks themselves.",
         "fact_ids": [
           "ODDS.11"
         ],
         "roster_id": 11
       },
       {
-        "text": "behold the lamb tumbled 3 places to 10th.",
-        "fact_ids": [
-          "PR.10"
-        ],
-        "roster_id": 10
-      },
-      {
-        "text": "The fall followed a 14-point loss to the 10th-place team.",
-        "fact_ids": [
-          "PR.10.why"
-        ],
-        "roster_id": 10
-      },
-      {
-        "text": "Behold, a 6% playoff chance.",
-        "fact_ids": [
-          "ODDS.10"
-        ],
-        "roster_id": 10
-      },
-      {
-        "text": "Pukancun on 3 climbed to 11th.",
+        "text": "Pukancun on 3 sits dead last in the standings and somehow climbs to 10th.",
         "fact_ids": [
           "PR.4"
         ],
         "roster_id": 4
       },
       {
-        "text": "A 3-11 record leaves them 4 games below the cut.",
+        "text": "Their results over the last 3 weeks rank 2nd, alongside the lowest scoring in the league.",
         "fact_ids": [
-          "S.12"
+          "PR.4"
         ],
         "roster_id": 4
       },
       {
-        "text": "The hardest remaining schedule in the league awaits.",
+        "text": "They also draw the hardest remaining schedule.",
         "fact_ids": [
           "ODDS.4.why"
         ],
         "roster_id": 4
       },
       {
-        "text": "To Infinity and Bijan fell to 12th, dead last.",
+        "text": "behold the lamb tumbles 5 places to 11th.",
         "fact_ids": [
-          "PR.7"
+          "PR.10"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "They lost by 14 to the 10th-place team, a true sacrifice.",
+        "fact_ids": [
+          "PR.10.why"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "Playoff odds of about 6% are not much to behold.",
+        "fact_ids": [
+          "ODDS.10"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "To Infinity and Bijan finishes 12th, losers of 3 straight.",
+        "fact_ids": [
+          "PR.7",
+          "H.7.streak"
         ],
         "roster_id": 7
       },
       {
-        "text": "Over the last 3 weeks they averaged 73.07, heading toward infinity in the wrong direction.",
+        "text": "They lost by 16 to the 12th-place team.",
+        "fact_ids": [
+          "PR.7.why"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "Scoring is down to 73.07 a week over the last 3 weeks; infinity looks a long way off.",
         "fact_ids": [
           "H.7.trend"
         ],
         "roster_id": 7
       }
     ],
-    "attempt": 1,
+    "attempt": 2,
     "fallback": false
   }
 }

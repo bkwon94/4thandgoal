@@ -156,32 +156,32 @@
           "blurb": []
         },
         {
-          "roster_id": 10,
-          "name": "behold the lamb",
-          "wins": 0,
-          "losses": 2,
-          "rank": 11,
-          "movement": null,
-          "components": {
-            "standing": 12,
-            "form": 12,
-            "schedule_played": 2,
-            "scoring": 12
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 4,
           "name": "Pukancun on 3",
           "wins": 0,
           "losses": 2,
-          "rank": 12,
+          "rank": 11,
           "movement": null,
           "components": {
             "standing": 11,
             "form": 11,
             "schedule_played": 6,
             "scoring": 11
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 0,
+          "losses": 2,
+          "rank": 12,
+          "movement": null,
+          "components": {
+            "standing": 12,
+            "form": 12,
+            "schedule_played": 2,
+            "scoring": 12
           },
           "blurb": []
         }
@@ -191,32 +191,32 @@
       "week": 2,
       "rows": [
         {
-          "roster_id": 3,
-          "name": "Lil Fridge",
-          "wins": 4,
-          "losses": 0,
-          "rank": 1,
-          "movement": 3,
-          "components": {
-            "standing": 1,
-            "form": 2,
-            "schedule_played": 10,
-            "scoring": 2
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 4,
           "losses": 0,
-          "rank": 2,
-          "movement": 0,
+          "rank": 1,
+          "movement": 1,
           "components": {
             "standing": 2,
             "form": 1,
             "schedule_played": 11,
             "scoring": 1
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 3,
+          "name": "Lil Fridge",
+          "wins": 4,
+          "losses": 0,
+          "rank": 2,
+          "movement": 2,
+          "components": {
+            "standing": 1,
+            "form": 2,
+            "schedule_played": 10,
+            "scoring": 2
           },
           "blurb": []
         },
@@ -229,7 +229,7 @@
           "movement": -2,
           "components": {
             "standing": 3,
-            "form": 4,
+            "form": 3,
             "schedule_played": 5,
             "scoring": 3
           },
@@ -244,7 +244,7 @@
           "movement": -1,
           "components": {
             "standing": 4,
-            "form": 3,
+            "form": 4,
             "schedule_played": 6,
             "scoring": 4
           },
@@ -259,24 +259,24 @@
           "movement": 1,
           "components": {
             "standing": 5,
-            "form": 6,
+            "form": 5,
             "schedule_played": 7,
             "scoring": 5
           },
           "blurb": []
         },
         {
-          "roster_id": 12,
-          "name": "Amon-Ra Dawg Your Team",
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
           "wins": 2,
           "losses": 2,
           "rank": 6,
-          "movement": -1,
+          "movement": 4,
           "components": {
-            "standing": 7,
-            "form": 9,
-            "schedule_played": 2,
-            "scoring": 6
+            "standing": 6,
+            "form": 6,
+            "schedule_played": 12,
+            "scoring": 8
           },
           "blurb": []
         },
@@ -286,7 +286,7 @@
           "wins": 2,
           "losses": 2,
           "rank": 7,
-          "movement": 4,
+          "movement": 5,
           "components": {
             "standing": 8,
             "form": 7,
@@ -296,17 +296,17 @@
           "blurb": []
         },
         {
-          "roster_id": 11,
-          "name": "Unsolicited Dak Picks",
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
           "wins": 2,
           "losses": 2,
           "rank": 8,
-          "movement": 2,
+          "movement": -3,
           "components": {
-            "standing": 6,
-            "form": 5,
-            "schedule_played": 12,
-            "scoring": 8
+            "standing": 7,
+            "form": 8,
+            "schedule_played": 2,
+            "scoring": 6
           },
           "blurb": []
         },
@@ -319,7 +319,7 @@
           "movement": 0,
           "components": {
             "standing": 9,
-            "form": 8,
+            "form": 9,
             "schedule_played": 8,
             "scoring": 7
           },
@@ -361,7 +361,7 @@
           "wins": 0,
           "losses": 4,
           "rank": 12,
-          "movement": 0,
+          "movement": -1,
           "components": {
             "standing": 12,
             "form": 12,
@@ -381,7 +381,7 @@
           "wins": 6,
           "losses": 0,
           "rank": 1,
-          "movement": 0,
+          "movement": 1,
           "components": {
             "standing": 1,
             "form": 1,
@@ -406,12 +406,27 @@
           "blurb": []
         },
         {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 2,
+          "rank": 3,
+          "movement": 3,
+          "components": {
+            "standing": 5,
+            "form": 3,
+            "schedule_played": 5,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 4,
           "losses": 2,
-          "rank": 3,
-          "movement": -1,
+          "rank": 4,
+          "movement": -3,
           "components": {
             "standing": 3,
             "form": 6,
@@ -425,28 +440,13 @@
           "name": "Brock ‘N’ Roll",
           "wins": 4,
           "losses": 2,
-          "rank": 4,
-          "movement": 0,
+          "rank": 5,
+          "movement": -1,
           "components": {
             "standing": 4,
-            "form": 4,
+            "form": 5,
             "schedule_played": 9,
             "scoring": 4
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 11,
-          "name": "Unsolicited Dak Picks",
-          "wins": 4,
-          "losses": 2,
-          "rank": 5,
-          "movement": 3,
-          "components": {
-            "standing": 5,
-            "form": 3,
-            "schedule_played": 5,
-            "scoring": 7
           },
           "blurb": []
         },
@@ -459,7 +459,7 @@
           "movement": 3,
           "components": {
             "standing": 6,
-            "form": 5,
+            "form": 4,
             "schedule_played": 11,
             "scoring": 5
           },
@@ -481,27 +481,12 @@
           "blurb": []
         },
         {
-          "roster_id": 10,
-          "name": "behold the lamb",
-          "wins": 3,
-          "losses": 3,
-          "rank": 8,
-          "movement": -1,
-          "components": {
-            "standing": 8,
-            "form": 9,
-            "schedule_played": 1,
-            "scoring": 10
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 7,
           "name": "To Infinity and Bijan",
           "wins": 2,
           "losses": 4,
-          "rank": 9,
-          "movement": 1,
+          "rank": 8,
+          "movement": 2,
           "components": {
             "standing": 9,
             "form": 7,
@@ -511,12 +496,27 @@
           "blurb": []
         },
         {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 3,
+          "losses": 3,
+          "rank": 9,
+          "movement": -2,
+          "components": {
+            "standing": 8,
+            "form": 9,
+            "schedule_played": 1,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 12,
           "name": "Amon-Ra Dawg Your Team",
           "wins": 2,
           "losses": 4,
           "rank": 10,
-          "movement": -4,
+          "movement": -2,
           "components": {
             "standing": 10,
             "form": 10,
@@ -561,11 +561,26 @@
       "week": 4,
       "rows": [
         {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 5,
+          "losses": 3,
+          "rank": 1,
+          "movement": 5,
+          "components": {
+            "standing": 4,
+            "form": 1,
+            "schedule_played": 10,
+            "scoring": 3
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 6,
           "losses": 2,
-          "rank": 1,
+          "rank": 2,
           "movement": 2,
           "components": {
             "standing": 1,
@@ -580,43 +595,13 @@
           "name": "Lil Fridge",
           "wins": 6,
           "losses": 2,
-          "rank": 2,
-          "movement": -1,
-          "components": {
-            "standing": 2,
-            "form": 5,
-            "schedule_played": 1,
-            "scoring": 2
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 5,
-          "name": "London Cooking",
-          "wins": 5,
-          "losses": 3,
           "rank": 3,
-          "movement": 3,
-          "components": {
-            "standing": 4,
-            "form": 1,
-            "schedule_played": 10,
-            "scoring": 3
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 2,
-          "name": "All You Need Is Love",
-          "wins": 6,
-          "losses": 2,
-          "rank": 4,
           "movement": -2,
           "components": {
-            "standing": 3,
+            "standing": 2,
             "form": 6,
-            "schedule_played": 4,
-            "scoring": 5
+            "schedule_played": 1,
+            "scoring": 2
           },
           "blurb": []
         },
@@ -625,7 +610,7 @@
           "name": "To Infinity and Bijan",
           "wins": 4,
           "losses": 4,
-          "rank": 5,
+          "rank": 4,
           "movement": 4,
           "components": {
             "standing": 6,
@@ -636,17 +621,17 @@
           "blurb": []
         },
         {
-          "roster_id": 12,
-          "name": "Amon-Ra Dawg Your Team",
-          "wins": 4,
-          "losses": 4,
-          "rank": 6,
-          "movement": 4,
+          "roster_id": 2,
+          "name": "All You Need Is Love",
+          "wins": 6,
+          "losses": 2,
+          "rank": 5,
+          "movement": -3,
           "components": {
-            "standing": 8,
-            "form": 8,
-            "schedule_played": 2,
-            "scoring": 7
+            "standing": 3,
+            "form": 4,
+            "schedule_played": 4,
+            "scoring": 5
           },
           "blurb": []
         },
@@ -655,8 +640,8 @@
           "name": "Unsolicited Dak Picks",
           "wins": 4,
           "losses": 4,
-          "rank": 7,
-          "movement": -2,
+          "rank": 6,
+          "movement": -3,
           "components": {
             "standing": 7,
             "form": 7,
@@ -666,11 +651,41 @@
           "blurb": []
         },
         {
+          "roster_id": 12,
+          "name": "Amon-Ra Dawg Your Team",
+          "wins": 4,
+          "losses": 4,
+          "rank": 7,
+          "movement": 3,
+          "components": {
+            "standing": 8,
+            "form": 8,
+            "schedule_played": 2,
+            "scoring": 7
+          },
+          "blurb": []
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 4,
+          "losses": 4,
+          "rank": 8,
+          "movement": 1,
+          "components": {
+            "standing": 9,
+            "form": 5,
+            "schedule_played": 11,
+            "scoring": 10
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 1,
           "name": "Brock ‘N’ Roll",
           "wins": 4,
           "losses": 4,
-          "rank": 8,
+          "rank": 9,
           "movement": -4,
           "components": {
             "standing": 5,
@@ -681,17 +696,17 @@
           "blurb": []
         },
         {
-          "roster_id": 10,
-          "name": "behold the lamb",
-          "wins": 4,
-          "losses": 4,
-          "rank": 9,
-          "movement": -1,
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 2,
+          "losses": 6,
+          "rank": 10,
+          "movement": 1,
           "components": {
-            "standing": 9,
-            "form": 4,
-            "schedule_played": 11,
-            "scoring": 10
+            "standing": 11,
+            "form": 9,
+            "schedule_played": 12,
+            "scoring": 11
           },
           "blurb": []
         },
@@ -700,28 +715,13 @@
           "name": "Maye d'force B with U",
           "wins": 3,
           "losses": 5,
-          "rank": 10,
-          "movement": -3,
+          "rank": 11,
+          "movement": -4,
           "components": {
             "standing": 10,
             "form": 11,
             "schedule_played": 8,
             "scoring": 4
-          },
-          "blurb": []
-        },
-        {
-          "roster_id": 8,
-          "name": "Return of T Mac",
-          "wins": 2,
-          "losses": 6,
-          "rank": 11,
-          "movement": 0,
-          "components": {
-            "standing": 11,
-            "form": 9,
-            "schedule_played": 12,
-            "scoring": 11
           },
           "blurb": []
         },
@@ -746,11 +746,26 @@
       "week": 5,
       "rows": [
         {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 7,
+          "losses": 3,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 3,
+            "form": 1,
+            "schedule_played": 11,
+            "scoring": 4
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 3,
           "name": "Lil Fridge",
           "wins": 8,
           "losses": 2,
-          "rank": 1,
+          "rank": 2,
           "movement": 1,
           "components": {
             "standing": 1,
@@ -761,27 +776,12 @@
           "blurb": []
         },
         {
-          "roster_id": 5,
-          "name": "London Cooking",
-          "wins": 7,
-          "losses": 3,
-          "rank": 2,
-          "movement": 1,
-          "components": {
-            "standing": 3,
-            "form": 1,
-            "schedule_played": 11,
-            "scoring": 4
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 7,
           "losses": 3,
           "rank": 3,
-          "movement": -2,
+          "movement": -1,
           "components": {
             "standing": 2,
             "form": 5,
@@ -796,7 +796,7 @@
           "wins": 6,
           "losses": 4,
           "rank": 4,
-          "movement": 4,
+          "movement": 5,
           "components": {
             "standing": 4,
             "form": 4,
@@ -806,11 +806,26 @@
           "blurb": []
         },
         {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 4,
+          "losses": 6,
+          "rank": 5,
+          "movement": 5,
+          "components": {
+            "standing": 9,
+            "form": 2,
+            "schedule_played": 10,
+            "scoring": 9
+          },
+          "blurb": []
+        },
+        {
           "roster_id": 9,
           "name": "Maye d'force B with U",
           "wins": 5,
           "losses": 5,
-          "rank": 5,
+          "rank": 6,
           "movement": 5,
           "components": {
             "standing": 6,
@@ -825,7 +840,7 @@
           "name": "All You Need Is Love",
           "wins": 6,
           "losses": 4,
-          "rank": 6,
+          "rank": 7,
           "movement": -2,
           "components": {
             "standing": 5,
@@ -836,17 +851,17 @@
           "blurb": []
         },
         {
-          "roster_id": 8,
-          "name": "Return of T Mac",
+          "roster_id": 7,
+          "name": "To Infinity and Bijan",
           "wins": 4,
           "losses": 6,
-          "rank": 7,
-          "movement": 4,
+          "rank": 8,
+          "movement": -4,
           "components": {
-            "standing": 9,
-            "form": 2,
-            "schedule_played": 10,
-            "scoring": 9
+            "standing": 10,
+            "form": 6,
+            "schedule_played": 2,
+            "scoring": 10
           },
           "blurb": []
         },
@@ -855,7 +870,7 @@
           "name": "Amon-Ra Dawg Your Team",
           "wins": 4,
           "losses": 6,
-          "rank": 8,
+          "rank": 9,
           "movement": -2,
           "components": {
             "standing": 8,
@@ -870,8 +885,8 @@
           "name": "Unsolicited Dak Picks",
           "wins": 4,
           "losses": 6,
-          "rank": 9,
-          "movement": -2,
+          "rank": 10,
+          "movement": -4,
           "components": {
             "standing": 7,
             "form": 11,
@@ -881,27 +896,12 @@
           "blurb": []
         },
         {
-          "roster_id": 7,
-          "name": "To Infinity and Bijan",
-          "wins": 4,
-          "losses": 6,
-          "rank": 10,
-          "movement": -5,
-          "components": {
-            "standing": 10,
-            "form": 6,
-            "schedule_played": 2,
-            "scoring": 10
-          },
-          "blurb": []
-        },
-        {
           "roster_id": 10,
           "name": "behold the lamb",
           "wins": 4,
           "losses": 6,
           "rank": 11,
-          "movement": -2,
+          "movement": -3,
           "components": {
             "standing": 11,
             "form": 10,
@@ -931,11 +931,46 @@
       "week": 6,
       "rows": [
         {
+          "roster_id": 5,
+          "name": "London Cooking",
+          "wins": 9,
+          "losses": 3,
+          "rank": 1,
+          "movement": 0,
+          "components": {
+            "standing": 2,
+            "form": 2,
+            "schedule_played": 12,
+            "scoring": 2
+          },
+          "blurb": [
+            {
+              "text": "London Cooking stays 2nd and has won 4 straight.",
+              "fact_ids": [
+                "PR.5",
+                "H.5.streak"
+              ]
+            },
+            {
+              "text": "The kitchen is getting hotter, too, with recent scoring up from the season average.",
+              "fact_ids": [
+                "H.5.trend"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 67,
+            "seed": 2,
+            "status": "open"
+          }
+        },
+        {
           "roster_id": 3,
           "name": "Lil Fridge",
           "wins": 10,
           "losses": 2,
-          "rank": 1,
+          "rank": 2,
           "movement": 0,
           "components": {
             "standing": 1,
@@ -967,116 +1002,11 @@
           }
         },
         {
-          "roster_id": 5,
-          "name": "London Cooking",
-          "wins": 9,
-          "losses": 3,
-          "rank": 2,
-          "movement": 0,
-          "components": {
-            "standing": 2,
-            "form": 2,
-            "schedule_played": 12,
-            "scoring": 2
-          },
-          "blurb": [
-            {
-              "text": "London Cooking stays 2nd and has won 4 straight.",
-              "fact_ids": [
-                "PR.5",
-                "H.5.streak"
-              ]
-            },
-            {
-              "text": "The kitchen is getting hotter, too, with recent scoring up from the season average.",
-              "fact_ids": [
-                "H.5.trend"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 99,
-            "bye": 67,
-            "seed": 2,
-            "status": "open"
-          }
-        },
-        {
-          "roster_id": 6,
-          "name": "Bo Girds",
-          "wins": 8,
-          "losses": 4,
-          "rank": 3,
-          "movement": 0,
-          "components": {
-            "standing": 3,
-            "form": 5,
-            "schedule_played": 4,
-            "scoring": 3
-          },
-          "blurb": [
-            {
-              "text": "Bo Girds hangs on at 3rd despite losing 2 straight.",
-              "fact_ids": [
-                "PR.6",
-                "H.6.streak"
-              ]
-            },
-            {
-              "text": "The bye shows up in 46% of runs, a coin flip with feathers.",
-              "fact_ids": [
-                "ODDS.6"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 99,
-            "bye": 46,
-            "seed": 3,
-            "status": "open"
-          }
-        },
-        {
-          "roster_id": 9,
-          "name": "Maye d'force B with U",
-          "wins": 7,
-          "losses": 5,
-          "rank": 4,
-          "movement": 1,
-          "components": {
-            "standing": 4,
-            "form": 4,
-            "schedule_played": 5,
-            "scoring": 4
-          },
-          "blurb": [
-            {
-              "text": "Maye d'force B with U climbs to 4th and has won 2 straight.",
-              "fact_ids": [
-                "PR.9",
-                "H.9.streak"
-              ]
-            },
-            {
-              "text": "The force is real: 79% of runs end in the playoffs.",
-              "fact_ids": [
-                "ODDS.9"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 79,
-            "bye": 4,
-            "seed": 4,
-            "status": "open"
-          }
-        },
-        {
           "roster_id": 8,
           "name": "Return of T Mac",
           "wins": 6,
           "losses": 6,
-          "rank": 5,
+          "rank": 3,
           "movement": 2,
           "components": {
             "standing": 7,
@@ -1114,15 +1044,120 @@
           }
         },
         {
+          "roster_id": 9,
+          "name": "Maye d'force B with U",
+          "wins": 7,
+          "losses": 5,
+          "rank": 4,
+          "movement": 2,
+          "components": {
+            "standing": 4,
+            "form": 4,
+            "schedule_played": 5,
+            "scoring": 4
+          },
+          "blurb": [
+            {
+              "text": "Maye d'force B with U climbs to 4th and has won 2 straight.",
+              "fact_ids": [
+                "PR.9",
+                "H.9.streak"
+              ]
+            },
+            {
+              "text": "The force is real: 79% of runs end in the playoffs.",
+              "fact_ids": [
+                "ODDS.9"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 79,
+            "bye": 4,
+            "seed": 4,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 6,
+          "name": "Bo Girds",
+          "wins": 8,
+          "losses": 4,
+          "rank": 5,
+          "movement": -2,
+          "components": {
+            "standing": 3,
+            "form": 5,
+            "schedule_played": 4,
+            "scoring": 3
+          },
+          "blurb": [
+            {
+              "text": "Bo Girds hangs on at 3rd despite losing 2 straight.",
+              "fact_ids": [
+                "PR.6",
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "The bye shows up in 46% of runs, a coin flip with feathers.",
+              "fact_ids": [
+                "ODDS.6"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 99,
+            "bye": 46,
+            "seed": 3,
+            "status": "open"
+          }
+        },
+        {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 6,
+          "losses": 6,
+          "rank": 6,
+          "movement": 5,
+          "components": {
+            "standing": 8,
+            "form": 6,
+            "schedule_played": 2,
+            "scoring": 9
+          },
+          "blurb": [
+            {
+              "text": "behold the lamb leaps 4 spots after a 5-point win last week.",
+              "fact_ids": [
+                "PR.10",
+                "PR.10.why"
+              ]
+            },
+            {
+              "text": "They still sit 2 spots outside the playoffs at 6-6.",
+              "fact_ids": [
+                "S.8"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 24,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
           "roster_id": 2,
           "name": "All You Need Is Love",
           "wins": 7,
           "losses": 5,
-          "rank": 6,
+          "rank": 7,
           "movement": 0,
           "components": {
             "standing": 5,
-            "form": 8,
+            "form": 7,
             "schedule_played": 6,
             "scoring": 6
           },
@@ -1156,41 +1191,6 @@
           }
         },
         {
-          "roster_id": 10,
-          "name": "behold the lamb",
-          "wins": 6,
-          "losses": 6,
-          "rank": 7,
-          "movement": 4,
-          "components": {
-            "standing": 8,
-            "form": 6,
-            "schedule_played": 2,
-            "scoring": 9
-          },
-          "blurb": [
-            {
-              "text": "behold the lamb leaps 4 spots after a 5-point win last week.",
-              "fact_ids": [
-                "PR.10",
-                "PR.10.why"
-              ]
-            },
-            {
-              "text": "They still sit 2 spots outside the playoffs at 6-6.",
-              "fact_ids": [
-                "S.8"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 24,
-            "bye": 1,
-            "seed": null,
-            "status": "open"
-          }
-        },
-        {
           "roster_id": 1,
           "name": "Brock ‘N’ Roll",
           "wins": 6,
@@ -1199,7 +1199,7 @@
           "movement": -4,
           "components": {
             "standing": 6,
-            "form": 7,
+            "form": 8,
             "schedule_played": 11,
             "scoring": 5
           },
@@ -1232,7 +1232,7 @@
           "wins": 4,
           "losses": 8,
           "rank": 9,
-          "movement": -1,
+          "movement": 0,
           "components": {
             "standing": 9,
             "form": 9,
@@ -1263,48 +1263,15 @@
           }
         },
         {
-          "roster_id": 11,
-          "name": "Unsolicited Dak Picks",
-          "wins": 4,
-          "losses": 8,
-          "rank": 10,
-          "movement": -1,
-          "components": {
-            "standing": 10,
-            "form": 12,
-            "schedule_played": 7,
-            "scoring": 10
-          },
-          "blurb": [
-            {
-              "text": "Unsolicited Dak Picks drops to 10th on 3 straight losses.",
-              "fact_ids": [
-                "PR.11",
-                "H.11.streak"
-              ]
-            },
-            {
-              "text": "Nobody asked for this either.",
-              "fact_ids": []
-            }
-          ],
-          "odds": {
-            "playoff": 8,
-            "bye": 1,
-            "seed": null,
-            "status": "open"
-          }
-        },
-        {
           "roster_id": 7,
           "name": "To Infinity and Bijan",
           "wins": 4,
           "losses": 8,
-          "rank": 11,
-          "movement": -1,
+          "rank": 10,
+          "movement": -2,
           "components": {
             "standing": 11,
-            "form": 10,
+            "form": 11,
             "schedule_played": 9,
             "scoring": 11
           },
@@ -1341,11 +1308,11 @@
           "name": "Pukancun on 3",
           "wins": 1,
           "losses": 11,
-          "rank": 12,
-          "movement": 0,
+          "rank": 11,
+          "movement": 1,
           "components": {
             "standing": 12,
-            "form": 11,
+            "form": 10,
             "schedule_played": 10,
             "scoring": 12
           },
@@ -1370,6 +1337,39 @@
             "seed": null,
             "status": "open"
           }
+        },
+        {
+          "roster_id": 11,
+          "name": "Unsolicited Dak Picks",
+          "wins": 4,
+          "losses": 8,
+          "rank": 12,
+          "movement": -2,
+          "components": {
+            "standing": 10,
+            "form": 12,
+            "schedule_played": 7,
+            "scoring": 10
+          },
+          "blurb": [
+            {
+              "text": "Unsolicited Dak Picks drops to 10th on 3 straight losses.",
+              "fact_ids": [
+                "PR.11",
+                "H.11.streak"
+              ]
+            },
+            {
+              "text": "Nobody asked for this either.",
+              "fact_ids": []
+            }
+          ],
+          "odds": {
+            "playoff": 8,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
         }
       ]
     },
@@ -1382,7 +1382,7 @@
           "wins": 10,
           "losses": 4,
           "rank": 1,
-          "movement": 0,
+          "movement": 1,
           "components": {
             "standing": 1,
             "form": 4,
@@ -1391,22 +1391,22 @@
           },
           "blurb": [
             {
-              "text": "Lil Fridge holds 1st again, untouched.",
+              "text": "Lil Fridge holds the top spot at 10-4, 3 games above the cut.",
               "fact_ids": [
                 "PR.3",
-                "PR.3.why"
-              ]
-            },
-            {
-              "text": "A 10-4 record sits 3 games above the cut.",
-              "fact_ids": [
                 "S.1"
               ]
             },
             {
-              "text": "The fridge stays cold to everyone else, with the top scoring in the league.",
+              "text": "They lost by 12 to the 7th-place team and still climbed a spot.",
               "fact_ids": [
-                "PR.3"
+                "PR.3.why"
+              ]
+            },
+            {
+              "text": "Playoff odds sit at about 99%; the fridge stays stocked.",
+              "fact_ids": [
+                "ODDS.3"
               ]
             }
           ],
@@ -1418,39 +1418,76 @@
           }
         },
         {
+          "roster_id": 8,
+          "name": "Return of T Mac",
+          "wins": 7,
+          "losses": 7,
+          "rank": 2,
+          "movement": 1,
+          "components": {
+            "standing": 7,
+            "form": 1,
+            "schedule_played": 3,
+            "scoring": 8
+          },
+          "blurb": [
+            {
+              "text": "Return of T Mac jumps to 2nd on a 4-game win streak.",
+              "fact_ids": [
+                "PR.8",
+                "H.8.streak"
+              ]
+            },
+            {
+              "text": "The record is still only 7-7, parked just outside the playoff spots.",
+              "fact_ids": [
+                "S.7"
+              ]
+            },
+            {
+              "text": "Playoff odds are a coin flip at about 54%.",
+              "fact_ids": [
+                "ODDS.8"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 54,
+            "bye": 2,
+            "seed": 6,
+            "status": "open"
+          }
+        },
+        {
           "roster_id": 6,
           "name": "Bo Girds",
           "wins": 9,
           "losses": 5,
-          "rank": 2,
-          "movement": 1,
+          "rank": 3,
+          "movement": 2,
           "components": {
             "standing": 2,
-            "form": 2,
+            "form": 7,
             "schedule_played": 7,
             "scoring": 2
           },
           "blurb": [
             {
-              "text": "Bo Girds moved up to 2nd after an 11-point loss.",
+              "text": "Bo Girds climbs 2 places to 3rd while losing 3 straight.",
               "fact_ids": [
                 "PR.6",
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "The latest loss came by 11, and schedule played slid to 7th.",
+              "fact_ids": [
                 "PR.6.why"
               ]
             },
             {
-              "text": "That is 3 straight losses, and they still climbed.",
-              "fact_ids": [
-                "H.6.streak",
-                "PR.6"
-              ]
-            },
-            {
-              "text": "Losing streaks apparently pay around here.",
-              "fact_ids": [
-                "H.6.streak",
-                "PR.6.why"
-              ]
+              "text": "Rising while losing is a skill.",
+              "fact_ids": []
             }
           ],
           "odds": {
@@ -1465,8 +1502,8 @@
           "name": "London Cooking",
           "wins": 9,
           "losses": 5,
-          "rank": 3,
-          "movement": -1,
+          "rank": 4,
+          "movement": -3,
           "components": {
             "standing": 3,
             "form": 8,
@@ -1475,22 +1512,21 @@
           },
           "blurb": [
             {
-              "text": "London Cooking slid to 3rd after a 50-point beating.",
+              "text": "London Cooking falls 3 places to 4th.",
               "fact_ids": [
-                "PR.5",
+                "PR.5"
+              ]
+            },
+            {
+              "text": "They got smoked by 50 against the 9th-place team.",
+              "fact_ids": [
                 "PR.5.why"
               ]
             },
             {
-              "text": "The kitchen has cooled to 107.08 a week over the last 3 weeks.",
+              "text": "The oven has cooled to 107.08 a week over the last 3 weeks.",
               "fact_ids": [
                 "H.5.trend"
-              ]
-            },
-            {
-              "text": "The oven is still on, with a bye in 55% of runs.",
-              "fact_ids": [
-                "ODDS.5"
               ]
             }
           ],
@@ -1506,29 +1542,30 @@
           "name": "All You Need Is Love",
           "wins": 9,
           "losses": 5,
-          "rank": 4,
+          "rank": 5,
           "movement": 2,
           "components": {
             "standing": 4,
-            "form": 5,
+            "form": 3,
             "schedule_played": 6,
             "scoring": 7
           },
           "blurb": [
             {
-              "text": "All You Need Is Love rose 2 places to 4th.",
+              "text": "All You Need Is Love rises to 5th riding 2 straight wins.",
               "fact_ids": [
-                "PR.2"
+                "PR.2",
+                "H.2.streak"
               ]
             },
             {
-              "text": "The jump came after an 11-point win over the 3rd-place team.",
+              "text": "They knocked off the 3rd-place team, and recent results rose to 3rd.",
               "fact_ids": [
                 "PR.2.why"
               ]
             },
             {
-              "text": "Love and the 2nd easiest remaining schedule may be all they need.",
+              "text": "Their remaining schedule is one of the softest around.",
               "fact_ids": [
                 "ODDS.2.why"
               ]
@@ -1542,41 +1579,6 @@
           }
         },
         {
-          "roster_id": 8,
-          "name": "Return of T Mac",
-          "wins": 7,
-          "losses": 7,
-          "rank": 5,
-          "movement": 0,
-          "components": {
-            "standing": 7,
-            "form": 1,
-            "schedule_played": 3,
-            "scoring": 8
-          },
-          "blurb": [
-            {
-              "text": "Return of T Mac held 5th on 4 straight wins.",
-              "fact_ids": [
-                "PR.8",
-                "H.8.streak"
-              ]
-            },
-            {
-              "text": "The playoff odds sit near a coin flip, about 54%.",
-              "fact_ids": [
-                "ODDS.8"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 54,
-            "bye": 2,
-            "seed": 6,
-            "status": "open"
-          }
-        },
-        {
           "roster_id": 9,
           "name": "Maye d'force B with U",
           "wins": 7,
@@ -1585,26 +1587,27 @@
           "movement": -2,
           "components": {
             "standing": 5,
-            "form": 6,
+            "form": 5,
             "schedule_played": 12,
             "scoring": 4
           },
           "blurb": [
             {
-              "text": "Maye d'force B with U fell 2 places to 6th.",
+              "text": "Maye d'force B with U slides 2 spots to 6th.",
               "fact_ids": [
                 "PR.9"
               ]
             },
             {
-              "text": "The drop followed a 5-point loss to the 6th-place team.",
+              "text": "They lost by 5, and schedule played fell all the way to 12th.",
               "fact_ids": [
                 "PR.9.why"
               ]
             },
             {
-              "text": "The force is with them in about 49% of runs.",
+              "text": "At 7-7 and level with the last playoff spot, the force is wobbling with playoff odds near 49%.",
               "fact_ids": [
+                "S.5",
                 "ODDS.9"
               ]
             }
@@ -1625,28 +1628,28 @@
           "movement": 2,
           "components": {
             "standing": 8,
-            "form": 7,
+            "form": 6,
             "schedule_played": 2,
             "scoring": 6
           },
           "blurb": [
             {
-              "text": "Amon-Ra Dawg Your Team jumped 2 spots to 7th.",
+              "text": "Amon-Ra Dawg Your Team climbs to 7th, fresh off a 50-point beatdown.",
               "fact_ids": [
-                "PR.12"
-              ]
-            },
-            {
-              "text": "The jump came off a 50-point win over the 2nd-place team.",
-              "fact_ids": [
+                "PR.12",
                 "PR.12.why"
               ]
             },
             {
-              "text": "At 6-8, they still make the playoffs in about 58% of runs, with the easiest remaining schedule in the league.",
+              "text": "At 6-8 they sit below the cut, yet their playoff odds are about 58%.",
               "fact_ids": [
                 "S.8",
-                "ODDS.12",
+                "ODDS.12"
+              ]
+            },
+            {
+              "text": "They also get the easiest remaining schedule in the league.",
+              "fact_ids": [
                 "ODDS.12.why"
               ]
             }
@@ -1667,28 +1670,28 @@
           "movement": 0,
           "components": {
             "standing": 6,
-            "form": 10,
+            "form": 9,
             "schedule_played": 9,
             "scoring": 5
           },
           "blurb": [
             {
-              "text": "Brock ‘N’ Roll stayed 8th in the rankings while sitting 6th in the standings.",
+              "text": "Brock ‘N’ Roll stays put at 8th, with no move from last week.",
               "fact_ids": [
-                "PR.1",
-                "S.6"
+                "PR.1"
               ]
             },
             {
-              "text": "They still hold the last playoff spot.",
+              "text": "They hold the last playoff spot at 7-7, but their playoff odds are only about 42%.",
               "fact_ids": [
-                "S.6"
-              ]
-            },
-            {
-              "text": "Even so, they get in only about 42% of runs.",
-              "fact_ids": [
+                "S.6",
                 "ODDS.1"
+              ]
+            },
+            {
+              "text": "They project to score exactly at their season pace from here.",
+              "fact_ids": [
+                "ODDS.1.why"
               ]
             }
           ],
@@ -1705,26 +1708,28 @@
           "wins": 6,
           "losses": 8,
           "rank": 9,
-          "movement": 1,
+          "movement": 3,
           "components": {
             "standing": 9,
-            "form": 9,
+            "form": 10,
             "schedule_played": 8,
             "scoring": 9
           },
           "blurb": [
             {
-              "text": "Unsolicited Dak Picks crept up 1 place to 9th.",
+              "text": "Unsolicited Dak Picks jumps 3 places to 9th.",
               "fact_ids": [
                 "PR.11"
               ]
             },
             {
-              "text": "Nobody asked for this, either.",
-              "fact_ids": []
+              "text": "They beat the 8th-place team by 14.",
+              "fact_ids": [
+                "PR.11.why"
+              ]
             },
             {
-              "text": "The playoffs show up in about 15% of runs.",
+              "text": "Playoff odds of about 15% are as welcome as the picks themselves.",
               "fact_ids": [
                 "ODDS.11"
               ]
@@ -1738,73 +1743,33 @@
           }
         },
         {
-          "roster_id": 10,
-          "name": "behold the lamb",
-          "wins": 6,
-          "losses": 8,
-          "rank": 10,
-          "movement": -3,
-          "components": {
-            "standing": 10,
-            "form": 11,
-            "schedule_played": 5,
-            "scoring": 10
-          },
-          "blurb": [
-            {
-              "text": "behold the lamb tumbled 3 places to 10th.",
-              "fact_ids": [
-                "PR.10"
-              ]
-            },
-            {
-              "text": "The fall followed a 14-point loss to the 10th-place team.",
-              "fact_ids": [
-                "PR.10.why"
-              ]
-            },
-            {
-              "text": "Behold, a 6% playoff chance.",
-              "fact_ids": [
-                "ODDS.10"
-              ]
-            }
-          ],
-          "odds": {
-            "playoff": 6,
-            "bye": 1,
-            "seed": null,
-            "status": "open"
-          }
-        },
-        {
           "roster_id": 4,
           "name": "Pukancun on 3",
           "wins": 3,
           "losses": 11,
-          "rank": 11,
+          "rank": 10,
           "movement": 1,
           "components": {
             "standing": 12,
-            "form": 3,
+            "form": 2,
             "schedule_played": 11,
             "scoring": 12
           },
           "blurb": [
             {
-              "text": "Pukancun on 3 climbed to 11th.",
+              "text": "Pukancun on 3 sits dead last in the standings and somehow climbs to 10th.",
               "fact_ids": [
                 "PR.4"
               ]
             },
             {
-              "text": "A 3-11 record leaves them 4 games below the cut.",
+              "text": "Their results over the last 3 weeks rank 2nd, alongside the lowest scoring in the league.",
               "fact_ids": [
-                "S.12"
+                "PR.4"
               ]
             },
             {
-              "text": "The hardest remaining schedule in the league awaits.",
+              "text": "They also draw the hardest remaining schedule.",
               "fact_ids": [
                 "ODDS.4.why"
               ]
@@ -1818,12 +1783,52 @@
           }
         },
         {
+          "roster_id": 10,
+          "name": "behold the lamb",
+          "wins": 6,
+          "losses": 8,
+          "rank": 11,
+          "movement": -5,
+          "components": {
+            "standing": 10,
+            "form": 11,
+            "schedule_played": 5,
+            "scoring": 10
+          },
+          "blurb": [
+            {
+              "text": "behold the lamb tumbles 5 places to 11th.",
+              "fact_ids": [
+                "PR.10"
+              ]
+            },
+            {
+              "text": "They lost by 14 to the 10th-place team, a true sacrifice.",
+              "fact_ids": [
+                "PR.10.why"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 6% are not much to behold.",
+              "fact_ids": [
+                "ODDS.10"
+              ]
+            }
+          ],
+          "odds": {
+            "playoff": 6,
+            "bye": 1,
+            "seed": null,
+            "status": "open"
+          }
+        },
+        {
           "roster_id": 7,
           "name": "To Infinity and Bijan",
           "wins": 5,
           "losses": 9,
           "rank": 12,
-          "movement": -1,
+          "movement": -2,
           "components": {
             "standing": 11,
             "form": 12,
@@ -1832,13 +1837,20 @@
           },
           "blurb": [
             {
-              "text": "To Infinity and Bijan fell to 12th, dead last.",
+              "text": "To Infinity and Bijan finishes 12th, losers of 3 straight.",
               "fact_ids": [
-                "PR.7"
+                "PR.7",
+                "H.7.streak"
               ]
             },
             {
-              "text": "Over the last 3 weeks they averaged 73.07, heading toward infinity in the wrong direction.",
+              "text": "They lost by 16 to the 12th-place team.",
+              "fact_ids": [
+                "PR.7.why"
+              ]
+            },
+            {
+              "text": "Scoring is down to 73.07 a week over the last 3 weeks; infinity looks a long way off.",
               "fact_ids": [
                 "H.7.trend"
               ]
