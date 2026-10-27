@@ -23,8 +23,8 @@ from cornerstone_api.ratelimit import client_address
 
 router = APIRouter()
 
-# The answer when the week has no chart. A grade with no trade value would mislead, so the route gives none.
-NO_CHART_DETAIL = "The trade value chart for this week is not available."
+# The line the site shows when the trade week has no chart. The grade then reads the adjusters alone.
+NO_CHART_NOTE = "Week {week} has no trade value chart yet, so the chart gives neither side an edge."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -91,6 +91,10 @@ def _as_of(snapshot: Snapshot) -> dict:
         "rosters_fetched": stamps.rosters_fetched.isoformat() if stamps.rosters_fetched else None,
         # The week N games that the player stats read. None when the grade reads no week N game.
         "known_games": stamps.known_games.model_dump() if stamps.known_games else None,
+        # The chart site posts the new chart hours after the trade week starts. The grade runs in that window too,
+        # so the document says the week has no chart, and the site shows the note with no words of its own.
+        "no_chart": snapshot.chart is None,
+        "no_chart_note": NO_CHART_NOTE.format(week=snapshot.week) if snapshot.chart is None else None,
     }
 
 
@@ -174,8 +178,6 @@ def analyze(request: Request, trade: ProposedTrade) -> dict:
         request.app.state.teams_cache.clear(trade.season)
         # The id lets the form mark the player who is no longer on the giving roster.
         raise HTTPException(status_code=422, detail={"message": str(error), "player_id": error.player_id})
-    if snapshot.chart is None:
-        raise HTTPException(status_code=503, detail=NO_CHART_DETAIL)
     cache = request.app.state.cache
     key = cache_key(trade, snapshot)
     cached = cache.get(key)
@@ -255,8 +257,6 @@ def find(request: Request, pair: FindRequest) -> dict:
         request.app.state.teams_cache.clear(pair.season)
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
-    if snapshot.chart is None:
-        raise HTTPException(status_code=503, detail=NO_CHART_DETAIL)
     cache = request.app.state.cache
     key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot)
     cached = cache.get(key)

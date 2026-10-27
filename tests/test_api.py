@@ -31,7 +31,7 @@ from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_fa
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.ranks import recent_points_per_game
 from cornerstone.render import is_def
-from cornerstone.rubric import LETTERS, ProposedTrade, grade, verdict
+from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
@@ -315,14 +315,16 @@ def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings,
     assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
 
 
-def test_a_chart_read_that_raises_makes_analyze_503(settings, sources):
+def test_a_chart_read_that_raises_grades_the_trade_with_no_chart(settings, sources):
+    # A chart read that raises gives no chart, and a week with no chart grades from the adjusters alone.
     analyzer = StubAnalyzer()
     chart = RaisingChart()
     response = _client(settings, dataclasses.replace(sources, read_chart=chart), analyzer).post(
         "/analyze", json=TRADE, headers=HEADERS)
-    assert response.status_code == 503
+    assert response.status_code == 200
+    assert response.json()["as_of"]["no_chart"] is True
     assert chart.calls == 1
-    assert analyzer.calls == 0
+    assert analyzer.calls == 1
 
 
 def test_a_wrong_passphrase_is_401_with_no_body(settings, sources):
@@ -365,7 +367,8 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     # The fixture player file has week 6 rows for 6 of those games, so the usage of 8 games is pending.
     assert doc["as_of"] == {"chart_week": 6, "stats_through": 6, "completed_through": 5,
                             "rosters_fetched": "2026-10-19T09:30:00-04:00",
-                            "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}}}
+                            "known_games": {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}},
+                            "no_chart": False, "no_chart_note": None}
     assert doc["fallback"] is False
 
 
@@ -389,16 +392,37 @@ def test_a_player_not_on_the_giving_roster_is_422_with_the_names_and_the_id(sett
     assert analyzer.calls == 0
 
 
-def test_a_week_with_no_chart_is_503_with_no_grade(settings, fixture_raw_dir):
-    analyzer = StubAnalyzer()
-    no_chart = Sources(
+def _no_chart_sources(fixture_raw_dir):
+    return Sources(
         fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
-    response = _client(settings, no_chart, analyzer).post("/analyze", json=TRADE, headers=HEADERS)
-    assert response.status_code == 503
-    assert response.json() == {"detail": "The trade value chart for this week is not available."}
-    assert analyzer.calls == 0
+
+
+def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fixture_raw_dir):
+    # The chart posts hours after the trade week starts, so the grade runs in that window with no chart.
+    analyzer = StubAnalyzer()
+    response = _client(settings, _no_chart_sources(fixture_raw_dir), analyzer).post(
+        "/analyze", json=TRADE, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    assert analyzer.calls == 1
+    for side in doc["sides"]:
+        assert side["chart"] == {"lean": "even", "reason": NO_CHART_REASON}
+    assert doc["as_of"]["chart_week"] is None
+    assert doc["as_of"]["no_chart"] is True
+    assert doc["as_of"]["no_chart_note"] == (
+        "Week 6 has no trade value chart yet, so the chart gives neither side an edge.")
+    assert "chart" in doc["missing"]
+
+
+def test_a_grade_with_no_chart_and_a_grade_with_the_chart_have_different_keys(settings, sources, fixture_raw_dir):
+    # The first chart post of the week must give a fresh grade, not the stored grade with no chart.
+    trade = ProposedTrade.model_validate(TRADE)
+    with_chart = sources.snapshot(settings.repo, trade.season)
+    no_chart = _no_chart_sources(fixture_raw_dir).snapshot(settings.repo, trade.season)
+    assert cache_key(trade, no_chart) != cache_key(trade, with_chart)
+    assert finder_cache_key(2026, 4, 12, no_chart) != finder_cache_key(2026, 4, 12, with_chart)
 
 
 def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, sources):
@@ -973,20 +997,14 @@ def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(setti
     assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
 
 
-def test_a_bad_trade_or_a_week_with_no_chart_does_not_count_as_a_grade(settings, sources, fixture_raw_dir):
+def test_a_bad_trade_does_not_count_as_a_grade(settings, sources):
     from cornerstone.tunables import GRADES_PER_MINUTE
 
     # Garrett Wilson is on roster 12, not roster 4.
     bad = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
-    no_chart = Sources(
-        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
-        fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
     bad_client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
-    no_chart_client = _graded_client(settings, no_chart, MovingClock(NOW), _uncached())
     for _ in range(GRADES_PER_MINUTE + 1):
         assert bad_client.post("/analyze", json=bad, headers=HEADERS).status_code == 422
-        assert no_chart_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 503
     assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
     assert bad_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
@@ -1273,17 +1291,18 @@ def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_ca
     assert json.loads((settings.result_cache_dir / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
 
-def test_a_find_in_a_week_with_no_chart_is_503_with_no_grade(settings, fixture_raw_dir):
+def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_raw_dir):
+    # With no chart every player is unlisted, so the finder finds no win-win and makes no Claude call.
     fake = FakeFinderClaude()
-    no_chart = Sources(
-        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
-        fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
-    response = _find_client(settings, no_chart, fake).post("/find", json=FIND, headers=HEADERS)
-    assert response.status_code == 503
-    assert response.json() == {"detail": "The trade value chart for this week is not available."}
+    response = _find_client(settings, _no_chart_sources(fixture_raw_dir), fake).post(
+        "/find", json=FIND, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    assert doc["trades"] == []
+    assert doc["as_of"]["no_chart"] is True
+    assert doc["as_of"]["no_chart_note"] == (
+        "Week 6 has no trade value chart yet, so the chart gives neither side an edge.")
     assert fake.calls == []
-    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
 
 
 def test_find_needs_the_passphrase(settings, sources):
@@ -1679,8 +1698,9 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_8():
+def test_the_document_version_is_9():
     import cornerstone_api.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
-    assert cache_module.DOCUMENT_VERSION == 8
+    # The as-of block says when the week has no chart, so a document stored before that must never serve.
+    assert cache_module.DOCUMENT_VERSION == 9
