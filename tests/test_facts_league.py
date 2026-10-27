@@ -396,7 +396,7 @@ def test_the_reason_names_the_top_two_storylines_with_their_numbers(fixture_raw_
     assert _reason(fixture_raw_dir, [(1, 3)], _hand_table(ranks={3: 4, 6: 5})) == (
         "1st and 4th meet at the top of the table")
     assert _reason(fixture_raw_dir, [(1, 3)], projected=HAND_PROJECTED) == (
-        "Lineups project 123.0 and 118.8 in a shootout")
+        "Lineups project 123.0 and 118.8 in a projected shootout")
 
 
 def test_the_reason_of_a_rematch_names_the_week_the_winner_and_the_margin(fixture_raw_dir):

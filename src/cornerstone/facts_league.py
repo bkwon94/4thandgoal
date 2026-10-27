@@ -382,7 +382,7 @@ def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | N
         return name[s.roster_id], "seeks revenge"
     if s.kind == "shootout":
         x, y = s.totals
-        return None, f"lineups project {x:.1f} and {y:.1f} in a shootout"
+        return None, f"lineups project {x:.1f} and {y:.1f} in a projected shootout"
     hi, lo = sorted((a.rank, b.rank))
     return None, f"{_ordinal(hi)} and {_ordinal(lo)} meet at the top of the table"
 
