@@ -56,6 +56,43 @@ def test_motw_is_closest(fixture_raw_dir):
     assert set(pick.scores) == {"closeness", "upset", "table", "stakes"}
 
 
+def _motw_with(fixture_raw_dir, margins, before=None, far_from_cut=()):
+    """Run the pick on the week 6 fixture with set margins, ranks before, and cut distance."""
+    wk, mf = _setup(fixture_raw_dir)
+    mf = [f.model_copy(update={"margin": margins.get(f.matchup_id, f.margin)}) for f in mf]
+    table = [
+        s.model_copy(update={"games_from_cut": 3}) if s.roster_id in far_from_cut else s
+        for s in standings(wk)
+    ]
+    return matchup_of_the_week(wk, mf, table, {**ranks_before(wk, table), **(before or {})})
+
+
+def test_motw_label_is_the_upset_when_the_pick_leads_only_there(fixture_raw_dir):
+    # Matchup 3 is the closest game. Matchup 1 wins on total and has the biggest upset.
+    # Closeness is its largest weighted score, but it does not lead in closeness.
+    pick = _motw_with(fixture_raw_dir, {1: 10, 3: 5}, {3: 12, 1: 1})
+    assert pick.matchup_id == 1 and pick.reason == "Upset"
+    assert pick.scores["closeness"] > pick.scores["upset"]
+
+
+def test_motw_label_is_closest_finish_for_the_closest_game(fixture_raw_dir):
+    # Matchup 4 has the smallest margin and also the biggest upset. Closeness weighs more.
+    wk, mf = _setup(fixture_raw_dir)
+    assert min(mf, key=lambda f: f.margin).matchup_id == 4
+    pick = matchup_of_the_week(wk, mf, standings(wk))
+    assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
+
+
+def test_motw_label_falls_back_to_the_largest_score_with_no_lead(fixture_raw_dir):
+    # Matchup 5 is second in closeness, upset, and table, and far from the cut.
+    # It leads in no signal, so its largest weighted score names it.
+    margins = {1: 60, 2: 66, 3: 60, 4: 5.34, 5: 6, 6: 60}
+    before = {5: 8, 7: 2, 10: 1, 6: 12, 2: 1, 8: 12, 11: 1}
+    pick = _motw_with(fixture_raw_dir, margins, before, far_from_cut={5, 10})
+    assert pick.matchup_id == 5 and pick.reason == "Closest Finish"
+    assert pick.scores["stakes"] == 0
+
+
 def test_next_week_two_must_watch(fixture_raw_dir):
     wk, _ = _setup(fixture_raw_dir)
     nx = next_week(wk, standings(wk))

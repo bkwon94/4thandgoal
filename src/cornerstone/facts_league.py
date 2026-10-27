@@ -186,14 +186,22 @@ def matchup_of_the_week(
     table: list[Standing],
     before: dict[int, int] | None = None,
 ) -> Pick:
+    """Pick the matchup with the highest weighted total of the four signals.
+
+    The label names the signal in which the pick ranks first among all matchups, by raw
+    value. A tie for first counts as a lead. With more than one lead, the larger weighted
+    score wins. With no lead, the largest weighted score names the pick. The label reads
+    the whole field because the winner alone misleads: closeness carries 40 percent, so it
+    is the largest part of almost every winner, even when another game was closer.
+    """
     by_roster = {s.roster_id: s for s in table}
     if before is None:
         before = ranks_before(week, table)
     max_margin = max(f.margin for f in mfacts)
-    best: tuple[float, float, Pick] | None = None
+    signals = []
     for f, m in zip(mfacts, week.matchups):
         a, b = by_roster[m.a.roster_id], by_roster[m.b.roster_id]
-        raw = {
+        signals.append({
             "closeness": 1 - f.margin / max_margin if max_margin else 1.0,
             "upset": (
                 upset_signal(before[f.winner], before[f.loser])
@@ -202,9 +210,13 @@ def matchup_of_the_week(
             ),
             "table": _table_signal(a.rank, b.rank),
             "stakes": _stakes_signal(a, b),
-        }
+        })
+    best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
+    best: tuple[float, float, Pick] | None = None
+    for f, raw in zip(mfacts, signals):
         scores = {k: r2(WEIGHTS[k] * v) for k, v in raw.items()}
-        top = max(scores, key=lambda k: scores[k])
+        leads = [k for k in raw if raw[k] == best_raw[k]]
+        top = max(leads or scores, key=lambda k: scores[k])
         pick = Pick(matchup_id=f.matchup_id, reason=REASONS[top], scores=scores)
         total = sum(WEIGHTS[k] * v for k, v in raw.items())
         # Highest total wins. A tie in total goes to the smallest margin.
