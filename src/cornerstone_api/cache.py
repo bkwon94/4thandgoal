@@ -24,7 +24,7 @@ STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 8
+DOCUMENT_VERSION = 9
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -41,6 +41,7 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         # The sides keep their order, because the document lists the sides in the order of the request.
         "sides": [[side.roster_id, sorted(side.gives)] for side in trade.sides],
         "asker": trade.asker,
+        # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
         "content": _content_hash(snapshot, roster_ids),

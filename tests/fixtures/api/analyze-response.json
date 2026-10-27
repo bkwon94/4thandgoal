@@ -176,7 +176,9 @@
       "pending": {
         "usage": 8
       }
-    }
+    },
+    "no_chart": false,
+    "no_chart_note": null
   },
   "fallback": false,
   "missing": [

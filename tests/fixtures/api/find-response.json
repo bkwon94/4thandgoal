@@ -163,7 +163,9 @@
       "games": 0,
       "in_progress": 0,
       "pending": {}
-    }
+    },
+    "no_chart": false,
+    "no_chart_note": null
   },
   "fallback": false,
   "missing": [
