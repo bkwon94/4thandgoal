@@ -9,16 +9,16 @@ week is still a hole. The schedule adjuster and its byes left lean do not change
 
 **Blocked by:** 01, Rename the bye window to the return window.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A starter with his bye in week N+1 and no bench cover is no hole, and the reason has no "hole".
-- [ ] A starter with his bye in week N+1 and a bench cover is no hole.
-- [ ] Two starters with byes in the window and one cover give no hole.
-- [ ] A trade that gives away the only bench cover for a bye opens no hole and gives no step down.
-- [ ] A starter due back in week N+2 with no cover is still a hole, and with a cover is not.
-- [ ] A starter due back in week N+6 is still a hole.
-- [ ] With no schedule map, the reason still names the missing schedules.
-- [ ] The schedule adjuster tests for byes left still pass unchanged.
-- [ ] The hand-worked table passes with its letters unchanged. If a row moves, stop and report it.
-- [ ] The finder timing test stays under 5 seconds.
-- [ ] The full suite passes and ruff is clean.
+- [x] A starter with his bye in week N+1 and no bench cover is no hole, and the reason has no "hole".
+- [x] A starter with his bye in week N+1 and a bench cover is no hole.
+- [x] Two starters with byes in the window and one cover give no hole.
+- [x] A trade that gives away the only bench cover for a bye opens no hole and gives no step down.
+- [x] A starter due back in week N+2 with no cover is still a hole, and with a cover is not.
+- [x] A starter due back in week N+6 is still a hole.
+- [x] With no schedule map, the reason still names the missing schedules.
+- [x] The schedule adjuster tests for byes left still pass unchanged.
+- [x] The hand-worked table passes with its letters unchanged. If a row moves, stop and report it.
+- [x] The finder timing test stays under 5 seconds.
+- [x] The full suite passes and ruff is clean.

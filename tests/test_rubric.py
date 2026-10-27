@@ -2418,6 +2418,3 @@ def test_the_prose_checks_of_the_analysis_pass_on_a_reason_with_the_label(
     for text in (trend, prose):
         assert _prose_failures("roster 1 analysis", text, allowed, breakdown_text, names) == []
         assert _letter_failures("roster 1 analysis", text) == []
-
-
-

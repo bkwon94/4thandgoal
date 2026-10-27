@@ -1,12 +1,12 @@
 # A bye is not a hole, except this week for a middle team
 
 ADR 0003 made a starter's bye inside a 3-week window a hole when no bench player above the line covered
-him. On week 7 live data that flagged 13 uncovered byes across 12 rosters, and the finder found 0 win-win
+him. On week 7 live data that flagged 13 uncovered byes across 12 rosters. The finder found 0 win-win
 trades where the old rule found 5. Brian ruled that a bye is something a team handles, not a reason to
 grade a trade down. The one bye that costs a team is the one it cannot handle: a team in the race for the
 last playoff spot gets a player who starts for it and sits out this week. So a bye is never a hole, with
 one exception. For a middle team, a player it gets who starts after the trade and has his bye in the trade
-week is a new hole, and the roster fit step rule runs as for any new hole. The window stays at 3 weeks for
+week is a new hole. The roster fit step rule runs as for any new hole. The window stays at 3 weeks for
 a starter due back, and its name is now the return window.
 
 ## Considered Options

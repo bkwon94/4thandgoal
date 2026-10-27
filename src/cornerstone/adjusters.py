@@ -158,7 +158,7 @@ class StartingSlot(NamedTuple):
     roster_slot: str
     # His return after the trade week. None when he is not out after the trade week. A bye is never an absence.
     absence: Absence | None = None
-    # True when the player is a new arrival of a middle team and has his bye in the trade week. No cover cancels it.
+    # True when a middle team gets the player and he has his bye in the trade week. No cover cancels it.
     bye_now: bool = False
 
     def is_hole(self, snapshot: Snapshot) -> bool:
@@ -343,7 +343,7 @@ def _with_byes_now(snapshot: Snapshot, roster_id: int, gets: list[str],
                    slots: list[StartingSlot]) -> list[StartingSlot]:
     """The slots after the trade, with bye_now set on each starter a middle team gets who has his bye in the trade week.
 
-    ADR 0004. A contender or a seller reads no bye hole, and with no schedule map no bye reads.
+    ADR 0004. A contender or a seller reads no hole for a bye, and with no schedule map no bye reads.
     """
     if snapshot.schedules is None or team_race(snapshot, roster_id) != "middle":
         return slots

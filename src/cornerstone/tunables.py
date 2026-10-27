@@ -61,7 +61,8 @@ WOPR_SWING = 8
 INJURY_WEEKS = 3
 # A player who is out now is a near return when his return week is no later than the trade week plus this count.
 # The hole read uses the same window, GLOSSARY.md "Return window", so a starter due back inside it needs a bench
-# player to cover him.
+# player to cover him. Three weeks is the trade week and the next two. A pickup or another trade can rarely fix a
+# slot sooner.
 RETURN_WINDOW_WEEKS = 2
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.

@@ -79,8 +79,8 @@ starter out with no return week on file is a hole.
 
 A bye is not a hole, with one exception. For a middle team, a player it gets who starts after the
 trade and has his bye in the trade week is a hole. No cover cancels it. A contender or a seller
-reads no bye hole. With no schedules, no bye reads, and the reason says that the schedules are
-not available.
+reads no hole for a bye. With no schedules, no bye reads, and the reason says that the schedules
+are not available.
 
 Depth is the count of the side's players at a position, starters and bench, at or above the line.
 Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of

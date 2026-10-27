@@ -16,16 +16,16 @@ the case.
 
 **Blocked by:** 02, A bye is never a hole.
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] A middle team gets a player who starts and has his bye in week N: step -1, reason names the slot, the player, week N, and the race.
-- [ ] The same trade for a contender reads no hole.
-- [ ] The same trade for a seller reads no hole.
-- [ ] The same trade with the bye in week N+1 reads no hole.
-- [ ] The same trade where the player lands on the bench reads no hole.
-- [ ] The same trade with a lineup gain reads step 0 and the reason names the hole.
-- [ ] A middle team gives a player with his bye in week N and the reason does not name him.
-- [ ] With no schedule map, the trade reads no hole and the reason names the schedules.
-- [ ] The hand-worked table passes with its letters unchanged. If a row moves, stop and report it.
-- [ ] The finder timing test stays under 5 seconds.
-- [ ] The full suite passes and ruff is clean.
+- [x] A middle team gets a player who starts and has his bye in week N: step -1, reason names the slot, the player, week N, and the race.
+- [x] The same trade for a contender reads no hole.
+- [x] The same trade for a seller reads no hole.
+- [x] The same trade with the bye in week N+1 reads no hole.
+- [x] The same trade where the player lands on the bench reads no hole.
+- [x] The same trade with a lineup gain reads step 0 and the reason names the hole.
+- [x] A middle team gives a player with his bye in week N and the reason does not name him.
+- [x] With no schedule map, the trade reads no hole and the reason names the schedules.
+- [x] The hand-worked table passes with its letters unchanged. If a row moves, stop and report it.
+- [x] The finder timing test stays under 5 seconds.
+- [x] The full suite passes and ruff is clean.

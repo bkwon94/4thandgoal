@@ -8,10 +8,10 @@ prefactor so that ticket 02 removes the bye read from a window that already has 
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The hole read uses the injury read's return window tunable, trade week plus two, and the bye window tunable is gone.
-- [ ] No source, test, or prompt text says "bye window".
-- [ ] The rubric prompt test asserts the new return paragraph and the new bye exception paragraph.
-- [ ] The full suite passes and ruff is clean.
-- [ ] The hand-worked table passes with its letters unchanged.
+- [x] The hole read uses the injury read's return window tunable, trade week plus two, and the bye window tunable is gone.
+- [x] No source, test, or prompt text says "bye window".
+- [x] The rubric prompt test asserts the new return paragraph and the new bye exception paragraph.
+- [x] The full suite passes and ruff is clean.
+- [x] The hand-worked table passes with its letters unchanged.
