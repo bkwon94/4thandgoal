@@ -370,6 +370,18 @@ def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture
     assert snap.model_copy(update={"projections_ahead": None}).position_rank(JACOBS) == 74
 
 
+def test_a_copy_of_the_snapshot_reads_its_own_rosters_and_values(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    roster_id = next(rid for rid, players in snap.rosters.items() if JACOBS in players)
+    value = snap.lineup_value(JACOBS)
+    assert JACOBS in snap.roster_read(roster_id, lambda _, roster: list(roster))
+    smaller = snap.model_copy(update={"rosters": {**snap.rosters,
+                                                  roster_id: [p for p in snap.rosters[roster_id] if p != JACOBS]}})
+    assert JACOBS not in smaller.roster_read(roster_id, lambda _, roster: list(roster))
+    # With no projections file, the due-back Jacobs counts for his recent points, so his value changes.
+    assert snap.model_copy(update={"projections_ahead": None}).lineup_value(JACOBS) != value
+
+
 ACHANE, RODRIGUEZ, BIGSBY, PERINE, GAINWELL, NO_LINE_BACK = "9226", "10219", "9225", "4147", "7567", "80001"
 
 
