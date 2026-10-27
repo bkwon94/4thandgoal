@@ -4,15 +4,16 @@ The builder reads saved raw Sleeper data, the saved history, trade values, and t
 """
 import json
 import logging
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 
 from pydantic import BaseModel, PrivateAttr
 
 from cornerstone.facts_league import standings
-from cornerstone.history import load_saved_weeks
-from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, Team
+from cornerstone.history import load_saved_weeks, snap_share, target_share
+from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
@@ -128,6 +129,12 @@ class Snapshot(BaseModel):
     # GLOSSARY.md, "Position rank".
     _rank_table: dict[str, list[str]] | None = PrivateAttr(default=None)
     _position_ranks: dict[str, int] | None = PrivateAttr(default=None)
+    # The lineup value of each player, the snap and target shares of each player, and the read of each roster as it
+    # is now, by roster id, each built on the first read. The finder grades about a thousand trades per call, and
+    # these reads depend on the snapshot only, so they must not run again per trade.
+    _lineup_values: dict[str, Decimal] = PrivateAttr(default_factory=dict)
+    _usage_shares: dict[str, tuple[UsageShare | None, UsageShare | None]] = PrivateAttr(default_factory=dict)
+    _roster_reads: dict[int, object] = PrivateAttr(default_factory=dict)
 
     def rank_table(self) -> dict[str, list[str]]:
         """The player ids at each of QB, RB, WR, and TE in position rank order, first to last.
@@ -145,6 +152,29 @@ class Snapshot(BaseModel):
         self.rank_table()
         return self._position_ranks.get(player_id)
 
+    def lineup_value(self, player_id: str) -> Decimal:
+        """The points per game the player counts for in a best lineup, built once per player per snapshot."""
+        if player_id not in self._lineup_values:
+            self._lineup_values[player_id] = lineup_value(self, player_id)
+        return self._lineup_values[player_id]
+
+    def usage_shares(self, player_id: str) -> tuple[UsageShare | None, UsageShare | None]:
+        """The snap share and the target share of the player through the player stat bound, built once per player."""
+        if player_id not in self._usage_shares:
+            through = self.as_of.stats_through
+            self._usage_shares[player_id] = (snap_share(self.stats, player_id, through),
+                                             target_share(self.stats, player_id, through))
+        return self._usage_shares[player_id]
+
+    def roster_read(self, roster_id: int, build: Callable[["Snapshot", list[str]], object]) -> object:
+        """The read of the roster as it is now, built once per roster by `build`.
+
+        The adjusters own the read, and the adjusters import this module, so the caller passes the build.
+        """
+        if roster_id not in self._roster_reads:
+            self._roster_reads[roster_id] = build(self, self.rosters[roster_id])
+        return self._roster_reads[roster_id]
+
     def best_free_agent(self, positions: Iterable[str]) -> tuple[SnapshotPlayer, int] | None:
         """The free agent at any of `positions` with the most lineup value, and his rank at his own position.
 
@@ -160,10 +190,14 @@ class Snapshot(BaseModel):
         return min(ranked, key=lambda each: (-lineup_value(self, each[0].player_id), each[1], each[0].player_id))
 
     def model_copy(self, *, update: dict | None = None, deep: bool = False) -> "Snapshot":
-        """A copy with no rank table, so a copy with new rosters, returns, or stats ranks from its own data."""
+        """A copy with no rank table and no cached reads, so a copy with new rosters, returns, or stats reads its own
+        data."""
         copy = super().model_copy(update=update, deep=deep)
         copy._rank_table = None
         copy._position_ranks = None
+        copy._lineup_values = {}
+        copy._usage_shares = {}
+        copy._roster_reads = {}
         return copy
 
 

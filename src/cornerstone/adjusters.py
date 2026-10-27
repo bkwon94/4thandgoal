@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.history import (
-    SHARE_DIRECTION_WEEKS, _round_half_up, carry_share, player_points, red_zone, scored_weeks, snap_share,
-    stats_complete, target_share,
+    SHARE_DIRECTION_WEEKS, _round_half_up, carry_share, player_points, red_zone, scored_weeks, stats_complete,
 )
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
@@ -187,7 +186,7 @@ def lineup_slots(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
     """
     positions = {pid: snapshot.players[pid].position for pid in roster}
     filled = fill_slots(roster, snapshot.roster_positions, positions,
-                        {pid: lineup_value(snapshot, pid) for pid in roster})
+                        {pid: snapshot.lineup_value(pid) for pid in roster})
     counts = {slot: sum(1 for each, _ in filled if each == slot) for slot, _ in filled}
     seen: dict[str, int] = {}
     starting = []
@@ -270,7 +269,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
 
 
 def _lineup_total(starting: list[StartingSlot], snapshot: Snapshot) -> Decimal:
-    return sum((lineup_value(snapshot, slot.player) for slot in starting if slot.player is not None), Decimal(0))
+    return sum((snapshot.lineup_value(slot.player) for slot in starting if slot.player is not None), Decimal(0))
 
 
 class Side(BaseModel):
@@ -352,15 +351,22 @@ def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: li
     return [pid for pid in snapshot.rosters[roster_id] if pid not in gives] + gets
 
 
+def _read_before(snapshot: Snapshot, roster: list[str]) -> tuple[list[StartingSlot], Decimal]:
+    """The starting slots of the roster before the trade, and their lineup total."""
+    before = lineup_slots(roster, snapshot)
+    return before, _lineup_total(before, snapshot)
+
+
 def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None,
           handcuffs: list[str]) -> Side:
-    before = lineup_slots(snapshot.rosters[roster_id], snapshot)
+    # The read before the trade depends on the roster as it is now only, so it builds once per roster.
+    before, total_before = snapshot.roster_read(roster_id, _read_before)
     after = lineup_slots(_roster_after(snapshot, roster_id, gives, gets), snapshot)
     return Side(
         roster_id=roster_id, gets=gets, gives=gives,
         starters_after=[slot.player for slot in after if slot.player is not None],
         slots_before=before, slots_after=after,
-        lineup_change=_lineup_total(after, snapshot) - _lineup_total(before, snapshot),
+        lineup_change=_lineup_total(after, snapshot) - total_before,
         gets_highest_value=top in gets,
         gives_highest_value=top in gives,
         handcuffs=handcuffs,
@@ -689,8 +695,7 @@ def _wopr(snapshot: Snapshot, player_id: str) -> _WoprWindow | None:
 def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
     """The set of share directions, up or down, of the players.
     A flat share or a player with no usage data adds none."""
-    through = snapshot.as_of.stats_through
-    shares = [share(snapshot.stats, pid, through) for pid in players for share in (snap_share, target_share)]
+    shares = [share for pid in players for share in snapshot.usage_shares(pid)]
     return {share.direction for share in shares if share is not None and share.direction in ("up", "down")}
 
 
@@ -721,12 +726,10 @@ def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
     When they differ, the weeks come after each percent.
     A share that reads a week N game in progress ends the sentence with "game in progress", because it can still move.
     """
-    through = snapshot.as_of.stats_through
     names = _short_names(snapshot, players)
     sentences = []
     for pid in players:
-        moved = [(kind, share) for kind, share in (("snap share", snap_share(snapshot.stats, pid, through)),
-                                                   ("target share", target_share(snapshot.stats, pid, through)))
+        moved = [(kind, share) for kind, share in zip(("snap share", "target share"), snapshot.usage_shares(pid))
                  if share is not None and share.direction in ("up", "down")]
         if not moved:
             continue
