@@ -819,6 +819,20 @@ def test_last_name_outside_team_names_still_fails(fixture_raw_dir):
     assert any("player Jalen Hurts is not on a team in this chapter" in m for m in code_check(b, ch, sheet))
 
 
+def test_game_changer_sentence_naming_his_own_player_passes(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    b = _blurb("game_changer", _s("Tre Tucker carried the win.", "M6.swing.10213"), _s("They won.", "M6.result"))
+    assert not any("player" in m for m in code_check(b, ch, sheet))
+
+
+def test_game_changer_sentence_naming_another_player_fails(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    ch = _ch(sheet, "game_changer")
+    b = _blurb("game_changer", _s("Tyler Shough threw to Tre Tucker.", "M6.swing.10213"), _s("They won.", "M6.result"))
+    assert any("player Tyler Shough is not on a team in this chapter" in m for m in code_check(b, ch, sheet))
+
+
 def test_two_rankings_teams_with_the_same_opener_fail(fixture_raw_dir, fixture_history_root):
     sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
     sentences = _good_rankings(sheet, ch)
