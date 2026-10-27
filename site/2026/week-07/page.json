@@ -704,7 +704,7 @@
         }
       ],
       "is_pick": true,
-      "recap": "Lil Fridge left Caleb Williams and his 22.12 on the bench to start Bryce Young's 7.42, a swap that would have flipped the result. Return of T Mac pulled the upset anyway, getting 14.7 from recent add Bijan Robinson while the other side's new pickup, Courtland Sutton, managed 6. To top it off, the league leaders now have Christian McCaffrey listed Questionable."
+      "recap": "Lil Fridge, sitting 1st, left Caleb Williams and his 22.12 on the bench to start Bryce Young, who managed 7.42, and that swap alone flips the result. Return of T Mac took the upset anyway, getting 14.7 from trade pickup Bijan Robinson while Courtland Sutton, the free agent add on the other side, put up 6. Christian McCaffrey, one of the few starters on that losing side to clear his projection, is now listed Questionable on Sleeper."
     },
     {
       "id": 2,
@@ -767,7 +767,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Brock ‘N’ Roll beat Maye d'force B with U 85.87 to 81.19 in an upset, a race to the bottom where both sides posted a season low. Recent adds Chris Godwin Jr. and Tyler Allgeier managed 4.7 and 6.4, and the Jets defense, another new pickup, finished below zero. On the other side, Jaylen Waddle is now listed Questionable, and new pickup Zonovan Knight edged past his projection."
+      "recap": "Brock ‘N’ Roll beat Maye d'force B with U in an upset, and both sides got there by posting a season low. The winning side's new pickups gave almost nothing back, with the Jets defense going negative at -0.55 and Chris Godwin Jr. scraping together 4.7. Tyler Allgeier added 6.4 and Zonovan Knight 7.8 as the other new pickups, while Jaylen Waddle is now listed Questionable."
     },
     {
       "id": 3,
@@ -830,7 +830,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "CeeDee Lamb showed up for behold the lamb, and they still lost 106.12 to 91.65 to Unsolicited Dak Picks in an upset. Caleb Douglas, a recent add, outscored the margin on his own with 20, and fellow recent add Josh Jacobs did the same with 17.6. Saquon Barkley is now listed Questionable, and the losing side's own new pickups, Kyler Murray and the Cleveland Browns defense, both landed under projection."
+      "recap": "Unsolicited Dak Picks beat behold the lamb 106.12 to 91.65 in an upset. A 6.25 projection turned into 20 for Caleb Douglas, the new pickup who outscored the margin on his own. On the losing side, Saquon Barkley is now listed Questionable, and the free agent pickups Kyler Murray and the Browns defense both finished under projection."
     },
     {
       "id": 4,
@@ -893,7 +893,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Amon-Ra Dawg Your Team ran London Cooking out of its own kitchen in an upset. Tony Pollard, a recent add by trade, posted 35, while the other side's trade for Nico Collins returned 1.6. Garrett Wilson, another trade add for the winners, managed just 3.6, and Woody Marks, Drake London and Amon-Ra St. Brown are now listed Questionable."
+      "recap": "Amon-Ra Dawg Your Team hung a season-high 148.13 on London Cooking in an upset. The new pickup Tony Pollard put up 35 by himself, while the kitchen's own trade arrival Nico Collins served 1.6. Garrett Wilson, the winners' other trade add, flopped too, and Woody Marks, Drake London and Amon-Ra St. Brown are all now listed Questionable."
     },
     {
       "id": 5,
@@ -956,7 +956,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "All You Need Is Love took down Bo Girds in an upset, and Joe Burrow outscored the margin on his own with 28.88. The new pickup Devaughn Vele chipped in 13.9 for the losing side, and they have now lost 3 straight. Aaron Jones Sr. is now listed Questionable, and the winners posted a season high with next to nothing from him."
+      "recap": "All You Need Is Love beat Bo Girds 121.63 to 110.27 in an upset, and it was a season high for the winners. The losers' recent add Devaughn Vele chipped in 13.9, while their Houston Texans defense contributed 0.05. Aaron Jones Sr. is now listed Questionable, and the winners still got there with Joe Burrow outscoring the margin on his own."
     },
     {
       "id": 6,
@@ -1019,7 +1019,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Pukancun on 3 hung a season high on To Infinity and Bijan, winning 122.5 to 106.32 in an upset. The new pickups on the losing side went nowhere: the Titans defense finished at -0.7 and Jaylin Noel, now listed Questionable, managed 0.7. Cam Skattebo, a recent add for the winners who is now listed Questionable, outscored the margin on his own."
+      "recap": "Pukancun on 3 took this one 122.5 to 106.32 in an upset, posting a season high along the way. To Infinity and Bijan grabbed the Tennessee Titans defense as a free agent add and got -0.7 back for the trouble. Jaylin Noel, another new pickup on the losing side, is now listed Questionable, and so is Cam Skattebo for the winners."
     }
   ],
   "median": {
@@ -1534,8 +1534,8 @@
         "points_for": 779.49,
         "is_brian": false
       },
-      "must_watch": true,
-      "reason": "1st vs 5th, near the playoff cut"
+      "must_watch": false,
+      "reason": null
     },
     {
       "a": {
@@ -1558,8 +1558,8 @@
         "points_for": 679.66,
         "is_brian": false
       },
-      "must_watch": false,
-      "reason": null
+      "must_watch": true,
+      "reason": "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"
     },
     {
       "a": {
@@ -1582,8 +1582,8 @@
         "points_for": 820.11,
         "is_brian": false
       },
-      "must_watch": true,
-      "reason": "3rd vs 6th, near the playoff cut"
+      "must_watch": false,
+      "reason": null
     },
     {
       "a": {
@@ -1654,24 +1654,24 @@
         "points_for": 650.2,
         "is_brian": false
       },
-      "must_watch": false,
-      "reason": null
+      "must_watch": true,
+      "reason": "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"
     }
   ],
   "blurbs": {
-    "motw": "Return of T Mac knocked off first-place Lil Fridge 101.61 to 89.77 in an upset. The answer was on the bench: Caleb Williams sat on 22.12 while Bryce Young finished dead last among started QBs, and that swap flips the result. Bold lineup call. Bijan Robinson, the recent trade add, managed just 14.7 and still outscored the margin on his own. On the losing side, the new pickup Courtland Sutton posted 6. Christian McCaffrey put up 19 for the leaders and is now listed Questionable.",
-    "game_changer": "Caleb Douglas, the new pickup, turned a 6.25 projection into 20 points and the Game Changer. Unsolicited Dak Picks took down behold the lamb in an upset, and did it with the Ravens defense finishing at -4. Douglas outscored the margin on his own, and Josh Jacobs, a trade acquisition, chipped in 17.6. On the other side, the new pickups Kyler Murray and the Browns defense both came in under projection. Saquon Barkley, who put up 14.1 for the losing side, is now listed Questionable on Sleeper.",
-    "awards": "Tony Pollard, a trade pickup for Amon-Ra Dawg Your Team, was the Top Scorer with 35 on a 13.31 projection. Caleb Douglas, a free agent add, took Game Changer with 20 on a 6.25 projection. His manager at Unsolicited Dak Picks left Dak Prescott on the bench for 23.28, the most of any bench player this week. Read the name again.",
-    "position_leaders": "Tony Pollard led every running back with 35, getting 86 percent of his team's carries. Bo Nix and Tee Higgins also made the leaderboard, so Amon-Ra Dawg Your Team basically rented out the whole page. Turns out All You Need Is Love also needs Joe Burrow, who topped the quarterbacks at 28.88, with Colston Loveland 2nd among tight ends. Jaxon Smith-Njigba led the receivers at 26.8 for Lil Fridge, on the biggest share of his team's targets and air yards among started WRs.",
-    "recap_1": "Lil Fridge left Caleb Williams and his 22.12 on the bench to start Bryce Young's 7.42, a swap that would have flipped the result. Return of T Mac pulled the upset anyway, getting 14.7 from recent add Bijan Robinson while the other side's new pickup, Courtland Sutton, managed 6. To top it off, the league leaders now have Christian McCaffrey listed Questionable.",
-    "recap_2": "Brock ‘N’ Roll beat Maye d'force B with U 85.87 to 81.19 in an upset, a race to the bottom where both sides posted a season low. Recent adds Chris Godwin Jr. and Tyler Allgeier managed 4.7 and 6.4, and the Jets defense, another new pickup, finished below zero. On the other side, Jaylen Waddle is now listed Questionable, and new pickup Zonovan Knight edged past his projection.",
-    "recap_3": "CeeDee Lamb showed up for behold the lamb, and they still lost 106.12 to 91.65 to Unsolicited Dak Picks in an upset. Caleb Douglas, a recent add, outscored the margin on his own with 20, and fellow recent add Josh Jacobs did the same with 17.6. Saquon Barkley is now listed Questionable, and the losing side's own new pickups, Kyler Murray and the Cleveland Browns defense, both landed under projection.",
-    "recap_4": "Amon-Ra Dawg Your Team ran London Cooking out of its own kitchen in an upset. Tony Pollard, a recent add by trade, posted 35, while the other side's trade for Nico Collins returned 1.6. Garrett Wilson, another trade add for the winners, managed just 3.6, and Woody Marks, Drake London and Amon-Ra St. Brown are now listed Questionable.",
-    "recap_5": "All You Need Is Love took down Bo Girds in an upset, and Joe Burrow outscored the margin on his own with 28.88. The new pickup Devaughn Vele chipped in 13.9 for the losing side, and they have now lost 3 straight. Aaron Jones Sr. is now listed Questionable, and the winners posted a season high with next to nothing from him.",
-    "recap_6": "Pukancun on 3 hung a season high on To Infinity and Bijan, winning 122.5 to 106.32 in an upset. The new pickups on the losing side went nowhere: the Titans defense finished at -0.7 and Jaylin Noel, now listed Questionable, managed 0.7. Cam Skattebo, a recent add for the winners who is now listed Questionable, outscored the margin on his own.",
-    "median": "Unsolicited Dak Picks cleared the median by 2.26, and Return of T Mac missed it by the same sliver. Amon-Ra Dawg Your Team blew past the line with a season-high 148.13. Maye d'force B with U went the other way, landing 22.68 under it with a season low. Not a great look.",
-    "next_week": "Maye d'force B with U gets Lil Fridge in a Must Watch, and Lil Fridge holds either way while a win puts Maye's playoff odds at 63%, a loss at 38%. The other Must Watch sends Brock ‘N’ Roll into London Cooking, who also holds, with Brock's playoff odds at 62% after a win and 35% after a loss. Amon-Ra Dawg Your Team gets the softest draw in the league against the last-place side, and both teams sit below the cut, a showdown of the awful.",
-    "rankings": "Lil Fridge climbs to the top spot despite a 12-point loss to the 7th-place team. A 10-4 record keeps them 3 games above the cut. Return of T Mac rose to 2nd on a 12-point win over the league leader. They have won 4 straight and still sit 1 spot outside the playoff spots. Their playoff odds sit at about 54%. Bo Girds climbed to 3rd off an 11-point loss. Reward the losing, apparently. That is 3 straight losses for a side with bye odds of about 73%. London Cooking fell 3 spots after losing by 50. The kitchen has gone cold, down to 107.08 per week lately. They still sit in the playoff spots. All You Need Is Love climbed 2 places on an 11-point win. They have won 2 straight and get the 2nd easiest remaining schedule. Maye d'force B with U slid 2 places after a 5-point loss. At 7-7 they sit level with the last playoff spot, with playoff odds of about 49%. The force is a coin flip right now. Amon-Ra Dawg Your Team climbed to 7th on a 50-point win. At 6-8 they still sit 1 game below the cut. They project 113 a week with the easiest remaining schedule, and their playoff odds sit at about 58%. Brock ‘N’ Roll stays put in 8th. The scoring keeps pace while the results lag behind it. They hold the last playoff spot at 7-7 with playoff odds of about 42%. Unsolicited Dak Picks rose 3 places on a 14-point win. Nobody asked, and they still sit 1 game below the cut at 6-8. Pukancun on 3 sits 10th in the power rankings with the worst record in the league at 3-11. Lately they have been good, ranking 2nd in results over the last 3 weeks. The bad news is the hardest remaining schedule in the league. behold the lamb tumbled 5 places after a 14-point loss. The team that did it sat 10th. They sit 1 game below the cut at 6-8. To Infinity and Bijan fell to last after a 16-point loss to the 12th-place team. They have lost 3 straight head-to-head, with scoring down to 73.07 per week lately. Infinity has never looked so far away."
+    "motw": "Return of T Mac knocked off first-place Lil Fridge 101.61 to 89.77 in an upset. The real story sat on the bench: Caleb Williams scored 22.12 there while Bryce Young started, and that swap flips the result. Brutal lineup call. Bryce Young finished dead last among started quarterbacks with 7.42. On the other side, Bijan Robinson, a recent add by trade, managed 14.7 and still outscored the margin on his own. Recent add Courtland Sutton chipped in 6 for the leaders, and Christian McCaffrey, who put up 19, is now listed Questionable.",
+    "game_changer": "Caleb Douglas, a recent free agent add, gave Unsolicited Dak Picks 20 points on a 6.25 projection. That outscored the margin on his own as this side beat behold the lamb in an upset. The same lineup started the Baltimore Ravens defense and got -4 for it. Josh Jacobs, acquired by trade, chipped in 17.6, while Kyler Murray, a free agent add across the way, managed 13.9. Saquon Barkley, who gave the losing side 14.1, is now listed Questionable.",
+    "awards": "Tony Pollard was the Top Scorer with 35, and the new pickup came over in a week 6 trade to Amon-Ra Dawg Your Team. Unsolicited Dak Picks left Dak Prescott on the bench for an MVB 23.28 and still won behind the new pickup Caleb Douglas, the Game Changer with 20. London Cooking got 1.6 from Nico Collins, the Underperformer, and he has now missed projection 3 weeks running. Drake London and Amon-Ra St. Brown are now listed Questionable.",
+    "position_leaders": "Amon-Ra Dawg Your Team landed Tony Pollard, Tee Higgins and Bo Nix among the position leaders, and not one of them is named Amon-Ra. Pollard topped every started running back with 35, on an 86 percent carry share. All You Need Is Love got the top quarterback in Joe Burrow at 28.88, plus the top defense in the Vikings. Jaxon Smith-Njigba led the receivers with 26.8, on the biggest share of his team's targets and air yards among started WRs.",
+    "recap_1": "Lil Fridge, sitting 1st, left Caleb Williams and his 22.12 on the bench to start Bryce Young, who managed 7.42, and that swap alone flips the result. Return of T Mac took the upset anyway, getting 14.7 from trade pickup Bijan Robinson while Courtland Sutton, the free agent add on the other side, put up 6. Christian McCaffrey, one of the few starters on that losing side to clear his projection, is now listed Questionable on Sleeper.",
+    "recap_2": "Brock ‘N’ Roll beat Maye d'force B with U in an upset, and both sides got there by posting a season low. The winning side's new pickups gave almost nothing back, with the Jets defense going negative at -0.55 and Chris Godwin Jr. scraping together 4.7. Tyler Allgeier added 6.4 and Zonovan Knight 7.8 as the other new pickups, while Jaylen Waddle is now listed Questionable.",
+    "recap_3": "Unsolicited Dak Picks beat behold the lamb 106.12 to 91.65 in an upset. A 6.25 projection turned into 20 for Caleb Douglas, the new pickup who outscored the margin on his own. On the losing side, Saquon Barkley is now listed Questionable, and the free agent pickups Kyler Murray and the Browns defense both finished under projection.",
+    "recap_4": "Amon-Ra Dawg Your Team hung a season-high 148.13 on London Cooking in an upset. The new pickup Tony Pollard put up 35 by himself, while the kitchen's own trade arrival Nico Collins served 1.6. Garrett Wilson, the winners' other trade add, flopped too, and Woody Marks, Drake London and Amon-Ra St. Brown are all now listed Questionable.",
+    "recap_5": "All You Need Is Love beat Bo Girds 121.63 to 110.27 in an upset, and it was a season high for the winners. The losers' recent add Devaughn Vele chipped in 13.9, while their Houston Texans defense contributed 0.05. Aaron Jones Sr. is now listed Questionable, and the winners still got there with Joe Burrow outscoring the margin on his own.",
+    "recap_6": "Pukancun on 3 took this one 122.5 to 106.32 in an upset, posting a season high along the way. To Infinity and Bijan grabbed the Tennessee Titans defense as a free agent add and got -0.7 back for the trouble. Jaylin Noel, another new pickup on the losing side, is now listed Questionable, and so is Cam Skattebo for the winners.",
+    "median": "The median landed at 103.87, and Amon-Ra Dawg Your Team cleared it by 44.27 with a season high. Unsolicited Dak Picks slipped over it by 2.26, and Return of T Mac missed it by exactly that much. Maye d'force B with U fell 22.68 short with a season low of 81.19. The force was elsewhere.",
+    "next_week": "Return of T Mac puts its win streak on the line in a near-the-cut Must Watch, where a win lifts its playoff odds to 64% and a loss drops them to 37%. Across the field, behold the lamb plays for 11% playoff odds with a win and 3% with a loss. In the other Must Watch, Bo Girds and To Infinity and Bijan both bring losing streaks, so somebody's skid has to end, and neither side's playoff odds will budge either way.",
+    "rankings": "Lil Fridge climbs to the top spot even after dropping a 12-point game to the 7th-place team. A 10-4 record keeps this side 3 games above the cut. Playoff odds of about 99% make the rest of the season a formality. Return of T Mac jumps to 2nd on a 4-game win streak, the latest over the league leader. They are still 1 spot outside the playoff spots. Playoff odds sit at about 54%, a coin flip with momentum. Bo Girds rises 2 places while losing 3 straight. The latest was an 11-point loss to the 5th-place team. A 3-0 mark at the median says the points still show up. London Cooking slides 3 places after taking a 50-point beating. Nothing came out of that kitchen. Playoff odds still sit at about 99%. All You Need Is Love climbs 2 spots after an 11-point win. That makes 2 straight, with the 2nd easiest remaining schedule ahead. Maye d'force B with U slips 2 places after a 5-point loss. Playoff odds of about 49% put this side squarely on the fence. Sitting level with the last playoff spot is the definition of middle. Amon-Ra Dawg Your Team moves up 2 places after a 50-point demolition. At 6-8 they still hold playoff odds of about 58%. They also get the easiest remaining schedule and project 113 a week from here. Brock ‘N’ Roll stays put at 8th while sitting in the last playoff spot. Playoff odds of about 42% say that seat is rented, not owned. Scoring sits mid-pack and the recent results lag behind it. Unsolicited Dak Picks jumps 3 places after a 14-point win. Nobody asked for this climb, and it comes with playoff odds of about 15%. Pukancun on 3 nudges up 1 place after a 16-point win. Recent results rank 2nd, a nice hobby for a 3-11 team. The hardest remaining schedule keeps the playoff dream mostly theoretical. behold the lamb falls 5 places after a 14-point loss. Playoff odds of about 6% make this flock a sacrifice. To Infinity and Bijan lands in the basement after a 16-point loss to the last-place team. That is 3 straight losses at 73.07 a week over that stretch. Infinity, it turns out, has a floor."
   },
   "avatars": {
     "1": "avatars/1.jpg",

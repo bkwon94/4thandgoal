@@ -1391,16 +1391,22 @@
           },
           "blurb": [
             {
-              "text": "Lil Fridge climbs to the top spot despite a 12-point loss to the 7th-place team.",
+              "text": "Lil Fridge climbs to the top spot even after dropping a 12-point game to the 7th-place team.",
               "fact_ids": [
                 "PR.3",
                 "PR.3.why"
               ]
             },
             {
-              "text": "A 10-4 record keeps them 3 games above the cut.",
+              "text": "A 10-4 record keeps this side 3 games above the cut.",
               "fact_ids": [
                 "S.1"
+              ]
+            },
+            {
+              "text": "Playoff odds of about 99% make the rest of the season a formality.",
+              "fact_ids": [
+                "ODDS.3"
               ]
             }
           ],
@@ -1426,21 +1432,21 @@
           },
           "blurb": [
             {
-              "text": "Return of T Mac rose to 2nd on a 12-point win over the league leader.",
+              "text": "Return of T Mac jumps to 2nd on a 4-game win streak, the latest over the league leader.",
               "fact_ids": [
                 "PR.8",
+                "H.8.streak",
                 "PR.8.why"
               ]
             },
             {
-              "text": "They have won 4 straight and still sit 1 spot outside the playoff spots.",
+              "text": "They are still 1 spot outside the playoff spots.",
               "fact_ids": [
-                "H.8.streak",
                 "S.7"
               ]
             },
             {
-              "text": "Their playoff odds sit at about 54%.",
+              "text": "Playoff odds sit at about 54%, a coin flip with momentum.",
               "fact_ids": [
                 "ODDS.8"
               ]
@@ -1468,21 +1474,22 @@
           },
           "blurb": [
             {
-              "text": "Bo Girds climbed to 3rd off an 11-point loss.",
+              "text": "Bo Girds rises 2 places while losing 3 straight.",
               "fact_ids": [
                 "PR.6",
+                "H.6.streak"
+              ]
+            },
+            {
+              "text": "The latest was an 11-point loss to the 5th-place team.",
+              "fact_ids": [
                 "PR.6.why"
               ]
             },
             {
-              "text": "Reward the losing, apparently.",
-              "fact_ids": []
-            },
-            {
-              "text": "That is 3 straight losses for a side with bye odds of about 73%.",
+              "text": "A 3-0 mark at the median says the points still show up.",
               "fact_ids": [
-                "H.6.streak",
-                "ODDS.6"
+                "PR.6"
               ]
             }
           ],
@@ -1508,22 +1515,20 @@
           },
           "blurb": [
             {
-              "text": "London Cooking fell 3 spots after losing by 50.",
+              "text": "London Cooking slides 3 places after taking a 50-point beating.",
               "fact_ids": [
                 "PR.5",
                 "PR.5.why"
               ]
             },
             {
-              "text": "The kitchen has gone cold, down to 107.08 per week lately.",
-              "fact_ids": [
-                "H.5.trend"
-              ]
+              "text": "Nothing came out of that kitchen.",
+              "fact_ids": []
             },
             {
-              "text": "They still sit in the playoff spots.",
+              "text": "Playoff odds still sit at about 99%.",
               "fact_ids": [
-                "S.3"
+                "ODDS.5"
               ]
             }
           ],
@@ -1549,14 +1554,14 @@
           },
           "blurb": [
             {
-              "text": "All You Need Is Love climbed 2 places on an 11-point win.",
+              "text": "All You Need Is Love climbs 2 spots after an 11-point win.",
               "fact_ids": [
                 "PR.2",
                 "PR.2.why"
               ]
             },
             {
-              "text": "They have won 2 straight and get the 2nd easiest remaining schedule.",
+              "text": "That makes 2 straight, with the 2nd easiest remaining schedule ahead.",
               "fact_ids": [
                 "H.2.streak",
                 "ODDS.2.why"
@@ -1585,23 +1590,22 @@
           },
           "blurb": [
             {
-              "text": "Maye d'force B with U slid 2 places after a 5-point loss.",
+              "text": "Maye d'force B with U slips 2 places after a 5-point loss.",
               "fact_ids": [
                 "PR.9",
                 "PR.9.why"
               ]
             },
             {
-              "text": "At 7-7 they sit level with the last playoff spot, with playoff odds of about 49%.",
+              "text": "Playoff odds of about 49% put this side squarely on the fence.",
               "fact_ids": [
-                "S.5",
                 "ODDS.9"
               ]
             },
             {
-              "text": "The force is a coin flip right now.",
+              "text": "Sitting level with the last playoff spot is the definition of middle.",
               "fact_ids": [
-                "ODDS.9"
+                "S.5"
               ]
             }
           ],
@@ -1627,23 +1631,23 @@
           },
           "blurb": [
             {
-              "text": "Amon-Ra Dawg Your Team climbed to 7th on a 50-point win.",
+              "text": "Amon-Ra Dawg Your Team moves up 2 places after a 50-point demolition.",
               "fact_ids": [
                 "PR.12",
                 "PR.12.why"
               ]
             },
             {
-              "text": "At 6-8 they still sit 1 game below the cut.",
+              "text": "At 6-8 they still hold playoff odds of about 58%.",
               "fact_ids": [
-                "S.8"
+                "S.8",
+                "ODDS.12"
               ]
             },
             {
-              "text": "They project 113 a week with the easiest remaining schedule, and their playoff odds sit at about 58%.",
+              "text": "They also get the easiest remaining schedule and project 113 a week from here.",
               "fact_ids": [
-                "ODDS.12.why",
-                "ODDS.12"
+                "ODDS.12.why"
               ]
             }
           ],
@@ -1669,22 +1673,22 @@
           },
           "blurb": [
             {
-              "text": "Brock ‘N’ Roll stays put in 8th.",
+              "text": "Brock ‘N’ Roll stays put at 8th while sitting in the last playoff spot.",
               "fact_ids": [
-                "PR.1"
+                "PR.1",
+                "S.6"
               ]
             },
             {
-              "text": "The scoring keeps pace while the results lag behind it.",
+              "text": "Playoff odds of about 42% say that seat is rented, not owned.",
+              "fact_ids": [
+                "ODDS.1"
+              ]
+            },
+            {
+              "text": "Scoring sits mid-pack and the recent results lag behind it.",
               "fact_ids": [
                 "PR.1.why"
-              ]
-            },
-            {
-              "text": "They hold the last playoff spot at 7-7 with playoff odds of about 42%.",
-              "fact_ids": [
-                "S.6",
-                "ODDS.1"
               ]
             }
           ],
@@ -1710,16 +1714,16 @@
           },
           "blurb": [
             {
-              "text": "Unsolicited Dak Picks rose 3 places on a 14-point win.",
+              "text": "Unsolicited Dak Picks jumps 3 places after a 14-point win.",
               "fact_ids": [
                 "PR.11",
                 "PR.11.why"
               ]
             },
             {
-              "text": "Nobody asked, and they still sit 1 game below the cut at 6-8.",
+              "text": "Nobody asked for this climb, and it comes with playoff odds of about 15%.",
               "fact_ids": [
-                "S.9"
+                "ODDS.11"
               ]
             }
           ],
@@ -1745,20 +1749,21 @@
           },
           "blurb": [
             {
-              "text": "Pukancun on 3 sits 10th in the power rankings with the worst record in the league at 3-11.",
+              "text": "Pukancun on 3 nudges up 1 place after a 16-point win.",
+              "fact_ids": [
+                "PR.4",
+                "PR.4.why"
+              ]
+            },
+            {
+              "text": "Recent results rank 2nd, a nice hobby for a 3-11 team.",
               "fact_ids": [
                 "PR.4",
                 "S.12"
               ]
             },
             {
-              "text": "Lately they have been good, ranking 2nd in results over the last 3 weeks.",
-              "fact_ids": [
-                "PR.4"
-              ]
-            },
-            {
-              "text": "The bad news is the hardest remaining schedule in the league.",
+              "text": "The hardest remaining schedule keeps the playoff dream mostly theoretical.",
               "fact_ids": [
                 "ODDS.4.why"
               ]
@@ -1786,22 +1791,16 @@
           },
           "blurb": [
             {
-              "text": "behold the lamb tumbled 5 places after a 14-point loss.",
+              "text": "behold the lamb falls 5 places after a 14-point loss.",
               "fact_ids": [
                 "PR.10",
                 "PR.10.why"
               ]
             },
             {
-              "text": "The team that did it sat 10th.",
+              "text": "Playoff odds of about 6% make this flock a sacrifice.",
               "fact_ids": [
-                "PR.10.why"
-              ]
-            },
-            {
-              "text": "They sit 1 game below the cut at 6-8.",
-              "fact_ids": [
-                "S.10"
+                "ODDS.10"
               ]
             }
           ],
@@ -1827,23 +1826,23 @@
           },
           "blurb": [
             {
-              "text": "To Infinity and Bijan fell to last after a 16-point loss to the 12th-place team.",
+              "text": "To Infinity and Bijan lands in the basement after a 16-point loss to the last-place team.",
               "fact_ids": [
                 "PR.7",
                 "PR.7.why"
               ]
             },
             {
-              "text": "They have lost 3 straight head-to-head, with scoring down to 73.07 per week lately.",
+              "text": "That is 3 straight losses at 73.07 a week over that stretch.",
               "fact_ids": [
                 "H.7.streak",
                 "H.7.trend"
               ]
             },
             {
-              "text": "Infinity has never looked so far away.",
+              "text": "Infinity, it turns out, has a floor.",
               "fact_ids": [
-                "ODDS.7"
+                "H.7.trend"
               ]
             }
           ],

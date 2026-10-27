@@ -1352,20 +1352,20 @@
       {
         "a": 3,
         "b": 9,
-        "must_watch": true,
-        "reason": "1st vs 5th, near the playoff cut"
-      },
-      {
-        "a": 8,
-        "b": 10,
         "must_watch": false,
         "reason": null
       },
       {
+        "a": 8,
+        "b": 10,
+        "must_watch": true,
+        "reason": "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"
+      },
+      {
         "a": 1,
         "b": 5,
-        "must_watch": true,
-        "reason": "3rd vs 6th, near the playoff cut"
+        "must_watch": false,
+        "reason": null
       },
       {
         "a": 2,
@@ -1382,8 +1382,8 @@
       {
         "a": 6,
         "b": 7,
-        "must_watch": false,
-        "reason": null
+        "must_watch": true,
+        "reason": "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"
       }
     ],
     "history": [
@@ -6334,7 +6334,7 @@
       },
       "NX.3v9": {
         "id": "NX.3v9",
-        "text": "Next week Lil Fridge (10-4, 1st) plays Maye d'force B with U (7-7, 5th). Must Watch: 1st vs 5th, near the playoff cut.",
+        "text": "Next week Lil Fridge (10-4, 1st) plays Maye d'force B with U (7-7, 5th).",
         "numbers": [
           "10",
           "4",
@@ -6343,8 +6343,6 @@
           "7",
           "7",
           "7-7",
-          "5",
-          "1",
           "5"
         ],
         "teams": [
@@ -6355,7 +6353,7 @@
       },
       "NX.8v10": {
         "id": "NX.8v10",
-        "text": "Next week Return of T Mac (7-7, 7th) plays behold the lamb (6-8, 10th).",
+        "text": "Next week Return of T Mac (7-7, 7th) plays behold the lamb (6-8, 10th). Must Watch: Return of T Mac puts a 4-game win streak on the line, and both sit near the cut.",
         "numbers": [
           "7",
           "7",
@@ -6364,7 +6362,8 @@
           "6",
           "8",
           "6-8",
-          "10"
+          "10",
+          "4"
         ],
         "teams": [
           "Return of T Mac",
@@ -6374,7 +6373,7 @@
       },
       "NX.1v5": {
         "id": "NX.1v5",
-        "text": "Next week Brock ‘N’ Roll (7-7, 6th) plays London Cooking (9-5, 3rd). Must Watch: 3rd vs 6th, near the playoff cut.",
+        "text": "Next week Brock ‘N’ Roll (7-7, 6th) plays London Cooking (9-5, 3rd).",
         "numbers": [
           "7",
           "7",
@@ -6383,9 +6382,7 @@
           "9",
           "5",
           "9-5",
-          "3",
-          "3",
-          "6"
+          "3"
         ],
         "teams": [
           "Brock ‘N’ Roll",
@@ -6433,7 +6430,7 @@
       },
       "NX.6v7": {
         "id": "NX.6v7",
-        "text": "Next week Bo Girds (9-5, 2nd) plays To Infinity and Bijan (5-9, 11th).",
+        "text": "Next week Bo Girds (9-5, 2nd) plays To Infinity and Bijan (5-9, 11th). Must Watch: Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak.",
         "numbers": [
           "9",
           "5",
@@ -6442,7 +6439,90 @@
           "5",
           "9",
           "5-9",
-          "11"
+          "11",
+          "3",
+          "3"
+        ],
+        "teams": [
+          "Bo Girds",
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "NX.3v9.cut": {
+        "id": "NX.3v9.cut",
+        "text": "Maye d'force B with U sits at the playoff cut. The game is near the cut.",
+        "numbers": [],
+        "teams": [
+          "Lil Fridge",
+          "Maye d'force B with U"
+        ],
+        "players": []
+      },
+      "NX.8v10.streak": {
+        "id": "NX.8v10.streak",
+        "text": "Return of T Mac has won 4 head-to-head games in a row, so the streak is on the line against behold the lamb.",
+        "numbers": [
+          "4"
+        ],
+        "teams": [
+          "Return of T Mac",
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "NX.8v10.cut": {
+        "id": "NX.8v10.cut",
+        "text": "Return of T Mac sits at the playoff cut. behold the lamb sits 1 game below the playoff cut. The game is near the cut.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "Return of T Mac",
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "NX.1v5.cut": {
+        "id": "NX.1v5.cut",
+        "text": "Brock ‘N’ Roll sits at the playoff cut. The game is near the cut.",
+        "numbers": [],
+        "teams": [
+          "Brock ‘N’ Roll",
+          "London Cooking"
+        ],
+        "players": []
+      },
+      "NX.2v11.cut": {
+        "id": "NX.2v11.cut",
+        "text": "Unsolicited Dak Picks sits 1 game below the playoff cut. The game is near the cut.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "All You Need Is Love",
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "NX.4v12.cut": {
+        "id": "NX.4v12.cut",
+        "text": "Amon-Ra Dawg Your Team sits 1 game below the playoff cut. The game is near the cut.",
+        "numbers": [
+          "1"
+        ],
+        "teams": [
+          "Pukancun on 3",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "NX.6v7.streak": {
+        "id": "NX.6v7.streak",
+        "text": "Bo Girds has lost 3 head-to-head games in a row, so the streak is on the line against To Infinity and Bijan. To Infinity and Bijan has lost 3 head-to-head games in a row, so the streak is on the line against Bo Girds.",
+        "numbers": [
+          "3",
+          "3"
         ],
         "teams": [
           "Bo Girds",
@@ -10725,31 +10805,31 @@
         ],
         "players": []
       },
-      "SW.3v9": {
-        "id": "SW.3v9",
-        "text": "The playoff odds of Lil Fridge stay near 99% either way. A win puts the playoff odds of Maye d'force B with U at 63%, a loss at 38%.",
+      "SW.8v10": {
+        "id": "SW.8v10",
+        "text": "A win puts the playoff odds of Return of T Mac at 64%, a loss at 37%. A win puts the playoff odds of behold the lamb at 11%, a loss at 3%.",
         "numbers": [
-          "99",
-          "63",
-          "38"
+          "64",
+          "37",
+          "11",
+          "3"
         ],
         "teams": [
-          "Lil Fridge",
-          "Maye d'force B with U"
+          "Return of T Mac",
+          "behold the lamb"
         ],
         "players": []
       },
-      "SW.1v5": {
-        "id": "SW.1v5",
-        "text": "A win puts the playoff odds of Brock ‘N’ Roll at 62%, a loss at 35%. The playoff odds of London Cooking stay near 99% either way.",
+      "SW.6v7": {
+        "id": "SW.6v7",
+        "text": "The playoff odds of Bo Girds stay near 99% either way. The playoff odds of To Infinity and Bijan stay near 1% either way.",
         "numbers": [
-          "62",
-          "35",
-          "99"
+          "99",
+          "1"
         ],
         "teams": [
-          "Brock ‘N’ Roll",
-          "London Cooking"
+          "Bo Girds",
+          "To Infinity and Bijan"
         ],
         "players": []
       },
@@ -12184,6 +12264,13 @@
           "NX.2v11",
           "NX.4v12",
           "NX.6v7",
+          "NX.3v9.cut",
+          "NX.8v10.streak",
+          "NX.8v10.cut",
+          "NX.1v5.cut",
+          "NX.2v11.cut",
+          "NX.4v12.cut",
+          "NX.6v7.streak",
           "NX.shootout.CARvGB",
           "SOS.3",
           "SOS.6",
@@ -12197,8 +12284,8 @@
           "SOS.10",
           "SOS.7",
           "SOS.4",
-          "SW.3v9",
-          "SW.1v5",
+          "SW.8v10",
+          "SW.6v7",
           "H.8.streak",
           "H.2.streak",
           "H.6.streak",
@@ -12651,7 +12738,7 @@
   },
   "waiver": {
     "week": 7,
-    "built": "2026-10-27T10:58:57.591690-04:00",
+    "built": "2026-10-27T12:09:15.182238-04:00",
     "buckets": {
       "best_adds": [
         {
@@ -12697,16 +12784,12 @@
             },
             {
               "id": "WV.research.10214.1",
-              "text": "Davis Allen caught 4 passes for 20 yards and 2 touchdowns in Week 7 on 5 targets, but the Yahoo Fantasy waiver column says he ran only 38 percent of Rams routes, is third among the team's tight ends by routes, and is no more than a TE2 for Week 8. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
+              "text": "Fantasy Sports On SI says Davis Allen's snap share rose from 31% in Week 6 to 69% in Week 7, the biggest jump among Rams wide receivers and tight ends. Source: Sports Illustrated (On SI), https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-8-waiver-wire-debate-davis-allen-vs-mason-taylor",
               "numbers": [
-                "4",
-                "20",
-                "2",
-                "7",
-                "5",
-                "38",
-                "2",
-                "8"
+                "31",
+                "6",
+                "69",
+                "7"
               ],
               "teams": [],
               "players": [
@@ -12715,12 +12798,11 @@
             },
             {
               "id": "WV.research.10214.2",
-              "text": "Fantasy Sports On SI notes that Allen's snap share rose from 31% in Week 6 to 69% in Week 7, the largest jump among Rams receivers and tight ends, though it says 2 touchdowns a game will not last. Source: Fantasy Sports On SI (via Yahoo Sports), https://sports.yahoo.com/articles/fantasy-football-week-8-waiver-171354153.html",
+              "text": "Allen caught 4 passes for 20 yards and 2 touchdowns against the Raiders, and On SI says the 2 scores are not sustainable but his role as one of Matthew Stafford's favorite targets could last. Source: Sports Illustrated (On SI), https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-8-waiver-wire-debate-davis-allen-vs-mason-taylor",
               "numbers": [
-                "31",
-                "6",
-                "69",
-                "7",
+                "4",
+                "20",
+                "2",
                 "2"
               ],
               "teams": [],
@@ -12778,18 +12860,18 @@
           "return_week": null,
           "research": [
             {
-              "text": "Davis Allen caught 4 passes for 20 yards and 2 touchdowns in Week 7 on 5 targets, but the Yahoo Fantasy waiver column says he ran only 38 percent of Rams routes, is third among the team's tight ends by routes, and is no more than a TE2 for Week 8.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
-              "source": "Yahoo Fantasy",
+              "text": "Fantasy Sports On SI says Davis Allen's snap share rose from 31% in Week 6 to 69% in Week 7, the biggest jump among Rams wide receivers and tight ends.",
+              "url": "https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-8-waiver-wire-debate-davis-allen-vs-mason-taylor",
+              "source": "Sports Illustrated (On SI)",
               "date": "2026-10-26",
               "stance": "backs"
             },
             {
-              "text": "Fantasy Sports On SI notes that Allen's snap share rose from 31% in Week 6 to 69% in Week 7, the largest jump among Rams receivers and tight ends, though it says 2 touchdowns a game will not last.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-week-8-waiver-171354153.html",
-              "source": "Fantasy Sports On SI (via Yahoo Sports)",
-              "date": "2026-10-27",
-              "stance": "backs"
+              "text": "Allen caught 4 passes for 20 yards and 2 touchdowns against the Raiders, and On SI says the 2 scores are not sustainable but his role as one of Matthew Stafford's favorite targets could last.",
+              "url": "https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-8-waiver-wire-debate-davis-allen-vs-mason-taylor",
+              "source": "Sports Illustrated (On SI)",
+              "date": "2026-10-26",
+              "stance": "news"
             }
           ]
         },
@@ -12836,10 +12918,10 @@
             },
             {
               "id": "WV.research.12531.1",
-              "text": "In his Week 8 waiver column, Justin Boone lists Trevor Etienne among his deeper running back adds, and notes that he is 2% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone listed Trevor Etienne, at 2% rostered, as a deeper running back option in his Week 8 waiver wire column. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
-                "8",
-                "2"
+                "2",
+                "8"
               ],
               "teams": [],
               "players": [
@@ -12896,7 +12978,7 @@
           "return_week": null,
           "research": [
             {
-              "text": "In his Week 8 waiver column, Justin Boone lists Trevor Etienne among his deeper running back adds, and notes that he is 2% rostered.",
+              "text": "Justin Boone listed Trevor Etienne, at 2% rostered, as a deeper running back option in his Week 8 waiver wire column.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-27",
@@ -12947,9 +13029,9 @@
             },
             {
               "id": "WV.research.7567.1",
-              "text": "Yahoo Sports reports that Gainwell broke a 29-yard run and then left in the third quarter with a hip injury, returning later for 4 straight carries and 34 yards; managers should watch his hip at Wednesday's practice. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
+              "text": "Yahoo Fantasy's Week 8 FAAB column says Gainwell missed the third quarter with a hip injury, then came back and ran 4 straight times for 34 yards, so managers should watch his hip at Wednesday's practice. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
               "numbers": [
-                "29",
+                "8",
                 "4",
                 "34"
               ],
@@ -12960,14 +13042,13 @@
             },
             {
               "id": "WV.research.7567.2",
-              "text": "Yahoo Sports calls Gainwell the No. 2 back behind Bucky Irving, who had 24 carries for 106 yards and 2 touchdowns, and ranks Gainwell as RB29 for Week 8 against Atlanta. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
+              "text": "The same Yahoo Fantasy column calls Gainwell the No. 2 back behind Bucky Irving, who had 24 carries for 106 yards and 2 touchdowns, and ranks Gainwell RB29. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
               "numbers": [
                 "2",
                 "24",
                 "106",
                 "2",
-                "29",
-                "8"
+                "29"
               ],
               "teams": [],
               "players": [
@@ -13024,14 +13105,14 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Sports reports that Gainwell broke a 29-yard run and then left in the third quarter with a hip injury, returning later for 4 straight carries and 34 yards; managers should watch his hip at Wednesday's practice.",
+              "text": "Yahoo Fantasy's Week 8 FAAB column says Gainwell missed the third quarter with a hip injury, then came back and ran 4 straight times for 34 yards, so managers should watch his hip at Wednesday's practice.",
               "url": "https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-26",
               "stance": "news"
             },
             {
-              "text": "Yahoo Sports calls Gainwell the No. 2 back behind Bucky Irving, who had 24 carries for 106 yards and 2 touchdowns, and ranks Gainwell as RB29 for Week 8 against Atlanta.",
+              "text": "The same Yahoo Fantasy column calls Gainwell the No. 2 back behind Bucky Irving, who had 24 carries for 106 yards and 2 touchdowns, and ranks Gainwell RB29.",
               "url": "https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-26",
@@ -13073,31 +13154,6 @@
               "text": "NYG runs the 8th fastest offense and passes on 44% of neutral downs.",
               "numbers": [
                 "44",
-                "8"
-              ],
-              "teams": [],
-              "players": [
-                "J.J. McCarthy"
-              ]
-            },
-            {
-              "id": "WV.research.11565.1",
-              "text": "SI says J.J. McCarthy (18% rostered) did not post a big stat line in Week 7 but is looking more like an NFL starter, with the Giants on a Week 8 bye before facing the Eagles in Week 9. Source: SI, https://www.si.com/fantasy/week-8-waiver-wire-targets",
-              "numbers": [
-                "18",
-                "7",
-                "8",
-                "9"
-              ],
-              "teams": [],
-              "players": [
-                "J.J. McCarthy"
-              ]
-            },
-            {
-              "id": "WV.research.11565.2",
-              "text": "Yahoo Fantasy's Week 8 waiver column says Malik Willis will throw the ball more often than J.J. McCarthy. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-120307594.html",
-              "numbers": [
                 "8"
               ],
               "teams": [],
@@ -13153,22 +13209,7 @@
           "bye": 8,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "SI says J.J. McCarthy (18% rostered) did not post a big stat line in Week 7 but is looking more like an NFL starter, with the Giants on a Week 8 bye before facing the Eagles in Week 9.",
-              "url": "https://www.si.com/fantasy/week-8-waiver-wire-targets",
-              "source": "SI",
-              "date": "2026-10-27",
-              "stance": "news"
-            },
-            {
-              "text": "Yahoo Fantasy's Week 8 waiver column says Malik Willis will throw the ball more often than J.J. McCarthy.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-120307594.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-10-27",
-              "stance": "news"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "4054",
@@ -13213,13 +13254,24 @@
             },
             {
               "id": "WV.research.4054.1",
-              "text": "Colts On SI's Week 7 snap count review of the 16-10 loss to the Vikings says the Colts' tight end rotation took an odd turn, and it calls Alie-Cox an experienced blocker rather than a pass-catching option. Source: Indianapolis Colts On SI, https://si.com/nfl/colts/onsi/colts-week-7-snap-count-analysis-3-takeaways-from-vikings-loss",
+              "text": "RotoWire reports Alie-Cox led all Colts tight ends with 39 offensive snaps in the 13-10 loss to the Vikings but caught 0 of his 2 targets. Source: RotoWire, https://www.rotowire.com/football/headlines/mo-alie-cox-news-zero-catches-in-week-7-loss-644609",
               "numbers": [
-                "7",
-                "16-10",
-                "16",
-                "10"
+                "39",
+                "13-10",
+                "13",
+                "10",
+                "0",
+                "2"
               ],
+              "teams": [],
+              "players": [
+                "Mo Alie-Cox"
+              ]
+            },
+            {
+              "id": "WV.research.4054.2",
+              "text": "RotoWire said Alie-Cox would have a bigger role against the Vikings, with Tyler Warren out for a second straight game with a groin injury. Source: RotoWire, https://www.rotowire.com/football/headlines/mo-alie-cox-news-no-warren-for-week-7-tilt-644055",
+              "numbers": [],
               "teams": [],
               "players": [
                 "Mo Alie-Cox"
@@ -13275,10 +13327,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "Colts On SI's Week 7 snap count review of the 16-10 loss to the Vikings says the Colts' tight end rotation took an odd turn, and it calls Alie-Cox an experienced blocker rather than a pass-catching option.",
-              "url": "https://si.com/nfl/colts/onsi/colts-week-7-snap-count-analysis-3-takeaways-from-vikings-loss",
-              "source": "Indianapolis Colts On SI",
-              "date": "2026-10-27",
+              "text": "RotoWire reports Alie-Cox led all Colts tight ends with 39 offensive snaps in the 13-10 loss to the Vikings but caught 0 of his 2 targets.",
+              "url": "https://www.rotowire.com/football/headlines/mo-alie-cox-news-zero-catches-in-week-7-loss-644609",
+              "source": "RotoWire",
+              "date": "2026-10-26",
+              "stance": "backs"
+            },
+            {
+              "text": "RotoWire said Alie-Cox would have a bigger role against the Vikings, with Tyler Warren out for a second straight game with a groin injury.",
+              "url": "https://www.rotowire.com/football/headlines/mo-alie-cox-news-no-warren-for-week-7-tilt-644055",
+              "source": "RotoWire",
+              "date": "2026-10-23",
               "stance": "news"
             }
           ]
@@ -13326,9 +13385,8 @@
             },
             {
               "id": "WV.research.7571.1",
-              "text": "RotoWire's Joe Bartel lists Bateman as a deep Week 8 waiver add, noting he had 11 catches for 171 yards and 1 touchdown on 15 targets in the 4 weeks Lamar Jackson was healthy. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
+              "text": "Joe Bartel of RotoWire notes Bateman had 11 catches for 171 yards and 1 touchdown on 15 targets in the 4 weeks Lamar Jackson was healthy, and expects his outlook to improve when Jackson returns. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
               "numbers": [
-                "8",
                 "11",
                 "171",
                 "1",
@@ -13342,10 +13400,10 @@
             },
             {
               "id": "WV.research.7571.2",
-              "text": "Bartel says Bateman is rostered in under 15 percent of Yahoo leagues, sees him as a flex option in bye weeks for a BAL vs. BUF game, and suggests a bid of 1 percent of FAAB. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
+              "text": "Bartel calls Bateman a bye-week flex option against Buffalo and suggests spending 1 percent of your FAAB budget on him, noting he is rostered in under 15 percent of Yahoo leagues. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
               "numbers": [
-                "15",
-                "1"
+                "1",
+                "15"
               ],
               "teams": [],
               "players": [
@@ -13402,17 +13460,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoWire's Joe Bartel lists Bateman as a deep Week 8 waiver add, noting he had 11 catches for 171 yards and 1 touchdown on 15 targets in the 4 weeks Lamar Jackson was healthy.",
+              "text": "Joe Bartel of RotoWire notes Bateman had 11 catches for 171 yards and 1 touchdown on 15 targets in the 4 weeks Lamar Jackson was healthy, and expects his outlook to improve when Jackson returns.",
               "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
               "source": "RotoWire",
-              "date": "2026-10-27",
+              "date": "2026-10-26",
               "stance": "news"
             },
             {
-              "text": "Bartel says Bateman is rostered in under 15 percent of Yahoo leagues, sees him as a flex option in bye weeks for a BAL vs. BUF game, and suggests a bid of 1 percent of FAAB.",
+              "text": "Bartel calls Bateman a bye-week flex option against Buffalo and suggests spending 1 percent of your FAAB budget on him, noting he is rostered in under 15 percent of Yahoo leagues.",
               "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
               "source": "RotoWire",
-              "date": "2026-10-27",
+              "date": "2026-10-26",
               "stance": "news"
             }
           ]
@@ -13548,38 +13606,6 @@
               "players": [
                 "Bryce Lance"
               ]
-            },
-            {
-              "id": "WV.research.13420.1",
-              "text": "Rotowire says Bryce Lance caught both of his 2 targets for 12 yards in the 16-10 loss to Pittsburgh, and that he has played 332 offensive snaps this season, third among Saints receivers. Source: Rotowire, https://www.rotowire.com/football/headlines/bryce-lance-news-cant-find-end-zone-again-sunday-644564",
-              "numbers": [
-                "2",
-                "12",
-                "16-10",
-                "16",
-                "10",
-                "332"
-              ],
-              "teams": [],
-              "players": [
-                "Bryce Lance"
-              ]
-            },
-            {
-              "id": "WV.research.13420.2",
-              "text": "Rotowire's Week 7 usage recap says rookie Barion Brown, who went 3-57-0 on 6 routes, could push Bryce Lance down the Saints depth chart, and Jordyn Tyson may also return at some point. Source: Rotowire, https://www.rotowire.com/football/article/nfl-box-score-breakdown-week-7-recap-usage-stats-144024",
-              "numbers": [
-                "7",
-                "3-57",
-                "3",
-                "57",
-                "0",
-                "6"
-              ],
-              "teams": [],
-              "players": [
-                "Bryce Lance"
-              ]
             }
           ],
           "price": {
@@ -13629,22 +13655,7 @@
           "bye": 8,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "Rotowire says Bryce Lance caught both of his 2 targets for 12 yards in the 16-10 loss to Pittsburgh, and that he has played 332 offensive snaps this season, third among Saints receivers.",
-              "url": "https://www.rotowire.com/football/headlines/bryce-lance-news-cant-find-end-zone-again-sunday-644564",
-              "source": "Rotowire",
-              "date": "2026-10-26",
-              "stance": "backs"
-            },
-            {
-              "text": "Rotowire's Week 7 usage recap says rookie Barion Brown, who went 3-57-0 on 6 routes, could push Bryce Lance down the Saints depth chart, and Jordyn Tyson may also return at some point.",
-              "url": "https://www.rotowire.com/football/article/nfl-box-score-breakdown-week-7-recap-usage-stats-144024",
-              "source": "Rotowire",
-              "date": "2026-10-27",
-              "stance": "news"
-            }
-          ]
+          "research": []
         }
       ],
       "trending": [
@@ -13702,20 +13713,10 @@
             },
             {
               "id": "WV.research.6130.1",
-              "text": "RotoBaller says injuries in the Giants backfield could give Devin Singletary more work, and it lists him as a possible waiver pickup for Week 8. Source: RotoBaller, https://www.rotoballer.com/player-news/injuries-in-giants-backfield-could-mean-more-work-for-devin-singletary/1976335",
+              "text": "SB Nation's Week 8 waiver column on Yahoo Sports says the Giants use 3 backs with no clear lead back, and says Devin Singletary should be rostered after he scored the overtime game-winner at Houston while Tyrone Tracy Jr. and Cam Skattebo picked up what look like minor hamstring injuries. Source: Yahoo Sports (SB Nation), https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-230000846.html",
               "numbers": [
-                "8"
-              ],
-              "teams": [],
-              "players": [
-                "Devin Singletary"
-              ]
-            },
-            {
-              "id": "WV.research.6130.2",
-              "text": "RotoBaller's Week 8 Waiver Wire Express includes Devin Singletary in its list of free agents to add. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-express-week-8-fantasy-football-pickups-adds-2026/1975552",
-              "numbers": [
-                "8"
+                "8",
+                "3"
               ],
               "teams": [],
               "players": [
@@ -13772,17 +13773,10 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoBaller says injuries in the Giants backfield could give Devin Singletary more work, and it lists him as a possible waiver pickup for Week 8.",
-              "url": "https://www.rotoballer.com/player-news/injuries-in-giants-backfield-could-mean-more-work-for-devin-singletary/1976335",
-              "source": "RotoBaller",
+              "text": "SB Nation's Week 8 waiver column on Yahoo Sports says the Giants use 3 backs with no clear lead back, and says Devin Singletary should be rostered after he scored the overtime game-winner at Houston while Tyrone Tracy Jr. and Cam Skattebo picked up what look like minor hamstring injuries.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-230000846.html",
+              "source": "Yahoo Sports (SB Nation)",
               "date": "2026-10-27",
-              "stance": "news"
-            },
-            {
-              "text": "RotoBaller's Week 8 Waiver Wire Express includes Devin Singletary in its list of free agents to add.",
-              "url": "https://www.rotoballer.com/waiver-wire-express-week-8-fantasy-football-pickups-adds-2026/1975552",
-              "source": "RotoBaller",
-              "date": "2026-10-26",
               "stance": "news"
             }
           ]
@@ -13841,10 +13835,25 @@
             },
             {
               "id": "WV.research.12498.1",
-              "text": "RotoBaller says Mason Taylor has taken on a much larger role in the Jets offense, and his 2-touchdown game in Week 7 makes him a top waiver target going forward. Source: RotoBaller, https://www.rotoballer.com/player-news/mason-taylors-big-game-sparks-immediate-waiver-wire-interest/1976748",
+              "text": "RotoWire says Mason Taylor has put up 3 straight weeks of low-end TE1 production, finishing with 5 catches for 62 yards and 2 touchdowns against the Dolphins on Sunday. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
               "numbers": [
-                "2",
-                "7"
+                "3",
+                "1",
+                "5",
+                "62",
+                "2"
+              ],
+              "teams": [],
+              "players": [
+                "Mason Taylor"
+              ]
+            },
+            {
+              "id": "WV.research.12498.2",
+              "text": "RotoBaller lists Mason Taylor as a Week 8 tight end add because he has drawn 6 targets in back-to-back games. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-express-week-8-fantasy-football-pickups-adds-2026/1975552",
+              "numbers": [
+                "8",
+                "6"
               ],
               "teams": [],
               "players": [
@@ -13901,10 +13910,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoBaller says Mason Taylor has taken on a much larger role in the Jets offense, and his 2-touchdown game in Week 7 makes him a top waiver target going forward.",
-              "url": "https://www.rotoballer.com/player-news/mason-taylors-big-game-sparks-immediate-waiver-wire-interest/1976748",
+              "text": "RotoWire says Mason Taylor has put up 3 straight weeks of low-end TE1 production, finishing with 5 catches for 62 yards and 2 touchdowns against the Dolphins on Sunday.",
+              "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-8-143901",
+              "source": "RotoWire",
+              "date": "2026-10-26",
+              "stance": "news"
+            },
+            {
+              "text": "RotoBaller lists Mason Taylor as a Week 8 tight end add because he has drawn 6 targets in back-to-back games.",
+              "url": "https://www.rotoballer.com/waiver-wire-express-week-8-fantasy-football-pickups-adds-2026/1975552",
               "source": "RotoBaller",
-              "date": "2026-10-27",
+              "date": "2026-10-26",
               "stance": "backs"
             }
           ]
@@ -13949,9 +13965,20 @@
             },
             {
               "id": "WV.research.7561.1",
-              "text": "RotoBaller lists Elijah Mitchell as a Week 8 FAAB target, calling him the next man up with Saquon Barkley ailing and Dameon Pierce leaving in the fourth quarter. Source: RotoBaller, https://www.rotoballer.com/faab-waiver-wire-advice-week-8-fantasy-pickups-2026/1975679",
+              "text": "Sports Illustrated says Elijah Mitchell stepped in as the next man up for the Eagles and would likely start against the Commanders if Saquon Barkley and Dameon Pierce are both ruled out. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/injuries/fantasy-football-impact-saquon-barkley-and-dameon-pierce-injured-elijah-mitchell-becomes-a-waiver-wire-target",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Elijah Mitchell"
+              ]
+            },
+            {
+              "id": "WV.research.7561.2",
+              "text": "Yahoo Sports ranks Mitchell 8th among its Week 8 waiver pickups and says he can be started as an RB2 if he moves into the starting role against Washington, but he has little path to work if either back is healthy. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-top-10-waiver-160137510.html",
               "numbers": [
-                "8"
+                "8",
+                "8",
+                "2"
               ],
               "teams": [],
               "players": [
@@ -14008,11 +14035,18 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoBaller lists Elijah Mitchell as a Week 8 FAAB target, calling him the next man up with Saquon Barkley ailing and Dameon Pierce leaving in the fourth quarter.",
-              "url": "https://www.rotoballer.com/faab-waiver-wire-advice-week-8-fantasy-pickups-2026/1975679",
-              "source": "RotoBaller",
+              "text": "Sports Illustrated says Elijah Mitchell stepped in as the next man up for the Eagles and would likely start against the Commanders if Saquon Barkley and Dameon Pierce are both ruled out.",
+              "url": "https://www.si.com/onsi/fantasy/injuries/fantasy-football-impact-saquon-barkley-and-dameon-pierce-injured-elijah-mitchell-becomes-a-waiver-wire-target",
+              "source": "Sports Illustrated",
               "date": "2026-10-27",
-              "stance": "backs"
+              "stance": "news"
+            },
+            {
+              "text": "Yahoo Sports ranks Mitchell 8th among its Week 8 waiver pickups and says he can be started as an RB2 if he moves into the starting role against Washington, but he has little path to work if either back is healthy.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-top-10-waiver-160137510.html",
+              "source": "Yahoo Sports",
+              "date": "2026-10-27",
+              "stance": "news"
             }
           ]
         },
@@ -14056,10 +14090,26 @@
             },
             {
               "id": "WV.research.12469.1",
-              "text": "In his Week 8 waiver column, Yahoo's Justin Boone listed Dylan Sampson, who is 8% rostered, as a risky flex option for the game at PIT. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "In his Week 8 waiver column, Justin Boone lists Dylan Sampson as a risky flex option at PIT and notes he is 8% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
                 "8",
                 "8"
+              ],
+              "teams": [],
+              "players": [
+                "Dylan Sampson"
+              ]
+            },
+            {
+              "id": "WV.research.12469.2",
+              "text": "An NBC Sports waiver column on Yahoo says Sampson came back from IR in Week 7 as the main passing-down back, running a route on 42% of dropbacks, with 3 catches for 32 yards and 6 carries for 45 yards. Source: Yahoo Sports (NBC Sports), https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
+              "numbers": [
+                "7",
+                "42",
+                "3",
+                "32",
+                "6",
+                "45"
               ],
               "teams": [],
               "players": [
@@ -14116,10 +14166,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "In his Week 8 waiver column, Yahoo's Justin Boone listed Dylan Sampson, who is 8% rostered, as a risky flex option for the game at PIT.",
+              "text": "In his Week 8 waiver column, Justin Boone lists Dylan Sampson as a risky flex option at PIT and notes he is 8% rostered.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-27",
+              "stance": "news"
+            },
+            {
+              "text": "An NBC Sports waiver column on Yahoo says Sampson came back from IR in Week 7 as the main passing-down back, running a route on 42% of dropbacks, with 3 catches for 32 yards and 6 carries for 45 yards.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
+              "source": "Yahoo Sports (NBC Sports)",
+              "date": "2026-10-26",
               "stance": "news"
             }
           ]
@@ -14164,15 +14221,11 @@
             },
             {
               "id": "WV.research.8161.1",
-              "text": "Justin Boone ranks Malik Willis 10th among his top Week 8 pickups, noting he finished as the QB4 with 2 passing touchdowns, 1 rushing touchdown, 208 passing yards and 37 rushing yards in Miami's first win. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone ranks Malik Willis 10th among his top 10 waiver pickups for Week 8 and says he had his second straight strong game as the Dolphins got their first win of the season. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-rookies-jonah-coleman-omar-cooper-jr-headline-top-pickups-150345826.html",
               "numbers": [
                 "10",
-                "8",
-                "4",
-                "2",
-                "1",
-                "208",
-                "37"
+                "10",
+                "8"
               ],
               "teams": [],
               "players": [
@@ -14181,13 +14234,11 @@
             },
             {
               "id": "WV.research.8161.2",
-              "text": "Boone lists Willis at 18% rostered with a $5 FAB suggestion, and says he has run at least 8 times in 3 of his last 4 games before a tough matchup against New England. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Yahoo's Week 8 waiver column says Willis is heating up, with his first and second 20-point fantasy games of the year coming in his last 2 games. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
               "numbers": [
-                "18",
-                "5",
                 "8",
-                "3",
-                "4"
+                "20",
+                "2"
               ],
               "teams": [],
               "players": [
@@ -14244,15 +14295,15 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone ranks Malik Willis 10th among his top Week 8 pickups, noting he finished as the QB4 with 2 passing touchdowns, 1 rushing touchdown, 208 passing yards and 37 rushing yards in Miami's first win.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone ranks Malik Willis 10th among his top 10 waiver pickups for Week 8 and says he had his second straight strong game as the Dolphins got their first win of the season.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-rookies-jonah-coleman-omar-cooper-jr-headline-top-pickups-150345826.html",
               "source": "Yahoo Fantasy",
-              "date": "2026-10-26",
+              "date": "2026-10-27",
               "stance": "news"
             },
             {
-              "text": "Boone lists Willis at 18% rostered with a $5 FAB suggestion, and says he has run at least 8 times in 3 of his last 4 games before a tough matchup against New England.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Yahoo's Week 8 waiver column says Willis is heating up, with his first and second 20-point fantasy games of the year coming in his last 2 games.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-144337882.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-26",
               "stance": "news"
@@ -14313,7 +14364,7 @@
             },
             {
               "id": "WV.research.11559.1",
-              "text": "Justin Boone lists Michael Penix Jr. (18% rostered) as a risky streaming quarterback for Week 8 at TB, for use only if your starter is out. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone lists Michael Penix Jr. (18% rostered) as a risky Week 8 streaming QB option at TB. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
                 "18",
                 "8"
@@ -14373,7 +14424,7 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone lists Michael Penix Jr. (18% rostered) as a risky streaming quarterback for Week 8 at TB, for use only if your starter is out.",
+              "text": "Justin Boone lists Michael Penix Jr. (18% rostered) as a risky Week 8 streaming QB option at TB.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-26",
@@ -14435,7 +14486,7 @@
             },
             {
               "id": "WV.research.12482.1",
-              "text": "Justin Boone listed Savion Williams among his deeper wide receiver waiver options for Week 8, at 0% rostered in Yahoo leagues, ahead of a home game against Carolina. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone lists Savion Williams as a deeper wide receiver waiver option for Week 8 against CAR, noting he is 0% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
                 "8",
                 "0"
@@ -14495,7 +14546,7 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone listed Savion Williams among his deeper wide receiver waiver options for Week 8, at 0% rostered in Yahoo leagues, ahead of a home game against Carolina.",
+              "text": "Justin Boone lists Savion Williams as a deeper wide receiver waiver option for Week 8 against CAR, noting he is 0% rostered.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-27",
@@ -14557,21 +14608,10 @@
             },
             {
               "id": "WV.research.9230.1",
-              "text": "Justin Boone lists Tanner McKee as a Week 8 streaming quarterback pickup for the game at Washington, noting he is 8% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone lists Tanner McKee, who is 8% rostered, as a desperation streaming option at QB for Week 8 at Washington. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
                 "8",
                 "8"
-              ],
-              "teams": [],
-              "players": [
-                "Tanner McKee"
-              ]
-            },
-            {
-              "id": "WV.research.9230.2",
-              "text": "Yahoo Sports ranks McKee QB13 and calls him a volume streamer with no rushing value, since Jalen Hurts remains on injured reserve with a blood clot. Source: Yahoo Sports, https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
-              "numbers": [
-                "13"
               ],
               "teams": [],
               "players": [
@@ -14628,18 +14668,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone lists Tanner McKee as a Week 8 streaming quarterback pickup for the game at Washington, noting he is 8% rostered.",
+              "text": "Justin Boone lists Tanner McKee, who is 8% rostered, as a desperation streaming option at QB for Week 8 at Washington.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
               "date": "2026-10-27",
               "stance": "news"
-            },
-            {
-              "text": "Yahoo Sports ranks McKee QB13 and calls him a volume streamer with no rushing value, since Jalen Hurts remains on injured reserve with a blood clot.",
-              "url": "https://sports.yahoo.com/articles/week-8-waiver-wire-faab-115740283.html",
-              "source": "Yahoo Sports",
-              "date": "2026-10-26",
-              "stance": "backs"
             }
           ]
         }
@@ -14698,7 +14731,7 @@
             },
             {
               "id": "WV.research.7607.1",
-              "text": "FantasyPros says Michael Carter filled the pass-catching back role in a few situations while Tyjae Spears was inactive, and Carter should benefit if Spears stays out and the Titans, 10-point underdogs to the Bengals, have to throw. Source: FantasyPros, https://www.fantasypros.com/2026/10/week-8-early-waiver-wire-additions-2026-fantasy-football/",
+              "text": "FantasyPros says Michael Carter took on the pass-catching role in a few situations while Tyjae Spears was inactive, and he could benefit if Spears stays out and the Titans fall behind as 10-point underdogs against the Bengals. Source: FantasyPros, https://www.fantasypros.com/2026/10/week-8-early-waiver-wire-additions-2026-fantasy-football/",
               "numbers": [
                 "10"
               ],
@@ -14757,7 +14790,7 @@
           "return_week": null,
           "research": [
             {
-              "text": "FantasyPros says Michael Carter filled the pass-catching back role in a few situations while Tyjae Spears was inactive, and Carter should benefit if Spears stays out and the Titans, 10-point underdogs to the Bengals, have to throw.",
+              "text": "FantasyPros says Michael Carter took on the pass-catching role in a few situations while Tyjae Spears was inactive, and he could benefit if Spears stays out and the Titans fall behind as 10-point underdogs against the Bengals.",
               "url": "https://www.fantasypros.com/2026/10/week-8-early-waiver-wire-additions-2026-fantasy-football/",
               "source": "FantasyPros",
               "date": "2026-10-26",
@@ -14808,15 +14841,14 @@
             },
             {
               "id": "WV.research.8523.1",
-              "text": "Nick Muse caught both of his 2 targets for 2 yards and a touchdown in the 29-20 win over the 49ers, and he played 21 offensive snaps. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/falcons-nick-muse-catches-touchdown-in-upset-win/",
+              "text": "RotoWire reports Nick Muse caught both of his 2 targets for 2 yards and a touchdown in the Falcons' 29-20 win over the 49ers on Sunday. Source: RotoWire, https://www.rotowire.com/football/headlines/nick-muse-news-catches-touchdown-in-upset-win-644565",
               "numbers": [
                 "2",
                 "2",
                 "29-20",
                 "29",
                 "20",
-                "49",
-                "21"
+                "49"
               ],
               "teams": [],
               "players": [
@@ -14825,9 +14857,9 @@
             },
             {
               "id": "WV.research.8523.2",
-              "text": "RotoWire calls Muse the Falcons' No. 4 tight end and says he scored on a red zone chance, which makes him a risky waiver add. Source: RotoWire, https://www.rotowire.com/football/headlines/nick-muse-news-catches-touchdown-in-upset-win-644565",
+              "text": "The Falcons' team site says Atlanta's tight ends, from Kyle Pitts to Nick Muse, made several of the key plays in the win over the 49ers. Source: Atlanta Falcons, https://www.atlantafalcons.com/news/national-tight-ends-day-kyle-pitts-nick-muse-49ers",
               "numbers": [
-                "4"
+                "49"
               ],
               "teams": [],
               "players": [
@@ -14884,16 +14916,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "Nick Muse caught both of his 2 targets for 2 yards and a touchdown in the 29-20 win over the 49ers, and he played 21 offensive snaps.",
-              "url": "https://www.cbssports.com/fantasy/football/news/falcons-nick-muse-catches-touchdown-in-upset-win/",
-              "source": "CBS Sports",
+              "text": "RotoWire reports Nick Muse caught both of his 2 targets for 2 yards and a touchdown in the Falcons' 29-20 win over the 49ers on Sunday.",
+              "url": "https://www.rotowire.com/football/headlines/nick-muse-news-catches-touchdown-in-upset-win-644565",
+              "source": "RotoWire",
               "date": "2026-10-26",
               "stance": "backs"
             },
             {
-              "text": "RotoWire calls Muse the Falcons' No. 4 tight end and says he scored on a red zone chance, which makes him a risky waiver add.",
-              "url": "https://www.rotowire.com/football/headlines/nick-muse-news-catches-touchdown-in-upset-win-644565",
-              "source": "RotoWire",
+              "text": "The Falcons' team site says Atlanta's tight ends, from Kyle Pitts to Nick Muse, made several of the key plays in the win over the 49ers.",
+              "url": "https://www.atlantafalcons.com/news/national-tight-ends-day-kyle-pitts-nick-muse-49ers",
+              "source": "Atlanta Falcons",
               "date": "2026-10-26",
               "stance": "news"
             }
@@ -15131,24 +15163,6 @@
                 "Jonathan Mingo",
                 "KaVontae Turpin"
               ]
-            },
-            {
-              "id": "WV.research.10225.1",
-              "text": "Todd Archer reports that KaVontae Turpin is out this week with a rib injury, so Jonathan Mingo will return punts and Tyler Goodson will return kicks. Source: X (Todd Archer), https://x.com/toddarcher/status/2113707523803111762",
-              "numbers": [],
-              "teams": [],
-              "players": [
-                "Jonathan Mingo"
-              ]
-            },
-            {
-              "id": "WV.research.10225.2",
-              "text": "The Dallas Morning News reports that special teams coordinator Nick Sorensen said Mingo will keep returning punts against the Eagles while Turpin is out. Source: Dallas Morning News, https://www.dallasnews.com/sports/cowboys/article/cowboys-injury-report-turpin-overshown-durant-22491090.php",
-              "numbers": [],
-              "teams": [],
-              "players": [
-                "Jonathan Mingo"
-              ]
             }
           ],
           "price": {
@@ -15198,22 +15212,7 @@
           "bye": 14,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "Todd Archer reports that KaVontae Turpin is out this week with a rib injury, so Jonathan Mingo will return punts and Tyler Goodson will return kicks.",
-              "url": "https://x.com/toddarcher/status/2113707523803111762",
-              "source": "X (Todd Archer)",
-              "date": "2026-10-24",
-              "stance": "backs"
-            },
-            {
-              "text": "The Dallas Morning News reports that special teams coordinator Nick Sorensen said Mingo will keep returning punts against the Eagles while Turpin is out.",
-              "url": "https://www.dallasnews.com/sports/cowboys/article/cowboys-injury-report-turpin-overshown-durant-22491090.php",
-              "source": "Dallas Morning News",
-              "date": "2026-10-24",
-              "stance": "backs"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "12540",
@@ -15352,19 +15351,6 @@
                 "Quentin Johnston",
                 "Ladd McConkey"
               ]
-            },
-            {
-              "id": "WV.research.9754.1",
-              "text": "Justin Boone's Week 8 waiver wire column for Yahoo Fantasy lists Quentin Johnston as a pickup option for the Week 8 game at LAR and says he is 34% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
-              "numbers": [
-                "8",
-                "8",
-                "34"
-              ],
-              "teams": [],
-              "players": [
-                "Quentin Johnston"
-              ]
             }
           ],
           "price": {
@@ -15414,15 +15400,7 @@
           "bye": 7,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "Justin Boone's Week 8 waiver wire column for Yahoo Fantasy lists Quentin Johnston as a pickup option for the Week 8 game at LAR and says he is 34% rostered.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-10-27",
-              "stance": "news"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "8254",
@@ -15474,6 +15452,15 @@
                 "Julius Chestnut",
                 "Tyjae Spears"
               ]
+            },
+            {
+              "id": "WV.research.8254.1",
+              "text": "FantasyPros says Tyjae Spears will miss this week with a knee injury, Tony Pollard will get most of the Titans' backfield touches, and Julius Chestnut will be the backup. Source: FantasyPros, https://www.fantasypros.com/nfl/injury-news.php",
+              "numbers": [],
+              "teams": [],
+              "players": [
+                "Julius Chestnut"
+              ]
             }
           ],
           "price": {
@@ -15523,7 +15510,15 @@
           "bye": 9,
           "injury_status": null,
           "return_week": null,
-          "research": []
+          "research": [
+            {
+              "text": "FantasyPros says Tyjae Spears will miss this week with a knee injury, Tony Pollard will get most of the Titans' backfield touches, and Julius Chestnut will be the backup.",
+              "url": "https://www.fantasypros.com/nfl/injury-news.php",
+              "source": "FantasyPros",
+              "date": "2026-10-21",
+              "stance": "backs"
+            }
+          ]
         }
       ],
       "stashes": [
@@ -15561,6 +15556,30 @@
               "text": "NYG runs the 8th fastest offense and succeeds on 38% of runs.",
               "numbers": [
                 "38",
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Tyrone Tracy Jr."
+              ]
+            },
+            {
+              "id": "WV.research.11655.1",
+              "text": "Justin Boone lists Tyrone Tracy Jr. (28% rostered) among his Week 8 waiver options and also names him among the key injuries, with a hamstring issue. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "numbers": [
+                "28",
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Tyrone Tracy Jr."
+              ]
+            },
+            {
+              "id": "WV.research.11655.2",
+              "text": "SB Nation says Tracy and Cam Skattebo both seem to have minor hamstring injuries from the win at Houston, that the Giants are using 3 backs with no clear lead back, and that Tracy should be rostered with the Giants on bye in Week 8. Source: Yahoo Sports (SB Nation), https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-230000846.html",
+              "numbers": [
+                "3",
                 "8"
               ],
               "teams": [],
@@ -15616,7 +15635,22 @@
           "bye": 8,
           "injury_status": "Questionable",
           "return_week": null,
-          "research": []
+          "research": [
+            {
+              "text": "Justin Boone lists Tyrone Tracy Jr. (28% rostered) among his Week 8 waiver options and also names him among the key injuries, with a hamstring issue.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-10-27",
+              "stance": "news"
+            },
+            {
+              "text": "SB Nation says Tracy and Cam Skattebo both seem to have minor hamstring injuries from the win at Houston, that the Giants are using 3 backs with no clear lead back, and that Tracy should be rostered with the Giants on bye in Week 8.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-230000846.html",
+              "source": "Yahoo Sports (SB Nation)",
+              "date": "2026-10-27",
+              "stance": "news"
+            }
+          ]
         },
         {
           "player_id": "7021",
@@ -15672,12 +15706,13 @@
             },
             {
               "id": "WV.research.7021.1",
-              "text": "NFL.com's Matt Okada ranks Rico Dowdle as the No. 1 running back waiver target for Week 8, noting he took 9 carries for 41 yards in Week 7, the same carry count the engine has. Source: NFL.com, https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
+              "text": "NFL.com ranks Rico Dowdle as its top waiver running back for Week 8 and notes he took 9 carries for 41 yards and caught all 6 of his targets for 45 yards in Week 7. Source: NFL.com, https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
               "numbers": [
-                "1",
                 "8",
                 "9",
                 "41",
+                "6",
+                "45",
                 "7"
               ],
               "teams": [],
@@ -15687,10 +15722,9 @@
             },
             {
               "id": "WV.research.7021.2",
-              "text": "Okada says Dowdle caught all 6 of his targets for 45 yards in Week 7 and looks like a flex option in good matchups, with more upside if Jaylen Warren misses time. Source: NFL.com, https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
+              "text": "NFL.com calls Dowdle a flex option in the right matchups, with big upside if anything happens to Jaylen Warren, who had 137 scrimmage yards in Week 7. Source: NFL.com, https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
               "numbers": [
-                "6",
-                "45",
+                "137",
                 "7"
               ],
               "teams": [],
@@ -15748,14 +15782,14 @@
           "return_week": null,
           "research": [
             {
-              "text": "NFL.com's Matt Okada ranks Rico Dowdle as the No. 1 running back waiver target for Week 8, noting he took 9 carries for 41 yards in Week 7, the same carry count the engine has.",
+              "text": "NFL.com ranks Rico Dowdle as its top waiver running back for Week 8 and notes he took 9 carries for 41 yards and caught all 6 of his targets for 45 yards in Week 7.",
               "url": "https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
               "source": "NFL.com",
               "date": "2026-10-27",
               "stance": "backs"
             },
             {
-              "text": "Okada says Dowdle caught all 6 of his targets for 45 yards in Week 7 and looks like a flex option in good matchups, with more upside if Jaylen Warren misses time.",
+              "text": "NFL.com calls Dowdle a flex option in the right matchups, with big upside if anything happens to Jaylen Warren, who had 137 scrimmage yards in Week 7.",
               "url": "https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-8-rookie-wr-kc-concepcion-headlines-top-15-targets",
               "source": "NFL.com",
               "date": "2026-10-27",
@@ -15792,10 +15826,22 @@
             },
             {
               "id": "WV.research.9508.1",
-              "text": "In his Week 8 waiver column, Yahoo's Justin Boone lists Tyjae Spears, rostered in 18% of leagues, as a risky flex option for the game at Cincinnati. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
+              "text": "Justin Boone lists Tyjae Spears as a risky flex option for Week 8 at CIN if healthy, noting he is 18% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "numbers": [
                 "8",
                 "18"
+              ],
+              "teams": [],
+              "players": [
+                "Tyjae Spears"
+              ]
+            },
+            {
+              "id": "WV.research.9508.2",
+              "text": "Spears missed Week 7 with a knee injury, and Michael Carter got 4 touches with him out. Source: RotoBaller, https://www.rotoballer.com/faab-waiver-wire-bidding-advice-week-8-fantasy-pickups-2026/1975679",
+              "numbers": [
+                "7",
+                "4"
               ],
               "teams": [],
               "players": [
@@ -15852,10 +15898,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "In his Week 8 waiver column, Yahoo's Justin Boone lists Tyjae Spears, rostered in 18% of leagues, as a risky flex option for the game at Cincinnati.",
+              "text": "Justin Boone lists Tyjae Spears as a risky flex option for Week 8 at CIN if healthy, noting he is 18% rostered.",
               "url": "https://sports.yahoo.com/fantasy/article/week-8-fantasy-football-waiver-wire-jonah-coleman-omar-cooper-jr-among-top-pickups-174541107.html",
               "source": "Yahoo Fantasy",
-              "date": "2026-10-27",
+              "date": "2026-10-26",
+              "stance": "news"
+            },
+            {
+              "text": "Spears missed Week 7 with a knee injury, and Michael Carter got 4 touches with him out.",
+              "url": "https://www.rotoballer.com/faab-waiver-wire-bidding-advice-week-8-fantasy-pickups-2026/1975679",
+              "source": "RotoBaller",
+              "date": "2026-10-26",
               "stance": "news"
             }
           ]
