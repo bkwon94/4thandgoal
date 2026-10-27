@@ -323,7 +323,7 @@ NO_GAME_RBS = ("12476", "8205")
 
 def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_history_root, chart_week6):
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
-    # Tuten scored about 12.48 points per game in 4 games of weeks 2 to 5. 14 backs have more.
+    # Tuten scored 12.475 points per game in 4 games of weeks 2 to 5, which the ranks show as 12.47. 14 backs have more.
     # The 14, by points per game of weeks 2 to 5. "ahead" marks a back out now who counts for his projection ahead.
     # Jahmyr Gibbs 27.28, Kenneth Walker 23.83, Bijan Robinson 21.22, Kyren Williams 20.45, James Cook 19.10, Jaylen
     # Warren 18.92, Derrick Henry 18.25, Christian McCaffrey 17.62, Chuba Hubbard 17.27, Jonathan Taylor 16.82, Javonte

@@ -8,8 +8,8 @@ one line: the position rank, a player's place at his position among every player
 rostered or not, by lineup value. The line is rank 36 at RB and WR and rank 24 at QB and TE. A slot
 below the line is a hole. A new hole with no lineup gain is one step down. A lineup gain that opens a new
 hole is no step, because the two cancel. The highest-value player step with a new hole is no step too.
-Depth and strength are facts for the reason and the analysis, never a step. The handcuff block narrows to a lineup loss, so a
-side that trades its starter for the backup and opens a hole steps down.
+Depth and strength are facts for the reason and the analysis, never a step. The handcuff block narrows
+to a lineup loss, so a side that trades its starter for the backup and opens a hole steps down.
 
 ## Considered Options
 

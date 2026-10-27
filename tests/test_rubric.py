@@ -314,7 +314,8 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
     assert "A starter who misses a week with no cover is a hole too." in fit
     assert "The bye window is `BYE_WINDOW` weeks from the trade week." in fit
     assert "A starter due back after the window is a hole, whatever his rank." in fit
-    assert "it names the week of his bye or his return and says that no bench player covers him." in fit
+    assert "it names the week and says that no bench player covers him." in fit
+    assert 'For a starter due back after the window, it says "X is due back in week W." with no cover phrase.' in fit
     assert "For a starter out with no return week on file, it says so and names no week." in fit
     assert tunables.BYE_WINDOW == 3
 
@@ -1868,7 +1869,9 @@ HAND_WORKED = [
     # Roster 8: the lineup gains 0.34, under the threshold, and it gives the highest-value player, no fit step.
     # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
     # Roster 8 asked and grades A: accept.
-    (("D", [1, 0, 0, -1, 0, 0], "against", "D"), ("A", [0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+    # Roster 7 gets Breece Hall, so RB1 is a hole: he is out with no return week on file. Malik Nabers takes WR1
+    # with his bye in week 8, and no bench player covers him. That hole moves fit from +1 to 0, and final D to F.
+    (("D", [0, 0, 0, -1, 0, 0], "against", "F"), ("A", [0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
     # The Josh Jacobs trade. Roster 11 gives Bhayshul Tuten 3.0 and Garrett Wilson 27.5, a sum of 30.5.
     # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
     # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.
@@ -1891,7 +1894,10 @@ HAND_WORKED = [
     # Roster 7: the lineup gains 4.15 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
     # Schedule even. Sum plus one, A stays A.
     # Roster 7 asked and grades A: accept.
-    (("F", [0, 0, 0, -1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0], "even", "A"), "accept"),
+    # Roster 6 gets Lamar Jackson, so QB is a hole: he is out with no return week on file. Pat Freiermuth leaves
+    # the bench for FLEX2, so no cover is left for the bye of Parker Washington in week 7. That hole moves fit
+    # from 0 to -1.
+    (("F", [-1, 0, 0, -1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0], "even", "A"), "accept"),
     # Roster 4 gives Ladd McConkey 4.5 and Rhamondre Stevenson 2.5, a sum of 7.0.
     # Roster 7 gives Cam Skattebo 18.0 and Nico Collins 46.5, a sum of 64.5. Two for two, no consolidation.
     # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
@@ -1923,25 +1929,13 @@ HAND_WORKED = [
     # Roster 12: the lineup changes by minus 0.59, no loss, and it gets Hampton, fit up. Middle. Trend mixed.
     # No injury step. Schedule for. Sum plus one, A stays A.
     # Roster 12 asked and grades A: accept.
-    (("F", [0, 0, 0, -1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+    # Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2. He is out with no return week
+    # on file, so RB2 is a hole. That hole moves fit from 0 to -1.
+    (("F", [-1, 0, 0, -1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0], "for", "A"), "accept"),
 ]
 
 
-# A new hole moves these rows. Each waits for Brian's word before HAND_WORKED changes.
-HOLE_MOVES = {
-    0: "Roster 7 gets Breece Hall, so RB1 is a hole: he is out with no return week on file. Malik Nabers takes WR1 "
-       "with his bye in week 8, and no bench player covers him. Fit +1 to 0, final D to F, still accept.",
-    2: "Roster 6 gets Lamar Jackson, so QB is a hole: he is out with no return week on file. Pat Freiermuth leaves "
-       "the bench for FLEX2, so no cover is left for the bye of Parker Washington in week 7. Fit 0 to -1, final "
-       "stays F, still accept.",
-    5: "Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2. He is out with no return week "
-       "on file. Fit 0 to -1, final stays F, still accept.",
-}
-
-
-@pytest.mark.parametrize("index", [
-    pytest.param(index, marks=pytest.mark.xfail(strict=True, reason=HOLE_MOVES[index])) if index in HOLE_MOVES
-    else index for index in range(len(REAL_TRADES))])
+@pytest.mark.parametrize("index", range(len(REAL_TRADES)))
 def test_each_real_week_6_trade_grades_as_worked_by_hand(slow_snap, index):
     a, a_gives, b, b_gives, asker = REAL_TRADES[index]
     trade = _trade(a, a_gives, b, b_gives, asker=asker)
