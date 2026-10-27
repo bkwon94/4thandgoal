@@ -796,8 +796,9 @@ def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Cal
             return f"{team(rid)} is {t.status} either way."
         # A gap under SWING_FLAT is noise, so the side reads as flat.
         if abs(win - loss) < SWING_FLAT:
-            return f"{team(rid)} stays near {n(t.playoff)}% either way."
-        return f"A win puts {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
+            return f"The playoff odds of {team(rid)} stay near {n(t.playoff)}% either way."
+        # No possessive: a team name that ends in s, such as Bo Girds, breaks the "'s" form.
+        return f"A win puts the playoff odds of {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
 
     out = []
     for a, b in pairs:
@@ -902,7 +903,7 @@ def history_facts(c: Context) -> list[Fact]:
 
 
 def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
-    """One fact per team: the power rank, the movement, and the four component ranks, as ordinals.
+    """One fact per team: the power rank, the movement, the four component ranks as ordinals, and the form records.
 
     It takes the rows and a name lookup, not a Context, so a saved week can get the facts from its history.
     """
@@ -923,7 +924,12 @@ def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
         components = ", ".join(
             f"{n.ord(row.ranks[key])} in {n.text(word)}" for key, word in COMPONENT_WORDS.items()
         )
-        text = f"{name} is {rank} in the power rankings, {move}: {components}."
+        # The form component weighs both games of a week, so the fact names both records for the writer to quote.
+        # Nums records each number in text order, so the records come before the count of weeks.
+        head_to_head, median = n.record(*row.head_to_head), n.record(*row.median)
+        window = "the last week" if row.form_weeks == 1 else f"the last {n(row.form_weeks)} weeks"
+        records = f"{head_to_head} head-to-head and {median} at the median over {window}"
+        text = f"{name} is {rank} in the power rankings, {move}: {components}; {records}."
         out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
     return out
 

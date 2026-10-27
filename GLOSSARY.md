@@ -99,12 +99,18 @@ One of standing, form, schedule played, scoring. Each has a rank of 1 to 12.
 _Avoid_: schedule strength (for schedule played). Schedule played is distinct from the next
 opponent win rate, which covers next week only.
 
+**Form**:
+The component for how a team plays now. It reads the last 3 weeks: the head-to-head game at double the
+weight of the median game, and the all-play record.
+_Avoid_: momentum, results (alone)
+
 **All-play record**:
 Wins and losses as if a team played every other team that week.
 
 **Form streak**:
-Wins or losses in a row over the last 3 weeks, newest game back, with the median game counted. The
-median game is the newer game of its week. A tie ends it. It feeds the form component only.
+Wins or losses in a row over the last 3 weeks, newest game back, with the median game counted. A
+head-to-head game counts 2 and a median game counts 1. The median game is the newer game of its week.
+A tie ends it. It feeds the form component only.
 _Avoid_: streak (alone). The streak fact on the page is head to head only.
 
 **Quality win**:

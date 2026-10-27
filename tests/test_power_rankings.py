@@ -127,25 +127,35 @@ def test_form_record_counts_the_median_game():
 
 def test_form_streak_breaks_on_a_tie():
     # Roster 1 wins both games in weeks 1 and 3. In week 2 it ties roster 2, then wins the median game.
-    # The median game is the newer game of its week, so the streak is 3 and stops at the tie.
-    # A streak that ran through the tie would be 5.
+    # The median game is the newer game of its week, so the streak stops at the tie.
+    # Newest back: median 1, head to head 2, median 1, then the tie. The streak is 4 of a cap of 9.
+    # A streak that ran through the tie would be 7.
     win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
     h = _built([win, win | {2: 110.0}, win])
-    # Roster 1 goes 5-0 with the median game and 32-0 in all-play, with ties as neither.
-    streak = (3 + 6) / 12
+    # The weighted record is 7-0 with the tie as neither: 2 + 1, 1, 2 + 1. All-play is 32-0.
+    streak = (4 + 9) / 18
     assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((streak + 1 + 1) / 3)
 
 
 def test_a_losing_form_streak_scores_below_an_even_record():
     # Roster 1 wins both games in week 1. In week 2 it wins head to head but loses the median game.
-    # In week 3 it loses both games. The form streak is -3 and the record is an even 3-3.
-    # A streak clamped at 0 would score 0.5, the same as the even record.
+    # In week 3 it loses both games. Newest back: median -1, head to head -2, median -1, then the win.
+    # The form streak is -4 of a cap of 9. A streak clamped at 0 would score 0.5.
     win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
     h = _built([win, win | {1: 99.0}, win | {1: 90.0}])
-    # All-play: 11-0, then 3-8, then 0-11.
-    streak = (-3 + 6) / 12
+    # The weighted record: wins 2 + 1 + 2 = 5, losses 1 + 2 + 1 = 4. All-play: 11-0, then 3-8, then 0-11.
+    streak = (-4 + 9) / 18
     assert streak < 0.5
-    assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((streak + 0.5 + 14 / 33) / 3)
+    assert _row(power_rankings(h, 3)[3], 1).values["form"] == pytest.approx((streak + 5 / 9 + 14 / 33) / 3)
+
+
+def test_form_weighs_the_head_to_head_game_double_the_median_game():
+    # Roster 1 scores 99 and beats roster 2 at 90. The median is 101.5, the mean of 101 and 102, so it loses there.
+    # Newest back: median -1, then the head-to-head win. The streak is -1 of a cap of 9.
+    # The weighted record is 2-1. All-play: it beats 90, 91, and 92, so 3-8.
+    h = _built([_FILLERS | {1: 99.0, 2: 90.0, 3: 91.0, 4: 92.0}])
+    streak = (-1 + 9) / 18
+    assert _row(power_rankings(h, 1)[1], 1).values["form"] == pytest.approx((streak + 2 / 3 + 3 / 11) / 3)
 
 
 def test_form_streak_is_zero_when_the_newest_game_is_a_tie():
@@ -201,3 +211,27 @@ def test_weight_change_moves_the_result(fixture_raw_dir, fixture_history_root, m
     rows = power_rankings(h, 6)[6]
     assert [r.roster_id for r in rows] != equal
     assert all(r.power_rank == r.ranks["standing"] for r in rows)
+
+
+def test_power_score_weighs_form_most_and_scoring_second(fixture_raw_dir, fixture_history_root):
+    # The league rule: standing 0.10, form 0.60, schedule played 0.10, scoring 0.20.
+    for row in power_rankings(_history(fixture_raw_dir, fixture_history_root), 6)[6]:
+        v = row.values
+        expected = 0.10 * v["standing"] + 0.60 * v["form"] + 0.10 * v["schedule_played"] + 0.20 * v["scoring"]
+        assert row.power_score == pytest.approx(expected)
+
+
+def test_a_row_holds_the_head_to_head_and_the_median_record_of_the_form_window():
+    # Week 1: roster 1 wins both games. Weeks 2 to 4: it wins head to head but loses the median game.
+    # Week 5: it loses both. At week 5 the window is weeks 3 to 5: head to head 2-1, median 0-3.
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    split = win | {1: 99.0}
+    h = _built([win, split, split, split, win | {1: 90.0}])
+    row = _row(power_rankings(h, 5)[5], 1)
+    assert (row.head_to_head, row.median, row.form_weeks) == ((2, 1), (0, 3), 3)
+
+
+def test_the_form_window_is_short_in_the_first_weeks():
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    row = _row(power_rankings(_built([win]), 1)[1], 1)
+    assert (row.head_to_head, row.median, row.form_weeks) == ((1, 0), (1, 0), 1)

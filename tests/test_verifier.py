@@ -687,9 +687,10 @@ def test_a_team_with_four_rankings_sentences_fails(fixture_raw_dir, fixture_hist
 def test_a_tagged_reaction_counts_toward_the_three(fixture_raw_dir, fixture_history_root):
     sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
     sentences = _good_rankings(sheet, ch)
-    rid = sentences[0].roster_id
+    # The first team's standing fact holds 721.96, and the fixture names one player 96, so the test uses the second.
+    rid = sentences[1].roster_id
     standing = _standing_id(sheet, ch, rid)
-    sentences[1:1] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    sentences[2:2] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
     assert code_check(_blurb("rankings", *sentences), ch, sheet) == []
 
 
@@ -1045,3 +1046,25 @@ def test_the_retry_still_hears_the_used_words(fixture_raw_dir):
     assert len(users) == 2
     assert "Sentence 0: not in facts" in users[1]
     assert "Do not say 'lucky'. Another chapter of this page already does." in users[1]
+
+
+def _open_odds_fact(sheet, ch):
+    """The first odds fact in the chapter that holds a percent: a team with the playoff odds still open."""
+    fid = next(f for f in ch.fact_ids if f.startswith("ODDS.") and not f.endswith(".why") and sheet.facts[f].numbers)
+    return fid, sheet.facts[fid]
+
+
+def test_an_odds_number_with_no_kind_fails(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    fid, fact = _open_odds_fact(sheet, ch)
+    number = fact.numbers[0]
+    b = _blurb("rankings", _tagged(f"A loss means {number}%.", 1, fid))
+    assert f"[0] odds number {number} needs 'playoff odds' or 'bye odds' in the same sentence" in code_check(
+        b, ch, sheet)
+
+
+def test_an_odds_number_with_its_kind_passes(fixture_raw_dir, fixture_history_root):
+    sheet, ch = _rankings(fixture_raw_dir, fixture_history_root)
+    fid, fact = _open_odds_fact(sheet, ch)
+    b = _blurb("rankings", _tagged(f"The playoff odds sit at {fact.numbers[0]}%.", 1, fid))
+    assert not any("odds number" in m for m in code_check(b, ch, sheet))
