@@ -1192,7 +1192,7 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
 
 # The find route. The fixture chart lists mostly stars, so no pair of the week 6 snapshot has a win-win on it.
 # The finder tests give chart rows to the players a test needs, and these tests do the same for rosters 2 and 3,
-# so the pair has two win-wins that share no player. The holes of the bye window rule out the rest.
+# so the pair has two win-wins that share no player. The holes of the return window rule out the rest.
 CHART_POSITIONS = frozenset({"RB", "WR", "TE", "QB"})
 FIND = {"season": 2026, "asker": 2, "partner": 3}
 

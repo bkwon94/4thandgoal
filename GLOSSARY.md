@@ -367,12 +367,16 @@ line of the player's own position. K and DEF have no line.
 _Avoid_: replacement level, floor, cutoff
 
 **Hole**:
-A starting slot that, after a trade, holds a player below the line or holds no player. A bye hole is a
-slot whose starter has his bye in the bye window and no bench player above the line can cover. The bye
-window is the trade week and the next two weeks. A starter due back inside the window reads as a bye, and
-a starter due back after it is a hole. A starter out with no return week on file is a hole. A hole that
-exists before the trade too is not new.
-_Avoid_: gap, weakness, need
+A starting slot that, after a trade, holds a player below the line or holds no player. A starter due back
+inside the return window with no bench player above the line to cover him is a hole. A starter due back
+after the return window is a hole. A starter out with no return week on file is a hole. For a middle team,
+a player it gets who starts after the trade and has his bye in the trade week is a hole. A bye in any
+other week, or on any other team, is never a hole. A hole that exists before the trade too is not new.
+_Avoid_: gap, weakness, need, bye hole
+
+**Return window**:
+The trade week and the next two weeks. A starter due back inside it needs a bench player to cover him.
+_Avoid_: bye window
 
 **Depth**:
 The count of a side's players at one position, starters and bench, above the line. It reads QB, RB,

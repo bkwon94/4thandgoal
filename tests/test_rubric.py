@@ -206,7 +206,8 @@ def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     assert _adjuster(tenth, "roster fit").reason == (
         "The best lineup gains after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
     assert _adjuster(fifth, "roster fit").step == -1
-    # Saquon Barkley takes FLEX1 on roster 5. He counts as back in week 14, past the bye window, so his slot is a hole.
+    # Saquon Barkley takes FLEX1 on roster 5. He counts as back in week 14, past the return window, so his slot is a
+    # hole.
     assert _adjuster(fifth, "roster fit").reason == (
         "FLEX1 is a hole after the trade: Saquon Barkley is out with no return week on file." + NO_SCHEDULES + " "
         + SAQUON_NOTE)
@@ -218,7 +219,7 @@ POLLARD = "5967"
 
 
 def _saquon_back_in_week_7(snap):
-    """The snapshot with Saquon Barkley due back in week 7, inside the bye window.
+    """The snapshot with Saquon Barkley due back in week 7, inside the return window.
 
     Out with no return week, he counts as back in week 14, and a slot he takes is a hole. The highest-value tests
     are about another rule, so they give him a return week. A bench back on roster 12 covers him.
@@ -311,13 +312,15 @@ def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block(
 
 def test_the_rubric_prompt_states_the_no_cover_hole():
     fit = _prompt_section("Roster fit")
-    assert "A starter who misses a week with no cover is a hole too." in fit
-    assert "The bye window is `BYE_WINDOW` weeks from the trade week." in fit
+    assert "A starter due back after the trade week with no cover is a hole too." in fit
+    assert "The return window is the trade week plus `RETURN_WINDOW_WEEKS` weeks." in fit
+    assert "A bye is not a hole, with one exception." in fit
+    assert "For a middle team, a player it gets who starts after the" in fit
     assert "A starter due back after the window is a hole, whatever his rank." in fit
     assert "it names the week and says that no bench player covers him." in fit
     assert 'For a starter due back after the window, it says "X is due back in week W." with no cover phrase.' in fit
     assert "For a starter out with no return week on file, it says so and names no week." in fit
-    assert tunables.BYE_WINDOW == 3
+    assert tunables.RETURN_WINDOW_WEEKS == 2
 
 
 def test_the_rubric_prompt_states_that_depth_and_strength_are_facts_and_never_move_the_step():
@@ -453,7 +456,7 @@ def test_a_starting_slot_with_no_player_is_a_hole_and_each_new_hole_is_named(sna
                                  "RB2 is a hole after the trade: no player fills it.")
 
 
-# Bye weeks from the nflverse fixture. The trade week is 6, so the bye window is weeks 6 to 8.
+# Bye weeks from the nflverse fixture. The trade week is 6, so the return window is weeks 6 to 8.
 # Roster 5 has no hole before a trade. Each of its starters with a bye in the window has a bench cover: Stafford QB6
 # covers Daniels, Woody Marks RB34 covers Cook, and Gesicki TE17 covers Kittle. Michael Wilson WR25, bye week 14,
 # sits on its bench free to cover a receiver.
@@ -2082,7 +2085,7 @@ def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reas
     snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}})
     third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     fit = _adjuster(third, "roster fit")
-    # Jacobs takes RB2 and is due back in week 7, inside the bye window. Roster 3 has no bench back above the line to
+    # Jacobs takes RB2 and is due back in week 7, inside the return window. Roster 3 has no bench back above the line to
     # cover him, so his slot is a new hole, and the gain and the hole cancel to no step.
     assert fit.step == 0
     assert fit.reason == (

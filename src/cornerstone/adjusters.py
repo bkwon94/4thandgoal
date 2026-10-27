@@ -23,7 +23,6 @@ from cornerstone.ranks import (
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    BYE_WINDOW,
     EXPECTED_ADJUSTER_ON,
     EXPECTED_GAP,
     FIT_THRESHOLD,
@@ -158,14 +157,14 @@ class StartingSlot(NamedTuple):
     rank: int | None
     # The roster slot it fills, such as "RB" or "FLEX". A FLEX slot reads the line of its player's position.
     roster_slot: str
-    # His bye in the bye window, or his return after the trade week. None when he misses no week of the window.
+    # His bye in the return window, or his return after the trade week. None when he misses no week of the window.
     absence: Absence | None = None
 
     def is_hole(self, snapshot: Snapshot) -> bool:
         """True when the slot is a hole. GLOSSARY.md, "Hole".
 
         A hole holds no player or a player below the line for his own position. A starter who misses a week of the
-        bye window with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
+        return window with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
         no rank is below the line, because he has no stat line to start on.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
@@ -200,12 +199,12 @@ def lineup_slots(roster: list[str], snapshot: Snapshot) -> list[StartingSlot]:
 
 
 def _last_window_week(snapshot: Snapshot) -> int:
-    """The last week of the bye window, which starts at the trade week."""
-    return snapshot.week + BYE_WINDOW - 1
+    """The last week of the return window, which starts at the trade week."""
+    return snapshot.week + RETURN_WINDOW_WEEKS
 
 
 def _bye_in_window(snapshot: Snapshot, player_id: str) -> int | None:
-    """The week of the player's bye when it falls in the bye window. None with no schedule map, as no bye reads."""
+    """The week of the player's bye when it falls in the return window. None with no schedule map, as no bye reads."""
     if snapshot.schedules is None:
         return None
     schedule = _scheduled(snapshot, player_id)

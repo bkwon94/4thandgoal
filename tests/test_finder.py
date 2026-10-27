@@ -58,7 +58,7 @@ RB_2, QB_3, WR_3 = "12527", "11560", "5947"
 
 
 def _no_absences(snap):
-    """The snapshot with no starter of rosters 2 and 3 away in the bye window.
+    """The snapshot with no starter of rosters 2 and 3 away in the return window.
 
     Each bye in weeks 6 to 8 moves to week 12, and each player due back on the two rosters is healthy. The count
     tests are about the finder, not the holes, and the bye and late-return holes of the pair leave too few win-wins.

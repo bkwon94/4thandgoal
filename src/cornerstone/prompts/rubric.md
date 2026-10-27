@@ -71,12 +71,16 @@ A hole is a starting slot that holds a player below the line, or holds no player
 is never a hole. A hole that exists before the trade too is not new. A hole can move to another
 slot of the same kind, such as from one flex slot to the other. It is still not new.
 
-A starter who misses a week with no cover is a hole too. The bye window is `BYE_WINDOW` weeks
-from the trade week. A starter with his bye in the window needs a cover. So does a starter due
-back after the trade week and inside the window. A cover is a bench player above the line at a
-position the slot allows. Each bench player covers one slot only. A bench player with his bye in
-the same week cannot cover. A starter due back after the window is a hole, whatever his rank.
-With no schedules, no bye hole reads, and the reason says that the schedules are not available.
+A starter due back after the trade week with no cover is a hole too. The return window is the trade
+week plus `RETURN_WINDOW_WEEKS` weeks. A starter due back inside the window needs a cover. A cover
+is a bench player above the line at a position the slot allows, and not out himself. Each bench
+player covers one slot only. A starter due back after the window is a hole, whatever his rank. A
+starter out with no return week on file is a hole.
+
+A bye is not a hole, with one exception. For a middle team, a player it gets who starts after the
+trade and has his bye in the trade week is a hole. No cover cancels it. A contender or a seller
+reads no bye hole. With no schedules, no bye reads, and the reason says that the schedules are
+not available.
 
 Depth is the count of the side's players at a position, starters and bench, at or above the line.
 Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of
