@@ -3,6 +3,9 @@ Tests for standings, awards, Matchup of the Week, next week, and position ranks.
 They run on the real week 6 fixture.
 """
 import re
+from pathlib import Path
+
+import pytest
 
 from cornerstone.facts_league import (
     awards,
@@ -54,6 +57,54 @@ def test_motw_is_closest(fixture_raw_dir):
     pick = matchup_of_the_week(wk, mf, standings(wk))
     assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
     assert set(pick.scores) == {"closeness", "upset", "table", "stakes"}
+
+
+def _motw_with(fixture_raw_dir, margins, before=None, far_from_cut=(), ranks=None):
+    """Run the pick on the week 6 fixture with set margins, ranks before, and cut distance."""
+    wk, mf = _setup(fixture_raw_dir)
+    mf = [f.model_copy(update={"margin": margins.get(f.matchup_id, f.margin)}) for f in mf]
+    table = [
+        s.model_copy(update={"games_from_cut": 3}) if s.roster_id in far_from_cut else s
+        for s in standings(wk)
+    ]
+    table = [s.model_copy(update={"rank": (ranks or {}).get(s.roster_id, s.rank)}) for s in table]
+    return matchup_of_the_week(wk, mf, table, {**ranks_before(wk, table), **(before or {})})
+
+
+def test_motw_label_is_the_upset_when_the_pick_leads_only_there(fixture_raw_dir):
+    # Matchup 3 is the closest game. Matchup 1 wins on total and has the biggest upset.
+    # Closeness is its largest weighted score, but it does not lead in closeness.
+    pick = _motw_with(fixture_raw_dir, {1: 10, 3: 5}, {3: 12, 1: 1})
+    assert pick.matchup_id == 1 and pick.reason == "Upset"
+    assert pick.scores["closeness"] > pick.scores["upset"]
+
+
+def test_motw_tie_shared_by_most_games_is_no_lead(fixture_raw_dir):
+    # All six matchups tie at 1.0 in stakes, so stakes leads for no pick.
+    # Matchup 1 leads only in upset, though its weighted stakes score is larger.
+    pick = _motw_with(
+        fixture_raw_dir, {1: 8, 3: 5}, {3: 5, 1: 1, 10: 1}, ranks={3: 12}
+    )
+    assert pick.matchup_id == 1 and pick.reason == "Upset"
+    assert pick.scores["stakes"] > pick.scores["upset"]
+
+
+def test_motw_label_is_closest_finish_for_the_closest_game(fixture_raw_dir):
+    # Matchup 4 has the smallest margin and also the biggest upset. Closeness weighs more.
+    wk, mf = _setup(fixture_raw_dir)
+    assert min(mf, key=lambda f: f.margin).matchup_id == 4
+    pick = matchup_of_the_week(wk, mf, standings(wk))
+    assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
+
+
+def test_motw_label_falls_back_to_the_nearest_to_best_with_no_lead(fixture_raw_dir):
+    # Matchup 5 is second in closeness, upset, and table, and far from the cut.
+    # It leads in no signal. Closeness is its nearest to the best, at 0.99 of it.
+    margins = {1: 60, 2: 66, 3: 60, 4: 5.34, 5: 6, 6: 60}
+    before = {5: 8, 7: 2, 10: 1, 6: 12, 2: 1, 8: 12, 11: 1}
+    pick = _motw_with(fixture_raw_dir, margins, before, far_from_cut={5, 10})
+    assert pick.matchup_id == 5 and pick.reason == "Closest Finish"
+    assert pick.scores["stakes"] == 0
 
 
 def test_next_week_two_must_watch(fixture_raw_dir):
@@ -151,3 +202,18 @@ def test_incomplete_history_falls_back_with_a_warning(fixture_raw_dir, caplog):
     h = History(week=6, weeks={})
     assert standings(wk, h) == standings(wk)
     assert "history incomplete" in caplog.text
+
+
+def test_motw_week_7_label_is_the_nearest_to_best():
+    # Week 7 of 2026: matchup 1 wins on total but leads no signal. Stakes is shared by
+    # four of six games, so it is no lead. Table is nearest to the best, at 0.895 of it.
+    season_root = Path(__file__).parents[1] / "data" / "2026"
+    if not (season_root / "week-07" / "raw").exists():
+        pytest.skip("saved week 7 is not on this machine")
+    raw = load_raw(season_root / "week-07" / "raw")
+    wk = parse_week(raw)
+    history = load_history(season_root / "history", raw, 7)
+    mf = [matchup_facts(m, wk.moves, 7) for m in wk.matchups]
+    table = standings(wk, history)
+    pick = matchup_of_the_week(wk, mf, table, ranks_before(wk, table, history))
+    assert pick.matchup_id == 1 and pick.reason == "Top of the Table"

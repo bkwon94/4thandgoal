@@ -186,14 +186,27 @@ def matchup_of_the_week(
     table: list[Standing],
     before: dict[int, int] | None = None,
 ) -> Pick:
+    """Pick the matchup with the highest weighted total of the four signals.
+
+    The label names the signal in which the pick ranks first among all matchups, by raw
+    value. A lone first is a lead. A tie for first is a lead only when fewer than half of
+    the matchups share the top value. A 0-or-1 signal that most games share says nothing
+    about this pick. With more than one lead, the larger weighted score wins. With no lead,
+    the signal in which the pick comes nearest to the best value names it, as a ratio of
+    the pick value to the best value. A tie in the ratio goes to the larger weighted score.
+    A signal that is no lead because most games share its top value stays out of this too.
+    The weights do not name the pick alone, because the winner alone misleads: closeness
+    carries 40 percent, so it is the largest part of almost every winner, even when
+    another game was closer.
+    """
     by_roster = {s.roster_id: s for s in table}
     if before is None:
         before = ranks_before(week, table)
     max_margin = max(f.margin for f in mfacts)
-    best: tuple[float, float, Pick] | None = None
+    signals = []
     for f, m in zip(mfacts, week.matchups):
         a, b = by_roster[m.a.roster_id], by_roster[m.b.roster_id]
-        raw = {
+        signals.append({
             "closeness": 1 - f.margin / max_margin if max_margin else 1.0,
             "upset": (
                 upset_signal(before[f.winner], before[f.loser])
@@ -202,9 +215,22 @@ def matchup_of_the_week(
             ),
             "table": _table_signal(a.rank, b.rank),
             "stakes": _stakes_signal(a, b),
-        }
+        })
+    best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
+    shared = {k: sum(raw[k] == best_raw[k] for raw in signals) for k in WEIGHTS}
+    best: tuple[float, float, Pick] | None = None
+    for f, raw in zip(mfacts, signals):
         scores = {k: r2(WEIGHTS[k] * v) for k, v in raw.items()}
-        top = max(scores, key=lambda k: scores[k])
+        leads = [k for k in raw if raw[k] == best_raw[k] and 2 * shared[k] < len(signals)]
+        if leads:
+            top = max(leads, key=lambda k: scores[k])
+        else:
+            # Only signals that can lead for a pick may name it.
+            open_signals = [k for k in raw if 2 * shared[k] < len(signals)] or list(raw)
+            top = max(
+                open_signals,
+                key=lambda k: (raw[k] / best_raw[k] if best_raw[k] else 0.0, scores[k]),
+            )
         pick = Pick(matchup_id=f.matchup_id, reason=REASONS[top], scores=scores)
         total = sum(WEIGHTS[k] * v for k, v in raw.items())
         # Highest total wins. A tie in total goes to the smallest margin.
