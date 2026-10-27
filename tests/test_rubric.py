@@ -320,6 +320,7 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
     assert "it names the week and says that no bench player covers him." in fit
     assert 'For a starter due back after the window, it says "X is due back in week W." with no cover phrase.' in fit
     assert "For a starter out with no return week on file, it says so and names no week." in fit
+    assert "it names the week and says that a middle team needs the win." in fit
     assert tunables.RETURN_WINDOW_WEEKS == 2
 
 
@@ -515,6 +516,77 @@ def test_a_starter_due_back_in_week_n_plus_6_is_a_hole(slow_snap):
     snap = slow_snap.model_copy(update={"returns": {**slow_snap.returns, P_WASHINGTON: 12}})
     fit = _washington_for_boston(snap)
     assert fit.reason.startswith("FLEX2 is a hole after the trade: Parker Washington is due back in week 12.")
+
+
+# Roster 6 holds Zay Flowers WR10 of BAL and Kenneth Walker RB2 of KC, and each takes a starting slot on a roster here.
+# Roster 12 is a middle team with no WR1 or RB1 hole. Roster 5 is a contender. Roster 4 is a seller with an RB1 hole
+# already, so Walker pushes a second back into a new hole if the bye reads.
+# The player given has the higher trade value, so the side does not get the highest-value player and no step up hides
+# a hole. The tests move the bye of the team of the player the side gets to week 6, the trade week.
+FLOWERS, WALKER, KINCAID, SKATTEBO = "9997", "8151", "10236", "12481"
+MALIK_WASHINGTON, TUTEN, CORUM = "11610", "12490", "11586"
+
+
+def _roster_fit_for(snap, roster_id: int, gives: str, gets: str, bye: int = 6):
+    """The roster fit adjuster of the side that gives one player for a player of roster 6, whose team has its bye in
+    week bye.
+    """
+    graded, _ = grade(_trade(roster_id, [gives], 6, [gets]),
+                      _with_values(_with_bye(snap, snap.players[gets].nfl_team, bye), {gives: 30.0, gets: 20.0}))
+    return _adjuster(graded, "roster fit")
+
+
+def test_a_middle_team_that_gets_a_starter_with_his_bye_in_week_n_has_a_new_hole_and_steps_down(slow_snap):
+    fit = _roster_fit_for(slow_snap, 12, KINCAID, FLOWERS)
+    assert fit.step == -1
+    assert fit.reason == ("WR1 is a hole after the trade: Zay Flowers has his bye in week 6, "
+                          "and a middle team needs the win.")
+
+
+def test_a_contender_that_gets_a_starter_with_his_bye_in_week_n_has_no_hole(slow_snap):
+    fit = _roster_fit_for(slow_snap, 5, GESICKI, FLOWERS)
+    assert "hole" not in fit.reason
+
+
+def test_a_seller_that_gets_a_starter_with_his_bye_in_week_n_has_no_hole(slow_snap):
+    fit = _roster_fit_for(slow_snap, 4, SKATTEBO, WALKER)
+    assert "hole" not in fit.reason
+
+
+def test_a_middle_team_that_gets_a_starter_with_his_bye_in_week_n_plus_1_has_no_hole(slow_snap):
+    fit = _roster_fit_for(slow_snap, 12, KINCAID, FLOWERS, bye=7)
+    assert "hole" not in fit.reason
+
+
+def test_a_middle_team_that_gets_a_bench_player_with_his_bye_in_week_n_has_no_hole(slow_snap):
+    # Malik Washington WR38 does not start for roster 12, so his bye costs the team nothing.
+    fit = _roster_fit_for(slow_snap, 12, KINCAID, MALIK_WASHINGTON)
+    assert "hole" not in fit.reason
+
+
+def test_a_middle_team_whose_lineup_gains_with_a_starter_on_bye_in_week_n_steps_no_step_and_names_hole(slow_snap):
+    fit = _roster_fit_for(slow_snap, 12, KINCAID, WALKER)
+    assert fit.step == 0
+    assert fit.reason.startswith("The best lineup gains after the trade. ")
+    assert ("RB1 is a hole after the trade: Kenneth Walker has his bye in week 6, "
+            "and a middle team needs the win.") in fit.reason
+
+
+def test_a_middle_team_that_gives_a_starter_with_his_bye_in_week_n_reads_no_hole_for_him(slow_snap):
+    # Bhayshul Tuten starts for roster 12, and JAX has its bye in week 6. The team that gives him reads no bye.
+    graded, _ = grade(_trade(12, [TUTEN], 6, [CORUM]),
+                      _with_values(_with_bye(slow_snap, "JAX", 6), {TUTEN: 30.0, CORUM: 20.0}))
+    reason = _adjuster(graded, "roster fit").reason
+    assert "Bhayshul Tuten" not in reason
+    assert "bye" not in reason
+
+
+def test_with_no_schedule_map_a_middle_team_reads_no_bye_hole_and_the_reason_names_the_schedules(slow_snap):
+    graded, _ = grade(_trade(12, [KINCAID], 6, [FLOWERS]),
+                      _with_values(slow_snap.model_copy(update={"schedules": None}), {KINCAID: 30.0, FLOWERS: 20.0}))
+    fit = _adjuster(graded, "roster fit")
+    assert "hole" not in fit.reason
+    assert "The schedule sources are not available." in fit.reason
 
 
 # Roster 12 starts Bhayshul Tuten RB15 of JAX, bye week 7. Its bench backs are Omarion Hampton RB26, Tony Pollard
@@ -2346,3 +2418,6 @@ def test_the_prose_checks_of_the_analysis_pass_on_a_reason_with_the_label(
     for text in (trend, prose):
         assert _prose_failures("roster 1 analysis", text, allowed, breakdown_text, names) == []
         assert _letter_failures("roster 1 analysis", text) == []
+
+
+

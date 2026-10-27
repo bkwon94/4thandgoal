@@ -158,19 +158,22 @@ class StartingSlot(NamedTuple):
     roster_slot: str
     # His return after the trade week. None when he is not out after the trade week. A bye is never an absence.
     absence: Absence | None = None
+    # True when the player is a new arrival of a middle team and has his bye in the trade week. No cover cancels it.
+    bye_now: bool = False
 
     def is_hole(self, snapshot: Snapshot) -> bool:
         """True when the slot is a hole. GLOSSARY.md, "Hole".
 
         A hole holds no player or a player below the line for his own position. A starter due back after the trade
         week with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
-        no rank is below the line, because he has no stat line to start on.
+        no rank is below the line, because he has no stat line to start on. A starter a middle team gets, who has his
+        bye in the trade week, is a hole too.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
             return False
         if self.player is None:
             return True
-        if self.absence is not None and not self.absence.covered:
+        if self.bye_now or (self.absence is not None and not self.absence.covered):
             return True
         line = LINES.get(snapshot.players[self.player].position)
         return line is not None and (self.rank is None or self.rank > line)
@@ -336,6 +339,24 @@ def _roster_after(snapshot: Snapshot, roster_id: int, gives: list[str], gets: li
     return [pid for pid in snapshot.rosters[roster_id] if pid not in gives] + gets
 
 
+def _with_byes_now(snapshot: Snapshot, roster_id: int, gets: list[str],
+                   slots: list[StartingSlot]) -> list[StartingSlot]:
+    """The slots after the trade, with bye_now set on each starter a middle team gets who has his bye in the trade week.
+
+    ADR 0004. A contender or a seller reads no bye hole, and with no schedule map no bye reads.
+    """
+    if snapshot.schedules is None or team_race(snapshot, roster_id) != "middle":
+        return slots
+    return [slot._replace(bye_now=True) if slot.player in gets and _bye_week(snapshot, slot.player) == snapshot.week
+            else slot for slot in slots]
+
+
+def _bye_week(snapshot: Snapshot, player_id: str) -> int | None:
+    """The bye week of the player's NFL team. None for a defense, a kicker, or a team with no schedule."""
+    schedule = _scheduled(snapshot, player_id)
+    return None if schedule is None else schedule.bye_week
+
+
 def _read_before(snapshot: Snapshot, roster: list[str]) -> tuple[list[StartingSlot], Decimal]:
     """The starting slots of the roster before the trade, and their lineup total."""
     before = lineup_slots(roster, snapshot)
@@ -346,7 +367,8 @@ def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[
           handcuffs: list[str]) -> Side:
     # The read before the trade depends on the roster as it is now only, so it builds once per roster.
     before, total_before = snapshot.roster_read(roster_id, _read_before)
-    after = lineup_slots(_roster_after(snapshot, roster_id, gives, gets), snapshot)
+    after = _with_byes_now(snapshot, roster_id, gets,
+                           lineup_slots(_roster_after(snapshot, roster_id, gives, gets), snapshot))
     return Side(
         roster_id=roster_id, gets=gets, gives=gives,
         starters_after=[slot.player for slot in after if slot.player is not None],
@@ -496,6 +518,8 @@ def hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     if slot.player is None:
         return f"{lead} no player fills it."
     player = snapshot.players[slot.player]
+    if slot.bye_now:
+        return f"{lead} {player.name} has his bye in week {snapshot.week}, and a middle team needs the win."
     if slot.absence is not None and not slot.absence.covered:
         week = slot.absence.week
         if slot.player not in snapshot.returns:

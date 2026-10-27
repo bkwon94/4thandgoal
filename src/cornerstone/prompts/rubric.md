@@ -90,7 +90,8 @@ Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a positi
   position rank. For a starter due back inside the window and no cover, it names the
   week and says that no bench player covers him. For a starter due back after the window, it says
   "X is due back in week W." with no cover phrase. For a starter out with no return week on file,
-  it says so and names no week.
+  it says so and names no week. For a middle team's starter who has his bye in the trade week, it
+  names the week and says that a middle team needs the win.
 - A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
   still one down, and the reason names the hole.
 - A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no
