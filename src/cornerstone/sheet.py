@@ -308,7 +308,7 @@ class Context:
         self.chart = chart
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts)
-        self.next = next_week(week, self.table)
+        self.next = next_week(week, self.table, history)
         self.season_history = season_history(week, history)
         # A gap in the history would shift every rank, so an incomplete history gives no power rankings.
         self.power = (

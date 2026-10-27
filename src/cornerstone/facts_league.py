@@ -19,11 +19,12 @@ from cornerstone.models import (
     PositionRank,
     SeasonHistory,
     Standing,
+    Storyline,
     Week,
     r2,
     sub,
 )
-from cornerstone.tunables import PLAYOFF_SPOTS
+from cornerstone.tunables import PLAYOFF_SPOTS, STORYLINE_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,10 @@ MOVE_BONUS = 5
 UNDERPERFORMER_MIN_PROJECTION = 10
 # Weights for the Matchup of the Week signals.
 WEIGHTS = {"closeness": 0.4, "upset": 0.25, "table": 0.2, "stakes": 0.15}
+# A team on this many head-to-head wins or losses in a row puts a streak on the line. GLOSSARY.md, "Streak on the line".
+STREAK_ON_THE_LINE = 3
+# Both teams ranked this high or higher in the standings meet at the top of the table.
+TABLE_TOP = 4
 REASONS = {
     "closeness": "Closest Finish",
     "upset": "Upset",
@@ -239,35 +244,91 @@ def matchup_of_the_week(
     return best[2]
 
 
-def next_week(week: Week, table: list[Standing]) -> list[NextMatchup]:
+def next_week(
+    week: Week, table: list[Standing], history: History | None = None,
+) -> list[NextMatchup]:
+    """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
+
+    A tie in the score goes to the smaller gap in the standings, then to the schedule order.
+    """
     by_roster = {s.roster_id: s for s in table}
-    scored = []
+    games = []
     for a_id, b_id in week.next_matchups:
         a, b = by_roster[a_id], by_roster[b_id]
-        stakes = _stakes_signal(a, b)
-        score = (
-            WEIGHTS["table"] * _table_signal(a.rank, b.rank)
-            + WEIGHTS["stakes"] * stakes
-        )
-        scored.append((score, a, b, stakes))
-    # sorted() is stable, so a tie keeps the order of the schedule.
-    top_two = {
-        id(item) for item in sorted(scored, key=lambda x: -x[0])[:2]
-    }
+        games.append((a, b, _storylines(week, a, b, history)))
+    # sorted() is stable, so a tie in score and gap keeps the order of the schedule.
+    ranked = sorted(
+        range(len(games)),
+        key=lambda i: (-sum(s.weight for s in games[i][2]), abs(games[i][0].rank - games[i][1].rank)),
+    )
+    top_two = set(ranked[:2])
     out = []
-    for item in scored:
-        score, a, b, stakes = item
-        must_watch = id(item) in top_two
-        reason = None
-        if must_watch:
-            hi, lo = sorted((a.rank, b.rank))
-            reason = f"{_ordinal(hi)} vs {_ordinal(lo)}"
-            if stakes:
-                reason += ", near the playoff cut"
-        out.append(
-            NextMatchup(a=a.roster_id, b=b.roster_id, must_watch=must_watch, reason=reason)
-        )
+    for i, (a, b, stories) in enumerate(games):
+        must_watch = i in top_two
+        out.append(NextMatchup(
+            a=a.roster_id, b=b.roster_id, must_watch=must_watch,
+            reason=_reason(week, a, b, stories) if must_watch else None, storylines=stories,
+        ))
     return out
+
+
+def _storylines(week: Week, a: Standing, b: Standing, history: History | None) -> list[Storyline]:
+    """The storylines of one next-week game, highest weight first. A tie in weight keeps the tunable order."""
+    out = []
+    if history is not None and history.complete():
+        for side in (a, b):
+            # The streak reads head-to-head games only, so the median game never counts.
+            run = _streak(history, side.roster_id, week.week)
+            if abs(run) >= STREAK_ON_THE_LINE:
+                out.append(_story("streak", roster_id=side.roster_id, length=run))
+    near = [s.roster_id for s in (a, b) if abs(s.games_from_cut) <= 1]
+    if near:
+        out.append(_story("cut", teams=near))
+    if a.rank <= TABLE_TOP and b.rank <= TABLE_TOP:
+        out.append(_story("table"))
+    order = list(STORYLINE_WEIGHTS)
+    return sorted(out, key=lambda s: (-s.weight, order.index(s.kind)))
+
+
+def _story(kind: str, **fields) -> Storyline:
+    return Storyline(kind=kind, weight=STORYLINE_WEIGHTS[kind], **fields)
+
+
+def _reason(week: Week, a: Standing, b: Standing, stories: list[Storyline]) -> str:
+    """One sentence on the top two storylines, with the numbers. A game with no storyline names the two ranks."""
+    if not stories:
+        hi, lo = sorted((a.rank, b.rank))
+        return f"{_ordinal(hi)} vs {_ordinal(lo)}"
+    clauses = [_clause(week, a, b, s) for s in stories[:2]]
+    if len(clauses) == 1:
+        text = " ".join(x for x in clauses[0] if x)
+    elif clauses[0][0] is not None and clauses[0][0] == clauses[1][0]:
+        # One team leads both clauses, so the second clause drops its name.
+        text = f"{clauses[0][0]} {clauses[0][1]} and {clauses[1][1]}"
+    else:
+        second = clauses[1]
+        if stories[0].kind == stories[1].kind == "streak":
+            # The second streak drops the verb, so two long team names still fit in 25 words.
+            second = (second[0], second[1].removeprefix("puts ").removesuffix(" on the line"))
+        text = f"{' '.join(x for x in clauses[0] if x)}, and {' '.join(x for x in second if x)}"
+    # A reason that starts with a team name keeps the case of the name.
+    if not any(text.startswith(t.name) for t in week.teams.values()):
+        text = text[0].upper() + text[1:]
+    return text
+
+
+def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | None, str]:
+    """The subject and the predicate of one storyline in the reason. The subject is a team name or None."""
+    name = {rid: t.name for rid, t in week.teams.items()}
+    if s.kind == "streak":
+        kind = "win" if s.length > 0 else "loss"
+        return name[s.roster_id], f"puts a {abs(s.length)}-game {kind} streak on the line"
+    if s.kind == "cut":
+        if len(s.teams) == 2:
+            return None, "both sit near the cut"
+        return name[s.teams[0]], "sits near the cut"
+    hi, lo = sorted((a.rank, b.rank))
+    return None, f"{_ordinal(hi)} and {_ordinal(lo)} meet at the top of the table"
 
 
 def _ordinal(n: int) -> str:
