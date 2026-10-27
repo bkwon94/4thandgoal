@@ -320,3 +320,28 @@ def test_one_team_fifth_in_projected_lineups_gives_no_shootout(fixture_raw_dir):
     nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), HAND_PROJECTED)
     assert _game(nx, 2, 4).storylines == []
     assert _game(nx, 5, 7).storylines == []
+
+
+def _kinds(n):
+    return [(s.kind, s.roster_id, s.week, s.margin) for s in n.storylines]
+
+
+def test_a_week_3_meeting_gives_a_rematch_and_revenge_for_the_loser(fixture_raw_dir):
+    # Roster 3 beat 8 in week 3, 112.4 to 100, a margin of 12.4.
+    week = _hand_week(fixture_raw_dir, [(3, 8)])
+    nx = next_week(week, _hand_table(), _hand_history(scores={(3, 3): 112.4}))
+    assert _kinds(nx[0]) == [("rematch", 3, 3, 12.4), ("revenge", 8, 3, 12.4)]
+
+
+def test_the_rematch_reads_the_earliest_meeting(fixture_raw_dir):
+    # Roster 8 beat 3 in week 1 by the flip, 110 to 100. Roster 3 beat 8 in week 3. Week 1 is the rematch.
+    week1 = [(1, 2), (3, 8), (5, 6), (4, 7), (9, 10), (11, 12)]
+    history = _hand_history({(1, (3, 8))}, pairs={1: week1})
+    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history)
+    assert _kinds(nx[0]) == [("rematch", 8, 1, 10.0), ("revenge", 3, 1, 10.0)]
+
+
+def test_a_tied_meeting_gives_a_rematch_and_no_revenge(fixture_raw_dir):
+    history = _hand_history(scores={(3, 3): 100.0, (3, 8): 100.0})
+    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history)
+    assert _kinds(nx[0]) == [("rematch", None, 3, 0.0)]

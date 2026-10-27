@@ -291,12 +291,39 @@ def _storylines(week: Week, a: Standing, b: Standing, history: History | None) -
             run = _streak(history, side.roster_id, week.week)
             if abs(run) >= STREAK_ON_THE_LINE:
                 out.append(_story("streak", roster_id=side.roster_id, length=run))
+        met = _first_meeting(history, a.roster_id, b.roster_id, week.week)
+        if met is not None:
+            number, winner, loser, margin = met
+            out.append(_story("rematch", roster_id=winner, week=number, margin=margin))
+            # A tie has no loser, so it gives no revenge.
+            if loser is not None:
+                out.append(_story("revenge", roster_id=loser, week=number, margin=margin))
     near = [s.roster_id for s in (a, b) if abs(s.games_from_cut) <= 1]
     if near:
         out.append(_story("cut", teams=near))
     if a.rank <= TABLE_TOP and b.rank <= TABLE_TOP:
         out.append(_story("table"))
     return out
+
+
+def _first_meeting(
+    history: History, a: int, b: int, through: int
+) -> tuple[int, int | None, int | None, float] | None:
+    """The week, the winner, the loser, and the margin of the earliest head-to-head game of a and b this season.
+
+    A tie has no winner and no loser. None when the two have not met.
+    """
+    for number in range(1, through + 1):
+        game = head_to_head(history.weeks[number], a)
+        if game is None or game[0] != b:
+            continue
+        scores = history.weeks[number].scores
+        margin = abs(sub(scores[a], scores[b]))
+        if game[1] == 0:
+            return number, None, None, margin
+        winner, loser = (a, b) if game[1] > 0 else (b, a)
+        return number, winner, loser, margin
+    return None
 
 
 def _sorted_storylines(stories: list[Storyline]) -> list[Storyline]:
