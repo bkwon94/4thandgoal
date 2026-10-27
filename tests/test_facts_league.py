@@ -444,3 +444,20 @@ def test_the_storyline_weights_come_from_the_tunables(fixture_raw_dir, monkeypat
     monkeypatch.setattr(facts_league, "STORYLINE_WEIGHTS", {**tunables.STORYLINE_WEIGHTS, "cut": 7})
     nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1}))
     assert [s.weight for s in _game(nx, 1, 3).storylines] == [7]
+
+
+def test_week_7_must_watch_games_and_reasons():
+    # Week 7 of 2026, read by hand: Return of T Mac (8) won 4 head-to-head games in a row, Bo Girds (6) and
+    # To Infinity and Bijan (7) each lost 3. Return of T Mac is at the cut and behold the lamb (10) 1 below.
+    # 6v7 scores 6 on two streaks, and 8v10 scores 6 on a streak and the cut. Every other game scores 3.
+    season_root = Path(__file__).parents[1] / "data" / "2026"
+    if not (season_root / "week-07" / "raw").exists():
+        pytest.skip("saved week 7 is not on this machine")
+    raw = load_raw(season_root / "week-07" / "raw")
+    wk = parse_week(raw)
+    history = load_history(season_root / "history", raw, 7)
+    nx = next_week(wk, standings(wk, history), history, projected_totals(wk))
+    assert [(n.a, n.b, n.reason) for n in nx if n.must_watch] == [
+        (8, 10, "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"),
+        (6, 7, "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"),
+    ]
