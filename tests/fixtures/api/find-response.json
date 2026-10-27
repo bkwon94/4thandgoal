@@ -18,6 +18,83 @@
           "team": "All You Need Is Love",
           "gives": [
             {
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+            },
+            {
+              "player_id": "4199",
+              "name": "Aaron Jones",
+              "position": "RB",
+              "nfl_team": "MIN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "3198",
+              "name": "Derrick Henry",
+              "position": "RB",
+              "nfl_team": "BAL",
+              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+            }
+          ]
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "gives": [
+            {
+              "player_id": "3198",
+              "name": "Derrick Henry",
+              "position": "RB",
+              "nfl_team": "BAL",
+              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+            },
+            {
+              "player_id": "4199",
+              "name": "Aaron Jones",
+              "position": "RB",
+              "nfl_team": "MIN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+            }
+          ]
+        }
+      ],
+      "fairness": {
+        "state": "win_win",
+        "gives_more": null,
+        "sides": [
+          {
+            "roster_id": 2,
+            "reason": "The best lineup gains after the trade."
+          },
+          {
+            "roster_id": 3,
+            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Tucker: snap share 70%, up, over weeks 4 and 5. Jones: target share 28%, up, over weeks 4 and 5."
+          }
+        ]
+      },
+      "reason": "All You Need Is Love gets Derrick Henry into its best lineup, and Lil Fridge gets Tre Tucker and Aaron Jones as their shares rise."
+    },
+    {
+      "sides": [
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "gives": [
+            {
               "player_id": "6770",
               "name": "Joe Burrow",
               "position": "QB",

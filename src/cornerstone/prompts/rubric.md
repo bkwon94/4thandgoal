@@ -87,7 +87,7 @@ Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a positi
 `STRENGTH_RANK` or better. Depth and strength are facts for the analysis. They never move the step.
 
 - A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
-  position rank. For a starter with a bye or a return inside the window and no cover, it names the
+  position rank. For a starter due back inside the window and no cover, it names the
   week and says that no bench player covers him. For a starter due back after the window, it says
   "X is due back in week W." with no cover phrase. For a starter out with no return week on file,
   it says so and names no week.

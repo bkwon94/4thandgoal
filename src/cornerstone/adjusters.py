@@ -142,9 +142,8 @@ STRENGTH_SLOTS = ("RB1", "RB2", "WR1", "WR2")
 
 
 class Absence(NamedTuple):
-    """A week that a starter misses: his bye or his return, the week, and whether a bench player covers him."""
+    """The week a starter is due back after the trade week, and whether a bench player covers him."""
 
-    kind: Literal["bye", "due back"]
     week: int
     covered: bool
 
@@ -157,14 +156,14 @@ class StartingSlot(NamedTuple):
     rank: int | None
     # The roster slot it fills, such as "RB" or "FLEX". A FLEX slot reads the line of its player's position.
     roster_slot: str
-    # His bye in the return window, or his return after the trade week. None when he misses no week of the window.
+    # His return after the trade week. None when he is not out after the trade week. A bye is never an absence.
     absence: Absence | None = None
 
     def is_hole(self, snapshot: Snapshot) -> bool:
         """True when the slot is a hole. GLOSSARY.md, "Hole".
 
-        A hole holds no player or a player below the line for his own position. A starter who misses a week of the
-        return window with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
+        A hole holds no player or a player below the line for his own position. A starter due back after the trade
+        week with no cover is a hole too. A K or DEF slot is never a hole. A player at a ranked position with
         no rank is below the line, because he has no stat line to start on.
         """
         if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
@@ -203,15 +202,6 @@ def _last_window_week(snapshot: Snapshot) -> int:
     return snapshot.week + RETURN_WINDOW_WEEKS
 
 
-def _bye_in_window(snapshot: Snapshot, player_id: str) -> int | None:
-    """The week of the player's bye when it falls in the return window. None with no schedule map, as no bye reads."""
-    if snapshot.schedules is None:
-        return None
-    schedule = _scheduled(snapshot, player_id)
-    week = schedule.bye_week if schedule is not None else None
-    return week if week is not None and snapshot.week <= week <= _last_window_week(snapshot) else None
-
-
 def _above_the_line(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player holds a position rank at or above the line of his position. K and DEF have no line."""
     line = LINES.get(snapshot.players[player_id].position)
@@ -229,13 +219,14 @@ def _out_now(snapshot: Snapshot, player_id: str) -> bool:
 
 
 def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Snapshot) -> list[StartingSlot]:
-    """The starting slots with the week each starter above the line misses, and whether a bench player covers him.
+    """The starting slots with the return week of each starter above the line who is out, and whether a bench player
+    covers him.
 
-    GLOSSARY.md, "Hole". A starter due back after the trade week and inside the window reads as a bye. A starter due
-    back after the window is a hole whatever his rank, so no cover can fix it. A cover is a bench player at a
-    position the slot allows, above the line, and not out after the trade week. A bench player whose own bye falls
-    in the starter's bye week cannot cover him. Each bench player covers one slot only, and the covers go out in
-    slot fill order, as the best lineup fills. The best bench player covers first.
+    GLOSSARY.md, "Hole". A bye is never an absence. A starter due back after the trade week and inside the window
+    needs a cover. A starter due back after the window is a hole whatever his rank, so no cover can fix it. A cover
+    is a bench player at a position the slot allows, above the line, and not out after the trade week. Each bench
+    player covers one slot only, and the covers go out in slot fill order, as the best lineup fills. The best bench
+    player covers first.
     """
     free = sorted(bench, key=lambda pid: (-lineup_value(snapshot, pid), pid))
     marked = []
@@ -246,24 +237,19 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
             continue
         # The hole read and the lineup value read the same return week, so a player out with no return week counts
         # as back at RETURN_BY_WEEK, past the window, and his slot is a hole.
-        if _out_now(snapshot, slot.player):
-            kind: Literal["bye", "due back"] = "due back"
-            week: int | None = due_back_week(snapshot, slot.player)
-        else:
-            kind, week = "bye", _bye_in_window(snapshot, slot.player)
-        if week is None:
+        if not _out_now(snapshot, slot.player):
             marked.append(slot)
             continue
+        week = due_back_week(snapshot, slot.player)
         allowed = allowed_positions(slot.roster_slot)
         cover = None if week > _last_window_week(snapshot) else next(
             (pid for pid in free
              if snapshot.players[pid].position in allowed
              and _above_the_line(snapshot, pid)
-             and not _out_now(snapshot, pid)
-             and not (kind == "bye" and _bye_in_window(snapshot, pid) == week)), None)
+             and not _out_now(snapshot, pid)), None)
         if cover is not None:
             free.remove(cover)
-        marked.append(slot._replace(absence=Absence(kind=kind, week=week, covered=cover is not None)))
+        marked.append(slot._replace(absence=Absence(week=week, covered=cover is not None)))
     return marked
 
 
@@ -466,7 +452,7 @@ def _fit(snapshot: Snapshot, side: Side) -> Adjuster:
     The note gives the lineup value of a player due back, because his recent points do not show it.
     """
     adjuster = _fit_step(snapshot, side)
-    # With no schedule map, no bye hole reads, so the reason says so next to the step it qualifies.
+    # With no schedule map, no bye read runs, so the reason names the missing schedules next to the step.
     notes = ([NO_SCHEDULES] if snapshot.schedules is None else []) + _due_back_notes(snapshot, side)
     if not notes:
         return adjuster
@@ -512,13 +498,11 @@ def hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     player = snapshot.players[slot.player]
     if slot.absence is not None and not slot.absence.covered:
         week = slot.absence.week
-        if slot.absence.kind == "due back" and slot.player not in snapshot.returns:
+        if slot.player not in snapshot.returns:
             return f"{lead} {player.name} is out with no return week on file."
         if week > _last_window_week(snapshot):
             return f"{lead} {player.name} is due back in week {week}."
-        if slot.absence.kind == "due back":
-            return f"{lead} {player.name} is due back in week {week}, and no bench player covers him."
-        return f"{lead} {player.name} has his bye in week {week}, and no bench player covers him."
+        return f"{lead} {player.name} is due back in week {week}, and no bench player covers him."
     if slot.rank is None:
         return f"{lead} {player.name} has no position rank."
     # A player due back ranks by his projection ahead, so his rank reads no game.
