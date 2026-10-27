@@ -189,10 +189,12 @@ def matchup_of_the_week(
     """Pick the matchup with the highest weighted total of the four signals.
 
     The label names the signal in which the pick ranks first among all matchups, by raw
-    value. A tie for first counts as a lead. With more than one lead, the larger weighted
-    score wins. With no lead, the largest weighted score names the pick. The label reads
-    the whole field because the winner alone misleads: closeness carries 40 percent, so it
-    is the largest part of almost every winner, even when another game was closer.
+    value. A lone first is a lead. A tie for first is a lead only when fewer than half of
+    the matchups share the top value. A 0-or-1 signal that most games share says nothing
+    about this pick. With more than one lead, the larger weighted score wins. With no lead,
+    the largest weighted score names the pick. The label reads the whole field because the
+    winner alone misleads: closeness carries 40 percent, so it is the largest part of
+    almost every winner, even when another game was closer.
     """
     by_roster = {s.roster_id: s for s in table}
     if before is None:
@@ -212,10 +214,11 @@ def matchup_of_the_week(
             "stakes": _stakes_signal(a, b),
         })
     best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
+    shared = {k: sum(raw[k] == best_raw[k] for raw in signals) for k in WEIGHTS}
     best: tuple[float, float, Pick] | None = None
     for f, raw in zip(mfacts, signals):
         scores = {k: r2(WEIGHTS[k] * v) for k, v in raw.items()}
-        leads = [k for k in raw if raw[k] == best_raw[k]]
+        leads = [k for k in raw if raw[k] == best_raw[k] and 2 * shared[k] < len(signals)]
         top = max(leads or scores, key=lambda k: scores[k])
         pick = Pick(matchup_id=f.matchup_id, reason=REASONS[top], scores=scores)
         total = sum(WEIGHTS[k] * v for k, v in raw.items())

@@ -3,6 +3,9 @@ Tests for standings, awards, Matchup of the Week, next week, and position ranks.
 They run on the real week 6 fixture.
 """
 import re
+from pathlib import Path
+
+import pytest
 
 from cornerstone.facts_league import (
     awards,
@@ -73,6 +76,13 @@ def test_motw_label_is_the_upset_when_the_pick_leads_only_there(fixture_raw_dir)
     pick = _motw_with(fixture_raw_dir, {1: 10, 3: 5}, {3: 12, 1: 1})
     assert pick.matchup_id == 1 and pick.reason == "Upset"
     assert pick.scores["closeness"] > pick.scores["upset"]
+
+
+def test_motw_tie_shared_by_most_games_is_no_lead(fixture_raw_dir):
+    # All six matchups tie at 1.0 in stakes, so stakes leads for no pick.
+    # Matchup 1 leads in upset and table, so a lone lead names it and stakes does not.
+    pick = _motw_with(fixture_raw_dir, {1: 10, 3: 5}, {3: 5, 1: 1, 10: 1})
+    assert pick.matchup_id == 1 and pick.reason == "Top of the Table"
 
 
 def test_motw_label_is_closest_finish_for_the_closest_game(fixture_raw_dir):
@@ -188,3 +198,18 @@ def test_incomplete_history_falls_back_with_a_warning(fixture_raw_dir, caplog):
     h = History(week=6, weeks={})
     assert standings(wk, h) == standings(wk)
     assert "history incomplete" in caplog.text
+
+
+def test_motw_week_7_label_names_no_shared_signal():
+    # Week 7 of 2026: matchup 1 wins on total but leads no signal. Stakes is shared by
+    # four of six games, so it is no lead, and the largest weighted score names the pick.
+    season_root = Path(__file__).parents[1] / "data" / "2026"
+    if not (season_root / "week-07" / "raw").exists():
+        pytest.skip("saved week 7 is not on this machine")
+    raw = load_raw(season_root / "week-07" / "raw")
+    wk = parse_week(raw)
+    history = load_history(season_root / "history", raw, 7)
+    mf = [matchup_facts(m, wk.moves, 7) for m in wk.matchups]
+    table = standings(wk, history)
+    pick = matchup_of_the_week(wk, mf, table, ranks_before(wk, table, history))
+    assert pick.matchup_id == 1 and pick.reason == "Closest Finish"
