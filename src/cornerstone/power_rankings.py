@@ -32,9 +32,10 @@ def _week_rows(history: History, week: int, before: dict[int, int]) -> list[Powe
     standing = standings_order(records)
     standing_rank = {rid: i + 1 for i, rid in enumerate(standing)}
     weeks = [history.weeks[n] for n in range(1, week + 1)]
+    recent = weeks[-TREND_WEEKS:]
     values = {
         "standing": {rid: _scaled(len(standing) - standing_rank[rid], 0, len(standing) - 1) for rid in standing},
-        "form": _form(weeks[-TREND_WEEKS:], standing),
+        "form": _form(recent, standing),
         "schedule_played": _schedule_played(weeks, standing),
         "scoring": _scoring(weeks, records),
     }
@@ -50,6 +51,9 @@ def _week_rows(history: History, week: int, before: dict[int, int]) -> list[Powe
                 power_score=score[rid],
                 values={name: values[name][rid] for name in values},
                 ranks={name: ranks[name][rid] for name in ranks},
+                head_to_head=_head_to_head_record(recent, rid),
+                median=_median_record(recent, rid),
+                form_weeks=len(recent),
             )
             for rid in standing
         ),
@@ -95,6 +99,12 @@ def _median_result(week: PastWeek, roster_id: int) -> int:
     # Decimal, as season_records settles it, so a float never flips a game at the median.
     mine, median = Decimal(str(week.scores[roster_id])), week_median(week)
     return (mine > median) - (mine < median)
+
+
+def _median_record(weeks: list[PastWeek], roster_id: int) -> tuple[int, int]:
+    """Median game wins and losses over the weeks. A tie is neither."""
+    results = [_median_result(w, roster_id) for w in weeks]
+    return results.count(1), results.count(-1)
 
 
 def _week_games(week: PastWeek, roster_id: int) -> list[tuple[int, int]]:

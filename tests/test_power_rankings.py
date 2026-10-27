@@ -219,3 +219,19 @@ def test_power_score_weighs_form_most_and_scoring_second(fixture_raw_dir, fixtur
         v = row.values
         expected = 0.10 * v["standing"] + 0.60 * v["form"] + 0.10 * v["schedule_played"] + 0.20 * v["scoring"]
         assert row.power_score == pytest.approx(expected)
+
+
+def test_a_row_holds_the_head_to_head_and_the_median_record_of_the_form_window():
+    # Week 1: roster 1 wins both games. Weeks 2 to 4: it wins head to head but loses the median game.
+    # Week 5: it loses both. At week 5 the window is weeks 3 to 5: head to head 2-1, median 0-3.
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    split = win | {1: 99.0}
+    h = _built([win, split, split, split, win | {1: 90.0}])
+    row = _row(power_rankings(h, 5)[5], 1)
+    assert (row.head_to_head, row.median, row.form_weeks) == ((2, 1), (0, 3), 3)
+
+
+def test_the_form_window_is_short_in_the_first_weeks():
+    win = _FILLERS | {1: 110.0, 2: 95.0, 3: 96.0, 4: 94.0}
+    row = _row(power_rankings(_built([win]), 1)[1], 1)
+    assert (row.head_to_head, row.median, row.form_weeks) == ((1, 0), (1, 0), 1)

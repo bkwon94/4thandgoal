@@ -383,25 +383,31 @@ def test_twelve_power_rank_facts_hold_the_team_and_every_ordinal(hbundle):
 def test_power_rank_fact_reads_plainly(hbundle):
     assert hbundle.sheet.facts["PR.1"].text == (
         "Brock ‘N’ Roll is 8th in the power rankings, down 4 places from last week: "
-        "6th in standing, 8th in results over the last 3 weeks, 11th in schedule played, 5th in scoring."
+        "6th in standing, 8th in results over the last 3 weeks, 11th in schedule played, 5th in scoring; "
+        "1-2 head-to-head and 1-2 at the median over the last 3 weeks."
     )
 
 
 def test_power_rank_fact_in_week_one_says_first_week():
     row = PowerRow(roster_id=3, power_rank=2, movement=None, power_score=0.6,
-                   values={}, ranks={"standing": 1, "form": 4, "schedule_played": 7, "scoring": 3})
+                   values={}, ranks={"standing": 1, "form": 4, "schedule_played": 7, "scoring": 3},
+                   head_to_head=(1, 0), median=(0, 1), form_weeks=1)
     [f] = power_facts([row], lambda rid: "Bo Girds")
     assert f.text == ("Bo Girds is 2nd in the power rankings, the first week of the power rankings: "
-                      "1st in standing, 4th in results over the last 3 weeks, 7th in schedule played, 3rd in scoring.")
-    assert f.numbers == ["2", "1", "4", "3", "7", "3"]
+                      "1st in standing, 4th in results over the last 3 weeks, 7th in schedule played, 3rd in scoring; "
+                      "1-0 head-to-head and 0-1 at the median over the last week.")
+    assert f.numbers == ["2", "1", "4", "3", "7", "3", "1", "0", "1-0", "0", "1", "0-1"]
 
 
 def test_power_rank_fact_with_no_movement_says_no_move():
     row = PowerRow(roster_id=3, power_rank=4, movement=0, power_score=0.5,
-                   values={}, ranks={"standing": 2, "form": 5, "schedule_played": 9, "scoring": 6})
+                   values={}, ranks={"standing": 2, "form": 5, "schedule_played": 9, "scoring": 6},
+                   head_to_head=(0, 3), median=(3, 0), form_weeks=3)
     [f] = power_facts([row], lambda rid: "Bo Girds")
     assert f.text == ("Bo Girds is 4th in the power rankings, no move from last week: "
-                      "2nd in standing, 5th in results over the last 3 weeks, 9th in schedule played, 6th in scoring.")
+                      "2nd in standing, 5th in results over the last 3 weeks, 9th in schedule played, 6th in scoring; "
+                      "0-3 head-to-head and 3-0 at the median over the last 3 weeks.")
+    assert f.numbers[-7:] == ["0", "3", "0-3", "3", "0", "3-0", "3"]
 
 
 def test_rankings_chapter_holds_every_team_and_its_four_facts(hbundle):

@@ -902,7 +902,7 @@ def history_facts(c: Context) -> list[Fact]:
 
 
 def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
-    """One fact per team: the power rank, the movement, and the four component ranks, as ordinals.
+    """One fact per team: the power rank, the movement, the four component ranks as ordinals, and the form records.
 
     It takes the rows and a name lookup, not a Context, so a saved week can get the facts from its history.
     """
@@ -923,7 +923,12 @@ def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
         components = ", ".join(
             f"{n.ord(row.ranks[key])} in {n.text(word)}" for key, word in COMPONENT_WORDS.items()
         )
-        text = f"{name} is {rank} in the power rankings, {move}: {components}."
+        # The form component weighs both games of a week, so the fact names both records for the writer to quote.
+        # Nums records each number in text order, so the records come before the count of weeks.
+        head_to_head, median = n.record(*row.head_to_head), n.record(*row.median)
+        window = "the last week" if row.form_weeks == 1 else f"the last {n(row.form_weeks)} weeks"
+        records = f"{head_to_head} head-to-head and {median} at the median over {window}"
+        text = f"{name} is {rank} in the power rankings, {move}: {components}; {records}."
         out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
     return out
 
