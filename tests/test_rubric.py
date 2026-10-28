@@ -15,7 +15,7 @@ from conftest import strip_trend_numbers, with_carries, with_free_agents
 from cornerstone import rubric, tunables
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
-    TREND, _byes_left, _return_bet, _wopr, best_lineup, due_back_week, lineup_value,
+    TREND, _byes_left, _return_bet, _wopr, best_lineup, bye_covers, due_back_week, lineup_value,
     rubric_adjusters,
 )
 from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
@@ -2695,3 +2695,26 @@ def test_the_prose_checks_of_the_analysis_pass_on_a_reason_with_the_label(
     for text in (trend, prose):
         assert _prose_failures("roster 1 analysis", text, allowed, breakdown_text, names) == []
         assert _letter_failures("roster 1 analysis", text) == []
+
+
+def test_the_bye_cover_is_the_bench_player_with_the_most_lineup_value_at_the_slot():
+    covers = bye_covers({"qb1": "QB"}, {"qb2": "QB", "qb3": "QB", "wr9": "WR"},
+                        {"qb1": Decimal(20), "qb2": Decimal("9.8"), "qb3": Decimal(12), "wr9": Decimal(15)})
+    assert covers == {"qb1": "qb3"}
+
+
+def test_a_key_starter_on_bye_with_no_bench_player_at_his_slot_has_no_cover():
+    assert bye_covers({"te1": "TE"}, {"wr9": "WR", "k1": "K"},
+                      {"te1": Decimal(11), "wr9": Decimal(15), "k1": Decimal(8)}) == {"te1": None}
+
+
+def test_one_bench_player_covers_the_key_starter_with_the_most_lineup_value_only():
+    covers = bye_covers({"rb1": "RB", "rb2": "RB"}, {"rb3": "RB"},
+                        {"rb1": Decimal(12), "rb2": Decimal(18), "rb3": Decimal(7)})
+    assert covers == {"rb2": "rb3", "rb1": None}
+
+
+def test_a_flex_slot_takes_a_back_a_receiver_or_a_tight_end_as_its_cover():
+    covers = bye_covers({"wr1": "FLEX"}, {"qb2": "QB", "te2": "TE", "rb4": "RB"},
+                        {"wr1": Decimal(14), "qb2": Decimal(20), "te2": Decimal(9), "rb4": Decimal(6)})
+    assert covers == {"wr1": "te2"}

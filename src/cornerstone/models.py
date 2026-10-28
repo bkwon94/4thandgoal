@@ -125,6 +125,8 @@ class PastWeek(BaseModel):
     # The position and the NFL team of each player with a stat line, keyed by player id.
     positions: dict[str, str] = {}
     nfl_teams: dict[str, str] = {}
+    # The starters of each roster that week, in slot order, by roster id. The key starter rule reads them.
+    starters: dict[int, list[str]] = {}
 
 
 class UsageShare(BaseModel):
@@ -168,6 +170,9 @@ class Week(BaseModel):
     roster_positions: list[str] = []
     # The position of each player on each current roster in rosters.json, by roster id and player id.
     rosters: dict[int, dict[str, str]] = {}
+    # The name and the NFL team of each player on a current roster, by player id. A player added after the games has
+    # no lineup line, so the bye lists read him here. The NFL team is None for a free agent or a missing player.
+    roster_players: dict[str, tuple[str, str | None]] = {}
 
 
 def week_lines(week: Week) -> list[PlayerLine]:
@@ -265,6 +270,22 @@ class Storyline(BaseModel):
     teams: list[int] = []
 
 
+class ByePlayer(BaseModel):
+    """A player on a roster whose NFL team has its bye next week. GLOSSARY.md, "Bye line"."""
+    player_id: str
+    name: str
+    position: str
+    # True for a key starter. GLOSSARY.md, "Key starter".
+    key: bool
+    # The facts read the position rank and the starts. The page does not, so they stay out of the page JSON.
+    # The rank is None for a K, a DEF, a player outside the rank pool, or a build with no snapshot.
+    rank: int | None = Field(default=None, exclude=True)
+    # The starts of the player on this roster in the completed weeks the key starter rule reads, and the count of
+    # those weeks.
+    starts: int = Field(default=0, exclude=True)
+    weeks: int = Field(default=0, exclude=True)
+
+
 class NextMatchup(BaseModel):
     a: int
     b: int
@@ -272,6 +293,9 @@ class NextMatchup(BaseModel):
     reason: str | None
     # The facts read the storylines. The page does not, so they stay out of the page JSON.
     storylines: list[Storyline] = Field(default=[], exclude=True)
+    # The players of side a and of side b on bye next week, key starters first. The page writes them on each side.
+    a_byes: list[ByePlayer] = []
+    b_byes: list[ByePlayer] = []
 
 
 class SeasonHistory(BaseModel):
@@ -660,3 +684,6 @@ class NflverseWeek(BaseModel):
     # The away and home Sleeper team codes of each NFL game of week N+1. None in an extract with no such field, or
     # when the schedule file is missing or has no game that week.
     next_games: list[tuple[str, str]] | None = None
+    # The bye week of each NFL team by Sleeper team code. None in an extract with no such field, or when the schedule
+    # file is missing or has no game of the season. A team with no clear bye in the file has no entry.
+    bye_weeks: dict[str, int] | None = None

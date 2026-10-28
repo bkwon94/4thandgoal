@@ -19,6 +19,7 @@ from cornerstone.history import (
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
+from cornerstone.models import ByePlayer
 from cornerstone.ranks import (
     LINES, OUT_STATUSES, POSITION_ORDER, _back_in_a_known_game, _played_weeks, due_back_week, lineup_value,
     projection_ahead,
@@ -91,6 +92,43 @@ def allowed_positions(roster_slot: str) -> frozenset[str]:
 
 # Slots that hold players who do not start.
 BENCH_SLOTS = frozenset({"BN", "IR", "TAXI"})
+
+
+def bye_covers(open_slots: dict[str, str], bench: dict[str, str], values: dict[str, Decimal]) -> dict[str, str | None]:
+    """The bye cover of each key starter on bye, by his player id, or None when no bench player can fill his slot.
+
+    GLOSSARY.md, "Bye cover". `open_slots` maps each key starter on bye to the roster slot he leaves open, such as
+    "QB" or "FLEX". `bench` maps each bench player who can play next week to his position. `values` holds the lineup
+    value of each of them. The starter with the most lineup value picks first, and each bench player covers one slot.
+    """
+    free = sorted(bench, key=lambda pid: (-values[pid], pid))
+    covers: dict[str, str | None] = {}
+    for starter in sorted(open_slots, key=lambda pid: (-values[pid], pid)):
+        allowed = allowed_positions(open_slots[starter])
+        cover = next((pid for pid in free if bench[pid] in allowed), None)
+        if cover is not None:
+            free.remove(cover)
+        covers[starter] = cover
+    return covers
+
+
+def bye_covers_for_roster(snapshot: Snapshot, roster_id: int, byes: list[ByePlayer]) -> dict[str, str | None]:
+    """The bye cover of each key starter on bye of the roster, from the slots of its best lineup.
+
+    A key starter outside the best lineup leaves the slot of his own position open. A bench player on bye cannot
+    cover, because he does not play next week either. A bench player out next week or out for the season cannot
+    cover either. The trade week of the week snapshot is next week, so `_out_now` reads "out next week".
+    """
+    roster = snapshot.rosters.get(roster_id, [])
+    slot_of = {s.player: s.roster_slot for s in lineup_slots(roster, snapshot) if s.player is not None}
+    on_bye = {p.player_id for p in byes}
+    open_slots = {p.player_id: slot_of.get(p.player_id, p.position) for p in byes if p.key}
+    bench = {
+        pid: snapshot.players[pid].position for pid in roster
+        if pid not in slot_of and pid not in on_bye
+        and not _out_now(snapshot, pid) and pid not in snapshot.out_for_season
+    }
+    return bye_covers(open_slots, bench, {pid: snapshot.lineup_value(pid) for pid in [*open_slots, *bench]})
 
 
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:

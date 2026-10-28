@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
-from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot
+from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
 
 
 def test_week_6_snapshot_holds_rosters_teams_standings_and_slots(fixture_raw_dir, fixture_history_root, chart_week6):
@@ -443,3 +443,13 @@ def test_a_position_with_no_free_agent_with_a_rank_has_no_best_free_agent(
     assert snap.best_free_agent(["QB"]) is None
     only_no_line = snap.model_copy(update={"free_agents": {"RB": snap.free_agents["RB"][1:2]}})
     assert only_no_line.best_free_agent(["RB"]) is None
+
+
+def test_a_week_snapshot_with_no_returns_file_has_no_returns_and_nobody_out_for_the_season(
+        fixture_raw_dir, fixture_history_root, tmp_path):
+    # The copied history has no returns.json beside it.
+    root = tmp_path / "history"
+    shutil.copytree(fixture_history_root, root)
+    snap = week_snapshot(load_raw(fixture_raw_dir), root, 6)
+    assert snap.returns == {} and "returns" in snap.missing
+    assert snap.out_for_season == set()

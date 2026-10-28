@@ -78,9 +78,10 @@ def test_won_it_needs_driver(fixture_raw_dir):
 def test_ordinal_matches_cited_number(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _ch(sheet, "next_week")
-    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"))
+    # The Next Week chapter takes at least 2 sentences, so a plain second sentence joins each blurb.
+    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"), _s("The rest of the league chases them.", "S.1"))
     assert code_check(b, ch, sheet) == []
-    b = _blurb("next_week", _s("Lil Fridge sits 11th.", "S.1"))
+    b = _blurb("next_week", _s("Lil Fridge sits 11th.", "S.1"), _s("The rest of the league chases them.", "S.1"))
     assert any("11" in m for m in code_check(b, ch, sheet))
 
 
@@ -708,7 +709,8 @@ def test_a_first_rankings_sentence_without_the_pr_fact_fails(fixture_raw_dir, fi
 def test_other_chapters_pass_with_no_roster_tag(fixture_raw_dir, fixture_history_root):
     sheet, _ = _rankings(fixture_raw_dir, fixture_history_root)
     ch = _ch(sheet, "next_week")
-    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"))
+    # The Next Week chapter takes at least 2 sentences.
+    b = _blurb("next_week", _s("Lil Fridge sits 1st.", "S.1"), _s("The rest of the league chases them.", "S.1"))
     assert code_check(b, ch, sheet) == []
 
 

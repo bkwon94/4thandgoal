@@ -73,6 +73,16 @@ def test_load_history_has_six_weeks(fixture_history_root, fixture_raw_dir):
     assert h.weeks[5].points["12501"] == 17.3
 
 
+def test_a_saved_week_keeps_the_starters_of_each_roster(fixture_history_root, fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    raw["matchups"][0]["starters"][1] = "0"
+    h = load_history(fixture_history_root, raw, week=6)
+    assert h.weeks[3].starters[1] == ['8183', '13286', '9226', '2216', '8167', '11604', '3198', '7543', 'SF']
+    # The empty slot "0" is not a starter.
+    assert "0" not in h.weeks[6].starters[raw["matchups"][0]["roster_id"]]
+    assert len(h.weeks[6].starters[raw["matchups"][0]["roster_id"]]) == 8
+
+
 def test_missing_week_is_incomplete(tmp_path, fixture_history_root, fixture_raw_dir):
     shutil.copytree(fixture_history_root, tmp_path / "h")
     shutil.rmtree(tmp_path / "h" / "week-03")

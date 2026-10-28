@@ -235,3 +235,13 @@ IN_PROGRESS_MINUTES = 4 * 60 + 30
 # them every week. A shootout and the top of the table count next. A rematch and revenge only add color.
 # The order is the order of the reason when two weights tie: a streak comes before near the cut.
 STORYLINE_WEIGHTS = {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
+
+# The key starter: GLOSSARY.md, "Key starter", and ADR 0006. The rule reads real starts, so it shows the habit of
+# the manager.
+# The count of latest completed weeks the rule reads.
+KEY_STARTER_WEEKS = 4
+# The starts in those weeks that make a key starter. Three of four lets one benched or hurt week pass.
+KEY_STARTER_STARTS = 3
+# The starts a key starter needs when fewer than KEY_STARTER_WEEKS weeks are complete. It is also the fewest weeks
+# the rule reads, because one start in one week says nothing about a habit.
+KEY_STARTER_SHORT_STARTS = 2

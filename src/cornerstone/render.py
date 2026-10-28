@@ -161,7 +161,13 @@ def build_context(
         "median": _median(bundle, teams),
         "table": [{"standing": s, "team": teams[s.roster_id]} for s in data.table],
         "next": [
-            {"a": teams[n.a], "b": teams[n.b], "must_watch": n.must_watch, "reason": n.reason}
+            {
+                # Each side is its team plus the players on bye next week. The site draws the bye line from them.
+                "a": {**teams[n.a].model_dump(), "byes": n.a_byes},
+                "b": {**teams[n.b].model_dump(), "byes": n.b_byes},
+                "must_watch": n.must_watch,
+                "reason": n.reason,
+            }
             for n in data.next
         ],
         "blurbs": text,
