@@ -65,9 +65,11 @@ INJURY_WEEKS = 3
 # slot sooner.
 RETURN_WINDOW_WEEKS = 2
 
-# Upside: a star is a player in the top STAR_RANK of the league's chart. GLOSSARY.md, "Star".
-# The 12 teams each start 2 RB and 2 WR, so the top 24 trade values are the players an average team builds on.
-STAR_RANK = 24
+# Upside: a star is a player in the top of his position on the league's chart, by this count. GLOSSARY.md, "Star".
+# The counts are the starter tier of a 12-team one-QB league: 1 QB, 2 RB, 2 WR, and 1 TE per team, with the top half
+# of each tier. The chart is a one-QB chart and ranks QBs low, so an overall rank misses them. A position not in the
+# map has no stars.
+STAR_RANK_BY_POSITION = {"QB": 6, "RB": 12, "WR": 12, "TE": 6}
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
 # A backup who takes 25% of his team's carries scores points of his own, so he counts as a running back.
