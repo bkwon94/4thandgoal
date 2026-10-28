@@ -22,14 +22,16 @@
               "name": "Tre Tucker",
               "position": "WR",
               "nfl_team": "LV",
-              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "to": 3
             },
             {
               "player_id": "4199",
               "name": "Aaron Jones",
               "position": "RB",
               "nfl_team": "MIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "to": 3
             }
           ],
           "gets": [
@@ -38,7 +40,8 @@
               "name": "Derrick Henry",
               "position": "RB",
               "nfl_team": "BAL",
-              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "from": 3
             }
           ]
         },
@@ -51,7 +54,8 @@
               "name": "Derrick Henry",
               "position": "RB",
               "nfl_team": "BAL",
-              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "to": 2
             }
           ],
           "gets": [
@@ -60,14 +64,16 @@
               "name": "Tre Tucker",
               "position": "WR",
               "nfl_team": "LV",
-              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "from": 2
             },
             {
               "player_id": "4199",
               "name": "Aaron Jones",
               "position": "RB",
               "nfl_team": "MIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "from": 2
             }
           ]
         }
@@ -99,7 +105,8 @@
               "name": "Joe Burrow",
               "position": "QB",
               "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
+              "to": 3
             }
           ],
           "gets": [
@@ -108,7 +115,8 @@
               "name": "Bryce Young",
               "position": "QB",
               "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
+              "from": 3
             }
           ]
         },
@@ -121,7 +129,8 @@
               "name": "Bryce Young",
               "position": "QB",
               "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
+              "to": 2
             }
           ],
           "gets": [
@@ -130,7 +139,8 @@
               "name": "Joe Burrow",
               "position": "QB",
               "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
+              "from": 2
             }
           ]
         }
@@ -162,7 +172,8 @@
               "name": "Ja'Marr Chase",
               "position": "WR",
               "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "to": 3
             }
           ],
           "gets": [
@@ -171,14 +182,16 @@
               "name": "Caleb Williams",
               "position": "QB",
               "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "from": 3
             },
             {
               "player_id": "2306",
               "name": "Jameis Winston",
               "position": "QB",
               "nfl_team": "NYG",
-              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "from": 3
             }
           ]
         },
@@ -191,14 +204,16 @@
               "name": "Caleb Williams",
               "position": "QB",
               "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "to": 2
             },
             {
               "player_id": "2306",
               "name": "Jameis Winston",
               "position": "QB",
               "nfl_team": "NYG",
-              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "to": 2
             }
           ],
           "gets": [
@@ -207,7 +222,8 @@
               "name": "Ja'Marr Chase",
               "position": "WR",
               "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg"
+              "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "from": 2
             }
           ]
         }

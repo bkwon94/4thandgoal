@@ -45,11 +45,24 @@ class TradeInputError(ValueError):
         self.player_id = player_id
 
 
+class GivenPlayer(BaseModel):
+    """One player a side gives and the roster id of the side he goes to."""
+
+    player_id: str
+    # Every given player names his destination, in a two-side trade too, so the API checks one shape (ADR 0003).
+    to: int
+
+
 class TradeSide(BaseModel):
-    """One roster in a proposed trade and the players it gives."""
+    """One roster in a proposed trade and the players it gives. What it gets derives from the other sides."""
 
     roster_id: int
-    gives: list[str]
+    gives: list[GivenPlayer]
+
+    @property
+    def player_ids(self) -> list[str]:
+        """The ids of the players this side gives, in order, with no destination."""
+        return [given.player_id for given in self.gives]
 
 
 class ProposedTrade(BaseModel):
@@ -67,12 +80,32 @@ class ProposedTrade(BaseModel):
             raise ValueError("A proposed trade needs two different rosters")
         if not a.gives or not b.gives:
             raise ValueError("Each side of a proposed trade must give at least one player")
-        given = a.gives + b.gives
+        given = a.player_ids + b.player_ids
         if len(set(given)) != len(given):
             raise ValueError("A player can appear only once in a proposed trade")
         if self.asker not in (a.roster_id, b.roster_id):
             raise ValueError(f"The asker {self.asker} is not one of the two rosters in the trade")
+        rosters = [side.roster_id for side in self.sides]
+        for side in self.sides:
+            for player in side.gives:
+                if player.to not in rosters:
+                    raise ValueError(f"Player {player.player_id} goes to roster {player.to}, "
+                                     "which is not a side of the trade")
+        # The gets check runs before the own-roster check. With two sides a side that gets nothing has a player
+        # sent home on the other side, and the missing gets is the plainer fault to name.
+        for side in self.sides:
+            if not self.gets(side.roster_id):
+                raise ValueError(f"Roster {side.roster_id} gets no player in the trade")
+        for side in self.sides:
+            for player in side.gives:
+                if player.to == side.roster_id:
+                    raise ValueError(f"Player {player.player_id} goes to his own roster {side.roster_id}")
         return self
+
+    def gets(self, roster_id: int) -> list[str]:
+        """The ids of the players the other sides send to `roster_id`, in the order of the sides."""
+        return [player.player_id for side in self.sides if side.roster_id != roster_id
+                for player in side.gives if player.to == roster_id]
 
 
 class Breakdown(BaseModel):
@@ -127,7 +160,7 @@ def check_trade(trade: ProposedTrade, snapshot: Snapshot) -> None:
         roster = snapshot.rosters.get(side.roster_id)
         if roster is None:
             raise TradeInputError(f"Roster {side.roster_id} is not in the league")
-        for pid in side.gives:
+        for pid in side.player_ids:
             if pid not in roster:
                 # A player who left the league is not in snapshot.players, so the id stands in for the name.
                 player = snapshot.players.get(pid)
@@ -176,18 +209,18 @@ def _start_letters(
     if snapshot.chart is None:
         return _both_at_c(NO_CHART_REASON)
     values = _trade_values(snapshot, handcuffs)
-    unlisted = unlisted_players(snapshot, [pid for side in trade.sides for pid in side.gives], handcuffs)
+    unlisted = unlisted_players(snapshot, [pid for side in trade.sides for pid in side.player_ids], handcuffs)
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
                   + " no trade value, so the chart gives neither side an edge.")
         return _both_at_c(reason)
     # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
-    sum_a = sum((Decimal(str(values[pid])) for pid in a.gives), Decimal(0))
-    sum_b = sum((Decimal(str(values[pid])) for pid in b.gives), Decimal(0))
+    sum_a = sum((Decimal(str(values[pid])) for pid in a.player_ids), Decimal(0))
+    sum_b = sum((Decimal(str(values[pid])) for pid in b.player_ids), Decimal(0))
     # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
-    consolidation = (len(a.gives) == 1) != (len(b.gives) == 1)
+    consolidation = (len(a.player_ids) == 1) != (len(b.player_ids) == 1)
     if consolidation:
-        if len(a.gives) > 1:
+        if len(a.player_ids) > 1:
             sum_a /= CONSOLIDATION_MARGIN
         else:
             sum_b /= CONSOLIDATION_MARGIN
@@ -206,7 +239,7 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
     player is unlisted, the trade values of the two sides do not compare, so the lineup value picks him.
     The lineup value is recent points per game, or the projection ahead of a player due back, who has no recent games.
     """
-    players = [pid for side in trade.sides for pid in side.gives]
+    players = [pid for side in trade.sides for pid in side.player_ids]
     values = _trade_values(snapshot, handcuffs) if snapshot.chart is not None else {}
     if all(pid in values for pid in players):
         worth = {pid: Decimal(str(values[pid])) for pid in players}
@@ -232,8 +265,8 @@ def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) 
     """
     a, b = trade.sides
     top = _highest_value_player(trade, snapshot, handcuffs)
-    return (build_side(snapshot, a.roster_id, a.gives, b.gives, top, handcuffs),
-            build_side(snapshot, b.roster_id, b.gives, a.gives, top, handcuffs))
+    return (build_side(snapshot, a.roster_id, a.player_ids, trade.gets(a.roster_id), top, handcuffs),
+            build_side(snapshot, b.roster_id, b.player_ids, trade.gets(b.roster_id), top, handcuffs))
 
 
 def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:

@@ -26,7 +26,7 @@ from cornerstone.pipeline import (
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
-from cornerstone.rubric import Fairness, ProposedTrade, TradeSide, fairness, grade, verdict
+from cornerstone.rubric import Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, verdict
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.trades import EASTERN
@@ -102,13 +102,13 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _trade_side(text: str) -> TradeSide:
-    """One --side value, ROSTER:PLAYER,PLAYER, as a trade side."""
+def _trade_side(text: str) -> tuple[int, list[str]]:
+    """One --side value, ROSTER:PLAYER,PLAYER, as the roster id and the ids of the players it gives."""
     roster, _, players = text.partition(":")
     gives = [pid.strip() for pid in players.split(",") if pid.strip()]
     if not roster.strip().isdigit() or not gives:
         raise argparse.ArgumentTypeError(f"{text!r} is not ROSTER:PLAYER,PLAYER")
-    return TradeSide(roster_id=int(roster), gives=gives)
+    return int(roster), gives
 
 
 def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
@@ -227,7 +227,11 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     if snapshot is None:
         return 2
     try:
-        trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
+        # Analyze takes two sides, so each given player goes to the other side.
+        (a, a_gives), (b, b_gives) = args.side
+        sides = (TradeSide(roster_id=a, gives=[GivenPlayer(player_id=pid, to=b) for pid in a_gives]),
+                 TradeSide(roster_id=b, gives=[GivenPlayer(player_id=pid, to=a) for pid in b_gives]))
+        trade = ProposedTrade(season=args.season, sides=sides, asker=args.asker)
     except ValidationError as err:
         # One plain line per broken rule, with no pydantic text and no echo of the input.
         for error in err.errors():
@@ -242,13 +246,12 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         analysis = analyze(trade, snapshot, call=analyzer_call)
         result, choice = analysis.breakdowns, analysis.code_verdict
     _print_as_of(snapshot)
-    for index, (side, other, breakdown) in enumerate(
-            ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1]))):
+    for index, (side, breakdown) in enumerate(zip(trade.sides, result)):
         asked = " (asked)" if side.roster_id == trade.asker else ""
         print()
         print(f"{snapshot.teams[side.roster_id].name}{asked}")
-        print(f"  Gives: {_names(snapshot, side.gives)}")
-        print(f"  Gets: {_names(snapshot, other.gives)}")
+        print(f"  Gives: {_names(snapshot, side.player_ids)}")
+        print(f"  Gets: {_names(snapshot, trade.gets(side.roster_id))}")
         print(f"  Start letter: {breakdown.start_letter}")
         print(f"  Reason: {breakdown.reason}")
         for adjuster in breakdown.adjusters:
@@ -298,8 +301,8 @@ def run_find(repo: Path, args: argparse.Namespace) -> int:
         return 0
     for number, item in enumerate(found, start=1):
         mine, theirs = item.trade.sides
-        print(f"{number}. {snapshot.teams[mine.roster_id].name} gives: {_names(snapshot, mine.gives)}")
-        print(f"   {snapshot.teams[theirs.roster_id].name} gives: {_names(snapshot, theirs.gives)}")
+        print(f"{number}. {snapshot.teams[mine.roster_id].name} gives: {_names(snapshot, mine.player_ids)}")
+        print(f"   {snapshot.teams[theirs.roster_id].name} gives: {_names(snapshot, theirs.player_ids)}")
         # The same fairness lines as analyze, so a trade reads the same in both commands.
         for line in _fairness_lines(snapshot, item.fairness):
             print(line)

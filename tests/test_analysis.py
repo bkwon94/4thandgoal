@@ -54,8 +54,10 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse
 
 @pytest.fixture
 def trade():
-    return ProposedTrade(season=2026, sides=(TradeSide(roster_id=11, gives=[TUTEN, WILSON]),
-                                             TradeSide(roster_id=12, gives=[JACOBS, VELE])), asker=12)
+    return ProposedTrade(season=2026, sides=(TradeSide(roster_id=11, gives=[{"player_id": TUTEN, "to": 12},
+                                                                            {"player_id": WILSON, "to": 12}]),
+                                             TradeSide(roster_id=12, gives=[{"player_id": JACOBS, "to": 11},
+                                                                            {"player_id": VELE, "to": 11}])), asker=12)
 
 
 def _facts(user: str) -> dict[str, str]:

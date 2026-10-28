@@ -39,7 +39,7 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         "document_version": DOCUMENT_VERSION,
         "season": trade.season,
         # The sides keep their order, because the document lists the sides in the order of the request.
-        "sides": [[side.roster_id, sorted(side.gives)] for side in trade.sides],
+        "sides": [[side.roster_id, sorted(side.player_ids)] for side in trade.sides],
         "asker": trade.asker,
         # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,

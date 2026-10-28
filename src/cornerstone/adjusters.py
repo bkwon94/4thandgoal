@@ -411,8 +411,8 @@ def trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
         return []
     found = []
     for giver, getter in (trade.sides, trade.sides[::-1]):
-        after = _roster_after(snapshot, getter.roster_id, getter.gives, giver.gives)
-        found.extend(pid for pid in giver.gives if _backs_up_a_starter(snapshot, pid, after))
+        after = _roster_after(snapshot, getter.roster_id, getter.player_ids, giver.player_ids)
+        found.extend(pid for pid in giver.player_ids if _backs_up_a_starter(snapshot, pid, after))
     return found
 
 

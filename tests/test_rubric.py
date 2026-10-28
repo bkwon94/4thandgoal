@@ -71,9 +71,20 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
 
 
 def _trade(a: int, a_gives: list[str], b: int, b_gives: list[str], asker: int | None = None) -> ProposedTrade:
+    # Each given player goes to the other side, as in every two-side trade.
     return ProposedTrade(season=2026,
-                         sides=(TradeSide(roster_id=a, gives=a_gives), TradeSide(roster_id=b, gives=b_gives)),
+                         sides=(TradeSide(roster_id=a, gives=[{"player_id": pid, "to": b} for pid in a_gives]),
+                                TradeSide(roster_id=b, gives=[{"player_id": pid, "to": a} for pid in b_gives])),
                          asker=a if asker is None else asker)
+
+
+def _shape_error(a_gives: list[tuple[str, int]], b_gives: list[tuple[str, int]]) -> str:
+    """The message of the input error for a trade of roster 4 and roster 12, each give a (player, to) pair."""
+    sides = [{"roster_id": rid, "gives": [{"player_id": pid, "to": to} for pid, to in gives]}
+             for rid, gives in ((4, a_gives), (12, b_gives))]
+    with pytest.raises(ValueError) as error:
+        ProposedTrade.model_validate({"season": 2026, "asker": 4, "sides": sides})
+    return str(error.value)
 
 
 def _with_values(snap, values: dict[str, float]):
@@ -161,6 +172,31 @@ def test_a_proposed_trade_needs_two_rosters_players_on_each_side_and_an_asker_in
         _trade(4, [], 12, [KINCAID])
     with pytest.raises(ValueError):
         _trade(4, [CROSKEY], 12, [KINCAID], asker=7)
+
+
+def test_each_side_gets_the_players_the_other_side_sends_to_it():
+    trade = _trade(4, [COLLINS], 12, [KINCAID, WILSON])
+    assert trade.gets(4) == [KINCAID, WILSON]
+    assert trade.gets(12) == [COLLINS]
+    assert trade.sides[1].player_ids == [KINCAID, WILSON]
+
+
+def test_a_destination_that_is_not_a_side_is_an_input_error():
+    assert "goes to roster 7, which is not a side of the trade" in _shape_error([(COLLINS, 7)], [(KINCAID, 4)])
+
+
+def test_a_side_that_gets_nothing_is_an_input_error():
+    # Kincaid goes back to his own roster, so roster 4 gets no player.
+    assert "Roster 4 gets no player in the trade" in _shape_error([(COLLINS, 12)], [(KINCAID, 12)])
+
+
+def test_a_player_sent_to_his_own_roster_is_an_input_error():
+    assert "goes to his own roster 4" in _shape_error([(COLLINS, 12), (CROSKEY, 4)], [(KINCAID, 4)])
+
+
+def test_a_player_given_twice_is_an_input_error():
+    assert "A player can appear only once in a proposed trade" in _shape_error([(COLLINS, 12), (COLLINS, 12)],
+                                                                               [(KINCAID, 4)])
 
 
 def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):

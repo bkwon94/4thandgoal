@@ -84,7 +84,7 @@ def _win_wins(asker, partner, snap) -> list[FinderTrade]:
 
 
 def _players(item) -> set[str]:
-    return {pid for side in item.trade.sides for pid in side.gives}
+    return {pid for side in item.trade.sides for pid in side.player_ids}
 
 
 def test_a_pair_with_three_or_more_win_wins_returns_three_ranked(slow_snap):
@@ -123,9 +123,9 @@ def test_a_two_for_one_appears_in_both_directions(slow_snap):
     snap = _with_rows(_no_absences(slow_snap), [RB_2, QB_3, WR_3])
     gets_two = find_win_wins(2, 3, snap)[0].trade
     gives_two = find_win_wins(3, 2, snap)[0].trade
-    assert [len(side.gives) for side in gets_two.sides] == [1, 2]
-    assert [len(side.gives) for side in gives_two.sides] == [2, 1]
-    assert gives_two.sides[0].gives == gets_two.sides[1].gives
+    assert [len(side.player_ids) for side in gets_two.sides] == [1, 2]
+    assert [len(side.player_ids) for side in gives_two.sides] == [2, 1]
+    assert gives_two.sides[0].player_ids == gets_two.sides[1].player_ids
 
 
 # The seconds one pair may take. The test measures wall-clock time on the fixture. With chart rows for both
@@ -142,7 +142,7 @@ def test_the_pair_with_the_most_candidates_runs_in_a_few_seconds(slow_snap):
 
 
 def _traded(trades) -> set[str]:
-    return {pid for trade in trades for side in trade.sides for pid in side.gives}
+    return {pid for trade in trades for side in trade.sides for pid in side.player_ids}
 
 
 # Breece Hall on roster 8 is Out with no row in the returns file.
@@ -237,31 +237,32 @@ def test_a_player_who_is_a_handcuff_on_the_roster_that_gets_him_is_never_a_candi
     # Henderson backs up Stevenson, who is on roster 7. A trade of Henderson to roster 7 is a handcuff trade,
     # unless roster 7 gives Stevenson in the same trade.
     snap = with_carries(_with_ids(slow_snap), HENDERSON, THIN)
-    with_henderson = [trade for trade in candidates(8, 7, snap) if HENDERSON in trade.sides[0].gives]
+    with_henderson = [trade for trade in candidates(8, 7, snap) if HENDERSON in trade.sides[0].player_ids]
     assert with_henderson
-    assert all(STEVENSON in trade.sides[1].gives for trade in with_henderson)
+    assert all(STEVENSON in trade.sides[1].player_ids for trade in with_henderson)
     # Roster 4 has no NE starter, so Henderson is a candidate there.
     assert HENDERSON in _traded(candidates(8, 4, snap))
 
 
 def test_a_backup_with_real_carries_can_go_to_the_roster_of_his_starter(slow_snap):
     # Henderson takes 26 of 79 NE carries in weeks 3 to 5, or 33%, so he is a running back and no handcuff.
-    with_henderson = [trade for trade in candidates(8, 7, _with_ids(slow_snap)) if HENDERSON in trade.sides[0].gives]
-    assert any(STEVENSON not in trade.sides[1].gives for trade in with_henderson)
+    with_henderson = [trade for trade in candidates(8, 7, _with_ids(slow_snap))
+                      if HENDERSON in trade.sides[0].player_ids]
+    assert any(STEVENSON not in trade.sides[1].player_ids for trade in with_henderson)
 
 
 def test_the_candidates_are_every_one_for_one_and_every_two_for_one_in_both_directions(slow_snap):
     trades = candidates(4, 12, _roster_rows(slow_snap, 4, 12))
-    shapes = {(len(trade.sides[0].gives), len(trade.sides[1].gives)) for trade in trades}
+    shapes = {(len(trade.sides[0].player_ids), len(trade.sides[1].player_ids)) for trade in trades}
     assert shapes == {(1, 1), (2, 1), (1, 2)}
     # The asker's side is first, and every trade is for the asker.
     assert all(trade.sides[0].roster_id == 4 and trade.asker == 4 for trade in trades)
-    ones = [trade for trade in trades if (len(trade.sides[0].gives), len(trade.sides[1].gives)) == (1, 1)]
-    mine = {pid for trade in ones for pid in trade.sides[0].gives}
-    theirs = {pid for trade in ones for pid in trade.sides[1].gives}
+    ones = [trade for trade in trades if (len(trade.sides[0].player_ids), len(trade.sides[1].player_ids)) == (1, 1)]
+    mine = {pid for trade in ones for pid in trade.sides[0].player_ids}
+    theirs = {pid for trade in ones for pid in trade.sides[1].player_ids}
     assert len(ones) == len(mine) * len(theirs)
     # Each pair of players gives once, with no order, so no two trades are the same.
-    keys = [(frozenset(trade.sides[0].gives), frozenset(trade.sides[1].gives)) for trade in trades]
+    keys = [(frozenset(trade.sides[0].player_ids), frozenset(trade.sides[1].player_ids)) for trade in trades]
     assert len(keys) == len(set(keys))
     two_for_ones = len(trades) - len(ones)
     # No trade of rosters 4 and 12 makes a handcuff, so every pair of players on each side gives a two-for-one.
@@ -280,8 +281,9 @@ def _breakdown(roster_id: int, final: str, ups: int, downs: int = 0) -> Breakdow
 
 def _item(mine: str, theirs: str, ups: tuple[int, int] = (1, 1), gives: tuple[str, str] = ("1", "2"),
           downs: tuple[int, int] = (0, 0)) -> FinderTrade:
-    trade = ProposedTrade(season=2026, asker=4, sides=(TradeSide(roster_id=4, gives=[gives[0]]),
-                                                         TradeSide(roster_id=12, gives=[gives[1]])))
+    sides = (TradeSide(roster_id=4, gives=[{"player_id": gives[0], "to": 12}]),
+             TradeSide(roster_id=12, gives=[{"player_id": gives[1], "to": 4}]))
+    trade = ProposedTrade(season=2026, asker=4, sides=sides)
     breakdowns = (_breakdown(4, mine, ups[0], downs[0]), _breakdown(12, theirs, ups[1], downs[1]))
     sides = (FairnessSide(roster_id=4, reason="A gain."), FairnessSide(roster_id=12, reason="A gain."))
     return FinderTrade(trade=trade, breakdowns=breakdowns,
@@ -289,7 +291,7 @@ def _item(mine: str, theirs: str, ups: tuple[int, int] = (1, 1), gives: tuple[st
 
 
 def _order(items) -> list[str]:
-    return [item.trade.sides[0].gives[0] for item in rank(items)]
+    return [item.trade.sides[0].player_ids[0] for item in rank(items)]
 
 
 def test_the_rank_puts_the_highest_net_steps_on_both_sides_first():

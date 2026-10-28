@@ -105,13 +105,12 @@ def trade_side_lines(
     """The prompt lines of each side of a trade: the team, the players it gives and gets, and its breakdown."""
     # The analysis prompt and the finder prompt both show a side this way, so Claude reads one layout.
     blocks = []
-    for side, other, breakdown in ((trade.sides[0], trade.sides[1], breakdowns[0]),
-                                   (trade.sides[1], trade.sides[0], breakdowns[1])):
+    for side, breakdown in zip(trade.sides, breakdowns):
         asked = ", the side that asked" if side.roster_id == trade.asker else ""
         blocks.append([
             f"Side: roster {side.roster_id}, {snapshot.teams[side.roster_id].name}{asked}",
-            f"Gives: {_names(snapshot, side.gives)}",
-            f"Gets: {_names(snapshot, other.gives)}",
+            f"Gives: {_names(snapshot, side.player_ids)}",
+            f"Gets: {_names(snapshot, trade.gets(side.roster_id))}",
             f"Start letter: {breakdown.start_letter}. {breakdown.reason}",
             *(f"{a.name.capitalize()}: {a.lean if a.lean is not None else STEP_WORDS[a.step]}. {a.reason}"
               for a in breakdown.adjusters),
