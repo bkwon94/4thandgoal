@@ -6,3 +6,5 @@ The start letter of a side is the ratio of the chart value it gets over the char
 
 - The commissioner's returns file is the source of truth. A season-ending injury the file does not mark reads as a star return bet, and the grade credits it.
 - The zero counts on the side that gets him only. The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
+- He also counts zero lineup value on every side, because he cannot play. The side that gives him loses nothing in its lineup, and the side that gets him gains nothing.
+- The cache key holds the set of players out for the season, so one edit of the returns file changes the next grade.
