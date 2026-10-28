@@ -9,7 +9,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-from cornerstone.adjusters import pick_lineup
+from cornerstone.adjusters import _out_now, bye_covers, lineup_slots, pick_lineup
 from cornerstone.facts_league import (
     TREND_WEEKS,
     _ordinal,
@@ -37,6 +37,7 @@ from cornerstone.history import (
 )
 from cornerstone.models import (
     Bundle,
+    ByePlayer,
     Chapter,
     ChartValues,
     DropLine,
@@ -59,6 +60,7 @@ from cornerstone.models import (
 from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
+from cornerstone.snapshot import Snapshot
 from cornerstone.trades import is_late
 from cornerstone.tunables import LAST_REGULAR_WEEK, SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
@@ -92,8 +94,8 @@ SENTENCE_RANGES = {
     "position_leaders": (2, 4),
     "recap": (2, 3),
     "median": (2, 4),
-    # The third sentence leaves room for the swing of the Must Watch games.
-    "next_week": (1, 3),
+    # The third sentence leaves room for the swing of the Must Watch games. The byes next week need up to three more.
+    "next_week": (2, 6),
     # One to three sentences for each of the 12 teams.
     "rankings": (12, 36),
 }
@@ -290,6 +292,7 @@ class Context:
         trades: list[Trade] | None = None,
         nfl: NflverseWeek | None = None,
         chart: ChartValues | None = None,
+        snapshot: Snapshot | None = None,
     ) -> None:
         self.week = week
         self.history = history
@@ -308,6 +311,8 @@ class Context:
         self.drops = drop_lines(week, nfl)
         self.nfl = nfl
         self.chart = chart
+        # The bye facts read the position rank and the lineup value from it. None gives no rank and no bye cover.
+        self.snapshot = snapshot
         self.nfl_up = nfl is not None and nfl.drops is not None
         self.awards = awards(week, self.mfacts)
         self.season_history = season_history(week, history)
@@ -321,7 +326,8 @@ class Context:
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = _odds(week, history, inputs, self.projected)
         # The shootout storyline reads the same projected lineups as the odds.
-        self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None)
+        self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
+                              snapshot.position_rank if snapshot is not None else None)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
@@ -655,7 +661,75 @@ def next_facts(c: Context) -> list[Fact]:
         if nx.must_watch:
             text += f" Must Watch: {n.text(nx.reason)}."
         out.append(fact(f"NX.{nx.a}v{nx.b}", text, n, [c.team(nx.a), c.team(nx.b)], []))
-    return out + storyline_facts(c.next, c.by_rank, c.team)
+    return out + storyline_facts(c.next, c.by_rank, c.team) + bye_facts(c)
+
+
+def _ranked(position: str, rank: int | None, n: Nums) -> str:
+    """The position with its rank, such as QB4, or the position alone for a player with no rank."""
+    return position if rank is None else f"{position}{n(rank)}"
+
+
+def _covers(snapshot: Snapshot, roster_id: int, byes: list[ByePlayer]) -> dict[str, str | None]:
+    """The bye cover of each key starter on bye of the roster, from the slots of its best lineup.
+
+    A key starter outside the best lineup leaves the slot of his own position open. A bench player on bye cannot
+    cover, because he does not play next week either. A bench player out next week or out for the season cannot
+    cover too. The trade week of the week snapshot is next week, so `_out_now` reads "out next week".
+    """
+    roster = snapshot.rosters.get(roster_id, [])
+    slot_of = {s.player: s.roster_slot for s in lineup_slots(roster, snapshot) if s.player is not None}
+    on_bye = {p.player_id for p in byes}
+    open_slots = {p.player_id: slot_of.get(p.player_id, p.position) for p in byes if p.key}
+    bench = {
+        pid: snapshot.players[pid].position for pid in roster
+        if pid not in slot_of and pid not in on_bye
+        and not _out_now(snapshot, pid) and pid not in snapshot.out_for_season
+    }
+    return bye_covers(open_slots, bench, {pid: snapshot.lineup_value(pid) for pid in [*open_slots, *bench]})
+
+
+def bye_facts(c: Context) -> list[Fact]:
+    """One fact per player on bye next week, id `NX.bye.<roster>.<pid>`, and one per team with nobody on bye.
+
+    GLOSSARY.md, "Bye line". The starts read the same weeks as the key starter rule, so a benched star shows too.
+    Each key starter on bye gets a bye cover fact, id `NX.bye.<roster>.<pid>.cover`. A build with no snapshot has no
+    lineup value, so it gives no cover fact.
+    A week with nobody on bye on any roster gives no fact. Thin data gives empty lists too, so it gives no fact, and
+    the writer never reads a "nobody on bye" line it cannot back.
+    """
+    sides = [(rid, byes) for nx in c.next for rid, byes in ((nx.a, nx.a_byes), (nx.b, nx.b_byes))]
+    if not any(byes for _, byes in sides):
+        return []
+    bye_week = c.week.week + 1
+    out = []
+    for rid, byes in sides:
+        team = c.team(rid)
+        n = Nums()
+        if not byes:
+            out.append(fact(f"NX.bye.{rid}.none", f"Nobody on {team} is on bye in week {n(bye_week)}.", n, [team], []))
+            continue
+        covers = _covers(c.snapshot, rid, byes) if c.snapshot is not None else None
+        for p in byes:
+            n = Nums()
+            text = (f"{p.name}, {_ranked(p.position, p.rank, n)}, is on bye in week {n(bye_week)} and started "
+                    f"{n(p.starts)} of the last {n(p.weeks)} weeks for {team}.")
+            out.append(fact(f"NX.bye.{rid}.{p.player_id}", text, n, [team], [p.name]))
+            if p.key and covers is not None:
+                out.append(_cover_fact(c.snapshot, rid, team, p, covers[p.player_id]))
+    return out
+
+
+def _cover_fact(snapshot: Snapshot, roster_id: int, team: str, starter: ByePlayer, cover: str | None) -> Fact:
+    """The bye cover fact of one key starter on bye. GLOSSARY.md, "Bye cover"."""
+    n = Nums()
+    fid = f"NX.bye.{roster_id}.{starter.player_id}.cover"
+    if cover is None:
+        return fact(fid, f"With {starter.name} on bye, no bench player can fill his slot.", n, [team], [starter.name])
+    player = snapshot.players[cover]
+    text = (f"With {starter.name} on bye, his slot falls to {player.name}, "
+            f"{_ranked(player.position, snapshot.position_rank(cover), n)}, "
+            f"with {_one_decimal(snapshot.lineup_value(cover), n)} a game.")
+    return fact(fid, text, n, [team], [starter.name, player.name])
 
 
 def storyline_facts(
@@ -1665,11 +1739,13 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         + _history_ids(facts, all_rosters, ("high",)),
         all_rosters, "median",
     ))
+    # The bye facts name players on the rosters now, such as a bye cover, so the scope adds them to the lineup names.
+    bye_players = [p for fid in _with_prefix(facts, "NX.bye.") for p in facts[fid].players]
     out.append(make(
         "next_week", "Next Week",
         _with_prefix(facts, "NX.", "S.", "SOS.", "SW.")
         + _history_ids(facts, [r for nx in c.next for r in (nx.a, nx.b)], ("streak", "trend")),
-        all_rosters, "next_week",
+        all_rosters, "next_week", players=players_of(all_rosters) + bye_players,
     ))
     if c.power:
         out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds))
@@ -1682,8 +1758,9 @@ def build_bundle(
     history: History | None = None,
     trades: list[Trade] | None = None,
     nfl: NflverseWeek | None = None,
+    snapshot: Snapshot | None = None,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl)
+    c = Context(week, news, history, trades, nfl, snapshot=snapshot)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),

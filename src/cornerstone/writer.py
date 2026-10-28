@@ -23,6 +23,8 @@ MOTW_HEADLINE_NOTE = (
     "Note: the Matchup of the Week chapter and its recap already told this game's headline: the score, "
     "the upset, and the player who won it. Lead with a different fact. Never repeat a sentence from those chapters."
 )
+# The Next Week chapter gets this line when it lists a bye fact, so the writer treats the byes as part of the preview.
+BYES_NOTE = "Note: the byes next week are part of the preview."
 # The header of the words that other chapters of the page already say. Rule 14 of the writer prompt names it.
 PAGE_WORDS_HEADER = "Words this page already uses:"
 
@@ -173,6 +175,8 @@ def build_writer_prompt(
         lines += ["", f"Cite each of these facts in its team's sentences: {', '.join(chapter.required)}."]
     if repeats_motw_headline(chapter, sheet):
         lines += ["", MOTW_HEADLINE_NOTE]
+    if any(fid.startswith("NX.bye.") for fid in chapter.fact_ids):
+        lines += ["", BYES_NOTE]
     if page_words is not None:
         lines += ["", PAGE_WORDS_HEADER, page_words]
     if feedback is not None:

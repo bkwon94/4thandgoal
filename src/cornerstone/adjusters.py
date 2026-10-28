@@ -93,6 +93,24 @@ def allowed_positions(roster_slot: str) -> frozenset[str]:
 BENCH_SLOTS = frozenset({"BN", "IR", "TAXI"})
 
 
+def bye_covers(open_slots: dict[str, str], bench: dict[str, str], values: dict[str, Decimal]) -> dict[str, str | None]:
+    """The bye cover of each key starter on bye, by his player id, or None when no bench player can fill his slot.
+
+    GLOSSARY.md, "Bye cover". `open_slots` maps each key starter on bye to the roster slot he leaves open, such as
+    "QB" or "FLEX". `bench` maps each bench player who can play next week to his position. `values` holds the lineup
+    value of each of them. The starter with the most lineup value picks first, and each bench player covers one slot.
+    """
+    free = sorted(bench, key=lambda pid: (-values[pid], pid))
+    covers: dict[str, str | None] = {}
+    for starter in sorted(open_slots, key=lambda pid: (-values[pid], pid)):
+        allowed = allowed_positions(open_slots[starter])
+        cover = next((pid for pid in free if bench[pid] in allowed), None)
+        if cover is not None:
+            free.remove(cover)
+        covers[starter] = cover
+    return covers
+
+
 def best_lineup(roster: list[str], slots: list[str], snapshot: Snapshot) -> list[str]:
     """The starters of the roster's best lineup, by lineup value, with the position order as the tie rule.
 

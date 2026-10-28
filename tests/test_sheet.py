@@ -31,6 +31,7 @@ from cornerstone.sheet import (
     write_bundle,
 )
 from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import week_snapshot
 
 
 @pytest.fixture
@@ -601,9 +602,9 @@ def test_no_odds_facts_without_history(bundle):
     assert not any(fid.startswith(("ODDS.", "SW.")) for fid in bundle.sheet.facts)
 
 
-def test_next_week_chapter_lists_the_swing_facts_in_3_sentences(hbundle):
+def test_next_week_chapter_lists_the_swing_facts_in_2_to_6_sentences(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
-    assert (ch.min_sentences, ch.max_sentences) == (1, 3)
+    assert (ch.min_sentences, ch.max_sentences) == (2, 6)
     assert [fid for fid in ch.fact_ids if fid.startswith("SW.")] == [
         fid for fid in hbundle.sheet.facts if fid.startswith("SW.")]
 
@@ -895,10 +896,11 @@ def test_each_side_of_a_next_week_game_lists_its_players_on_bye_key_starters_fir
 
 
 def test_a_bench_player_on_bye_is_on_the_list_and_not_key(dbundle):
-    # Stefon Diggs started 2 of the last 4 weeks. Meyers and Shakir sat on the bench. The rest sort by name.
+    # Stefon Diggs started 2 of the last 4 weeks. Meyers and Shakir sat on the bench. The rest sort by position
+    # rank: Meyers is WR42, Diggs WR47, and Shakir WR51.
     game = _game(dbundle, 3, 8)
-    assert [(p.name, p.key) for p in game.a_byes] == [
-        ("Jakobi Meyers", False), ("Khalil Shakir", False), ("Stefon Diggs", False)]
+    assert [(p.name, p.key, p.rank) for p in game.a_byes] == [
+        ("Jakobi Meyers", False, 42), ("Stefon Diggs", False, 47), ("Khalil Shakir", False, 51)]
     assert game.b_byes == []
 
 
@@ -920,3 +922,105 @@ def test_a_build_with_one_saved_week_has_empty_bye_lists(fixture_raw_dir, tmp_pa
     assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
     assert [r.message for r in caplog.records if "bye" in r.message] == [
         "history has 1 completed weeks: the next-week games have no bye lists"]
+
+
+def test_a_key_starter_on_bye_has_a_fact_with_his_rank_the_bye_week_and_his_starts(dbundle):
+    f = dbundle.sheet.facts["NX.bye.12.7523"]
+    assert f.text == ("Trevor Lawrence, QB10, is on bye in week 7 and started 4 of the last 4 weeks "
+                      "for Amon-Ra Dawg Your Team.")
+    assert f.numbers == ["10", "7", "4", "4"]
+    assert f.teams == ["Amon-Ra Dawg Your Team"] and f.players == ["Trevor Lawrence"]
+
+
+def test_a_bench_player_on_bye_has_a_fact_with_his_starts_and_no_cover_fact(dbundle):
+    facts = dbundle.sheet.facts
+    assert facts["NX.bye.3.8134"].text == (
+        "Khalil Shakir, WR51, is on bye in week 7 and started 0 of the last 4 weeks for Lil Fridge.")
+    assert facts["NX.bye.3.2449"].text == (
+        "Stefon Diggs, WR47, is on bye in week 7 and started 2 of the last 4 weeks for Lil Fridge.")
+    assert "NX.bye.3.8134.cover" not in facts and "NX.bye.3.2449.cover" not in facts
+
+
+def test_a_team_with_nobody_on_bye_has_one_none_fact(dbundle):
+    f = dbundle.sheet.facts["NX.bye.8.none"]
+    assert f.text == "Nobody on Return of T Mac is on bye in week 7."
+    assert f.numbers == ["7"] and f.teams == ["Return of T Mac"]
+    assert not any(fid.startswith("NX.bye.8.") and fid != "NX.bye.8.none" for fid in dbundle.sheet.facts)
+
+
+def test_a_key_starter_on_bye_has_a_cover_fact_with_the_best_bench_player_at_his_slot(dbundle):
+    # James Cook holds RB1 of the best lineup. Woody Marks is the bench back with the most lineup value.
+    f = dbundle.sheet.facts["NX.bye.5.8138.cover"]
+    assert f.text == "With James Cook on bye, his slot falls to Woody Marks, RB33, with 9.1 a game."
+    assert f.numbers == ["33", "9.1"]
+    assert f.teams == ["London Cooking"] and f.players == ["James Cook", "Woody Marks"]
+
+
+def test_a_key_starter_on_bye_with_no_bench_player_at_his_slot_has_a_no_cover_fact(dbundle):
+    # Amon-Ra Dawg Your Team rosters one quarterback, Trevor Lawrence.
+    f = dbundle.sheet.facts["NX.bye.12.7523.cover"]
+    assert f.text == "With Trevor Lawrence on bye, no bench player can fill his slot."
+    assert f.numbers == [] and f.players == ["Trevor Lawrence"]
+
+
+def test_a_build_with_no_snapshot_reads_the_byes_without_a_rank_or_a_cover(
+        fixture_raw_dir, fixture_history_root, nfl_week6):
+    raw = load_raw(fixture_raw_dir)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
+                     nfl=nfl_week6)
+    facts = b.sheet.facts
+    assert facts["NX.bye.12.7523"].text == (
+        "Trevor Lawrence, QB, is on bye in week 7 and started 4 of the last 4 weeks for Amon-Ra Dawg Your Team.")
+    assert facts["NX.bye.12.7523"].numbers == ["7", "4", "4"]
+    assert not any(fid.endswith(".cover") for fid in facts)
+    # With no rank, the players on bye who are not key starters sort by name.
+    assert [p.name for p in _game(b, 3, 8).a_byes] == ["Jakobi Meyers", "Khalil Shakir", "Stefon Diggs"]
+
+
+def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_the_bye_note(dbundle):
+    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    chapter = next(c for c in dbundle.sheet.chapters if c.key == "next_week")
+    byes = [fid for fid in dbundle.sheet.facts if fid.startswith("NX.bye.")]
+    assert set(byes) <= set(chapter.fact_ids)
+    assert {"NX.bye.12.7523", "NX.bye.12.7523.cover", "NX.bye.5.8138.cover", "NX.bye.8.none"} <= set(byes)
+    assert (chapter.min_sentences, chapter.max_sentences) == (2, 6)
+    assert chapter.required == []
+    assert {"Trevor Lawrence", "Woody Marks", "Khalil Shakir"} <= set(chapter.scope_players)
+    assert {"Amon-Ra Dawg Your Team", "Return of T Mac"} <= set(chapter.scope_teams)
+    _, user = build_writer_prompt(chapter, dbundle.sheet, None)
+    assert BYES_NOTE in user.splitlines()
+    assert BYES_NOTE == "Note: the byes next week are part of the preview."
+
+
+def test_a_chapter_with_no_bye_fact_has_no_bye_note(hbundle):
+    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    chapter = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
+    _, user = build_writer_prompt(chapter, hbundle.sheet, None)
+    assert BYES_NOTE not in user
+
+
+@pytest.mark.parametrize("thin", ["no schedule", "one saved week"])
+def test_thin_data_makes_no_bye_fact_not_even_a_none_fact(thin, fixture_raw_dir, fixture_history_root, tmp_path,
+                                                         nfl_week6):
+    raw = load_raw(fixture_raw_dir)
+    # An empty history root saves no week, so the history holds week 6 alone.
+    root = fixture_history_root if thin == "no schedule" else tmp_path
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(root, raw, week=6),
+                     nfl=None if thin == "no schedule" else nfl_week6, snapshot=week_snapshot(raw, root, 6))
+    assert not any(fid.startswith("NX.bye.") for fid in b.sheet.facts)
+
+
+@pytest.mark.parametrize("out", ["returns", "out for season"])
+def test_a_bench_player_who_cannot_play_next_week_is_no_bye_cover(out, fixture_raw_dir, fixture_history_root,
+                                                                  nfl_week6):
+    # Woody Marks is the only bench back of London Cooking who can play next week. Jordan Mason is on IR.
+    # A return in week 9 keeps Marks out next week, and his projection ahead of 10 a game keeps him the best bench
+    # back, so only the out rule can skip him. Out for the season, he cannot cover either.
+    raw = load_raw(fixture_raw_dir)
+    snap = week_snapshot(raw, fixture_history_root, 6)
+    ahead = {**snap.projections_ahead, "12474": {week: 10.0 for week in range(9, 15)}}
+    snap = snap.model_copy(update={"returns": {"12474": 9}, "projections_ahead": ahead} if out == "returns"
+                           else {"out_for_season": {"12474"}})
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
+                     nfl=nfl_week6, snapshot=snap)
+    assert b.sheet.facts["NX.bye.5.8138.cover"].text == "With James Cook on bye, no bench player can fill his slot."

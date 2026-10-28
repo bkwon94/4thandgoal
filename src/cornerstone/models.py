@@ -274,6 +274,13 @@ class ByePlayer(BaseModel):
     position: str
     # True for a key starter. GLOSSARY.md, "Key starter".
     key: bool
+    # The facts read the position rank and the starts. The page does not, so they stay out of the page JSON.
+    # The rank is None for a K, a DEF, a player outside the rank pool, or a build with no snapshot.
+    rank: int | None = Field(default=None, exclude=True)
+    # The starts of the player on this roster in the completed weeks the key starter rule reads, and the count of
+    # those weeks.
+    starts: int = Field(default=0, exclude=True)
+    weeks: int = Field(default=0, exclude=True)
 
 
 class NextMatchup(BaseModel):

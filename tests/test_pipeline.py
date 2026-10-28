@@ -1032,3 +1032,11 @@ def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_r
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
     run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
     assert seen["awards"] == set()
+
+
+def test_the_bundle_reads_the_position_rank_and_the_bye_cover_from_the_week_snapshot(
+        tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+    assert bundle.sheet.facts["NX.bye.12.7523"].text.startswith("Trevor Lawrence, QB10, is on bye in week 7")
+    assert "NX.bye.5.8138.cover" in bundle.sheet.facts

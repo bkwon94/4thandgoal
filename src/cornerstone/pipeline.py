@@ -32,7 +32,7 @@ from cornerstone.sheet import (
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import load_returns
+from cornerstone.snapshot import load_returns, week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import page_words, reserved_words, write_and_verify
 from cornerstone.waiver import waiver_board
@@ -255,7 +255,9 @@ def make_bundle(
         until = started
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history)
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
-    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl)
+    # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
+    snapshot = week_snapshot(raw, history_root(repo, season), week)
+    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.

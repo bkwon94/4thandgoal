@@ -17,6 +17,7 @@ from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_facts
 from cornerstone.sleeper import load_raw
+from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 
 ET = ZoneInfo("America/New_York")
@@ -89,7 +90,8 @@ def fixture_history_root() -> Path:
 def hbundle(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     return build_bundle(parse_week(raw), news=lambda pid: [],
-                        history=load_history(fixture_history_root, raw, week=6))
+                        history=load_history(fixture_history_root, raw, week=6),
+                        snapshot=week_snapshot(raw, fixture_history_root, 6))
 
 
 def _window(raw, h):
@@ -102,7 +104,8 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
     """The week 6 bundle with history and trades. A given nflverse week adds the drop facts."""
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)
-    return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=_window(raw, h), nfl=nfl)
+    return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=_window(raw, h), nfl=nfl,
+                        snapshot=week_snapshot(raw, history_root, 6))
 
 
 def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):

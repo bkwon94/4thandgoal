@@ -322,6 +322,17 @@ def load_snapshot(
                           returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file))
 
 
+def week_snapshot(raw: dict[str, object], history_root: Path, week: int) -> Snapshot:
+    """The snapshot the weekly build of week N reads: the league after week N, as the analyzer sees it in week N + 1.
+
+    The bye facts read the position rank and the lineup value, and neither needs a chart or a slow source.
+    """
+    # The returns file sits beside the history, so the history root locates it.
+    returns_file = history_root.parent / "returns.json"
+    return build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
+                          out_for_season=load_out_for_season(returns_file))
+
+
 def build_snapshot(
         raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
