@@ -880,9 +880,9 @@ def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, 
     with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
         _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
     saved = json.loads(path.read_text())
-    assert saved["usage"] and saved["expected"] and saved["next_games"]
+    assert saved["usage"] and saved["expected"] and saved["next_games"] and saved["bye_weeks"]
     assert record.sources["nflverse_stats_player"] is True
-    assert ("week 6 nflverse.json lacks environment, expected, next_games, usage, "
+    assert ("week 6 nflverse.json lacks bye_weeks, environment, expected, next_games, usage, "
             "so the build fetches the extract again") in caplog.text
 
 

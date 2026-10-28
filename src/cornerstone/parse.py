@@ -232,4 +232,8 @@ def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
             if (item.get("player") or {}).get("position")
         },
         nfl_teams={item["player_id"]: item["team"] for item in raw["stats"] if item.get("team")},
+        # The empty slot "0" is not a player, so it is never a start.
+        starters={
+            e["roster_id"]: [pid for pid in e.get("starters") or [] if pid != EMPTY_SLOT] for e in entries
+        },
     )

@@ -185,6 +185,17 @@ def test_next_week_holds_both_teams_of_each_game(hbundle, tmp_path):
     assert all(game["a"]["name"] and game["b"]["name"] for game in data["next"])
 
 
+def test_each_side_of_a_next_week_game_writes_its_byes(dbundle, tmp_path):
+    data = _page(render_week(dbundle, {}, tmp_path, fetch_bytes=lambda url: None))
+    game = next(g for g in data["next"] if (g["a"]["roster_id"], g["b"]["roster_id"]) == (5, 12))
+    assert game["b"]["byes"][0] == {"player_id": "7523", "name": "Trevor Lawrence", "position": "QB", "key": True}
+    assert len(game["b"]["byes"]) == 5 and game["b"]["name"] == "Amon-Ra Dawg Your Team"
+    # Return of T Mac has nobody on bye, so its list is empty.
+    quiet = next(g for g in data["next"] if g["b"]["roster_id"] == 8)
+    assert quiet["b"]["byes"] == []
+    assert data["schema_version"] == 2
+
+
 def test_build_context_has_five_leader_boards(fixture_raw_dir):
     b = _bundle(fixture_raw_dir)
     boards = build_context(b, _blurbs(b), {}, {})["leaders"]

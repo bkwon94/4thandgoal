@@ -8,6 +8,7 @@ import pytest
 
 from cornerstone.facts_league import (
     awards,
+    key_starters,
     matchup_of_the_week,
     next_week,
     position_ranks,
@@ -461,3 +462,58 @@ def test_week_7_must_watch_games_and_reasons():
         (8, 10, "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"),
         (6, 7, "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"),
     ]
+
+
+# The key starter rule. A roster maps each player on it now to his position.
+KEY_ROSTER = {"qb": "QB", "rb": "RB", "wr": "WR", "te": "TE", "k": "K", "def": "DEF"}
+
+
+def test_a_key_starter_started_3_of_the_last_4_weeks():
+    weeks = [["qb", "rb"], ["qb", "rb"], ["qb"], ["qb", "rb"]]
+    assert key_starters(weeks, KEY_ROSTER) == {"qb", "rb"}
+
+
+def test_2_of_the_last_4_weeks_is_not_a_key_starter():
+    weeks = [["rb"], ["qb", "rb"], ["qb"], ["wr"]]
+    assert key_starters(weeks, KEY_ROSTER) == set()
+
+
+def test_a_start_before_the_last_4_weeks_does_not_count():
+    weeks = [["wr"], ["wr"], ["wr"], ["qb"], ["qb"], ["qb"]]
+    assert key_starters(weeks, KEY_ROSTER) == {"qb"}
+
+
+def test_with_3_weeks_2_starts_make_a_key_starter():
+    weeks = [["qb", "rb"], ["qb"], ["rb", "wr"]]
+    assert key_starters(weeks, KEY_ROSTER) == {"qb", "rb"}
+
+
+def test_with_2_weeks_2_starts_make_a_key_starter():
+    assert key_starters([["qb", "rb"], ["qb"]], KEY_ROSTER) == {"qb"}
+
+
+def test_with_1_week_no_player_is_a_key_starter():
+    assert key_starters([["qb", "rb", "wr"]], KEY_ROSTER) == set()
+    assert key_starters([], KEY_ROSTER) == set()
+
+
+def test_a_flex_start_counts():
+    # The starters list holds the flex slot too, so the third back in the list is a start.
+    weeks = [["qb", "rb2", "rb"], ["qb", "rb2", "rb"], ["qb", "rb2", "rb"], ["qb", "rb2"]]
+    assert key_starters(weeks, {**KEY_ROSTER, "rb2": "RB"}) == {"qb", "rb", "rb2"}
+
+
+def test_a_player_not_on_the_roster_now_is_not_a_key_starter():
+    weeks = [["qb", "gone"], ["qb", "gone"], ["qb", "gone"], ["qb", "gone"]]
+    assert key_starters(weeks, KEY_ROSTER) == {"qb"}
+
+
+def test_a_new_add_is_not_a_key_starter():
+    # The add has no starts on his new roster, whatever he did on his old one.
+    weeks = [["qb"], ["qb"], ["qb"], ["qb", "add"]]
+    assert key_starters(weeks, {**KEY_ROSTER, "add": "WR"}) == {"qb"}
+
+
+def test_a_kicker_and_a_defense_are_never_key_starters():
+    weeks = [["k", "def", "te"]] * 4
+    assert key_starters(weeks, KEY_ROSTER) == {"te"}

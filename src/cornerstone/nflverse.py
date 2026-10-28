@@ -280,6 +280,11 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     environment = None if plays is None else nflverse_usage.read_environment(plays)
     # The shootout facts look ahead, so they read the games of week N+1.
     next_games = read_games(schedules, season, week + 1) if schedules else None
+    # The bye lines of the next-week games read the bye week of each NFL team.
+    team_schedules = read_schedules(schedules, season) if schedules else None
+    bye_weeks = None if team_schedules is None else {
+        team: s.bye_week for team, s in team_schedules.items() if s.bye_week is not None
+    }
     ep_path = get(FFOPPORTUNITY_URL)
     expected = (nflverse_expected.read_expected(ep_path, schedules, season, week, scoring, sleeper_of_gsis)
                 if ep_path and schedules and scoring is not None else None)
@@ -296,4 +301,5 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
         gsis=gsis,
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
         injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},
-        usage=usage, environment=environment, expected=expected, next_games=next_games)
+        usage=usage, environment=environment, expected=expected, next_games=next_games,
+        bye_weeks=bye_weeks)

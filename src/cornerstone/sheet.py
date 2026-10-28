@@ -321,7 +321,7 @@ class Context:
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = _odds(week, history, inputs, self.projected)
         # The shootout storyline reads the same projected lineups as the odds.
-        self.next = next_week(week, self.table, history, self.projected)
+        self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}

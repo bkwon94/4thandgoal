@@ -2,6 +2,7 @@
 Tests for the fact sheet, the bundle, and the week gate.
 They run on the recorded week 6 data.
 """
+import logging
 import re
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
@@ -876,3 +877,46 @@ def test_the_checker_accepts_a_cited_streak_length_and_projected_total():
              "in a projected shootout.")
     assert number_failures(remove_names(prose, list(_NAMES.values())), cited, text) == []
     assert number_failures("a 5-game win streak", cited, text) == ["number 5 is not in the cited facts"]
+
+
+def _game(bundle, a, b):
+    return next(nx for nx in bundle.data.next if (nx.a, nx.b) == (a, b))
+
+
+def test_each_side_of_a_next_week_game_lists_its_players_on_bye_key_starters_first(dbundle):
+    # BUF, JAX, LAC, and WAS have the week 7 bye. Trevor Lawrence started every week, so he is a key starter.
+    # Each other JAX, BUF, or LAC player of Amon-Ra Dawg Your Team started 1 or 2 of the last 4 weeks.
+    game = _game(dbundle, 5, 12)
+    assert [(p.name, p.position, p.key) for p in game.b_byes[:1]] == [("Trevor Lawrence", "QB", True)]
+    assert game.b_byes[0].player_id == "7523"
+    assert {p.name for p in game.b_byes[1:]} == {"Dalton Kincaid", "Bhayshul Tuten", "Omarion Hampton", "DJ Moore"}
+    assert not any(p.key for p in game.b_byes[1:])
+    assert {p.name for p in game.a_byes} == {"Jayden Daniels", "James Cook"}
+
+
+def test_a_bench_player_on_bye_is_on_the_list_and_not_key(dbundle):
+    # Stefon Diggs started 2 of the last 4 weeks. Meyers and Shakir sat on the bench. The rest sort by name.
+    game = _game(dbundle, 3, 8)
+    assert [(p.name, p.key) for p in game.a_byes] == [
+        ("Jakobi Meyers", False), ("Khalil Shakir", False), ("Stefon Diggs", False)]
+    assert game.b_byes == []
+
+
+def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_raw_dir, fixture_history_root, caplog):
+    raw = load_raw(fixture_raw_dir)
+    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+        b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
+    assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
+    assert [r.message for r in caplog.records if "bye" in r.message] == [
+        "no NFL schedule: the next-week games have no bye lists"]
+
+
+def test_a_build_with_one_saved_week_has_empty_bye_lists(fixture_raw_dir, tmp_path, nfl_week6, caplog):
+    raw = load_raw(fixture_raw_dir)
+    # An empty history root saves no week, so the history holds week 6 alone.
+    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+        b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(tmp_path, raw, week=6),
+                         nfl=nfl_week6)
+    assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
+    assert [r.message for r in caplog.records if "bye" in r.message] == [
+        "history has 1 completed weeks: the next-week games have no bye lists"]

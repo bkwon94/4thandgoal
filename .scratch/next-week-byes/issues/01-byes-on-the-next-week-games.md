@@ -12,11 +12,11 @@ one line.
 
 **Status:** ready-for-agent
 
-- [ ] The past week model keeps each roster's starters for that week, read from the saved matchups. The empty slot "0" is not a starter.
-- [ ] A pure function gives a roster's key starters from its starters per completed week: 3 of the last 4, then 2 of 3, then 2 of 2, none under 2 weeks. QB, RB, WR, TE only. FLEX counts. The counts are tunables.
-- [ ] A player's bye is his NFL team's bye from the nflverse schedule. Next week is the page week plus one.
-- [ ] Each side of a next-week game carries `byes`: `{ player_id, name, position, key }`, key starters first, then by position rank, then by name. Position rank may wait for ticket 02; until then the rest sort by name.
-- [ ] The renderer writes `byes` on each side in the page JSON. An empty list for a team with nobody on bye. The schema version does not change.
-- [ ] No schedule, no history, or fewer than 2 completed weeks: empty lists, one log line that names the missing source, no raise.
-- [ ] Tests on the week 6 fixture bundle read the lists. Unit tests cover the key starter rule with 4, 3, 2, and 1 weeks, a FLEX start, a new add, a K and a DEF. The thin data case has a test.
-- [ ] `uv run pytest -q` and `uv run ruff check src tests` pass.
+- [x] The past week model keeps each roster's starters for that week, read from the saved matchups. The empty slot "0" is not a starter.
+- [x] A pure function gives a roster's key starters from its starters per completed week: 3 of the last 4, then 2 of 3, then 2 of 2, none under 2 weeks. QB, RB, WR, TE only. FLEX counts. The counts are tunables.
+- [x] A player's bye is his NFL team's bye from the nflverse schedule. Next week is the page week plus one.
+- [x] Each side of a next-week game carries `byes`: `{ player_id, name, position, key }`, key starters first, then by position rank, then by name. Position rank may wait for ticket 02; until then the rest sort by name.
+- [x] The renderer writes `byes` on each side in the page JSON. An empty list for a team with nobody on bye. The schema version does not change.
+- [x] No schedule, no history, or fewer than 2 completed weeks: empty lists, one log line that names the missing source, no raise.
+- [x] Tests on the week 6 fixture bundle read the lists. Unit tests cover the key starter rule with 4, 3, 2, and 1 weeks, a FLEX start, a new add, a K and a DEF. The thin data case has a test.
+- [x] `uv run pytest -q` and `uv run ruff check src tests` pass.

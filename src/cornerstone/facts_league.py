@@ -9,6 +9,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
+    ByePlayer,
     History,
     MatchupFacts,
     NextMatchup,
@@ -22,9 +23,16 @@ from cornerstone.models import (
     Storyline,
     Week,
     r2,
+    week_lines,
     sub,
 )
-from cornerstone.tunables import PLAYOFF_SPOTS, STORYLINE_WEIGHTS
+from cornerstone.tunables import (
+    KEY_STARTER_SHORT_STARTS,
+    KEY_STARTER_STARTS,
+    KEY_STARTER_WEEKS,
+    PLAYOFF_SPOTS,
+    STORYLINE_WEIGHTS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -246,15 +254,64 @@ def matchup_of_the_week(
     return best[2]
 
 
+# A kicker or a defense is never a key starter. GLOSSARY.md, "Key starter".
+KEY_STARTER_POSITIONS = ("QB", "RB", "WR", "TE")
+
+
+def key_starters(weeks: list[list[str]], roster: dict[str, str]) -> set[str]:
+    """The key starters of a roster: the players it started in enough of its latest completed weeks.
+
+    `weeks` holds the starters of each completed week, oldest first. `roster` maps each player on the roster
+    at build time to his position. A start is any place in the starters list, the flex slot too.
+    """
+    recent = weeks[-KEY_STARTER_WEEKS:]
+    if len(recent) < KEY_STARTER_SHORT_STARTS:
+        return set()
+    bar = KEY_STARTER_STARTS if len(recent) >= KEY_STARTER_WEEKS else KEY_STARTER_SHORT_STARTS
+    return {
+        pid for pid, position in roster.items()
+        if position in KEY_STARTER_POSITIONS and sum(pid in starters for starters in recent) >= bar
+    }
+
+
+def _byes(week: Week, history: History | None, bye_weeks: dict[str, int] | None) -> dict[int, list[ByePlayer]]:
+    """The players of each roster whose NFL team has its bye next week, key starters first.
+
+    Thin data gives no lists and one log line, so the page shows no bye line it cannot back.
+    """
+    if not bye_weeks:
+        logger.warning("no NFL schedule: the next-week games have no bye lists")
+        return {}
+    completed = sorted(w for w in (history.weeks if history is not None else {}) if w <= week.week)
+    if len(completed) < KEY_STARTER_SHORT_STARTS:
+        logger.warning("history has %d completed weeks: the next-week games have no bye lists", len(completed))
+        return {}
+    lines = {line.player_id: line for line in week_lines(week)}
+    out = {}
+    for roster_id, roster in week.rosters.items():
+        keys = key_starters([history.weeks[w].starters.get(roster_id, []) for w in completed], roster)
+        # A player with no lineup line has no NFL team the build knows, so he has no bye.
+        on_bye = [
+            ByePlayer(player_id=pid, name=lines[pid].name, position=lines[pid].position, key=pid in keys)
+            for pid in roster
+            if pid in lines and bye_weeks.get(lines[pid].nfl_team) == week.week + 1
+        ]
+        # Key starters come first, then the rest by name. A sort by position rank belongs between the two.
+        out[roster_id] = sorted(on_bye, key=lambda p: (not p.key, p.name))
+    return out
+
+
 def next_week(
     week: Week, table: list[Standing], history: History | None = None,
-    projected: dict[int, dict[int, float]] | None = None,
+    projected: dict[int, dict[int, float]] | None = None, bye_weeks: dict[str, int] | None = None,
 ) -> list[NextMatchup]:
     """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
 
     `projected` is the best projected lineup of each roster by week, as `projected_totals` gives it.
+    `bye_weeks` is the bye week of each NFL team. Each side of a game lists its players on bye next week.
     A tie in the score goes to the smaller gap in the standings, then to the schedule order.
     """
+    byes = _byes(week, history, bye_weeks)
     by_roster = {s.roster_id: s for s in table}
     ahead = {rid: by_week[week.week + 1] for rid, by_week in (projected or {}).items() if week.week + 1 in by_week}
     # A tie in the total goes to the lower roster id, so the top four is the same on every build.
@@ -278,6 +335,7 @@ def next_week(
         out.append(NextMatchup(
             a=a.roster_id, b=b.roster_id, must_watch=must_watch,
             reason=_reason(week, a, b, stories) if must_watch else None, storylines=stories,
+            a_byes=byes.get(a.roster_id, []), b_byes=byes.get(b.roster_id, []),
         ))
     return out
 
