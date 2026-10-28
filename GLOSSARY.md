@@ -67,6 +67,22 @@ One data-backed reason a next-week game matters, from a fixed set: streak on the
 rematch, revenge, near the cut, top of the table. Each has a weight. A game's storyline score is the sum.
 _Avoid_: angle, narrative, hook
 
+**Key starter**:
+A player a team started in at least 3 of its last 4 completed weeks, at QB, RB, WR, or TE. With fewer than 4
+played weeks, 2 of 3, then 2 of 2. The rule reads real starts, not the best lineup. A kicker or a defense is never one.
+_Avoid_: star (that is a chart rank), stud, core player, regular
+
+**Bye line**:
+The line under a team in a next-week game card that names every rostered player of that team on bye next
+week, key starters first and marked. A team with nobody on bye has no bye line. The prose about the byes is
+part of the Next Week blurb, not of the line.
+_Avoid_: bye note, bye alert, bye hole (that is a trade term)
+
+**Bye cover**:
+The bench player with the highest lineup value who can fill the slot a key starter on bye leaves open. A slot
+with no such bench player has no cover.
+_Avoid_: backup, replacement, fill-in
+
 **Streak on the line**:
 A storyline: a team enters next week on 3 or more head-to-head wins or losses in a row. The median game
 does not count. The storyline names the length and the kind.
