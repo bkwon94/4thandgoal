@@ -357,7 +357,7 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
     assert [side["chart"]["lean"] for side in doc["sides"]] == ["even", "even"]
     names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 6
+    assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 7
     assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
     # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
@@ -553,12 +553,12 @@ def test_the_chart_lean_maps_from_the_start_letter(settings, sources, letter, le
 
 
 def _steps(steps, schedule_lean):
-    """Breakdowns with the steps of the first five adjusters of each side and the lean of the schedule set."""
+    """Breakdowns with the steps of the first six adjusters of each side and the lean of the schedule set."""
     def rework(breakdowns):
         reworked = []
         for b in breakdowns:
-            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:5], steps)]
-            adjusters.append(b.adjusters[5].model_copy(update={"lean": schedule_lean}))
+            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:6], steps)]
+            adjusters.append(b.adjusters[6].model_copy(update={"lean": schedule_lean}))
             reworked.append(b.model_copy(update={"adjusters": adjusters}))
         return tuple(reworked)
     return rework
@@ -566,11 +566,21 @@ def _steps(steps, schedule_lean):
 
 @pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
 def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
-    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, -1], schedule_lean))
+    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, -1], schedule_lean))
     factors = doc["sides"][0]["factors"]
-    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "handcuff",
-                                            "schedule"]
-    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "against", schedule_lean]
+    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "upside",
+                                            "handcuff", "schedule"]
+    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "against", schedule_lean]
+
+
+def test_a_graded_trade_carries_an_upside_factor_per_side(settings, sources):
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
+    for side in doc["sides"]:
+        upside = [f for f in side["factors"] if f["name"] == "upside"]
+        assert len(upside) == 1
+        # No player in TRADE is a star out now or has a role that just opened, so the upside is even.
+        assert upside[0] == {"name": "upside", "lean": "even",
+                             "reason": "No player it gets is a star out now or has a role that just opened."}
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):

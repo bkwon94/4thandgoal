@@ -31,7 +31,7 @@ Then give a verdict for the side that asked, with one reason.
 
 1. Write three to five sentences for each side. Each sentence ends with a period.
 2. Cover what matters most for that side: the roster fit, the need, the standing, the trend and
-   usage, the schedule, and the injury status and history.
+   usage, the schedule, the upside, and the injury status and history.
 3. Put the IDs of the facts you use in `cited`. Never put an ID in the analysis text.
 4. Use only numbers that appear in the facts you cite or in the breakdown, except trade values;
    never write a trade value, a sum, or a ratio. Never compute a new number or a difference.
