@@ -101,21 +101,29 @@
           "team": "All You Need Is Love",
           "gives": [
             {
-              "player_id": "6770",
-              "name": "Joe Burrow",
-              "position": "QB",
-              "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
+              "player_id": "12527",
+              "name": "Ashton Jeanty",
+              "position": "RB",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
               "to": 3
             }
           ],
           "gets": [
             {
-              "player_id": "9228",
-              "name": "Bryce Young",
+              "player_id": "11560",
+              "name": "Caleb Williams",
               "position": "QB",
-              "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "from": 3
+            },
+            {
+              "player_id": "6806",
+              "name": "J.K. Dobbins",
+              "position": "RB",
+              "nfl_team": "DEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
               "from": 3
             }
           ]
@@ -125,21 +133,29 @@
           "team": "Lil Fridge",
           "gives": [
             {
-              "player_id": "9228",
-              "name": "Bryce Young",
+              "player_id": "11560",
+              "name": "Caleb Williams",
               "position": "QB",
-              "nfl_team": "CAR",
-              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "to": 2
+            },
+            {
+              "player_id": "6806",
+              "name": "J.K. Dobbins",
+              "position": "RB",
+              "nfl_team": "DEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
               "to": 2
             }
           ],
           "gets": [
             {
-              "player_id": "6770",
-              "name": "Joe Burrow",
-              "position": "QB",
-              "nfl_team": "CIN",
-              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg",
+              "player_id": "12527",
+              "name": "Ashton Jeanty",
+              "position": "RB",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
               "from": 2
             }
           ]
@@ -151,15 +167,15 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Young: snap share 100%, up, over weeks 3 and 4."
+            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Dobbins: target share 11%, up, over weeks 4 and 5. Jeanty: snap share 61%, down, over weeks 4 and 5."
           },
           {
             "roster_id": 3,
-            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+            "reason": "The best lineup gains after the trade."
           }
         ]
       },
-      "reason": "All You Need Is Love gets Bryce Young as his snap share rises, and Lil Fridge gets Joe Burrow, the best player in the trade, with no loss to its lineup."
+      "reason": "All You Need Is Love gets J.K. Dobbins as his target share rises, and Lil Fridge gets Ashton Jeanty into its best lineup."
     },
     {
       "sides": [
@@ -178,19 +194,19 @@
           ],
           "gets": [
             {
-              "player_id": "11560",
-              "name": "Caleb Williams",
-              "position": "QB",
-              "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
-              "from": 3
-            },
-            {
               "player_id": "2306",
               "name": "Jameis Winston",
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "from": 3
+            },
+            {
+              "player_id": "8134",
+              "name": "Khalil Shakir",
+              "position": "WR",
+              "nfl_team": "BUF",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
               "from": 3
             }
           ]
@@ -200,19 +216,19 @@
           "team": "Lil Fridge",
           "gives": [
             {
-              "player_id": "11560",
-              "name": "Caleb Williams",
-              "position": "QB",
-              "nfl_team": "CHI",
-              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
-              "to": 2
-            },
-            {
               "player_id": "2306",
               "name": "Jameis Winston",
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "to": 2
+            },
+            {
+              "player_id": "8134",
+              "name": "Khalil Shakir",
+              "position": "WR",
+              "nfl_team": "BUF",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
               "to": 2
             }
           ],
@@ -234,7 +250,7 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Chase: snap share 52%, down, target share 19%, down, over weeks 4 and 5."
+            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Shakir: snap share 72%, up, target share 35%, up, over weeks 4 and 5. Chase: snap share 52%, down, target share 19%, down, over weeks 4 and 5."
           },
           {
             "roster_id": 3,
@@ -242,7 +258,7 @@
           }
         ]
       },
-      "reason": "All You Need Is Love gets Caleb Williams and Jameis Winston as the target share of Ja'Marr Chase falls, and Lil Fridge gets Chase into its best lineup."
+      "reason": "All You Need Is Love gets Khalil Shakir as his snap share rises, and Lil Fridge gets Ja'Marr Chase into its best lineup."
     }
   ],
   "empty": null,

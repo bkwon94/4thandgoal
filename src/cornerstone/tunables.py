@@ -65,6 +65,10 @@ INJURY_WEEKS = 3
 # slot sooner.
 RETURN_WINDOW_WEEKS = 2
 
+# Upside: a star is a player in the top STAR_RANK of the league's chart. GLOSSARY.md, "Star".
+# The 12 teams each start 2 RB and 2 WR, so the top 24 trade values are the players an average team builds on.
+STAR_RANK = 24
+
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
 # A backup who takes 25% of his team's carries scores points of his own, so he counts as a running back.
 # A pure backup sits near 15%. A backup with a real role, such as Blake Corum at 28%, sits above 25%.

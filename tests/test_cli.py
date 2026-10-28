@@ -330,15 +330,16 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     out = capsys.readouterr().out
     assert code == 0
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
-    # Each side ends with the schedule lean and the final letter, after the five adjusters with steps.
+    # Each side ends with the schedule lean and the final letter, after the six adjusters with steps.
     assert out.count("  Schedule: even. ") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     # The fairness line follows the verdict, then one reason per side in the order of the sides.
+    # Jacobs is a star out now, so the upside step up gives the reason of Unsolicited Dak Picks.
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
-        "  Unsolicited Dak Picks: It gets far more trade value than it gives.\n"
+        "  Unsolicited Dak Picks: Josh Jacobs is a star out now with a return in play.\n"
         "  Amon-Ra Dawg Your Team: The best lineup gains after the trade. "
         "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 12.2 a game.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
