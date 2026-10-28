@@ -117,7 +117,7 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
     """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets."""
     # The analyze document and the finder document share this shape, so the site renders a side one way.
     # Each given player carries `to` and each got player carries `from`, so the site can tag a player by team.
-    givers = {player.player_id: side.roster_id for side in trade.sides for player in side.gives}
+    givers = trade.givers
     return [
         {
             "roster_id": side.roster_id,

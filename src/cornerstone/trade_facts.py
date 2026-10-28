@@ -142,7 +142,7 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     gives = next(s.player_ids for s in trade.sides if s.roster_id == rid)
     gets = trade.gets(rid)
     after = [pid for pid in snapshot.rosters[rid] if pid not in gives] + gets
-    traded = [pid for side in trade.sides for pid in side.player_ids]
+    traded = trade.player_ids
     positions = sorted({snapshot.players[pid].position for pid in traded})
     depth = [f"{n(sum(snapshot.players[pid].position == pos for pid in after if pid in snapshot.players))} {pos}"
              for pos in positions]

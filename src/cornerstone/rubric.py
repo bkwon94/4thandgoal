@@ -90,7 +90,7 @@ class ProposedTrade(BaseModel):
             raise ValueError("A proposed trade needs a different roster on each side")
         if not all(side.gives for side in self.sides):
             raise ValueError("Each side of a proposed trade must give at least one player")
-        given = [pid for side in self.sides for pid in side.player_ids]
+        given = self.player_ids
         if len(set(given)) != len(given):
             raise ValueError("A player can appear only once in a proposed trade")
         if self.asker not in rosters:
@@ -110,6 +110,16 @@ class ProposedTrade(BaseModel):
                 if player.to == side.roster_id:
                     raise ValueError(f"Player {player.player_id} goes to his own roster {side.roster_id}")
         return self
+
+    @property
+    def player_ids(self) -> list[str]:
+        """The ids of every player in the trade, in the order of the sides and of each side's gives."""
+        return [pid for side in self.sides for pid in side.player_ids]
+
+    @property
+    def givers(self) -> dict[str, int]:
+        """The roster id of the side that gives each player in the trade, by player id."""
+        return {player.player_id: side.roster_id for side in self.sides for player in side.gives}
 
     def gets(self, roster_id: int) -> list[str]:
         """The ids of the players the other sides send to `roster_id`, in the order of the sides."""
@@ -194,13 +204,19 @@ def _all_at_c(trade: ProposedTrade, reason: str) -> tuple[tuple[Letter, str], ..
 
 
 def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
-    """The trade value of each player on the chart, with every handcuff in the trade at zero, listed or not."""
-    return {**snapshot.chart.values, **{pid: 0.0 for pid in handcuffs}}
+    """The trade value of each player on the chart, with every handcuff in the trade at zero, listed or not.
+
+    A player out for the season and off the chart is at zero too. ADR 0005: he counts zero for the side that gets
+    him, listed or not, so he is never unlisted. A listed one keeps his chart value for the side that gives him.
+    """
+    off_chart_season = {pid: 0.0 for pid in snapshot.out_for_season if pid not in snapshot.chart.values}
+    return {**snapshot.chart.values, **off_chart_season, **{pid: 0.0 for pid in handcuffs}}
 
 
 def unlisted_players(snapshot: Snapshot, players: list[str], handcuffs: list[str] | None = None) -> list[str]:
     """The players with no trade value on the week's chart. A handcuff in the trade counts as listed, at zero.
 
+    A player out for the season counts as listed, at zero.
     A trade with an unlisted player starts every side at C. With no chart, every player is unlisted.
     """
     if snapshot.chart is None:
@@ -217,7 +233,7 @@ def _start_letters(
     if snapshot.chart is None:
         return _all_at_c(trade, NO_CHART_REASON)
     values = _trade_values(snapshot, handcuffs)
-    unlisted = unlisted_players(snapshot, [pid for side in trade.sides for pid in side.player_ids], handcuffs)
+    unlisted = unlisted_players(snapshot, trade.player_ids, handcuffs)
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
                   + " no trade value, so the chart gives neither side an edge.")
@@ -252,7 +268,7 @@ def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: l
     player is unlisted, the trade values of the sides do not compare, so the lineup value picks him.
     The lineup value is recent points per game, or the projection ahead of a player due back, who has no recent games.
     """
-    players = [pid for side in trade.sides for pid in side.player_ids]
+    players = trade.player_ids
     values = _trade_values(snapshot, handcuffs) if snapshot.chart is not None else {}
     if all(pid in values for pid in players):
         worth = {pid: Decimal(str(values[pid])) for pid in players}
@@ -305,7 +321,11 @@ def _at_or_below(letter: Letter, bound: Letter) -> bool:
 
 
 def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, ...]) -> Verdict:
-    """The code's default verdict for the asker, from the final letters of every side and the asker's schedule lean."""
+    """The code's default verdict for the asker, from the final letters of every side and the asker's schedule lean.
+
+    With three or more sides, the verdict compares the asker's letter with the letter of the best other side.
+    When that side does better, the reason reads "Another side does better, so ask for more."
+    """
     asker = next(b for b in breakdowns if b.roster_id == trade.asker)
     others = [b for b in breakdowns if b.roster_id != trade.asker]
     # The asker compares with the best other side, so a middle letter accepts only when no other side does better.
@@ -319,13 +339,14 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, ...]) -> Verdict:
         return Verdict(choice="decline", reason="The trade costs the asking side too much.")
     # The letters between the two bands accept only when the other side does no better than the asker.
     # A two-side trade keeps its words. A trade of three or more names the best other side as "another side".
-    two = len(others) == 1
+    two_sides = len(others) == 1
     if mine == theirs:
-        sides = "The two sides are about even" if two else "The asking side and the best other side are about even"
+        sides = ("The two sides are about even" if two_sides
+                 else "The asking side and the best other side are about even")
     elif _at_or_above(mine, theirs):
         sides = "The asking side does better"
     else:
-        sides = "The other side does better" if two else "Another side does better"
+        sides = "The other side does better" if two_sides else "Another side does better"
     if _at_or_above(mine, theirs):
         # Schedule is the tie break between fair and not quite fair. It never turns a clear letter.
         if lean == "against":

@@ -130,7 +130,7 @@ def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> li
     rosters = [roster for roster, _ in sides]
     built = []
     for index, (roster, gives) in enumerate(sides):
-        # With two sides a player with no destination goes to the other side, so the old form still works.
+        # A two-side trade may leave out `@TO`, because the other side is the destination.
         default = rosters[1 - index] if len(rosters) == 2 else None
         if any(to is None for _, to in gives) and default is None:
             return None
@@ -159,7 +159,7 @@ def _names(snapshot: Snapshot, pids: list[str]) -> str:
 
 def _routed(snapshot: Snapshot, trade: ProposedTrade, roster_id: int, gives: bool) -> str:
     """The players a side gives, each with the team he goes to, or the players it gets, each with his source team."""
-    givers = {player.player_id: side.roster_id for side in trade.sides for player in side.gives}
+    givers = trade.givers
     if gives:
         side = next(side for side in trade.sides if side.roster_id == roster_id)
         pairs = [(player.player_id, f"to {snapshot.teams[player.to].name}") for player in side.gives]

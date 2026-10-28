@@ -954,7 +954,7 @@ def _rising_signal(snapshot: Snapshot, player_id: str) -> str | None:
     return next((name for name, signal in signals if signal is not None and signal.direction == "up"), None)
 
 
-def _opened_by(snapshot: Snapshot, player_id: str) -> str | None:
+def _opportunity_from(snapshot: Snapshot, player_id: str) -> str | None:
     """The same-position teammate on his NFL team who is out for the season or out with no near return, or None."""
     player = snapshot.players[player_id]
     if player.nfl_team is None:
@@ -976,7 +976,7 @@ def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
         name = snapshot.players[pid].name
         if _star_return_bet(snapshot, pid):
             return Adjuster(name=UPSIDE, step=1, reason=f"{name} is a star out now with a return in play.")
-        teammate = _opened_by(snapshot, pid)
+        teammate = _opportunity_from(snapshot, pid)
         if teammate is None:
             continue
         signal = _rising_signal(snapshot, pid)
@@ -985,7 +985,7 @@ def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
             out = ("out for the season" if teammate in snapshot.out_for_season else "out with no near return")
             return Adjuster(name=UPSIDE, step=1,
                             reason=f"{name} gains {signal} with {snapshot.players[teammate].name} {out}.")
-    return Adjuster(name=UPSIDE, step=0, reason="No player it gets is a star out now or has a role that just opened.")
+    return Adjuster(name=UPSIDE, step=0, reason="No player it gets is a star out now or has an opportunity.")
 
 
 def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:

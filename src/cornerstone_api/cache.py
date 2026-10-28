@@ -24,7 +24,7 @@ STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 10
+DOCUMENT_VERSION = 11
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -60,19 +60,21 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     back. `DOCUMENT_VERSION` covers a deploy only, so the rows must be in the key.
     The week N lines are the stat lines of a known-games week, cut to the fields the grade reads. A new fetch with a
     new number for a rostered player is a new key. A week with no known games adds none.
-    Only the rows and lines of the two rosters go in, so a change to any other player keeps the hit. A change that
-    moves a position rank is the one exception.
+    Only the rows and lines of the rosters in the trade go in, so a change to any other player keeps the hit. A change
+    that moves a position rank is one exception.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
     return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
     The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
     The known-games block of the stamp goes in, because the document shows its counts. A stale stats fetch goes in,
-    because a failed week N fetch grades from the completed week. The week N WOPR rows of the two rosters go in,
-    because the trend step reads them once the player file posts them.
+    because a failed week N fetch grades from the completed week. The week N WOPR rows of the rosters in the trade go
+    in, because the trend step reads them once the player file posts them.
     The rank table goes in: the player ids per position in position rank order. A rank reads every player at the
     position, rostered or not, so a line of a free agent or of a third roster can move it. The table itself is
     the exact input. A line that moves a rank misses. A line that moves none, such as a K line, keeps the hit.
     The free agent ids per position go in, because the hole fact names the best free agent. The rank table
     already covers their stat lines, so a new free agent or one who leaves the pool is the only change left.
+    The players out for the season go in, from every roster. A mark zeroes a chart value, moves a rank, and opens an
+    opportunity for a teammate on any roster, so a mark on any player is the other exception.
     """
     standings = {standing.roster_id: standing for standing in snapshot.standings}
     projections_ahead = snapshot.projections_ahead or {}
@@ -106,6 +108,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
                "known_games": snapshot.as_of.known_games.model_dump() if snapshot.as_of.known_games else None,
                "stats_stale": "stats" in snapshot.stale,
                "rank_table": snapshot.rank_table(),
+               "out_for_season": sorted(snapshot.out_for_season),
                "free_agents": {position: [player.player_id for player in players]
                                for position, players in snapshot.free_agents.items()}}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode()).hexdigest()

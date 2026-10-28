@@ -578,9 +578,9 @@ def test_a_graded_trade_carries_an_upside_factor_per_side(settings, sources):
     for side in doc["sides"]:
         upside = [f for f in side["factors"] if f["name"] == "upside"]
         assert len(upside) == 1
-        # No player in TRADE is a star out now or has a role that just opened, so the upside is even.
+        # No player in TRADE is a star out now or has an opportunity, so the upside is even.
         assert upside[0] == {"name": "upside", "lean": "even",
-                             "reason": "No player it gets is a star out now or has a role that just opened."}
+                             "reason": "No player it gets is a star out now or has an opportunity."}
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
@@ -707,6 +707,18 @@ def test_the_cache_key_changes_when_a_rostered_player_moves_into_the_out_set(set
     assert cache_key(trade, _with_week_rows(out, {}, {rostered: {14: 13.5}})) != cache_key(trade, out)
     # A returns row of week 14 gives the same week, but the reason says he is due back, so the key must miss.
     assert cache_key(trade, _with_week_rows(out, {rostered: 14}, {rostered: {14: 12.5}})) != cache_key(trade, out)
+
+
+def test_the_cache_key_changes_with_a_season_mark_on_any_roster(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    outside = _outside_player(snapshot, [4, 12])
+    # A season mark zeroes a chart value or opens an opportunity for a teammate, so each mark must miss.
+    for player in (rostered, outside):
+        marked = snapshot.model_copy(update={"out_for_season": {player}})
+        assert cache_key(trade, marked) != cache_key(trade, snapshot)
+        assert finder_cache_key(2026, 4, 12, marked) != finder_cache_key(2026, 4, 12, snapshot)
 
 
 def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(settings, sources):
@@ -1787,10 +1799,11 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_10():
+def test_the_document_version_is_11():
     import cornerstone_api.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
     # The as-of block says when the week has no chart, so a document stored before that must never serve.
     # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
-    assert cache_module.DOCUMENT_VERSION == 10
+    # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
+    assert cache_module.DOCUMENT_VERSION == 11

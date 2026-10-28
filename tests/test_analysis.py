@@ -550,6 +550,16 @@ def test_a_two_side_output_for_a_three_side_trade_fails_and_the_retry_names_all_
     assert "exactly 3 sides: roster 4 first, then roster 11, then roster 12, each once" in retry
 
 
+def test_a_three_side_output_in_the_wrong_order_fails_and_the_retry_names_the_order_of_the_trade(three, snap):
+    fake = FakeClaude(_sides_response(three, snap, (12, 4, 11)), _sides_response(three, snap, (4, 11, 12)))
+    result = analyze(three, snap, call=fake)
+    assert len(fake.calls) == 2
+    assert not result.fallback
+    retry = fake.calls[1][1]
+    assert "it had rosters 12, 4, 11" in retry
+    assert "exactly 3 sides: roster 4 first, then roster 11, then roster 12, each once" in retry
+
+
 def test_the_user_message_names_the_destination_of_each_given_player_and_the_source_of_each_got_player(three, snap):
     fake = FakeClaude(_sides_response(three, snap, (4, 11, 12)))
     analyze(three, snap, call=fake)

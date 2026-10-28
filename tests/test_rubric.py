@@ -250,6 +250,19 @@ def test_a_player_out_for_the_season_counts_zero_only_for_the_side_that_gets_him
     assert _letters(result) == ["A", "F", "D"]
 
 
+def test_a_player_out_for_the_season_and_off_the_chart_counts_zero_and_is_never_unlisted(snap):
+    # Croskey-Merritt is off the chart and out for the season. He counts zero, so no side starts at C by rule.
+    # Roster 4 gives him for Harrison, an A. Roster 12 gets him for Kincaid, an F. Roster 7 gets 31.5 for 36.0, a D.
+    values = {pid: value for pid, value in snap.chart.values.items() if pid != CROSKEY}
+    snap = snap.model_copy(update={"chart": snap.chart.model_copy(update={"values": values}),
+                                   "out_for_season": {CROSKEY}})
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert _letters(result) == ["A", "F", "D"]
+    assert not any("no trade value" in side.reason for side in result)
+    trade_fairness = fairness(tuple(side.final_letter for side in result), result)
+    assert (trade_fairness.state, trade_fairness.gives_more) == ("lopsided", 12)
+
+
 def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
     # Croskey-Merritt is on IR with no return week. The note for a player due back gives his projection, so this case
     # makes him healthy to keep every reason free of a digit.
@@ -1574,7 +1587,7 @@ def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_retu
 # Rome Odunze on roster 4 and Luther Burden on roster 12 are CHI receivers. Odunze is up in snap and target share.
 # Brock Purdy on roster 1 is the only SF quarterback. His snap share is up, and his target share is flat.
 STAR, BURDEN, PURDY, BURROW = "12507", "12519", "8183", "6770"
-NO_UPSIDE = "No player it gets is a star out now or has a role that just opened."
+NO_UPSIDE = "No player it gets is a star out now or has an opportunity."
 
 
 def test_a_side_that_gets_a_star_out_now_with_no_return_week_steps_up_and_the_injury_leaves_him_alone(snap):
@@ -1584,6 +1597,13 @@ def test_a_side_that_gets_a_star_out_now_with_no_return_week_steps_up_and_the_in
     assert _adjuster(fourth, "upside").reason == "Omarion Hampton is a star out now with a return in play."
     assert _adjuster(fourth, "injury").step == 0
     # Roster 12 gives the star return bet, and the upside reads the players a side gets only.
+    assert _adjuster(twelfth, "upside").step == 0
+    assert _adjuster(twelfth, "upside").reason == NO_UPSIDE
+
+
+def test_a_side_that_gives_a_star_return_bet_gets_no_upside_for_him(snap):
+    # Roster 12 gives Hampton, a star out now, and gets Collins, so no player it gets is a bet.
+    _, twelfth = grade(_trade(4, [COLLINS], 12, [STAR]), _with_status(snap, STAR, "Out"))
     assert _adjuster(twelfth, "upside").step == 0
     assert _adjuster(twelfth, "upside").reason == NO_UPSIDE
 

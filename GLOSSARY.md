@@ -579,7 +579,7 @@ The adjuster that credits a side for a player it gets who is a star return bet o
 _Avoid_: potential, ceiling, buy low
 
 **Star**:
-A player with a chart value in the top STAR_RANK of the league's chart.
+A player with a chart value in the top 24 of the league's chart, a count that `STAR_RANK` sets.
 _Avoid_: stud, elite, top guy
 
 **Star return bet**:

@@ -105,7 +105,7 @@ def trade_side_lines(
     # The analysis prompt and the finder prompt both show a side this way, so Claude reads one layout.
     # Each player names the team he goes to or comes from, so a trade of three or more sides reads plainly.
     team = {side.roster_id: snapshot.teams[side.roster_id].name for side in trade.sides}
-    givers = {player.player_id: side.roster_id for side in trade.sides for player in side.gives}
+    givers = trade.givers
     blocks = []
     for side, breakdown in zip(trade.sides, breakdowns):
         asked = ", the side that asked" if side.roster_id == trade.asker else ""
@@ -241,7 +241,8 @@ def check_response(
     """Every rule a response breaks. An empty list means the response stands."""
     failures = []
     by_roster = {s.roster_id: s for s in out.sides}
-    if sorted(by_roster) != sorted(b.roster_id for b in breakdowns) or len(out.sides) != len(breakdowns):
+    # The sides must come in the order of the user message, each once, so a list in another order fails too.
+    if [s.roster_id for s in out.sides] != [b.roster_id for b in breakdowns]:
         got_rosters = ", ".join(str(s.roster_id) for s in out.sides) or "none"
         return [f"the response must have {_side_shape(breakdowns)}; it had rosters {got_rosters}"]
     names = _names_of_everyone(snapshot)
