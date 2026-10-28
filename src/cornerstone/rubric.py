@@ -217,19 +217,25 @@ def _start_letters(
     # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
     sum_a = sum((Decimal(str(values[pid])) for pid in a.player_ids), Decimal(0))
     sum_b = sum((Decimal(str(values[pid])) for pid in b.player_ids), Decimal(0))
+    # ADR 0005: the side that gets a player out for the season buys nothing, so he counts zero in what it gets.
+    # The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
+    got_a = sum((Decimal(str(values[pid])) for pid in b.player_ids if pid not in snapshot.out_for_season), Decimal(0))
+    got_b = sum((Decimal(str(values[pid])) for pid in a.player_ids if pid not in snapshot.out_for_season), Decimal(0))
     # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
     consolidation = (len(a.player_ids) == 1) != (len(b.player_ids) == 1)
     if consolidation:
         if len(a.player_ids) > 1:
             sum_a /= CONSOLIDATION_MARGIN
+            got_b /= CONSOLIDATION_MARGIN
         else:
             sum_b /= CONSOLIDATION_MARGIN
+            got_a /= CONSOLIDATION_MARGIN
 
     def start(got: Decimal, gave: Decimal) -> tuple[Letter, str]:
         letter = _letter(got, gave)
         return letter, BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
 
-    return start(sum_b, sum_a), start(sum_a, sum_b)
+    return start(got_a, sum_a), start(got_b, sum_b)
 
 
 def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:

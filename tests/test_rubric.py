@@ -1450,6 +1450,60 @@ def test_injury_without_the_injury_report_says_no_count_ran(snap):
     assert "The injury report is not available" in _adjuster(third, "injury").reason
 
 
+def _out_for_season(snap, *players: str):
+    """The snapshot with each player marked `season` in the returns file."""
+    return snap.model_copy(update={"out_for_season": {*snap.out_for_season, *players}})
+
+
+def test_a_player_out_for_the_season_counts_zero_for_the_side_that_gets_him_only(snap):
+    # With full values roster 4 gets 31.5 for 24.0, an A, and roster 12 gets 24.0 for 31.5, a D.
+    # Kincaid out for the season counts 0 for roster 4, so it gets nothing for 24.0, an F.
+    # Roster 12 still gives his full 31.5, so its letter stays D.
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID]), _out_for_season(snap, KINCAID))
+    assert _letters(result) == ["F", "D"]
+
+
+def test_a_player_out_for_the_season_counts_zero_after_the_consolidation_discount(snap):
+    # Collins is set to 30. With Wilson out for the season, roster 4 gets only Kincaid's 31.5 over the margin,
+    # 25.2, for 30: a D. With no discount on what it gets, 31.5 for 30 is a C.
+    # Roster 12 still gives the full 59.0, which counts as 47.2, and gets 30: an F.
+    snap = _out_for_season(_with_values(snap, {COLLINS: 30.0}), WILSON)
+    result = grade(_trade(4, [COLLINS], 12, [KINCAID, WILSON]), snap)
+    assert _letters(result) == ["D", "F"]
+
+
+def test_injury_steps_down_for_a_player_out_for_the_season(snap):
+    # The mark alone counts. Saquon Barkley's Sleeper status is cleared, so only the returns file marks him.
+    snap = _out_for_season(_with_status(snap, SAQUON, None), SAQUON)
+    third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").step == -1
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+    assert _adjuster(tenth, "injury").step == 0
+
+
+def test_injury_names_the_season_mark_before_the_no_near_return_check(snap):
+    # Saquon Barkley is Out with no returns row, so he is out with no near return too. The season reason wins.
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), _out_for_season(snap, SAQUON))
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+
+
+def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
+    # Sleeper's IR status alone is not the mark, so the player is due back and reads as out with no near return.
+    snap = _with_status(snap, SAQUON, "IR")
+    assert SAQUON not in snap.out_for_season
+    assert due_back_week(snap, SAQUON) == tunables.RETURN_BY_WEEK
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+
+
+def test_a_player_out_for_the_season_is_never_due_back_or_a_return_bet(snap):
+    # A stale returns row must not make him due back. The season mark wins over it.
+    snap = _out_for_season(snap.model_copy(update={"returns": {SAQUON: 9}}), SAQUON)
+    assert due_back_week(snap, SAQUON) is None
+    assert not _return_bet(snap, SAQUON)
+    assert lineup_value(snap, SAQUON) == 0
+
+
 def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_return_bet(snap):
     # Jacobs is suspended and due back in week 10: past the return window, but before the playoffs.
     snap = _before_the_jacobs_trade(snap).model_copy(update={"returns": {JACOBS: 10}})

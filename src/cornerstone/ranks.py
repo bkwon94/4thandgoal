@@ -69,7 +69,11 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
 
     A player due back has no recent games, so his projection ahead gives his lineup value.
     Recent points show current play, so every other player keeps them. With no projections file, all players keep them.
+    A player out for the season plays no more games, so he counts for 0.
     """
+    # He is never due back, so without this he would keep the recent points of the games before his injury.
+    if player_id in snapshot.out_for_season:
+        return Decimal(0)
     if snapshot.projections_ahead is not None and due_back_week(snapshot, player_id) is not None:
         return projection_ahead(snapshot, player_id)
     return recent_points_per_game(snapshot, player_id)
@@ -138,7 +142,10 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must start at that week.
     A week through the last completed week is no return ahead, so he is not due back.
     A player with a returns row by the trade week who played in its known games is back, so he is not due back.
+    A player out for the season has no return, so he is never due back. GLOSSARY.md, "Out for the season".
     """
+    if player_id in snapshot.out_for_season:
+        return None
     if _back_in_a_known_game(snapshot, player_id):
         return None
     week = snapshot.returns.get(player_id)

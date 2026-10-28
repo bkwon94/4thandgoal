@@ -114,6 +114,22 @@ def test_a_season_with_no_returns_file_has_no_return_weeks_and_names_it_as_missi
     assert snap.missing[-1] == "returns"
 
 
+def test_the_returns_file_marks_a_player_out_for_the_season_with_the_word_season(
+        fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
+    # The commissioner writes `season` in place of a week. That player is out for the season, not due back.
+    history_root = tmp_path / "2026" / "history"
+    shutil.copytree(fixture_history_root, history_root)
+    (history_root.parent / "returns.json").write_text('{"5850": 7, "4866": "season"}', encoding="utf-8")
+    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6)
+    assert snap.returns == {"5850": 7}
+    assert snap.out_for_season == {"4866"}
+
+
+def test_a_returns_file_with_no_season_mark_has_no_player_out_for_the_season(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6).out_for_season == set()
+
+
 def test_the_snapshot_carries_the_wopr_by_player_and_week(fixture_raw_dir, fixture_history_root, chart_week6):
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, SlowSources(wopr={"12501": {5: 58}}))
     assert snap.wopr == {"12501": {5: 58}}

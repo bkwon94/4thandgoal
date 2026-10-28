@@ -596,12 +596,16 @@ def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
 
     A player who played in the known games of his return week is back, so he is no return bet.
     """
-    return (back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
+    # A player out for the season is never a return bet, even with a stale returns row. ADR 0005.
+    return (player_id not in snapshot.out_for_season
+            and back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
             and not _back_in_a_known_game(snapshot, player_id))
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
     """Why the player is not back by RETURN_BY_WEEK, or None when he is back by then or is not out."""
+    if player_id in snapshot.out_for_season:
+        return "is out for the season"
     week = snapshot.returns.get(player_id)
     if week is not None:
         return "is not due back before the playoffs" if week > RETURN_BY_WEEK else None
@@ -861,8 +865,10 @@ def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjust
 
 def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player is out now with no return week on file, or with one later than the trade week
-    plus RETURN_WINDOW_WEEKS.
+    plus RETURN_WINDOW_WEEKS. A player out for the season is out with no near return, whatever his Sleeper status.
     """
+    if player_id in snapshot.out_for_season:
+        return True
     if snapshot.players[player_id].injury_status not in OUT_STATUSES:
         return False
     week = snapshot.returns.get(player_id)
@@ -884,12 +890,15 @@ def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
 
 
 def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
-    """Injury: a player it gets who is out with no near return, or who was on the report in many weeks."""
+    """Injury: a player it gets who is out for the season, out with no near return, or on the report in many weeks."""
     exempt = set(_credited_return_bets(snapshot, side))
     for pid in side.gets:
         if pid in exempt:
             continue
         name = snapshot.players[pid].name
+        # The season mark comes first, so the reason names the plain cause and not the weaker "no near return".
+        if pid in snapshot.out_for_season:
+            return Adjuster(name=INJURY, step=-1, reason=f"{name} is out for the season.")
         if _out_with_no_near_return(snapshot, pid):
             return Adjuster(name=INJURY, step=-1, reason=f"{name} is out with no near return.")
         if (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS:
