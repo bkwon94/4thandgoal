@@ -24,7 +24,7 @@ from cornerstone.parse import parse_week
 from cornerstone.pipeline import LEAGUE_ID, nflverse_cache_dir
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
-from cornerstone.snapshot import Snapshot, build_snapshot, load_returns
+from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
 
@@ -212,7 +212,9 @@ def _build_live(
     root = history_root(repo, season)
     slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root, raw["league"]["scoring_settings"])
     returns = load_returns(returns_path(repo, season))
-    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now)
+    out_for_season = load_out_for_season(returns_path(repo, season))
+    return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now,
+                          out_for_season=out_for_season)
 
 
 def live_snapshot(
