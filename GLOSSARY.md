@@ -78,6 +78,11 @@ week, key starters first and marked. A team with nobody on bye has no bye line. 
 part of the Next Week blurb, not of the line.
 _Avoid_: bye note, bye alert, bye hole (that is a trade term)
 
+**Thin data**:
+A build with no NFL schedule, or with fewer than 2 completed weeks of history. The bye lists are empty, and the
+build makes no bye fact, not even a "nobody on bye" fact.
+_Avoid_: missing data, sparse data, partial data
+
 **Bye cover**:
 The bench player with the highest lineup value who can fill the slot a key starter on bye leaves open. A slot
 with no such bench player has no cover.

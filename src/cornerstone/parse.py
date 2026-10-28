@@ -145,6 +145,15 @@ def _rosters(raw: dict) -> dict[int, dict[str, str]]:
     }
 
 
+def _roster_players(raw: dict) -> dict[str, tuple[str, str | None]]:
+    # A player missing from the players file has his id as the name and no NFL team.
+    players = raw["players"]
+    return {
+        pid: (player_name(pid, players.get(pid)), (players.get(pid) or {}).get("team"))
+        for r in raw["rosters"] for pid in r["players"] or []
+    }
+
+
 def parse_moves(transactions: list[dict]) -> list[Move]:
     moves = []
     for transaction in transactions:
@@ -195,6 +204,7 @@ def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | No
         roster_slots=len(raw["league"]["roster_positions"]) + raw["league"]["settings"]["reserve_slots"],
         roster_positions=raw["league"]["roster_positions"],
         rosters=_rosters(raw),
+        roster_players=_roster_players(raw),
         scoring=raw["league"]["scoring_settings"],
         # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
         stats={item["player_id"]: item["stats"] for item in raw.get("stats") or []},

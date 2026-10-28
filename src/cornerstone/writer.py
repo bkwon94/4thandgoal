@@ -12,7 +12,7 @@ import anthropic
 from pydantic import BaseModel, ValidationError
 
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
-from cornerstone.sheet import repeats_motw_headline
+from cornerstone.sheet import BYE_FACT_PREFIX, repeats_motw_headline
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
@@ -175,7 +175,7 @@ def build_writer_prompt(
         lines += ["", f"Cite each of these facts in its team's sentences: {', '.join(chapter.required)}."]
     if repeats_motw_headline(chapter, sheet):
         lines += ["", MOTW_HEADLINE_NOTE]
-    if any(fid.startswith("NX.bye.") for fid in chapter.fact_ids):
+    if any(fid.startswith(BYE_FACT_PREFIX) for fid in chapter.fact_ids):
         lines += ["", BYES_NOTE]
     if page_words is not None:
         lines += ["", PAGE_WORDS_HEADER, page_words]

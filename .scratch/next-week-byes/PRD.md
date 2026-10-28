@@ -101,7 +101,8 @@ early or late in a blurb. The banned patterns stay. The verifier's accuracy rule
   reads without one.
 - `NX.bye.<roster>.<pid>.cover`: "His slot falls to Spencer Rattler, QB27, with 9.8 a game." Or: "No
   bench player can fill his slot." One fact per key starter on bye, never for a bench player on bye.
-- `NX.bye.<roster>.none`: "Nobody on Return of T Mac is on bye in week 9."
+- `NX.bye.<roster>.none`: "Nobody on Return of T Mac is on bye in week 9." In a week with no player on bye on any
+  roster, the chapter gets no bye fact, so twelve 'nobody' lines never fill the brief.
 - The Next Week chapter's fact ids gain the `NX.bye.` facts. Its range becomes 2 to 6 sentences. The
   chapter brief gains one line: the byes next week are part of the preview. No required fact and no
   count rule on how many teams the prose names.

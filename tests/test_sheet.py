@@ -904,6 +904,19 @@ def test_a_bench_player_on_bye_is_on_the_list_and_not_key(dbundle):
     assert game.b_byes == []
 
 
+def test_a_roster_player_with_no_lineup_line_is_on_the_bye_list_and_not_key(
+        fixture_raw_dir, fixture_history_root, nfl_week6):
+    # A player added after the games is on the roster now, but the week 6 matchups give him no lineup line.
+    raw = load_raw(fixture_raw_dir)
+    raw["players"] = {**raw["players"], "99999": {"full_name": "Late Add", "position": "WR", "team": "JAX"}}
+    raw["rosters"] = [{**r, "players": [*(r["players"] or []), "99999"]} if r["roster_id"] == 8 else r
+                      for r in raw["rosters"]]
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
+                     nfl=nfl_week6)
+    assert [(p.player_id, p.name, p.position, p.key) for p in _game(b, 3, 8).b_byes] == [
+        ("99999", "Late Add", "WR", False)]
+
+
 def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_raw_dir, fixture_history_root, caplog):
     raw = load_raw(fixture_raw_dir)
     with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):

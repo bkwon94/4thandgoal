@@ -24,7 +24,6 @@ from cornerstone.models import (
     Storyline,
     Week,
     r2,
-    week_lines,
     sub,
 )
 from cornerstone.tunables import (
@@ -259,6 +258,14 @@ def matchup_of_the_week(
 KEY_STARTER_POSITIONS = ("QB", "RB", "WR", "TE")
 
 
+def _starts(pid: str, weeks: list[list[str]]) -> int:
+    """The starts of the player in the latest completed weeks the key starter rule reads.
+
+    `weeks` holds the starters of each completed week, oldest first.
+    """
+    return sum(pid in starters for starters in weeks[-KEY_STARTER_WEEKS:])
+
+
 def key_starters(weeks: list[list[str]], roster: dict[str, str]) -> set[str]:
     """The key starters of a roster: the players it started in enough of its latest completed weeks.
 
@@ -271,7 +278,7 @@ def key_starters(weeks: list[list[str]], roster: dict[str, str]) -> set[str]:
     bar = KEY_STARTER_STARTS if len(recent) >= KEY_STARTER_WEEKS else KEY_STARTER_SHORT_STARTS
     return {
         pid for pid, position in roster.items()
-        if position in KEY_STARTER_POSITIONS and sum(pid in starters for starters in recent) >= bar
+        if position in KEY_STARTER_POSITIONS and _starts(pid, weeks) >= bar
     }
 
 
@@ -291,19 +298,18 @@ def _byes(
     if len(completed) < KEY_STARTER_SHORT_STARTS:
         logger.warning("history has %d completed weeks: the next-week games have no bye lists", len(completed))
         return {}
-    lines = {line.player_id: line for line in week_lines(week)}
     out = {}
     for roster_id, roster in week.rosters.items():
         weeks = [history.weeks[w].starters.get(roster_id, []) for w in completed]
         keys = key_starters(weeks, roster)
-        recent = weeks[-KEY_STARTER_WEEKS:]
-        # A player with no lineup line has no NFL team the build knows, so he has no bye.
+        # The roster players give the name and the NFL team, so a player with no lineup line, such as a player
+        # added after the games, is on the list too. A player with no NFL team the build knows has no bye.
         on_bye = [
-            ByePlayer(player_id=pid, name=lines[pid].name, position=lines[pid].position, key=pid in keys,
+            ByePlayer(player_id=pid, name=week.roster_players[pid][0], position=position, key=pid in keys,
                       rank=rank(pid) if rank is not None else None,
-                      starts=sum(pid in starters for starters in recent), weeks=len(recent))
-            for pid in roster
-            if pid in lines and bye_weeks.get(lines[pid].nfl_team) == week.week + 1
+                      starts=_starts(pid, weeks), weeks=min(len(weeks), KEY_STARTER_WEEKS))
+            for pid, position in roster.items()
+            if pid in week.roster_players and bye_weeks.get(week.roster_players[pid][1]) == week.week + 1
         ]
         # Key starters come first, then the rest by position rank, then by name. A player with no rank comes last.
         out[roster_id] = sorted(on_bye, key=lambda p: (not p.key, p.rank is None, p.rank or 0, p.name))

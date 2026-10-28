@@ -170,6 +170,9 @@ class Week(BaseModel):
     roster_positions: list[str] = []
     # The position of each player on each current roster in rosters.json, by roster id and player id.
     rosters: dict[int, dict[str, str]] = {}
+    # The name and the NFL team of each player on a current roster, by player id. A player added after the games has
+    # no lineup line, so the bye lists read him here. The NFL team is None for a free agent or a missing player.
+    roster_players: dict[str, tuple[str, str | None]] = {}
 
 
 def week_lines(week: Week) -> list[PlayerLine]:

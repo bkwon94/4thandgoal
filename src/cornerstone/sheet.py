@@ -9,7 +9,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-from cornerstone.adjusters import _out_now, bye_covers, lineup_slots, pick_lineup
+from cornerstone.adjusters import bye_covers_for_roster, pick_lineup
 from cornerstone.facts_league import (
     TREND_WEEKS,
     _ordinal,
@@ -86,6 +86,8 @@ AWARD_TITLES = {
     "unlucky": "Unlucky",
     "lucky": "Lucky",
 }
+# The id prefix of every bye fact. GLOSSARY.md, "Bye line". The writer reads it to add the bye note.
+BYE_FACT_PREFIX = "NX.bye."
 # (min, max) sentences per chapter, from the spec.
 SENTENCE_RANGES = {
     "motw": (4, 6),
@@ -669,25 +671,6 @@ def _ranked(position: str, rank: int | None, n: Nums) -> str:
     return position if rank is None else f"{position}{n(rank)}"
 
 
-def _covers(snapshot: Snapshot, roster_id: int, byes: list[ByePlayer]) -> dict[str, str | None]:
-    """The bye cover of each key starter on bye of the roster, from the slots of its best lineup.
-
-    A key starter outside the best lineup leaves the slot of his own position open. A bench player on bye cannot
-    cover, because he does not play next week either. A bench player out next week or out for the season cannot
-    cover too. The trade week of the week snapshot is next week, so `_out_now` reads "out next week".
-    """
-    roster = snapshot.rosters.get(roster_id, [])
-    slot_of = {s.player: s.roster_slot for s in lineup_slots(roster, snapshot) if s.player is not None}
-    on_bye = {p.player_id for p in byes}
-    open_slots = {p.player_id: slot_of.get(p.player_id, p.position) for p in byes if p.key}
-    bench = {
-        pid: snapshot.players[pid].position for pid in roster
-        if pid not in slot_of and pid not in on_bye
-        and not _out_now(snapshot, pid) and pid not in snapshot.out_for_season
-    }
-    return bye_covers(open_slots, bench, {pid: snapshot.lineup_value(pid) for pid in [*open_slots, *bench]})
-
-
 def bye_facts(c: Context) -> list[Fact]:
     """One fact per player on bye next week, id `NX.bye.<roster>.<pid>`, and one per team with nobody on bye.
 
@@ -706,14 +689,15 @@ def bye_facts(c: Context) -> list[Fact]:
         team = c.team(rid)
         n = Nums()
         if not byes:
-            out.append(fact(f"NX.bye.{rid}.none", f"Nobody on {team} is on bye in week {n(bye_week)}.", n, [team], []))
+            text = f"Nobody on {team} is on bye in week {n(bye_week)}."
+            out.append(fact(f"{BYE_FACT_PREFIX}{rid}.none", text, n, [team], []))
             continue
-        covers = _covers(c.snapshot, rid, byes) if c.snapshot is not None else None
+        covers = bye_covers_for_roster(c.snapshot, rid, byes) if c.snapshot is not None else None
         for p in byes:
             n = Nums()
             text = (f"{p.name}, {_ranked(p.position, p.rank, n)}, is on bye in week {n(bye_week)} and started "
                     f"{n(p.starts)} of the last {n(p.weeks)} weeks for {team}.")
-            out.append(fact(f"NX.bye.{rid}.{p.player_id}", text, n, [team], [p.name]))
+            out.append(fact(f"{BYE_FACT_PREFIX}{rid}.{p.player_id}", text, n, [team], [p.name]))
             if p.key and covers is not None:
                 out.append(_cover_fact(c.snapshot, rid, team, p, covers[p.player_id]))
     return out
@@ -722,7 +706,7 @@ def bye_facts(c: Context) -> list[Fact]:
 def _cover_fact(snapshot: Snapshot, roster_id: int, team: str, starter: ByePlayer, cover: str | None) -> Fact:
     """The bye cover fact of one key starter on bye. GLOSSARY.md, "Bye cover"."""
     n = Nums()
-    fid = f"NX.bye.{roster_id}.{starter.player_id}.cover"
+    fid = f"{BYE_FACT_PREFIX}{roster_id}.{starter.player_id}.cover"
     if cover is None:
         return fact(fid, f"With {starter.name} on bye, no bench player can fill his slot.", n, [team], [starter.name])
     player = snapshot.players[cover]
@@ -1740,7 +1724,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         all_rosters, "median",
     ))
     # The bye facts name players on the rosters now, such as a bye cover, so the scope adds them to the lineup names.
-    bye_players = [p for fid in _with_prefix(facts, "NX.bye.") for p in facts[fid].players]
+    bye_players = [p for fid in _with_prefix(facts, BYE_FACT_PREFIX) for p in facts[fid].players]
     out.append(make(
         "next_week", "Next Week",
         _with_prefix(facts, "NX.", "S.", "SOS.", "SW.")
