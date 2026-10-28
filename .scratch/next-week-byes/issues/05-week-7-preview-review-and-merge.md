@@ -7,7 +7,7 @@ Both repos pass review against `main` and merge with `--no-ff`. Nothing publishe
 
 **Blocked by:** 02, 03, 04.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `make build WEEK=7` in the pipeline worktree passes the verifier. The page JSON has `byes` on every side.
 - [ ] The site dev server in the site worktree renders that page. Brian reads every blurb and the bye lines.
@@ -16,3 +16,7 @@ Both repos pass review against `main` and merge with `--no-ff`. Nothing publishe
 - [ ] Pipeline: `uv run pytest -q`, `uv run ruff check src tests`. Site: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm check:export`.
 - [ ] Each main checkout is clean and level with origin, then `git merge --no-ff next-week-byes`. No publish of week 7.
 - [ ] The untracked `AGENTS.md` from the dev server is not committed.
+
+## Comments
+
+- 2026-10-28: merged to main in both repos, pipeline 9d9ecc8 and site 15f1161. Not pushed. Ships with the week 8 build.
