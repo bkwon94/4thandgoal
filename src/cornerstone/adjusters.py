@@ -409,11 +409,11 @@ def trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
     """
     if not _has_depth_chart(snapshot):
         return []
-    found = []
-    for giver, getter in (trade.sides, trade.sides[::-1]):
-        after = _roster_after(snapshot, getter.roster_id, getter.player_ids, giver.player_ids)
-        found.extend(pid for pid in giver.player_ids if _backs_up_a_starter(snapshot, pid, after))
-    return found
+    # Each given player names the roster that gets him, so the test reads that roster after the trade.
+    after = {side.roster_id: _roster_after(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id))
+             for side in trade.sides}
+    return [player.player_id for side in trade.sides for player in side.gives
+            if _backs_up_a_starter(snapshot, player.player_id, after[player.to])]
 
 
 def is_handcuff(snapshot: Snapshot, player_id: str, roster_id: int) -> bool:

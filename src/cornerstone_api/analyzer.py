@@ -158,7 +158,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "reason": analysis.verdict.reason,
             "differs": analysis.verdict_differs,
         },
-        # The fairness is for both sides, after the decision, so the asker's own answer stays the lead.
+        # The fairness is for every side, after the decision, so the asker's own answer stays the lead.
         "fairness": fairness_result.model_dump(mode="json"),
         "sides": sides,
         "as_of": _as_of(snapshot),

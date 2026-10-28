@@ -65,34 +65,43 @@ class TradeSide(BaseModel):
         return [given.player_id for given in self.gives]
 
 
+# A trade has two to four sides. A fifth side is out of scope, so the model rejects it with a plain message.
+MIN_SIDES, MAX_SIDES = 2, 4
+
+
 class ProposedTrade(BaseModel):
-    """A trade the analyzer grades before it happens. Two sides only, and players only, with no picks."""
+    """A trade the analyzer grades before it happens. Two to four sides, and players only, with no picks."""
 
     season: int
-    sides: tuple[TradeSide, TradeSide]
+    # In the order of the request. Each list that the grade gives back keeps this order.
+    sides: list[TradeSide]
     # The roster id of the side that asked. The verdict is for this side.
     asker: int
 
     @model_validator(mode="after")
     def _check_shape(self) -> "ProposedTrade":
-        a, b = self.sides
-        if a.roster_id == b.roster_id:
-            raise ValueError("A proposed trade needs two different rosters")
-        if not a.gives or not b.gives:
+        # The count checks run in the validator, so the message is plain and not the pydantic length text.
+        if len(self.sides) > MAX_SIDES:
+            raise ValueError("A proposed trade has four sides at most")
+        if len(self.sides) < MIN_SIDES:
+            raise ValueError("A proposed trade needs two to four sides")
+        rosters = [side.roster_id for side in self.sides]
+        if len(set(rosters)) != len(rosters):
+            raise ValueError("A proposed trade needs a different roster on each side")
+        if not all(side.gives for side in self.sides):
             raise ValueError("Each side of a proposed trade must give at least one player")
-        given = a.player_ids + b.player_ids
+        given = [pid for side in self.sides for pid in side.player_ids]
         if len(set(given)) != len(given):
             raise ValueError("A player can appear only once in a proposed trade")
-        if self.asker not in (a.roster_id, b.roster_id):
-            raise ValueError(f"The asker {self.asker} is not one of the two rosters in the trade")
-        rosters = [side.roster_id for side in self.sides]
+        if self.asker not in rosters:
+            raise ValueError(f"The asker {self.asker} is not one of the rosters in the trade")
         for side in self.sides:
             for player in side.gives:
                 if player.to not in rosters:
                     raise ValueError(f"Player {player.player_id} goes to roster {player.to}, "
                                      "which is not a side of the trade")
-        # The gets check runs before the own-roster check. With two sides a side that gets nothing has a player
-        # sent home on the other side, and the missing gets is the plainer fault to name.
+        # The gets check runs before the own-roster check. A side that gets nothing can have a player sent home on
+        # another side, and the missing gets is the plainer fault to name.
         for side in self.sides:
             if not self.gets(side.roster_id):
                 raise ValueError(f"Roster {side.roster_id} gets no player in the trade")
@@ -140,16 +149,16 @@ class FairnessSide(BaseModel):
 
 
 class Fairness(BaseModel):
-    """Whether the trade is good for both sides, fair, or lopsided, with one reason per side.
+    """Whether the trade is good for every side, fair, or lopsided, with one reason per side.
 
-    It is for both sides, not only the asker, so a manager knows if the other side will take the trade.
+    It is for every side, not only the asker, so a manager knows if the other sides will take the trade.
     """
 
     state: Literal["win_win", "fair", "lopsided"]
     # None when no side gives more, so a win-win or a fair trade names no loser.
     gives_more: int | None
     # In the order of the trade's sides, so the block lines up with the sides of the document.
-    sides: tuple[FairnessSide, FairnessSide]
+    sides: tuple[FairnessSide, ...]
 
 
 def check_trade(trade: ProposedTrade, snapshot: Snapshot) -> None:
@@ -180,8 +189,8 @@ def _letter(got: Decimal, gave: Decimal) -> Letter:
     return "F"
 
 
-def _both_at_c(reason: str) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
-    return ("C", reason), ("C", reason)
+def _all_at_c(trade: ProposedTrade, reason: str) -> tuple[tuple[Letter, str], ...]:
+    return tuple(("C", reason) for _ in trade.sides)
 
 
 def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
@@ -192,7 +201,7 @@ def _trade_values(snapshot: Snapshot, handcuffs: list[str]) -> dict[str, float]:
 def unlisted_players(snapshot: Snapshot, players: list[str], handcuffs: list[str] | None = None) -> list[str]:
     """The players with no trade value on the week's chart. A handcuff in the trade counts as listed, at zero.
 
-    A trade with an unlisted player starts both sides at C. With no chart, every player is unlisted.
+    A trade with an unlisted player starts every side at C. With no chart, every player is unlisted.
     """
     if snapshot.chart is None:
         return list(players)
@@ -202,47 +211,45 @@ def unlisted_players(snapshot: Snapshot, players: list[str], handcuffs: list[str
 
 def _start_letters(
     trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str],
-) -> tuple[tuple[Letter, str], tuple[Letter, str]]:
-    """The start letter and its reason for each side, as a pair, before any adjuster.
+) -> tuple[tuple[Letter, str], ...]:
+    """The start letter and its reason for each side, in the order of trade.sides, before any adjuster.
     A handcuff counts as zero in the sums."""
-    a, b = trade.sides
     if snapshot.chart is None:
-        return _both_at_c(NO_CHART_REASON)
+        return _all_at_c(trade, NO_CHART_REASON)
     values = _trade_values(snapshot, handcuffs)
     unlisted = unlisted_players(snapshot, [pid for side in trade.sides for pid in side.player_ids], handcuffs)
     if unlisted:
         reason = (named(snapshot, unlisted, "has", "have")
                   + " no trade value, so the chart gives neither side an edge.")
-        return _both_at_c(reason)
-    # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
-    sum_a = sum((Decimal(str(values[pid])) for pid in a.player_ids), Decimal(0))
-    sum_b = sum((Decimal(str(values[pid])) for pid in b.player_ids), Decimal(0))
-    # ADR 0005: the side that gets a player out for the season buys nothing, so he counts zero in what it gets.
-    # The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
-    got_a = sum((Decimal(str(values[pid])) for pid in b.player_ids if pid not in snapshot.out_for_season), Decimal(0))
-    got_b = sum((Decimal(str(values[pid])) for pid in a.player_ids if pid not in snapshot.out_for_season), Decimal(0))
-    # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
-    consolidation = (len(a.player_ids) == 1) != (len(b.player_ids) == 1)
-    if consolidation:
-        if len(a.player_ids) > 1:
-            sum_a /= CONSOLIDATION_MARGIN
-            got_b /= CONSOLIDATION_MARGIN
-        else:
-            sum_b /= CONSOLIDATION_MARGIN
-            got_a /= CONSOLIDATION_MARGIN
+        return _all_at_c(trade, reason)
 
-    def start(got: Decimal, gave: Decimal) -> tuple[Letter, str]:
+    def start(side: TradeSide) -> tuple[Letter, str]:
+        gives, gets = side.player_ids, trade.gets(side.roster_id)
+        # Decimal sums keep half-point trade values exact, so a ratio at a band's lower bound stays in that band.
+        gave = sum((Decimal(str(values[pid])) for pid in gives), Decimal(0))
+        # ADR 0005: the side that gets a player out for the season buys nothing, so he counts zero in what it gets.
+        # The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
+        got = sum((Decimal(str(values[pid])) for pid in gets if pid not in snapshot.out_for_season), Decimal(0))
+        # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
+        # Each side reads its own gives and gets, so in a two-side trade both sides consolidate or neither does.
+        consolidation = (len(gives) == 1) != (len(gets) == 1)
+        if consolidation:
+            # The two or more players are the depth, and their sum is the one the margin divides.
+            if len(gives) > 1:
+                gave /= CONSOLIDATION_MARGIN
+            else:
+                got /= CONSOLIDATION_MARGIN
         letter = _letter(got, gave)
         return letter, BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
 
-    return start(got_a, sum_a), start(got_b, sum_b)
+    return tuple(start(side) for side in trade.sides)
 
 
 def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:
     """The single highest-value player in the trade, or None when two or more tie at the top.
 
     Trade value picks him, with a handcuff at zero as in the sums. When the week has no chart or a traded
-    player is unlisted, the trade values of the two sides do not compare, so the lineup value picks him.
+    player is unlisted, the trade values of the sides do not compare, so the lineup value picks him.
     The lineup value is recent points per game, or the projection ahead of a player due back, who has no recent games.
     """
     players = [pid for side in trade.sides for pid in side.player_ids]
@@ -264,18 +271,17 @@ def _final_letter(start: Letter, adjusters: list[Adjuster]) -> Letter:
     return LETTERS[max(0, min(len(LETTERS) - 1, LETTERS.index(start) - total))]
 
 
-def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[Side, Side]:
+def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> tuple[Side, ...]:
     """The reads of each side, in the order of trade.sides: the best lineup, its slots, and the holes.
 
     The grade and the trade fact sheet both read the sides here, so the facts name the same slots the grade reads.
     """
-    a, b = trade.sides
     top = _highest_value_player(trade, snapshot, handcuffs)
-    return (build_side(snapshot, a.roster_id, a.player_ids, trade.gets(a.roster_id), top, handcuffs),
-            build_side(snapshot, b.roster_id, b.player_ids, trade.gets(b.roster_id), top, handcuffs))
+    return tuple(build_side(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id), top, handcuffs)
+                 for side in trade.sides)
 
 
-def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdown]:
+def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, ...]:
     """The breakdown of each side, in the order of trade.sides. It raises TradeInputError on a bad trade."""
     check_trade(trade, snapshot)
     # The handcuffs come first, because the start letter sums and the highest-value player count them at zero.
@@ -287,7 +293,7 @@ def grade(trade: ProposedTrade, snapshot: Snapshot) -> tuple[Breakdown, Breakdow
         adjusters = [adjuster(snapshot, side) for adjuster in ADJUSTERS]
         breakdowns.append(Breakdown(roster_id=trade_side.roster_id, start_letter=letter, reason=reason,
                                     adjusters=adjusters, final_letter=_final_letter(letter, adjusters)))
-    return breakdowns[0], breakdowns[1]
+    return tuple(breakdowns)
 
 
 def _at_or_above(letter: Letter, bound: Letter) -> bool:
@@ -298,11 +304,13 @@ def _at_or_below(letter: Letter, bound: Letter) -> bool:
     return LETTERS.index(letter) >= LETTERS.index(bound)
 
 
-def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Verdict:
-    """The code's default verdict for the asker, from the final letters of both sides and the asker's schedule lean."""
+def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, ...]) -> Verdict:
+    """The code's default verdict for the asker, from the final letters of every side and the asker's schedule lean."""
     asker = next(b for b in breakdowns if b.roster_id == trade.asker)
-    other = next(b for b in breakdowns if b.roster_id != trade.asker)
-    mine, theirs = asker.final_letter, other.final_letter
+    others = [b for b in breakdowns if b.roster_id != trade.asker]
+    # The asker compares with the best other side, so a middle letter accepts only when no other side does better.
+    mine = asker.final_letter
+    theirs = min((b.final_letter for b in others), key=LETTERS.index)
     lean = asker.lean
     # The reasons reach the result document, which gives a decision, so they name no letter.
     if _at_or_above(mine, ACCEPT_AT_OR_ABOVE):
@@ -310,12 +318,14 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, Breakdown]) -> Ve
     if _at_or_below(mine, DECLINE_AT_OR_BELOW):
         return Verdict(choice="decline", reason="The trade costs the asking side too much.")
     # The letters between the two bands accept only when the other side does no better than the asker.
+    # A two-side trade keeps its words. A trade of three or more names the best other side as "another side".
+    two = len(others) == 1
     if mine == theirs:
-        sides = "The two sides are about even"
+        sides = "The two sides are about even" if two else "The asking side and the best other side are about even"
     elif _at_or_above(mine, theirs):
         sides = "The asking side does better"
     else:
-        sides = "The other side does better"
+        sides = "The other side does better" if two else "Another side does better"
     if _at_or_above(mine, theirs):
         # Schedule is the tie break between fair and not quite fair. It never turns a clear letter.
         if lean == "against":
@@ -334,14 +344,14 @@ def _gain_reason(breakdown: Breakdown) -> str:
     return next((a.reason for a in breakdown.adjusters if a.step > 0), breakdown.reason)
 
 
-def fairness(letters: tuple[Letter, Letter], breakdowns: tuple[Breakdown, Breakdown]) -> Fairness:
+def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> Fairness:
     """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call."""
     sides = list(zip(letters, breakdowns))
     if all(_at_or_above(letter, WIN_WIN_AT_OR_ABOVE) for letter, _ in sides):
         state, gives_more = "win_win", None
     elif any(_at_or_below(letter, LOPSIDED_AT_OR_BELOW) for letter, _ in sides):
         state = "lopsided"
-        # The lower final letter gives more, then the lower start letter. max keeps the first side at a full tie.
+        # The lowest final letter gives more, then the lowest start letter. max keeps the first side at a full tie.
         _, giver = max(sides, key=lambda side: (LETTERS.index(side[0]), LETTERS.index(side[1].start_letter)))
         gives_more = giver.roster_id
     else:

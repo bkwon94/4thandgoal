@@ -20,7 +20,7 @@ BAND_D = Decimal("0.75")
 # The bands from the top down. A ratio below the last bound starts at F.
 START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "B"), (BAND_C, "C"), (BAND_D, "D"))
 
-# In a one-for-two-or-more trade, both ratios use the depth side's sum divided by this.
+# A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
 
 # Roster fit and standing compare a side's best lineup before and after the trade.

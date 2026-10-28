@@ -70,12 +70,20 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
 
 
-def _trade(a: int, a_gives: list[str], b: int, b_gives: list[str], asker: int | None = None) -> ProposedTrade:
-    # Each given player goes to the other side, as in every two-side trade.
-    return ProposedTrade(season=2026,
-                         sides=(TradeSide(roster_id=a, gives=[{"player_id": pid, "to": b} for pid in a_gives]),
-                                TradeSide(roster_id=b, gives=[{"player_id": pid, "to": a} for pid in b_gives])),
-                         asker=a if asker is None else asker)
+def _trade(*sides, asker: int | None = None) -> ProposedTrade:
+    """A trade from roster and gives pairs in order, as in _trade(4, [COLLINS], 12, [KINCAID]).
+
+    A gives entry is a player id or a (player id, to) pair. A bare player id goes to the next side in order, and the
+    last side's go to the first, so in a two-side trade each given player goes to the other side.
+    """
+    rosters = sides[::2]
+    built = []
+    for index, (roster, gives) in enumerate(zip(rosters, sides[1::2])):
+        after = rosters[(index + 1) % len(rosters)]
+        built.append(TradeSide(roster_id=roster, gives=[
+            {"player_id": entry, "to": after} if isinstance(entry, str) else {"player_id": entry[0], "to": entry[1]}
+            for entry in gives]))
+    return ProposedTrade(season=2026, sides=built, asker=rosters[0] if asker is None else asker)
 
 
 def _shape_error(a_gives: list[tuple[str, int]], b_gives: list[tuple[str, int]]) -> str:
@@ -197,6 +205,49 @@ def test_a_player_sent_to_his_own_roster_is_an_input_error():
 def test_a_player_given_twice_is_an_input_error():
     assert "A player can appear only once in a proposed trade" in _shape_error([(COLLINS, 12), (COLLINS, 12)],
                                                                                [(KINCAID, 4)])
+
+
+def test_a_trade_takes_up_to_four_sides_and_a_fifth_side_is_an_input_error():
+    four = _trade(4, [COLLINS], 12, [KINCAID], 7, [HARRISON], 3, [MCCAFFREY])
+    assert [side.roster_id for side in four.sides] == [4, 12, 7, 3]
+    with pytest.raises(ValueError) as error:
+        _trade(4, [COLLINS], 12, [KINCAID], 7, [HARRISON], 3, [MCCAFFREY], 1, ["1"])
+    assert "A proposed trade has four sides at most" in str(error.value)
+
+
+def test_a_trade_with_one_side_is_an_input_error():
+    with pytest.raises(ValueError) as error:
+        _trade(4, [(COLLINS, 12)])
+    assert "A proposed trade needs two to four sides" in str(error.value)
+
+
+def test_a_side_in_a_three_side_trade_gets_every_player_the_other_sides_send_to_it():
+    trade = _trade(4, [(COLLINS, 7)], 12, [(KINCAID, 4), (WILSON, 7)], 7, [(HARRISON, 12)])
+    assert trade.gets(4) == [KINCAID]
+    assert trade.gets(7) == [COLLINS, WILSON]
+    assert trade.gets(12) == [HARRISON]
+
+
+def test_a_three_side_trade_gives_each_side_a_start_letter_from_its_own_gets_and_gives(snap):
+    # Roster 4 gets Harrison 36.0 for Croskey-Merritt 24.0, a ratio of 1.5. Roster 12 gets 24.0 for Kincaid 31.5,
+    # a ratio of 0.762. Roster 7 gets 31.5 for 36.0, a ratio of 0.875.
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert [side.roster_id for side in result] == [4, 12, 7]
+    assert _letters(result) == ["A", "D", "D"]
+
+
+def test_a_three_side_trade_reads_the_consolidation_per_side(snap):
+    # Roster 4 gives one and gets two, roster 12 gives two and gets one, and roster 7 swaps one for one.
+    trade = _trade(4, [(COLLINS, 7)], 12, [(KINCAID, 4), (WILSON, 4)], 7, [(HARRISON, 12)])
+    result = grade(trade, snap)
+    assert ["one player for two or more" in side.reason for side in result] == [True, True, False]
+
+
+def test_a_player_out_for_the_season_counts_zero_only_for_the_side_that_gets_him_in_a_three_side_trade(snap):
+    # Roster 12 gets Croskey-Merritt out for the season, so it gets nothing for Kincaid. Roster 4 gives his full value.
+    snap = snap.model_copy(update={"out_for_season": {CROSKEY}})
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert _letters(result) == ["A", "F", "D"]
 
 
 def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
@@ -1975,6 +2026,33 @@ def test_fairness_reads_the_letters_it_gets_and_not_the_breakdown_final_letters(
     # Claude may move a final letter one step, and that letter stands, so the rule reads it.
     result = _fairness_for(_sided(4, "C"), _sided(12, "C"), letters=("B", "B"))
     assert result.state == "win_win"
+
+
+@pytest.mark.parametrize("letters, state, gives_more", [
+    (("B", "A", "B"), "win_win", None),
+    (("B", "C", "A"), "fair", None),
+    (("B", "D", "C"), "lopsided", 12),
+    (("D", "B", "F"), "lopsided", 7),
+])
+def test_a_three_side_fairness_runs_the_same_rule_over_every_side(letters, state, gives_more):
+    breakdowns = tuple(_sided(roster_id, letter) for roster_id, letter in zip((4, 12, 7), letters))
+    result = fairness(letters, breakdowns)
+    assert (result.state, result.gives_more) == (state, gives_more)
+    assert [side.roster_id for side in result.sides] == [4, 12, 7]
+
+
+def test_in_a_three_side_fairness_the_lower_start_letter_then_the_first_side_gives_more():
+    by_start = (_sided(4, "D", start="C", steps=(-1,)), _sided(12, "D", start="F", steps=(1,)), _sided(7, "D"))
+    assert fairness(("D", "D", "D"), by_start).gives_more == 12
+    full_tie = (_sided(4, "B"), _sided(12, "F"), _sided(7, "F"))
+    assert fairness(("B", "F", "F"), full_tie).gives_more == 12
+
+
+def test_a_three_side_verdict_is_for_the_asker_against_the_best_other_side():
+    trade = _trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON])
+    choice = verdict(trade, (_graded(4, "C"), _graded(12, "D"), _graded(7, "B")))
+    assert choice.choice == "counter"
+    assert choice.reason == "Another side does better, so ask for more."
 
 
 # The six real week 6 trades, newest first, as in the transactions file: (roster a, a gives, roster b, b gives, asker).

@@ -30,7 +30,7 @@ DOCUMENT_VERSION = 10
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
     """The hash of the trade and the content of the snapshot that the grade reads.
 
-    The key holds a hash of both rosters and of both records, not the fetch time. The fetch time changes on
+    The key holds a hash of every roster in the trade and of each record, not the fetch time. The fetch time changes on
     every request, so it would never hit. A roster change on Sleeper changes the hash, so a stale grade never serves.
     """
     as_of = snapshot.as_of
@@ -39,7 +39,8 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         "document_version": DOCUMENT_VERSION,
         "season": trade.season,
         # The sides keep their order, because the document lists the sides in the order of the request.
-        "sides": [[side.roster_id, sorted(side.player_ids)] for side in trade.sides],
+        # Each player keeps his destination, because in a trade of three or more sides it changes what a side gets.
+        "sides": [[side.roster_id, sorted([p.player_id, p.to] for p in side.gives)] for side in trade.sides],
         "asker": trade.asker,
         # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,

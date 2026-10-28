@@ -358,14 +358,45 @@ def test_analyze_names_a_player_not_on_the_giving_roster(
     assert "Christian McCaffrey is no longer on Pukancun on 3." in capsys.readouterr().out
 
 
-def test_analyze_needs_exactly_two_sides(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+def test_analyze_needs_two_to_four_sides(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
     code = cli.main(["analyze", "--season", "2026", "--week", "6", "--side", "4:7569", "--asker", "4", "--no-claude"])
 
     assert code == 2
-    assert "exactly twice" in capsys.readouterr().out
+    assert "Give --side two to four times, once for each roster." in capsys.readouterr().out
+
+
+def test_analyze_grades_a_three_side_trade_with_a_destination_per_player(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569@12", "--side", "12:10236@4,8146@7", "--side", "7:11628@4",
+                     "--asker", "4", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert out.count("Start letter: ") == 3 and out.count("Final letter: ") == 3
+    assert "  Gives: Dalton Kincaid to Pukancun on 3, Garrett Wilson to " in out
+    assert "  Gets: Dalton Kincaid from " in out
+    assert out.count("Fairness: ") == 1
+
+
+def test_analyze_needs_a_destination_per_player_in_a_three_side_trade(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+                     "--side", "4:7569", "--side", "12:10236@4,8146@7", "--side", "7:11628@4",
+                     "--asker", "4", "--no-claude"])
+
+    assert code == 2
+    assert "Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides." in (
+        capsys.readouterr().out)
 
 
 def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
@@ -378,7 +409,7 @@ def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
 
     out = capsys.readouterr().out
     assert code == 2
-    assert out.strip() == "A proposed trade needs two different rosters"
+    assert out.strip() == "A proposed trade needs a different roster on each side"
 
 
 def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, chart_week6, monkeypatch,

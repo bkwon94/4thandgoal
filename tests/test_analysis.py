@@ -12,7 +12,7 @@ from conftest import with_free_agents
 
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
-from cornerstone.rubric import ProposedTrade, TradeSide
+from cornerstone.rubric import ProposedTrade, TradeSide, grade
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
@@ -505,3 +505,57 @@ def test_a_side_that_does_well_in_plain_words_passes(trade, snap):
             "He is a starter.")
     fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
     assert not analyze(trade, snap, call=fake).fallback
+
+
+# A three-side trade on the same snapshot: roster 4 sends Nico Collins to roster 11, roster 11 sends Tuten to roster 12
+# and Wilson to roster 4, and roster 12 sends Jacobs and Vele to roster 11. Roster 12 asked.
+COLLINS = "7569"
+
+
+@pytest.fixture
+def three():
+    return ProposedTrade(season=2026, asker=12, sides=[
+        TradeSide(roster_id=4, gives=[{"player_id": COLLINS, "to": 11}]),
+        TradeSide(roster_id=11, gives=[{"player_id": TUTEN, "to": 12}, {"player_id": WILSON, "to": 4}]),
+        TradeSide(roster_id=12, gives=[{"player_id": JACOBS, "to": 11}, {"player_id": VELE, "to": 11}]),
+    ])
+
+
+def _sides_response(trade, snap, rosters):
+    """A response that passes every check for the sides of `rosters`, each at the code's final letter."""
+    letters = {b.roster_id: b.final_letter for b in grade(trade, snap)}
+    return lambda facts: {
+        "sides": [_side(roster_id, letter=letters.get(roster_id, "C")) for roster_id in rosters],
+        "verdict": {"choice": "decline", "reason": "The trade is fair for both sides."},
+    }
+
+
+def test_a_three_side_output_passes_with_every_side_in_the_order_of_the_trade(three, snap):
+    fake = FakeClaude(_sides_response(three, snap, (4, 11, 12)))
+    result = analyze(three, snap, call=fake)
+    assert len(fake.calls) == 1
+    assert not result.fallback
+    assert [s.roster_id for s in result.sides] == [4, 11, 12]
+    assert [b.roster_id for b in result.breakdowns] == [4, 11, 12]
+    assert len(result.standing_letters) == 3
+
+
+def test_a_two_side_output_for_a_three_side_trade_fails_and_the_retry_names_all_three_sides(three, snap):
+    fake = FakeClaude(_sides_response(three, snap, (11, 12)), _sides_response(three, snap, (4, 11, 12)))
+    result = analyze(three, snap, call=fake)
+    assert len(fake.calls) == 2
+    assert not result.fallback
+    retry = fake.calls[1][1]
+    assert "it had rosters 11, 12" in retry
+    assert "exactly 3 sides: roster 4 first, then roster 11, then roster 12, each once" in retry
+
+
+def test_the_user_message_names_the_destination_of_each_given_player_and_the_source_of_each_got_player(three, snap):
+    fake = FakeClaude(_sides_response(three, snap, (4, 11, 12)))
+    analyze(three, snap, call=fake)
+    system, user = fake.calls[0]
+    team = {roster_id: snap.teams[roster_id].name for roster_id in (4, 11, 12)}
+    assert f"Gives: Bhayshul Tuten to {team[12]}, Garrett Wilson to {team[4]}" in user
+    assert f"Gets: Nico Collins from {team[4]}, Josh Jacobs from {team[12]}, Devaughn Vele from {team[12]}" in user
+    # The rules ask for one side per roster in the order of the user message, for any count of sides.
+    assert "one side for each roster in the trade, in the order of the user message" in system

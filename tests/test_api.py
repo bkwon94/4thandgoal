@@ -405,6 +405,52 @@ def test_a_trade_with_a_bad_destination_or_a_repeat_is_422_with_a_plain_message(
     assert analyzer.calls == 0
 
 
+def test_a_fifth_side_is_422_with_a_plain_message(settings, sources):
+    analyzer = StubAnalyzer()
+    five = ((4, "7569", 12), (12, "10236", 7), (7, "11628", 3), (3, "4034", 1), (1, "1", 4))
+    sides = [{"roster_id": roster_id, "gives": _gives([(pid, to)])} for roster_id, pid, to in five]
+    response = _client(settings, sources, analyzer).post("/analyze", json={**TRADE, "sides": sides}, headers=HEADERS)
+    assert response.status_code == 422
+    message = "Value error, A proposed trade has four sides at most"
+    assert [error["msg"] for error in response.json()["detail"]] == [message]
+    assert analyzer.calls == 0
+
+
+# Roster 4 sends Nico Collins to roster 12, roster 12 sends Kincaid to roster 4 and Wilson to roster 7,
+# and roster 7 sends Marvin Harrison Jr. to roster 4.
+THREE = {"season": 2026, "asker": 4, "sides": [
+    {"roster_id": 4, "gives": _gives([("7569", 12)])},
+    {"roster_id": 12, "gives": _gives([("10236", 4), ("8146", 7)])},
+    {"roster_id": 7, "gives": _gives([("11628", 4)])},
+]}
+
+
+def test_a_three_side_request_grades_with_every_side_in_the_order_of_the_request(settings, sources):
+    response = _client(settings, sources, StubAnalyzer()).post("/analyze", json=THREE, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    assert [side["roster_id"] for side in doc["trade"]["sides"]] == [4, 12, 7]
+    assert [side["roster_id"] for side in doc["fairness"]["sides"]] == [4, 12, 7]
+    assert [side["roster_id"] for side in doc["sides"]] == [4, 12, 7]
+    four, twelve, seven = doc["trade"]["sides"]
+    assert [(p["player_id"], p["from"]) for p in four["gets"]] == [("10236", 12), ("11628", 7)]
+    assert [(p["player_id"], p["to"]) for p in twelve["gives"]] == [("10236", 4), ("8146", 7)]
+    assert [(p["player_id"], p["from"]) for p in seven["gets"]] == [("8146", 12)]
+    assert doc["decision"]["for_roster"] == 4
+    assert all(len(side["factors"]) == len(doc["sides"][0]["factors"]) for side in doc["sides"])
+
+
+def test_the_same_gives_with_other_destinations_is_another_cache_key(settings, sources):
+    # In a three-side trade the destinations change what each side gets, so they are part of the key.
+    swapped = {**THREE, "sides": [
+        {"roster_id": 4, "gives": _gives([("7569", 7)])},
+        {"roster_id": 12, "gives": _gives([("10236", 4), ("8146", 4)])},
+        {"roster_id": 7, "gives": _gives([("11628", 12)])},
+    ]}
+    snapshot = sources.snapshot(settings.repo, 2026)
+    assert cache_key(ProposedTrade(**THREE), snapshot) != cache_key(ProposedTrade(**swapped), snapshot)
+
+
 def test_the_document_holds_no_trade_value_sum_or_ratio(settings, sources):
     text = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).text
     # The trade values of the three players, the sum of the two, and the ratios never appear.
