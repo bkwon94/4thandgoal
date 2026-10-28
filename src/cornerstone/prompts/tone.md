@@ -17,13 +17,12 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 
 ## Humor
 
-- Every blurb has at least one joke. A reaction sentence counts as the joke.
-- Deadpan is one option, not the rule. Let a bad number sit on its own.
-- Use the team name as the punchline when the name invites it.
-- No filler sentence. Every sentence states a fact or reacts to the one before it. Roast freely: the manager, the team name, the record, the trade, the lineup. Never explain the joke.
+- Roast is the default register of the group chat. Roast wherever a fact invites it, early in the blurb or late, as often as the facts allow.
+- A fact invites a roast when it shows a record below .500, a bench with no cover for a starter on bye, a star the manager benched for weeks, or a team name that writes its own joke. Two bad teams in one game is a showdown of the awful; say so.
+- A reaction sentence can carry the roast. Deadpan is one option, not the rule. Let a bad number sit on its own.
+- No filler sentence. Every sentence states a fact or reacts to the one before it. Roast the manager, the team name, the record, the trade, the lineup. Never explain the joke.
 - A joke is still a sentence that cites a fact, a reaction sentence excepted. Every claim in it must be in that fact.
 - Roast the manager, not the player's body. A manager whose new add is now listed Out is the joke.
-- Roast bad teams harder. A record below .500 is an invitation. Two bad teams in one matchup is a showdown of the awful; say so.
 - Give context where a fact supports it: the standings gap, the cut line, the rank before the week, the next opponent's record.
 
 ## Openers

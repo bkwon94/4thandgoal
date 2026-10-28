@@ -365,10 +365,14 @@ def test_another_recap_and_the_motw_get_no_note_on_the_headline(fixture_raw_dir)
         assert MOTW_HEADLINE_NOTE not in user, key
 
 
-def test_tone_asks_for_one_joke_per_blurb(fixture_raw_dir):
+def test_tone_makes_roast_the_default_register_with_no_joke_count(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
-    assert "- Every blurb has at least one joke. A reaction sentence counts as the joke." in system
+    assert "- Roast is the default register of the group chat." in system
+    assert "as often as the facts allow" in system
+    assert "a record below .500, a bench with no cover" in system
+    assert "Every blurb has at least one joke" not in system
+    assert "Roast bad teams harder" not in system
 
 
 def test_prompts_ask_for_one_sentence_with_no_number(fixture_raw_dir):
