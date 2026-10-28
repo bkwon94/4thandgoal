@@ -34,10 +34,11 @@ page-json: need-week ## Write page.json for a saved week (WEEK required)
 rankings: need-week ## Write rankings.json for a saved week (WEEK required)
 	uv run cornerstone rankings --season $(SEASON) --week $(WEEK)
 
-# Example: make analyze A=4:7569 B=12:10236,8146 ASKER=4
-analyze: ## Grade a trade without the Claude call (A, B, ASKER required)
-	@test -n "$(A)" -a -n "$(B)" -a -n "$(ASKER)" || { echo "Set A, B, and ASKER. Example: make analyze A=4:7569 B=12:10236,8146 ASKER=4"; exit 1; }
-	uv run cornerstone analyze --season $(SEASON) --side $(A) --side $(B) --asker $(ASKER) --no-claude
+# Example: make analyze SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4
+# SIDES holds two to four sides, each ROSTER:PLAYER@TO,PLAYER@TO. A two-side trade may still use A=4:7569 B=12:10236.
+analyze: ## Grade a trade without the Claude call (SIDES="ROSTER:PLAYER@TO,PLAYER@TO ..." and ASKER required)
+	@test -n "$(SIDES)$(A)$(B)" -a -n "$(ASKER)" || { echo "Set SIDES and ASKER. Example: make analyze SIDES=\"4:7569@12 12:10236@4\" ASKER=4"; exit 1; }
+	uv run cornerstone analyze --season $(SEASON) $(foreach side,$(or $(SIDES),$(A) $(B)),--side $(side)) --asker $(ASKER) --no-claude
 
 api: ## Run the API on port 8080 with a test passphrase
 	CORNERSTONE_PASSPHRASE=localtest CORNERSTONE_REPO=$(CURDIR) uv run uvicorn --factory cornerstone_api.app:app_from_env --port 8080

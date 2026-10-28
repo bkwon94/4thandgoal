@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from cornerstone.adjusters import OUT_STATUSES, is_handcuff, trade_handcuffs
 from cornerstone.rubric import (
-    LETTERS, Breakdown, Fairness, ProposedTrade, TradeSide, fairness, grade, unlisted_players,
+    LETTERS, Breakdown, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, unlisted_players,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import FINDER_TOP
@@ -66,9 +66,12 @@ def candidates(asker: int, partner: int, snapshot: Snapshot) -> list[ProposedTra
                                            (asker_ones, partner_twos)):
         for asker_gives in asker_options:
             for partner_gives in partner_options:
-                trade = ProposedTrade(season=snapshot.season, asker=asker,
-                                      sides=(TradeSide(roster_id=asker, gives=asker_gives),
-                                             TradeSide(roster_id=partner, gives=partner_gives)))
+                # The finder is a two-side tool, so each given player goes to the other side.
+                sides = (TradeSide(roster_id=asker,
+                                   gives=[GivenPlayer(player_id=pid, to=partner) for pid in asker_gives]),
+                         TradeSide(roster_id=partner,
+                                   gives=[GivenPlayer(player_id=pid, to=asker) for pid in partner_gives]))
+                trade = ProposedTrade(season=snapshot.season, asker=asker, sides=sides)
                 if not trade_handcuffs(trade, snapshot):
                     trades.append(trade)
     return trades
@@ -84,7 +87,7 @@ def _rank_key(item: FinderTrade) -> tuple:
     asker_place = next(LETTERS.index(b.final_letter) for b in item.breakdowns if b.roster_id == item.trade.asker)
     # A lower place on LETTERS is a better letter, so each letter key sorts ascending.
     # The sorted player ids break the last tie, so the same snapshot always gives the same list.
-    ids = tuple(tuple(sorted(side.gives)) for side in item.trade.sides)
+    ids = tuple(tuple(sorted(side.player_ids)) for side in item.trade.sides)
     return (-steps, max(places), abs(places[0] - places[1]), asker_place, ids)
 
 
@@ -94,7 +97,7 @@ def rank(items: list[FinderTrade]) -> list[FinderTrade]:
 
 
 def _players(item: FinderTrade) -> set[str]:
-    return {pid for side in item.trade.sides for pid in side.gives}
+    return {pid for side in item.trade.sides for pid in side.player_ids}
 
 
 def _no_shared_player(ranked: list[FinderTrade]) -> list[FinderTrade]:

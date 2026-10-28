@@ -108,6 +108,9 @@ class Snapshot(BaseModel):
     # The week each player returns, by player id, from the returns file the commissioner keeps.
     # No data source holds a return week, so a suspended or injured player's week comes from that file.
     returns: dict[str, int] = {}
+    # The players the returns file marks with `season` in place of a week. GLOSSARY.md, "Out for the season".
+    # Sleeper's IR status does not mean out for the season, so this mark is the only sign of one. ADR 0005.
+    out_for_season: set[str] = set()
     # The Sleeper projection of each player by Sleeper id and week, from the week after the raw week on.
     # The raw week's own projection is here too, so a player due back in that week counts for it.
     # A week with no row is a bye or no game. It is None when the raw data has no projections ahead file.
@@ -267,11 +270,26 @@ def _free_agents(entries: dict[str, dict], rosters: dict[int, list[str]]) -> dic
     return free_agents
 
 
+# The word the commissioner writes in the returns file in place of a week for a player out for the season.
+SEASON_MARK = "season"
+
+
 def load_returns(path: Path) -> dict[str, int] | None:
-    """The return week by player id, or None when the season has no returns file."""
+    """The return week by player id, or None when the season has no returns file.
+
+    A player marked `season` has no return week, so he is not here. load_out_for_season reads him.
+    """
     if not path.exists():
         return None
-    return {pid: int(week) for pid, week in json.loads(path.read_text(encoding="utf-8")).items()}
+    return {pid: int(week) for pid, week in json.loads(path.read_text(encoding="utf-8")).items()
+            if week != SEASON_MARK}
+
+
+def load_out_for_season(path: Path) -> set[str]:
+    """The player ids the returns file marks `season`, or none when the season has no returns file."""
+    if not path.exists():
+        return set()
+    return {pid for pid, week in json.loads(path.read_text(encoding="utf-8")).items() if week == SEASON_MARK}
 
 
 def _projections_by_player(raw: dict[str, object], week: int) -> dict[str, dict[int, float]] | None:
@@ -299,21 +317,23 @@ def load_snapshot(
     Without `slow`, the slow sources stay None and all of them are named as missing.
     """
     # The returns file sits beside the history, so the history root locates it.
-    returns = load_returns(history_root.parent / "returns.json")
-    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir), returns=returns)
+    returns_file = history_root.parent / "returns.json"
+    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir),
+                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file))
 
 
 def build_snapshot(
         raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
         trade_week: int | None = None, returns: dict[str, int] | None = None,
-        now: datetime | None = None) -> Snapshot:
+        now: datetime | None = None, out_for_season: set[str] | None = None) -> Snapshot:
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
     A saved week passes no trade week and never counts its own games. Only the live path passes one, so only a
     fetch on a game day reads the known games of week N.
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
+    `out_for_season` is the set of players the same file marks `season`.
     `now` is the clock of the request. With the kickoffs of the slow sources, it tells the known games in progress.
     """
     # A failed live stats fetch gives None, and a raw can lack the key. The parses then read no lines.
@@ -393,6 +413,7 @@ def build_snapshot(
         expected=slow.expected if slow else None,
         wopr=slow.wopr if slow else None,
         returns=returns or {},
+        out_for_season=out_for_season or set(),
         projections_ahead=_projections_by_player(raw, week.week),
         missing=missing,
         stale=stale,

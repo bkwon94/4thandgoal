@@ -20,7 +20,7 @@ BAND_D = Decimal("0.75")
 # The bands from the top down. A ratio below the last bound starts at F.
 START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "B"), (BAND_C, "C"), (BAND_D, "D"))
 
-# In a one-for-two-or-more trade, both ratios use the depth side's sum divided by this.
+# A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
 
 # Roster fit and standing compare a side's best lineup before and after the trade.
@@ -64,6 +64,10 @@ INJURY_WEEKS = 3
 # player to cover him. Three weeks is the trade week and the next two. A pickup or another trade can rarely fix a
 # slot sooner.
 RETURN_WINDOW_WEEKS = 2
+
+# Upside: a star is a player in the top STAR_RANK of the league's chart. GLOSSARY.md, "Star".
+# The 12 teams each start 2 RB and 2 WR, so the top 24 trade values are the players an average team builds on.
+STAR_RANK = 24
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
 # A backup who takes 25% of his team's carries scores points of his own, so he counts as a running back.

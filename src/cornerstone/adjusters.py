@@ -1,6 +1,7 @@
 """
-The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, handcuff, schedule, and
-expected gap. It also holds what they read of one side: the best lineup before and after the trade, and the handcuffs.
+The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, upside, handcuff, schedule,
+and expected gap. It also holds what they read of one side: the best lineup before and after the trade, and the
+handcuffs.
 """
 from __future__ import annotations
 
@@ -12,7 +13,8 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.history import (
-    SHARE_DIRECTION_WEEKS, _round_half_up, carry_share, player_points, red_zone, scored_weeks, stats_complete,
+    SHARE_DIRECTION_WEEKS, _round_half_up, air_yards_share, carry_share, player_points, red_zone, scored_weeks,
+    stats_complete,
 )
 from cornerstone.names import last_name
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
@@ -34,6 +36,7 @@ from cornerstone.tunables import (
     SCHEDULE_RANK_GAP,
     SELLER_GAP,
     SHARE_WEEKS,
+    STAR_RANK,
     WOPR_SWING,
 )
 
@@ -41,8 +44,8 @@ if TYPE_CHECKING:
     # The rubric module imports this one, so the trade model is a name for the type checker only.
     from cornerstone.rubric import ProposedTrade
 
-# The adjusters run in this order: roster fit, standing, trend and usage, injury, handcuff, schedule, and expected gap
-# when its tunable is on.
+# The adjusters run in this order: roster fit, standing, trend and usage, injury, upside, handcuff, schedule, and
+# expected gap when its tunable is on.
 
 
 Lean = Literal["for", "against", "even"]
@@ -409,11 +412,11 @@ def trade_handcuffs(trade: ProposedTrade, snapshot: Snapshot) -> list[str]:
     """
     if not _has_depth_chart(snapshot):
         return []
-    found = []
-    for giver, getter in (trade.sides, trade.sides[::-1]):
-        after = _roster_after(snapshot, getter.roster_id, getter.gives, giver.gives)
-        found.extend(pid for pid in giver.gives if _backs_up_a_starter(snapshot, pid, after))
-    return found
+    # Each given player names the roster that gets him, so the test reads that roster after the trade.
+    after = {side.roster_id: _roster_after(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id))
+             for side in trade.sides}
+    return [player.player_id for side in trade.sides for player in side.gives
+            if _backs_up_a_starter(snapshot, player.player_id, after[player.to])]
 
 
 def is_handcuff(snapshot: Snapshot, player_id: str, roster_id: int) -> bool:
@@ -460,6 +463,7 @@ ROSTER_FIT = "roster fit"
 STANDING = "standing"
 TREND = "trend and usage"
 INJURY = "injury"
+UPSIDE = "upside"
 HANDCUFF = "handcuff"
 SCHEDULE = "schedule"
 EXPECTED = "expected gap"
@@ -596,12 +600,16 @@ def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
 
     A player who played in the known games of his return week is back, so he is no return bet.
     """
-    return (back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
+    # A player out for the season is never a return bet, even with a stale returns row. ADR 0005.
+    return (player_id not in snapshot.out_for_season
+            and back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
             and not _back_in_a_known_game(snapshot, player_id))
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
     """Why the player is not back by RETURN_BY_WEEK, or None when he is back by then or is not out."""
+    if player_id in snapshot.out_for_season:
+        return "is out for the season"
     week = snapshot.returns.get(player_id)
     if week is not None:
         return "is not due back before the playoffs" if week > RETURN_BY_WEEK else None
@@ -861,8 +869,10 @@ def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjust
 
 def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player is out now with no return week on file, or with one later than the trade week
-    plus RETURN_WINDOW_WEEKS.
+    plus RETURN_WINDOW_WEEKS. A player out for the season is out with no near return, whatever his Sleeper status.
     """
+    if player_id in snapshot.out_for_season:
+        return True
     if snapshot.players[player_id].injury_status not in OUT_STATUSES:
         return False
     week = snapshot.returns.get(player_id)
@@ -884,12 +894,16 @@ def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
 
 
 def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
-    """Injury: a player it gets who is out with no near return, or who was on the report in many weeks."""
-    exempt = set(_credited_return_bets(snapshot, side))
+    """Injury: a player it gets who is out for the season, out with no near return, or on the report in many weeks."""
+    # A star return bet is the upside's credit, so the injury never counts him against the same side. ADR 0005.
+    exempt = set(_credited_return_bets(snapshot, side)) | {pid for pid in side.gets if _star_return_bet(snapshot, pid)}
     for pid in side.gets:
         if pid in exempt:
             continue
         name = snapshot.players[pid].name
+        # The season mark comes first, so the reason names the plain cause and not the weaker "no near return".
+        if pid in snapshot.out_for_season:
+            return Adjuster(name=INJURY, step=-1, reason=f"{name} is out for the season.")
         if _out_with_no_near_return(snapshot, pid):
             return Adjuster(name=INJURY, step=-1, reason=f"{name} is out with no near return.")
         if (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS:
@@ -901,6 +915,77 @@ def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
         reason += " " + named(snapshot, unmapped, "is not in the id map, so no report count ran for him.",
                                "are not in the id map, so no report count ran for them.")
     return Adjuster(name=INJURY, step=0, reason=reason)
+
+
+def _star(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player's chart value is in the top STAR_RANK of the league's chart. GLOSSARY.md, "Star".
+
+    The rank is over every player on the chart, not the roster. A tie shares the better rank, so a tie at the edge
+    makes every tied player a star. With no chart, or with the player not on it, he is no star.
+    """
+    if snapshot.chart is None or player_id not in snapshot.chart.values:
+        return False
+    value = snapshot.chart.values[player_id]
+    return 1 + sum(1 for other in snapshot.chart.values.values() if other > value) <= STAR_RANK
+
+
+def _star_return_bet(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player is a star who is out now and is not out for the season. GLOSSARY.md, "Star return bet".
+
+    A missing return week does not matter: a star with no week on file is still a bet on his return.
+    """
+    return (player_id not in snapshot.out_for_season
+            and snapshot.players[player_id].injury_status in OUT_STATUSES
+            and _star(snapshot, player_id))
+
+
+def _rising_signal(snapshot: Snapshot, player_id: str) -> str | None:
+    """The first of the player's use signals that points up, by name, or None when none does.
+
+    The signals are the snap share, target share, and air yards share directions, and the WOPR direction.
+    A QB plays nearly every snap, so his snap share says nothing about a role and he reads none.
+    """
+    snap, target = snapshot.usage_shares(player_id)
+    air = air_yards_share(snapshot.stats, player_id, snapshot.as_of.stats_through)
+    wopr = _wopr(snapshot, player_id)
+    signals = [("target share", target), ("air yards share", air), ("WOPR", wopr)]
+    if snapshot.players[player_id].position != "QB":
+        signals.insert(0, ("snap share", snap))
+    return next((name for name, signal in signals if signal is not None and signal.direction == "up"), None)
+
+
+def _opportunity_from(snapshot: Snapshot, player_id: str) -> str | None:
+    """The same-position teammate on his NFL team who is out for the season or out with no near return, or None."""
+    player = snapshot.players[player_id]
+    if player.nfl_team is None:
+        return None
+    return next((pid for pid, other in snapshot.players.items()
+                 if pid != player_id and other.nfl_team == player.nfl_team and other.position == player.position
+                 and _out_with_no_near_return(snapshot, pid)), None)
+
+
+def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
+    """Upside: a player it gets who is a star return bet or who has an opportunity. GLOSSARY.md, "Upside".
+
+    It steps up or not at all, never down, and it reads the players the side gets only. A player out for the season
+    is never a star return bet and never an opportunity, because he buys the side nothing. ADR 0005.
+    """
+    for pid in side.gets:
+        if pid in snapshot.out_for_season:
+            continue
+        name = snapshot.players[pid].name
+        if _star_return_bet(snapshot, pid):
+            return Adjuster(name=UPSIDE, step=1, reason=f"{name} is a star out now with a return in play.")
+        teammate = _opportunity_from(snapshot, pid)
+        if teammate is None:
+            continue
+        signal = _rising_signal(snapshot, pid)
+        if signal is not None:
+            # _out_with_no_near_return holds the season mark too, so the reason names the plainer cause first.
+            out = ("out for the season" if teammate in snapshot.out_for_season else "out with no near return")
+            return Adjuster(name=UPSIDE, step=1,
+                            reason=f"{name} gains {signal} with {snapshot.players[teammate].name} {out}.")
+    return Adjuster(name=UPSIDE, step=0, reason="No player it gets is a star out now or has an opportunity.")
 
 
 def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
@@ -1077,7 +1162,7 @@ def _expected_gap(snapshot: Snapshot, side: Side) -> Adjuster:
 
 def rubric_adjusters(expected_on: bool) -> tuple[Callable[[Snapshot, Side], Adjuster], ...]:
     """The adjusters in rubric order. The expected gap comes last, and only when `expected_on` is True."""
-    return (_fit, _standing, _trend, _injury, _handcuff, _schedule) + ((_expected_gap,) if expected_on else ())
+    return (_fit, _standing, _trend, _injury, _upside, _handcuff, _schedule) + ((_expected_gap,) if expected_on else ())
 
 
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.

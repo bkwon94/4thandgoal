@@ -26,7 +26,9 @@ from cornerstone.pipeline import (
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
-from cornerstone.rubric import Fairness, ProposedTrade, TradeSide, fairness, grade, verdict
+from cornerstone.rubric import (
+    MAX_SIDES, MIN_SIDES, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, verdict,
+)
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
 from cornerstone.trades import EASTERN
@@ -73,13 +75,16 @@ def build_parser() -> argparse.ArgumentParser:
         "analyze", help="grade a proposed trade from the league now, or from the saved data of a week",
         description="Grade a proposed trade from a snapshot. Without --week, the command fetches the league "
                     "from Sleeper now. With --week, it reads the saved data of that week. "
-                    "Give --side twice, once for each roster, as ROSTER:PLAYER,PLAYER. "
-                    "Example: --side 4:7569 --side 12:10236,8146 --asker 4 --no-claude")
+                    "Give --side two to four times, once for each roster, as ROSTER:PLAYER@TO,PLAYER@TO, where TO "
+                    "is the roster that gets the player. A two-side trade may leave out @TO. "
+                    "Example: --side 4:7569@12 --side 12:10236@7 --side 7:11628@4 --asker 4 --no-claude")
     analyze.add_argument("--season", type=int, required=True)
     analyze.add_argument("--week", type=int,
                          help="read the saved data of this week; without it, fetch the league now")
-    analyze.add_argument("--side", type=_trade_side, action="append", required=True, metavar="ROSTER:PLAYERS",
-                         help="a roster id and the comma-separated player ids it gives; give it twice")
+    analyze.add_argument("--side", type=_trade_side, action="append", required=True,
+                         metavar="ROSTER:PLAYER@TO,PLAYER@TO",
+                         help="a roster id and the comma-separated player ids it gives, each with the roster id "
+                              "that gets him; give it two to four times")
     analyze.add_argument("--asker", type=int, required=True, help="the roster id of the side that asked")
     analyze.add_argument("--chart", type=Path,
                          help="a trade values JSON file; the default is the chart of the trade window week")
@@ -102,13 +107,36 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _trade_side(text: str) -> TradeSide:
-    """One --side value, ROSTER:PLAYER,PLAYER, as a trade side."""
+def _trade_side(text: str) -> tuple[int, list[tuple[str, int | None]]]:
+    """One --side value, ROSTER:PLAYER@TO,PLAYER@TO, as the roster id and each player it gives with his destination.
+
+    The destination is None when the value leaves out @TO, which only a two-side trade allows.
+    """
+    # "@" needs no quotes in a shell, where ">" would redirect the output.
     roster, _, players = text.partition(":")
-    gives = [pid.strip() for pid in players.split(",") if pid.strip()]
+    gives = []
+    for entry in (item.strip() for item in players.split(",") if item.strip()):
+        pid, at, to = entry.partition("@")
+        if not pid or (at and not to.strip().isdigit()):
+            raise argparse.ArgumentTypeError(f"{text!r} is not ROSTER:PLAYER@TO,PLAYER@TO")
+        gives.append((pid.strip(), int(to) if at else None))
     if not roster.strip().isdigit() or not gives:
-        raise argparse.ArgumentTypeError(f"{text!r} is not ROSTER:PLAYER,PLAYER")
-    return TradeSide(roster_id=int(roster), gives=gives)
+        raise argparse.ArgumentTypeError(f"{text!r} is not ROSTER:PLAYER@TO,PLAYER@TO")
+    return int(roster), gives
+
+
+def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> list[TradeSide] | None:
+    """The trade sides of the --side values, or None when a player in a trade of three or more has no destination."""
+    rosters = [roster for roster, _ in sides]
+    built = []
+    for index, (roster, gives) in enumerate(sides):
+        # A two-side trade may leave out `@TO`, because the other side is the destination.
+        default = rosters[1 - index] if len(rosters) == 2 else None
+        if any(to is None for _, to in gives) and default is None:
+            return None
+        built.append(TradeSide(roster_id=roster, gives=[GivenPlayer(player_id=pid, to=default if to is None else to)
+                                                        for pid, to in gives]))
+    return built
 
 
 def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
@@ -127,6 +155,17 @@ def _given_chart(path: Path) -> ChartValues:
 
 def _names(snapshot: Snapshot, pids: list[str]) -> str:
     return ", ".join(snapshot.players[pid].name if pid in snapshot.players else pid for pid in pids)
+
+
+def _routed(snapshot: Snapshot, trade: ProposedTrade, roster_id: int, gives: bool) -> str:
+    """The players a side gives, each with the team he goes to, or the players it gets, each with his source team."""
+    givers = trade.givers
+    if gives:
+        side = next(side for side in trade.sides if side.roster_id == roster_id)
+        pairs = [(player.player_id, f"to {snapshot.teams[player.to].name}") for player in side.gives]
+    else:
+        pairs = [(pid, f"from {snapshot.teams[givers[pid]].name}") for pid in trade.gets(roster_id)]
+    return ", ".join(f"{_names(snapshot, [pid])} {where}" for pid, where in pairs)
 
 
 # The plain name of each slow source that the as-of line shows, by its key in Snapshot.missing, in print order.
@@ -220,14 +259,18 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
 
     Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
     """
-    if len(args.side) != 2:
-        print("Give --side exactly twice, once for each roster.")
+    if not MIN_SIDES <= len(args.side) <= MAX_SIDES:
+        print("Give --side two to four times, once for each roster.")
+        return 2
+    sides = _proposed_sides(args.side)
+    if sides is None:
+        print("Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides.")
         return 2
     snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
     if snapshot is None:
         return 2
     try:
-        trade = ProposedTrade(season=args.season, sides=tuple(args.side), asker=args.asker)
+        trade = ProposedTrade(season=args.season, sides=sides, asker=args.asker)
     except ValidationError as err:
         # One plain line per broken rule, with no pydantic text and no echo of the input.
         for error in err.errors():
@@ -242,13 +285,17 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
         analysis = analyze(trade, snapshot, call=analyzer_call)
         result, choice = analysis.breakdowns, analysis.code_verdict
     _print_as_of(snapshot)
-    for index, (side, other, breakdown) in enumerate(
-            ((trade.sides[0], trade.sides[1], result[0]), (trade.sides[1], trade.sides[0], result[1]))):
+    for index, (side, breakdown) in enumerate(zip(trade.sides, result)):
         asked = " (asked)" if side.roster_id == trade.asker else ""
         print()
         print(f"{snapshot.teams[side.roster_id].name}{asked}")
-        print(f"  Gives: {_names(snapshot, side.gives)}")
-        print(f"  Gets: {_names(snapshot, other.gives)}")
+        if len(trade.sides) == 2:
+            print(f"  Gives: {_names(snapshot, side.player_ids)}")
+            print(f"  Gets: {_names(snapshot, trade.gets(side.roster_id))}")
+        else:
+            # With three or more sides each player names the team he goes to or comes from.
+            print(f"  Gives: {_routed(snapshot, trade, side.roster_id, gives=True)}")
+            print(f"  Gets: {_routed(snapshot, trade, side.roster_id, gives=False)}")
         print(f"  Start letter: {breakdown.start_letter}")
         print(f"  Reason: {breakdown.reason}")
         for adjuster in breakdown.adjusters:
@@ -271,7 +318,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     flag = " (differs from the rubric's default)" if analysis is not None and analysis.verdict_differs else ""
     print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}{flag}")
     # The fairness reads the letters that stand: Claude's when the call ran, the rubric's without it.
-    letters = analysis.standing_letters if analysis is not None else (result[0].final_letter, result[1].final_letter)
+    letters = analysis.standing_letters if analysis is not None else tuple(b.final_letter for b in result)
     for line in _fairness_lines(snapshot, fairness(letters, result)):
         print(line)
     return 0
@@ -298,8 +345,8 @@ def run_find(repo: Path, args: argparse.Namespace) -> int:
         return 0
     for number, item in enumerate(found, start=1):
         mine, theirs = item.trade.sides
-        print(f"{number}. {snapshot.teams[mine.roster_id].name} gives: {_names(snapshot, mine.gives)}")
-        print(f"   {snapshot.teams[theirs.roster_id].name} gives: {_names(snapshot, theirs.gives)}")
+        print(f"{number}. {snapshot.teams[mine.roster_id].name} gives: {_names(snapshot, mine.player_ids)}")
+        print(f"   {snapshot.teams[theirs.roster_id].name} gives: {_names(snapshot, theirs.player_ids)}")
         # The same fairness lines as analyze, so a trade reads the same in both commands.
         for line in _fairness_lines(snapshot, item.fairness):
             print(line)

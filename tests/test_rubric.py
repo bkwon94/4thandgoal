@@ -70,10 +70,29 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
 
 
-def _trade(a: int, a_gives: list[str], b: int, b_gives: list[str], asker: int | None = None) -> ProposedTrade:
-    return ProposedTrade(season=2026,
-                         sides=(TradeSide(roster_id=a, gives=a_gives), TradeSide(roster_id=b, gives=b_gives)),
-                         asker=a if asker is None else asker)
+def _trade(*sides, asker: int | None = None) -> ProposedTrade:
+    """A trade from roster and gives pairs in order, as in _trade(4, [COLLINS], 12, [KINCAID]).
+
+    A gives entry is a player id or a (player id, to) pair. A bare player id goes to the next side in order, and the
+    last side's go to the first, so in a two-side trade each given player goes to the other side.
+    """
+    rosters = sides[::2]
+    built = []
+    for index, (roster, gives) in enumerate(zip(rosters, sides[1::2])):
+        after = rosters[(index + 1) % len(rosters)]
+        built.append(TradeSide(roster_id=roster, gives=[
+            {"player_id": entry, "to": after} if isinstance(entry, str) else {"player_id": entry[0], "to": entry[1]}
+            for entry in gives]))
+    return ProposedTrade(season=2026, sides=built, asker=rosters[0] if asker is None else asker)
+
+
+def _shape_error(a_gives: list[tuple[str, int]], b_gives: list[tuple[str, int]]) -> str:
+    """The message of the input error for a trade of roster 4 and roster 12, each give a (player, to) pair."""
+    sides = [{"roster_id": rid, "gives": [{"player_id": pid, "to": to} for pid, to in gives]}
+             for rid, gives in ((4, a_gives), (12, b_gives))]
+    with pytest.raises(ValueError) as error:
+        ProposedTrade.model_validate({"season": 2026, "asker": 4, "sides": sides})
+    return str(error.value)
 
 
 def _with_values(snap, values: dict[str, float]):
@@ -161,6 +180,87 @@ def test_a_proposed_trade_needs_two_rosters_players_on_each_side_and_an_asker_in
         _trade(4, [], 12, [KINCAID])
     with pytest.raises(ValueError):
         _trade(4, [CROSKEY], 12, [KINCAID], asker=7)
+
+
+def test_each_side_gets_the_players_the_other_side_sends_to_it():
+    trade = _trade(4, [COLLINS], 12, [KINCAID, WILSON])
+    assert trade.gets(4) == [KINCAID, WILSON]
+    assert trade.gets(12) == [COLLINS]
+    assert trade.sides[1].player_ids == [KINCAID, WILSON]
+
+
+def test_a_destination_that_is_not_a_side_is_an_input_error():
+    assert "goes to roster 7, which is not a side of the trade" in _shape_error([(COLLINS, 7)], [(KINCAID, 4)])
+
+
+def test_a_side_that_gets_nothing_is_an_input_error():
+    # Kincaid goes back to his own roster, so roster 4 gets no player.
+    assert "Roster 4 gets no player in the trade" in _shape_error([(COLLINS, 12)], [(KINCAID, 12)])
+
+
+def test_a_player_sent_to_his_own_roster_is_an_input_error():
+    assert "goes to his own roster 4" in _shape_error([(COLLINS, 12), (CROSKEY, 4)], [(KINCAID, 4)])
+
+
+def test_a_player_given_twice_is_an_input_error():
+    assert "A player can appear only once in a proposed trade" in _shape_error([(COLLINS, 12), (COLLINS, 12)],
+                                                                               [(KINCAID, 4)])
+
+
+def test_a_trade_takes_up_to_four_sides_and_a_fifth_side_is_an_input_error():
+    four = _trade(4, [COLLINS], 12, [KINCAID], 7, [HARRISON], 3, [MCCAFFREY])
+    assert [side.roster_id for side in four.sides] == [4, 12, 7, 3]
+    with pytest.raises(ValueError) as error:
+        _trade(4, [COLLINS], 12, [KINCAID], 7, [HARRISON], 3, [MCCAFFREY], 1, ["1"])
+    assert "A proposed trade has four sides at most" in str(error.value)
+
+
+def test_a_trade_with_one_side_is_an_input_error():
+    with pytest.raises(ValueError) as error:
+        _trade(4, [(COLLINS, 12)])
+    assert "A proposed trade needs two to four sides" in str(error.value)
+
+
+def test_a_side_in_a_three_side_trade_gets_every_player_the_other_sides_send_to_it():
+    trade = _trade(4, [(COLLINS, 7)], 12, [(KINCAID, 4), (WILSON, 7)], 7, [(HARRISON, 12)])
+    assert trade.gets(4) == [KINCAID]
+    assert trade.gets(7) == [COLLINS, WILSON]
+    assert trade.gets(12) == [HARRISON]
+
+
+def test_a_three_side_trade_gives_each_side_a_start_letter_from_its_own_gets_and_gives(snap):
+    # Roster 4 gets Harrison 36.0 for Croskey-Merritt 24.0, a ratio of 1.5. Roster 12 gets 24.0 for Kincaid 31.5,
+    # a ratio of 0.762. Roster 7 gets 31.5 for 36.0, a ratio of 0.875.
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert [side.roster_id for side in result] == [4, 12, 7]
+    assert _letters(result) == ["A", "D", "D"]
+
+
+def test_a_three_side_trade_reads_the_consolidation_per_side(snap):
+    # Roster 4 gives one and gets two, roster 12 gives two and gets one, and roster 7 swaps one for one.
+    trade = _trade(4, [(COLLINS, 7)], 12, [(KINCAID, 4), (WILSON, 4)], 7, [(HARRISON, 12)])
+    result = grade(trade, snap)
+    assert ["one player for two or more" in side.reason for side in result] == [True, True, False]
+
+
+def test_a_player_out_for_the_season_counts_zero_only_for_the_side_that_gets_him_in_a_three_side_trade(snap):
+    # Roster 12 gets Croskey-Merritt out for the season, so it gets nothing for Kincaid. Roster 4 gives his full value.
+    snap = snap.model_copy(update={"out_for_season": {CROSKEY}})
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert _letters(result) == ["A", "F", "D"]
+
+
+def test_a_player_out_for_the_season_and_off_the_chart_counts_zero_and_is_never_unlisted(snap):
+    # Croskey-Merritt is off the chart and out for the season. He counts zero, so no side starts at C by rule.
+    # Roster 4 gives him for Harrison, an A. Roster 12 gets him for Kincaid, an F. Roster 7 gets 31.5 for 36.0, a D.
+    values = {pid: value for pid, value in snap.chart.values.items() if pid != CROSKEY}
+    snap = snap.model_copy(update={"chart": snap.chart.model_copy(update={"values": values}),
+                                   "out_for_season": {CROSKEY}})
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
+    assert _letters(result) == ["A", "F", "D"]
+    assert not any("no trade value" in side.reason for side in result)
+    trade_fairness = fairness(tuple(side.final_letter for side in result), result)
+    assert (trade_fairness.state, trade_fairness.gives_more) == ("lopsided", 12)
 
 
 def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
@@ -1115,7 +1215,7 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
 def test_the_adjusters_show_in_rubric_order(snap):
     for side in grade(_trade(10, [SAQUON], 5, [COOK]), snap):
         assert [a.name for a in side.adjusters] == [
-            "roster fit", "standing", "trend and usage", "injury", "handcuff", "schedule"]
+            "roster fit", "standing", "trend and usage", "injury", "upside", "handcuff", "schedule"]
 
 
 # The week 6 Josh Jacobs trade: roster 11 got Jacobs and Devaughn Vele from roster 12
@@ -1414,9 +1514,64 @@ def test_injury_without_the_injury_report_says_no_count_ran(snap):
     assert "The injury report is not available" in _adjuster(third, "injury").reason
 
 
+def _out_for_season(snap, *players: str):
+    """The snapshot with each player marked `season` in the returns file."""
+    return snap.model_copy(update={"out_for_season": {*snap.out_for_season, *players}})
+
+
+def test_a_player_out_for_the_season_counts_zero_for_the_side_that_gets_him_only(snap):
+    # With full values roster 4 gets 31.5 for 24.0, an A, and roster 12 gets 24.0 for 31.5, a D.
+    # Kincaid out for the season counts 0 for roster 4, so it gets nothing for 24.0, an F.
+    # Roster 12 still gives his full 31.5, so its letter stays D.
+    result = grade(_trade(4, [CROSKEY], 12, [KINCAID]), _out_for_season(snap, KINCAID))
+    assert _letters(result) == ["F", "D"]
+
+
+def test_a_player_out_for_the_season_counts_zero_after_the_consolidation_discount(snap):
+    # Collins is set to 30. With Wilson out for the season, roster 4 gets only Kincaid's 31.5 over the margin,
+    # 25.2, for 30: a D. With no discount on what it gets, 31.5 for 30 is a C.
+    # Roster 12 still gives the full 59.0, which counts as 47.2, and gets 30: an F.
+    snap = _out_for_season(_with_values(snap, {COLLINS: 30.0}), WILSON)
+    result = grade(_trade(4, [COLLINS], 12, [KINCAID, WILSON]), snap)
+    assert _letters(result) == ["D", "F"]
+
+
+def test_injury_steps_down_for_a_player_out_for_the_season(snap):
+    # The mark alone counts. Saquon Barkley's Sleeper status is cleared, so only the returns file marks him.
+    snap = _out_for_season(_with_status(snap, SAQUON, None), SAQUON)
+    third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").step == -1
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+    assert _adjuster(tenth, "injury").step == 0
+
+
+def test_injury_names_the_season_mark_before_the_no_near_return_check(snap):
+    # Saquon Barkley is Out with no returns row, so he is out with no near return too. The season reason wins.
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), _out_for_season(snap, SAQUON))
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+
+
+def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
+    # Sleeper's IR status alone is not the mark, so the player is due back and reads as out with no near return.
+    snap = _with_status(snap, SAQUON, "IR")
+    assert SAQUON not in snap.out_for_season
+    assert due_back_week(snap, SAQUON) == tunables.RETURN_BY_WEEK
+    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
+    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+
+
+def test_a_player_out_for_the_season_is_never_due_back_or_a_return_bet(snap):
+    # A stale returns row must not make him due back. The season mark wins over it.
+    snap = _out_for_season(snap.model_copy(update={"returns": {SAQUON: 9}}), SAQUON)
+    assert due_back_week(snap, SAQUON) is None
+    assert not _return_bet(snap, SAQUON)
+    assert lineup_value(snap, SAQUON) == 0
+
+
 def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_return_bet(snap):
     # Jacobs is suspended and due back in week 10: past the return window, but before the playoffs.
-    snap = _before_the_jacobs_trade(snap).model_copy(update={"returns": {JACOBS: 10}})
+    # At 0.5 he is the last of the 25 players on the chart, so he is no star and the upside does not exempt him.
+    snap = _with_values(_before_the_jacobs_trade(snap).model_copy(update={"returns": {JACOBS: 10}}), {JACOBS: 0.5})
     trade = _trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE])
     # In the middle of the standings, roster 11 gets no return bet credit, so the injury counts.
     eleventh, _ = grade(trade, snap)
@@ -1426,6 +1581,79 @@ def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_retu
     eleventh, _ = grade(trade, _as_contender(snap, 11))
     assert _adjuster(eleventh, "standing").step == 1
     assert _adjuster(eleventh, "injury").step == 0
+
+
+# Omarion Hampton on roster 12 holds the top trade value on the week 6 chart, so he is a star.
+# Rome Odunze on roster 4 and Luther Burden on roster 12 are CHI receivers. Odunze is up in snap and target share.
+# Brock Purdy on roster 1 is the only SF quarterback. His snap share is up, and his target share is flat.
+STAR, BURDEN, PURDY, BURROW = "12507", "12519", "8183", "6770"
+NO_UPSIDE = "No player it gets is a star out now or has an opportunity."
+
+
+def test_a_side_that_gets_a_star_out_now_with_no_return_week_steps_up_and_the_injury_leaves_him_alone(snap):
+    # Hampton is Out with no row in the returns file, so he would be out with no near return.
+    fourth, twelfth = grade(_trade(4, [COLLINS], 12, [STAR]), _with_status(snap, STAR, "Out"))
+    assert _adjuster(fourth, "upside").step == 1
+    assert _adjuster(fourth, "upside").reason == "Omarion Hampton is a star out now with a return in play."
+    assert _adjuster(fourth, "injury").step == 0
+    # Roster 12 gives the star return bet, and the upside reads the players a side gets only.
+    assert _adjuster(twelfth, "upside").step == 0
+    assert _adjuster(twelfth, "upside").reason == NO_UPSIDE
+
+
+def test_a_side_that_gives_a_star_return_bet_gets_no_upside_for_him(snap):
+    # Roster 12 gives Hampton, a star out now, and gets Collins, so no player it gets is a bet.
+    _, twelfth = grade(_trade(4, [COLLINS], 12, [STAR]), _with_status(snap, STAR, "Out"))
+    assert _adjuster(twelfth, "upside").step == 0
+    assert _adjuster(twelfth, "upside").reason == NO_UPSIDE
+
+
+def test_a_side_that_gets_a_star_out_for_the_season_gets_no_upside(snap):
+    snap = _out_for_season(_with_status(snap, STAR, "Out"), STAR)
+    fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
+    assert _adjuster(fourth, "upside").step == 0
+    assert _adjuster(fourth, "upside").reason == NO_UPSIDE
+    assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out for the season."
+
+
+def test_a_star_outside_the_top_star_rank_is_no_star_return_bet(snap):
+    # Hampton at 0.5 drops to the last of the 25 players on the chart, past STAR_RANK.
+    snap = _with_values(_with_status(snap, STAR, "Out"), {STAR: 0.5})
+    fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
+    assert tunables.STAR_RANK == 24
+    assert _adjuster(fourth, "upside").step == 0
+    assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out with no near return."
+
+
+@pytest.mark.parametrize("mark, out", [
+    (lambda snap: _out_for_season(snap, BURDEN), "out for the season"),
+    (lambda snap: _with_status(snap, BURDEN, "Out"), "out with no near return"),
+])
+def test_a_side_that_gets_a_player_whose_teammate_is_out_and_whose_use_points_up_steps_up(snap, mark, out):
+    first, fourth = grade(_trade(1, [WATSON], 4, [ODUNZE]), mark(snap))
+    assert _adjuster(first, "upside").step == 1
+    assert _adjuster(first, "upside").reason == f"Rome Odunze gains snap share with Luther Burden {out}."
+    assert _adjuster(fourth, "upside").step == 0
+
+
+def test_a_player_out_for_the_season_is_never_an_opportunity(snap):
+    snap = _out_for_season(snap, BURDEN, ODUNZE)
+    first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
+    assert _adjuster(first, "upside").step == 0
+
+
+def test_a_qb_with_a_flat_target_share_and_wopr_gets_no_upside_from_snaps(snap):
+    # Burrow moves to SF and is out for the season, so Purdy's role opens. Only his snap share points up.
+    players = {**snap.players, BURROW: snap.players[BURROW].model_copy(update={"nfl_team": "SF"})}
+    snap = _out_for_season(snap.model_copy(update={"players": players}), BURROW)
+    assert snap.usage_shares(PURDY)[0].direction == "up"
+    _, third = grade(_trade(1, [PURDY], 3, [WICKS]), snap)
+    assert _adjuster(third, "upside").step == 0
+    assert _adjuster(third, "upside").reason == NO_UPSIDE
+
+
+def test_the_analysis_prompt_names_the_upside():
+    assert "the upside" in " ".join(load_prompt("analysis.md").split())
 
 
 # The LAC depth chart: Omarion Hampton on roster 12 first, then Keaton Mitchell and Kimani Vidal on roster 11.
@@ -1716,17 +1944,19 @@ def test_the_clamp_holds_three_steps_up_to_one(snap):
     # Three steps up from F would reach B. The clamp holds the sum at one, so the final letter is D.
     first, _ = grade(_trade(1, [IRVING], 3, [HENRY]), _with_values(snap, {IRVING: 40.0, HENRY: 20.0}))
     assert first.start_letter == "F"
-    assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0]
+    assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0, 0]
     assert first.final_letter == "D"
 
 
-def test_the_clamp_holds_three_steps_down_to_one(snap):
+def test_the_clamp_holds_three_steps_down_to_one(snap, monkeypatch):
     # Roster 5, a contender, gets Rice for Cook. Its best lineup loses now for a player with no return week,
     # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
     # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
+    # Rice at 40 would be a star return bet, which the injury exempts, so no player is a star here.
+    monkeypatch.setattr("cornerstone.adjusters.STAR_RANK", 0)
     fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(snap, {RICE: 40.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
-    assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0]
+    assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0]
     assert fifth.final_letter == "B"
 
 
@@ -1887,6 +2117,33 @@ def test_fairness_reads_the_letters_it_gets_and_not_the_breakdown_final_letters(
     assert result.state == "win_win"
 
 
+@pytest.mark.parametrize("letters, state, gives_more", [
+    (("B", "A", "B"), "win_win", None),
+    (("B", "C", "A"), "fair", None),
+    (("B", "D", "C"), "lopsided", 12),
+    (("D", "B", "F"), "lopsided", 7),
+])
+def test_a_three_side_fairness_runs_the_same_rule_over_every_side(letters, state, gives_more):
+    breakdowns = tuple(_sided(roster_id, letter) for roster_id, letter in zip((4, 12, 7), letters))
+    result = fairness(letters, breakdowns)
+    assert (result.state, result.gives_more) == (state, gives_more)
+    assert [side.roster_id for side in result.sides] == [4, 12, 7]
+
+
+def test_in_a_three_side_fairness_the_lower_start_letter_then_the_first_side_gives_more():
+    by_start = (_sided(4, "D", start="C", steps=(-1,)), _sided(12, "D", start="F", steps=(1,)), _sided(7, "D"))
+    assert fairness(("D", "D", "D"), by_start).gives_more == 12
+    full_tie = (_sided(4, "B"), _sided(12, "F"), _sided(7, "F"))
+    assert fairness(("B", "F", "F"), full_tie).gives_more == 12
+
+
+def test_a_three_side_verdict_is_for_the_asker_against_the_best_other_side():
+    trade = _trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON])
+    choice = verdict(trade, (_graded(4, "C"), _graded(12, "D"), _graded(7, "B")))
+    assert choice.choice == "counter"
+    assert choice.reason == "Another side does better, so ask for more."
+
+
 # The six real week 6 trades, newest first, as in the transactions file: (roster a, a gives, roster b, b gives, asker).
 # The asker is the roster that made the trade in Sleeper.
 # The saved rosters show the league after all six. To grade one trade, the test sets back that trade and every
@@ -1913,12 +2170,14 @@ def _before_real_trade(snap, index: int):
     return snap.model_copy(update={"rosters": rosters})
 
 
-# Each row: the start letter, the six adjuster steps, the schedule lean, and the final letter of side a, then of
+# Each row: the start letter, the seven adjuster steps, the schedule lean, and the final letter of side a, then of
 # side b, then the verdict for the asker. Worked by hand from the rubric on the week 6 snapshot with the nflverse
 # fixture and the returns file: trade values from the week 6 chart, points per game over weeks 2 to 5,
 # standings through week 5, and shares of weeks 4 and 5 against weeks 2 and 3. Trade week N is 6, so a bye in
 # week 6 or later is left. Roster 4 is a seller at 1-9. Roster 6 is a contender. Rosters 7, 8, 11, and 12 are
-# in the middle at 4-6.
+# in the middle at 4-6. A star is in the top STAR_RANK of the 25 players on the chart, so every player on it but
+# Braelon Allen is a star. A star out now and not out for the season is a star return bet: the upside steps up for
+# him, and the injury leaves him alone.
 HAND_WORKED = [
     # Roster 7 gives Marvin Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5, a sum of 78.5.
     # Roster 8 gives Braelon Allen 1.5, Malik Nabers 6.5, Jared Goff 13.0, and Breece Hall 41.0, a sum of 62.0.
@@ -1926,42 +2185,44 @@ HAND_WORKED = [
     # Breece Hall at 41.0 is the highest-value player.
     # Roster 7: Breece Hall is out with no return week, so he counts as back in week 14 at 11.7 a game. The lineup
     # changes by minus 2.18, no loss, and it gets the highest-value player, fit up. Middle, no standing step. Gets
-    # up shares only, gives up and down shares, so trend is mixed. Breece Hall is out with no return week, injury
-    # down. Byes left: four got against three gave, against. Playoff opponent mean rank 18.58 got against 16.67
-    # gave, inside the gap, even. Schedule against. Sum zero, D stays D.
+    # up shares only, gives up and down shares, so trend is mixed. Breece Hall is a star return bet, so no injury
+    # step. Braelon Allen gains snap share with Breece Hall out with no near return, upside up. Byes left: four got
+    # against three gave, against. Playoff opponent mean rank 18.58 got against 16.67 gave, inside the gap, even.
+    # Schedule against.
     # Roster 8: the lineup gains 0.34, under the threshold, and it gives the highest-value player, no fit step.
     # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
     # Roster 8 asked and grades A: accept.
     # Roster 7 gets Breece Hall, so RB1 is a hole: he is out with no return week on file. That hole moves fit from +1
-    # to 0, and final D to F.
+    # to 0. Sum plus one, D to C.
     # Roster 8: Carnell Tate at WR47 takes WR2 after the trade and is a new hole, so fit is -1 and A moves to B.
-    (("D", [0, 0, 0, -1, 0, 0], "against", "F"), ("A", [-1, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    (("D", [0, 0, 0, 0, 1, 0, 0], "against", "C"), ("A", [-1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
     # The Josh Jacobs trade. Roster 11 gives Bhayshul Tuten 3.0 and Garrett Wilson 27.5, a sum of 30.5.
     # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
     # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.
     # Jacobs is due back in week 7, so his use does not count, and week 7 is inside the return window of week 8.
     # Roster 11: the lineup loses 6.94, fit down. Middle. Gets Vele, flat, and gives Tuten and Wilson, each with
-    # one share up, so trend down. No injury step. Byes two and two, even. Playoff mean rank 13.83 got against
-    # 16.83 gave, a gap of 3.0, inside the gap, even. Schedule even. Sum minus two, clamped to minus one, A to B.
+    # one share up, so trend down. No injury step. Jacobs is a star out now, so he is a star return bet, upside up.
+    # Byes two and two, even. Playoff mean rank 13.83 got against 16.83 gave, a gap of 3.0, inside the gap, even.
+    # Schedule even. Sum minus one, A to B.
     # Roster 12: the lineup gains 5.57, fit up. Middle. Trend up. No injury step. Schedule even.
     # Sum plus two, clamped to plus one, F to D.
     # Roster 12 asked and grades D, with roster 11 at B: decline.
-    (("A", [-1, 0, -1, 0, 0, 0], "even", "B"), ("F", [1, 0, 1, 0, 0, 0], "even", "D"), "decline"),
+    (("A", [-1, 0, -1, 0, 1, 0, 0], "even", "B"), ("F", [1, 0, 1, 0, 0, 0, 0], "even", "D"), "decline"),
     # Roster 6 gives Patrick Mahomes 15.5 and Brian Robinson 22.0, a sum of 37.5. Roster 7 gives Lamar Jackson 7.0.
     # One for two: the depth sum counts as 37.5 over 1.25, which is 30.0. Roster 6: 7.0 over 30.0 is 0.233, F.
     # Roster 7: 4.29, A. Brian Robinson at 22.0 is the highest-value player.
     # Roster 6: Lamar Jackson is out with no return week, so he counts as back in week 14 at 22.7 a game. The
     # lineup changes by minus 0.22, about the same, no fit step. A contender with no lineup gain and no return bet,
-    # no standing step. Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is out with no
-    # return week, injury down. Byes one left and one left, even. Playoff mean rank 19.67 got against 22.17 gave,
-    # inside the gap, even. Schedule even. Sum minus one, F stays F.
+    # no standing step. Gets one share down, gives one share down, so trend is mixed. Lamar Jackson is a star
+    # return bet, so no injury step, and upside up. Byes one left and one left, even. Playoff mean rank 19.67 got
+    # against 22.17 gave, inside the gap, even. Schedule even.
     # Roster 7: the lineup gains 4.15 and both players it gets start, fit up. Middle. Trend mixed. No injury step.
     # Schedule even. Sum plus one, A stays A.
     # Roster 7 asked and grades A: accept.
     # Roster 6 gets Lamar Jackson, so QB is a hole: he is out with no return week on file. Pat Freiermuth leaves
     # the bench for FLEX2, so no cover is left for the bye of Parker Washington in week 7. That hole moves fit
-    # from 0 to -1.
-    (("F", [-1, 0, 0, -1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0], "even", "A"), "accept"),
+    # from 0 to -1. Sum zero, F stays F.
+    (("F", [-1, 0, 0, 0, 1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0, 0], "even", "A"), "accept"),
     # Roster 4 gives Ladd McConkey 4.5 and Rhamondre Stevenson 2.5, a sum of 7.0.
     # Roster 7 gives Cam Skattebo 18.0 and Nico Collins 46.5, a sum of 64.5. Two for two, no consolidation.
     # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
@@ -1969,10 +2230,10 @@ HAND_WORKED = [
     # Gets one share down, gives shares up and down, so trend is mixed. No injury step. Byes two and two, even.
     # Playoff mean rank 14.00 got against 19.67 gave, a gap of 5.67, for. Schedule for.
     # Sum plus two, clamped to plus one, A stays A.
-    # Roster 7: the lineup loses 4.63, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week,
-    # injury down. Schedule against. Sum minus two, clamped to minus one, F stays F.
+    # Roster 7: the lineup loses 4.63, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week, but
+    # he is a star return bet, so no injury step, and upside up. Schedule against. Sum zero, F stays F.
     # Roster 7 asked and grades F: decline.
-    (("A", [1, 1, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, -1, 0, 0], "against", "F"), "decline"),
+    (("A", [1, 1, 0, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, 0, 1, 0, 0], "against", "F"), "decline"),
     # Roster 7 gives Dalton Kincaid 31.5. Roster 12 gives Kenyon Sadiq, with no row on the chart, so both start at C.
     # Points per game pick the highest-value player: Kincaid at 6.55 against Sadiq at 5.50.
     # Roster 7: the lineup changes by minus 1.05, no loss, and it gives Kincaid, no fit step. Middle. Each player
@@ -1981,21 +2242,21 @@ HAND_WORKED = [
     # Roster 12: no lineup change, and it gets Kincaid, fit up. Middle. Trend mixed. Kincaid is Questionable,
     # which is not out. Schedule for. Sum plus one, C to B.
     # Roster 12 asked and grades B: accept.
-    (("C", [0, 0, 0, 0, 0, 0], "against", "C"), ("C", [1, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    (("C", [0, 0, 0, 0, 0, 0, 0], "against", "C"), ("C", [1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
     # Roster 4 gives Omarion Hampton 68.5 and Tony Pollard 9.0, a sum of 77.5.
     # Roster 12 gives Jacory Croskey-Merritt 24.0 and David Montgomery 12.5, a sum of 36.5.
     # Roster 4: 36.5 over 77.5 is 0.471, F. Roster 12: 2.12, A. Omarion Hampton is the highest-value player.
     # Roster 4: Croskey-Merritt and David Montgomery are out with no return week, so they count as back in week 14
     # at 6.8 and 10.3 a game. The lineup changes by 0.14, about the same, no fit step. A seller that gives the
     # highest-value player with no lineup gain, no standing step. Gets shares up and down, so trend is mixed.
-    # Croskey-Merritt is on IR with no return week, injury down. Byes two and two, even. Playoff mean rank 23.17
-    # got against 10.67 gave, against. Schedule against. Sum minus one, F stays F.
+    # Croskey-Merritt is on IR with no return week, but he is a star return bet, so no injury step, and upside up.
+    # Byes two and two, even. Playoff mean rank 23.17 got against 10.67 gave, against. Schedule against.
     # Roster 12: the lineup changes by minus 0.59, no loss, and it gets Hampton, fit up. Middle. Trend mixed.
     # No injury step. Schedule for. Sum plus one, A stays A.
     # Roster 12 asked and grades A: accept.
     # Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2. He is out with no return week
-    # on file, so RB2 is a hole. That hole moves fit from 0 to -1.
-    (("F", [-1, 0, 0, -1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+    # on file, so RB2 is a hole. That hole moves fit from 0 to -1. Sum zero, F stays F.
+    (("F", [-1, 0, 0, 0, 1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
 ]
 
 

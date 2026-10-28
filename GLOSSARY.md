@@ -573,3 +573,23 @@ a stance: it backs the engine's facts, disputes them, or is plain news. The sear
 family `WV.research.{player_id}.{n}`. The fact ID is the citation. The URL is text the page shows. When the search fails for every
 player, the board sets `experts_missing`. Use "experts" on the page.
 _Avoid_: expert take (alone), quote, rumor
+
+**Upside**:
+The adjuster that credits a side for a player it gets who is a star return bet or who has an opportunity. It steps up or not at all, never down.
+_Avoid_: potential, ceiling, buy low
+
+**Star**:
+A player with a chart value in the top 24 of the league's chart, a count that `STAR_RANK` sets.
+_Avoid_: stud, elite, top guy
+
+**Star return bet**:
+A star who is out now and is not out for the season. His return week may be missing. The injury adjuster does not count him against the side that gets him.
+_Avoid_: injured star, stash
+
+**Out for the season**:
+A player the returns file marks with `season` in place of a return week. He counts zero chart value for the side that gets him.
+_Avoid_: season-ending, done for the year, IR (alone)
+
+**Opportunity**:
+A player whose same-position teammate is out for the season or out with no near return, and whose snap share, target share, air yards share, or WOPR points up.
+_Avoid_: breakout, vacated targets, opened role

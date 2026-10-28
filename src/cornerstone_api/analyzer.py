@@ -116,15 +116,16 @@ def _factor_lean(adjuster: Adjuster) -> Lean:
 def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
     """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets."""
     # The analyze document and the finder document share this shape, so the site renders a side one way.
-    a, b = trade.sides
+    # Each given player carries `to` and each got player carries `from`, so the site can tag a player by team.
+    givers = trade.givers
     return [
         {
             "roster_id": side.roster_id,
             "team": snapshot.teams[side.roster_id].name,
-            "gives": [_player(snapshot, pid) for pid in side.gives],
-            "gets": [_player(snapshot, pid) for pid in other.gives],
+            "gives": [{**_player(snapshot, player.player_id), "to": player.to} for player in side.gives],
+            "gets": [{**_player(snapshot, pid), "from": givers[pid]} for pid in trade.gets(side.roster_id)],
         }
-        for side, other in ((a, b), (b, a))
+        for side in trade.sides
     ]
 
 
@@ -157,7 +158,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "reason": analysis.verdict.reason,
             "differs": analysis.verdict_differs,
         },
-        # The fairness is for both sides, after the decision, so the asker's own answer stays the lead.
+        # The fairness is for every side, after the decision, so the asker's own answer stays the lead.
         "fairness": fairness_result.model_dump(mode="json"),
         "sides": sides,
         "as_of": _as_of(snapshot),

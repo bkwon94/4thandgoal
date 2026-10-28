@@ -134,8 +134,13 @@ class FakeClaude:
 
 
 # Nico Collins for Dalton Kincaid and Garrett Wilson, asked by roster 4.
-TRADE = {"season": 2026, "sides": [{"roster_id": 4, "gives": ["7569"]},
-                                   {"roster_id": 12, "gives": ["10236", "8146"]}], "asker": 4}
+def _sides(four_gives: list[str], twelve_gives: list[str]) -> list[dict]:
+    """The sides of a trade of roster 4 and roster 12, each given player sent to the other side."""
+    return [{"roster_id": 4, "gives": [{"player_id": pid, "to": 12} for pid in four_gives]},
+            {"roster_id": 12, "gives": [{"player_id": pid, "to": 4} for pid in twelve_gives]}]
+
+
+TRADE = {"season": 2026, "sides": _sides(["7569"], ["10236", "8146"]), "asker": 4}
 
 
 def _client(settings, sources, analyzer=None):
@@ -267,7 +272,7 @@ def test_a_trade_input_error_from_analyze_clears_the_teams_of_its_season(setting
     client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper), StubAnalyzer())
     client.get("/teams", params={"season": 2026}, headers=HEADERS)
     # Garrett Wilson is on roster 12, not roster 4, so the form showed a roster that Sleeper no longer has.
-    trade = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
+    trade = {**TRADE, "sides": _sides(["8146"], ["10236"])}
     assert client.post("/analyze", json=trade, headers=HEADERS).status_code == 422
     assert sleeper.calls == 2
     assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
@@ -352,7 +357,7 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
     assert [side["chart"]["lean"] for side in doc["sides"]] == ["even", "even"]
     names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 6
+    assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 7
     assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
     # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
@@ -370,6 +375,82 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert doc["fallback"] is False
 
 
+def test_each_given_player_names_where_he_goes_and_each_got_player_where_he_comes_from(settings, sources):
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
+    four, twelve = doc["trade"]["sides"]
+    assert [(p["player_id"], p["to"]) for p in four["gives"]] == [("7569", 12)]
+    assert [(p["player_id"], p["from"]) for p in four["gets"]] == [("10236", 12), ("8146", 12)]
+    assert [(p["player_id"], p["to"]) for p in twelve["gives"]] == [("10236", 4), ("8146", 4)]
+    assert [(p["player_id"], p["from"]) for p in twelve["gets"]] == [("7569", 4)]
+
+
+def _gives(pairs: list[tuple[str, int]]) -> list[dict]:
+    return [{"player_id": pid, "to": to} for pid, to in pairs]
+
+
+@pytest.mark.parametrize("four_gives, twelve_gives, message", [
+    ([("7569", 7)], [("10236", 4)], "Player 7569 goes to roster 7, which is not a side of the trade"),
+    ([("7569", 12)], [("10236", 12)], "Roster 4 gets no player in the trade"),
+    ([("7569", 12), ("7569", 12)], [("10236", 4)], "A player can appear only once in a proposed trade"),
+    ([("7569", 12), ("4881", 4)], [("10236", 4)], "Player 4881 goes to his own roster 4"),
+])
+def test_a_trade_with_a_bad_destination_or_a_repeat_is_422_with_a_plain_message(
+        settings, sources, four_gives, twelve_gives, message):
+    analyzer = StubAnalyzer()
+    sides = [{"roster_id": 4, "gives": _gives(four_gives)}, {"roster_id": 12, "gives": _gives(twelve_gives)}]
+    response = _client(settings, sources, analyzer).post("/analyze", json={**TRADE, "sides": sides},
+                                                         headers=HEADERS)
+    assert response.status_code == 422
+    assert [error["msg"] for error in response.json()["detail"]] == [f"Value error, {message}"]
+    assert analyzer.calls == 0
+
+
+def test_a_fifth_side_is_422_with_a_plain_message(settings, sources):
+    analyzer = StubAnalyzer()
+    five = ((4, "7569", 12), (12, "10236", 7), (7, "11628", 3), (3, "4034", 1), (1, "1", 4))
+    sides = [{"roster_id": roster_id, "gives": _gives([(pid, to)])} for roster_id, pid, to in five]
+    response = _client(settings, sources, analyzer).post("/analyze", json={**TRADE, "sides": sides}, headers=HEADERS)
+    assert response.status_code == 422
+    message = "Value error, A proposed trade has four sides at most"
+    assert [error["msg"] for error in response.json()["detail"]] == [message]
+    assert analyzer.calls == 0
+
+
+# Roster 4 sends Nico Collins to roster 12, roster 12 sends Kincaid to roster 4 and Wilson to roster 7,
+# and roster 7 sends Marvin Harrison Jr. to roster 4.
+THREE = {"season": 2026, "asker": 4, "sides": [
+    {"roster_id": 4, "gives": _gives([("7569", 12)])},
+    {"roster_id": 12, "gives": _gives([("10236", 4), ("8146", 7)])},
+    {"roster_id": 7, "gives": _gives([("11628", 4)])},
+]}
+
+
+def test_a_three_side_request_grades_with_every_side_in_the_order_of_the_request(settings, sources):
+    response = _client(settings, sources, StubAnalyzer()).post("/analyze", json=THREE, headers=HEADERS)
+    assert response.status_code == 200
+    doc = response.json()
+    assert [side["roster_id"] for side in doc["trade"]["sides"]] == [4, 12, 7]
+    assert [side["roster_id"] for side in doc["fairness"]["sides"]] == [4, 12, 7]
+    assert [side["roster_id"] for side in doc["sides"]] == [4, 12, 7]
+    four, twelve, seven = doc["trade"]["sides"]
+    assert [(p["player_id"], p["from"]) for p in four["gets"]] == [("10236", 12), ("11628", 7)]
+    assert [(p["player_id"], p["to"]) for p in twelve["gives"]] == [("10236", 4), ("8146", 7)]
+    assert [(p["player_id"], p["from"]) for p in seven["gets"]] == [("8146", 12)]
+    assert doc["decision"]["for_roster"] == 4
+    assert all(len(side["factors"]) == len(doc["sides"][0]["factors"]) for side in doc["sides"])
+
+
+def test_the_same_gives_with_other_destinations_is_another_cache_key(settings, sources):
+    # In a three-side trade the destinations change what each side gets, so they are part of the key.
+    swapped = {**THREE, "sides": [
+        {"roster_id": 4, "gives": _gives([("7569", 7)])},
+        {"roster_id": 12, "gives": _gives([("10236", 4), ("8146", 4)])},
+        {"roster_id": 7, "gives": _gives([("11628", 12)])},
+    ]}
+    snapshot = sources.snapshot(settings.repo, 2026)
+    assert cache_key(ProposedTrade(**THREE), snapshot) != cache_key(ProposedTrade(**swapped), snapshot)
+
+
 def test_the_document_holds_no_trade_value_sum_or_ratio(settings, sources):
     text = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).text
     # The trade values of the three players, the sum of the two, and the ratios never appear.
@@ -382,7 +463,7 @@ def test_the_document_holds_no_trade_value_sum_or_ratio(settings, sources):
 def test_a_player_not_on_the_giving_roster_is_422_with_the_names_and_the_id(settings, sources):
     analyzer = StubAnalyzer()
     # Garrett Wilson is on roster 12, not roster 4.
-    trade = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
+    trade = {**TRADE, "sides": _sides(["8146"], ["10236"])}
     response = _client(settings, sources, analyzer).post("/analyze", json=trade, headers=HEADERS)
     assert response.status_code == 422
     assert response.json()["detail"]["player_id"] == "8146"
@@ -472,12 +553,12 @@ def test_the_chart_lean_maps_from_the_start_letter(settings, sources, letter, le
 
 
 def _steps(steps, schedule_lean):
-    """Breakdowns with the steps of the first five adjusters of each side and the lean of the schedule set."""
+    """Breakdowns with the steps of the first six adjusters of each side and the lean of the schedule set."""
     def rework(breakdowns):
         reworked = []
         for b in breakdowns:
-            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:5], steps)]
-            adjusters.append(b.adjusters[5].model_copy(update={"lean": schedule_lean}))
+            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:6], steps)]
+            adjusters.append(b.adjusters[6].model_copy(update={"lean": schedule_lean}))
             reworked.append(b.model_copy(update={"adjusters": adjusters}))
         return tuple(reworked)
     return rework
@@ -485,11 +566,21 @@ def _steps(steps, schedule_lean):
 
 @pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
 def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
-    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, -1], schedule_lean))
+    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, -1], schedule_lean))
     factors = doc["sides"][0]["factors"]
-    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "handcuff",
-                                            "schedule"]
-    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "against", schedule_lean]
+    assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "upside",
+                                            "handcuff", "schedule"]
+    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "against", schedule_lean]
+
+
+def test_a_graded_trade_carries_an_upside_factor_per_side(settings, sources):
+    doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
+    for side in doc["sides"]:
+        upside = [f for f in side["factors"] if f["name"] == "upside"]
+        assert len(upside) == 1
+        # No player in TRADE is a star out now or has an opportunity, so the upside is even.
+        assert upside[0] == {"name": "upside", "lean": "even",
+                             "reason": "No player it gets is a star out now or has an opportunity."}
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
@@ -618,6 +709,18 @@ def test_the_cache_key_changes_when_a_rostered_player_moves_into_the_out_set(set
     assert cache_key(trade, _with_week_rows(out, {rostered: 14}, {rostered: {14: 12.5}})) != cache_key(trade, out)
 
 
+def test_the_cache_key_changes_with_a_season_mark_on_any_roster(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = sources.snapshot(settings.repo, trade.season)
+    rostered = snapshot.rosters[4][0]
+    outside = _outside_player(snapshot, [4, 12])
+    # A season mark zeroes a chart value or opens an opportunity for a teammate, so each mark must miss.
+    for player in (rostered, outside):
+        marked = snapshot.model_copy(update={"out_for_season": {player}})
+        assert cache_key(trade, marked) != cache_key(trade, snapshot)
+        assert finder_cache_key(2026, 4, 12, marked) != finder_cache_key(2026, 4, 12, snapshot)
+
+
 def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = sources.snapshot(settings.repo, trade.season)
@@ -731,7 +834,7 @@ def _strings(value):
 def test_a_trade_with_an_unlisted_player_leans_even_with_no_letter(settings, sources):
     snapshot = sources.snapshot(settings.repo, 2026)
     unlisted = next(pid for pid in snapshot.rosters[12] if pid not in snapshot.chart.values and not is_def(pid))
-    trade = {**TRADE, "sides": [TRADE["sides"][0], {"roster_id": 12, "gives": [unlisted]}]}
+    trade = {**TRADE, "sides": _sides(["7569"], [unlisted])}
     doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=trade, headers=HEADERS).json()
     for side in doc["sides"]:
         assert side["chart"]["lean"] == "even"
@@ -768,7 +871,7 @@ def test_a_repeat_is_a_cache_hit_with_one_claude_call(settings, fixture_raw_dir,
     first = _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED), analyzer)
     # The rosters fetch time moves on every request, but a repeat on unchanged rosters is the same trade.
     later = _client(settings, _at(fixture_raw_dir, chart_week6, FETCHED.replace(minute=55)), analyzer)
-    swapped = {**TRADE, "sides": [TRADE["sides"][0], {"roster_id": 12, "gives": ["8146", "10236"]}]}
+    swapped = {**TRADE, "sides": _sides(["7569"], ["8146", "10236"])}
     one = first.post("/analyze", json=TRADE, headers=HEADERS).json()
     two = later.post("/analyze", json=swapped, headers=HEADERS).json()
     assert analyzer.calls == 1
@@ -999,7 +1102,7 @@ def test_a_bad_trade_does_not_count_as_a_grade(settings, sources):
     from cornerstone.tunables import GRADES_PER_MINUTE
 
     # Garrett Wilson is on roster 12, not roster 4.
-    bad = {**TRADE, "sides": [{"roster_id": 4, "gives": ["8146"]}, {"roster_id": 12, "gives": ["10236"]}]}
+    bad = {**TRADE, "sides": _sides(["8146"], ["10236"])}
     bad_client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
     for _ in range(GRADES_PER_MINUTE + 1):
         assert bad_client.post("/analyze", json=bad, headers=HEADERS).status_code == 422
@@ -1057,9 +1160,9 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 
 
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
-# The fairness block's gives_more is a roster id.
+# The fairness block's gives_more is a roster id, and so are the to and from of each traded player.
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
-               "season", "week", "games", "in_progress", "snaps", "usage"}
+               "season", "week", "games", "in_progress", "snaps", "usage", "to", "from"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
 
@@ -1520,7 +1623,7 @@ def test_the_find_fixture_reasons_pass_the_real_reason_checks(found):
     fixture = json.loads(FIND_FIXTURE.read_text(encoding="utf-8"))
     # The fixture is the run on these rosters, so its trades are the finder's trades in the same order.
     assert [[[player["player_id"] for player in side["gives"]] for side in item["sides"]]
-            for item in fixture["trades"]] == [[side.gives for side in item.trade.sides] for item in items]
+            for item in fixture["trades"]] == [[side.player_ids for side in item.trade.sides] for item in items]
     sheets = _sheets(snapshot, items)
     out = _reasons(sheets, [item["reason"] for item in fixture["trades"]])
     assert check_reasons(out, items, snapshot, sheets) == []
@@ -1696,10 +1799,11 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_10():
+def test_the_document_version_is_11():
     import cornerstone_api.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
     # The as-of block says when the week has no chart, so a document stored before that must never serve.
     # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
-    assert cache_module.DOCUMENT_VERSION == 10
+    # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
+    assert cache_module.DOCUMENT_VERSION == 11

@@ -139,10 +139,10 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     """The depth of a roster after the trade at each position the trade touches, and its open roster spots."""
     n = Nums()
     team = snapshot.teams[rid].name
-    gives = next(s.gives for s in trade.sides if s.roster_id == rid)
-    gets = next(s.gives for s in trade.sides if s.roster_id != rid)
+    gives = next(s.player_ids for s in trade.sides if s.roster_id == rid)
+    gets = trade.gets(rid)
     after = [pid for pid in snapshot.rosters[rid] if pid not in gives] + gets
-    traded = [pid for side in trade.sides for pid in side.gives]
+    traded = trade.player_ids
     positions = sorted({snapshot.players[pid].position for pid in traded})
     depth = [f"{n(sum(snapshot.players[pid].position == pos for pid in after if pid in snapshot.players))} {pos}"
              for pos in positions]
@@ -264,7 +264,7 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     facts = [_week_fact(snapshot)]
     through = snapshot.as_of.stats_through
     for side in trade.sides:
-        for pid in side.gives:
+        for pid in side.player_ids:
             position = snapshot.players[pid].position
             facts.append(_ppg_fact(snapshot, pid))
             facts.append(_share_fact(snapshot, pid, "usage", snap_share(snapshot.stats, pid, through)))

@@ -61,7 +61,7 @@ class VerdictOut(BaseModel):
 
 
 class AnalysisOut(BaseModel):
-    """The structured output of the Claude call: exactly 2 sides, one per roster in the trade, then the verdict.
+    """The structured output of the Claude call: exactly one side per roster in the trade, then the verdict.
 
     The sides come in the order of the user message, and no side repeats.
     """
@@ -74,9 +74,10 @@ class Analysis(BaseModel):
     """The breakdowns and the code verdict, with the final letters, the analysis per side,
     and the verdict that stands."""
 
-    breakdowns: tuple[Breakdown, Breakdown]
+    # In the order of the trade's sides, one per side, two to four in all.
+    breakdowns: tuple[Breakdown, ...]
     code_verdict: Verdict
-    sides: tuple[SideAnalysis, SideAnalysis]
+    sides: tuple[SideAnalysis, ...]
     verdict: Verdict
     # True when the verdict that stands differs from the code's default.
     verdict_differs: bool
@@ -84,44 +85,47 @@ class Analysis(BaseModel):
     fallback: bool
 
     @property
-    def standing_letters(self) -> tuple[Letter, Letter]:
+    def standing_letters(self) -> tuple[Letter, ...]:
         """The final letters that stand, in the order of the trade's sides."""
         # Claude can move a letter one step, and the verdict and the fairness must read the same letters.
-        return (self.sides[0].final_letter, self.sides[1].final_letter)
+        return tuple(side.final_letter for side in self.sides)
 
 
-def _names(snapshot: Snapshot, pids: list[str]) -> str:
-    return ", ".join(snapshot.players[pid].name for pid in pids)
-
-
-def _side_shape(breakdowns: tuple[Breakdown, Breakdown]) -> str:
-    """The one shape of the sides that the check accepts, in words, with both roster IDs."""
-    return f"exactly 2 sides: roster {breakdowns[0].roster_id} first, then roster {breakdowns[1].roster_id}, each once"
+def _side_shape(breakdowns: tuple[Breakdown, ...]) -> str:
+    """The one shape of the sides that the check accepts, in words, with every roster ID in order."""
+    first, *rest = (b.roster_id for b in breakdowns)
+    then = "".join(f", then roster {roster_id}" for roster_id in rest)
+    return f"exactly {len(breakdowns)} sides: roster {first} first{then}, each once"
 
 
 def trade_side_lines(
-    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown],
-) -> tuple[list[str], list[str]]:
+    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...],
+) -> tuple[list[str], ...]:
     """The prompt lines of each side of a trade: the team, the players it gives and gets, and its breakdown."""
     # The analysis prompt and the finder prompt both show a side this way, so Claude reads one layout.
+    # Each player names the team he goes to or comes from, so a trade of three or more sides reads plainly.
+    team = {side.roster_id: snapshot.teams[side.roster_id].name for side in trade.sides}
+    givers = trade.givers
     blocks = []
-    for side, other, breakdown in ((trade.sides[0], trade.sides[1], breakdowns[0]),
-                                   (trade.sides[1], trade.sides[0], breakdowns[1])):
+    for side, breakdown in zip(trade.sides, breakdowns):
         asked = ", the side that asked" if side.roster_id == trade.asker else ""
+        gives = ", ".join(f"{snapshot.players[p.player_id].name} to {team[p.to]}" for p in side.gives)
+        gets = ", ".join(f"{snapshot.players[pid].name} from {team[givers[pid]]}"
+                         for pid in trade.gets(side.roster_id))
         blocks.append([
-            f"Side: roster {side.roster_id}, {snapshot.teams[side.roster_id].name}{asked}",
-            f"Gives: {_names(snapshot, side.gives)}",
-            f"Gets: {_names(snapshot, other.gives)}",
+            f"Side: roster {side.roster_id}, {team[side.roster_id]}{asked}",
+            f"Gives: {gives}",
+            f"Gets: {gets}",
             f"Start letter: {breakdown.start_letter}. {breakdown.reason}",
             *(f"{a.name.capitalize()}: {a.lean if a.lean is not None else STEP_WORDS[a.step]}. {a.reason}"
               for a in breakdown.adjusters),
             f"Final letter: {breakdown.final_letter}",
         ])
-    return blocks[0], blocks[1]
+    return tuple(blocks)
 
 
 def build_analysis_prompt(
-    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict,
+    trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...], code_verdict: Verdict,
     facts: dict[str, Fact], feedback: str | None,
 ) -> tuple[str, str]:
     system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
@@ -177,8 +181,8 @@ def _letter_failures(label: str, text: str) -> list[str]:
     return failures
 
 
-def _breakdown_text(breakdowns: tuple[Breakdown, Breakdown]) -> str:
-    """The reasons of both breakdowns. The prompt shows them, so their numbers may appear in the prose."""
+def _breakdown_text(breakdowns: tuple[Breakdown, ...]) -> str:
+    """The reasons of every breakdown. The prompt shows them, so their numbers may appear in the prose."""
     return " ".join(reason for b in breakdowns for reason in (b.reason, *(a.reason for a in b.adjusters)))
 
 
@@ -199,7 +203,7 @@ def _names_of_everyone(snapshot: Snapshot) -> list[str]:
 
 
 def trade_prose_failures(
-    owner: str, kind: str, text: str, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown],
+    owner: str, kind: str, text: str, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...],
     facts: dict[str, Fact], cited: list[str], sentences: tuple[int, int],
 ) -> list[str]:
     """The prose rules of the analysis on one piece of prose about a trade, such as a side's analysis.
@@ -232,12 +236,13 @@ def trade_prose_failures(
 
 
 def check_response(
-    out: AnalysisOut, snapshot: Snapshot, breakdowns: tuple[Breakdown, Breakdown], facts: dict[str, Fact],
+    out: AnalysisOut, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...], facts: dict[str, Fact],
 ) -> list[str]:
     """Every rule a response breaks. An empty list means the response stands."""
     failures = []
     by_roster = {s.roster_id: s for s in out.sides}
-    if sorted(by_roster) != sorted(b.roster_id for b in breakdowns) or len(out.sides) != 2:
+    # The sides must come in the order of the user message, each once, so a list in another order fails too.
+    if [s.roster_id for s in out.sides] != [b.roster_id for b in breakdowns]:
         got_rosters = ", ".join(str(s.roster_id) for s in out.sides) or "none"
         return [f"the response must have {_side_shape(breakdowns)}; it had rosters {got_rosters}"]
     names = _names_of_everyone(snapshot)
@@ -257,7 +262,7 @@ def check_response(
             cited = [fid for fid in side.cited if fid in facts]
             failures += _prose_failures(f"{label} reason", side.reason, _allowed(facts, cited, breakdown_text),
                                         _allowed_text(facts, cited, breakdown_text), names)
-    # The verdict reason cites no fact of its own, so any fact the two analyses cite may back its numbers.
+    # The verdict reason cites no fact of its own, so any fact the analyses cite may back its numbers.
     every = [fid for s in out.sides for fid in s.cited if fid in facts]
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
                                 _allowed_text(facts, every, breakdown_text), names)
@@ -265,7 +270,7 @@ def check_response(
     return failures
 
 
-def _accepted(out: AnalysisOut, breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict) -> Analysis:
+def _accepted(out: AnalysisOut, breakdowns: tuple[Breakdown, ...], code_verdict: Verdict) -> Analysis:
     sides = []
     for breakdown in breakdowns:
         side = next(s for s in out.sides if s.roster_id == breakdown.roster_id)
@@ -277,7 +282,7 @@ def _accepted(out: AnalysisOut, breakdowns: tuple[Breakdown, Breakdown], code_ve
                     verdict_differs=chosen.choice != code_verdict.choice, fallback=False)
 
 
-def _fallback(breakdowns: tuple[Breakdown, Breakdown], code_verdict: Verdict) -> Analysis:
+def _fallback(breakdowns: tuple[Breakdown, ...], code_verdict: Verdict) -> Analysis:
     """The code's letters and verdict with "Analysis unavailable" per side. The shape lives here once."""
     sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
                                analysis=UNAVAILABLE, cited=[]) for b in breakdowns)
