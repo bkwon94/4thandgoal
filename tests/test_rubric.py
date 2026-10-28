@@ -1616,13 +1616,28 @@ def test_a_side_that_gets_a_star_out_for_the_season_gets_no_upside(snap):
     assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out for the season."
 
 
-def test_a_star_outside_the_top_star_rank_is_no_star_return_bet(snap):
-    # Hampton at 0.5 drops to the last of the 25 players on the chart, past STAR_RANK.
-    snap = _with_values(_with_status(snap, STAR, "Out"), {STAR: 0.5})
+def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
+    # Hampton at 2.0 sits under Tuten at 3.0 and Stevenson at 2.5, so he is the 13th RB on the chart, past the
+    # top 12. He is still 24th of the 25 players on the chart.
+    snap = _with_values(_with_status(snap, STAR, "Out"), {STAR: 2.0})
     fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
-    assert tunables.STAR_RANK == 24
+    assert tunables.STAR_RANK_BY_POSITION["RB"] == 12
     assert _adjuster(fourth, "upside").step == 0
     assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out with no near return."
+
+
+def test_a_qb_4th_at_his_position_and_47th_on_the_chart_is_a_star_return_bet(snap):
+    # Lamar Jackson is Out with no return week. At 1.0 he sits under 24 players on the chart. Twenty two players off
+    # the chart join it at 2.0, one of them a QB, so he is the 4th QB and 47th overall.
+    off_chart = [pid for pid in sorted(snap.players) if pid not in snap.chart.values]
+    qb = next(pid for pid in off_chart if snap.players[pid].position == "QB")
+    others = [pid for pid in off_chart if snap.players[pid].position in ("RB", "WR", "TE")][:21]
+    snap = _with_values(snap, {LAMAR: 1.0, qb: 2.0, **{pid: 2.0 for pid in others}})
+    assert 1 + sum(1 for value in snap.chart.values.values() if value > 1.0) == 47
+    # On the week 6 snapshot roster 6 holds Lamar Jackson, so roster 7 gets him back for Mahomes.
+    seventh, _ = grade(_trade(7, [MAHOMES], 6, [LAMAR]), snap)
+    assert _adjuster(seventh, "upside").step == 1
+    assert _adjuster(seventh, "upside").reason == "Lamar Jackson is a star out now with a return in play."
 
 
 @pytest.mark.parametrize("mark, out", [
@@ -1953,7 +1968,7 @@ def test_the_clamp_holds_three_steps_down_to_one(snap, monkeypatch):
     # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
     # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
     # Rice at 40 would be a star return bet, which the injury exempts, so no player is a star here.
-    monkeypatch.setattr("cornerstone.adjusters.STAR_RANK", 0)
+    monkeypatch.setattr("cornerstone.adjusters.STAR_RANK_BY_POSITION", {})
     fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(snap, {RICE: 40.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
     assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0]
@@ -2175,9 +2190,10 @@ def _before_real_trade(snap, index: int):
 # fixture and the returns file: trade values from the week 6 chart, points per game over weeks 2 to 5,
 # standings through week 5, and shares of weeks 4 and 5 against weeks 2 and 3. Trade week N is 6, so a bye in
 # week 6 or later is left. Roster 4 is a seller at 1-9. Roster 6 is a contender. Rosters 7, 8, 11, and 12 are
-# in the middle at 4-6. A star is in the top STAR_RANK of the 25 players on the chart, so every player on it but
-# Braelon Allen is a star. A star out now and not out for the season is a star return bet: the upside steps up for
-# him, and the injury leaves him alone.
+# in the middle at 4-6. A star is in the top of his position on the chart, by STAR_RANK_BY_POSITION. The chart holds
+# 16 RBs, so every player on it but Rhamondre Stevenson and Braelon Allen, the 13th and 14th RB, is a star. A star
+# out now and not out for the season is a star return bet: the upside steps up for him, and the injury leaves him
+# alone.
 HAND_WORKED = [
     # Roster 7 gives Marvin Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5, a sum of 78.5.
     # Roster 8 gives Braelon Allen 1.5, Malik Nabers 6.5, Jared Goff 13.0, and Breece Hall 41.0, a sum of 62.0.

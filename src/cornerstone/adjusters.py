@@ -36,7 +36,7 @@ from cornerstone.tunables import (
     SCHEDULE_RANK_GAP,
     SELLER_GAP,
     SHARE_WEEKS,
-    STAR_RANK,
+    STAR_RANK_BY_POSITION,
     WOPR_SWING,
 )
 
@@ -918,15 +918,21 @@ def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
 
 
 def _star(snapshot: Snapshot, player_id: str) -> bool:
-    """True when the player's chart value is in the top STAR_RANK of the league's chart. GLOSSARY.md, "Star".
+    """True when the player's chart value is in the top of his position on the league's chart. GLOSSARY.md, "Star".
 
-    The rank is over every player on the chart, not the roster. A tie shares the better rank, so a tie at the edge
-    makes every tied player a star. With no chart, or with the player not on it, he is no star.
+    The rank is over every player at his position on the chart, not the roster. STAR_RANK_BY_POSITION sets the count
+    per position, and a position not in it has no stars. A tie shares the better rank, so a tie at the edge makes
+    every tied player a star. With no chart, or with the player not on it, he is no star.
     """
     if snapshot.chart is None or player_id not in snapshot.chart.values:
         return False
+    position = snapshot.players[player_id].position
+    if position not in STAR_RANK_BY_POSITION:
+        return False
     value = snapshot.chart.values[player_id]
-    return 1 + sum(1 for other in snapshot.chart.values.values() if other > value) <= STAR_RANK
+    above = sum(1 for pid, other in snapshot.chart.values.items()
+                if other > value and pid in snapshot.players and snapshot.players[pid].position == position)
+    return 1 + above <= STAR_RANK_BY_POSITION[position]
 
 
 def _star_return_bet(snapshot: Snapshot, player_id: str) -> bool:
