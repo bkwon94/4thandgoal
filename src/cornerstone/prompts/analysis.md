@@ -43,6 +43,9 @@ Then give a verdict for the side that asked, with one reason.
    "they", or the player names.
 9. Never name a letter grade in the analysis or the verdict reason. Never write the word letter.
 10. For roster fit, say position rank, the line, and hole. Never write replacement, tier, or floor.
+11. Call a player an upside, a return bet, or an opportunity only when the upside factor of that
+    side credits him, and then use the reason of that factor. When the upside factor credits no one,
+    say nothing about upside for that side.
 
 ## Trade value
 

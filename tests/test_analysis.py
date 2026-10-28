@@ -507,6 +507,35 @@ def test_a_side_that_does_well_in_plain_words_passes(trade, snap):
     assert not analyze(trade, snap, call=fake).fallback
 
 
+
+def _grade_with_upside(monkeypatch, step):
+    """Grade as the code does, with the upside adjuster of roster 11 set to `step`."""
+    real_grade = analysis.grade
+
+    def graded(trade, snapshot):
+        first, second = real_grade(trade, snapshot)
+        adjusters = [a.model_copy(update={"step": step}) if a.name == "upside" else a for a in first.adjusters]
+        return first.model_copy(update={"adjusters": adjusters}), second
+
+    monkeypatch.setattr(analysis, "grade", graded)
+
+
+UPSIDE_TEXT = "Garrett Wilson scored 14.2 points per game before the trade. He has upside. He is a starter."
+
+
+def test_an_upside_claim_fails_when_the_upside_adjuster_credits_no_one(trade, snap, monkeypatch):
+    _grade_with_upside(monkeypatch, 0)
+    bad = _response(eleven=_side(11, analysis=UPSIDE_TEXT))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert "roster 11 analysis: 'upside' claims upside" in fake.calls[1][1]
+
+
+def test_an_upside_claim_passes_when_the_upside_adjuster_credits_a_player(trade, snap, monkeypatch):
+    _grade_with_upside(monkeypatch, 1)
+    fake = FakeClaude(_response(eleven=_side(11, analysis=UPSIDE_TEXT)))
+    assert not analyze(trade, snap, call=fake).fallback
+
 # A three-side trade on the same snapshot: roster 4 sends Nico Collins to roster 11, roster 11 sends Tuten to roster 12
 # and Wilson to roster 4, and roster 12 sends Jacobs and Vele to roster 11. Roster 12 asked.
 COLLINS = "7569"

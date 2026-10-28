@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from cornerstone.adjusters import STEP_WORDS
+from cornerstone.adjusters import STEP_WORDS, UPSIDE
 from cornerstone.models import Fact
 from cornerstone.names import NAME_SUFFIXES
 from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdict, grade, verdict
@@ -38,6 +38,8 @@ CHART_WORD = re.compile(r"(?<!\w)(?<!depth )charts?(?!\w)", re.IGNORECASE)
 # The document gives a decision, not letters, so no letter grade reaches the prose a manager reads.
 LETTER_GRADE = re.compile(r"\b(?:grades?|graded|grade of|an?) [A-F]\b|\b[A-F]-(?:level|grade)\b")
 LETTER_WORD = re.compile(r"\bletters?\b", re.IGNORECASE)
+# A side's prose may claim upside only when the upside adjuster credits a player of that side. GLOSSARY.md, "Upside".
+UPSIDE_WORDS = re.compile(r"\b(?:upside|return bets?|opportunit(?:y|ies))\b", re.IGNORECASE)
 
 
 class SideAnalysis(BaseModel):
@@ -181,6 +183,14 @@ def _letter_failures(label: str, text: str) -> list[str]:
     return failures
 
 
+def _upside_failures(label: str, text: str, breakdown: Breakdown) -> list[str]:
+    """The upside rule on one piece of a side's prose: no upside claim when the upside adjuster credits no one."""
+    if any(a.name == UPSIDE and a.step > 0 for a in breakdown.adjusters):
+        return []
+    return [f"{label}: '{match.group()}' claims upside, but the upside adjuster credits no player of this side"
+            for match in UPSIDE_WORDS.finditer(text)]
+
+
 def _breakdown_text(breakdowns: tuple[Breakdown, ...]) -> str:
     """The reasons of every breakdown. The prompt shows them, so their numbers may appear in the prose."""
     return " ".join(reason for b in breakdowns for reason in (b.reason, *(a.reason for a in b.adjusters)))
@@ -258,10 +268,12 @@ def check_response(
             failures.append(f"{label}: the final letter differs from the code's, so it needs a reason")
         failures += trade_prose_failures(label, "analysis", side.analysis, snapshot, breakdowns, facts, side.cited,
                                          (MIN_SENTENCES, MAX_SENTENCES))
+        failures += _upside_failures(f"{label} analysis", side.analysis, breakdown)
         if side.reason:
             cited = [fid for fid in side.cited if fid in facts]
             failures += _prose_failures(f"{label} reason", side.reason, _allowed(facts, cited, breakdown_text),
                                         _allowed_text(facts, cited, breakdown_text), names)
+            failures += _upside_failures(f"{label} reason", side.reason, breakdown)
     # The verdict reason cites no fact of its own, so any fact the analyses cite may back its numbers.
     every = [fid for s in out.sides for fid in s.cited if fid in facts]
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
