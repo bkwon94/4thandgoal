@@ -127,6 +127,9 @@ class PastWeek(BaseModel):
     nfl_teams: dict[str, str] = {}
     # The starters of each roster that week, in slot order, by roster id. The key starter rule reads them.
     starters: dict[int, list[str]] = {}
+    # Every player on each roster that week, bench included, in the order of the saved file, by roster id.
+    # The points of each one sit in `points`, because a player is on one roster per week.
+    rosters: dict[int, list[str]] = {}
 
 
 class UsageShare(BaseModel):
