@@ -384,14 +384,19 @@ def render_rankings(
 
 
 def render_managers(
-    history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None,
+    history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
+    roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
 ) -> Path:
-    """Write managers.json for the season: one entry per roster through the history week, in roster id order."""
+    """Write managers.json for the season: one entry per roster through the history week, in roster id order.
+    The players and the keywords go to managers for the names, the bench points, and the awards shelf."""
     season_dir = site_dir / str(season)
     out = season_dir / "managers.json"
     body = {
         "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": history.week,
-        "managers": [entry.model_dump(mode="json") for entry in managers(history, teams, players=players)],
+        "managers": [
+            entry.model_dump(mode="json")
+            for entry in managers(history, teams, players, roster_slots=roster_slots, week_awards=week_awards)
+        ],
     }
     season_dir.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")

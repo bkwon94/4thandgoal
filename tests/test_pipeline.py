@@ -187,6 +187,12 @@ def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixtur
     adds = [a for m in data["managers"] for w in m["moves"]["weeks"] for a in w["adds"]]
     assert adds
     assert any(a["name"] != a["player_id"] for a in adds)
+    # The raw league file of the week gives the roster slots, so every entry carries bench points.
+    assert all(m["bench"] is not None and len(m["weeks"]) == 6 for m in data["managers"])
+    # Only week 6 has a report, so the shelf counts the shelf awards of its facts file.
+    facts = json.loads((repo / "data" / "2026" / "week-06" / "facts.json").read_text(encoding="utf-8"))
+    shelf = [a for a in facts["data"]["awards"] if a["key"] != "overachiever"]
+    assert sum(sum(m["awards"].values()) for m in data["managers"]) == len(shelf)
     # The rankings command writes the same file from the same saved history.
     _managers(repo).unlink()
     run_rankings(repo, 2026, 6, _fake)
