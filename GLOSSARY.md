@@ -615,3 +615,23 @@ _Avoid_: season-ending, done for the year, IR (alone)
 **Opportunity**:
 A player whose same-position teammate is out for the season or out with no near return, and whose snap share, target share, air yards share, or WOPR points up.
 _Avoid_: breakout, vacated targets, opened role
+
+**Best lineup**:
+The starters a roster could have started in a week for the most points, by the league's slots and the real points.
+_Avoid_: Optimal lineup, perfect lineup, max lineup
+
+**Move**:
+One add to a roster from the waiver pool, by a waiver claim, a free agent pickup, or a trade, with its week and its bid.
+_Avoid_: Transaction, pickup, acquisition
+
+**Add**:
+A move by a waiver claim or a free agent pickup. A trade is a move but not an add.
+_Avoid_: Claim, pickup, signing
+
+**Drop**:
+The release of a player from a roster to the waiver pool, in a week.
+_Avoid_: Cut, release, waive
+
+**Roster grade**:
+The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of slot strength, holes, and depth.
+_Avoid_: Score, rating, power score
