@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "season": 2026,
+  "through": 7,
+  "managers": [
+    {
+      "roster_id": 1,
+      "team": {
+        "name": "Brock ‘N’ Roll",
+        "owner": "tjhong0104",
+        "avatar_url": "https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg"
+      },
+      "wins": 7,
+      "losses": 7,
+      "points_for": 770.88
+    },
+    {
+      "roster_id": 2,
+      "team": {
+        "name": "All You Need Is Love",
+        "owner": "wsh5022",
+        "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp"
+      },
+      "wins": 9,
+      "losses": 5,
+      "points_for": 733.34
+    },
+    {
+      "roster_id": 3,
+      "team": {
+        "name": "Lil Fridge",
+        "owner": "TeamJu",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183"
+      },
+      "wins": 10,
+      "losses": 4,
+      "points_for": 829.44
+    },
+    {
+      "roster_id": 4,
+      "team": {
+        "name": "Pukancun on 3",
+        "owner": "justinjjoo",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204"
+      },
+      "wins": 3,
+      "losses": 11,
+      "points_for": 615.89
+    },
+    {
+      "roster_id": 5,
+      "team": {
+        "name": "London Cooking",
+        "owner": "DumpsterFiresRUs",
+        "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg"
+      },
+      "wins": 9,
+      "losses": 5,
+      "points_for": 820.11
+    },
+    {
+      "roster_id": 6,
+      "team": {
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg"
+      },
+      "wins": 9,
+      "losses": 5,
+      "points_for": 833.42
+    },
+    {
+      "roster_id": 7,
+      "team": {
+        "name": "To Infinity and Bijan",
+        "owner": "bjpicard96",
+        "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg"
+      },
+      "wins": 5,
+      "losses": 9,
+      "points_for": 650.2
+    },
+    {
+      "roster_id": 8,
+      "team": {
+        "name": "Return of T Mac",
+        "owner": "jkwak03",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp"
+      },
+      "wins": 7,
+      "losses": 7,
+      "points_for": 720.58
+    },
+    {
+      "roster_id": 9,
+      "team": {
+        "name": "Maye d'force B with U",
+        "owner": "dkim475",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382"
+      },
+      "wins": 7,
+      "losses": 7,
+      "points_for": 779.49
+    },
+    {
+      "roster_id": 10,
+      "team": {
+        "name": "behold the lamb",
+        "owner": "steveekimm",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3"
+      },
+      "wins": 6,
+      "losses": 8,
+      "points_for": 679.66
+    },
+    {
+      "roster_id": 11,
+      "team": {
+        "name": "Unsolicited Dak Picks",
+        "owner": "mkim120",
+        "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp"
+      },
+      "wins": 6,
+      "losses": 8,
+      "points_for": 701.03
+    },
+    {
+      "roster_id": 12,
+      "team": {
+        "name": "Amon-Ra Dawg Your Team",
+        "owner": "pdurkim",
+        "avatar_url": "https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg"
+      },
+      "wins": 6,
+      "losses": 8,
+      "points_for": 751.88
+    }
+  ]
+}
