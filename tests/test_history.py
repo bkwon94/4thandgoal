@@ -83,6 +83,33 @@ def test_a_saved_week_keeps_the_starters_of_each_roster(fixture_history_root, fi
     assert len(h.weeks[6].starters[raw["matchups"][0]["roster_id"]]) == 8
 
 
+def test_a_saved_week_keeps_every_player_of_each_roster_with_his_points(fixture_history_root, fixture_raw_dir):
+    h = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
+    week = h.weeks[3]
+    assert week.rosters[1] == [
+        '11604', '12489', '13281', '13286', '2216', '2449', '3198', '5001',
+        '6797', '7543', '8167', '8183', '9225', '9226', 'SF',
+    ]
+    bench = [pid for pid in week.rosters[1] if pid not in week.starters[1]]
+    assert {pid: week.points[pid] for pid in bench} == {
+        '12489': 7.7, '13281': 0.0, '2449': 5.3, '5001': 4.5, '6797': 13.74, '9225': -1.0,
+    }
+    assert all(pid in week.points for players in week.rosters.values() for pid in players)
+
+
+def test_a_roster_with_an_empty_slot_keeps_every_player(fixture_history_root, fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    roster_id = raw["matchups"][0]["roster_id"]
+    benched = raw["matchups"][0]["starters"][1]
+    raw["matchups"][0]["starters"][1] = "0"
+    h = load_history(fixture_history_root, raw, week=6)
+    # The player out of the empty slot stays on the roster with his points.
+    assert benched in h.weeks[6].rosters[roster_id]
+    assert h.weeks[6].points[benched] == 5.9
+    assert "0" not in h.weeks[6].rosters[roster_id]
+    assert len(h.weeks[6].rosters[roster_id]) == 15
+
+
 def test_missing_week_is_incomplete(tmp_path, fixture_history_root, fixture_raw_dir):
     shutil.copytree(fixture_history_root, tmp_path / "h")
     shutil.rmtree(tmp_path / "h" / "week-03")

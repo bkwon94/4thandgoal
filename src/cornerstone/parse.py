@@ -246,4 +246,8 @@ def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
         starters={
             e["roster_id"]: [pid for pid in e.get("starters") or [] if pid != EMPTY_SLOT] for e in entries
         },
+        # The empty slot "0" is not a player, so it is never on a roster.
+        rosters={
+            e["roster_id"]: [pid for pid in e.get("players") or [] if pid != EMPTY_SLOT] for e in entries
+        },
     )

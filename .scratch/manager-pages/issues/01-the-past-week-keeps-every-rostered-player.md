@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The past week model gives, per roster, every player on it that week with his points, bench included.
-- [ ] The saved history tests cover a roster with bench players and a roster with an empty slot.
-- [ ] Every existing test passes. No saved file changes.
-- [ ] Each new or changed code file keeps its two-line docstring. Comments and the commit in STE.
+- [x] The past week model gives, per roster, every player on it that week with his points, bench included.
+- [x] The saved history tests cover a roster with bench players and a roster with an empty slot.
+- [x] Every existing test passes. No saved file changes.
+- [x] Each new or changed code file keeps its two-line docstring. Comments and the commit in STE.
