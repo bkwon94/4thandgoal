@@ -67,6 +67,17 @@ class Move(BaseModel):
     bid: int | None
 
 
+class Drop(BaseModel):
+    """The release of a player from a roster in a week, by a waiver claim or a free agent pickup.
+
+    A drop is its own model, not a field of Move: a transaction can drop a player with no add, and the
+    readers of the moves count each Move as an add. A trade drop is a side of the trade, so it is not a Drop.
+    """
+    player_id: str
+    roster_id: int
+    week: int
+
+
 class DraftPick(BaseModel):
     season: str
     round: int
@@ -130,6 +141,7 @@ class PastWeek(BaseModel):
     # Every player on each roster that week, bench included, in the order of the saved file, by roster id.
     # The points of each one sit in `points`, because a player is on one roster per week.
     rosters: dict[int, list[str]] = {}
+    drops: list[Drop] = []
 
 
 class UsageShare(BaseModel):
