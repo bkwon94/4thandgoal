@@ -18,6 +18,7 @@ from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, returns_path, save_week_to_history,
     saved_through,
 )
+from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.models import (
     Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
 )
@@ -25,7 +26,7 @@ from cornerstone.nflverse import nflverse_week
 from cornerstone.odds import OddsResult
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.power_rankings import power_rankings
-from cornerstone.render import _download_bytes, render_page_json, render_rankings, render_week
+from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
     write_bundle,
@@ -347,6 +348,11 @@ def run_build(
             log.warning("history incomplete through week %d: rankings.json not written", week)
     except (OSError, ValueError, KeyError) as err:
         log.warning("rankings.json not written for week %d: %s", week, err)
+    # The managers file reads the same saved history, so it comes right after the rankings file.
+    try:
+        _write_managers(repo, season, week, bundle.data.teams)
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("managers.json not written for week %d: %s", week, err)
     return page
 
 
@@ -370,6 +376,24 @@ def _write_rankings(
     if through > week:
         log.info("rankings.json covers weeks 1 to %d, past the built week %d", through, week)
     return render_rankings(history, season, teams, repo / "site", week, blurb, odds)
+
+
+def _write_managers(repo: Path, season: int, week: int, teams: dict[int, Team]) -> Path | None:
+    """Write managers.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
+    None, with one log line, when a week from 1 to `week` is missing or the history is under two weeks."""
+    root = history_root(repo, season)
+    # The same history as the rankings file, so the record of an entry matches the record of its rankings row.
+    through = saved_through(root, week)
+    history = History(week=through, weeks=load_saved_weeks(root, through))
+    if not history.complete():
+        log.warning("history incomplete through week %d: managers.json not written", week)
+        return None
+    if through < MANAGERS_MIN_WEEKS:
+        log.info(
+            "history holds %d of the %d weeks the file needs: managers.json not written", through, MANAGERS_MIN_WEEKS,
+        )
+        return None
+    return render_managers(history, season, teams, repo / "site")
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
@@ -476,6 +500,9 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key], bundle.odds)
     if out is None:
         raise BuildStopped(HISTORY_GAP.format(week=week))
+    # The command rebuilds the season files from the saved history, so the managers file comes along.
+    # A thin history only logs: the rankings file is the output of the command.
+    _write_managers(repo, season, week, bundle.data.teams)
     return out
 
 

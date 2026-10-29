@@ -18,6 +18,7 @@ import pytest
 
 from cornerstone.history import HISTORY_FILES, history_dir, history_root, load_saved_weeks
 from cornerstone.models import History
+from cornerstone.parse import parse_week
 from pathlib import Path
 
 from cornerstone.models import (
@@ -26,8 +27,8 @@ from cornerstone.models import (
 from cornerstone.nflverse import nflverse_week
 from cornerstone.power_rankings import power_rankings
 from cornerstone.pipeline import (
-    BuildStopped, _nflverse_for_week, _rankings_chapter, _write_rankings, make_bundle, read_verify, run_build,
-    run_page_json, run_rankings, run_rewrite, week_dir,
+    BuildStopped, _nflverse_for_week, _rankings_chapter, _write_managers, _write_rankings, make_bundle, read_verify,
+    run_build, run_page_json, run_rankings, run_rewrite, week_dir,
 )
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
@@ -168,6 +169,37 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
     assert run_rankings(repo, 2026, 6, _fake).read_text(encoding="utf-8") == built
 
 
+def _managers(repo):
+    return repo / "site" / "2026" / "managers.json"
+
+
+def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    built = _managers(repo).read_text(encoding="utf-8")
+    data = json.loads(built)
+    assert data["schema_version"] == 1
+    assert data["season"] == 2026
+    assert data["through"] == 6
+    assert [m["roster_id"] for m in data["managers"]] == list(range(1, 13))
+    # The rankings command writes the same file from the same saved history.
+    _managers(repo).unlink()
+    run_rankings(repo, 2026, 6, _fake)
+    assert _managers(repo).read_text(encoding="utf-8") == built
+
+
+def test_a_thin_history_writes_no_managers_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    # One saved week is under the two the file needs.
+    shutil.copytree(fixture_history_root / "week-01", history_root(repo, 2026) / "week-01")
+    teams = parse_week(load_raw(fixture_raw_dir)).teams
+    caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
+    assert _write_managers(repo, 2026, 1, teams) is None
+    assert not _managers(repo).exists()
+    lines = [r for r in caplog.records if r.name == "cornerstone.pipeline" and "managers.json" in r.getMessage()]
+    assert len(lines) == 1
+
+
 def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
@@ -210,6 +242,7 @@ def test_incomplete_history_skips_the_rankings_file_and_the_page_builds(tmp_path
     page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
     assert page.exists()
     assert not _rankings(repo).exists()
+    assert not _managers(repo).exists()
     assert "history incomplete" in caplog.text
 
 
@@ -597,6 +630,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "public/2026/week-06/page.json" in files
     assert "public/2026/rankings.json" in files
+    assert "public/2026/managers.json" in files
     assert "public/2026/week-06/waiver.json" in files
     assert "public/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
@@ -628,6 +662,8 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     assert "the publish goes out without rankings.json" in caplog.text
     assert "public/2026/rankings.json" not in files
     assert not (site_repo / "public" / "2026" / "rankings.json").exists()
+    assert "the publish goes out without managers.json" in caplog.text
+    assert not (site_repo / "public" / "2026" / "managers.json").exists()
 
 
 def test_publish_requires_built_page(tmp_path):

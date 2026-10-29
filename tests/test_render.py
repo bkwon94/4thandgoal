@@ -11,7 +11,9 @@ from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence
 from cornerstone.odds import OddsResult, TeamOdds
 from cornerstone.parse import parse_week
-from cornerstone.render import _saved_avatars, _saved_headshots, build_context, render_rankings, render_week
+from cornerstone.render import (
+    _saved_avatars, _saved_headshots, build_context, render_managers, render_rankings, render_week,
+)
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 
@@ -382,6 +384,24 @@ def test_rankings_file_holds_every_week_in_rank_order(fixture_raw_dir, fixture_h
             assert row["blurb"] == []
     assert all(row["movement"] is None for row in data["weeks"][0]["rows"])
     assert all(isinstance(row["movement"], int) for row in data["weeks"][1]["rows"])
+
+
+def test_managers_file_holds_one_entry_per_roster(fixture_raw_dir, fixture_history_root, tmp_path):
+    raw = load_raw(fixture_raw_dir)
+    history = load_history(fixture_history_root, raw, week=6)
+    teams = parse_week(raw).teams
+    out = render_managers(history, 2026, teams, tmp_path)
+    assert out == tmp_path / "2026" / "managers.json"
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert list(data) == ["schema_version", "season", "through", "managers"]
+    assert data["schema_version"] == 1
+    assert data["season"] == 2026
+    assert data["through"] == 6
+    assert [m["roster_id"] for m in data["managers"]] == list(range(1, 13))
+    for entry in data["managers"]:
+        assert set(entry) == {"roster_id", "team", "wins", "losses", "points_for"}
+        team = teams[entry["roster_id"]]
+        assert entry["team"] == {"name": team.name, "owner": team.owner, "avatar_url": team.avatar_url}
 
 
 def _rankings_blurb(*tagged):
