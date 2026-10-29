@@ -18,13 +18,14 @@ from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, returns_path, save_week_to_history,
     saved_through,
 )
+from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.models import (
     Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.odds import OddsResult
-from cornerstone.parse import parse_trades, parse_week
+from cornerstone.parse import parse_trades, parse_week, player_name
 from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
@@ -393,7 +394,21 @@ def _write_managers(repo: Path, season: int, week: int, teams: dict[int, Team]) 
             "history holds %d of the %d weeks the file needs: managers.json not written", through, MANAGERS_MIN_WEEKS,
         )
         return None
-    return render_managers(history, season, teams, repo / "site")
+    slots, names = _season_raw(week_dir(repo, season, week) / "raw")
+    week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
+    return render_managers(
+        history, season, teams, repo / "site", roster_slots=slots, names=names, week_awards=week_awards,
+    )
+
+
+def _season_raw(raw_dir: Path) -> tuple[list[str] | None, dict[str, str]]:
+    """The roster slots and the player names of the managers file, from the raw league and players files.
+    The roster slots do not change in a season, so the raw files of the built week serve every saved week.
+    No league file gives no slots, so the entries carry no bench points."""
+    league, players = raw_dir / "league.json", raw_dir / "players.json"
+    slots = json.loads(league.read_text(encoding="utf-8"))["roster_positions"] if league.exists() else None
+    entries = json.loads(players.read_text(encoding="utf-8")) if players.exists() else {}
+    return slots, {pid: player_name(pid, entry) for pid, entry in entries.items()}
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:

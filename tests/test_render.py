@@ -399,7 +399,7 @@ def test_managers_file_holds_one_entry_per_roster(fixture_raw_dir, fixture_histo
     assert data["through"] == 6
     assert [m["roster_id"] for m in data["managers"]] == list(range(1, 13))
     for entry in data["managers"]:
-        assert set(entry) == {"roster_id", "team", "wins", "losses", "points_for"}
+        assert set(entry) == {"roster_id", "team", "wins", "losses", "points_for", "weeks", "bench", "awards"}
         team = teams[entry["roster_id"]]
         assert entry["team"] == {"name": team.name, "owner": team.owner, "avatar_url": team.avatar_url}
 
