@@ -182,6 +182,11 @@ def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixtur
     assert data["season"] == 2026
     assert data["through"] == 6
     assert [m["roster_id"] for m in data["managers"]] == list(range(1, 13))
+    # The moves hold every week, newest first, and the raw players file names the players.
+    assert all([w["week"] for w in m["moves"]["weeks"]] == [6, 5, 4, 3, 2, 1] for m in data["managers"])
+    adds = [a for m in data["managers"] for w in m["moves"]["weeks"] for a in w["adds"]]
+    assert adds
+    assert any(a["name"] != a["player_id"] for a in adds)
     # The rankings command writes the same file from the same saved history.
     _managers(repo).unlink()
     run_rankings(repo, 2026, 6, _fake)

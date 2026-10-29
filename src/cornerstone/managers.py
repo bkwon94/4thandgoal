@@ -5,6 +5,7 @@ Pure code over the saved history. The render module writes the entries as manage
 from pydantic import BaseModel
 
 from cornerstone.facts_league import season_records
+from cornerstone.manager_moves import Moves, roster_moves
 from cornerstone.models import History, Team
 
 # Under two saved weeks a manager page has too little to show, so the file waits for the second week.
@@ -26,9 +27,10 @@ class ManagerEntry(BaseModel):
     wins: int
     losses: int
     points_for: float
+    moves: Moves
 
 
-def managers(history: History, teams: dict[int, Team]) -> list[ManagerEntry]:
+def managers(history: History, teams: dict[int, Team], players: dict[str, dict] | None = None) -> list[ManagerEntry]:
     """One entry per roster through the history week, in roster id order."""
     records = season_records(history, history.week)
     # The site joins the entry to the rankings row on the roster id, so a stable order helps a reader of the file only.
@@ -39,6 +41,8 @@ def managers(history: History, teams: dict[int, Team]) -> list[ManagerEntry]:
             wins=records[rid][0],
             losses=records[rid][1],
             points_for=records[rid][2],
+            # The raw players file of the week gives the names. With none, each name falls back to the id.
+            moves=roster_moves(history, rid, players or {}),
         )
         for rid in sorted(records)
     ]
