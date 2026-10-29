@@ -245,3 +245,19 @@ KEY_STARTER_STARTS = 3
 # The starts a key starter needs when fewer than KEY_STARTER_WEEKS weeks are complete. It is also the fewest weeks
 # the rule reads, because one start in one week says nothing about a habit.
 KEY_STARTER_SHORT_STARTS = 2
+
+# The roster grade: GLOSSARY.md, "Roster grade". The score is 0 to 100, the sum of four parts, each 0 to 1, times
+# its weight. The weights sum to 100, so a roster with every part in full scores 100.
+# The starters against the line weigh most, because the starters score the points each week.
+# The best lineup against the league weighs next, because it says how this roster compares with the other eleven.
+# The holes come third: a hole is a slot no one can start in, and the starter part already counts it as zero.
+# Depth weighs least, because a bench player above the line only scores when a starter misses a game.
+GRADE_WEIGHTS = {"slots": 40, "lineup": 25, "holes": 20, "depth": 15}
+# The share of the holes part that one hole takes away. Four holes leave none, and a fifth costs nothing more.
+GRADE_HOLE_COST = 0.25
+# The players above the line past the starters at a position that give the depth part in full. One spare per
+# position covers one missed game at a time.
+GRADE_DEPTH_SPARES = 1
+# The lowest score of each letter, best first. A score under the last band is a D. A report card reads A+ to D.
+GRADE_BANDS = (("A+", 90), ("A", 80), ("B", 65), ("C", 50))
+GRADE_BELOW_BANDS = "D"
