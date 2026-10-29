@@ -393,7 +393,10 @@ def _write_managers(repo: Path, season: int, week: int, teams: dict[int, Team]) 
             "history holds %d of the %d weeks the file needs: managers.json not written", through, MANAGERS_MIN_WEEKS,
         )
         return None
-    return render_managers(history, season, teams, repo / "site")
+    # The raw players file of the built week names the players of the entries. A missing file reads ids.
+    players_file = week_dir(repo, season, week) / "raw" / "players.json"
+    players = json.loads(players_file.read_text(encoding="utf-8")) if players_file.exists() else None
+    return render_managers(history, season, teams, repo / "site", players)
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
