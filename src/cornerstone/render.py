@@ -17,6 +17,7 @@ from cornerstone.models import Blurb, Bundle, History, MatchupFacts, Team
 from cornerstone.odds import OddsResult
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet import AWARD_TITLES
+from cornerstone.snapshot import Snapshot
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
@@ -386,16 +387,19 @@ def render_rankings(
 def render_managers(
     history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
     roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
+    snapshot: Snapshot | None = None,
 ) -> Path:
     """Write managers.json for the season: one entry per roster through the history week, in roster id order.
-    The players and the keywords go to managers for the names, the bench points, and the awards shelf."""
+    The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
     season_dir = site_dir / str(season)
     out = season_dir / "managers.json"
     body = {
         "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": history.week,
         "managers": [
             entry.model_dump(mode="json")
-            for entry in managers(history, teams, players, roster_slots=roster_slots, week_awards=week_awards)
+            for entry in managers(
+                history, teams, players, roster_slots=roster_slots, week_awards=week_awards, snapshot=snapshot,
+            )
         ],
     }
     season_dir.mkdir(parents=True, exist_ok=True)

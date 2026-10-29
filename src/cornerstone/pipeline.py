@@ -34,7 +34,7 @@ from cornerstone.sheet import (
 )
 from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import load_returns, week_snapshot
+from cornerstone.snapshot import Snapshot, load_returns, week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import page_words, reserved_words, write_and_verify
 from cornerstone.waiver import waiver_board
@@ -351,7 +351,7 @@ def run_build(
         log.warning("rankings.json not written for week %d: %s", week, err)
     # The managers file reads the same saved history, so it comes right after the rankings file.
     try:
-        _write_managers(repo, season, week, bundle.data.teams)
+        _write_managers(repo, season, week, bundle.data.teams, snapshot=_managers_snapshot(repo, season, week))
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
     return page
@@ -379,7 +379,9 @@ def _write_rankings(
     return render_rankings(history, season, teams, repo / "site", week, blurb, odds)
 
 
-def _write_managers(repo: Path, season: int, week: int, teams: dict[int, Team]) -> Path | None:
+def _write_managers(
+    repo: Path, season: int, week: int, teams: dict[int, Team], snapshot: Snapshot | None = None,
+) -> Path | None:
     """Write managers.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
     None, with one log line, when a week from 1 to `week` is missing or the history is under two weeks."""
     root = history_root(repo, season)
@@ -398,6 +400,7 @@ def _write_managers(repo: Path, season: int, week: int, teams: dict[int, Team]) 
     week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
         history, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
+        snapshot=snapshot,
     )
 
 
@@ -409,6 +412,17 @@ def _season_raw(raw_dir: Path) -> tuple[list[str] | None, dict[str, dict] | None
     slots = json.loads(league.read_text(encoding="utf-8"))["roster_positions"] if league.exists() else None
     entries = json.loads(players.read_text(encoding="utf-8")) if players.exists() else None
     return slots, entries
+
+
+def _managers_snapshot(repo: Path, season: int, week: int) -> Snapshot | None:
+    """The analyzer's snapshot of the week for the roster grade. None, with one log line, when the week has no raw
+    data."""
+    raw_dir = week_dir(repo, season, week) / "raw"
+    # A saved week can lack its raw data. The file then goes out with no grade, so the page still ships.
+    if not raw_dir.exists():
+        log.info("no raw data for week %d: managers.json has no roster grade", week)
+        return None
+    return week_snapshot(load_raw(raw_dir), history_root(repo, season), week)
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
@@ -517,7 +531,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
         raise BuildStopped(HISTORY_GAP.format(week=week))
     # The command rebuilds the season files from the saved history, so the managers file comes along.
     # A thin history only logs: the rankings file is the output of the command.
-    _write_managers(repo, season, week, bundle.data.teams)
+    _write_managers(repo, season, week, bundle.data.teams, snapshot=_managers_snapshot(repo, season, week))
     return out
 
 
