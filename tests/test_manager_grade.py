@@ -2,14 +2,19 @@
 Tests for the roster grade and the slot ranks of the managers file.
 They feed the score known parts, and they read the grade of each entry on the fixture snapshot of week 6.
 The grade reads the projections ahead, so some tests build projections that put a player above or below the line.
+Other tests change the saved points or the chart values of one roster and read its parts against the league.
 """
+from datetime import date
+
 import pytest
 
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
-    GradeParts, depth_word, grade_letter, grade_score, position_ranks, projected_values, roster_grades,
+    GradeParts, depth_word, grade_letter, grade_score, position_ranks, projected_values, roster_grades, roster_parts,
+    season_points_per_game,
 )
 from cornerstone.managers import managers
+from cornerstone.models import ChartValues, History, PastWeek
 from cornerstone.parse import parse_week
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
@@ -35,6 +40,15 @@ def _depth(grade, position):
     return next(slot.depth for slot in grade.slots if slot.position == position)
 
 
+def _history(raw_dir, root):
+    return load_history(root, load_raw(raw_dir), week=6)
+
+
+def _past(week, points, positions):
+    return PastWeek(week=week, scores={}, pairs=[], points=points, projections={}, stats={}, moves=[],
+                    positions=positions)
+
+
 def _roster_ahead(snapshot, roster_id, points=10.0):
     """Projections ahead for the players of one roster only, so each of them ranks inside a small pool."""
     return {week: {pid: points for pid in snapshot.rosters[roster_id]} for week in (7, 8)}
@@ -49,17 +63,31 @@ def test_each_band_at_its_edge(score, letter):
 
 
 def test_the_score_is_the_weighted_sum_of_the_parts():
-    assert grade_score(GradeParts(slots=1, holes=1, depth=1, lineup=1)) == 100
-    assert grade_score(GradeParts(slots=0, holes=0, depth=0, lineup=0)) == 0
-    assert grade_score(GradeParts(slots=1, holes=0, depth=0, lineup=0)) == GRADE_WEIGHTS["slots"]
-    assert grade_score(GradeParts(slots=0, holes=0, depth=0, lineup=0.5)) == GRADE_WEIGHTS["lineup"] / 2
+    assert grade_score(GradeParts(projection=1, production=1, trade_value=1, depth=1)) == 100
+    assert grade_score(GradeParts(projection=0, production=0, trade_value=0, depth=0)) == 0
+    assert grade_score(GradeParts(projection=1, production=0, trade_value=0, depth=0)) == GRADE_WEIGHTS["projection"]
+    assert grade_score(GradeParts(projection=0, production=0.5, trade_value=0, depth=0)) == (
+        GRADE_WEIGHTS["production"] / 2)
+    assert grade_score(GradeParts(projection=0, production=0, trade_value=1, depth=0)) == GRADE_WEIGHTS["trade_value"]
+    assert grade_score(GradeParts(projection=0, production=0, trade_value=0, depth=1)) == GRADE_WEIGHTS["depth"]
 
 
-def test_a_score_at_a_band_edge_from_known_parts_reads_that_band():
-    # Slots, holes, and depth in full give 75 of the 100. Lineup at 0.6 of its 25 gives 15 more, so the edge of A.
-    parts = GradeParts(slots=1, holes=1, depth=1, lineup=0.6)
-    assert grade_score(parts) == 90
-    assert grade_letter(grade_score(parts)) == "A+"
+@pytest.mark.parametrize("parts, letter", [
+    # Projection, production, and depth in full give 80. Trade value at 0.5 of its 20 gives 10 more.
+    (GradeParts(projection=1, production=1, trade_value=0.5, depth=1), "A+"),
+    # Projection, production, and trade value in full give 80.
+    (GradeParts(projection=1, production=1, trade_value=1, depth=0), "A"),
+    # Projection and trade value in full give 55. Production at 0.4 of its 25 gives 10 more.
+    (GradeParts(projection=1, production=0.4, trade_value=1, depth=0), "B"),
+    # Production, trade value, and depth in full give 65. Projection at 0 drops it to the edge of B.
+    (GradeParts(projection=0, production=1, trade_value=1, depth=1), "B"),
+    # Projection in full gives 35. Production at 0.6 of its 25 gives 15 more.
+    (GradeParts(projection=1, production=0.6, trade_value=0, depth=0), "C"),
+    # Projection in full gives 35. Production a hair under 0.6 gives 49.99, under the edge of C.
+    (GradeParts(projection=1, production=0.5996, trade_value=0, depth=0), "D"),
+])
+def test_a_score_at_a_band_edge_from_known_parts_reads_that_band(parts, letter):
+    assert grade_letter(grade_score(parts)) == letter
 
 
 @pytest.mark.parametrize("starters, above, hole, word", [
@@ -131,7 +159,8 @@ def test_a_starter_out_with_a_projection_ahead_is_no_hole(fixture_raw_dir, fixtu
     snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
     # Roster 1 starts 10229 at WR with the status Out and no return week on file.
     assert snapshot.players["10229"].injury_status == "Out"
-    grade = roster_grades(snapshot, _roster_ahead(snapshot, 1))[1]
+    history = _history(fixture_raw_dir, fixture_history_root)
+    grade = roster_grades(snapshot, _roster_ahead(snapshot, 1), history, None)[1]
     assert _depth(grade, "WR") != "thin"
     assert all(slot.depth != "thin" for slot in grade.slots)
 
@@ -142,7 +171,8 @@ def test_a_starter_with_no_projection_ahead_is_a_hole(fixture_raw_dir, fixture_h
     # 8183 is the only QB of roster 1, so with no projection his slot is a hole.
     for projections in ahead.values():
         del projections["8183"]
-    assert _depth(roster_grades(snapshot, ahead)[1], "QB") == "thin"
+    history = _history(fixture_raw_dir, fixture_history_root)
+    assert _depth(roster_grades(snapshot, ahead, history, None)[1], "QB") == "thin"
 
 
 def test_the_grade_is_null_without_projections_ahead(fixture_raw_dir, fixture_history_root):
@@ -150,3 +180,55 @@ def test_the_grade_is_null_without_projections_ahead(fixture_raw_dir, fixture_hi
     entries = managers(load_history(fixture_history_root, raw, week=6), parse_week(raw).teams,
                        snapshot=week_snapshot(raw, fixture_history_root, 6))
     assert all(entry.grade is None for entry in entries)
+
+
+def test_the_season_points_per_game_count_the_weeks_with_a_stat_line():
+    history = History(week=3, weeks={
+        1: _past(1, {"a": 10.0, "b": 30.0}, {"a": "WR"}),
+        2: _past(2, {"a": 20.0}, {"a": "WR"}),
+        # A stat line with no points counts 0 in the sum and one week in the count.
+        3: _past(3, {}, {"a": "WR"}),
+    })
+    assert season_points_per_game(history) == {"a": 10.0}
+
+
+def test_a_player_with_no_stat_line_counts_0_points_per_game(fixture_raw_dir, fixture_history_root):
+    history = _history(fixture_raw_dir, fixture_history_root)
+    # b has points on a roster but no stat line in any week, so he has no points per game.
+    history.weeks[1].points["b"] = 30.0
+    assert "b" not in season_points_per_game(history)
+
+
+def test_a_roster_that_scored_a_lot_but_projects_low_ranks_higher(fixture_raw_dir, fixture_history_root):
+    snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
+    ahead = _ahead(load_raw(fixture_raw_dir))
+    # Roster 1 projects low: each of its players projects 0.1 a week.
+    ahead = {week: {**projections, **{pid: 0.1 for pid in snapshot.rosters[1]}} for week, projections in ahead.items()}
+    before = roster_parts(snapshot, ahead, _history(fixture_raw_dir, fixture_history_root), None)[1]
+    history = _history(fixture_raw_dir, fixture_history_root)
+    for past in history.weeks.values():
+        for pid in snapshot.rosters[1]:
+            past.points[pid] = 60.0
+            past.positions[pid] = snapshot.players[pid].position
+    after = roster_parts(snapshot, ahead, history, None)[1]
+    assert after.production == 1.0
+    assert after.projection == before.projection
+    assert grade_score(after) > grade_score(before)
+
+
+def test_a_roster_with_high_chart_values_ranks_higher(fixture_raw_dir, fixture_history_root):
+    snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
+    ahead, history = _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root)
+    chart = ChartValues(week=6, date=date(2026, 10, 14), values={pid: 50.0 for pid in snapshot.rosters[1]})
+    before = roster_parts(snapshot, ahead, history, None)
+    after = roster_parts(snapshot, ahead, history, chart)
+    assert after[1].trade_value == 1.0
+    assert all(after[rid].trade_value == 0.0 for rid in after if rid != 1)
+    assert grade_score(after[1]) > grade_score(before[1])
+
+
+def test_no_chart_gives_0_for_the_trade_value_part(fixture_raw_dir, fixture_history_root):
+    snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
+    parts = roster_parts(snapshot, _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root),
+                         None)
+    assert all(part.trade_value == 0.0 for part in parts.values())

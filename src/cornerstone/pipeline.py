@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
+from cornerstone.chart import match_chart, saved_chart_read
 from cornerstone.facts_league import season_records, standings_order
 from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, returns_path, save_week_to_history,
@@ -21,7 +22,8 @@ from cornerstone.history import (
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.models import (
-    Blurb, BuildRecord, Bundle, Chapter, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult, Week,
+    Blurb, BuildRecord, Bundle, Chapter, ChartValues, History, NflverseWeek, Team, Trade, VerifyFile, VerifyResult,
+    Week, week_lines,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.odds import OddsResult
@@ -403,8 +405,19 @@ def _write_managers(
     week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
         history, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
-        snapshot=snapshot, projections_ahead=_projections_ahead(raw_dir),
+        snapshot=snapshot, projections_ahead=_projections_ahead(raw_dir), chart=_managers_chart(repo, week, raw_dir),
     )
+
+
+def _managers_chart(repo: Path, week: int, raw_dir: Path) -> ChartValues | None:
+    """The trade values of the saved chart read of the week for the roster grade. None, with one log line, when no
+    read is saved or the week has no raw data. It never fetches or reads an image."""
+    chart = saved_chart_read(repo, week) if raw_dir.exists() else None
+    if chart is None:
+        # The grade still goes out. Its trade value part is 0 for every roster.
+        log.info("no saved chart read for week %d: the roster grade has no trade value", week)
+        return None
+    return match_chart(chart, week_lines(parse_week(load_raw(raw_dir))))
 
 
 def _projections_ahead(raw_dir: Path) -> dict[int, dict[str, float]] | None:

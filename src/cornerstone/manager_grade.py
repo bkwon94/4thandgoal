@@ -1,5 +1,5 @@
 """
-The roster grade and the slot ranks of the managers file, from the current rosters and the projections ahead.
+The roster grade and the slot ranks of the managers file, from the rosters, the projections, the points, and the chart.
 The score stays in the pipeline. The entry carries the letter and one rank and one depth word per position.
 """
 from typing import Literal, NamedTuple
@@ -7,6 +7,8 @@ from typing import Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.adjusters import StartingSlot, fill_slots
+from cornerstone.history import player_points
+from cornerstone.models import ChartValues, History
 from cornerstone.ranks import LINES
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -34,14 +36,18 @@ class ManagerGrade(BaseModel):
 
 class GradeParts(NamedTuple):
     """The four parts of the score, each from 0 to 1. GRADE_WEIGHTS weighs each one."""
-    # The mean of each ranked starter's place above the line.
-    slots: float
-    # One less GRADE_HOLE_COST per hole, never under 0.
-    holes: float
-    # The mean over the positions of the depth against the starters plus the spares.
+    # The mean of two reads by the projections ahead: the mean of each ranked starter's place above the line, and
+    # the best lineup's total against the league, from 0 at the lowest roster to 1 at the highest.
+    projection: float
+    # The best lineup's total by the season points per game against the league, from 0 at the lowest roster to 1
+    # at the highest.
+    production: float
+    # The sum of the chart values of the roster against the league, from 0 at the lowest roster to 1 at the
+    # highest. It is 0 for every roster when the week has no chart.
+    trade_value: float
+    # The mean of two reads: one less GRADE_HOLE_COST per hole, never under 0, and the mean over the positions of
+    # the depth against the starters plus the spares.
     depth: float
-    # The best lineup's total against the league, from 0 at the lowest roster to 1 at the highest.
-    lineup: float
 
 
 def grade_score(parts: GradeParts) -> float:
@@ -72,6 +78,19 @@ def projected_values(projections_ahead: dict[int, dict[str, float]]) -> dict[str
     return {pid: sum(projections.get(pid, 0.0) for projections in weeks) / len(weeks) for pid in players}
 
 
+def season_points_per_game(history: History) -> dict[str, float]:
+    """The points per game of each player over the saved weeks in which he had a stat line, on any roster.
+
+    PastWeek.positions holds a player in a week with a stat line. A week with a stat line and no points counts 0
+    in the sum. A player with no stat line is not in the result, so he counts 0.
+    """
+    weeks: dict[str, list[float]] = {}
+    for past in history.weeks.values():
+        for pid in past.positions:
+            weeks.setdefault(pid, []).append(player_points(past, pid) or 0.0)
+    return {pid: sum(points) / len(points) for pid, points in weeks.items()}
+
+
 def position_ranks(values: dict[str, float], positions: dict[str, str]) -> dict[str, int]:
     """The place of each player from 1 at his position by value, most first, among the players with a value.
 
@@ -85,29 +104,59 @@ def position_ranks(values: dict[str, float], positions: dict[str, str]) -> dict[
     return ranks
 
 
-def roster_grades(snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]]) -> dict[int, ManagerGrade]:
-    """The grade of each roster of the snapshot by the projections ahead, by roster id.
+def roster_parts(
+    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
+) -> dict[int, GradeParts]:
+    """The four parts of the score of each roster of the snapshot, by roster id. GLOSSARY.md, "Roster grade"."""
+    return {rid: read.parts(league) for rid, read, league in _league_reads(snapshot, projections_ahead, history, chart)}
+
+
+def roster_grades(
+    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
+) -> dict[int, ManagerGrade]:
+    """The grade of each roster of the snapshot by roster id. The slot ranks read the projections ahead only.
 
     The snapshot gives the rosters, the roster slots, and the positions. The injury status and the returns file play
     no part, so a starter out one week with a projection ahead is no hole.
     """
+    reads = _league_reads(snapshot, projections_ahead, history, chart)
+    ranks = {position: _ranks({rid: read.position_total(position) for rid, read, _ in reads})
+             for position in SLOT_POSITIONS}
+    return {rid: ManagerGrade(letter=grade_letter(grade_score(read.parts(league))), slots=[
+        SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
+        for position in SLOT_POSITIONS
+    ]) for rid, read, league in reads}
+
+
+class _League(NamedTuple):
+    """The three parts of one roster that read it against the league, each from 0 to 1."""
+    lineup: float
+    production: float
+    trade_value: float
+
+
+def _league_reads(
+    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
+) -> list[tuple[int, "_RosterRead", _League]]:
+    """The read of each roster and its parts against the league, in roster id order."""
     values = projected_values(projections_ahead)
     ranks_by_player = position_ranks(values, {pid: player.position for pid, player in snapshot.players.items()})
+    per_game = season_points_per_game(history)
     reads = {rid: _RosterRead(snapshot, roster, values, ranks_by_player) for rid, roster in snapshot.rosters.items()}
-    totals = [read.lineup_total for read in reads.values()]
-    low, high = min(totals), max(totals)
-    ranks = {position: _ranks({rid: read.position_total(position) for rid, read in reads.items()})
-             for position in SLOT_POSITIONS}
-    grades = {}
-    for rid, read in reads.items():
-        # With every roster equal, no roster is ahead of the league, so each takes the part in full.
-        lineup = 1.0 if high == low else float((read.lineup_total - low) / (high - low))
-        letter = grade_letter(grade_score(read.parts(lineup)))
-        grades[rid] = ManagerGrade(letter=letter, slots=[
-            SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
-            for position in SLOT_POSITIONS
-        ])
-    return grades
+    lineup = _against_league({rid: read.lineup_total for rid, read in reads.items()})
+    production = _against_league({rid: read.best_lineup_total(per_game) for rid, read in reads.items()})
+    # A player the chart does not list counts 0. With no chart, no roster has a trade value.
+    trade_value = (_against_league({rid: sum(chart.values.get(pid, 0.0) for pid in snapshot.rosters[rid])
+                                    for rid in reads})
+                   if chart is not None else dict.fromkeys(reads, 0.0))
+    return [(rid, reads[rid], _League(lineup[rid], production[rid], trade_value[rid])) for rid in sorted(reads)]
+
+
+def _against_league(totals: dict[int, float]) -> dict[int, float]:
+    """Each total against the league, from 0 at the lowest roster to 1 at the highest."""
+    low, high = min(totals.values()), max(totals.values())
+    # With every roster equal, no roster is ahead of the league, so each takes the part in full.
+    return {rid: 1.0 if high == low else float((total - low) / (high - low)) for rid, total in totals.items()}
 
 
 def _ranks(totals: dict[int, float]) -> dict[int, int]:
@@ -130,6 +179,7 @@ class _RosterRead:
         self.values = values
         self.ranks = ranks
         positions = {pid: snapshot.players[pid].position for pid in roster}
+        self.positions = positions
         filled = fill_slots(roster, snapshot.roster_positions, positions, {pid: self._value(pid) for pid in roster})
         starting = [StartingSlot(name=slot, player=pid, rank=None if pid is None else ranks.get(pid), roster_slot=slot)
                     for slot, pid in filled]
@@ -138,6 +188,15 @@ class _RosterRead:
         self.slots = [slot for slot in starting
                       if self._position(slot) in LINES or (slot.player is None and slot.is_hole(snapshot))]
         self.lineup_total = sum(self._value(slot.player) for slot in self.slots if slot.player is not None)
+
+    def best_lineup_total(self, values: dict[str, float]) -> float:
+        """The total of the best lineup the values fill, over the starters at the positions in LINES.
+
+        A player with no value counts 0. K and DEF have no line, so they count in neither lineup total.
+        """
+        points = {pid: values.get(pid, 0.0) for pid in self.roster}
+        filled = fill_slots(self.roster, self.snapshot.roster_positions, self.positions, points)
+        return sum(points[pid] for _, pid in filled if pid is not None and self.positions[pid] in LINES)
 
     def _value(self, player_id: str) -> float:
         """The projected value of the player. A player with no projection ahead counts 0."""
@@ -166,17 +225,18 @@ class _RosterRead:
         starters = self._at(position)
         return depth_word(len(starters), self.above(position), any(slot.is_hole(self.snapshot) for slot in starters))
 
-    def parts(self, lineup: float) -> GradeParts:
-        """The four parts of the score, with the lineup part the league read gives."""
+    def parts(self, league: "_League") -> GradeParts:
+        """The four parts of the score, with the parts against the league that the league read gives."""
         places = [self._place(slot) for slot in self.slots]
         holes = sum(1 for slot in self.slots if slot.is_hole(self.snapshot))
         depth = [min(self.above(position), len(self._at(position)) + GRADE_DEPTH_SPARES)
                  / (len(self._at(position)) + GRADE_DEPTH_SPARES) for position in SLOT_POSITIONS]
+        slots = sum(places) / len(places) if places else 0.0
         return GradeParts(
-            slots=sum(places) / len(places) if places else 0.0,
-            holes=max(0.0, 1 - GRADE_HOLE_COST * holes),
-            depth=sum(depth) / len(depth),
-            lineup=lineup,
+            projection=(slots + league.lineup) / 2,
+            production=league.production,
+            trade_value=league.trade_value,
+            depth=(max(0.0, 1 - GRADE_HOLE_COST * holes) + sum(depth) / len(depth)) / 2,
         )
 
     def _place(self, slot: StartingSlot) -> float:
