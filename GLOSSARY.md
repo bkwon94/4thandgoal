@@ -634,4 +634,5 @@ _Avoid_: Cut, release, waive
 
 **Roster grade**:
 The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of slot strength, holes, and depth.
+The grade and its slot ranks read the current roster by the projections ahead, never by recent points or injury status.
 _Avoid_: Score, rating, power score
