@@ -90,15 +90,17 @@ def test_a_score_at_a_band_edge_from_known_parts_reads_that_band(parts, letter):
     assert grade_letter(grade_score(parts)) == letter
 
 
-@pytest.mark.parametrize("starters, above, hole, word", [
-    (2, 3, False, "deep"),
-    (2, 2, False, "fine"),
-    (2, 2, True, "thin"),
+@pytest.mark.parametrize("spares, hole, word", [
+    (2, False, "stacked"),
+    (3, False, "stacked"),
+    (1, False, "deep"),
+    (0, False, "fine"),
+    (0, True, "thin"),
     # A hole wins over depth: a slot no one above the line fills reads thin.
-    (2, 4, True, "thin"),
+    (2, True, "thin"),
 ])
-def test_each_depth_word(starters, above, hole, word):
-    assert depth_word(starters, above, hole) == word
+def test_each_depth_word(spares, hole, word):
+    assert depth_word(spares, hole) == word
 
 
 def test_each_entry_carries_the_letter_and_the_slot_ranks_in_order(fixture_raw_dir, fixture_history_root):

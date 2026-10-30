@@ -402,6 +402,8 @@ _Avoid_: bye window
 **Depth**:
 The count of a side's players at one position, starters and bench, above the line. It reads QB, RB,
 WR, and TE, before and after a trade.
+The depth word of a manager page counts a spare only inside the league's starter count at the position:
+"stacked" with two spares, "deep" with one, "fine" with none, and "thin" with a hole.
 _Avoid_: bench strength, room
 
 **Strength**:

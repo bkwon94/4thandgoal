@@ -12,13 +12,14 @@ from cornerstone.models import ChartValues, History
 from cornerstone.ranks import LINES
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS, LAST_REGULAR_WEEK,
+    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SPARE_RANK, GRADE_WEIGHTS,
+    LAST_REGULAR_WEEK,
 )
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
 SLOT_POSITIONS = ("QB", "RB", "WR", "TE")
 
-Depth = Literal["deep", "fine", "thin"]
+Depth = Literal["stacked", "deep", "fine", "thin"]
 
 
 class SlotRank(BaseModel):
@@ -60,11 +61,16 @@ def grade_letter(score: float) -> str:
     return next((letter for letter, lowest in GRADE_BANDS if score >= lowest), GRADE_BELOW_BANDS)
 
 
-def depth_word(starters: int, above: int, hole: bool) -> Depth:
-    """The depth word of a position: thin with a hole, deep with more players above the line than starters."""
+def depth_word(spares: int, hole: bool) -> Depth:
+    """The depth word of a position: thin with a hole, else by the spares inside the starter count past the starters.
+
+    Two or more spares read stacked, one reads deep, and none reads fine. A hole wins over any spare.
+    """
     if hole:
         return "thin"
-    return "deep" if above > starters else "fine"
+    if spares >= 2:
+        return "stacked"
+    return "deep" if spares == 1 else "fine"
 
 
 def projected_values(projections_ahead: dict[int, dict[str, float]]) -> dict[str, float]:
@@ -221,9 +227,16 @@ class _RosterRead:
         return sum(1 for pid in self.roster
                    if self.snapshot.players[pid].position == position and self.ranks.get(pid, line + 1) <= line)
 
+    def spares(self, position: str) -> int:
+        """The players at the position inside the league's starter count, past the starters the roster has there.
+        The score's depth part reads the line instead, so a backup still counts there."""
+        bar = GRADE_SPARE_RANK[position]
+        inside = sum(1 for pid in self.roster
+                     if self.snapshot.players[pid].position == position and self.ranks.get(pid, bar + 1) <= bar)
+        return max(0, inside - len(self._at(position)))
+
     def depth_word(self, position: str) -> Depth:
-        starters = self._at(position)
-        return depth_word(len(starters), self.above(position), any(slot.is_hole(self.snapshot) for slot in starters))
+        return depth_word(self.spares(position), any(slot.is_hole(self.snapshot) for slot in self._at(position)))
 
     def parts(self, league: "_League") -> GradeParts:
         """The four parts of the score, with the parts against the league that the league read gives."""

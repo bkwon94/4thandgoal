@@ -267,6 +267,10 @@ GRADE_HOLE_COST = 0.25
 # The players above the line past the starters at a position that give the depth part in full. One spare per
 # position covers one missed game at a time.
 GRADE_DEPTH_SPARES = 1
+# The depth word of a position on the manager page counts a spare only inside the league's starter count at the
+# position: 12 teams start 1 QB, 2 RB, 2 WR, and 1 TE, flex aside. The line is looser, so a QB16 is startable but
+# he is a backup, not a second good player. Two spares read "stacked", one reads "deep", none reads "fine".
+GRADE_SPARE_RANK = {"QB": 12, "RB": 24, "WR": 24, "TE": 12}
 # The lowest score of each letter, best first. A score under the last band is a D. A report card reads A+ to D.
 GRADE_BANDS = (("A+", 90), ("A", 80), ("B", 65), ("C", 50))
 GRADE_BELOW_BANDS = "D"
