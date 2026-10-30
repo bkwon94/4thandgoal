@@ -73,19 +73,27 @@ def test_the_score_is_the_weighted_sum_of_the_parts():
     assert grade_score(GradeParts(projection=0, production=0, trade_value=0, depth=1)) == GRADE_WEIGHTS["depth"]
 
 
+def test_the_score_reads_the_weights_45_30_10_15():
+    assert grade_score(GradeParts(projection=1, production=0, trade_value=0, depth=0)) == 45
+    assert grade_score(GradeParts(projection=0, production=1, trade_value=0, depth=0)) == 30
+    assert grade_score(GradeParts(projection=0, production=0, trade_value=1, depth=0)) == 10
+    assert grade_score(GradeParts(projection=0, production=0, trade_value=0, depth=1)) == 15
+    assert grade_score(GradeParts(projection=0.5, production=0.5, trade_value=0.5, depth=0.5)) == 50
+
+
 @pytest.mark.parametrize("parts, letter", [
     # Every part in full gives 100, an A. There is no A+: a report card tops out at A.
     (GradeParts(projection=1, production=1, trade_value=1, depth=1), "A"),
-    # Projection and production in full give 60. Depth at 0.5 of its 20 gives 10 more, the edge of A.
-    (GradeParts(projection=1, production=1, trade_value=0, depth=0.5), "A"),
+    # Projection, trade value, and depth in full give 70, the edge of A.
+    (GradeParts(projection=1, production=0, trade_value=1, depth=1), "A"),
     # Projection and trade value in full give 55, the edge of B.
     (GradeParts(projection=1, production=0, trade_value=1, depth=0), "B"),
-    # Production, trade value, and depth in full give 65. Projection at 0 keeps it in B.
+    # Production, trade value, and depth in full give 55. Projection at 0 still reaches B.
     (GradeParts(projection=0, production=1, trade_value=1, depth=1), "B"),
-    # Projection in full gives 35. Production at 0.2 of its 25 gives 5 more, the edge of C.
-    (GradeParts(projection=1, production=0.2, trade_value=0, depth=0), "C"),
-    # Projection in full gives 35. Production a hair under 0.2 gives 39.99, under the edge of C.
-    (GradeParts(projection=1, production=0.1996, trade_value=0, depth=0), "D"),
+    # Production and trade value in full give 40, the edge of C.
+    (GradeParts(projection=0, production=1, trade_value=1, depth=0), "C"),
+    # Production in full gives 30. Trade value a hair under full gives 39.99, under the edge of C.
+    (GradeParts(projection=0, production=1, trade_value=0.999, depth=0), "D"),
 ])
 def test_a_score_at_a_band_edge_from_known_parts_reads_that_band(parts, letter):
     assert grade_letter(grade_score(parts)) == letter

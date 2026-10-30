@@ -251,16 +251,17 @@ KEY_STARTER_SHORT_STARTS = 2
 GRADE_WEIGHTS = {
     # The projection ahead weighs most: the starters against the line and the best lineup against the league, by
     # the projections to the end of the regular season. The rest of the season is what the grade says the most of.
-    "projection": 35,
+    "projection": 45,
     # The season production weighs next: the best lineup by the points per game so far. A projection can miss a
     # player who scores, and the points already scored are a fact.
-    "production": 25,
-    # The trade value of the whole roster, bench included, against the league. The chart reads a player as the
-    # market prices him, so it sees a strong bench the starters do not show.
-    "trade_value": 20,
+    "production": 30,
+    # The trade value of the whole roster, bench included, against the league, weighs least. The chart reads a
+    # player as the market prices him, so it sees a strong bench the starters do not show. But a market price is
+    # not points, so it says the least of the season ahead.
+    "trade_value": 10,
     # The depth and the holes, as one part. A hole is a slot no one can start in. A bench player above the line
-    # only scores when a starter misses a game. So the part ties the trade value for the least weight.
-    "depth": 20,
+    # only scores when a starter misses a game, so the part weighs under production but over the trade value.
+    "depth": 15,
 }
 # The share of the holes part that one hole takes away. Four holes leave none, and a fifth costs nothing more.
 GRADE_HOLE_COST = 0.25
