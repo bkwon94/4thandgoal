@@ -4,11 +4,11 @@
 
 **Blocked by:** 01 The past week keeps every rostered player, 03 The routes, the index, the hero, and the menu
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Each entry carries the best adds: the player, the week of the add, the points since, the projection since, and the games. A free agent pickup is an add. A drop and a re-add counts from the last add. Ties break by the earlier add.
-- [ ] Each entry carries the top performers: the player, the position, the total, the games started, and the points per game started. A player traded away keeps his starts.
-- [ ] The managers module tests cover a short stint add, a re-added player, and a traded player.
-- [ ] A roster with no adds reads "No adds yet." in the chapter.
-- [ ] The two chapters read like the Position Leaders rows: headshot, name, one emphasis per line.
-- [ ] The page tests read the rows in order. All checks pass in both repos.
+- [x] Each entry carries the best adds: the player, the week of the add, the points since, the projection since, and the games. A free agent pickup is an add. A drop and a re-add counts from the last add. Ties break by the earlier add.
+- [x] Each entry carries the top performers: the player, the position, the total, the games started, and the points per game started. A player traded away keeps his starts.
+- [x] The managers module tests cover a short stint add, a re-added player, and a traded player.
+- [x] A roster with no adds reads "No adds yet." in the chapter.
+- [x] The two chapters read like the Position Leaders rows: headshot, name, one emphasis per line.
+- [x] The page tests read the rows in order. All checks pass in both repos.

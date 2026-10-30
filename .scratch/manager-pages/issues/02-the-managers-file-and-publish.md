@@ -4,11 +4,11 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The build on the week 6 fixture writes the managers file with twelve entries and the schema version.
-- [ ] Under two saved weeks the build writes no file and logs one line. Nothing raises.
-- [ ] Publish copies the managers file to the site's public folder. A missing file warns and does not fail.
-- [ ] The managers module holds one pure function from the history and the snapshot to the entries. The render module writes the file.
-- [ ] The file shape is the base every later ticket extends. A later ticket adds fields and never changes what exists.
-- [ ] Every existing test passes. `ruff` is clean.
+- [x] The build on the week 6 fixture writes the managers file with twelve entries and the schema version.
+- [x] Under two saved weeks the build writes no file and logs one line. Nothing raises.
+- [x] Publish copies the managers file to the site's public folder. A missing file warns and does not fail.
+- [x] The managers module holds one pure function from the history and the snapshot to the entries. The render module writes the file.
+- [x] The file shape is the base every later ticket extends. A later ticket adds fields and never changes what exists.
+- [x] Every existing test passes. `ruff` is clean.

@@ -5,7 +5,7 @@ This is the only module that knows the shape of the raw data.
 from collections import defaultdict
 from datetime import date, datetime, timezone
 
-from cornerstone.models import DraftPick, Matchup, Move, PastWeek, PlayerLine, Side, Team, Trade, Week
+from cornerstone.models import DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, Side, Team, Trade, Week
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")
@@ -171,6 +171,16 @@ def parse_moves(transactions: list[dict]) -> list[Move]:
     return moves
 
 
+def parse_drops(transactions: list[dict]) -> list[Drop]:
+    """The drops of the complete waiver claims and free agent pickups. A trade drop is a side of its trade."""
+    return [
+        Drop(player_id=player_id, roster_id=roster_id, week=transaction["leg"])
+        for transaction in transactions
+        if transaction["status"] == "complete" and transaction["type"] in ("waiver", "free_agent")
+        for player_id, roster_id in (transaction["drops"] or {}).items()
+    ]
+
+
 def parse_trades(transactions: list[dict]) -> list[Trade]:
     return [
         Trade(
@@ -246,4 +256,9 @@ def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
         starters={
             e["roster_id"]: [pid for pid in e.get("starters") or [] if pid != EMPTY_SLOT] for e in entries
         },
+        # The empty slot "0" is not a player, so it is never on a roster.
+        rosters={
+            e["roster_id"]: [pid for pid in e.get("players") or [] if pid != EMPTY_SLOT] for e in entries
+        },
+        drops=parse_drops(raw["transactions"]),
     )

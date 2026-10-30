@@ -64,6 +64,12 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
         shutil.copy2(rankings, public_dir / str(season) / "rankings.json")
     else:
         log.warning("%s missing: the publish goes out without rankings.json", rankings)
+    # The managers file is a season file too. A thin history has none, so a missing file only warns.
+    managers = repo / "site" / str(season) / "managers.json"
+    if managers.exists():
+        shutil.copy2(managers, public_dir / str(season) / "managers.json")
+    else:
+        log.warning("%s missing: the publish goes out without managers.json", managers)
     _git(site_repo, "add", "-A")
     _commit_if_staged(site_repo, f"Week {week}", ".")
     if push:

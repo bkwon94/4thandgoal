@@ -4,11 +4,11 @@
 
 **Blocked by:** 04 The roster grade and the slot ranks, 05 Season So Far
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The grade uses the hero timing. The slot ranks use the reveal stagger.
-- [ ] The odds count once over the decision timing and never again on scroll.
-- [ ] The points line draws by its path length over the reveal timing.
-- [ ] Each moment reads the motion-off switch. The reduced motion tests cover the three.
-- [ ] Every timing comes from the shared motion module. No new ease.
-- [ ] All site checks pass.
+- [x] The grade uses the hero timing. The slot ranks use the reveal stagger.
+- [x] The odds count once over the decision timing and never again on scroll.
+- [x] The points line draws by its path length over the reveal timing.
+- [x] Each moment reads the motion-off switch. The reduced motion tests cover the three.
+- [x] Every timing comes from the shared motion module. No new ease.
+- [x] All site checks pass.

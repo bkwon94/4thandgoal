@@ -4,12 +4,12 @@
 
 **Blocked by:** 02 The managers file and publish
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The loader reads the managers file for the latest season, checks the schema version loud, and joins each entry with the last rankings week for the odds, the rank, and their changes.
-- [ ] With no managers file the routes do not build, the menu has no "Managers" entry, and nothing fails.
-- [ ] The odds change is none when the week before has no odds. The odds read "—" when no week has odds.
-- [ ] The index shows twelve cards in standings order with the avatar, the name, the owner, and the record. A card is one link.
-- [ ] The hero reads the report's look at every tier. One quiet line of context under each number. No third line.
-- [ ] The loader tests, the page tests, and the masthead test pass. Fixtures are built in the test.
-- [ ] `pnpm test`, `pnpm typecheck`, `pnpm build`, and `pnpm check:export` pass.
+- [x] The loader reads the managers file for the latest season, checks the schema version loud, and joins each entry with the last rankings week for the odds, the rank, and their changes.
+- [x] With no managers file the routes do not build, the menu has no "Managers" entry, and nothing fails.
+- [x] The odds change is none when the week before has no odds. The odds read "—" when no week has odds.
+- [x] The index shows twelve cards in standings order with the avatar, the name, the owner, and the record. A card is one link.
+- [x] The hero reads the report's look at every tier. One quiet line of context under each number. No third line.
+- [x] The loader tests, the page tests, and the masthead test pass. Fixtures are built in the test.
+- [x] `pnpm test`, `pnpm typecheck`, `pnpm build`, and `pnpm check:export` pass.

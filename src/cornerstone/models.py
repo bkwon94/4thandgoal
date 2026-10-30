@@ -67,6 +67,17 @@ class Move(BaseModel):
     bid: int | None
 
 
+class Drop(BaseModel):
+    """A player taken off a roster in a week, with an add from the waiver pool or with no add.
+
+    A drop is its own model, not a field of Move: a Sleeper transaction can drop a player with no add, and the
+    readers of the moves count each Move as an add. A trade drop is a side of the trade, so it is not a Drop.
+    """
+    player_id: str
+    roster_id: int
+    week: int
+
+
 class DraftPick(BaseModel):
     season: str
     round: int
@@ -127,6 +138,11 @@ class PastWeek(BaseModel):
     nfl_teams: dict[str, str] = {}
     # The starters of each roster that week, in slot order, by roster id. The key starter rule reads them.
     starters: dict[int, list[str]] = {}
+    # Every player on each roster that week, bench included, in the order of the saved file, by roster id.
+    # The points of each one sit in `points`, because a player is on one roster per week.
+    rosters: dict[int, list[str]] = {}
+    # The drops of the week as their own models, because a drop can come with no add. See Drop.
+    drops: list[Drop] = []
 
 
 class UsageShare(BaseModel):

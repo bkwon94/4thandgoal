@@ -1,6 +1,6 @@
 """
 Writes the page.json of a week from a bundle and its blurbs, and saves the images it names.
-It also writes the waiver file of the week and the season file of power rankings. The site renders the pages.
+It also writes the waiver file of the week and the season files of rankings and managers. The site renders the pages.
 """
 import json
 import logging
@@ -12,10 +12,12 @@ import httpx
 from pydantic import TypeAdapter
 
 from cornerstone.facts_league import LEADER_POSITIONS, season_records
-from cornerstone.models import Blurb, Bundle, History, MatchupFacts, Team
+from cornerstone.managers import managers
+from cornerstone.models import Blurb, Bundle, ChartValues, History, MatchupFacts, Team
 from cornerstone.odds import OddsResult
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet import AWARD_TITLES
+from cornerstone.snapshot import Snapshot
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
@@ -29,6 +31,8 @@ TILE_KEYS = ("top_scorer", "mvb", "underperformer", "overachiever")
 PAGE_SCHEMA_VERSION = 2
 # The season file has its own version, so a change to one file never breaks the reader of the other.
 RANKINGS_SCHEMA_VERSION = 1
+# The managers file has its own version too. A new key in an entry does not need a bump.
+MANAGERS_SCHEMA_VERSION = 1
 # The waiver file has its own version too, so the site reads a week with or without it.
 WAIVER_SCHEMA_VERSION = 1
 # The keys of the odds object on a rankings row, in the order of the site type.
@@ -375,6 +379,31 @@ def render_rankings(
             if row_odds is not None:
                 row["odds"] = row_odds
     body = {"schema_version": RANKINGS_SCHEMA_VERSION, "season": season, "weeks": weeks}
+    season_dir.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    return out
+
+
+def render_managers(
+    history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
+    roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
+    snapshot: Snapshot | None = None, projections_ahead: dict[int, dict[str, float]] | None = None,
+    chart: ChartValues | None = None,
+) -> Path:
+    """Write managers.json for the season: one entry per roster through the history week, in roster id order.
+    The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
+    season_dir = site_dir / str(season)
+    out = season_dir / "managers.json"
+    body = {
+        "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": history.week,
+        "managers": [
+            entry.model_dump(mode="json")
+            for entry in managers(
+                history, teams, players, roster_slots=roster_slots, week_awards=week_awards, snapshot=snapshot,
+                projections_ahead=projections_ahead, chart=chart,
+            )
+        ],
+    }
     season_dir.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
     return out

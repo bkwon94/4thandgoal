@@ -402,6 +402,8 @@ _Avoid_: bye window
 **Depth**:
 The count of a side's players at one position, starters and bench, above the line. It reads QB, RB,
 WR, and TE, before and after a trade.
+The depth word of a manager page counts a spare only inside the league's starter count at the position:
+"stacked" with two spares, "deep" with one, "fine" with none, and "thin" with a hole.
 _Avoid_: bench strength, room
 
 **Strength**:
@@ -617,21 +619,28 @@ A player whose same-position teammate is out for the season or out with no near 
 _Avoid_: breakout, vacated targets, opened role
 
 **Best lineup**:
-The starters a roster could have started in a week for the most points, by the league's slots and the real points.
+The starters a roster could have started for the most points, by the league's slots.
+The best lineup of a week reads the real points.
+The best lineups of the grade read the projections ahead and the points per game.
 _Avoid_: Optimal lineup, perfect lineup, max lineup
 
 **Move**:
-One add to a roster from the waiver pool, by a waiver claim, a free agent pickup, or a trade, with its week and its bid.
+One change to a roster in a week: an add from the waiver pool with its bid, or a trade.
 _Avoid_: Transaction, pickup, acquisition
 
 **Add**:
-A move by a waiver claim or a free agent pickup. A trade is a move but not an add.
+A move that brings a player onto a roster from the waiver pool, by a Sleeper waiver or free agent transaction. A trade is a move but not an add.
 _Avoid_: Claim, pickup, signing
 
 **Drop**:
-The release of a player from a roster to the waiver pool, in a week.
+A player taken off a roster and put in the waiver pool, in a week.
 _Avoid_: Cut, release, waive
 
 **Roster grade**:
-The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of slot strength, holes, and depth.
+The letter, A to D, that says how good a roster is now, from a 0 to 100 score of four parts.
+The parts are the projection ahead, the season production, the trade value, and the depth and holes.
+The slot ranks read the current roster by the projections ahead, never by recent points or injury status.
+The file carries the rank of the roster on each part, from 1 to 12, and never the score.
+The read is the grade in words from the slot ranks: strong in the top quarter, soft in the bottom quarter, deep with a spare, thin at a hole.
+A stacked position reads "Deep" in the grade read.
 _Avoid_: Score, rating, power score
