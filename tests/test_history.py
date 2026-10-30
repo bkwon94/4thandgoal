@@ -3,6 +3,7 @@ Tests for the fetch and cache of past weeks.
 They also test the pre-trade player profile helpers.
 One test calls the real Sleeper API and is marked live.
 """
+import json
 import shutil
 
 import pytest
@@ -12,6 +13,7 @@ from cornerstone.history import (
     fetch_history,
     history_dir,
     load_history,
+    load_saved_weeks,
     player_trend,
     points_per_game,
     red_zone,
@@ -115,6 +117,30 @@ def test_missing_week_is_incomplete(tmp_path, fixture_history_root, fixture_raw_
     shutil.rmtree(tmp_path / "h" / "week-03")
     h = load_history(tmp_path / "h", load_raw(fixture_raw_dir), week=6)
     assert sorted(h.weeks) == [1, 2, 4, 5, 6] and not h.complete()
+
+
+def _add(player_id, roster_id):
+    return {"status": "complete", "type": "free_agent", "leg": 1, "adds": {player_id: roster_id},
+            "drops": None, "settings": None}
+
+
+def test_a_saved_week_reads_the_fresh_transactions_of_the_next_week(tmp_path, fixture_history_root):
+    root = tmp_path / "2026" / "history"
+    shutil.copytree(fixture_history_root / "week-01", history_dir(root, 1))
+    (history_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
+    raw = tmp_path / "2026" / "week-02" / "raw"
+    raw.mkdir(parents=True)
+    (raw / "transactions_prev.json").write_text(json.dumps([_add("SF", 1), _add("HOU", 6)]))
+    moves = load_saved_weeks(root, 1)[1].moves
+    assert [(m.player_id, m.roster_id) for m in moves] == [("SF", 1), ("HOU", 6)]
+
+
+def test_a_saved_week_with_no_fresh_transactions_reads_the_saved_copy(tmp_path, fixture_history_root):
+    root = tmp_path / "2026" / "history"
+    shutil.copytree(fixture_history_root / "week-01", history_dir(root, 1))
+    (history_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
+    moves = load_saved_weeks(root, 1)[1].moves
+    assert [(m.player_id, m.roster_id) for m in moves] == [("SF", 1)]
 
 
 def test_parse_moves_matches_parse_week(fixture_raw_dir):
