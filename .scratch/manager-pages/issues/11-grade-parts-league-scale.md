@@ -4,9 +4,13 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Brian decides: league scale for both parts, or a fixed comment and fixed bands.
-- [ ] The code, the `GRADE_BANDS` comment, and the tests agree on the scale of each part.
-- [ ] The week 7 letters are checked against the decision.
-- [ ] Every existing test passes. `ruff` is clean.
+- [x] Brian decides: league scale for both parts, or a fixed comment and fixed bands.
+- [x] The code, the `GRADE_BANDS` comment, and the tests agree on the scale of each part.
+- [x] The week 7 letters are checked against the decision.
+- [x] Every existing test passes. `ruff` is clean.
+
+## Comments
+
+- 2026-10-29: Brian chose the league scale for every part, so the median roster reads C. The weights are projection 45, production 30, trade value 10, depth 15.

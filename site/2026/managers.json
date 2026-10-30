@@ -499,7 +499,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 6
+            "rank": 4
           },
           {
             "key": "production",
@@ -902,7 +902,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "B",
+        "letter": "C",
         "slots": [
           {
             "position": "QB",
@@ -1367,7 +1367,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 5
+            "rank": 6
           },
           {
             "key": "production",
@@ -2067,7 +2067,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 11
+            "rank": 12
           },
           {
             "key": "production",
@@ -2339,7 +2339,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 2
+            "rank": 1
           },
           {
             "key": "production",
@@ -3089,7 +3089,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 1
+            "rank": 2
           },
           {
             "key": "production",
@@ -3918,7 +3918,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 12
+            "rank": 11
           },
           {
             "key": "production",
@@ -5144,7 +5144,7 @@
         "parts": [
           {
             "key": "projection",
-            "rank": 4
+            "rank": 5
           },
           {
             "key": "production",
