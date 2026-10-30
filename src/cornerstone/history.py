@@ -13,7 +13,7 @@ from typing import Literal
 from cornerstone.facts_league import TREND_WEEKS
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.parse import parse_past_week
-from cornerstone.sleeper import fetch_past_week
+from cornerstone.sleeper import fetch_past_week, read_prev_transactions
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
@@ -72,12 +72,25 @@ def _read_week(directory: Path) -> dict[str, object] | None:
     }
 
 
+def _fresh_transactions(root: Path, week: int) -> list | None:
+    """The full leg of `week` that the fetch of the next week saved, or None when that file is not saved.
+
+    The week N build runs before the Tuesday night waiver run, so the saved copy misses the adds after it.
+    Sleeper keeps the leg at N until the next week starts, and the fetch of week N+1 saves the full leg.
+    """
+    # The raw directory of a week sits beside the history root: data/{season}/week-NN/raw.
+    return read_prev_transactions(root.parent / f"week-{week + 1:02d}" / "raw")
+
+
 def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
     """The saved weeks 1 to `through`, by week. A week that is not saved has no entry."""
     weeks = {}
     for past in range(1, through + 1):
         saved = _read_week(history_dir(root, past))
         if saved is not None:
+            fresh = _fresh_transactions(root, past)
+            if fresh is not None:
+                saved["transactions"] = fresh
             weeks[past] = parse_past_week(saved, past)
     return weeks
 
