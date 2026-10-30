@@ -4,11 +4,15 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `load_saved_weeks` reads week N's transactions from `week-(N+1)/raw/transactions_prev.json` when that file exists, and from `week-NN/raw/transactions.json` otherwise. A comment says why.
-- [ ] `_window_trades` keeps its result on the current fixtures.
-- [ ] A one-off fetch writes `transactions_prev.json` for weeks 2 to 7 from Sleeper's leg 1 to 6 lists, and the files are committed. Sleeper serves a past leg in full at any time.
-- [ ] The week 7 managers file is rebuilt and committed. Bo Girds' week 6 adds hold the Houston Texans.
-- [ ] A test with a fixture pair shows an add in the fresh copy and not in the saved copy lands in the moves.
+- [x] `load_saved_weeks` reads week N's transactions from `week-(N+1)/raw/transactions_prev.json` when that file exists, and from `week-NN/raw/transactions.json` otherwise. A comment says why.
+- [x] `_window_trades` keeps its result on the current fixtures.
+- [x] A one-off fetch writes `transactions_prev.json` for weeks 2 to 7 from Sleeper's leg 1 to 6 lists, and the files are committed. Sleeper serves a past leg in full at any time.
+- [x] The week 7 managers file is rebuilt and committed. Bo Girds' week 6 adds hold the Houston Texans.
+- [x] A test with a fixture pair shows an add in the fresh copy and not in the saved copy lands in the moves.
 - [ ] The site gets the rebuilt file on `main` and the deploy runs.
+
+## Comments
+
+- 2026-10-29: The history reads the fresh copy of each leg. Legs 1 to 5 are backfilled, and week 7 already held leg 6. Only week 6 had a gap: 15 of 83. Bo Girds' week 6 adds hold HOU.
