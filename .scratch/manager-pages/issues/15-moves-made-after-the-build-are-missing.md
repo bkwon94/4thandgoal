@@ -11,8 +11,9 @@
 - [x] A one-off fetch writes `transactions_prev.json` for weeks 2 to 7 from Sleeper's leg 1 to 6 lists, and the files are committed. Sleeper serves a past leg in full at any time.
 - [x] The week 7 managers file is rebuilt and committed. Bo Girds' week 6 adds hold the Houston Texans.
 - [x] A test with a fixture pair shows an add in the fresh copy and not in the saved copy lands in the moves.
-- [ ] The site gets the rebuilt file on `main` and the deploy runs.
+- [x] The site gets the rebuilt file on `main` and the deploy runs.
 
 ## Comments
 
 - 2026-10-29: The history reads the fresh copy of each leg. Legs 1 to 5 are backfilled, and week 7 already held leg 6. Only week 6 had a gap: 15 of 83. Bo Girds' week 6 adds hold HOU.
+- 2026-10-29: merged as e658aca and pushed. The site has the rebuilt file in dd29ecb, and the deploy ran.
