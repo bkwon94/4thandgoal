@@ -638,4 +638,5 @@ _Avoid_: Cut, release, waive
 The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of four parts.
 The parts are the projection ahead, the season production, the trade value, and the depth and holes.
 The slot ranks read the current roster by the projections ahead, never by recent points or injury status.
+The file carries the rank of the roster on each part, from 1 to 12, and never the score.
 _Avoid_: Score, rating, power score

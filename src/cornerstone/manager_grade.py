@@ -1,6 +1,7 @@
 """
 The roster grade and the slot ranks of the managers file, from the rosters, the projections, the points, and the chart.
-The score stays in the pipeline. The entry carries the letter and one rank and one depth word per position.
+The score stays in the pipeline. The entry carries the letter, one rank and one depth word per position, and one
+rank per part of the score.
 """
 from typing import Literal, NamedTuple
 
@@ -29,10 +30,18 @@ class SlotRank(BaseModel):
     depth: Depth
 
 
+class PartRank(BaseModel):
+    """One part of the score of a roster: its key in GRADE_WEIGHTS and its rank of 1 to 12 in the league."""
+    key: str
+    rank: int
+
+
 class ManagerGrade(BaseModel):
-    """The roster grade of an entry: the letter and the slot ranks. The score never leaves the pipeline."""
+    """The roster grade of an entry: the letter, the slot ranks, and the part ranks. The score never leaves the
+    pipeline, so the part ranks show the place of the roster on each part and never the value."""
     letter: str
     slots: list[SlotRank]
+    parts: list[PartRank]
 
 
 class GradeParts(NamedTuple):
@@ -128,10 +137,15 @@ def roster_grades(
     reads = _league_reads(snapshot, projections_ahead, history, chart)
     ranks = {position: _ranks({rid: read.position_total(position) for rid, read, _ in reads})
              for position in SLOT_POSITIONS}
-    return {rid: ManagerGrade(letter=grade_letter(grade_score(read.parts(league))), slots=[
-        SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
-        for position in SLOT_POSITIONS
-    ]) for rid, read, league in reads}
+    parts = {rid: read.parts(league) for rid, read, league in reads}
+    # With no chart every roster has trade value 0, so the roster id alone breaks that tie and sets the rank.
+    part_ranks = {key: _ranks({rid: getattr(parts[rid], key) for rid in parts}) for key in GRADE_WEIGHTS}
+    return {rid: ManagerGrade(
+        letter=grade_letter(grade_score(parts[rid])),
+        slots=[SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
+               for position in SLOT_POSITIONS],
+        parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
+    ) for rid, read, _ in reads}
 
 
 class _League(NamedTuple):
