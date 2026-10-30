@@ -248,11 +248,20 @@ KEY_STARTER_SHORT_STARTS = 2
 
 # The roster grade: GLOSSARY.md, "Roster grade". The score is 0 to 100, the sum of four parts, each 0 to 1, times
 # its weight. The weights sum to 100, so a roster with every part in full scores 100.
-# The starters against the line weigh most, because the starters score the points each week.
-# The best lineup against the league weighs next, because it says how this roster compares with the other eleven.
-# The holes come third: a hole is a slot no one can start in, and the starter part already counts it as zero.
-# Depth weighs least, because a bench player above the line only scores when a starter misses a game.
-GRADE_WEIGHTS = {"slots": 40, "lineup": 25, "holes": 20, "depth": 15}
+GRADE_WEIGHTS = {
+    # The projection ahead weighs most: the starters against the line and the best lineup against the league, by
+    # the projections to the end of the regular season. The rest of the season is what the grade says the most of.
+    "projection": 35,
+    # The season production weighs next: the best lineup by the points per game so far. A projection can miss a
+    # player who scores, and the points already scored are a fact.
+    "production": 25,
+    # The trade value of the whole roster, bench included, against the league. The chart reads a player as the
+    # market prices him, so it sees a strong bench the starters do not show.
+    "trade_value": 20,
+    # The depth and the holes, as one part. A hole is a slot no one can start in, and a bench player above the
+    # line only scores when a starter misses a game, so the part ties the trade value for the least weight.
+    "depth": 20,
+}
 # The share of the holes part that one hole takes away. Four holes leave none, and a fifth costs nothing more.
 GRADE_HOLE_COST = 0.25
 # The players above the line past the starters at a position that give the depth part in full. One spare per

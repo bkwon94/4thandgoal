@@ -633,6 +633,7 @@ The release of a player from a roster to the waiver pool, in a week.
 _Avoid_: Cut, release, waive
 
 **Roster grade**:
-The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of slot strength, holes, and depth.
-The grade and its slot ranks read the current roster by the projections ahead, never by recent points or injury status.
+The letter, A+ to D, that says how good a roster is now, from a 0 to 100 score of four parts.
+The parts are the projection ahead, the season production, the trade value, and the depth and holes.
+The slot ranks read the current roster by the projections ahead, never by recent points or injury status.
 _Avoid_: Score, rating, power score
