@@ -473,7 +473,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "C",
+        "letter": "B",
         "slots": [
           {
             "position": "QB",
@@ -513,7 +513,8 @@
             "key": "depth",
             "rank": 7
           }
-        ]
+        ],
+        "read": "Strong at TE."
       }
     },
     {
@@ -901,7 +902,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "C",
+        "letter": "B",
         "slots": [
           {
             "position": "QB",
@@ -941,7 +942,8 @@
             "key": "depth",
             "rank": 4
           }
-        ]
+        ],
+        "read": "Middle of the league at every position."
       }
     },
     {
@@ -1379,7 +1381,8 @@
             "key": "depth",
             "rank": 9
           }
-        ]
+        ],
+        "read": "Deep at QB. Thin at WR."
       }
     },
     {
@@ -2078,7 +2081,8 @@
             "key": "depth",
             "rank": 6
           }
-        ]
+        ],
+        "read": "Soft at QB, RB, and TE."
       }
     },
     {
@@ -2349,7 +2353,8 @@
             "key": "depth",
             "rank": 2
           }
-        ]
+        ],
+        "read": "Strong at RB."
       }
     },
     {
@@ -3058,7 +3063,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "A+",
+        "letter": "A",
         "slots": [
           {
             "position": "QB",
@@ -3098,7 +3103,8 @@
             "key": "depth",
             "rank": 3
           }
-        ]
+        ],
+        "read": "Strong at WR."
       }
     },
     {
@@ -3926,7 +3932,8 @@
             "key": "depth",
             "rank": 10
           }
-        ]
+        ],
+        "read": "Strong at QB and TE. Deep at QB. Soft at RB. Thin at WR."
       }
     },
     {
@@ -4497,7 +4504,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "D",
+        "letter": "C",
         "slots": [
           {
             "position": "QB",
@@ -4537,7 +4544,8 @@
             "key": "depth",
             "rank": 8
           }
-        ]
+        ],
+        "read": "Strong at RB and TE. Soft at QB and WR."
       }
     },
     {
@@ -5110,7 +5118,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "C",
+        "letter": "B",
         "slots": [
           {
             "position": "QB",
@@ -5150,7 +5158,8 @@
             "key": "depth",
             "rank": 11
           }
-        ]
+        ],
+        "read": "Thin at WR."
       }
     },
     {
@@ -5674,7 +5683,8 @@
             "key": "depth",
             "rank": 12
           }
-        ]
+        ],
+        "read": "Strong at QB. Deep at QB. Soft at RB and TE. Thin at WR."
       }
     },
     {
@@ -6208,7 +6218,8 @@
             "key": "depth",
             "rank": 5
           }
-        ]
+        ],
+        "read": "Strong at RB. Soft at QB, WR, and TE."
       }
     },
     {
@@ -6666,7 +6677,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "B",
+        "letter": "A",
         "slots": [
           {
             "position": "QB",
@@ -6706,7 +6717,8 @@
             "key": "depth",
             "rank": 1
           }
-        ]
+        ],
+        "read": "Strong at QB and WR. Deep at TE."
       }
     }
   ]
