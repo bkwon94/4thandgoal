@@ -483,7 +483,7 @@
           {
             "position": "RB",
             "rank": 9,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -494,6 +494,24 @@
             "position": "TE",
             "rank": 1,
             "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 6
+          },
+          {
+            "key": "production",
+            "rank": 5
+          },
+          {
+            "key": "trade_value",
+            "rank": 7
+          },
+          {
+            "key": "depth",
+            "rank": 7
           }
         ]
       }
@@ -893,7 +911,7 @@
           {
             "position": "RB",
             "rank": 7,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -903,7 +921,25 @@
           {
             "position": "TE",
             "rank": 9,
-            "depth": "deep"
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 8
+          },
+          {
+            "key": "production",
+            "rank": 7
+          },
+          {
+            "key": "trade_value",
+            "rank": 3
+          },
+          {
+            "key": "depth",
+            "rank": 4
           }
         ]
       }
@@ -1313,7 +1349,7 @@
           {
             "position": "RB",
             "rank": 6,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -1324,6 +1360,24 @@
             "position": "TE",
             "rank": 6,
             "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 5
+          },
+          {
+            "key": "production",
+            "rank": 3
+          },
+          {
+            "key": "trade_value",
+            "rank": 5
+          },
+          {
+            "key": "depth",
+            "rank": 9
           }
         ]
       }
@@ -2004,7 +2058,25 @@
           {
             "position": "TE",
             "rank": 10,
-            "depth": "deep"
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 11
+          },
+          {
+            "key": "production",
+            "rank": 10
+          },
+          {
+            "key": "trade_value",
+            "rank": 11
+          },
+          {
+            "key": "depth",
+            "rank": 6
           }
         ]
       }
@@ -2242,12 +2314,12 @@
           {
             "position": "QB",
             "rank": 8,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "RB",
             "rank": 2,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -2257,7 +2329,25 @@
           {
             "position": "TE",
             "rank": 5,
-            "depth": "deep"
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 2
+          },
+          {
+            "key": "production",
+            "rank": 2
+          },
+          {
+            "key": "trade_value",
+            "rank": 1
+          },
+          {
+            "key": "depth",
+            "rank": 2
           }
         ]
       }
@@ -2973,7 +3063,7 @@
           {
             "position": "QB",
             "rank": 6,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "RB",
@@ -2988,7 +3078,25 @@
           {
             "position": "TE",
             "rank": 4,
-            "depth": "deep"
+            "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 1
+          },
+          {
+            "key": "production",
+            "rank": 1
+          },
+          {
+            "key": "trade_value",
+            "rank": 2
+          },
+          {
+            "key": "depth",
+            "rank": 3
           }
         ]
       }
@@ -3800,6 +3908,24 @@
             "rank": 3,
             "depth": "fine"
           }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 12
+          },
+          {
+            "key": "production",
+            "rank": 12
+          },
+          {
+            "key": "trade_value",
+            "rank": 12
+          },
+          {
+            "key": "depth",
+            "rank": 10
+          }
         ]
       }
     },
@@ -4392,6 +4518,24 @@
             "position": "TE",
             "rank": 2,
             "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 7
+          },
+          {
+            "key": "production",
+            "rank": 9
+          },
+          {
+            "key": "trade_value",
+            "rank": 8
+          },
+          {
+            "key": "depth",
+            "rank": 8
           }
         ]
       }
@@ -4988,6 +5132,24 @@
             "rank": 8,
             "depth": "fine"
           }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 4
+          },
+          {
+            "key": "production",
+            "rank": 4
+          },
+          {
+            "key": "trade_value",
+            "rank": 6
+          },
+          {
+            "key": "depth",
+            "rank": 11
+          }
         ]
       }
     },
@@ -5482,7 +5644,7 @@
           {
             "position": "RB",
             "rank": 10,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -5493,6 +5655,24 @@
             "position": "TE",
             "rank": 12,
             "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 10
+          },
+          {
+            "key": "production",
+            "rank": 8
+          },
+          {
+            "key": "trade_value",
+            "rank": 9
+          },
+          {
+            "key": "depth",
+            "rank": 12
           }
         ]
       }
@@ -5993,12 +6173,12 @@
           {
             "position": "QB",
             "rank": 10,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "RB",
             "rank": 1,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
@@ -6009,6 +6189,24 @@
             "position": "TE",
             "rank": 11,
             "depth": "fine"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 9
+          },
+          {
+            "key": "production",
+            "rank": 11
+          },
+          {
+            "key": "trade_value",
+            "rank": 10
+          },
+          {
+            "key": "depth",
+            "rank": 5
           }
         ]
       }
@@ -6473,22 +6671,40 @@
           {
             "position": "QB",
             "rank": 2,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "RB",
             "rank": 8,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "WR",
             "rank": 1,
-            "depth": "deep"
+            "depth": "fine"
           },
           {
             "position": "TE",
             "rank": 7,
             "depth": "deep"
+          }
+        ],
+        "parts": [
+          {
+            "key": "projection",
+            "rank": 3
+          },
+          {
+            "key": "production",
+            "rank": 6
+          },
+          {
+            "key": "trade_value",
+            "rank": 4
+          },
+          {
+            "key": "depth",
+            "rank": 1
           }
         ]
       }

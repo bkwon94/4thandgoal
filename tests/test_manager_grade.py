@@ -121,8 +121,35 @@ def test_the_slot_ranks_place_each_team_once_per_position(fixture_raw_dir, fixtu
 def test_the_file_carries_the_letter_and_never_the_score(fixture_raw_dir, fixture_history_root):
     entry = _entries(fixture_raw_dir, fixture_history_root)[0]
     grade = entry.model_dump(mode="json")["grade"]
-    assert set(grade) == {"letter", "slots"}
+    assert set(grade) == {"letter", "slots", "parts"}
     assert set(grade["slots"][0]) == {"position", "rank", "depth"}
+    assert set(grade["parts"][0]) == {"key", "rank"}
+
+
+def test_each_entry_carries_the_part_ranks_in_the_order_of_the_weights(fixture_raw_dir, fixture_history_root):
+    for entry in _entries(fixture_raw_dir, fixture_history_root):
+        assert [part.key for part in entry.grade.parts] == list(GRADE_WEIGHTS)
+        assert list(GRADE_WEIGHTS) == ["projection", "production", "trade_value", "depth"]
+
+
+def test_the_part_ranks_place_each_roster_once_per_part(fixture_raw_dir, fixture_history_root):
+    entries = _entries(fixture_raw_dir, fixture_history_root)
+    for index, key in enumerate(GRADE_WEIGHTS):
+        ranks = sorted(entry.grade.parts[index].rank for entry in entries)
+        assert ranks == list(range(1, 13)), key
+
+
+def test_a_roster_that_leads_a_part_ranks_1_on_it(fixture_raw_dir, fixture_history_root):
+    snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
+    ahead, history = _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root)
+    # Roster 5 alone has chart value, so it leads the trade value part.
+    chart = ChartValues(week=6, date=date(2026, 10, 14), values={pid: 50.0 for pid in snapshot.rosters[5]})
+    grades = roster_grades(snapshot, ahead, history, chart)
+    parts = roster_parts(snapshot, ahead, history, chart)
+    assert {part.key: part.rank for part in grades[5].parts}["trade_value"] == 1
+    for key in GRADE_WEIGHTS:
+        leader = max(parts, key=lambda rid: (getattr(parts[rid], key), -rid))
+        assert {part.key: part.rank for part in grades[leader].parts}[key] == 1, key
 
 
 def test_the_grade_is_null_without_a_snapshot(fixture_raw_dir, fixture_history_root):
