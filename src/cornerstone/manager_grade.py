@@ -13,8 +13,8 @@ from cornerstone.models import ChartValues, History
 from cornerstone.ranks import LINES
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SPARE_RANK, GRADE_WEIGHTS,
-    LAST_REGULAR_WEEK,
+    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SOFT_RANK, GRADE_SPARE_RANK,
+    GRADE_STRONG_RANK, GRADE_WEIGHTS, LAST_REGULAR_WEEK,
 )
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
@@ -37,11 +37,13 @@ class PartRank(BaseModel):
 
 
 class ManagerGrade(BaseModel):
-    """The roster grade of an entry: the letter, the slot ranks, and the part ranks. The score never leaves the
-    pipeline, so the part ranks show the place of the roster on each part and never the value."""
+    """The roster grade of an entry: the letter, the slot ranks, the part ranks, and the read. The score never leaves
+    the pipeline, so the part ranks show the place of the roster on each part and never the value."""
     letter: str
     slots: list[SlotRank]
     parts: list[PartRank]
+    # One to four short sentences in words, from the slot ranks: "Strong at RB and TE. Soft at QB and WR."
+    read: str
 
 
 class GradeParts(NamedTuple):
@@ -80,6 +82,28 @@ def depth_word(spares: int, hole: bool) -> Depth:
     if spares >= 2:
         return "stacked"
     return "deep" if spares == 1 else "fine"
+
+
+def _names(positions: list[str]) -> str:
+    """Positions in a list: "RB", "RB and TE", or "QB, RB, and WR"."""
+    if len(positions) <= 2:
+        return " and ".join(positions)
+    return ", ".join(positions[:-1]) + ", and " + positions[-1]
+
+
+def grade_read(slots: list[SlotRank]) -> str:
+    """The grade in words, from the slot ranks: the strong positions, the deep ones, the soft ones, and the thin ones.
+
+    A position is strong in the top quarter of the league and soft in the bottom quarter. A thin position is a hole,
+    so it reads thin and not soft. With nothing to say, the roster is middle of the league at every position.
+    """
+    strong = [s.position for s in slots if s.rank <= GRADE_STRONG_RANK]
+    deep = [s.position for s in slots if s.depth in ("deep", "stacked")]
+    thin = [s.position for s in slots if s.depth == "thin"]
+    soft = [s.position for s in slots if s.rank >= GRADE_SOFT_RANK and s.position not in thin]
+    sentences = [f"{word} at {_names(names)}." for word, names in (
+        ("Strong", strong), ("Deep", deep), ("Soft", soft), ("Thin", thin)) if names]
+    return " ".join(sentences) or "Middle of the league at every position."
 
 
 def projected_values(projections_ahead: dict[int, dict[str, float]]) -> dict[str, float]:
@@ -140,12 +164,17 @@ def roster_grades(
     parts = {rid: read.parts(league) for rid, read, league in reads}
     # With no chart every roster has trade value 0, so the roster id alone breaks that tie and sets the rank.
     part_ranks = {key: _ranks({rid: getattr(parts[rid], key) for rid in parts}) for key in GRADE_WEIGHTS}
-    return {rid: ManagerGrade(
-        letter=grade_letter(grade_score(parts[rid])),
-        slots=[SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
-               for position in SLOT_POSITIONS],
-        parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
-    ) for rid, read, _ in reads}
+    grades = {}
+    for rid, read, _ in reads:
+        slots = [SlotRank(position=position, rank=ranks[position][rid], depth=read.depth_word(position))
+                 for position in SLOT_POSITIONS]
+        grades[rid] = ManagerGrade(
+            letter=grade_letter(grade_score(parts[rid])),
+            slots=slots,
+            parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
+            read=grade_read(slots),
+        )
+    return grades
 
 
 class _League(NamedTuple):

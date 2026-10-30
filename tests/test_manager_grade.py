@@ -10,7 +10,8 @@ import pytest
 
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
-    GradeParts, depth_word, grade_letter, grade_score, position_ranks, projected_values, roster_grades, roster_parts,
+    GradeParts, SlotRank, depth_word, grade_letter, grade_read, grade_score, position_ranks, projected_values,
+    roster_grades, roster_parts,
     season_points_per_game,
 )
 from cornerstone.managers import managers
@@ -55,7 +56,7 @@ def _roster_ahead(snapshot, roster_id, points=10.0):
 
 
 @pytest.mark.parametrize("score, letter", [
-    (100, "A+"), (85, "A+"), (84.99, "A"), (70, "A"), (69.99, "B"), (55, "B"), (54.99, "C"), (40, "C"),
+    (100, "A"), (70, "A"), (69.99, "B"), (55, "B"), (54.99, "C"), (40, "C"),
     (39.99, "D"), (0, "D"),
 ])
 def test_each_band_at_its_edge(score, letter):
@@ -73,8 +74,8 @@ def test_the_score_is_the_weighted_sum_of_the_parts():
 
 
 @pytest.mark.parametrize("parts, letter", [
-    # Projection, production, and depth in full give 80. Trade value at 0.25 of its 20 gives 5 more, the edge of A+.
-    (GradeParts(projection=1, production=1, trade_value=0.25, depth=1), "A+"),
+    # Every part in full gives 100, an A. There is no A+: a report card tops out at A.
+    (GradeParts(projection=1, production=1, trade_value=1, depth=1), "A"),
     # Projection and production in full give 60. Depth at 0.5 of its 20 gives 10 more, the edge of A.
     (GradeParts(projection=1, production=1, trade_value=0, depth=0.5), "A"),
     # Projection and trade value in full give 55, the edge of B.
@@ -106,7 +107,7 @@ def test_each_depth_word(spares, hole, word):
 def test_each_entry_carries_the_letter_and_the_slot_ranks_in_order(fixture_raw_dir, fixture_history_root):
     entries = _entries(fixture_raw_dir, fixture_history_root)
     for entry in entries:
-        assert entry.grade.letter in {"A+", "A", "B", "C", "D"}
+        assert entry.grade.letter in {"A", "B", "C", "D"}
         assert [slot.position for slot in entry.grade.slots] == ["QB", "RB", "WR", "TE"]
         assert all(slot.depth in {"deep", "fine", "thin"} for slot in entry.grade.slots)
 
@@ -121,7 +122,7 @@ def test_the_slot_ranks_place_each_team_once_per_position(fixture_raw_dir, fixtu
 def test_the_file_carries_the_letter_and_never_the_score(fixture_raw_dir, fixture_history_root):
     entry = _entries(fixture_raw_dir, fixture_history_root)[0]
     grade = entry.model_dump(mode="json")["grade"]
-    assert set(grade) == {"letter", "slots", "parts"}
+    assert set(grade) == {"letter", "slots", "parts", "read"}
     assert set(grade["slots"][0]) == {"position", "rank", "depth"}
     assert set(grade["parts"][0]) == {"key", "rank"}
 
@@ -261,3 +262,19 @@ def test_no_chart_gives_0_for_the_trade_value_part(fixture_raw_dir, fixture_hist
     parts = roster_parts(snapshot, _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root),
                          None)
     assert all(part.trade_value == 0.0 for part in parts.values())
+
+
+def _slot(position, rank, depth="fine"):
+    return SlotRank(position=position, rank=rank, depth=depth)
+
+
+@pytest.mark.parametrize("slots, read", [
+    ([_slot("QB", 11), _slot("RB", 3), _slot("WR", 11), _slot("TE", 2)], "Strong at RB and TE. Soft at QB and WR."),
+    ([_slot("QB", 1, "deep"), _slot("RB", 2), _slot("WR", 3), _slot("TE", 6)], "Strong at QB, RB, and WR. Deep at QB."),
+    # A thin position is a hole, so it reads thin and never soft too.
+    ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 12, "thin"), _slot("TE", 7)], "Thin at WR."),
+    ([_slot("QB", 5), _slot("RB", 6, "stacked"), _slot("WR", 4), _slot("TE", 7)], "Deep at RB."),
+    ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 4), _slot("TE", 7)], "Middle of the league at every position."),
+])
+def test_the_grade_read_names_the_strong_deep_soft_and_thin_positions(slots, read):
+    assert grade_read(slots) == read
