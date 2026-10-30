@@ -387,7 +387,7 @@ def render_rankings(
 def render_managers(
     history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
     roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
-    snapshot: Snapshot | None = None,
+    snapshot: Snapshot | None = None, projections_ahead: dict[int, dict[str, float]] | None = None,
 ) -> Path:
     """Write managers.json for the season: one entry per roster through the history week, in roster id order.
     The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
@@ -399,6 +399,7 @@ def render_managers(
             entry.model_dump(mode="json")
             for entry in managers(
                 history, teams, players, roster_slots=roster_slots, week_awards=week_awards, snapshot=snapshot,
+                projections_ahead=projections_ahead,
             )
         ],
     }

@@ -1,17 +1,16 @@
 """
-The roster grade and the slot ranks of the managers file, from the analyzer's snapshot of the current week.
+The roster grade and the slot ranks of the managers file, from the current rosters and the projections ahead.
 The score stays in the pipeline. The entry carries the letter and one rank and one depth word per position.
 """
-from decimal import Decimal
 from typing import Literal, NamedTuple
 
 from pydantic import BaseModel
 
-from cornerstone.adjusters import StartingSlot, _above_the_line, lineup_slots
+from cornerstone.adjusters import StartingSlot, fill_slots
 from cornerstone.ranks import LINES
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS,
+    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS, LAST_REGULAR_WEEK,
 )
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
@@ -62,9 +61,39 @@ def depth_word(starters: int, above: int, hole: bool) -> Depth:
     return "deep" if above > starters else "fine"
 
 
-def roster_grades(snapshot: Snapshot) -> dict[int, ManagerGrade]:
-    """The grade of each roster of the snapshot, by roster id."""
-    reads = {rid: _RosterRead(snapshot, roster) for rid, roster in snapshot.rosters.items()}
+def projected_values(projections_ahead: dict[int, dict[str, float]]) -> dict[str, float]:
+    """The value of each player in the projections: the mean of his projections over the weeks ahead.
+
+    A week with no projection for him counts 0 in the mean. The weeks stop at LAST_REGULAR_WEEK, because the file
+    runs to the end of the NFL season and a playoff week says nothing of the roster in the regular season.
+    """
+    weeks = [projections for week, projections in projections_ahead.items() if week <= LAST_REGULAR_WEEK]
+    players = {pid for projections in weeks for pid in projections}
+    return {pid: sum(projections.get(pid, 0.0) for projections in weeks) / len(weeks) for pid in players}
+
+
+def position_ranks(values: dict[str, float], positions: dict[str, str]) -> dict[str, int]:
+    """The place of each player from 1 at his position by value, most first, among the players with a value.
+
+    Only the positions in LINES get a rank. A player with no value has no rank, so he is below the line. The player
+    id breaks a tie, so no two share a place.
+    """
+    ranks: dict[str, int] = {}
+    for position in LINES:
+        pool = sorted((pid for pid in values if positions.get(pid) == position), key=lambda pid: (-values[pid], pid))
+        ranks.update({pid: place for place, pid in enumerate(pool, start=1)})
+    return ranks
+
+
+def roster_grades(snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]]) -> dict[int, ManagerGrade]:
+    """The grade of each roster of the snapshot by the projections ahead, by roster id.
+
+    The snapshot gives the rosters, the roster slots, and the positions. The injury status and the returns file play
+    no part, so a starter out one week with a projection ahead is no hole.
+    """
+    values = projected_values(projections_ahead)
+    ranks_by_player = position_ranks(values, {pid: player.position for pid, player in snapshot.players.items()})
+    reads = {rid: _RosterRead(snapshot, roster, values, ranks_by_player) for rid, roster in snapshot.rosters.items()}
     totals = [read.lineup_total for read in reads.values()]
     low, high = min(totals), max(totals)
     ranks = {position: _ranks({rid: read.position_total(position) for rid, read in reads.items()})
@@ -81,24 +110,38 @@ def roster_grades(snapshot: Snapshot) -> dict[int, ManagerGrade]:
     return grades
 
 
-def _ranks(totals: dict[int, Decimal]) -> dict[int, int]:
+def _ranks(totals: dict[int, float]) -> dict[int, int]:
     """The place of each roster from 1 by the total, most first. The roster id breaks a tie, so no two share a place."""
     order = sorted(totals, key=lambda rid: (-totals[rid], rid))
     return {rid: place for place, rid in enumerate(order, start=1)}
 
 
 class _RosterRead:
-    """What the grade reads of one roster: the starters of its best lineup, with the FLEX filled, and its depth."""
+    """What the grade reads of one roster: the starters of its best lineup, with the FLEX filled, and its depth.
 
-    def __init__(self, snapshot: Snapshot, roster: list[str]) -> None:
+    The best lineup fills the roster slots by the projected value, and each starter carries his projected rank.
+    A slot of a StartingSlot here has no absence, so a hole is a slot with no player or a player below the line.
+    """
+
+    def __init__(self, snapshot: Snapshot, roster: list[str], values: dict[str, float],
+                 ranks: dict[str, int]) -> None:
         self.snapshot = snapshot
         self.roster = roster
+        self.values = values
+        self.ranks = ranks
+        positions = {pid: snapshot.players[pid].position for pid in roster}
+        filled = fill_slots(roster, snapshot.roster_positions, positions, {pid: self._value(pid) for pid in roster})
+        starting = [StartingSlot(name=slot, player=pid, rank=None if pid is None else ranks.get(pid), roster_slot=slot)
+                    for slot, pid in filled]
         # K and DEF have no line, so the grade reads only the slots of the positions in LINES. An empty slot is a
         # hole only when a lined player could fill it, so an empty FLEX counts in the score but at no position.
-        self.slots = [slot for slot in lineup_slots(roster, snapshot)
+        self.slots = [slot for slot in starting
                       if self._position(slot) in LINES or (slot.player is None and slot.is_hole(snapshot))]
-        self.lineup_total = sum((snapshot.lineup_value(slot.player) for slot in self.slots if slot.player is not None),
-                                Decimal(0))
+        self.lineup_total = sum(self._value(slot.player) for slot in self.slots if slot.player is not None)
+
+    def _value(self, player_id: str) -> float:
+        """The projected value of the player. A player with no projection ahead counts 0."""
+        return self.values.get(player_id, 0.0)
 
     def _position(self, slot: StartingSlot) -> str | None:
         """The position the slot counts for: its player's, or its fixed roster slot when it holds no player."""
@@ -109,15 +152,15 @@ class _RosterRead:
     def _at(self, position: str) -> list[StartingSlot]:
         return [slot for slot in self.slots if self._position(slot) == position]
 
-    def position_total(self, position: str) -> Decimal:
-        """The lineup value of the starters at the position, the FLEX starters included."""
-        return sum((self.snapshot.lineup_value(slot.player) for slot in self._at(position) if slot.player is not None),
-                   Decimal(0))
+    def position_total(self, position: str) -> float:
+        """The projected value of the starters at the position, the FLEX starters included."""
+        return sum(self._value(slot.player) for slot in self._at(position) if slot.player is not None)
 
     def above(self, position: str) -> int:
         """The depth at the position: the players, starters and bench, above the line. GLOSSARY.md, "Depth"."""
+        line = LINES[position]
         return sum(1 for pid in self.roster
-                   if self.snapshot.players[pid].position == position and _above_the_line(self.snapshot, pid))
+                   if self.snapshot.players[pid].position == position and self.ranks.get(pid, line + 1) <= line)
 
     def depth_word(self, position: str) -> Depth:
         starters = self._at(position)

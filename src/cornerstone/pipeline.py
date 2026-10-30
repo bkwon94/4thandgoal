@@ -32,7 +32,9 @@ from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
     write_bundle,
 )
-from cornerstone.sleeper import fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions
+from cornerstone.sleeper import (
+    PROJECTIONS_AHEAD_FILE, fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions,
+)
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_returns, week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
@@ -396,12 +398,22 @@ def _write_managers(
             "history holds %d of the %d weeks the file needs: managers.json not written", through, MANAGERS_MIN_WEEKS,
         )
         return None
-    slots, players = _season_raw(week_dir(repo, season, week) / "raw")
+    raw_dir = week_dir(repo, season, week) / "raw"
+    slots, players = _season_raw(raw_dir)
     week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
         history, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
-        snapshot=snapshot,
+        snapshot=snapshot, projections_ahead=_projections_ahead(raw_dir),
     )
+
+
+def _projections_ahead(raw_dir: Path) -> dict[int, dict[str, float]] | None:
+    """The projections ahead of the roster grade, by week and player id, from the raw projections ahead file.
+    No file gives None, so the entries carry no grade."""
+    path = raw_dir / PROJECTIONS_AHEAD_FILE
+    if not path.exists():
+        return None
+    return {entry["week"]: entry["projections"] for entry in json.loads(path.read_text(encoding="utf-8"))}
 
 
 def _season_raw(raw_dir: Path) -> tuple[list[str] | None, dict[str, dict] | None]:
