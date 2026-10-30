@@ -4,11 +4,15 @@
 
 **Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08, 09
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The pipeline builds the managers file for week 7 from the saved weeks 1 to 7. The file is copied to the site worktree's public folder for the preview only and never committed to the site before the merge.
-- [ ] Screenshots at 390 by 844, 768 by 1024, and 1280 by 800, both themes, reduced motion on and off.
-- [ ] Brian's notes from each pass become edits. The page earns "best-looking" by his read.
-- [ ] The code review skill runs two reviewers per repo against `origin/main`. Findings are fixed or ticketed.
-- [ ] Both repos merge to `main` with `--no-ff` from a clean main checkout. Week 8 ships the feature.
-- [ ] No republish of week 7.
+- [x] The pipeline builds the managers file for week 7 from the saved weeks 1 to 7. The file is copied to the site worktree's public folder for the preview only and never committed to the site before the merge.
+- [x] Screenshots at 390 by 844, 768 by 1024, and 1280 by 800, both themes, reduced motion on and off.
+- [x] Brian's notes from each pass become edits. The page earns "best-looking" by his read.
+- [x] The code review skill runs two reviewers per repo against `origin/main`. Findings are fixed or ticketed.
+- [x] Both repos merge to `main` with `--no-ff` from a clean main checkout. Week 8 ships the feature.
+- [x] No republish of week 7.
+
+## Comments
+
+- 2026-10-29: merged to main in both repos, pipeline 3d6dff1 and site 4c85766, and pushed. The week 7 managers file went live on the site with d4c4185, the managers file only, not the week page. Review findings: 14 fixed on the branch; tickets 11 to 14 in the pipeline and 11 to 13 in the site hold the rest. The grade went fully league-relative with weights 45, 30, 10, 15 (pipeline ticket 11).
