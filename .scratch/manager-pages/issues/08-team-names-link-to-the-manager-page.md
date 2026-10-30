@@ -4,10 +4,10 @@
 
 **Blocked by:** 03 The routes, the index, the hero, and the menu
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The link style is the text with no underline and a hover underline, as the given player links in the analyzer.
-- [ ] The link carries the base path and the season of the page it sits on.
-- [ ] The standings, rankings, matchups, and trades tests gain one assertion each: a link with the file, plain text without.
-- [ ] No layout shifts: the name keeps its weight, size, and wrap.
-- [ ] All site checks pass.
+- [x] The link style is the text with no underline and a hover underline, as the given player links in the analyzer.
+- [x] The link carries the base path and the season of the page it sits on.
+- [x] The standings, rankings, matchups, and trades tests gain one assertion each: a link with the file, plain text without.
+- [x] No layout shifts: the name keeps its weight, size, and wrap.
+- [x] All site checks pass.

@@ -4,12 +4,16 @@
 
 **Blocked by:** 03 The routes, the index, the hero, and the menu
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The score reads each starting slot against the line, holes, depth above the line per position, and the best lineup's lineup value against the league.
-- [ ] The bands are A+ at 90, A at 80, B at 65, C at 50, D under 50. The score parts and the bands are tunables in one place.
-- [ ] Each entry carries the letter and the slot ranks for QB, RB, WR, and TE: the rank 1 to 12 and the depth word, deep, fine, or thin.
-- [ ] The managers module tests cover each band at its edge and each depth word.
-- [ ] The hero shows the letter with the depth words in short form under it. The index cards show the letter.
-- [ ] The Roster chapter lists the slot ranks as "RB · 2nd of 12 · deep". One quiet label, one emphasis per line.
-- [ ] The page tests read the letter and the slot ranks. All checks pass in both repos.
+- [x] The score reads each starting slot against the line, holes, depth above the line per position, and the best lineup's lineup value against the league.
+- [x] The bands are A+ at 90, A at 80, B at 65, C at 50, D under 50. The score parts and the bands are tunables in one place.
+- [x] Each entry carries the letter and the slot ranks for QB, RB, WR, and TE: the rank 1 to 12 and the depth word, deep, fine, or thin.
+- [x] The managers module tests cover each band at its edge and each depth word.
+- [x] The hero shows the letter with the depth words in short form under it. The index cards show the letter.
+- [x] The Roster chapter lists the slot ranks as "RB · 2nd of 12 · deep". One quiet label, one emphasis per line.
+- [x] The page tests read the letter and the slot ranks. All checks pass in both repos.
+
+## Comments
+
+- 2026-10-29: the design passes dropped A+. The bands are A 70, B 55, C 40, D under 40.
