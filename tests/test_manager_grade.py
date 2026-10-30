@@ -10,8 +10,8 @@ import pytest
 
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
-    GradeParts, SlotRank, depth_word, grade_letter, grade_read, grade_score, position_ranks, projected_values,
-    roster_grades, roster_parts,
+    GradeParts, SlotRank, _league_reads, depth_word, grade_letter, grade_read, grade_score, position_ranks,
+    projected_values, roster_grades, roster_parts,
     season_points_per_game,
 )
 from cornerstone.managers import managers
@@ -255,6 +255,31 @@ def test_a_roster_with_high_chart_values_ranks_higher(fixture_raw_dir, fixture_h
     assert after[1].trade_value == 1.0
     assert all(after[rid].trade_value == 0.0 for rid in after if rid != 1)
     assert grade_score(after[1]) > grade_score(before[1])
+
+
+def _reads(raw_dir, root):
+    snapshot = _snapshot(raw_dir, root)
+    return _league_reads(snapshot, _ahead(load_raw(raw_dir)), _history(raw_dir, root), None)
+
+
+def test_the_depth_part_puts_the_lowest_depth_total_at_0_and_the_highest_at_1(fixture_raw_dir, fixture_history_root):
+    reads = _reads(fixture_raw_dir, fixture_history_root)
+    totals = {rid: read.depth_total() for rid, read, _ in reads}
+    # The fixture rosters differ in depth, so the league read has a low end and a high end.
+    assert min(totals.values()) < max(totals.values())
+    depth = {rid: read.parts(league).depth for rid, read, league in reads}
+    assert all(depth[rid] == 0.0 for rid in totals if totals[rid] == min(totals.values()))
+    assert all(depth[rid] == 1.0 for rid in totals if totals[rid] == max(totals.values()))
+
+
+def test_the_places_read_puts_the_lowest_places_total_at_0_and_the_highest_at_1(fixture_raw_dir,
+                                                                                fixture_history_root):
+    reads = _reads(fixture_raw_dir, fixture_history_root)
+    totals = {rid: read.places_total() for rid, read, _ in reads}
+    assert min(totals.values()) < max(totals.values())
+    places = {rid: league.places for rid, _, league in reads}
+    assert all(places[rid] == 0.0 for rid in totals if totals[rid] == min(totals.values()))
+    assert all(places[rid] == 1.0 for rid in totals if totals[rid] == max(totals.values()))
 
 
 def test_no_chart_gives_0_for_the_trade_value_part(fixture_raw_dir, fixture_history_root):
