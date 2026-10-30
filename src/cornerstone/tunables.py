@@ -258,8 +258,8 @@ GRADE_WEIGHTS = {
     # The trade value of the whole roster, bench included, against the league. The chart reads a player as the
     # market prices him, so it sees a strong bench the starters do not show.
     "trade_value": 20,
-    # The depth and the holes, as one part. A hole is a slot no one can start in, and a bench player above the
-    # line only scores when a starter misses a game, so the part ties the trade value for the least weight.
+    # The depth and the holes, as one part. A hole is a slot no one can start in. A bench player above the line
+    # only scores when a starter misses a game. So the part ties the trade value for the least weight.
     "depth": 20,
 }
 # The share of the holes part that one hole takes away. Four holes leave none, and a fifth costs nothing more.
@@ -268,8 +268,8 @@ GRADE_HOLE_COST = 0.25
 # position covers one missed game at a time.
 GRADE_DEPTH_SPARES = 1
 # The depth word of a position on the manager page counts a spare only inside the league's starter count at the
-# position: 12 teams start 1 QB, 2 RB, 2 WR, and 1 TE, flex aside. The line is looser, so a QB16 is startable but
-# he is a backup, not a second good player. Two spares read "stacked", one reads "deep", none reads "fine".
+# position. 12 teams start 1 QB, 2 RB, 2 WR, and 1 TE, flex aside. The line is looser, so a QB16 is startable.
+# He is a backup, not a second good player. Two spares read "stacked", one reads "deep", none reads "fine".
 GRADE_SPARE_RANK = {"QB": 12, "RB": 24, "WR": 24, "TE": 12}
 # The lowest score of each letter, best first. A score under the last band is a D. A report card reads A to D.
 # Each part puts the league's worst roster at 0 and its best at 1, so a median roster scores near 50. The bands
