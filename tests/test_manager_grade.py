@@ -55,8 +55,8 @@ def _roster_ahead(snapshot, roster_id, points=10.0):
 
 
 @pytest.mark.parametrize("score, letter", [
-    (100, "A+"), (90, "A+"), (89.99, "A"), (80, "A"), (79.99, "B"), (65, "B"), (64.99, "C"), (50, "C"),
-    (49.99, "D"), (0, "D"),
+    (100, "A+"), (85, "A+"), (84.99, "A"), (70, "A"), (69.99, "B"), (55, "B"), (54.99, "C"), (40, "C"),
+    (39.99, "D"), (0, "D"),
 ])
 def test_each_band_at_its_edge(score, letter):
     assert grade_letter(score) == letter
