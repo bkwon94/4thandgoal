@@ -95,11 +95,12 @@ def grade_read(slots: list[SlotRank]) -> str:
     """The grade in words, from the slot ranks: the strong positions, the deep ones, the soft ones, and the thin ones.
 
     A position is strong in the top quarter of the league and soft in the bottom quarter. A thin position is a hole,
-    so it reads thin and not soft. With nothing to say, the roster is middle of the league at every position.
+    so it reads thin and never strong or soft too: one star cannot make a position with a hole strong. With nothing
+    to say, the roster is middle of the league at every position.
     """
-    strong = [s.position for s in slots if s.rank <= GRADE_STRONG_RANK]
-    deep = [s.position for s in slots if s.depth in ("deep", "stacked")]
     thin = [s.position for s in slots if s.depth == "thin"]
+    strong = [s.position for s in slots if s.rank <= GRADE_STRONG_RANK and s.position not in thin]
+    deep = [s.position for s in slots if s.depth in ("deep", "stacked")]
     soft = [s.position for s in slots if s.rank >= GRADE_SOFT_RANK and s.position not in thin]
     sentences = [f"{word} at {_names(names)}." for word, names in (
         ("Strong", strong), ("Deep", deep), ("Soft", soft), ("Thin", thin)) if names]

@@ -273,6 +273,8 @@ def _slot(position, rank, depth="fine"):
     ([_slot("QB", 1, "deep"), _slot("RB", 2), _slot("WR", 3), _slot("TE", 6)], "Strong at QB, RB, and WR. Deep at QB."),
     # A thin position is a hole, so it reads thin and never soft too.
     ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 12, "thin"), _slot("TE", 7)], "Thin at WR."),
+    # One star cannot make a position with a hole strong, so a thin position never reads strong either.
+    ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 3, "thin"), _slot("TE", 7)], "Thin at WR."),
     ([_slot("QB", 5), _slot("RB", 6, "stacked"), _slot("WR", 4), _slot("TE", 7)], "Deep at RB."),
     ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 4), _slot("TE", 7)], "Middle of the league at every position."),
 ])
