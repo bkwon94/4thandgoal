@@ -270,7 +270,7 @@ def make_bundle(
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.
     slow = load_slow_sources(nflverse_cache_dir(repo), season, week + 1, history_root(repo, season))
     bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(repo, season), raw, week),
-                                 slow=slow, returns=load_returns(returns_path(repo, season)))
+                                 slow=slow, returns=load_returns(returns_path(repo, season)), config=config)
     record = BuildRecord(
         started=started,
         sources={"history": history is not None and history.complete(),

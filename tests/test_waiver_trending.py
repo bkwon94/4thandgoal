@@ -58,7 +58,7 @@ def _raw(fixture_raw_dir, players: dict[str, dict], counts: dict[str, int]) -> d
 
 
 def _trending(raw) -> list[str]:
-    return [p.player_id for p in waiver_board(raw, 6, BUILT).buckets["trending"]]
+    return [p.player_id for p in waiver_board(raw, 6, BUILT, config=CONFIG).buckets["trending"]]
 
 
 def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixture_raw_dir):
@@ -78,7 +78,7 @@ def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixtu
 def test_a_player_in_best_adds_and_trending_shows_in_both(fixture_raw_dir):
     raw = _raw(fixture_raw_dir, {"80001": _player("WR", "Hot Hand")}, {"80001": 41200})
     raw.projections_ahead = [{"week": w, "projections": {"80001": 12.0}} for w in range(7, 18)]
-    buckets = waiver_board(raw, 6, BUILT).buckets
+    buckets = waiver_board(raw, 6, BUILT, config=CONFIG).buckets
     assert [p.player_id for p in buckets["best_adds"]] == ["80001"]
     assert [p.player_id for p in buckets["trending"]] == ["80001"]
 
@@ -91,7 +91,8 @@ def test_a_week_with_no_trending_file_gives_an_empty_bucket(fixture_raw_dir):
 
 def test_every_trending_count_is_a_fact_with_the_digits_in_its_numbers(fixture_raw_dir):
     players = {"80001": _player("WR", "Hot Hand"), "80002": _player("TE", "Big Tight")}
-    trending = waiver_board(_raw(fixture_raw_dir, players, {"80001": 41200, "80002": 7}), 6, BUILT).buckets["trending"]
+    raw = _raw(fixture_raw_dir, players, {"80001": 41200, "80002": 7})
+    trending = waiver_board(raw, 6, BUILT, config=CONFIG).buckets["trending"]
     assert [(p.trending_count, [f.model_dump() for f in p.facts]) for p in trending] == [
         (41200, [{"id": "WV.trending.80001", "text": "Hot Hand was added in 41200 Sleeper leagues in the last day.",
                   "numbers": ["41200"], "teams": [], "players": ["Hot Hand"]}]),
