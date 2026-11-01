@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { currentPage } from "@/components/current-page";
-import { Menu, type Destinations } from "@/components/menu";
+import { Menu, type Brand, type Destinations } from "@/components/menu";
 import type { WeekSummary } from "@/lib/week-types";
 
 /* The week line lives in its own file, so a client component can import it. The pages import it from here. */
@@ -12,11 +12,9 @@ export { WeekLine } from "@/components/week-line";
 
 /* The links of the masthead and its menu, each with the base path. The app layer builds them with the route builders. */
 export type MastheadLinks = {
-  home: string;
+  brand: Brand;
   rankings: string;
   analyze: string;
-  // The src of the brand logo. It sits with the links, because it takes the base path the same way.
-  logo: string;
   // The managers index. A season with no managers file has no route, so no link.
   managers: string | null;
   // The waiver page of the latest week with a file. A build with the flag off has no route, so no link.
@@ -44,7 +42,7 @@ function destinationsOf(weeks: WeekSummary[], links: MastheadLinks): Destination
   const week = (summary: WeekSummary) => ({ label: `Week ${summary.number}`, href: summary.href });
   return {
     pages: [
-      { label: "Home", href: links.home },
+      { label: "Home", href: links.brand.home },
       ...(current ? [week(current)] : []),
       { label: "Power Rankings", href: links.rankings },
       ...(links.managers ? [{ label: "Managers", href: links.managers }] : []),
@@ -75,9 +73,9 @@ export function Masthead({
           {/* A plain anchor, not next/link: the home page is a static page with no shared state, so the client router adds nothing. */}
           {/* The link is at least 44px tall, so it is a comfortable tap target on a phone. */}
           {/* In the grid of the desktop tier the link keeps the width of its content, so the empty space of the cell is no link. */}
-          <a href={links.home} className="flex min-h-touch items-center gap-sp-3 text-inherit no-underline desktop:justify-self-start">
+          <a href={links.brand.home} className="flex min-h-touch items-center gap-sp-3 text-inherit no-underline desktop:justify-self-start">
             {/* The title next to the logo names the link, so the logo is decorative. */}
-            <img src={links.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
+            <img src={links.brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
             <div className="h-divider w-px bg-mute" />
             <div>
               {/* The brand name stays as it is under a page translator. Where the title must wrap, the balance splits it into even lines. */}
@@ -87,7 +85,7 @@ export function Masthead({
               {subtitle && <div className="text-label tracking-caps text-on-dark-muted uppercase">{subtitle}</div>}
             </div>
           </a>
-          <Menu destinations={destinations} pageHref={pageHref} title={title} homeHref={links.home} logoSrc={links.logo} />
+          <Menu destinations={destinations} pageHref={pageHref} title={title} brand={links.brand} />
         </div>
         {/* The menu sheet needs the script, so a reader with scripts off gets the same destinations as a plain row of links. */}
         <noscript>

@@ -11,7 +11,7 @@ import { Blurb, Chapter, Label } from "@/components/week/parts";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars, loadRankings } from "@/lib/data/rankings-data";
 import { rankingsHref } from "@/lib/routes";
-import { mastheadProps } from "../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Power Rankings · Cornerstone Fantasy Football League",

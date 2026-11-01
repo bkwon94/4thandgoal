@@ -8,7 +8,7 @@ import { Analyzer } from "@/components/analyzer";
 import { Masthead } from "@/components/masthead";
 import { PageColumn } from "@/components/page-column";
 import { analyzeHref } from "@/lib/routes";
-import { mastheadProps } from "../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Trade Analyzer · Cornerstone Fantasy Football League",

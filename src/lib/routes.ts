@@ -1,5 +1,5 @@
 /**
- * One builder per destination. Each joins the base path to the route.
+ * One builder per href or src. Each joins the base path to the route.
  * The app layer calls them, so a link change starts in this file.
  */
 import { basePath } from "./config";

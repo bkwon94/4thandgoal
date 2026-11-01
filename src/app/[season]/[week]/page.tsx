@@ -20,7 +20,7 @@ import { basePath } from "@/lib/config";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
-import { mastheadProps } from "../../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 

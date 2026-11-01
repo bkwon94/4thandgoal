@@ -26,7 +26,7 @@ export type AvatarMap = z.infer<typeof schema.avatarMapSchema>;
 export type HeadshotMap = z.infer<typeof schema.headshotMapSchema>;
 export type WeekPage = z.infer<typeof schema.weekPageSchema>;
 
-/* One row of the week list. The loader builds it from the folders, not the JSON, so it has no schema.
+/* One row of the week list. It has no schema, because the pipeline does not publish it. The loader builds it from the page and its folder.
    The href carries the base path, because every week link is a plain anchor. */
 export type WeekSummary = {
   number: number;

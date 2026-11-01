@@ -18,7 +18,7 @@ import { loadRankings } from "@/lib/data/rankings-data";
 import { analyzeHref, homeHref, rankingsHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { listWeekSummaries } from "@/lib/data/week-data";
-import { mastheadProps } from "./masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Cornerstone Fantasy Football League",

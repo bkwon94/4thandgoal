@@ -19,7 +19,13 @@ function renderWeekMasthead() {
     <Masthead
       subtitle="League Weekly"
       weeks={WEEKS}
-      links={{ home: "/", rankings: "/rankings/", analyze: "/analyze/", logo: "/images/logo.png", managers: null, waiver: null }}
+      links={{
+        brand: { home: "/", logo: "/images/logo.png" },
+        rankings: "/rankings/",
+        analyze: "/analyze/",
+        managers: null,
+        waiver: null,
+      }}
       pageHref="/2026/week-07/"
     />,
   );

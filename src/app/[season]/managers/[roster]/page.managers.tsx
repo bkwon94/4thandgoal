@@ -13,7 +13,7 @@ import { avatarSrc } from "@/components/week/parts";
 import { loadManagers, seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managerHref } from "@/lib/routes";
-import { mastheadProps } from "../../../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 type Params = { season: string; roster: string };
 type Props = { params: Promise<Params> };

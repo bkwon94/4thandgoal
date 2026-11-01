@@ -9,7 +9,7 @@ import { PageColumn } from "@/components/page-column";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managersHref } from "@/lib/routes";
-import { mastheadProps } from "../../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<{ season: string }> };
 

@@ -13,10 +13,9 @@ export function mastheadProps(): { weeks: WeekSummary[]; links: MastheadLinks } 
   return {
     weeks: listWeekSummaries(),
     links: {
-      home: homeHref(),
+      brand: { home: homeHref(), logo: logoSrc() },
       rankings: rankingsHref(),
       analyze: analyzeHref(),
-      logo: logoSrc(),
       managers: currentManagersHref(),
       waiver: currentWaiverHref(),
     },

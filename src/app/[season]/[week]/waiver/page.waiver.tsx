@@ -11,7 +11,7 @@ import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { waiverHref, weekHref } from "@/lib/routes";
 import type { AvatarMap } from "@/lib/week-types";
-import { mastheadProps } from "../../../masthead-props";
+import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 

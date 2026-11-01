@@ -9,8 +9,6 @@ import { weekHref } from "../routes";
 import { weekPageSchema } from "../schemas/week";
 import type { WeekPage, WeekSummary } from "../week-types";
 
-export type { WeekSummary };
-
 /* The build and the tests both run from the repo root, so public/ sits under the working folder. */
 const PUBLIC_DIR = join(process.cwd(), "public");
 const SEASON_DIR = /^\d{4}$/;

@@ -16,10 +16,9 @@ const WEEKS: WeekSummary[] = [
 
 /* The links of a build with no base path, the waiver flag off, and no managers file. */
 const LINKS: MastheadLinks = {
-  home: "/",
+  brand: { home: "/", logo: "/images/logo.png" },
   rankings: "/rankings/",
   analyze: "/analyze/",
-  logo: "/images/logo.png",
   managers: null,
   waiver: null,
 };
