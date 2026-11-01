@@ -42,7 +42,7 @@ line-length = 120
 [tool.pyright]
 typeCheckingMode = "basic"
 include = ["src/cornerstone/config.py", "src/cornerstone/files.py", "src/cornerstone/numbers.py", "src/cornerstone/paths.py",
-           "src/cornerstone/render.py"]
+           "src/cornerstone/render.py", "src/cornerstone/season_inputs.py"]
 
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.

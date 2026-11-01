@@ -14,12 +14,12 @@ from pydantic import TypeAdapter
 from cornerstone.facts_league import LEADER_POSITIONS, season_records
 from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
-from cornerstone.models import Blurb, Bundle, ChartValues, History, MatchupFacts, Team
+from cornerstone.models import Blurb, Bundle, History, MatchupFacts, Team
 from cornerstone.odds import OddsResult
 from cornerstone.paths import site_week_dir
 from cornerstone.power_rankings import power_rankings
+from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import AWARD_TITLES
-from cornerstone.snapshot import Snapshot
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
@@ -387,23 +387,18 @@ def render_rankings(
 
 
 def render_managers(
-    history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
-    roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
-    snapshot: Snapshot | None = None, projections_ahead: dict[int, dict[str, float]] | None = None,
-    chart: ChartValues | None = None,
+    inputs: SeasonInputs, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None,
+    *, roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
 ) -> Path:
     """Write managers.json for the season: one entry per roster through the history week, in roster id order.
     The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
     season_dir = site_dir / str(season)
     out = season_dir / "managers.json"
     body = {
-        "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": history.week,
+        "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": inputs.history.week,
         "managers": [
             entry.model_dump(mode="json")
-            for entry in managers(
-                history, teams, players, roster_slots=roster_slots, week_awards=week_awards, snapshot=snapshot,
-                projections_ahead=projections_ahead, chart=chart,
-            )
+            for entry in managers(inputs, teams, players, roster_slots=roster_slots, week_awards=week_awards)
         ],
     }
     season_dir.mkdir(parents=True, exist_ok=True)

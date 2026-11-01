@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from cornerstone.managers import managers
 from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
 from cornerstone.parse import parse_drops
+from cornerstone.season_inputs import SeasonInputs
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},
@@ -32,7 +33,7 @@ def _week(n: int, moves=(), drops=(), trades=()) -> PastWeek:
 
 def _moves(weeks: list[PastWeek], roster_id: int = 1, players=PLAYERS) -> dict:
     history = History(week=len(weeks), weeks={w.week: w for w in weeks})
-    entry = next(e for e in managers(history, TEAMS, players=players) if e.roster_id == roster_id)
+    entry = next(e for e in managers(SeasonInputs(history=history), TEAMS, players=players) if e.roster_id == roster_id)
     return entry.model_dump(mode="json")["moves"]
 
 

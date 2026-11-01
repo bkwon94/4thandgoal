@@ -31,6 +31,7 @@ from cornerstone.paths import (
 )
 from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
+from cornerstone.season_inputs import ProjectionsAhead, SeasonInputs
 from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
     write_bundle,
@@ -50,6 +51,7 @@ from cornerstone.writer import ClaudeCall
 log = logging.getLogger(__name__)
 
 NewsFetcher = Callable[[str], list[dict]]
+RawLoader = Callable[[Path], dict]
 BytesFetcher = Callable[[str], bytes | None]
 # The fetch takes the season, the week, the rostered player IDs, the players file, the Sleeper
 # codes of the NFL teams whose started players played, and the league scoring.
@@ -237,9 +239,12 @@ def make_bundle(
     nflverse: NflverseFetcher | None = None,
     *,
     config: LeagueConfig,
+    raw: dict | None = None,
 ) -> tuple[Bundle, BuildRecord]:
-    """Load the raw data, run the week gate, load the history, and build the bundle and the waiver board."""
-    raw = load_raw(raw_dir(repo, season, week))
+    """Load the raw data, run the week gate, load the history, and build the bundle and the waiver board.
+    The build passes the `raw` week it loaded, so the week loads once. None loads it here."""
+    if raw is None:
+        raw = load_raw(raw_dir(repo, season, week))
     parsed = parse_week(raw, config.owner_username, week=week)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
     message = check_week_is_buildable(week, parsed.last_scored_week)
@@ -304,6 +309,8 @@ def run_build(
     started: datetime | None = None,
     *,
     config: LeagueConfig,
+    # The loader is a seam: a test passes a counted one to prove the raw week loads once per build.
+    load_raw: RawLoader = load_raw,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_path = raw_dir(repo, season, week)
@@ -315,10 +322,12 @@ def run_build(
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
 
+    # The page and the season files read this one load of the raw week.
+    raw = load_raw(raw_path)
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
         repo, season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,
-        nflverse=nflverse or fetch_nflverse(repo), config=config)
+        nflverse=nflverse or fetch_nflverse(repo), config=config, raw=raw)
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
     # No argument means the real search. A test passes a fake one.
     if bundle.waiver is not None:
@@ -346,51 +355,71 @@ def run_build(
         log.warning("week %d not saved to history: %s", week, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
     try:
-        rankings = _write_rankings(repo, season, week, bundle.data.teams, blurbs.get(RANKINGS_CHAPTER), bundle.odds)
+        inputs = _season_inputs(repo, season, week, raw)
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("rankings.json and managers.json not written for week %d: %s", week, err)
+        return page
+    try:
+        rankings = _write_rankings(repo, season, week, bundle.data.teams, inputs, blurbs.get(RANKINGS_CHAPTER),
+                                   bundle.odds)
         if rankings is None:
             log.warning("history incomplete through week %d: rankings.json not written", week)
     except (OSError, ValueError, KeyError) as err:
         log.warning("rankings.json not written for week %d: %s", week, err)
     # The managers file reads the same saved history, so it comes right after the rankings file.
     try:
-        _write_managers(repo, season, week, bundle.data.teams, snapshot=_managers_snapshot(repo, season, week))
+        _write_managers(repo, season, week, bundle.data.teams, inputs)
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
     return page
 
 
+def _season_history(repo: Path, season: int, week: int) -> History:
+    """The saved history of weeks 1 to the latest saved week, never less than `week`. It can have a gap."""
+    root = history_root(repo, season)
+    # The file holds every week to date. A rebuild of an older week must not cut the later weeks from it.
+    through = saved_through(root, week)
+    return History(week=through, weeks=load_saved_weeks(root, through))
+
+
+def _season_inputs(repo: Path, season: int, week: int, raw: dict | None) -> SeasonInputs:
+    """The inputs of the season files, from one load of the `raw` week. None for `raw` means the week has no raw
+    data, so the managers file goes out with no grade."""
+    raw_path = raw_dir(repo, season, week)
+    return SeasonInputs(
+        history=_season_history(repo, season, week), snapshot=_managers_snapshot(repo, season, week, raw),
+        projections_ahead=_projections_ahead(raw_path), chart=_managers_chart(repo, week, raw),
+    )
+
+
 def _write_rankings(
-    repo: Path, season: int, week: int, teams: dict[int, Team], blurb: Blurb | None = None,
+    repo: Path, season: int, week: int, teams: dict[int, Team], inputs: SeasonInputs, blurb: Blurb | None = None,
     odds: OddsResult | None = None,
 ) -> Path | None:
-    """Write rankings.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
-    The rankings blurb and the `odds` go into the rows of `week`. None when a week from 1 to `week` is missing."""
+    """Write rankings.json from the history of the `inputs`: weeks 1 to the latest complete week, never less than
+    `week`. The rankings blurb and the `odds` go into the rows of `week`. None when a week from 1 to `week` is
+    missing."""
     # A fallback blurb has no roster tags, so it would write an empty blurb for every team. With no blurb, the
     # week keeps the blurbs of the last file.
     if blurb is not None and blurb.fallback:
         blurb = None
-    root = history_root(repo, season)
-    # The file holds every week to date. A rebuild of an older week must not cut the later weeks from it.
-    through = saved_through(root, week)
-    history = History(week=through, weeks=load_saved_weeks(root, through))
+    history = inputs.history
     # A gap would shift every rank after it, so the file waits for a complete history.
     if not history.complete():
         return None
-    if through > week:
-        log.info("rankings.json covers weeks 1 to %d, past the built week %d", through, week)
+    if history.week > week:
+        log.info("rankings.json covers weeks 1 to %d, past the built week %d", history.week, week)
     return render_rankings(history, season, teams, repo / "site", week, blurb, odds)
 
 
 def _write_managers(
-    repo: Path, season: int, week: int, teams: dict[int, Team], snapshot: Snapshot | None = None,
+    repo: Path, season: int, week: int, teams: dict[int, Team], inputs: SeasonInputs,
 ) -> Path | None:
-    """Write managers.json from the saved history of weeks 1 to the latest complete week, never less than `week`.
-    None, with one log line, when a week from 1 to `week` is missing or the history is under two weeks."""
-    root = history_root(repo, season)
+    """Write managers.json from the history of the `inputs`: weeks 1 to the latest complete week, never less than
+    `week`. None, with one log line, when a week from 1 to `week` is missing or the history is under two weeks."""
     # The same history as the rankings file, so the record of an entry matches the record of its rankings row.
-    through = saved_through(root, week)
-    history = History(week=through, weeks=load_saved_weeks(root, through))
-    if not history.complete():
+    through = inputs.history.week
+    if not inputs.history.complete():
         log.warning("history incomplete through week %d: managers.json not written", week)
         return None
     if through < MANAGERS_MIN_WEEKS:
@@ -402,23 +431,22 @@ def _write_managers(
     slots, players = _season_raw(raw_path)
     week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
-        history, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
-        snapshot=snapshot, projections_ahead=_projections_ahead(raw_path), chart=_managers_chart(repo, week, raw_path),
+        inputs, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
     )
 
 
-def _managers_chart(repo: Path, week: int, raw_path: Path) -> ChartValues | None:
+def _managers_chart(repo: Path, week: int, raw: dict | None) -> ChartValues | None:
     """The trade values of the saved chart read of the week for the roster grade. None, with one log line, when no
     read is saved or the week has no raw data. It never fetches or reads an image."""
-    chart = saved_chart_read(repo, week) if raw_path.exists() else None
+    chart = saved_chart_read(repo, week) if raw is not None else None
     if chart is None:
         # The grade still goes out. Its trade value part is 0 for every roster.
         log.info("no saved chart read for week %d: the roster grade has no trade value", week)
         return None
-    return match_chart(chart, week_lines(parse_week(load_raw(raw_path))))
+    return match_chart(chart, week_lines(parse_week(raw)))
 
 
-def _projections_ahead(raw_path: Path) -> dict[int, dict[str, float]] | None:
+def _projections_ahead(raw_path: Path) -> ProjectionsAhead | None:
     """The projections ahead of the roster grade, by week and player id, from the raw projections ahead file.
     No file gives None, so the entries carry no grade."""
     path = raw_path / PROJECTIONS_AHEAD_FILE
@@ -437,15 +465,20 @@ def _season_raw(raw_path: Path) -> tuple[list[str] | None, dict[str, dict] | Non
     return slots, entries
 
 
-def _managers_snapshot(repo: Path, season: int, week: int) -> Snapshot | None:
+def _managers_snapshot(repo: Path, season: int, week: int, raw: dict | None) -> Snapshot | None:
     """The analyzer's snapshot of the week for the roster grade. None, with one log line, when the week has no raw
     data."""
-    raw_path = raw_dir(repo, season, week)
     # A saved week can lack its raw data. The file then goes out with no grade, so the page still ships.
-    if not raw_path.exists():
+    if raw is None:
         log.info("no raw data for week %d: managers.json has no roster grade", week)
         return None
-    return week_snapshot(load_raw(raw_path), history_root(repo, season), week)
+    return week_snapshot(raw, history_root(repo, season), week)
+
+
+def _saved_raw(repo: Path, season: int, week: int) -> dict | None:
+    """The raw week of a saved week, or None when the week has no raw data."""
+    raw_path = raw_dir(repo, season, week)
+    return load_raw(raw_path) if raw_path.exists() else None
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:
@@ -494,7 +527,9 @@ def run_rewrite(
     # The season file holds the rankings blurb, so a rewrite of the chapter must reach the file too.
     if chapter == RANKINGS_CHAPTER:
         try:
-            if _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter], bundle.odds) is None:
+            # The rankings file reads only the history, so a rewrite loads no raw week.
+            inputs = SeasonInputs(history=_season_history(repo, season, week))
+            if _write_rankings(repo, season, week, bundle.data.teams, inputs, blurbs[chapter], bundle.odds) is None:
                 log.warning("history incomplete through week %d: rankings.json not written", week)
         except (OSError, ValueError, KeyError) as err:
             log.warning("rankings.json not written for week %d: %s", week, err)
@@ -549,12 +584,13 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used)
     _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, verify)
-    out = _write_rankings(repo, season, week, bundle.data.teams, blurbs[chapter.key], bundle.odds)
+    inputs = _season_inputs(repo, season, week, _saved_raw(repo, season, week))
+    out = _write_rankings(repo, season, week, bundle.data.teams, inputs, blurbs[chapter.key], bundle.odds)
     if out is None:
         raise BuildStopped(HISTORY_GAP.format(week=week))
     # The command rebuilds the season files from the saved history, so the managers file comes along.
     # A thin history only logs: the rankings file is the output of the command.
-    _write_managers(repo, season, week, bundle.data.teams, snapshot=_managers_snapshot(repo, season, week))
+    _write_managers(repo, season, week, bundle.data.teams, inputs)
     return out
 
 

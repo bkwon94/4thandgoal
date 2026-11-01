@@ -9,8 +9,9 @@ from pydantic import BaseModel
 
 from cornerstone.adjusters import StartingSlot, fill_slots
 from cornerstone.history import player_points
-from cornerstone.models import ChartValues, History
+from cornerstone.models import History
 from cornerstone.ranks import LINES
+from cornerstone.season_inputs import ProjectionsAhead, SeasonInputs
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SOFT_RANK, GRADE_SPARE_RANK,
@@ -108,7 +109,7 @@ def grade_read(slots: list[SlotRank]) -> str:
     return " ".join(sentences) or "Middle of the league at every position."
 
 
-def projected_values(projections_ahead: dict[int, dict[str, float]]) -> dict[str, float]:
+def projected_values(projections_ahead: ProjectionsAhead) -> dict[str, float]:
     """The value of each player in the projections: the mean of his projections over the weeks ahead.
 
     A week with no projection for him counts 0 in the mean. The weeks stop at LAST_REGULAR_WEEK, because the file
@@ -145,22 +146,18 @@ def position_ranks(values: dict[str, float], positions: dict[str, str]) -> dict[
     return ranks
 
 
-def roster_parts(
-    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
-) -> dict[int, GradeParts]:
+def roster_parts(inputs: SeasonInputs) -> dict[int, GradeParts]:
     """The four parts of the score of each roster of the snapshot, by roster id. GLOSSARY.md, "Roster grade"."""
-    return {rid: read.parts(league) for rid, read, league in _league_reads(snapshot, projections_ahead, history, chart)}
+    return {rid: read.parts(league) for rid, read, league in _league_reads(inputs)}
 
 
-def roster_grades(
-    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
-) -> dict[int, ManagerGrade]:
+def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
     """The grade of each roster of the snapshot by roster id. The slot ranks read the projections ahead only.
 
     The snapshot gives the rosters, the roster slots, and the positions. The injury status and the returns file play
     no part, so a starter out one week with a projection ahead is no hole.
     """
-    reads = _league_reads(snapshot, projections_ahead, history, chart)
+    reads = _league_reads(inputs)
     ranks = {position: _ranks({rid: read.position_total(position) for rid, read, _ in reads})
              for position in SLOT_POSITIONS}
     parts = {rid: read.parts(league) for rid, read, league in reads}
@@ -188,13 +185,15 @@ class _League(NamedTuple):
     depth: float
 
 
-def _league_reads(
-    snapshot: Snapshot, projections_ahead: dict[int, dict[str, float]], history: History, chart: ChartValues | None,
-) -> list[tuple[int, "_RosterRead", _League]]:
+def _league_reads(inputs: SeasonInputs) -> list[tuple[int, "_RosterRead", _League]]:
     """The read of each roster and its parts against the league, in roster id order."""
+    snapshot, projections_ahead, chart = inputs.snapshot, inputs.projections_ahead, inputs.chart
+    # The grade has no meaning without the rosters and the projections, so the caller checks for both first.
+    if snapshot is None or projections_ahead is None:
+        raise ValueError("the roster grade needs a snapshot and the projections ahead")
     values = projected_values(projections_ahead)
     ranks_by_player = position_ranks(values, {pid: player.position for pid, player in snapshot.players.items()})
-    per_game = season_points_per_game(history)
+    per_game = season_points_per_game(inputs.history)
     reads = {rid: _RosterRead(snapshot, roster, values, ranks_by_player) for rid, roster in snapshot.rosters.items()}
     places = _against_league({rid: read.places_total() for rid, read in reads.items()})
     lineup = _against_league({rid: read.lineup_total for rid, read in reads.items()})
