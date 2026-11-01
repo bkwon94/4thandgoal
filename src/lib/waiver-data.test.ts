@@ -6,6 +6,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "./week-page-fixture";
 import fixture from "@/components/waiver/fixture.json";
 
 afterEach(() => {
@@ -18,7 +19,7 @@ async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) 
   const root = mkdtempSync(join(tmpdir(), "waiver-data-"));
   for (const week of weeks) {
     mkdirSync(join(root, "public", "2026", week), { recursive: true });
-    writeFileSync(join(root, "public", "2026", week, "page.json"), JSON.stringify({ schema_version: 2 }));
+    writeFileSync(join(root, "public", "2026", week, "page.json"), weekPageJson());
   }
   for (const [week, body] of Object.entries(withWaiver)) {
     writeFileSync(join(root, "public", "2026", week, "waiver.json"), JSON.stringify(body));

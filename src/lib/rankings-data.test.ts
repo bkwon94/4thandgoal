@@ -6,6 +6,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "./week-page-fixture";
 import fixture from "@/components/rankings/fixture.json";
 
 afterEach(() => {
@@ -19,7 +20,7 @@ async function readerOver(weeks: string[], rankings?: unknown) {
     mkdirSync(join(root, "public", "2026", week), { recursive: true });
     writeFileSync(
       join(root, "public", "2026", week, "page.json"),
-      JSON.stringify({ schema_version: 2, avatars: { "10": "avatars/10.jpg" } }),
+      weekPageJson({ avatars: { "10": "avatars/10.jpg" } }),
     );
   }
   if (rankings !== undefined) {

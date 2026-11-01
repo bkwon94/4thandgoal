@@ -7,7 +7,8 @@ import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports this module, and its loader does not resolve the alias.
 // Type imports keep the alias, because TypeScript erases them before the loader runs.
 import { basePath } from "./config";
-import type { Manager, ManagerEntry, Managers, ManagersFile } from "@/lib/manager-types";
+import { managersFileSchema } from "./schemas/managers";
+import type { Manager, ManagerEntry, Managers } from "@/lib/manager-types";
 import { latestSeason, loadRankings } from "./rankings-data";
 import type { RankingsRow } from "@/lib/rankings-types";
 
@@ -36,7 +37,7 @@ export function loadManagers(): Managers | null {
       `${file} has schema_version ${String(data.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
     );
   }
-  const { season, through, managers } = data as ManagersFile;
+  const { season, through, managers } = managersFileSchema.parse(data);
   // One number has one source, so the odds and the power rank come from the last week of the rankings file.
   const weeks = loadRankings()?.weeks ?? [];
   const rowsOf = (index: number) => new Map((weeks.at(index)?.rows ?? []).map((row) => [row.roster_id, row]));

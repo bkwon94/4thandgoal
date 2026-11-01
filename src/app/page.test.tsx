@@ -7,6 +7,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "@/lib/week-page-fixture";
 import fixture from "@/components/rankings/fixture.json";
 import { season } from "@/lib/config";
 import HomePage from "./page";
@@ -89,7 +90,7 @@ async function homeOver(rankings?: unknown, managers = false) {
   for (const week of [5, 6]) {
     const folder = join(root, "public", "2026", `week-0${week}`);
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), JSON.stringify({ schema_version: 2, week, dates: `Dates of week ${week}`, avatars: {} }));
+    writeFileSync(join(folder, "page.json"), weekPageJson({ week, dates: `Dates of week ${week}`, avatars: {} }));
   }
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));

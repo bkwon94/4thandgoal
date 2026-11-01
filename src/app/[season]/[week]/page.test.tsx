@@ -7,6 +7,7 @@ import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "@/lib/week-page-fixture";
 import WeekPage from "./page";
 
 /* The nine chapters in the report's order: the id each chapter sets and the words of its own label. */
@@ -241,7 +242,7 @@ async function publicWithWeeks() {
   roots.push(root);
   const season = join(root, "public", "2026");
   for (const week of ["week-05", "week-06", "week-07"]) mkdirSync(join(season, week), { recursive: true });
-  writeFileSync(join(season, "week-05", "page.json"), JSON.stringify({ schema_version: 2, week: 5, dates: "Oct 8 – Oct 12, 2026" }));
+  writeFileSync(join(season, "week-05", "page.json"), weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }));
   for (const week of ["week-06", "week-07"]) {
     copyFileSync(join(process.cwd(), "public", "2026", week, "page.json"), join(season, week, "page.json"));
   }

@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the managers reader, which imports this module.
 import { basePath } from "./config";
+import { rankingsSchema } from "./schemas/rankings";
 import type { Rankings } from "@/lib/rankings-types";
 import { listWeeks, loadWeek } from "./week-data";
 import type { AvatarMap } from "@/lib/week-types";
@@ -32,7 +33,7 @@ export function loadRankings(): Rankings | null {
       `${file} has schema_version ${String(rankings.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
     );
   }
-  return rankings as Rankings;
+  return rankingsSchema.parse(rankings);
 }
 
 /* The avatars of the latest published week in a season, so the rankings rows show the same images as the week page.

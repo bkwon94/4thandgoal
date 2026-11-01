@@ -7,6 +7,7 @@ import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports this module, and its loader does not resolve the alias.
 import { basePath, waiverOn } from "./config";
 import { listWeeks, type WeekRef } from "./week-data";
+import { waiverBoardSchema } from "./schemas/waiver";
 import type { WaiverBoard } from "./waiver-types";
 
 /* The waiver file layout version this site reads. It counts apart from the page JSON version. */
@@ -31,7 +32,7 @@ export function loadWaiver(season: string, week: string): WaiverBoard | null {
       `${file} has schema_version ${String(board.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
     );
   }
-  return board as WaiverBoard;
+  return waiverBoardSchema.parse(board);
 }
 
 /* The masthead link to the waiver page of the latest week with a file. A build with the flag off has no route, so no link.

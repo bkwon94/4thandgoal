@@ -7,6 +7,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "@/lib/week-page-fixture";
 import fixture from "@/components/managers/fixture.json";
 import { rankings as rankingsFixture } from "@/components/rankings/fixture";
 
@@ -19,7 +20,7 @@ afterEach(() => {
 async function routeOver(managers?: unknown) {
   const root = mkdtempSync(join(tmpdir(), "managers-index-"));
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
-  writeFileSync(join(root, "public", "2026", "week-06", "page.json"), JSON.stringify({ schema_version: 2, avatars: {} }));
+  writeFileSync(join(root, "public", "2026", "week-06", "page.json"), weekPageJson({ avatars: {} }));
   writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankingsFixture));
   if (managers !== undefined) writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
   vi.spyOn(process, "cwd").mockReturnValue(root);

@@ -6,6 +6,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { weekPageJson } from "./week-page-fixture";
 import { listWeeks, listWeekSummaries, loadWeek } from "./week-data";
 
 describe("listWeeks", () => {
@@ -65,10 +66,9 @@ describe("listWeekSummaries", () => {
       ["2027", "week-01", 1],
     ] as const) {
       mkdirSync(join(root, "public", season, week), { recursive: true });
-      const side = (name: string) => ({ team: { name } });
       writeFileSync(
         join(root, "public", season, week, "page.json"),
-        JSON.stringify({ schema_version: 2, week: number, dates: "d", pick: { sides: [side("A"), side("B")] } }),
+        weekPageJson({ week: number, dates: "d" }),
       );
     }
     vi.spyOn(process, "cwd").mockReturnValue(root);
