@@ -8,14 +8,12 @@ import threading
 import time
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from functools import partial
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
 
-from cornerstone.chart import chart_values, claude_reader
 from cornerstone.config import LeagueConfig
 from cornerstone.history import PastLegFetcher, fetch_history, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
@@ -31,7 +29,6 @@ from cornerstone.provider.sleeper import SLEEPER
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
-from cornerstone.writer import parse_call
 
 logger = logging.getLogger(__name__)
 
@@ -188,14 +185,15 @@ def refresh_sources(
         config: LeagueConfig,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
-        read_chart: ChartReader | None = partial(chart_values, read=claude_reader(parse_call)),
+        read_chart: ChartReader | None,
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
     """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
 
     The live snapshot and the refresh route both call it, so the daily job and a request refresh the same way.
     A failed fetch logs and leaves the old cache in place.
     The refresh route sets `max_age_seconds` to 0, because a late cron must still fetch a file 23 hours old.
-    With `read_chart` None, the run skips the chart.
+    `read_chart` has no default, because the Claude read sits above this layer. With `read_chart` None, the run
+    skips the chart.
     """
     # The trade week is the chart week of the trade window, not Sleeper's display_week.
     # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
@@ -241,11 +239,12 @@ def live_snapshot(
         fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
-        read_chart: ChartReader | None = partial(chart_values, read=claude_reader(parse_call)),
+        read_chart: ChartReader | None,
         fetch_projections: ProjectionsFetcher = SLEEPER.fetch_projections,
         projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.
 
+    `read_chart` has no default, because the Claude read sits above this layer. The CLI and the API pass it.
     With `read_chart` None, the snapshot has no chart, and the chart is not noted as stale.
     The projections ahead come through `projections`, so a repeat grade in its window fetches none.
 

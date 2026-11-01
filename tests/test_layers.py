@@ -51,6 +51,7 @@ LAYER_OF: dict[str, str] = {
     "standings_table": "load",
     "snapshot": "load",
     "season_inputs": "load",
+    "live": "load",
     # facts
     "sheet": "facts",
     "sheet.assemble": "facts",
@@ -90,7 +91,6 @@ LAYER_OF: dict[str, str] = {
     "analysis": "write",
     "finder_reasons": "write",
     "waiver_research": "write",
-    "live": "write",  # PRD: load. It imports chart.
     # output
     "render": "output",
     "publish": "output",
