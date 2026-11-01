@@ -17,7 +17,10 @@ def week_median(week: PastWeek) -> Decimal:
     """The exact median score of one week, the line of the median game."""
     ordered = sorted((Decimal(str(p)) for p in week.scores.values()), reverse=True)
     # The same median as median_facts: the mean of the 6th and 7th scores.
-    return (ordered[5] + ordered[6]) / 2
+    # A past week holds no config, so the two middle ranks come from the count of scores. A league has an even team
+    # count, because every team plays a game each week.
+    middle = len(ordered) // 2
+    return (ordered[middle - 1] + ordered[middle]) / 2
 
 
 def season_records(history: History, through: int) -> dict[int, tuple[int, int, float]]:

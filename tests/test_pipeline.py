@@ -399,7 +399,7 @@ def test_a_saved_pr_fact_with_an_old_rank_is_rebuilt_from_the_history_and_the_ru
     assert stale.text != fresh.text
     bundle.sheet.facts[stale.id] = stale
 
-    _rankings_chapter(bundle, history)
+    _rankings_chapter(bundle, history, CONFIG)
     assert bundle.sheet.facts[stale.id].text == fresh.text
     assert f"is {_ordinal(row.power_rank)} in the power rankings" in bundle.sheet.facts[stale.id].text
 

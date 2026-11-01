@@ -323,4 +323,4 @@ def _slot(position, rank, depth="fine"):
     ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 4), _slot("TE", 7)], "Middle of the league at every position."),
 ])
 def test_the_grade_read_names_the_strong_deep_soft_and_thin_positions(slots, read):
-    assert grade_read(slots) == read
+    assert grade_read(slots, config=CONFIG) == read

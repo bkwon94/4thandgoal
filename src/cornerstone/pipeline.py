@@ -246,7 +246,7 @@ def make_bundle(
     The build passes the `raw` week it loaded, so the week loads once. None loads it here."""
     if raw is None:
         raw = load_raw(raw_dir(repo, season, week))
-    parsed = parse_week(raw, config.owner_username, week=week)
+    parsed = parse_week(raw, config.owner_username, week=week, team_count=config.team_count)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
     message = check_week_is_buildable(week, parsed.last_scored_week, config)
     if message:
@@ -558,7 +558,7 @@ def run_page_json(repo: Path, season: int, week: int) -> Path:
     return render_page_json(bundle, blurbs, repo / "site")
 
 
-def _rankings_chapter(bundle: Bundle, history: History) -> Chapter:
+def _rankings_chapter(bundle: Bundle, history: History, config: LeagueConfig) -> Chapter:
     """The rankings chapter of a saved week, built from the history and the current rules.
 
     The PR facts and the rank why facts derive from the history and the rules, never from the saved facts.
@@ -578,7 +578,7 @@ def _rankings_chapter(bundle: Bundle, history: History) -> Chapter:
     )
     bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
     bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
-    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds)
+    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, config=config)
     bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
     return built
 
@@ -592,7 +592,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, config
     # The check comes before the writer call, so a missing week costs no Claude call.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))
-    chapter = _rankings_chapter(bundle, history)
+    chapter = _rankings_chapter(bundle, history, config)
     # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
     write_bundle(bundle, directory / "facts.json")
     verify = read_verify(directory / "verify.json")

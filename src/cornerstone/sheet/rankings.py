@@ -18,7 +18,7 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import round_half_up
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Context, Nums, fact
+from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
 from cornerstone.tunables import SWING_FLAT, TREND_WEEKS, WHY_MOVE_AT, WHY_ODDS_AT
 
 
@@ -268,11 +268,11 @@ def required_why_ids(
 
 def rankings_chapter(
     facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], table: list[Standing],
-    odds: OddsResult | None,
+    odds: OddsResult | None, *, config: LeagueConfig,
 ) -> Chapter:
     """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
 
-    The history cap does not apply here: the spec gives each of the 12 teams its own streak and trend facts.
+    The history cap does not apply here: the spec gives each team its own streak and trend facts.
     """
     standing_rank = standing_ranks(table)
     ids = [
@@ -282,7 +282,7 @@ def rankings_chapter(
                     f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
                     f"ODDS.{row.roster_id}.why")
     ]
-    low, high = SENTENCE_RANGES[RANKINGS_CHAPTER]
+    low, high = sentence_range(RANKINGS_CHAPTER, config)
     return Chapter(
         key=RANKINGS_CHAPTER,
         title="Power rankings",

@@ -8,6 +8,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
@@ -38,7 +39,6 @@ from cornerstone.tunables import (
 
 logger = logging.getLogger(__name__)
 
-TEAM_COUNT = 12
 # A recent move adds this many points to the Game Changer score.
 MOVE_BONUS = 5
 UNDERPERFORMER_MIN_PROJECTION = 10
@@ -48,8 +48,6 @@ WEIGHTS = {"closeness": 0.4, "upset": 0.25, "table": 0.2, "stakes": 0.15}
 STREAK_ON_THE_LINE = 3
 # Both teams ranked this high or higher in the standings meet at the top of the table.
 TABLE_TOP = 4
-# Both best projected lineups for next week rank this high or higher of the 12 for a shootout. GLOSSARY.md, "Shootout".
-SHOOTOUT_TOP = 4
 REASONS = {
     "closeness": "Closest Finish",
     "upset": "Upset",
@@ -97,13 +95,13 @@ def ranks_before(
     return {rid: i + 1 for i, rid in enumerate(ordered)}
 
 
-def upset_signal(winner_rank_before: int, loser_rank_before: int) -> float:
+def upset_signal(winner_rank_before: int, loser_rank_before: int, *, config: LeagueConfig) -> float:
     """An upset is a winner ranked below the loser before the week."""
-    return max(0, (winner_rank_before - loser_rank_before) / (TEAM_COUNT - 1))
+    return max(0, (winner_rank_before - loser_rank_before) / (config.team_count - 1))
 
 
-def _table_signal(rank_a: int, rank_b: int) -> float:
-    return 1 - (rank_a + rank_b - 3) / (2 * (TEAM_COUNT - 1))
+def _table_signal(rank_a: int, rank_b: int, *, config: LeagueConfig) -> float:
+    return 1 - (rank_a + rank_b - 3) / (2 * (config.team_count - 1))
 
 
 def _stakes_signal(a: Standing, b: Standing) -> float:
@@ -115,6 +113,8 @@ def matchup_of_the_week(
     mfacts: list[MatchupFacts],
     table: list[Standing],
     before: dict[int, int] | None = None,
+    *,
+    config: LeagueConfig,
 ) -> Pick:
     """Pick the matchup with the highest weighted total of the four signals.
 
@@ -139,11 +139,11 @@ def matchup_of_the_week(
         signals.append({
             "closeness": 1 - f.margin / max_margin if max_margin else 1.0,
             "upset": (
-                upset_signal(before[f.winner], before[f.loser])
+                upset_signal(before[f.winner], before[f.loser], config=config)
                 if f.winner is not None
                 else 0.0
             ),
-            "table": _table_signal(a.rank, b.rank),
+            "table": _table_signal(a.rank, b.rank, config=config),
             "stakes": _stakes_signal(a, b),
         })
     best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
@@ -235,6 +235,8 @@ def next_week(
     week: Week, table: list[Standing], history: History | None = None,
     projected: dict[int, dict[int, float]] | None = None, bye_weeks: dict[str, int] | None = None,
     rank: Callable[[str], int | None] | None = None,
+    *,
+    config: LeagueConfig,
 ) -> list[NextMatchup]:
     """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
 
@@ -247,7 +249,7 @@ def next_week(
     by_roster = {s.roster_id: s for s in table}
     ahead = {rid: by_week[week.week + 1] for rid, by_week in (projected or {}).items() if week.week + 1 in by_week}
     # A tie in the total goes to the lower roster id, so the top four is the same on every build.
-    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:SHOOTOUT_TOP])
+    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:config.shootout_top])
     games = []
     for a_id, b_id in week.next_matchups:
         a, b = by_roster[a_id], by_roster[b_id]

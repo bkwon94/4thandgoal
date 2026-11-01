@@ -58,7 +58,7 @@ def test_awards_one_player_one_tile(fixture_raw_dir):
 
 def test_motw_is_closest(fixture_raw_dir):
     wk, mf = _setup(fixture_raw_dir)
-    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG))
+    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG), config=CONFIG)
     assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
     assert set(pick.scores) == {"closeness", "upset", "table", "stakes"}
 
@@ -72,7 +72,7 @@ def _motw_with(fixture_raw_dir, margins, before=None, far_from_cut=(), ranks=Non
         for s in standings(wk, config=CONFIG)
     ]
     table = [s.model_copy(update={"rank": (ranks or {}).get(s.roster_id, s.rank)}) for s in table]
-    return matchup_of_the_week(wk, mf, table, {**ranks_before(wk, table), **(before or {})})
+    return matchup_of_the_week(wk, mf, table, {**ranks_before(wk, table), **(before or {})}, config=CONFIG)
 
 
 def test_motw_label_is_the_upset_when_the_pick_leads_only_there(fixture_raw_dir):
@@ -97,7 +97,7 @@ def test_motw_label_is_closest_finish_for_the_closest_game(fixture_raw_dir):
     # Matchup 4 has the smallest margin and also the biggest upset. Closeness weighs more.
     wk, mf = _setup(fixture_raw_dir)
     assert min(mf, key=lambda f: f.margin).matchup_id == 4
-    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG))
+    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG), config=CONFIG)
     assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
 
 
@@ -113,7 +113,7 @@ def test_motw_label_falls_back_to_the_nearest_to_best_with_no_lead(fixture_raw_d
 
 def test_next_week_two_must_watch(fixture_raw_dir):
     wk, _ = _setup(fixture_raw_dir)
-    nx = next_week(wk, standings(wk, config=CONFIG))
+    nx = next_week(wk, standings(wk, config=CONFIG), config=CONFIG)
     assert len(nx) == 6 and sum(n.must_watch for n in nx) == 2
     assert all(n.reason for n in nx if n.must_watch)
     # The text names ranks and makes no claim about who falls.
@@ -144,9 +144,9 @@ def test_ranks_before_is_a_permutation(fixture_raw_dir):
 
 def test_upset_signal_direction():
     # A winner ranked 10th that beats a team ranked 2nd is an upset.
-    assert upset_signal(winner_rank_before=10, loser_rank_before=2) == 8 / 11
+    assert upset_signal(winner_rank_before=10, loser_rank_before=2, config=CONFIG) == 8 / (CONFIG.team_count - 1)
     # A favorite that wins is not an upset.
-    assert upset_signal(winner_rank_before=2, loser_rank_before=10) == 0
+    assert upset_signal(winner_rank_before=2, loser_rank_before=10, config=CONFIG) == 0
 
 
 def test_season_history_covers_this_week_only(fixture_raw_dir):
@@ -221,7 +221,7 @@ def test_motw_week_7_label_is_the_nearest_to_best():
     history = load_history(season_root / "history", raw, 7)
     mf = [matchup_facts(m, wk.moves, 7) for m in wk.matchups]
     table = standings(wk, history, config=CONFIG)
-    pick = matchup_of_the_week(wk, mf, table, ranks_before(wk, table, history))
+    pick = matchup_of_the_week(wk, mf, table, ranks_before(wk, table, history), config=CONFIG)
     assert pick.matchup_id == 1 and pick.reason == "Top of the Table"
 
 
@@ -280,20 +280,20 @@ def _game(nx, a, b):
 
 
 def test_the_hand_made_base_season_has_no_storyline(fixture_raw_dir):
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history())
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), config=CONFIG)
     assert all(n.storylines == [] for n in nx)
 
 
 def test_three_straight_head_to_head_wins_or_losses_put_a_streak_on_the_line(fixture_raw_dir):
     # The flip gives roster 1 a week 2 win over 4. Roster 1 wins weeks 1 to 3, and roster 4 loses weeks 1 to 3.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(2, (1, 4))}))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(2, (1, 4))}), config=CONFIG)
     assert [(s.kind, s.roster_id, s.length) for s in _game(nx, 1, 3).storylines] == [("streak", 1, 3)]
     assert [(s.kind, s.roster_id, s.length) for s in _game(nx, 2, 4).storylines] == [("streak", 4, -3)]
 
 
 def test_two_straight_head_to_head_wins_are_no_streak(fixture_raw_dir):
     # The flip gives roster 2 a week 3 win over 9. Roster 2 loses week 1, then wins 2 in a row.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(3, (2, 9))}))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(3, (2, 9))}), config=CONFIG)
     assert _game(nx, 2, 4).storylines == []
 
 
@@ -301,12 +301,12 @@ def test_the_median_game_never_counts_in_the_streak(fixture_raw_dir):
     # Roster 2 scores 140 each week, over the median of 110, 105, and 105, but loses to roster 1 in week 1.
     # The median wins would make a longer run. Head-to-head alone, roster 2 has 2 wins in a row, so no streak.
     scores = {(1, 1): 150.0, (1, 2): 140.0, (2, 2): 140.0, (3, 2): 140.0}
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(3, (2, 9))}, scores))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history({(3, (2, 9))}, scores), config=CONFIG)
     assert _game(nx, 2, 4).storylines == []
 
 
 def test_no_history_gives_no_streak(fixture_raw_dir):
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table())
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), config=CONFIG)
     assert all(n.storylines == [] for n in nx)
 
 
@@ -316,14 +316,14 @@ HAND_PROJECTED = {2: {4: 130.0}, 1: {4: 123.04}, 3: {4: 118.75}, 5: {4: 115.0}, 
 
 def test_both_teams_in_the_top_four_projected_lineups_give_a_shootout(fixture_raw_dir):
     # 1 projects 123.04 (2nd) and 3 projects 118.75 (3rd). One decimal rounds half up: 123.0 and 118.8.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), HAND_PROJECTED)
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), HAND_PROJECTED, config=CONFIG)
     [s] = _game(nx, 1, 3).storylines
     assert (s.kind, s.totals) == ("shootout", (123.0, 118.8))
 
 
 def test_one_team_fifth_in_projected_lineups_gives_no_shootout(fixture_raw_dir):
     # 2 projects 130 (1st), but 4 projects 101 (5th). 5 projects 115 (4th), and 7 has no projection.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), HAND_PROJECTED)
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(), _hand_history(), HAND_PROJECTED, config=CONFIG)
     assert _game(nx, 2, 4).storylines == []
     assert _game(nx, 5, 7).storylines == []
 
@@ -335,7 +335,7 @@ def _kinds(n):
 def test_a_week_3_meeting_gives_a_rematch_and_revenge_for_the_loser(fixture_raw_dir):
     # Roster 3 beat 8 in week 3, 112.4 to 100, a margin of 12.4.
     week = _hand_week(fixture_raw_dir, [(3, 8)])
-    nx = next_week(week, _hand_table(), _hand_history(scores={(3, 3): 112.4}))
+    nx = next_week(week, _hand_table(), _hand_history(scores={(3, 3): 112.4}), config=CONFIG)
     assert _kinds(nx[0]) == [("rematch", 3, 3, 12.4), ("revenge", 8, 3, 12.4)]
 
 
@@ -343,20 +343,20 @@ def test_the_rematch_reads_the_earliest_meeting(fixture_raw_dir):
     # Roster 8 beat 3 in week 1 by the flip, 110 to 100. Roster 3 beat 8 in week 3. Week 1 is the rematch.
     week1 = [(1, 2), (3, 8), (5, 6), (4, 7), (9, 10), (11, 12)]
     history = _hand_history({(1, (3, 8))}, pairs={1: week1})
-    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history)
+    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history, config=CONFIG)
     assert _kinds(nx[0]) == [("rematch", 8, 1, 10.0), ("revenge", 3, 1, 10.0)]
 
 
 def test_a_tied_meeting_gives_a_rematch_and_no_revenge(fixture_raw_dir):
     history = _hand_history(scores={(3, 3): 100.0, (3, 8): 100.0})
-    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history)
+    nx = next_week(_hand_week(fixture_raw_dir, [(3, 8)]), _hand_table(), history, config=CONFIG)
     assert _kinds(nx[0]) == [("rematch", None, 3, 0.0)]
 
 
 def test_near_the_cut_names_the_teams_within_one_game(fixture_raw_dir):
     # Roster 1 is 1 game above the cut. Rosters 2 and 4 are at the cut and 1 below. Roster 5 is 2 above.
     table = _hand_table(from_cut={1: 1, 2: 0, 4: -1, 5: 2})
-    nx = next_week(_hand_week(fixture_raw_dir), table)
+    nx = next_week(_hand_week(fixture_raw_dir), table, config=CONFIG)
     assert [(s.kind, s.teams) for s in _game(nx, 1, 3).storylines] == [("cut", [1])]
     assert [(s.kind, s.teams) for s in _game(nx, 2, 4).storylines] == [("cut", [2, 4])]
     assert _game(nx, 5, 7).storylines == []
@@ -364,7 +364,7 @@ def test_near_the_cut_names_the_teams_within_one_game(fixture_raw_dir):
 
 def test_both_teams_ranked_1_to_4_meet_at_the_top_of_the_table(fixture_raw_dir):
     # Roster 3 moves to 4th and roster 6 to 5th: 1st meets 4th, and 5th meets 8th.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(ranks={3: 4, 6: 5}))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(ranks={3: 4, 6: 5}), config=CONFIG)
     assert [s.kind for s in _game(nx, 1, 3).storylines] == ["table"]
     assert _game(nx, 6, 8).storylines == []
 
@@ -373,7 +373,7 @@ def test_the_top_two_games_by_storyline_score_are_must_watch(fixture_raw_dir):
     # 2v4: a 3-game loss streak for 4 and 2 at the cut, 3 + 3 = 6. Three games score 3: 1v3 (streak, gap 4),
     # 6v8 (6 near the cut, gap 4), and 9v11 (9 near the cut, gap 2). The smaller gap puts 9v11 second.
     table = _hand_table(from_cut={2: 0, 6: 1, 9: -1})
-    nx = next_week(_hand_week(fixture_raw_dir), table, _hand_history({(2, (1, 4))}))
+    nx = next_week(_hand_week(fixture_raw_dir), table, _hand_history({(2, (1, 4))}), config=CONFIG)
     assert [sum(s.weight for s in n.storylines) for n in nx] == [3, 6, 0, 3, 3, 0]
     assert [(n.a, n.b) for n in nx if n.must_watch] == [(2, 4), (9, 11)]
     assert all(n.reason is None for n in nx if not n.must_watch)
@@ -381,12 +381,12 @@ def test_the_top_two_games_by_storyline_score_are_must_watch(fixture_raw_dir):
 
 def test_a_tie_in_score_and_gap_goes_to_the_schedule_order(fixture_raw_dir):
     # 1v3, 2v4, and 6v8 each have one team near the cut and a gap of 4. The schedule order picks 1v3 and 2v4.
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1, 2: 1, 6: 1}))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1, 2: 1, 6: 1}), config=CONFIG)
     assert [(n.a, n.b) for n in nx if n.must_watch] == [(1, 3), (2, 4)]
 
 
 def _reason(fixture_raw_dir, pairs, table=None, history=None, projected=None):
-    [n] = next_week(_hand_week(fixture_raw_dir, pairs), table or _hand_table(), history, projected)
+    [n] = next_week(_hand_week(fixture_raw_dir, pairs), table or _hand_table(), history, projected, config=CONFIG)
     return n.reason
 
 
@@ -428,7 +428,7 @@ def test_week_6_storylines_and_must_watch(fixture_raw_dir, fixture_history_root)
     # No two teams of next week met in weeks 1 to 6, and no game has two of the top four in the standings.
     wk, _ = _setup(fixture_raw_dir)
     h = _history(fixture_raw_dir, fixture_history_root)
-    nx = next_week(wk, standings(wk, h, config=CONFIG), h, projected_totals(wk, config=CONFIG))
+    nx = next_week(wk, standings(wk, h, config=CONFIG), h, projected_totals(wk, config=CONFIG), config=CONFIG)
     assert [(n.a, n.b, [s.kind for s in n.storylines]) for n in nx] == [
         (3, 8, ["streak", "cut"]),
         (1, 9, ["cut"]),
@@ -447,7 +447,7 @@ def test_the_storyline_weights_come_from_the_tunables(fixture_raw_dir, monkeypat
     from cornerstone import facts_league, tunables
     assert tunables.STORYLINE_WEIGHTS == {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
     monkeypatch.setattr(facts_league, "STORYLINE_WEIGHTS", {**tunables.STORYLINE_WEIGHTS, "cut": 7})
-    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1}))
+    nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1}), config=CONFIG)
     assert [s.weight for s in _game(nx, 1, 3).storylines] == [7]
 
 
@@ -461,7 +461,9 @@ def test_week_7_must_watch_games_and_reasons():
     raw = load_raw(season_root / "week-07" / "raw")
     wk = parse_week(raw)
     history = load_history(season_root / "history", raw, 7)
-    nx = next_week(wk, standings(wk, history, config=CONFIG), history, projected_totals(wk, config=CONFIG))
+    nx = next_week(
+        wk, standings(wk, history, config=CONFIG), history, projected_totals(wk, config=CONFIG), config=CONFIG,
+    )
     assert [(n.a, n.b, n.reason) for n in nx if n.must_watch] == [
         (8, 10, "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"),
         (6, 7, "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"),

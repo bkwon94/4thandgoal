@@ -36,6 +36,12 @@ class LeagueConfig(BaseModel):
     # send to Claude. Every function that reads a prompt takes this folder.
     prompts_dir: Path
 
+    # The count of teams in the league. It must match the roster count of the league file, so the build passes it to
+    # the parse, and the parse stops on a mismatch. The ranks and the sizes below that name 12 teams follow it.
+    team_count: int
+    # Both best projected lineups for next week rank this high or higher for a shootout. GLOSSARY.md, "Projected
+    # shootout": the top four of the league.
+    shootout_top: int
     # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
     # The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.
     playoff_spots: int
@@ -79,6 +85,33 @@ class LeagueConfig(BaseModel):
         return {"QB": self.line_qb_te, "RB": self.line_rb_wr, "WR": self.line_rb_wr, "TE": self.line_qb_te}
 
     @property
+    def grade_spare_rank(self) -> dict[str, int]:
+        """The rank of a spare at each position on the manager page. GLOSSARY.md, "Roster grade".
+
+        The depth word of a position on the manager page counts a spare only inside the league's starter count at the
+        position. 12 teams start 1 QB, 2 RB, 2 WR, and 1 TE, flex aside. The line is looser, so a QB16 is startable.
+        He is a backup, not a second good player. Two spares read "stacked", one reads "deep", none reads "fine".
+        """
+        starters = {"QB": 1, "RB": 2, "WR": 2, "TE": 1}
+        return {position: count * self.team_count for position, count in starters.items()}
+
+    @property
+    def grade_strong_rank(self) -> int:
+        """The slot rank that reads "strong" in the grade sentence. The top quarter of a 12-team league is strong.
+
+        The quarter rounds down, so a ten-team league reads ranks 1 and 2 strong.
+        """
+        return self.team_count // 4
+
+    @property
+    def grade_soft_rank(self) -> int:
+        """The slot rank that reads "soft" in the grade sentence. The bottom quarter of a 12-team league is soft.
+
+        The quarter rounds down, so a ten-team league reads ranks 9 and 10 soft.
+        """
+        return self.team_count - self.team_count // 4 + 1
+
+    @property
     def tz(self) -> ZoneInfo:
         """The league timezone as a ZoneInfo, so a caller can make an aware datetime with it."""
         return ZoneInfo(self.timezone)
@@ -106,6 +139,8 @@ def cornerstone_config() -> LeagueConfig:
         owner_username="bkwon",
         timezone="America/New_York",
         prompts_dir=Path(__file__).parent / "prompts",
+        team_count=12,
+        shootout_top=4,
         playoff_spots=6,
         seller_gap=2,
         return_by_week=14,

@@ -14,8 +14,7 @@ from cornerstone.models import History, ProjectionsAhead
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SOFT_RANK, GRADE_SPARE_RANK,
-    GRADE_STRONG_RANK, GRADE_WEIGHTS,
+    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS,
 )
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
@@ -93,7 +92,7 @@ def _names(positions: list[str]) -> str:
     return ", ".join(positions[:-1]) + ", and " + positions[-1]
 
 
-def grade_read(slots: list[SlotRank]) -> str:
+def grade_read(slots: list[SlotRank], *, config: LeagueConfig) -> str:
     """The grade in words, from the slot ranks: the strong positions, the deep ones, the soft ones, and the thin ones.
 
     A position is strong in the top quarter of the league and soft in the bottom quarter. A thin position is a hole,
@@ -101,9 +100,9 @@ def grade_read(slots: list[SlotRank]) -> str:
     to say, the roster is middle of the league at every position.
     """
     thin = [s.position for s in slots if s.depth == "thin"]
-    strong = [s.position for s in slots if s.rank <= GRADE_STRONG_RANK and s.position not in thin]
+    strong = [s.position for s in slots if s.rank <= config.grade_strong_rank and s.position not in thin]
     deep = [s.position for s in slots if s.depth in ("deep", "stacked")]
-    soft = [s.position for s in slots if s.rank >= GRADE_SOFT_RANK and s.position not in thin]
+    soft = [s.position for s in slots if s.rank >= config.grade_soft_rank and s.position not in thin]
     sentences = [f"{word} at {_names(names)}." for word, names in (
         ("Strong", strong), ("Deep", deep), ("Soft", soft), ("Thin", thin)) if names]
     return " ".join(sentences) or "Middle of the league at every position."
@@ -172,7 +171,7 @@ def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
             letter=grade_letter(grade_score(parts[rid])),
             slots=slots,
             parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
-            read=grade_read(slots),
+            read=grade_read(slots, config=inputs.snapshot.config),
         )
     return grades
 
@@ -280,7 +279,7 @@ class _RosterRead:
     def spares(self, position: str) -> int:
         """The players at the position inside the league's starter count, past the starters the roster has there.
         The score's depth part reads the line instead, so a backup still counts there."""
-        bar = GRADE_SPARE_RANK[position]
+        bar = self.snapshot.config.grade_spare_rank[position]
         inside = sum(1 for pid in self.roster
                      if self.snapshot.players[pid].position == position and self.ranks.get(pid, bar + 1) <= bar)
         return max(0, inside - len(self._at(position)))
