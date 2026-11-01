@@ -25,7 +25,7 @@ from cornerstone.models import (
     Week,
     sub,
 )
-from cornerstone.numbers import ordinal, one_decimal, r2
+from cornerstone.numbers import one_decimal, ordinal, r2
 from cornerstone.tunables import (
     KEY_STARTER_SHORT_STARTS,
     KEY_STARTER_STARTS,
