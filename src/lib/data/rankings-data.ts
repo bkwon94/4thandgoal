@@ -5,11 +5,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the managers reader, which imports this module.
-import { weekHref } from "../routes";
+import { basePath } from "../config";
 import { rankingsSchema } from "../schemas/rankings";
-import type { Rankings } from "@/lib/rankings-types";
+import type { Rankings } from "../rankings-types";
 import { listWeeks, loadWeek } from "./week-data";
-import type { AvatarMap } from "@/lib/week-types";
+import type { AvatarMap } from "../week-types";
 
 /* The rankings file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;
@@ -43,7 +43,7 @@ export function latestAvatars(season: number): AvatarMap {
     .filter((week) => week.season === String(season))
     .at(-1);
   if (!ref) return {};
-  const folder = weekHref(ref.season, ref.week);
+  const folder = `${basePath}/${ref.season}/${ref.week}`;
   const avatars = loadWeek(ref.season, ref.week).avatars;
-  return Object.fromEntries(Object.entries(avatars).map(([id, path]) => [id, `${folder}${path}`]));
+  return Object.fromEntries(Object.entries(avatars).map(([id, path]) => [id, `${folder}/${path}`]));
 }

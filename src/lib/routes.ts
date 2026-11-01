@@ -1,6 +1,6 @@
 /**
- * One builder per destination. Each puts the base path in front of the route.
- * No other module joins the base path to a route, so a link change touches only this file.
+ * One builder per destination. Each joins the base path to the route.
+ * The app layer calls them, so a link change starts in this file.
  */
 import { basePath } from "./config";
 

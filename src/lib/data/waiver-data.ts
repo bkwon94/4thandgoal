@@ -9,7 +9,7 @@ import { waiverOn } from "../config";
 import { waiverHref } from "../routes";
 import { listWeeks, type WeekRef } from "./week-data";
 import { waiverBoardSchema } from "../schemas/waiver";
-import type { WaiverBoard } from "@/lib/waiver-types";
+import type { WaiverBoard } from "../waiver-types";
 
 /* The waiver file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;
