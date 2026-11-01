@@ -20,14 +20,16 @@ def test_load_raw_returns_every_file(fixture_raw_dir):
 
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {
         *RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead", "trending"}
 
 
 @pytest.mark.live
 def test_fetch_week_records_the_fetch_time(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     assert read_fetch_time(tmp_path / "raw").tzinfo is not None
 
 
@@ -80,7 +82,8 @@ def _fetch_schedule(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     return json.loads((tmp_path / "raw" / "schedule.json").read_text()), calls
 
 
@@ -140,7 +143,8 @@ def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, li
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     return json.loads((tmp_path / "raw" / "projections_ahead.json").read_text()), calls
 
 
@@ -172,7 +176,7 @@ def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
-    ahead = sleeper.fetch_projections_ahead(2026, 6)
+    ahead = sleeper.fetch_projections_ahead(2026, 6, CONFIG.last_regular_week)
     assert [entry.week for entry in ahead] == list(range(7, 15))
     assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
     assert ahead[0].model_dump() == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}

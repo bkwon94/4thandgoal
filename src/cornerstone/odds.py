@@ -6,10 +6,9 @@ import random
 from collections import Counter
 from typing import Literal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
 from cornerstone.tunables import (
-    BYE_COUNT,
-    PLAYOFF_SPOTS,
     PROJECTION_WEIGHT,
     RECENT_WEEKS,
     RECENT_WEIGHT,
@@ -29,8 +28,7 @@ def playoff_odds(
     *,
     season: int,
     week: int,
-    playoff_spots: int = PLAYOFF_SPOTS,
-    bye_count: int = BYE_COUNT,
+    config: LeagueConfig,
     runs: int = SIM_RUNS,
     projected: dict[int, dict[int, float]] | None = None,
     projection_weight: float = PROJECTION_WEIGHT,
@@ -41,7 +39,9 @@ def playoff_odds(
     and points for. `remaining` holds the pairs of each remaining week; the first week is week N+1.
     `projected` holds the projected best-lineup total of each roster, by roster ID and week. Each drawn
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
+    `config` gives the count of playoff spots and the count of byes.
     """
+    playoff_spots, bye_count = config.playoff_spots, config.bye_count
     if len(records) % 2:
         raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
     weeks_left = len(remaining)

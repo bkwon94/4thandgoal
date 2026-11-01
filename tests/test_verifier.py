@@ -2,6 +2,7 @@
 Tests for the verifier: the code check, the prompt, and the retry loop.
 Every test injects a fake call, so none of them reach the Claude API.
 """
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
 from cornerstone.parse import parse_week
@@ -19,9 +20,11 @@ from cornerstone.verifier import (
 )
 from cornerstone.writer import RefusalError
 
+CONFIG = cornerstone_config()
+
 
 def _sheet(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: []).sheet
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG).sheet
 
 
 def _ch(sheet, key):
@@ -509,7 +512,7 @@ def test_number_word_in_cited_fact_passes(fixture_raw_dir):
     def news(_player_id):
         return [{"metadata": {"description": "He scored two touchdowns."}, "published": "1792500000000"}]
 
-    sheet = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news).sheet
+    sheet = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, config=CONFIG).sheet
     ch = _ch(sheet, "game_changer")
     b = _blurb("game_changer", _s("He scored two touchdowns.", "AW.game_changer.news"))
     assert not any("number word" in m for m in code_check(b, ch, sheet))
@@ -608,7 +611,8 @@ def test_twelve_team_chapter_skips_the_repeat_check(fixture_raw_dir):
 
 def _rankings(raw_dir, history_root):
     raw = load_raw(raw_dir)
-    sheet = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(history_root, raw, week=6)).sheet
+    sheet = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(history_root, raw, week=6),
+                         config=CONFIG).sheet
     return sheet, _ch(sheet, "rankings")
 
 

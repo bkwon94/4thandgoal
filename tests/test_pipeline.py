@@ -156,7 +156,7 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
     # The plain fake gives the rankings chapter no roster tags, so it falls back. The fallback leaves the
     # blurbs empty on purpose, so both files match.
     # The rankings command writes the same file from the same saved history.
-    assert run_rankings(repo, 2026, 6, _fake).read_text(encoding="utf-8") == built
+    assert run_rankings(repo, 2026, 6, _fake, config=CONFIG).read_text(encoding="utf-8") == built
 
 
 def _managers(repo):
@@ -186,7 +186,7 @@ def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixtur
     assert sum(sum(m["awards"].values()) for m in data["managers"]) == len(shelf)
     # The rankings command writes the same file from the same saved history.
     _managers(repo).unlink()
-    run_rankings(repo, 2026, 6, _fake)
+    run_rankings(repo, 2026, 6, _fake, config=CONFIG)
     assert _managers(repo).read_text(encoding="utf-8") == built
 
 
@@ -288,7 +288,7 @@ def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw
     run_page_json(repo, 2026, 6)
     # The page-json command leaves the season file alone.
     assert not _rankings(repo).exists()
-    out = run_rankings(repo, 2026, 6, _fake)
+    out = run_rankings(repo, 2026, 6, _fake, config=CONFIG)
     data = json.loads(out.read_text(encoding="utf-8"))
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
     # The plain fake falls back on the rankings chapter. The fallback leaves the blurbs empty on purpose.
@@ -327,7 +327,7 @@ def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_r
     facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
 
     call = _RankingsWriter()
-    data = json.loads(run_rankings(repo, 2026, 6, call).read_text(encoding="utf-8"))
+    data = json.loads(run_rankings(repo, 2026, 6, call, config=CONFIG).read_text(encoding="utf-8"))
     assert call.writer_calls == 1
     week6 = next(w for w in data["weeks"] if w["week"] == 6)
     assert all(len(row["blurb"]) == 1 for row in week6["rows"])
@@ -352,7 +352,7 @@ def test_rankings_command_adds_the_rank_why_facts_to_an_older_saved_chapter(
         c.fact_ids = [fid for fid in c.fact_ids if not fid.endswith(".why")]
     facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
 
-    run_rankings(repo, 2026, 6, _fake)
+    run_rankings(repo, 2026, 6, _fake, config=CONFIG)
     saved = read_bundle(facts)
     chapter = next(c for c in saved.sheet.chapters if c.key == "rankings")
     assert [c.key for c in saved.sheet.chapters].count("rankings") == 1
@@ -375,7 +375,7 @@ def test_rankings_command_lists_the_saved_odds_why_facts_in_an_older_saved_chapt
         c.fact_ids = [fid for fid in c.fact_ids if not (fid.startswith("ODDS.") and fid.endswith(".why"))]
     facts.write_text(bundle.model_dump_json(indent=2), encoding="utf-8")
 
-    run_rankings(repo, 2026, 6, _fake)
+    run_rankings(repo, 2026, 6, _fake, config=CONFIG)
     chapter = next(c for c in read_bundle(facts).sheet.chapters if c.key == "rankings")
     for rid in bundle.data.teams:
         assert f"ODDS.{rid}.why" in chapter.fact_ids
@@ -426,11 +426,11 @@ def _week6_blurbs(repo):
 def test_a_fallback_rankings_blurb_keeps_the_saved_blurbs(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
-    run_rankings(repo, 2026, 6, _RankingsWriter())
+    run_rankings(repo, 2026, 6, _RankingsWriter(), config=CONFIG)
     saved = _week6_blurbs(repo)
     assert all(len(b) == 1 for b in saved.values())
     # The plain fake gives no roster tags, so the blurb falls back and must not wipe the saved blurbs.
-    run_rankings(repo, 2026, 6, _fake)
+    run_rankings(repo, 2026, 6, _fake, config=CONFIG)
     blurbs = json.loads((week_dir(repo, 2026, 6) / "blurbs.json").read_text(encoding="utf-8"))
     assert blurbs["rankings"]["fallback"] is True
     assert _week6_blurbs(repo) == saved
@@ -560,7 +560,7 @@ def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_d
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     with pytest.raises(BuildStopped, match="history"):
-        run_rankings(repo, 2026, 6, _fake)
+        run_rankings(repo, 2026, 6, _fake, config=CONFIG)
 
 
 def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog, offline):

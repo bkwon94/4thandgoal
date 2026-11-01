@@ -6,15 +6,18 @@ import re
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, template_blurb, write_blurb
 
+CONFIG = cornerstone_config()
+
 
 def _sheet(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: []).sheet
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG).sheet
 
 
 def _chapter(sheet, key):

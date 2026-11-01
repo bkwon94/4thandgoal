@@ -182,7 +182,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
     live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
                          read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
     assert (live.week, live.as_of.stats_through) == (saved.week, saved.as_of.stats_through) == (6, 5)
     pool = {pid for past in saved.stats.weeks.values() for pid in past.positions} | set(saved.players)
     live_ranks = {pid: live.position_rank(pid) for pid in pool}
@@ -198,7 +198,7 @@ def test_a_known_game_of_week_n_moves_a_live_position_rank_and_weeks_1_to_n_minu
     live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
                          read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
     assert (live.as_of.stats_through, saved.as_of.stats_through) == (6, 5)
     assert all(live.stats.weeks[week] == saved.stats.weeks[week] for week in range(1, 6))
     # With the known games cut away, the live table is the saved table, so only week 6 moves a rank.
@@ -222,7 +222,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_
     live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
                          read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6)
+    saved = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
     assert live.free_agents == saved.free_agents
     # Perine, the back with no stat line, and Bigsby, in player id order, as the saved test reads them.
     assert [p.player_id for p in live.free_agents["RB"]] == ["4147", "80001", "9225"]
@@ -516,7 +516,7 @@ class ProjectionsRecorder:
     def __init__(self):
         self.calls = []
 
-    def __call__(self, season, week):
+    def __call__(self, season, week, last_regular_week):
         self.calls.append((season, week))
         return [RawAheadWeek(week=7, projections={"5850": 18.0})]
 

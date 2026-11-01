@@ -8,6 +8,7 @@ from typing import NamedTuple
 
 from cornerstone import waiver_buckets
 from cornerstone.adjusters import OUT_STATUSES
+from cornerstone.config import LeagueConfig
 from cornerstone.numbers import round_half_up
 from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
@@ -38,6 +39,7 @@ TRENDING_REASON = "trending"
 def waiver_board(
     raw: RawWeek, week: int, built: datetime, nfl: NflverseWeek | None = None,
     claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None, returns: dict[str, int] | None = None,
+    *, config: LeagueConfig,
 ) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
@@ -45,18 +47,19 @@ def waiver_board(
     score and an environment score of 0. `claims` is the bid history of the season, the input of the price
     floor and the last like him. `slow` gives the depth charts and the injury report of the sneaky and stash
     buckets. None leaves out every rule that needs them. `returns` is the hand-kept return week by player ID.
+    `config` gives the last season week, where the rest of season projection ends.
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
     pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
-    ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
+    ros = {pid: rest_of_season(ahead, pid, week, config) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
     inputs = waiver_buckets.BucketInputs(raw.players, week, slow, returns or {},
-                                         lambda pid: rest_of_season(ahead, pid, week))
+                                         lambda pid: rest_of_season(ahead, pid, week, config), config)
     players = [
         _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
                      BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
@@ -84,7 +87,7 @@ def waiver_board(
     # Drop candidates come after the price step, so a drop candidate never carries a price. The bucket has no
     # cap per position, as one roster can hold several fading players at one position.
     # A player who is out cannot replace a drop candidate this week, so drops compare against the healthy pool.
-    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy)[:BUCKET_SIZE]
+    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy, config)[:BUCKET_SIZE]
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 

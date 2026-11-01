@@ -7,6 +7,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
@@ -30,7 +31,6 @@ from cornerstone.tunables import (
     KEY_STARTER_SHORT_STARTS,
     KEY_STARTER_STARTS,
     KEY_STARTER_WEEKS,
-    PLAYOFF_SPOTS,
     STORYLINE_WEIGHTS,
 )
 
@@ -94,7 +94,9 @@ def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
     return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
 
 
-def standings(week: Week, history: History | None = None) -> list[Standing]:
+def standings(week: Week, history: History | None = None, *, config: LeagueConfig) -> list[Standing]:
+    """The table after the week, in standings order. The cut reads the playoff spots of `config`, so it follows the
+    league."""
     if history is not None and history.complete():
         records = season_records(history, week.week)
     else:
@@ -104,7 +106,7 @@ def standings(week: Week, history: History | None = None) -> list[Standing]:
             t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
         }
     ordered = standings_order(records)
-    cut_wins = records[ordered[PLAYOFF_SPOTS - 1]][0]
+    cut_wins = records[ordered[config.playoff_spots - 1]][0]
     strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
     # Rank the highest strength first. A team with no next matchup has no rank.
     by_strength = sorted(
@@ -119,7 +121,7 @@ def standings(week: Week, history: History | None = None) -> list[Standing]:
             wins=records[rid][0],
             losses=records[rid][1],
             points_for=records[rid][2],
-            in_playoffs=i + 1 <= PLAYOFF_SPOTS,
+            in_playoffs=i + 1 <= config.playoff_spots,
             games_from_cut=records[rid][0] - cut_wins,
             schedule_strength=strength[rid],
             strength_rank=strength_rank.get(rid),

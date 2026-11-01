@@ -59,7 +59,8 @@ class FixtureProvider:
         self.fetched = fetched
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo) -> RawWeek:
+            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int) -> RawWeek:
         shutil.copytree(self.raw_dir, raw_dir, dirs_exist_ok=True)
         return load_raw(raw_dir)
 
@@ -75,7 +76,7 @@ class FixtureProvider:
     def fetch_players(self, players_cache: Path) -> dict[str, dict]:
         return load_raw(self.raw_dir).players
 
-    def fetch_projections(self, season: int, week: int) -> list[RawAheadWeek]:
+    def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
         return load_raw(self.raw_dir).projections_ahead or []
 
 

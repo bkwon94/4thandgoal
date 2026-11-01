@@ -1,6 +1,6 @@
 """
-Tests for the league config and the owner flag it drives in the parse.
-A second config literal stands in for another league, so the owner is a parameter and not a constant.
+Tests for the league config, the owner flag it drives in the parse, and the playoff cut it drives in the standings.
+A second config literal stands in for another league, so the owner and the sizes are parameters and not constants.
 """
 from pathlib import Path
 
@@ -8,14 +8,15 @@ import pytest
 from pydantic import ValidationError
 
 from cornerstone.config import LeagueConfig, cornerstone_config
+from cornerstone.facts_league import standings
 from cornerstone.parse import parse_week
 from cornerstone.sleeper import load_raw
 
-# Another league with the same raw data, owned by the manager of roster 12.
-OTHER = LeagueConfig(
+# Another league with the same raw data, owned by the manager of roster 12. Its sizes are those of Cornerstone.
+OTHER = cornerstone_config().model_copy(update=dict(
     slug="other", display_name="Other League", provider="sleeper", league_ids=((2026, "1"),),
     owner_username="pdurkim", timezone="America/Chicago", prompts_dir=Path("prompts"),
-)
+))
 
 
 def _owners(raw: dict, config: LeagueConfig) -> list[int]:
@@ -49,3 +50,12 @@ def test_the_league_id_comes_from_the_season():
 def test_the_config_is_frozen():
     with pytest.raises(ValidationError):
         OTHER.owner_username = "someone"
+
+
+def test_the_standings_cut_follows_the_playoff_spots_of_the_config(fixture_raw_dir):
+    # A league with four playoff spots puts four teams in, not the six of Cornerstone.
+    week = parse_week(load_raw(fixture_raw_dir))
+    config = cornerstone_config()
+    four = config.model_copy(update={"playoff_spots": 4})
+    assert [s.in_playoffs for s in standings(week, config=config)].count(True) == config.playoff_spots
+    assert [s.in_playoffs for s in standings(week, config=four)].count(True) == 4

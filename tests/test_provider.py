@@ -28,9 +28,11 @@ class RecordedProvider(FixtureProvider):
         self.week_calls: list[tuple[str, int, int, ZoneInfo]] = []
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo) -> RawWeek:
+            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int) -> RawWeek:
         self.week_calls.append((league_id, season, week, tz))
-        return super().fetch_week(league_id, season, week, raw_dir, players_cache, tz)
+        return super().fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week,
+                                  last_season_week)
 
 
 def _no_claude(system, user, model):
@@ -51,10 +53,11 @@ def test_the_fixture_provider_satisfies_the_protocol():
 
 def test_an_object_with_four_of_the_five_fetches_is_no_provider():
     class NoPlayers:
-        def fetch_week(self, league_id, season, week, raw_dir, players_cache, tz): ...
+        def fetch_week(self, league_id, season, week, raw_dir, players_cache, tz, last_regular_week,
+                       last_season_week): ...
         def fetch_live(self, league_id, players_cache): ...
         def fetch_past_leg(self, league_id, season, week, out_dir): ...
-        def fetch_projections(self, season, week): ...
+        def fetch_projections(self, season, week, last_regular_week): ...
 
     assert not isinstance(NoPlayers(), Provider)
 

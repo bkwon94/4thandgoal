@@ -13,7 +13,6 @@ from typing import NamedTuple
 from cornerstone.adjusters import due_back_week
 from cornerstone.rubric import ProposedTrade
 from cornerstone.snapshot import Snapshot
-from cornerstone.tunables import LAST_REGULAR_WEEK
 
 # The stat fields the grade reads from a week N line. A change to any other field keeps the hit.
 STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_att")
@@ -63,7 +62,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
     Only the rows and lines of the rosters in the trade go in, so a change to any other player keeps the hit. A change
     that moves a position rank is one exception.
     The key holds only the projection rows the grade can read. These are the rows of a player due back, from his
-    return week through LAST_REGULAR_WEEK. A change to any other row would miss, but the grade would not change.
+    return week through the last regular week. A change to any other row would miss, but the grade would not change.
     The NFL teams whose known game is in progress go in too, because the reasons name a game in progress.
     The known-games block of the stamp goes in, because the document shows its counts. A stale stats fetch goes in,
     because a failed week N fetch grades from the completed week. The week N WOPR rows of the rosters in the trade go
@@ -92,7 +91,8 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
             # A player out with no returns row gets other words in the reason than a row of the same week.
             "on_file": sorted(player for player in snapshot.rosters[roster_id]
                               if player in due_back and player in snapshot.returns),
-            "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player])
+            "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player],
+                                                     snapshot.config.last_regular_week)
                                   for player in snapshot.rosters[roster_id] if player in due_back},
             "week_n_lines": {player: week_n_lines[player] for player in sorted(snapshot.rosters[roster_id])
                              if player in week_n_lines},
@@ -137,9 +137,9 @@ def _week_n_wopr(snapshot: Snapshot) -> dict[str, int]:
             if as_of.stats_through in weeks}
 
 
-def _rows_read(rows: dict[int, float], return_week: int) -> dict[int, float]:
+def _rows_read(rows: dict[int, float], return_week: int, last_regular_week: int) -> dict[int, float]:
     """The projection rows of one player that the projection ahead reads, from the return week through the last."""
-    return {week: points for week, points in rows.items() if return_week <= week <= LAST_REGULAR_WEEK}
+    return {week: points for week, points in rows.items() if return_week <= week <= last_regular_week}
 
 
 def finder_cache_key(season: int, asker: int, partner: int, snapshot: Snapshot) -> str:
