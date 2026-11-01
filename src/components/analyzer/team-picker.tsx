@@ -8,7 +8,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { Team } from "@/lib/api";
 import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
-import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type TeamPickerProps = {

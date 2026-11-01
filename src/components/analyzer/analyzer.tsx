@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorLine } from "@/components/parts/error-line";
 import { PassphraseDialog } from "@/components/analyzer/passphrase-dialog";
 import { Reveal } from "@/components/parts/reveal";
@@ -12,6 +12,7 @@ import { TeamsSkeleton } from "@/components/analyzer/teams-skeleton";
 import { TradeForm } from "@/components/analyzer/trade-form";
 import { Button } from "@/components/ui/button";
 import { Chapter } from "@/components/parts/chapter";
+import { useRequest } from "@/hooks/use-request";
 import { ApiError, retryText, type Team } from "@/lib/api";
 import { DURATION } from "@/lib/motion";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@/lib/passphrase";
@@ -34,16 +35,11 @@ export function Analyzer({ season, finderOn }: { season: number; finderOn: boole
   const [teams, setTeams] = useState<TeamsState>({ status: "idle" });
   // A new value starts the fetch again, for the retry button.
   const [attempt, setAttempt] = useState(0);
-  // The refresh after a 422 runs outside the effect, so it reads this flag before it sets state.
-  const mounted = useRef(true);
+  // The refresh after a 422 runs outside the effect, so it reads its run before it sets state.
+  const request = useRequest();
 
   useEffect(() => {
-    // React strict mode runs the cleanup and the effect again on mount, so the effect sets the flag.
-    mounted.current = true;
     setPassphraseState(getPassphrase());
-    return () => {
-      mounted.current = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -85,10 +81,11 @@ export function Analyzer({ season, finderOn }: { season: number; finderOn: boole
   function handleStaleRosters() {
     if (!passphrase) return;
     clearStoredTeams();
+    const run = request.start();
     fetchAndStoreTeams(passphrase)
-      .then((list) => mounted.current && setTeams({ status: "ready", teams: list }))
+      .then((list) => run.isCurrent() && setTeams({ status: "ready", teams: list }))
       .catch((error: unknown) => {
-        if (!mounted.current) return;
+        if (!run.isCurrent()) return;
         if (error instanceof ApiError && error.status === 401) handleUnauthorized();
         // Any other failure keeps the current list. The error line of the form already tells the reader.
       });

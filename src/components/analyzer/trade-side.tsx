@@ -13,7 +13,8 @@ import type { Team, TeamPlayer } from "@/lib/api";
 import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
 import { count } from "@/lib/format/format";
 import { HEADSHOT_FALLBACK, swapToDefault } from "@/lib/headshot";
-import { enterExit, useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { enterExit } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type TradeSideProps = {
