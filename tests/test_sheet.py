@@ -11,8 +11,8 @@ import pytest
 
 from cornerstone import sheet
 from cornerstone.history import load_history
-from cornerstone.models import History, NextMatchup, PowerRow, Standing, Storyline
-from cornerstone.odds import OddsResult, Swing, TeamOdds, playoff_odds
+from cornerstone.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
+from cornerstone.odds import playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     Context,
