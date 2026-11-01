@@ -336,7 +336,7 @@ def run_build(
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
     # No argument means the real search. A test passes a fake one.
     if bundle.waiver is not None:
-        bundle.waiver = research_board(bundle.waiver, research or search_call)
+        bundle.waiver = research_board(bundle.waiver, research or search_call, config.prompts_dir)
     write_bundle(bundle, directory / "facts.json")
 
     blurbs: dict[str, Blurb] = {}
@@ -346,7 +346,8 @@ def run_build(
     used: set[str] = set()
     for chapter in bundle.sheet.chapters:
         reserved = reserved_words(chapter.key, bundle.sheet)
-        blurbs[chapter.key], verify[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used | reserved)
+        blurbs[chapter.key], verify[chapter.key] = write_and_verify(
+            chapter, bundle.sheet, config.prompts_dir, call, used | reserved)
         used |= page_words(blurbs[chapter.key], chapter)
         _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, VerifyFile(build=record, chapters=verify))
@@ -517,6 +518,8 @@ def run_rewrite(
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
     research: SearchCall | None = None,
+    *,
+    prompts_dir: Path,
 ) -> Path:
     # The news, nflverse, and research arguments keep the signature the same as run_build.
     # A rewrite reads the saved facts and the saved claims, so it needs no news, no fetch, and no search.
@@ -529,7 +532,7 @@ def run_rewrite(
 
     verify = read_verify(directory / "verify.json")
     used = _other_page_words(bundle, blurbs, chapter)
-    blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, call, used)
+    blurbs[chapter], verify.chapters[chapter] = write_and_verify(chosen, bundle.sheet, prompts_dir, call, used)
     _log_chapter(chapter, blurbs[chapter])
     _save_blurbs(directory, blurbs, verify)
 
@@ -592,7 +595,8 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, config
     write_bundle(bundle, directory / "facts.json")
     verify = read_verify(directory / "verify.json")
     used = _other_page_words(bundle, blurbs, chapter.key)
-    blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(chapter, bundle.sheet, call, used)
+    blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(
+        chapter, bundle.sheet, config.prompts_dir, call, used)
     _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, verify)
     season_history = _season_history(repo, season, week)

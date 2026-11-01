@@ -5,7 +5,7 @@ The template blurb is the safe fallback when the writer fails twice.
 import logging
 import re
 from collections.abc import Callable
-from importlib import resources
+from pathlib import Path
 from typing import TypeVar
 
 import anthropic
@@ -156,14 +156,15 @@ def call_with_retry(
     return None
 
 
-def load_prompt(name: str) -> str:
-    return resources.files("cornerstone.prompts").joinpath(name).read_text(encoding="utf-8").strip()
+def load_prompt(prompts_dir: Path, name: str) -> str:
+    """One prompt file from the prompts folder of the league config, so a league can bring its own prompts."""
+    return (prompts_dir / name).read_text(encoding="utf-8").strip()
 
 
 def build_writer_prompt(
-    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None
+    chapter: Chapter, sheet: FactSheet, prompts_dir: Path, feedback: str | None, page_words: str | None = None
 ) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
+    system = "\n\n".join(load_prompt(prompts_dir, name) for name in PROMPT_FILES)
     lines = [
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",
@@ -187,12 +188,13 @@ def build_writer_prompt(
 def write_blurb(
     chapter: Chapter,
     sheet: FactSheet,
+    prompts_dir: Path,
     call: ClaudeCall,
     feedback: str | None = None,
     page_words: str | None = None,
     attempt: int = 1,
 ) -> Blurb:
-    system, user = build_writer_prompt(chapter, sheet, feedback, page_words)
+    system, user = build_writer_prompt(chapter, sheet, prompts_dir, feedback, page_words)
     out = call(system, user, WriterOut)
     # Any call, real or injected, can come back empty. That is a failed attempt, not a blurb.
     if out is None:

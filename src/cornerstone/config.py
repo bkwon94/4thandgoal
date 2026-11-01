@@ -33,8 +33,7 @@ class LeagueConfig(BaseModel):
     # The IANA name of the league timezone. The trade cutoffs, the fetch times, and the daily limits read it.
     timezone: str
     # The folder of the prompt files that the writer and the verifier send to Claude.
-    # Nothing reads it yet. Pipeline ticket 15 threads it into load_prompt for the writer, the verifier, the analysis,
-    # the finder reasons, and the research.
+    # Every prompt read takes this folder: the writer, the verifier, the analysis, the finder reasons, and the research.
     prompts_dir: Path
 
     # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.

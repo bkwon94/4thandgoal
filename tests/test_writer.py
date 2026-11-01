@@ -11,9 +11,10 @@ from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
-from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, template_blurb, write_blurb
+from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, load_prompt, template_blurb, write_blurb
 
 CONFIG = cornerstone_config()
+PROMPTS = CONFIG.prompts_dir
 
 
 def _sheet(d):
@@ -24,10 +25,17 @@ def _chapter(sheet, key):
     return next(c for c in sheet.chapters if c.key == key)
 
 
+def test_writer_reads_a_prompt_from_the_config_folder(tmp_path):
+    # A league with its own prompts sets prompts_dir, so the writer must read that folder and not the packaged one.
+    (tmp_path / "writer.md").write_text("  League prompt from the temp folder.\n", encoding="utf-8")
+    config = CONFIG.model_copy(update={"prompts_dir": tmp_path})
+    assert load_prompt(config.prompts_dir, "writer.md") == "League prompt from the temp folder."
+
+
 def test_prompt_contains_scope_facts_only(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _chapter(sheet, "recap_4")
-    system, user = build_writer_prompt(ch, sheet, None)
+    system, user = build_writer_prompt(ch, sheet, PROMPTS, None)
     assert "Read recap" not in user
     assert "M4." in user and "M1." not in user
     assert "fact ID" in system
@@ -36,7 +44,7 @@ def test_prompt_contains_scope_facts_only(fixture_raw_dir):
 def test_user_prompt_lists_scope_facts_in_order(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _chapter(sheet, "recap_4")
-    _, user = build_writer_prompt(ch, sheet, None)
+    _, user = build_writer_prompt(ch, sheet, PROMPTS, None)
     listed = re.findall(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE)
     assert listed == ch.fact_ids
     assert f"Chapter: {ch.title}" in user
@@ -46,7 +54,7 @@ def test_user_prompt_lists_scope_facts_in_order(fixture_raw_dir):
 
 def test_system_prompt_has_all_three_files(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "Top Scorer" in system and "upset" in system and "recent add" in system
     assert "league group chat" in system and "fact ID" in system
 
@@ -54,7 +62,7 @@ def test_system_prompt_has_all_three_files(fixture_raw_dir):
 def test_feedback_block_appears_only_with_feedback(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     ch = _chapter(sheet, "median")
-    _, user = build_writer_prompt(ch, sheet, "Sentence 2 is unsupported.")
+    _, user = build_writer_prompt(ch, sheet, PROMPTS, "Sentence 2 is unsupported.")
     assert user.endswith("Feedback from the last attempt:\nSentence 2 is unsupported.")
     assert len(re.findall(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE)) == len(ch.fact_ids)
 
@@ -67,7 +75,7 @@ def test_write_blurb_uses_call(fixture_raw_dir):
         assert model is WriterOut
         return model(sentences=[Sentence(text="Six teams cleared 106.83.", fact_ids=["MED.value"])])
 
-    b = write_blurb(ch, sheet, fake)
+    b = write_blurb(ch, sheet, PROMPTS, fake)
     assert b.chapter == "median" and b.sentences[0].fact_ids == ["MED.value"] and not b.fallback
     assert b.attempt == 1
 
@@ -81,7 +89,7 @@ def test_retry_sets_attempt_two_and_passes_feedback(fixture_raw_dir):
         seen["user"] = user
         return model(sentences=[Sentence(text="x", fact_ids=["MED.value"])])
 
-    b = write_blurb(ch, sheet, fake, feedback="Fix sentence 1.", attempt=2)
+    b = write_blurb(ch, sheet, PROMPTS, fake, feedback="Fix sentence 1.", attempt=2)
     assert b.attempt == 2 and "Fix sentence 1." in seen["user"]
 
 
@@ -107,7 +115,7 @@ def test_live_write_median(fixture_raw_dir):
 
     sheet = _sheet(fixture_raw_dir)
     ch = _chapter(sheet, "median")
-    b = write_blurb(ch, sheet, claude_call)
+    b = write_blurb(ch, sheet, PROMPTS, claude_call)
     for s in b.sentences:
         print(f"{s.text}  {s.fact_ids}")
     assert 2 <= len(b.sentences) <= 4 and [s.fact_ids for s in b.sentences].count([]) <= 1
@@ -115,7 +123,7 @@ def test_live_write_median(fixture_raw_dir):
 
 def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, PROMPTS, None)
     assert "Make no jokes about injuries." not in system
     assert "Make no joke about an injury itself or about a player's health." in system
     assert "Roast the manager, not the player's body." in system
@@ -127,14 +135,14 @@ def test_prompt_lets_the_manager_take_the_injury_joke(fixture_raw_dir):
 
 def test_writer_rule_6_gates_decided_on_a_driver_only(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert '6. Never say "decided" or "decider" unless a cited fact ID contains `.driver`.' in system
     assert "T{n}.{rid}.swing" not in system
 
 
 def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "1. Cite one or more fact IDs for every sentence, except one reaction sentence per blurb." in system
     assert "The reaction sentence has no citation and an empty `fact_ids`." in system
     assert "no digit, no team name, no player name, and fewer than 8 words" in system
@@ -143,7 +151,7 @@ def test_writer_rule_1_allows_one_reaction_sentence(fixture_raw_dir):
 
 def test_writer_rule_21_tags_each_rankings_sentence_with_its_team(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert ("21. In the Power rankings chapter, tag every sentence with its team: "
             "set `roster_id` to the number in the team's `PR.` fact ID.") in system
     assert "Give every team 1 to 3 sentences." in system
@@ -162,7 +170,7 @@ def test_verifier_prompt_supports_a_reaction_sentence():
 
 def test_tone_has_the_banned_patterns(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
     for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
                     '"a lot to hang on"', '"a polite way to say"', "explains the joke it just made"):
@@ -172,7 +180,7 @@ def test_tone_has_the_banned_patterns(fixture_raw_dir):
 
 def test_tone_gives_each_banned_pattern_an_example(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
     lines = [line for line in section.splitlines() if line.startswith("- ")]
     for pattern in ('The ", which is X" tail', '"one of the problems"', '"the entire point"',
@@ -184,7 +192,7 @@ def test_tone_gives_each_banned_pattern_an_example(fixture_raw_dir):
 
 def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     tone = system.split("# Tone", 1)[1].strip()
     voice = "The voice is the league group chat: a member who watched every game and types like a person."
     assert tone.startswith(voice)
@@ -196,7 +204,7 @@ def test_tone_opens_with_the_group_chat_voice(fixture_raw_dir):
 
 def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     section = system.split("## Examples", 1)[1].split("\n## ", 1)[0]
     passed = section.split("Passed review:", 1)[1].split("Failed review:", 1)[0]
     # Brian picked these sentences from the week 6 candidates. A prompt edit that drops one fails here.
@@ -216,7 +224,7 @@ def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
 
 def test_writer_rule_4_lets_a_plain_phrase_stand_for_a_stat(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "4. When you name a stat, use its vocabulary term. You need not name the stat." in system
     assert "A plain phrase that the cited fact supports is fine" in system
     assert "Use only the vocabulary terms." not in system
@@ -231,7 +239,7 @@ def test_a_saved_blurb_with_a_grades_map_still_parses():
 
 def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "In a trade recap" not in system and "`impact`" not in system and "`.late`" not in system
     assert "grade each side" not in system and "Grade keys" not in system and "`.value`" not in system
     assert "With more than two trades" not in system and "In the Trades chapter" not in system
@@ -349,7 +357,7 @@ def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(monkeypatc
 
 def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     section = system.split("## Openers", 1)[1].split("\n## ", 1)[0]
     assert "- Vary the opener." in section
     assert 'Put "upset" mid-sentence or at the end at least half the time' in section
@@ -357,20 +365,20 @@ def test_tone_varies_the_opener_and_moves_upset_off_the_front(fixture_raw_dir):
 
 def test_the_motw_recap_gets_the_note_on_the_headline(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    _, motw_recap = build_writer_prompt(_chapter(sheet, "recap_4"), sheet, None)
+    _, motw_recap = build_writer_prompt(_chapter(sheet, "recap_4"), sheet, PROMPTS, None)
     assert MOTW_HEADLINE_NOTE in motw_recap
 
 
 def test_another_recap_and_the_motw_get_no_note_on_the_headline(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     for key in ("recap_1", "motw"):
-        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, PROMPTS, None)
         assert MOTW_HEADLINE_NOTE not in user, key
 
 
 def test_tone_makes_roast_the_default_register_with_no_joke_count(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "- Roast is the default register of the group chat." in system
     assert "as often as the facts allow" in system
     assert "a record below .500, a bench with no cover" in system
@@ -380,14 +388,14 @@ def test_tone_makes_roast_the_default_register_with_no_joke_count(fixture_raw_di
 
 def test_prompts_ask_for_one_sentence_with_no_number(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "- At least one sentence per blurb carries no number." in system
     assert "Put at most two numbers in a sentence. At least one sentence per blurb carries no number." in system
 
 
 def test_tone_asks_for_an_before_a_vowel_sound_number(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert 'Write "an", not "a", before a number that starts with a vowel sound: "an 8.13 projection"' in system
 
 
@@ -395,7 +403,7 @@ def test_vocabulary_gives_a_plain_phrase_for_each_stat_term(fixture_raw_dir):
     from cornerstone.verifier import GATED_WORDS
 
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     lines = system.split("# Vocabulary", 1)[1].split("## Banned words", 1)[0].splitlines()
     for term in ("margin driver", "swing player", "recent add", "next opponent win rate"):
         line = next(line for line in lines if line.startswith(f"- **{term}**"))
@@ -410,7 +418,7 @@ def test_vocabulary_gives_a_plain_phrase_for_each_stat_term(fixture_raw_dir):
 
 def test_vocabulary_has_one_rule_line_for_the_unlucky_and_lucky_awards(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "awards"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "awards"), sheet, PROMPTS, None)
     assert ("- **Unlucky**: the starter with the largest gap below his expected points, at least 5 under. "
             "Expected points are what his volume should have scored. "
             "Say \"unlucky\" only in a sentence that cites `AW.unlucky`.") in system
@@ -426,10 +434,10 @@ def test_the_game_changer_and_awards_get_the_motw_note_when_the_game_changer_is_
     # With the history, the Game Changer is Germie Bernard of behold the lamb, a Matchup of the Week team.
     sheet = hbundle.sheet
     for key in ("game_changer", "awards"):
-        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, PROMPTS, None)
         assert MOTW_HEADLINE_NOTE in user, key
     for key in ("recap_1", "median", "position_leaders", "rankings"):
-        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, PROMPTS, None)
         assert MOTW_HEADLINE_NOTE not in user, key
 
 
@@ -438,13 +446,13 @@ def test_no_motw_note_when_the_game_changer_is_outside_it(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     assert set(_chapter(sheet, "game_changer").scope_teams) != set(_chapter(sheet, "motw").scope_teams)
     for key in ("game_changer", "awards"):
-        _, user = build_writer_prompt(_chapter(sheet, key), sheet, None)
+        _, user = build_writer_prompt(_chapter(sheet, key), sheet, PROMPTS, None)
         assert MOTW_HEADLINE_NOTE not in user, key
 
 
 def test_tone_bans_the_and_thats_closer(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     section = system.split("## Banned patterns", 1)[1].split("\n## ", 1)[0]
     assert '- The ", and that\'s X" closer.' in section
     # The closer is banned outright, so no line allows one per page.
@@ -457,7 +465,7 @@ def test_tone_bans_the_and_thats_closer(fixture_raw_dir):
 
 def test_rankings_rule_asks_for_its_own_openers_numberless_rows_and_no_form(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     rule = system.split("\n22. ", 1)[1]
     assert rule.startswith("The Power rankings chapter uses the no-number line below in place of rule 15.")
     assert "Never start the first sentences of 2 teams with the same 3 words." in rule
@@ -469,7 +477,7 @@ def test_rankings_rule_asks_for_its_own_openers_numberless_rows_and_no_form(fixt
 
 def test_system_prompt_limits_the_odds_to_the_teams_where_they_matter(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert ("Cite a team's odds only when they change what the reader should feel. "
             "A clinch, an out, or a team near 50% is such a case. Do not list odds for all 12.") in system
 
@@ -478,7 +486,7 @@ def test_rankings_rule_cites_the_why_facts_past_the_tunable_thresholds(fixture_r
     from cornerstone.tunables import WHY_MOVE_AT, WHY_ODDS_AT
 
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     rule = system.split("\n25. ", 1)[1]
     assert rule.startswith("A `PR.{rid}.why` fact gives the game and the component behind a team's move.")
     assert f"Cite it for every team that moved {WHY_MOVE_AT} or more places either way." in rule
@@ -494,24 +502,24 @@ def test_rankings_rule_cites_the_why_facts_past_the_tunable_thresholds(fixture_r
 
 def test_writer_prompt_lists_the_required_facts_after_the_facts(hbundle):
     sheet = hbundle.sheet
-    _, user = build_writer_prompt(_chapter(sheet, "rankings"), sheet, None)
+    _, user = build_writer_prompt(_chapter(sheet, "rankings"), sheet, PROMPTS, None)
     facts, required = user.split("\n\nCite each of these facts in its team's sentences: ", 1)
     assert "Facts:" in facts
     assert sorted(required.removesuffix(".").split(", ")) == sorted(_chapter(sheet, "rankings").required)
-    _, user = build_writer_prompt(_chapter(sheet, "median"), sheet, None)
+    _, user = build_writer_prompt(_chapter(sheet, "median"), sheet, PROMPTS, None)
     assert "Cite each of these facts" not in user
 
 
 def test_system_prompt_states_the_swing_for_the_must_watch_games(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, PROMPTS, None)
     assert "State the swing for the Must Watch games. Use the fact's two numbers as given." in system
     assert "A side that stays near one number has no swing. Say that it holds." in system
 
 
 def test_system_prompt_names_the_must_watch_reasons_and_the_best_other_storyline(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, PROMPTS, None)
     assert ("An `NX.{a}v{b}.{kind}` fact gives one storyline of a next-week game. Name the reason of each Must Watch "
             "game. For any other game, mention its best storyline only when it is a streak of 4 or more or an "
             "`NX.{a}v{b}.shootout`.") in system
@@ -519,7 +527,7 @@ def test_system_prompt_names_the_must_watch_reasons_and_the_best_other_storyline
 
 def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, None)
+    system, _ = build_writer_prompt(_chapter(sheet, "next_week"), sheet, PROMPTS, None)
     assert ("an `NX.shootout.` fact gives an NFL game next week where both teams have a positive pass rate over "
             "expected. Mention at most one shootout. Pick the one with the most league starters in it.") in system
 

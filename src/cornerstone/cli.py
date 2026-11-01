@@ -432,7 +432,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "rankings":
             print(run_rankings(repo, season, week, claude_call, config=config))
         elif args.command == "rewrite":
-            page = run_rewrite(repo, season, week, args.chapter, claude_call)
+            page = run_rewrite(repo, season, week, args.chapter, claude_call, prompts_dir=config.prompts_dir)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
