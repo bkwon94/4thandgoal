@@ -1,6 +1,6 @@
 """
 The errors of a Claude call that gives no parsed output: a refusal, or an output that does not fit the model.
-They sit in the model layer, so the writer raises them and the chart read catches them with no upward import.
+They sit in the provider layer beside the chart read, so the writer raises them and the chart catches them.
 """
 
 

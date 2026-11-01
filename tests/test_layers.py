@@ -29,7 +29,6 @@ LAYER_OF: dict[str, str] = {
     "tunables": "model",
     "player_ids": "model",
     "trades": "model",
-    "claude_errors": "model",
     # provider
     "provider": "provider",
     "provider.base": "provider",
@@ -42,6 +41,7 @@ LAYER_OF: dict[str, str] = {
     "nflverse_usage": "provider",
     "files": "provider",
     "chart": "provider",
+    "claude_errors": "provider",
     # load
     "parse": "load",
     "slow_sources": "load",

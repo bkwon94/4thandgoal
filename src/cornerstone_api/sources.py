@@ -4,8 +4,8 @@ Every route group that grades or lists the league builds its snapshot here, so a
 """
 from collections.abc import Callable
 from dataclasses import dataclass
-from functools import partial
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 from cornerstone.chart import chart_values, claude_reader
