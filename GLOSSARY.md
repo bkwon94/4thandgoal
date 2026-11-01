@@ -14,6 +14,10 @@ _Avoid_: stat, data point
 **Fact sheet**:
 Every fact of one week plus the chapters that cite them.
 
+**Fact group**:
+One module of the sheet that builds the facts of one subject, such as the standings or the awards, and feeds the chapters that cite them. A fact group is not a chapter.
+_Avoid_: fact chapter, section, builder
+
 **Chapter**:
 One unit of prose on the page, with the fact IDs it may cite and the sentence range it must fit.
 _Avoid_: section, blurb (a blurb is the written output, a chapter is the brief)
