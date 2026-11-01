@@ -32,6 +32,7 @@ from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.writer import load_prompt
 
 CONFIG = cornerstone_config()
+PROMPTS = CONFIG.prompts_dir
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -392,7 +393,7 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
 
 def _prompt_section(heading: str) -> str:
     """One section of the rubric prompt, from its heading to the next, with the line breaks joined."""
-    text = load_prompt("rubric.md")
+    text = load_prompt(PROMPTS, "rubric.md")
     section = text.split(f"## {heading}\n", 1)[1].split("\n## ", 1)[0]
     return " ".join(section.split())
 
@@ -1671,7 +1672,7 @@ def test_a_qb_with_a_flat_target_share_and_wopr_gets_no_upside_from_snaps(snap):
 
 
 def test_the_analysis_prompt_names_the_upside():
-    assert "the upside" in " ".join(load_prompt("analysis.md").split())
+    assert "the upside" in " ".join(load_prompt(PROMPTS, "analysis.md").split())
 
 
 # The LAC depth chart: Omarion Hampton on roster 12 first, then Keaton Mitchell and Kimani Vidal on roster 11.

@@ -35,6 +35,7 @@ from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 
 CONFIG = cornerstone_config()
+PROMPTS = CONFIG.prompts_dir
 
 
 @pytest.fixture
@@ -1007,7 +1008,7 @@ def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_
     assert chapter.required == []
     assert {"Trevor Lawrence", "Woody Marks", "Khalil Shakir"} <= set(chapter.scope_players)
     assert {"Amon-Ra Dawg Your Team", "Return of T Mac"} <= set(chapter.scope_teams)
-    _, user = build_writer_prompt(chapter, dbundle.sheet, None)
+    _, user = build_writer_prompt(chapter, dbundle.sheet, None, prompts_dir=PROMPTS)
     assert BYES_NOTE in user.splitlines()
     assert BYES_NOTE == "Note: the byes next week are part of the preview."
 
@@ -1015,7 +1016,7 @@ def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_
 def test_a_chapter_with_no_bye_fact_has_no_bye_note(hbundle):
     from cornerstone.writer import BYES_NOTE, build_writer_prompt
     chapter = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
-    _, user = build_writer_prompt(chapter, hbundle.sheet, None)
+    _, user = build_writer_prompt(chapter, hbundle.sheet, None, prompts_dir=PROMPTS)
     assert BYES_NOTE not in user
 
 

@@ -61,7 +61,8 @@ def _trade_shape(count: int) -> str:
 def build_finder_prompt(
     found: list[FinderTrade], snapshot: Snapshot, facts: list[dict[str, Fact]], feedback: str | None,
 ) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
+    # The snapshot carries the league config, so the prompts come from the folder that the config names.
+    system = "\n\n".join(load_prompt(snapshot.config.prompts_dir, name) for name in PROMPT_FILES)
     lines = []
     for number, (item, trade_sheet) in enumerate(zip(found, facts), start=1):
         lines += [f"Trade {number}", ""]
