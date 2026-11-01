@@ -6,6 +6,7 @@
 import json from "../../public/2026/week-06/page.json";
 import { weekPageSchema } from "@/lib/schemas/week";
 
+/* The parse runs at import, so a stale fixture fails at once. */
 export const week6 = weekPageSchema.parse(json);
 
 /* The first sentence of a blurb, for a test that finds the blurb on the page with a substring match. */

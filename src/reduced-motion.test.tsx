@@ -5,14 +5,14 @@
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import fixtureJson from "../.scratch/site-react/fixtures/analyze-response.json";
+import { analyzeResponse as fixtureJson } from "@/fixtures/api";
 import HomePage from "@/app/page";
 import WeekPage from "@/app/[season]/[week]/page";
 import type { AnalyzeResponse } from "@/lib/analyze-types";
 import type { Team } from "@/lib/api";
 import type { Manager } from "@/lib/manager-types";
 import AnalyzeResult from "@/components/analyzer/analyze-result";
-import managersFixture from "@/fixtures/managers.json";
+import { managers as managersFixture } from "@/fixtures/managers";
 import { ManagerHero } from "@/components/managers/manager-hero";
 import { Roster } from "@/components/managers/roster";
 import { SeasonSoFar } from "@/components/managers/season-so-far";

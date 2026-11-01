@@ -1,5 +1,5 @@
 /**
- * The small red tag that follows a label.
+ * The small red tag that follows a label. It ports the .tag rule of the source stylesheet.
  * It sits to the right of the label or on its own line.
  */
 import type { ReactNode } from "react";

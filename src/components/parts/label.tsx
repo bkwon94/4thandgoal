@@ -1,5 +1,5 @@
 /**
- * The red uppercase label that opens a chapter or a card.
+ * The red uppercase label that opens a chapter or a card. It ports the .lbl rule of the source stylesheet.
  * It is a level 2 heading when it opens a chapter.
  */
 import type { ReactNode } from "react";

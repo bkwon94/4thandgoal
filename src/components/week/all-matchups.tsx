@@ -16,7 +16,8 @@ import { avatarSrc } from "@/lib/avatar";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
-import { managerHref, TeamName } from "@/components/parts/team-name";
+import { TeamName } from "@/components/parts/team-name";
+import { managerHrefOrNull } from "@/lib/routes";
 
 /* The top scorer of one side, or a dash when the side started no one. */
 function Star({ side }: { side: MatchupSide }) {
@@ -71,7 +72,7 @@ function Row({
   // The JSON puts the winner first. A tie has no winner, so neither side is bold.
   const [winner, loser] = matchup.sides;
   const bold = cn(winner.winner && "font-extrabold text-red-ink");
-  const loserHref = managerHref(managersHref, loser.team.roster_id);
+  const loserHref = managerHrefOrNull(managersHref, loser.team.roster_id);
   // The panel stays in the DOM when closed, so find-in-page still finds the recap text.
   // Height 0 hides it from sight. aria-hidden and inert hide it from assistive tech and the tab order.
   const panel = (
@@ -107,7 +108,7 @@ function Row({
           <Avatar src={avatarSrc(avatars, winner.team.roster_id)} />
           <span className="min-w-0 tablet:truncate">
             <span className={bold}>
-              <TeamName name={winner.team.name} href={managerHref(managersHref, winner.team.roster_id)} />
+              <TeamName name={winner.team.name} href={managerHrefOrNull(managersHref, winner.team.roster_id)} />
             </span> <span className={bold}>{num(winner.score)}</span>
           </span>
         </div>

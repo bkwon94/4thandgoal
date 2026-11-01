@@ -10,7 +10,7 @@ import { avatarSrc } from "@/lib/avatar";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
-import { managerHref } from "@/components/parts/team-name";
+import { managerHrefOrNull } from "@/lib/routes";
 import { Who } from "@/components/parts/who";
 
 /* Six teams make the playoffs, so the dashed cut line sits under the sixth row. */
@@ -78,7 +78,7 @@ export function Standings({
                   key="team"
                   src={avatarSrc(avatars, row.team.roster_id)}
                   name={row.team.name}
-                  href={managerHref(managersHref, row.team.roster_id)}
+                  href={managerHrefOrNull(managersHref, row.team.roster_id)}
                 />,
                 record(row.standing.wins, row.standing.losses),
                 // num would drop the trailing zero of 698.30, so the column keeps toFixed to line up the decimals.

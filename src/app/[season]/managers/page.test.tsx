@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
-import fixture from "@/fixtures/managers.json";
+import { managers as fixture } from "@/fixtures/managers";
 import { rankings as rankingsFixture } from "@/fixtures/rankings";
 
 afterEach(() => {

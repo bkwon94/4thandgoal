@@ -1,5 +1,5 @@
 /**
- * The player headshot image, with the default headshot for a player the map lacks.
+ * The player headshot image, with the default headshot for a player the map lacks. It ports the .headshot rule of the source stylesheet.
  * It is decorative, because the player name always sits next to it.
  */
 import { HEADSHOT_FALLBACK } from "@/lib/headshot";

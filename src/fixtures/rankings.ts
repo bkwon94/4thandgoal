@@ -5,4 +5,5 @@
 import json from "./rankings.json";
 import { rankingsSchema } from "@/lib/schemas/rankings";
 
+/* The parse runs at import, so a stale fixture fails at once. */
 export const rankings = rankingsSchema.parse(json);

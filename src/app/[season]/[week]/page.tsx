@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { Masthead, WeekLine } from "@/components/shell/masthead";
 import { PageColumn } from "@/components/parts/page-column";
 import { AllMatchups } from "@/components/week/all-matchups";
-import { ChapterRail, type RailChapter } from "@/components/week/chapter-rail";
+import { ChapterRail, type RailChapter } from "@/components/parts/chapter-rail";
 import { Awards } from "@/components/week/awards";
 import { GameChanger } from "@/components/week/game-changer";
 import { MatchupOfTheWeek } from "@/components/week/matchup-of-the-week";

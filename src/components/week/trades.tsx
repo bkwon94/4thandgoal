@@ -12,7 +12,8 @@ import { Avatar } from "@/components/parts/avatar";
 import { avatarSrc } from "@/lib/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
-import { managerHref, TeamName } from "@/components/parts/team-name";
+import { TeamName } from "@/components/parts/team-name";
+import { managerHrefOrNull } from "@/lib/routes";
 
 /* Each column spans three rows of the card grid: the team, the Gets label, and the chips.
    A long team name grows its row in both columns, so the chips start on one line. */
@@ -22,7 +23,7 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
       <div className="flex flex-col items-center gap-sp-1 text-center text-meta leading-tight font-extrabold hyphens-auto">
         <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
         <span>
-          <TeamName name={side.team.name} href={managerHref(managersHref, side.team.roster_id)} />
+          <TeamName name={side.team.name} href={managerHrefOrNull(managersHref, side.team.roster_id)} />
         </span>
       </div>
       <span className="mt-sp-2 mb-sp-1 justify-self-center text-label font-bold tracking-wide text-mute uppercase">

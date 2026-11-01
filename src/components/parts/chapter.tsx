@@ -1,6 +1,6 @@
 /**
- * A chapter of the week page: the section that holds one topic, on the brand black or on white.
- * It can fade in once as a unit when it enters the view.
+ * A chapter of a page: the section that holds one topic, on the brand black or on white.
+ * It ports the .chap rule of the source stylesheet. It can fade in once as a unit when it enters the view.
  */
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/parts/reveal";

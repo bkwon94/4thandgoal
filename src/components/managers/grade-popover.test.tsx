@@ -5,7 +5,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Manager } from "@/lib/manager-types";
-import fixture from "@/fixtures/managers.json";
+import { managers as fixture } from "@/fixtures/managers";
 import { ManagerHero } from "./manager-hero";
 
 afterEach(cleanup);

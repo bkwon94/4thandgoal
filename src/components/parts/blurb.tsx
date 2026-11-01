@@ -1,5 +1,5 @@
 /**
- * The blurb: a short paragraph of prose under a chapter label or a grid of cards.
+ * The blurb: a short paragraph of prose under a chapter label or a grid of cards. It ports the .blurb rule of the source stylesheet.
  * Its measure caps the line, so prose stays readable on a wide column.
  */
 import type { ReactNode } from "react";

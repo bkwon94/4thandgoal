@@ -6,7 +6,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Manager } from "@/lib/manager-types";
 import { BestAdds } from "./best-adds";
-import fixture from "@/fixtures/managers.json";
+import { managers as fixture } from "@/fixtures/managers";
 
 afterEach(() => {
   cleanup();

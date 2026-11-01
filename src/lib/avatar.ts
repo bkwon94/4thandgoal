@@ -1,6 +1,6 @@
 /**
- * The default team avatar and the image error handler that swaps to it.
- * The team pickers share them, so a missing avatar looks the same in each.
+ * The default team avatar, the image error handler that swaps to it, and avatarSrc, the lookup of an avatar by roster id.
+ * The team pickers and the week sections share them, so a missing avatar looks the same in each.
  */
 import type { SyntheticEvent } from "react";
 import { basePath } from "@/lib/config";

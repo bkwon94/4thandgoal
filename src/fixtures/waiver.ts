@@ -5,4 +5,5 @@
 import json from "./waiver.json";
 import { waiverBoardSchema } from "@/lib/schemas/waiver";
 
+/* The parse runs at import, so a stale fixture fails at once. */
 export const waiver = waiverBoardSchema.parse(json);
