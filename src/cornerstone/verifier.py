@@ -20,7 +20,7 @@ from cornerstone.models import (
     VerifyResult,
 )
 from cornerstone.names import last_name
-from cornerstone.sheet import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
+from cornerstone.sheet.base import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
 from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
