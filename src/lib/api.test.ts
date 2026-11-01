@@ -2,7 +2,7 @@
  * Tests for the API client. fetch is a test stub that returns real Response objects.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiError, fetchTeams, postAnalyze, retryText, toApiError } from "./api";
+import { ApiError, fetchTeams, postAnalyze, retryText, toApiError, toErrorLine } from "./api";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -69,5 +69,12 @@ describe("response parse", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}")));
     const call = postAnalyze("pw", { season: 2026, asker: 1, sides: [] }, new AbortController().signal);
     await expect(call).rejects.toBeInstanceOf(ApiError);
+  });
+});
+
+describe("toErrorLine for a wrong body", () => {
+  it("offers no retry for a 502", () => {
+    const line = toErrorLine(new ApiError(502, "wrong body"), false, "timed out");
+    expect(line).toEqual({ message: "The API sent an answer the site cannot read.", retry: false });
   });
 });

@@ -5,9 +5,9 @@
 import type { z, ZodType } from "zod";
 import type { AnalyzeResponse, FindResponse } from "@/lib/analyze-types";
 import { apiUrl, season } from "@/lib/config";
-import { analyzeResponseSchema, findResponseSchema, teamPlayerSchema, teamSchema, teamsResponseSchema } from "@/lib/schemas/api";
+import { analyzeResponseSchema, findResponseSchema, playerSchema, teamSchema, teamsResponseSchema } from "@/lib/schemas/api";
 
-export type TeamPlayer = z.infer<typeof teamPlayerSchema>;
+export type TeamPlayer = z.infer<typeof playerSchema>;
 export type Team = z.infer<typeof teamSchema>;
 
 export class ApiError extends Error {
@@ -39,13 +39,14 @@ async function errorDetail(response: Response): Promise<string | undefined> {
   return undefined;
 }
 
-/* A body that fails its schema is a fault of the API, not of the reader, so it is a 502 with the path of each bad field.
-   The client throws it here, so a component never meets a wrong shape. */
-function parseBody<S extends ZodType>(schema: S, body: unknown, path: string): z.output<S> {
+/* A body that fails its schema is a 502 with the path of each bad field.
+   The fault is upstream, and a retry cannot fix a wrong shape, so toErrorLine offers no retry for it.
+   The client throws it here, so a component never gets a wrong shape. */
+function parseBody<S extends ZodType>(schema: S, body: unknown, route: string): z.output<S> {
   const result = schema.safeParse(body);
   if (result.success) return result.data;
   const issues = result.error.issues.map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`);
-  throw new ApiError(502, `The API sent a wrong body for ${path}. ${issues.join("; ")}`);
+  throw new ApiError(502, `The API sent a wrong body for ${route}. ${issues.join("; ")}`);
 }
 
 /* Builds the ApiError for a failed response. Every call of the client uses it. */
@@ -84,6 +85,8 @@ export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: s
   if (timedOut) return { message: timeoutMessage, retry: true };
   if (error instanceof ApiError) {
     if (error.status === 422) return { message: error.message, retry: false };
+    // A wrong body is a fault of the API, so a retry cannot fix it.
+    if (error.status === 502) return { message: "The API sent an answer the site cannot read.", retry: false };
     if (error.status === 429) return { message: retryText(error.retryAfter), retry: false };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
@@ -115,7 +118,7 @@ export type AnalyzeRequest = {
   sides: AnalyzeSide[];
 };
 
-/* Posts a JSON body with the passphrase and reads the JSON answer. The caller owns the AbortSignal and sets the timeout. */
+/* Posts a JSON body with the passphrase and reads the JSON answer. It checks the answer against the schema. The caller owns the AbortSignal and sets the timeout. */
 async function postJson<S extends ZodType>(
   path: string,
   schema: S,

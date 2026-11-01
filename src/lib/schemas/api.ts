@@ -12,15 +12,13 @@ export const playerSchema = z.object({
   headshot: z.string(),
 });
 
-export const teamPlayerSchema = playerSchema;
-
 export const teamSchema = z.object({
   roster_id: z.number(),
   team: z.string(),
   manager: z.string(),
   // The live API may not send the avatar yet, so a missing field reads as null.
   avatar: z.string().nullable().default(null),
-  players: z.array(teamPlayerSchema),
+  players: z.array(playerSchema),
 });
 
 export const teamsResponseSchema = z.object({ teams: z.array(teamSchema) });
