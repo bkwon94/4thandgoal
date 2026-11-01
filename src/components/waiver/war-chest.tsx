@@ -9,7 +9,9 @@ import { useMarkHydrated } from "@/hooks/use-mark-hydrated";
 import { avatarSrc } from "@/lib/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
-import { sleeperHeadshot, swapToDefault } from "@/lib/headshot";
+import { Avatar } from "@/components/parts/avatar";
+import { Headshot } from "@/components/parts/headshot";
+import { sleeperHeadshot } from "@/lib/headshot";
 import { getTeamPick, setTeamPick } from "@/lib/team-pick";
 import { cn } from "@/lib/utils";
 import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, type WaiverPlayer } from "@/lib/waiver-types";
@@ -51,10 +53,10 @@ function BudgetRing({
     <ol aria-label="Budgets" className="m-0 grid list-none grid-cols-12 p-0">
       {rows.map((row) => (
         <li key={row.roster_id} className="flex flex-col items-center">
-          <img
+          <Avatar
             src={avatarSrc(avatars, row.roster_id)}
-            alt=""
-            className="size-ring-avatar rounded-full border border-rule-dark bg-gry object-cover"
+            size="ring"
+            className="rounded-full border border-rule-dark bg-gry object-cover"
           />
           {/* The bar is a picture of the number under it, so it is hidden from a screen reader. */}
           <span aria-hidden className="relative mt-sp-1 block h-ring-bar w-ring-bar-w overflow-hidden rounded-sm bg-rule-dark">
@@ -112,12 +114,11 @@ function RestList({
                 <span className={open ? "font-bold text-red-lt" : "text-on-dark-muted"}>{SLOTS.length + index + 1}</span>
                 {/* The player name sits next to the headshot, so the image is decorative. */}
                 {/* The fill is the dark rule, so it stays one step off the black card in both themes. Ink-2 turns light grey in the dark theme. */}
-                <img
+                <Headshot
                   src={sleeperHeadshot(player.player_id)}
-                  alt=""
-                  loading="lazy"
-                  onError={swapToDefault}
-                  className="size-avatar rounded-full bg-rule-dark object-cover object-top"
+                  size="avatar"
+                  lazy
+                  className="rounded-full bg-rule-dark object-cover object-top"
                 />
                 <span className="flex min-w-0 flex-col">
                   <b className="font-extrabold">{player.name}</b>

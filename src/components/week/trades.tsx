@@ -9,6 +9,7 @@ import { stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, Trade, TradeSide } from "@/lib/week-types";
 import { Avatar } from "@/components/parts/avatar";
+import { Headshot } from "@/components/parts/headshot";
 import { avatarSrc } from "@/lib/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
@@ -38,10 +39,9 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
             {/* The cutout fills the chip top edge to edge, so the chip reads as a card for that player.
                 The red rule matches the page accent. The gradient is plain sRGB, as the stylesheet draws it.
                 The base styles cap an image at 100% width, so max-w-none lets the cutout reach past the chip padding. */}
-            <img
+            <Headshot
               src={player.headshot}
-              alt=""
-              loading="lazy"
+              lazy
               className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot w-[calc(100%+var(--spacing-sp-2)*2)] max-w-none flex-none border-b-2 border-red bg-[linear-gradient(var(--color-gry),var(--color-wht))] object-contain object-bottom"
             />
             <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>

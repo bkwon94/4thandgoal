@@ -7,7 +7,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { shortName } from "@/lib/format/format";
-import { sleeperHeadshot, swapToDefault } from "@/lib/headshot";
+import { Headshot } from "@/components/parts/headshot";
+import { sleeperHeadshot } from "@/lib/headshot";
 import { useMotionOff } from "@/hooks/use-motion-off";
 import { DRIFT_EASE, DURATION, INSTANT, rise, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -82,11 +83,9 @@ function Orb({
         >
           <span className="relative block">
             {/* The geometry comes from the layout table, so the overlap test covers what the page draws. */}
-            <img
+            <Headshot
               src={sleeperHeadshot(player.player_id)}
-              alt=""
-              onError={swapToDefault}
-              style={{ width: slot.size, height: slot.size }}
+              size={slot.size}
               className={cn(
                 // The fill is the dark rule, so it stays one step off the black card in both themes. Ink-2 turns light grey in the dark theme.
                 "block rounded-full border-2 bg-rule-dark object-cover object-top shadow-orb",

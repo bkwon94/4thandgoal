@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TeamPicker } from "@/components/analyzer/team-picker";
+import { Avatar } from "@/components/parts/avatar";
 import { avatarSrc } from "@/lib/avatar";
 import type { Team as PickerTeam } from "@/lib/api";
 import type { BudgetRow } from "@/lib/waiver-types";
@@ -33,7 +34,7 @@ function pickerTeams(budgets: BudgetRow[], teams: Record<string, Team>, avatars:
 function PickChip({ name, avatar, budget, onChange }: { name: string; avatar: string; budget: number; onChange: () => void }) {
   return (
     <section aria-label={LABEL} className="flex h-pick-chip items-center gap-sp-3 rounded-card bg-chip-dark py-sp-1 pl-sp-3">
-      <img src={avatar} alt="" className="size-avatar flex-none rounded-full bg-gry object-cover" />
+      <Avatar src={avatar} />
       <span className="flex min-w-0 flex-1 flex-col">
         <b className="truncate text-row leading-tight font-extrabold">{name}</b>
         <span className="text-meta text-on-dark-muted tabular-nums">{`you have $${budget}`}</span>

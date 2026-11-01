@@ -5,7 +5,8 @@
 import type { ReactNode } from "react";
 import { num } from "@/lib/format/format";
 import type { ManagerPlayer } from "@/lib/manager-types";
-import { PlayerHeadshot } from "./player-headshot";
+import { Headshot } from "@/components/parts/headshot";
+import { sleeperHeadshot } from "@/lib/headshot";
 
 /* The quiet line of a row. A null position adds no part, so the line starts at the next part. */
 export function playerMetaLine(player: ManagerPlayer, ...parts: string[]): string {
@@ -26,7 +27,7 @@ export function PlayerRow({
 }) {
   return (
     <li className="flex items-center gap-sp-2 border-t border-rule py-sp-2 tabular-nums first:border-t-0">
-      <PlayerHeadshot playerId={player.player_id} />
+      <Headshot src={sleeperHeadshot(player.player_id)} size="avatar" lazy className="flex-none rounded-full bg-gry object-cover object-top" />
       <span className="flex min-w-0 flex-1 flex-col">
         <b data-line className="overflow-hidden font-extrabold text-ellipsis whitespace-nowrap">
           {player.name}

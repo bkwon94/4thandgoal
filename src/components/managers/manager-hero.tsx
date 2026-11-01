@@ -4,6 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/parts/reveal";
+import { Avatar } from "@/components/parts/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { ordinal, record } from "@/lib/format/format";
 import { DURATION, REVEAL_STAGGER } from "@/lib/motion";
@@ -64,7 +65,7 @@ export function ManagerHero({ manager, avatar, teams }: { manager: Manager; avat
     <Chapter>
       <div className="flex items-center gap-sp-4">
         {/* The team name sits next to the avatar, so the image is decorative. */}
-        <img src={avatar} alt="" className="size-headshot flex-none rounded-full bg-gry object-cover" />
+        <Avatar src={avatar} size="headshot" />
         <div className="min-w-0">
           {/* The name wraps and never truncates. The balance splits a long name into even lines. */}
           <h1 className="m-0 text-stat leading-tight font-extrabold text-balance text-ink tablet:text-score">

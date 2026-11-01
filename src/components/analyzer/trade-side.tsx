@@ -8,11 +8,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useId } from "react";
 import { XIcon } from "lucide-react";
 import type { PlayerPick } from "@/components/analyzer/trade-form";
+import { Avatar } from "@/components/parts/avatar";
+import { Headshot } from "@/components/parts/headshot";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Team, TeamPlayer } from "@/lib/api";
-import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
+import { AVATAR_FALLBACK } from "@/lib/avatar";
 import { count } from "@/lib/format/format";
-import { HEADSHOT_FALLBACK, swapToDefault } from "@/lib/headshot";
+import { HEADSHOT_FALLBACK } from "@/lib/headshot";
 import { useMotionOff } from "@/hooks/use-motion-off";
 import { enterExit } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -50,23 +52,15 @@ const ITEM = "min-h-touch gap-sp-3 rounded-sm px-sp-2 pr-sp-6 text-row text-ink 
 /* The label above a picker: small red caps, as the form used for its legends. The text stays in title case for a screen reader. */
 const LABEL = "m-0 text-label font-bold tracking-wide text-red-ink uppercase";
 
-/* A round image in a picker. The faint ring gives the image an edge on the grey row in both themes. */
-const ROUND_IMG = "size-avatar flex-none rounded-full bg-wht object-cover ring-1 ring-ink/10";
+/* A round image in a picker. The faint ring gives the image an edge on the grey row in both themes. The size prop of each part sets the size. */
+const ROUND_IMG = "flex-none rounded-full bg-wht object-cover ring-1 ring-ink/10";
 
 function TeamAvatar({ team }: { team: Team }) {
-  return <img src={team.avatar ?? AVATAR_FALLBACK} alt="" onError={swapAvatarToDefault} className={ROUND_IMG} />;
+  return <Avatar src={team.avatar ?? AVATAR_FALLBACK} className={ROUND_IMG} />;
 }
 
-function Headshot({ player }: { player: TeamPlayer }) {
-  return (
-    <img
-      src={player.headshot || HEADSHOT_FALLBACK}
-      alt=""
-      loading="lazy"
-      onError={swapToDefault}
-      className={cn(ROUND_IMG, "object-top")}
-    />
-  );
+function PlayerHeadshot({ player }: { player: TeamPlayer }) {
+  return <Headshot src={player.headshot || HEADSHOT_FALLBACK} size="avatar" lazy className={cn(ROUND_IMG, "object-top")} />;
 }
 
 /* The name over the position and the NFL team. min-w-0 lets a long name truncate and not push the row wider. */
@@ -229,7 +223,7 @@ export function TradeSide({
             <SelectContent alignItemWithTrigger={false} className="p-sp-1 motion-reduce:animate-none">
               {team.players.map((player) => (
                 <SelectItem key={player.player_id} value={player.player_id} className={ITEM}>
-                  <Headshot player={player} />
+                  <PlayerHeadshot player={player} />
                   <PlayerText player={player} />
                 </SelectItem>
               ))}
@@ -247,7 +241,7 @@ export function TradeSide({
                   {...enterExit(off)}
                   className="flex min-h-touch w-full items-center gap-sp-3 rounded-card bg-pick py-sp-1 pl-sp-3 text-ink shadow-[inset_3px_0_0_var(--color-red)]"
                 >
-                  <Headshot player={player} />
+                  <PlayerHeadshot player={player} />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <b className="truncate text-row leading-tight font-extrabold">{player.name}</b>
                     <span className="flex min-w-0 items-center gap-sp-1 text-meta whitespace-nowrap text-mute">

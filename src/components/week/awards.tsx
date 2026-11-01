@@ -10,6 +10,7 @@ import type { Award, HeadshotMap } from "@/lib/week-types";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Headshot } from "@/components/parts/headshot";
+import { headshotSrc } from "@/lib/headshot";
 import { Label } from "@/components/parts/label";
 
 /* The tile is the reveal box, so the grid still stretches every tile in a row to one height. */
@@ -24,7 +25,7 @@ function Tile({ award, headshots, index }: { award: Award; headshots: HeadshotMa
       ) : (
         <>
           {/* The headshot has no background, so the cutout sits on the card grey. The awards sit below the fold, so the headshot is lazy. */}
-          <Headshot playerId={award.player_id} headshots={headshots} lazy className="mb-sp-2 block size-award rounded-full" />
+          <Headshot src={headshotSrc(headshots, award.player_id)} lazy className="flex-none object-cover mb-sp-2 block size-award rounded-full" />
           <div className="text-body leading-tight font-extrabold">{award.player}</div>
           <div className="mt-sp-1 text-stat leading-stat font-black tabular-nums">{num(award.points)}</div>
           <div className="mt-sp-1 text-meta text-mute tabular-nums">
