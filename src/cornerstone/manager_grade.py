@@ -9,9 +9,9 @@ from pydantic import BaseModel
 
 from cornerstone.adjusters import StartingSlot, fill_slots
 from cornerstone.history import player_points
-from cornerstone.models import History
+from cornerstone.models import History, ProjectionsAhead
 from cornerstone.ranks import LINES
-from cornerstone.season_inputs import ProjectionsAhead, SeasonInputs
+from cornerstone.season_inputs import SeasonInputs
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_SOFT_RANK, GRADE_SPARE_RANK,

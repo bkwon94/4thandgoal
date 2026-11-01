@@ -198,10 +198,26 @@ def test_a_build_loads_the_raw_week_once(tmp_path, fixture_raw_dir, fixture_hist
         loads.append(path)
         return load_raw(path)
 
-    run_build(repo, 2026, 6, _fake, fetch=False, **offline, load_raw=counted, config=CONFIG)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, raw_loader=counted, config=CONFIG)
     # The page, the rankings file, and the managers file all read the one load.
     assert _managers(repo).exists()
     assert loads == [week_dir(repo, 2026, 6) / "raw"]
+
+
+def test_a_failed_grade_input_still_writes_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, offline,
+                                                            caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+
+    def corrupt_after_load(path):
+        raw = load_raw(path)
+        # The page reads the loaded week. The grade inputs of the managers file then read a broken projections file.
+        (path / "projections_ahead.json").write_text("not json", encoding="utf-8")
+        return raw
+
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, raw_loader=corrupt_after_load, config=CONFIG)
+    assert _rankings(repo).exists()
+    assert not _managers(repo).exists()
+    assert "managers.json not written for week 6" in caplog.text
 
 
 def test_a_thin_history_writes_no_managers_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):

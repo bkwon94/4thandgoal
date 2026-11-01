@@ -1,16 +1,13 @@
 """
 The inputs of the season files: the snapshot, the projections ahead, the history, and the chart of one build.
 The build makes them once after it saves the week, so the rankings and managers files read one load.
+The module stands apart from models.py because it holds a Snapshot, and snapshot.py imports models.py.
+It imports only the model module and the snapshot module, so each reader imports it with no upward import.
 """
-# This module stands apart from models.py because it holds a Snapshot, and snapshot.py imports models.py.
-# It imports only the model module and the snapshot module, so each reader imports it with no upward import.
 from dataclasses import dataclass
 
-from cornerstone.models import ChartValues, History
+from cornerstone.models import ChartValues, History, ProjectionsAhead
 from cornerstone.snapshot import Snapshot
-
-# The projections of the roster grade by week and player id. A plain alias, so any dict of that shape fits.
-ProjectionsAhead = dict[int, dict[str, float]]
 
 
 @dataclass(frozen=True, kw_only=True)

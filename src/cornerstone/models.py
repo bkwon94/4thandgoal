@@ -11,6 +11,9 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from cornerstone.numbers import r2
 from cornerstone.odds import OddsResult
 
+# The projections of each week ahead by player ID, keyed by week. A plain alias, so any dict of that shape fits.
+ProjectionsAhead = dict[int, dict[str, float]]
+
 
 def sub(a: float, b: float) -> float:
     """Subtract on exact decimals, then round half up. Float subtraction drifts."""
@@ -181,7 +184,7 @@ class Week(BaseModel):
     # The pairs of weeks N+2 to 14, keyed by week, in the shape of next_matchups.
     schedule: dict[int, list[tuple[int, int]]] = {}
     # The half-PPR projection of each rostered player in weeks N+1 to 14, by week and player id.
-    projections_ahead: dict[int, dict[str, float]] = {}
+    projections_ahead: ProjectionsAhead = {}
     # The league's lineup slots, in Sleeper's order, such as QB, RB, RB, WR, and BN.
     roster_positions: list[str] = []
     # The position of each player on each current roster in rosters.json, by roster id and player id.

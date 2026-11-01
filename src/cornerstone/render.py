@@ -390,8 +390,8 @@ def render_managers(
     inputs: SeasonInputs, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None,
     *, roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
 ) -> Path:
-    """Write managers.json for the season: one entry per roster through the history week, in roster id order.
-    The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
+    """Write managers.json for the season: one entry per roster through the history week of the `inputs`, in roster
+    id order. The `inputs` give the grade. The players and the keywords give the names, the bench, and the awards."""
     season_dir = site_dir / str(season)
     out = season_dir / "managers.json"
     body = {

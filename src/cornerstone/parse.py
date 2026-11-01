@@ -5,7 +5,9 @@ This is the only module that knows the shape of the raw data.
 from collections import defaultdict
 from datetime import date, datetime, timezone
 
-from cornerstone.models import DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, Side, Team, Trade, Week
+from cornerstone.models import (
+    DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, ProjectionsAhead, Side, Team, Trade, Week,
+)
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")
@@ -132,7 +134,7 @@ def _schedule(raw: dict) -> dict[int, list[tuple[int, int]]]:
     return {entry["week"]: _pairs(entry["matchups"]) for entry in raw.get("schedule", [])}
 
 
-def _projections_ahead(raw: dict) -> dict[int, dict[str, float]]:
+def _projections_ahead(raw: dict) -> ProjectionsAhead:
     # A cached week can lack the projections file, so it gives no weeks.
     return {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
 
