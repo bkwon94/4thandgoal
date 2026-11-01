@@ -11,10 +11,10 @@ import pytest
 from PIL import Image
 
 from cornerstone.chart import (
-    CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_values, claude_read,
+    CHART_PROMPT, MEDIA_URL, PNG_SIGNATURE, STRIP_HEIGHT, STRIP_OVERLAP, chart_values, claude_read, claude_reader,
     cut_strips, fetch_chart, guard_results, load_chart, match_chart, read_chart, saved_chart_read,
 )
-from cornerstone.writer import WriterError
+from cornerstone.writer import WriterError, parse_call
 from cornerstone.models import ChartRead, ChartRow, PlayerLine
 from cornerstone.paths import charts_dir
 
@@ -265,7 +265,7 @@ def test_chart_values_fetch_read_match_and_cache(tmp_path):
     fetch = _site_with_png("20261013")
     reader = _Reader(_padded((50.0, "Ja'Marr Chase", "WR"), (40.0, "Kenneth Walker", "RB")))
     lines = [_line("1", "Ja'Marr Chase", "WR"), _line("2", "Kenneth Walker III", "RB")]
-    values = chart_values(tmp_path, SEASON_START, 6, lines, fetch, reader)
+    values = chart_values(tmp_path, SEASON_START, 6, lines, fetch, read=reader)
     assert values.values == {"1": 50.0, "2": 40.0}
     assert (charts_dir(tmp_path) / "week-06.png").exists()
     assert ChartRead.model_validate_json((charts_dir(tmp_path) / "week-06.json").read_text()) == reader.result
@@ -274,9 +274,9 @@ def test_chart_values_fetch_read_match_and_cache(tmp_path):
 def test_a_parsed_json_is_reused_with_no_fetch_and_no_read(tmp_path):
     fetch = _site_with_png("20261013")
     reader = _Reader(_padded((50.0, "Ja'Marr Chase", "WR")))
-    chart_values(tmp_path, SEASON_START, 6, [], fetch, reader)
+    chart_values(tmp_path, SEASON_START, 6, [], fetch, read=reader)
     fetch.calls.clear()
-    values = chart_values(tmp_path, SEASON_START, 6, [_line("9", "Ja'Marr Chase", "WR")], _down, _Reader(None))
+    values = chart_values(tmp_path, SEASON_START, 6, [_line("9", "Ja'Marr Chase", "WR")], _down, read=_Reader(None))
     assert values.values == {"9": 50.0}
     assert reader.calls == 1
     assert fetch.calls == []
@@ -286,7 +286,7 @@ def test_a_hand_placed_png_is_read_not_fetched(tmp_path):
     charts_dir(tmp_path).mkdir(parents=True)
     (charts_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
     reader = _Reader(_padded((50.0, "A", "RB")))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, reader) == (6, reader.result)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=reader) == (6, reader.result)
 
 
 def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
@@ -296,12 +296,12 @@ def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
     png, saved = charts / "week-06.png", charts / "week-06.json"
     png.write_bytes(_png(1500))
     first = _Reader(_padded((50.0, "A", "RB")))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, first) == (6, first.result)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=first) == (6, first.result)
     # A later PNG drop, by hand, must beat the saved read of the old image.
     os.utime(saved, (1_000_000, 1_000_000))
     png.write_bytes(_png(1500))
     second = _Reader(_padded((60.0, "A", "RB")))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, second) == (6, second.result)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=second) == (6, second.result)
     assert second.calls == 1
 
 
@@ -310,21 +310,21 @@ def test_a_parsed_json_that_is_not_utf_8_is_read_again_from_the_image(tmp_path):
     (charts_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
     (charts_dir(tmp_path) / "week-06.json").write_bytes(b"\xff\xfe not utf-8")
     reader = _Reader(_padded((50.0, "A", "RB")))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, reader) == (6, reader.result)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=reader) == (6, reader.result)
     assert reader.calls == 1
 
 
 def test_a_hand_placed_file_with_html_inside_gives_no_trade_values_and_does_not_raise(tmp_path, caplog):
     charts_dir(tmp_path).mkdir(parents=True)
     (charts_dir(tmp_path) / "week-06.png").write_bytes(b"<html>Not found</html>")
-    assert load_chart(tmp_path, SEASON_START, 6, _down, _Reader(None)) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=_Reader(None)) is None
     assert "does not open as an image" in caplog.text
 
 
 def test_a_failed_guard_keeps_the_png_writes_no_json_and_names_the_guard(tmp_path, caplog):
     fetch = _site_with_png("20261013")
     bad = _Reader(_read((10.0, "A", "RB"), (20.0, "B", "RB")))
-    assert chart_values(tmp_path, SEASON_START, 6, [_line("1", "A", "RB")], fetch, bad) is None
+    assert chart_values(tmp_path, SEASON_START, 6, [_line("1", "A", "RB")], fetch, read=bad) is None
     assert (charts_dir(tmp_path) / "week-06.png").exists()
     assert not (charts_dir(tmp_path) / "week-06.json").exists()
     assert "trade values never rise" in caplog.text
@@ -332,7 +332,7 @@ def test_a_failed_guard_keeps_the_png_writes_no_json_and_names_the_guard(tmp_pat
 
 def test_a_failed_header_week_guard_gives_no_trade_values(tmp_path):
     wrong_week = _Reader(_read((50.0, "A", "RB")).model_copy(update={"week": 5}))
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), wrong_week) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), read=wrong_week) is None
 
 
 def test_the_row_count_guard_uses_the_parsed_prior_week(tmp_path):
@@ -340,25 +340,25 @@ def test_the_row_count_guard_uses_the_parsed_prior_week(tmp_path):
     prior = _read(*_rows(200)).model_copy(update={"week": 5})
     (charts_dir(tmp_path) / "week-05.json").write_text(prior.model_dump_json())
     short = _Reader(_read(*_rows(150, 100.0)))
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), short) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), read=short) is None
 
 
 def test_a_failed_read_gives_no_trade_values_and_does_not_raise(tmp_path):
     def broken(strips, output_model):
         raise WriterError("no parsed output")
 
-    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), broken) is None
+    assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), read=broken) is None
 
 
 def test_no_chart_and_no_cache_gives_no_trade_values(tmp_path):
-    assert chart_values(tmp_path, SEASON_START, 6, [], _down, _Reader(None)) is None
+    assert chart_values(tmp_path, SEASON_START, 6, [], _down, read=_Reader(None)) is None
 
 
 def test_an_outage_reads_the_stand_in_as_its_own_week(tmp_path):
     charts_dir(tmp_path).mkdir(parents=True)
     (charts_dir(tmp_path) / "week-05.png").write_bytes(_png(1500))
     stand_in = _Reader(_padded((50.0, "A", "RB")).model_copy(update={"week": 5}))
-    assert load_chart(tmp_path, SEASON_START, 6, _down, stand_in) == (5, stand_in.result)
+    assert load_chart(tmp_path, SEASON_START, 6, _down, read=stand_in) == (5, stand_in.result)
 
 
 def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
@@ -377,7 +377,7 @@ def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
             })()
 
     monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
-    assert claude_read([b"one", b"two"], ChartRead) == "parsed"
+    assert claude_read([b"one", b"two"], ChartRead, parse_call) == "parsed"
     content = sent["messages"][0]["content"]
     assert [block["type"] for block in content] == ["image", "image", "text"]
     assert content[0]["source"] == {"type": "base64", "media_type": "image/png", "data": "b25l"}
@@ -389,7 +389,7 @@ def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
 
 @pytest.mark.live
 def test_live_week_6_chart_passes_the_guards(tmp_path):
-    loaded = load_chart(tmp_path, SEASON_START, 6)
+    loaded = load_chart(tmp_path, SEASON_START, 6, read=claude_reader(parse_call))
     assert loaded is not None, "a guard failed or the fetch failed, see the log"
     chart_week, parsed = loaded
     assert chart_week == 6

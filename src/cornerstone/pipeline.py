@@ -15,7 +15,6 @@ from pydantic import TypeAdapter
 
 from cornerstone.chart import match_chart, saved_chart_read
 from cornerstone.config import LeagueConfig
-from cornerstone.facts_league import season_records, standings_order
 from cornerstone.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
@@ -42,6 +41,7 @@ from cornerstone.provider.sleeper import (
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_returns, week_snapshot
+from cornerstone.standings_table import season_records, standings_order
 from cornerstone.trades import default_cutoff, trades_for_week
 from cornerstone.verifier import page_words, reserved_words, write_and_verify
 from cornerstone.waiver import waiver_board

@@ -15,7 +15,6 @@ from cornerstone.facts_league import (
     position_ranks,
     ranks_before,
     season_history,
-    standings,
     upset_signal,
 )
 from cornerstone.facts_matchup import matchup_facts
@@ -24,6 +23,7 @@ from cornerstone.models import History, PastWeek, Standing
 from cornerstone.parse import parse_week
 from cornerstone.sheet import projected_totals
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.standings_table import standings
 
 CONFIG = cornerstone_config()
 

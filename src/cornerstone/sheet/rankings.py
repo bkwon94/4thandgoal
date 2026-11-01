@@ -6,7 +6,6 @@ from collections.abc import Callable
 
 from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
-    TREND_WEEKS,
     head_to_head,
 )
 from cornerstone.models import (
@@ -20,7 +19,7 @@ from cornerstone.models import (
 from cornerstone.numbers import round_half_up
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
-from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
+from cornerstone.tunables import SWING_FLAT, TREND_WEEKS, WHY_MOVE_AT, WHY_ODDS_AT
 
 
 # The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from

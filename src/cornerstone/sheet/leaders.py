@@ -4,9 +4,6 @@ The position leaders chapter and the history caps read them.
 """
 
 from cornerstone.config import LeagueConfig
-from cornerstone.facts_league import (
-    TREND_WEEKS,
-)
 from cornerstone.facts_nflverse import volume_ranks
 from cornerstone.history import (
     player_trend,
@@ -17,6 +14,7 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import r2
 from cornerstone.sheet.base import Context, Nums, fact, trend_text
+from cornerstone.tunables import TREND_WEEKS
 
 
 def facts(context: Context, config: LeagueConfig) -> list[Fact]:

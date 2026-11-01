@@ -11,6 +11,7 @@ from typing import TypeVar
 import anthropic
 from pydantic import BaseModel, ValidationError
 
+from cornerstone.claude_errors import RefusalError, WriterError
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
 
@@ -49,14 +50,6 @@ ANALYZER_EFFORT = "medium"
 log = logging.getLogger(__name__)
 
 _client: anthropic.Anthropic | None = None
-
-
-class RefusalError(Exception):
-    """Claude refused the request, so there is no parsed output."""
-
-
-class WriterError(Exception):
-    """Claude gave no parsed output, for example when the output does not fit the model."""
 
 
 def _get_client() -> anthropic.Anthropic:

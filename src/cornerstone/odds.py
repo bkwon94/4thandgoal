@@ -149,7 +149,8 @@ def _run(
 def _table_order(wins: dict[int, int], points: dict[int, float]) -> list[int]:
     """The roster IDs in seed order: most wins first, then most points for, then the lower roster ID.
 
-    The same order as standings_order in facts_league.py. Roster ID is the last key, so a full tie has one fixed order.
+    The same order as standings_order in standings_table.py.
+    Roster ID is the last key, so a full tie has one fixed order.
     """
     return sorted(wins, key=lambda rid: (-wins[rid], -points[rid], rid))
 
@@ -157,7 +158,7 @@ def _table_order(wins: dict[int, int], points: dict[int, float]) -> list[int]:
 def _median(scores: list[float]) -> float:
     """The line of the median game: the mean of the two middle scores, the 6th and 7th of 12.
 
-    The same rule as week_median in facts_league.py, for any even count of rosters.
+    The same rule as week_median in standings_table.py, for any even count of rosters.
     Floats are exact here. The mean equals a score only when both middle scores are equal.
     Then it equals that score exactly, so a tie stays a tie.
     """

@@ -106,6 +106,9 @@ TEAMS_CACHE_SECONDS = 300
 # A short list is one a manager reads, and three trades with no shared player each stand as a real choice.
 FINDER_TOP = 3
 
+# The team trend is the mean of this many latest weeks. The form component of the power score reads the same window.
+TREND_WEEKS = 3
+
 # The form component counts two games a week, each with a weight in the record and the streak.
 # A head-to-head loss costs a game in the standings and a median loss does not, so the head-to-head game weighs more.
 # Both games still show how a team plays, so the median game stays in.
