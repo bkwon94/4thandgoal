@@ -44,8 +44,8 @@ LAYER_OF: dict[str, str] = {
     "parse": "load",
     "slow_sources": "load",
     "points_allowed": "load",
+    "history": "load",
     # facts
-    "history": "facts",  # PRD: load. It imports TREND_WEEKS from facts_league.
     "snapshot": "facts",  # PRD: load. It imports facts_league and ranks.
     "season_inputs": "facts",  # PRD: load. It imports snapshot.
     "sheet": "facts",

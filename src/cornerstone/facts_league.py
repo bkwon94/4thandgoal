@@ -33,13 +33,12 @@ from cornerstone.tunables import (
     KEY_STARTER_STARTS,
     KEY_STARTER_WEEKS,
     STORYLINE_WEIGHTS,
+    TREND_WEEKS,
 )
 
 logger = logging.getLogger(__name__)
 
 TEAM_COUNT = 12
-# The team trend is the mean of this many latest weeks.
-TREND_WEEKS = 3
 # A recent move adds this many points to the Game Changer score.
 MOVE_BONUS = 5
 UNDERPERFORMER_MIN_PROJECTION = 10

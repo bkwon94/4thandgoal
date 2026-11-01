@@ -10,7 +10,6 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Literal
 
-from cornerstone.facts_league import TREND_WEEKS
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.numbers import round_half_up
@@ -18,7 +17,7 @@ from cornerstone.parse import parse_past_week
 from cornerstone.paths import history_raw_dir, history_week_dir
 from cornerstone.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawWeek
 from cornerstone.provider.sleeper import SLEEPER, read_prev_transactions
-from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
+from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS, TREND_WEEKS
 
 # The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
 # It has the shape of Provider.fetch_past_leg. The history reads the saved files and not the return, so a fake that
