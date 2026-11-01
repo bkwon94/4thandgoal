@@ -30,13 +30,17 @@ function parseFile(schema: ZodType, file: string) {
   throw new Error(`${file} does not match its schema:\n${issues.join("\n")}`);
 }
 
+/* A count of zero would pass with no file read, so the three files that always exist must be found. */
 describe.each([
-  ["page.json", weekPageSchema],
-  ["waiver.json", waiverBoardSchema],
-  ["rankings.json", rankingsSchema],
-  ["managers.json", managersFileSchema],
-])("%s under public/", (name, schema) => {
+  ["page.json", weekPageSchema, 1],
+  // No waiver.json is published yet. The waiver page tests cover the waiver schema through the component fixture.
+  ["waiver.json", waiverBoardSchema, 0],
+  ["rankings.json", rankingsSchema, 1],
+  ["managers.json", managersFileSchema, 1],
+])("%s under public/", (name, schema, least) => {
   it("parses with its schema", () => {
-    for (const file of filesNamed(name)) expect(() => parseFile(schema, file)).not.toThrow();
+    const files = filesNamed(name);
+    expect(files.length).toBeGreaterThanOrEqual(least);
+    for (const file of files) expect(() => parseFile(schema, file)).not.toThrow();
   });
 });

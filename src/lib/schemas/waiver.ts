@@ -1,17 +1,17 @@
 /**
  * The Zod schema of the waiver.json file that the Python build writes beside page.json in a week folder.
- * The waiver types are inferred from it. A key that an older build may leave out is optional.
+ * A key that an older build may leave out is optional, so the site reads every file the pipeline wrote.
  */
 import { z } from "zod";
 
-/* Each score is from 0 to 1. A score with no input is 0. */
+/* The three scores of a pool player, each from 0 to 1. A score with no input is 0. */
 export const boardScoresSchema = z.object({
   usage: z.number(),
   environment: z.number(),
   projection: z.number(),
 });
 
-/* The numbers field holds every number in the text, so the checks can match the page to the facts. */
+/* One fact of the pipeline. The numbers field holds every number in the text, so the checks can match the page to the facts. */
 export const waiverFactSchema = z.object({
   id: z.string(),
   text: z.string(),
@@ -20,6 +20,7 @@ export const waiverFactSchema = z.object({
   players: z.array(z.string()),
 });
 
+/* The most recent winning claim at the player's position this season. The roster id names the fantasy team that won it. */
 export const lastLikeSchema = z.object({
   player_id: z.string(),
   name: z.string(),
@@ -29,7 +30,8 @@ export const lastLikeSchema = z.object({
   bid: z.number(),
 });
 
-/* The outbid map maps a budget level to the count of rivals that can bid more than that level. */
+/* The bid to win of one pool player, a whole dollar, with the fact that holds its inputs.
+   The outbid map maps a budget level to the count of rivals that can bid more than that level. */
 export const waiverPriceSchema = z.object({
   bid: z.number(),
   fact: waiverFactSchema,
@@ -38,8 +40,10 @@ export const waiverPriceSchema = z.object({
   outbid: z.record(z.string(), z.number()),
 });
 
+/* Whether a research claim backs the board facts, disputes them, or is plain news. */
 export const claimStanceSchema = z.enum(["backs", "disputes", "news"]);
 
+/* One research claim: one sentence from a web source, with the link, the source name, and an ISO 8601 date. */
 export const researchClaimSchema = z.object({
   text: z.string(),
   url: z.string(),
@@ -48,6 +52,8 @@ export const researchClaimSchema = z.object({
   stance: claimStanceSchema,
 });
 
+/* Why a rostered player is a drop: the roster and team name that hold him, the reason code,
+   and the pool player who beats him by a margin in points a week. */
 export const dropInfoSchema = z.object({
   roster_id: z.number(),
   holder: z.string(),
@@ -57,7 +63,7 @@ export const dropInfoSchema = z.object({
   margin: z.number(),
 });
 
-/* The week projection is for the next week, the rest of season one runs to week 17. */
+/* One ranked player of a bucket. The week projection is for the next week, the rest of season one runs to week 17. */
 export const waiverPlayerSchema = z.object({
   player_id: z.string(),
   name: z.string(),
@@ -84,12 +90,14 @@ export const waiverPlayerSchema = z.object({
   drop: dropInfoSchema.nullable().optional(),
 });
 
+/* The FAAB budget left and the waiver order of one roster. */
 export const budgetRowSchema = z.object({
   roster_id: z.number(),
   budget_left: z.number(),
   waiver_order: z.number(),
 });
 
+/* The board of one week: the buckets by key, each in rank order, and the budget table in roster order. */
 export const waiverBoardSchema = z.object({
   schema_version: z.literal(1),
   week: z.number(),

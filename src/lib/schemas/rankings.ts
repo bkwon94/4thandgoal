@@ -1,6 +1,6 @@
 /**
  * The Zod schema of the season rankings file that the Python build writes beside the week folders.
- * The rankings types are inferred from it, so the shape has one owner.
+ * The file holds every week of the season, so a later trend chart needs no new file.
  */
 import { z } from "zod";
 
@@ -15,7 +15,9 @@ export const componentsSchema = z.object({
   scoring: z.number(),
 });
 
-/* Playoff and bye are whole percents. Status is "in" when the team has clinched, "out" when it cannot make it. */
+/* The playoff odds of a team from the season simulations. Playoff and bye are whole percents.
+   Seed is the seed the team gets most often, or null when it makes the playoffs in no simulation.
+   Status is "in" when the team has clinched, "out" when it cannot make it, and "open" for all others. */
 export const oddsSchema = z.object({
   playoff: z.number(),
   bye: z.number(),
@@ -23,7 +25,8 @@ export const oddsSchema = z.object({
   status: z.enum(["in", "out", "open"]),
 });
 
-/* Rows for weeks before the odds engine ran have no odds. */
+/* Movement is last week's rank minus this week's, so positive is up. It is null in week 1.
+   Rows for weeks before the odds engine ran have no odds. */
 export const rankingsRowSchema = z.object({
   roster_id: z.number(),
   name: z.string(),
@@ -36,6 +39,7 @@ export const rankingsRowSchema = z.object({
   odds: oddsSchema.optional(),
 });
 
+/* The rows are in rank order, 1 to 12. */
 export const rankingsWeekSchema = z.object({ week: z.number(), rows: z.array(rankingsRowSchema) });
 
 export const rankingsSchema = z.object({

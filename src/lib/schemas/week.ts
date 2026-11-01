@@ -1,6 +1,6 @@
 /**
  * The Zod schema of the week page JSON that the Python build writes beside each week's images.
- * The week types are inferred from it, so the shape has one owner.
+ * The JSON turns int keys into strings, so maps take string roster ids.
  */
 import { z } from "zod";
 

@@ -1,5 +1,6 @@
 /**
  * Builds a week page JSON string for tests that write a temp public/ folder.
+ * It reads the live week 6 page on purpose, so the tests follow the real shape. A reshape of that file changes ten tests.
  * The base is the real week 6 page, so the loader's schema accepts it, and each test overrides only the keys it reads.
  */
 import { readFileSync } from "node:fs";
