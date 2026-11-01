@@ -4,9 +4,13 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The four loaders sit in the data folder and are the only modules under lib that import the node fs.
 - [ ] The routes module is the only module that joins the base path to a route. The href helpers in the loaders call it.
 - [ ] Every pure helper sits in the format folder with a unit test.
 - [ ] `pnpm typecheck`, `pnpm test`, and `pnpm check:export` pass. `out/` has no diff against `main`.
+
+## Comments
+
+- 2026-10-31: merged into `main` from branch `modular-03-lib-split`, commits 6600dfb and 3dffb07. 514 tests on `main` after the merge. The export matches `main` after the build id and one Turbopack module id are normalized. Two deferrals: `week-page-fixture.ts` reads `node:fs` at the top of `lib` until ticket 06 moves the fixtures, and `WeekSummary.href` keeps no base path until ticket 05.
