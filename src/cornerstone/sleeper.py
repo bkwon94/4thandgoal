@@ -5,7 +5,7 @@ It writes one raw JSON file per endpoint and reads them back.
 import json
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -194,14 +194,15 @@ def _league_raw(
     return {name: known[name] if name in known else call() for name, call in calls.items()}
 
 
-def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path) -> None:
+def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo) -> None:
+    """Fetch the raw files of `week` into `raw_dir`. The saved fetch time is in the league timezone `tz`."""
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
         # Week N-1 comes first, so the fetch time below is later than both calls.
         previous = _get(client, f"{league}/transactions/{week - 1}") if week > 1 else None
         transactions = _get(client, f"{league}/transactions/{week}")
         # The code takes the time right after the call returns. The page shows it and the history keeps it.
-        fetched = datetime.now(ZoneInfo("America/New_York"))
+        fetched = datetime.now(tz)
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
         schedule = _schedule(client, league, week)
         projections_ahead = _projections_ahead(client, season, week)
@@ -228,7 +229,8 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         season, week = int(state["season"]), int(state["display_week"])
         rosters = _get(client, f"{league}/rosters")
         # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
-        fetched = datetime.now(ZoneInfo("America/New_York"))
+        # The fetcher shape has no timezone, so the time is in UTC and the caller puts it in the league timezone.
+        fetched = datetime.now(timezone.utc)
         # The stats are None on a failed call, so the snapshot names them stale. An empty list is no game yet.
         stats = _get_or_none(client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params())
         data = _league_raw(client, league, season, week, players_cache,

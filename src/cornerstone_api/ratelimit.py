@@ -12,11 +12,11 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Literal
+from zoneinfo import ZoneInfo
 
 from fastapi import Request
 
 from cornerstone.files import write_bytes_atomic
-from cornerstone.trades import EASTERN
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +58,8 @@ def client_address(request: Request) -> str:
 
 
 def seconds_to_midnight(now: datetime) -> int:
-    """The seconds from `now` to the next midnight in Eastern time, rounded up, never less than one."""
-    midnight = datetime(now.year, now.month, now.day, tzinfo=EASTERN) + timedelta(days=1)
+    """The seconds from `now` to the next midnight in the timezone of `now`, rounded up, never less than one."""
+    midnight = datetime(now.year, now.month, now.day, tzinfo=now.tzinfo) + timedelta(days=1)
     # The timestamps hold the offset, so a day when the clocks change counts its real seconds and not wall time.
     return max(1, math.ceil(midnight.timestamp() - now.timestamp()))
 
@@ -73,18 +73,19 @@ class GradeLimited:
 
 
 class GradeLimiter:
-    """Count the grades of each address in a one-minute window and in a calendar day in Eastern time.
+    """Count the grades of each address in a one-minute window and in a calendar day in the league timezone.
 
     The minute window lives in memory. The day counts live in a JSON file, so a restart or a deploy keeps them.
     The file holds only today: {"day": "2026-10-19", "counts": {"<address>": <grades>}}.
     """
 
-    def __init__(self, per_minute: int, per_day: int, path: Path,
-                 clock: Callable[[], datetime] = lambda: datetime.now(EASTERN)) -> None:
+    def __init__(self, per_minute: int, per_day: int, path: Path, tz: ZoneInfo,
+                 clock: Callable[[], datetime] | None = None) -> None:
         self.per_day = per_day
         self.path = path
-        # An aware datetime, so the day is the calendar day in Eastern time wherever the host runs.
-        self.clock = clock
+        self.tz = tz
+        # An aware datetime, so the day is the calendar day in the league timezone wherever the host runs.
+        self.clock = clock or (lambda: datetime.now(tz))
         self.minute = RateLimiter(per_minute, clock=lambda: self.clock().timestamp())
         # FastAPI runs the sync route in a thread pool. Without the lock, two grades at once both read N and both
         # write N+1, so one grade goes uncounted. The lock covers the minute check too, for the same reason.
@@ -96,7 +97,7 @@ class GradeLimiter:
     def hit(self, address: str) -> GradeLimited | None:
         """Count one grade. Return None when it is within both limits, else the full window and its retry-after."""
         with self.lock:
-            now = self.clock().astimezone(EASTERN)
+            now = self.clock().astimezone(self.tz)
             today = now.date().isoformat()
             counts = self._read(today)
             if self.day == today:

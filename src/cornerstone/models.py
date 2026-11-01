@@ -6,7 +6,7 @@ from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from cornerstone.odds import OddsResult
 
@@ -22,6 +22,10 @@ def sub(a: float, b: float) -> float:
 
 
 class Team(BaseModel):
+    # The published files and the site schema name the owner flag is_brian, so the field keeps that name on the wire.
+    # A saved facts file holds is_brian too, so a read takes either name.
+    model_config = ConfigDict(serialize_by_alias=True)
+
     roster_id: int
     name: str
     owner: str
@@ -29,7 +33,7 @@ class Team(BaseModel):
     wins: int
     losses: int
     points_for: float
-    is_brian: bool
+    is_owner: bool = Field(validation_alias=AliasChoices("is_owner", "is_brian"), serialization_alias="is_brian")
 
 
 class PlayerLine(BaseModel):

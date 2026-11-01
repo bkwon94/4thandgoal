@@ -10,10 +10,12 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 
 from cornerstone.chart import chart_values
+from cornerstone.config import LeagueConfig
 from cornerstone.history import fetch_history, history_dir, history_root, returns_path, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
@@ -21,7 +23,7 @@ from cornerstone.nflverse import (
     STATS_PLAYER_URL, cache_path, download, http_get, is_fresh,
 )
 from cornerstone.parse import parse_week
-from cornerstone.pipeline import LEAGUE_ID, nflverse_cache_dir
+from cornerstone.pipeline import nflverse_cache_dir
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
@@ -50,9 +52,13 @@ FAST_SOURCES = ("injuries", "player weeks")
 LAST_REGULAR_SEASON_WEEK = 18
 
 
-def window_week(season_start: date, now: datetime) -> int:
-    """The trade window week whose cutoff is the latest cutoff at or before `now`. Before week 1 it is week 1."""
-    started = [week for week in range(1, LAST_REGULAR_SEASON_WEEK + 1) if default_cutoff(season_start, week) <= now]
+def window_week(season_start: date, now: datetime, tz: ZoneInfo) -> int:
+    """The trade window week whose cutoff is the latest cutoff at or before `now`. Before week 1 it is week 1.
+
+    The cutoffs fall in the league timezone `tz`.
+    """
+    started = [week for week in range(1, LAST_REGULAR_SEASON_WEEK + 1)
+               if default_cutoff(season_start, week, tz) <= now]
     return max(started, default=1)
 
 
@@ -147,19 +153,24 @@ class RefreshResult:
     chart: ChartValues | None
 
 
-def fetch_current_week(repo: Path, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
-    """The raw Sleeper data now, its fetch time, and its parsed week, in the season that Sleeper is in."""
-    raw, fetched = fetch_sleeper(LEAGUE_ID, repo / "data" / "cache" / "players.json")
-    return raw, fetched, parse_week(raw)
+def fetch_current_week(
+        repo: Path, config: LeagueConfig, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+    """The raw Sleeper data now, its fetch time in the league timezone, and its parsed week.
+
+    The data is of the season that Sleeper is in.
+    """
+    raw, fetched = fetch_sleeper(config.current_league_id, repo / "data" / "cache" / "players.json")
+    return raw, fetched.astimezone(config.tz), parse_week(raw, config.owner_username)
 
 
 def fetch_live_week(
-        repo: Path, season: int, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+        repo: Path, season: int, config: LeagueConfig,
+        fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
     """The raw Sleeper data now, its fetch time, and its parsed week.
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
     """
-    raw, fetched, week = fetch_current_week(repo, fetch_sleeper)
+    raw, fetched, week = fetch_current_week(repo, config, fetch_sleeper)
     if week.season != season:
         raise ValueError(f"Sleeper is in season {week.season}, not {season}. Use --week to read a saved week.")
     return raw, fetched, week
@@ -167,6 +178,7 @@ def fetch_live_week(
 
 def refresh_sources(
         repo: Path, season: int, now: datetime, week: Week, *,
+        config: LeagueConfig,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
         read_chart: ChartReader | None = chart_values,
@@ -180,14 +192,14 @@ def refresh_sources(
     """
     # The trade week is the chart week of the trade window, not Sleeper's display_week.
     # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
-    trade_week = window_week(week.season_start, now)
+    trade_week = window_week(week.season_start, now, config.tz)
     refreshed, stale = _refresh(nflverse_cache_dir(repo), season, fetch_nflverse, max_age_seconds)
     # Past weeks never change, so the fetch gets only a week that is not saved.
     # A failure leaves a gap that the facts skip.
     # The inputs end at the week before the trade week. The raw data of this run gives its own week, so no fetch does.
     try:
-        saved = fetch_history(LEAGUE_ID, season, min(trade_week, week.week) - 1, history_root(repo, season),
-                              fetch=fetch_history_week)
+        saved = fetch_history(config.league_id(season), season, min(trade_week, week.week) - 1,
+                              history_root(repo, season), fetch=fetch_history_week)
         refreshed.extend(f"history week {saved_week}" for saved_week in saved)
     except httpx.HTTPError as error:
         logger.warning("History refresh failed (%s), so the saved weeks stand", error)
@@ -218,7 +230,7 @@ def _build_live(
 
 
 def live_snapshot(
-        repo: Path, season: int, *, now: datetime,
+        repo: Path, season: int, *, config: LeagueConfig, now: datetime,
         fetch_sleeper: SleeperFetcher = fetch_live_raw,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
@@ -232,8 +244,8 @@ def live_snapshot(
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
     """
-    raw, fetched, week = fetch_live_week(repo, season, fetch_sleeper)
-    result = refresh_sources(repo, season, now, week, fetch_nflverse=fetch_nflverse,
+    raw, fetched, week = fetch_live_week(repo, season, config, fetch_sleeper)
+    result = refresh_sources(repo, season, now, week, config=config, fetch_nflverse=fetch_nflverse,
                               fetch_history_week=fetch_history_week, read_chart=read_chart)
     trade_week = result.trade_week
     stale = list(result.stale)
@@ -258,7 +270,8 @@ def live_snapshot(
 
 
 def live_rosters_snapshot(
-        repo: Path, season: int, *, now: datetime, fetch_sleeper: SleeperFetcher = fetch_live_raw) -> Snapshot:
+        repo: Path, season: int, *, config: LeagueConfig, now: datetime,
+        fetch_sleeper: SleeperFetcher = fetch_live_raw) -> Snapshot:
     """The snapshot of the league now for the rosters only. The teams route reads it.
 
     It fetches only Sleeper. It reads the slow sources and the history from the disk as they are. It refreshes
@@ -266,6 +279,7 @@ def live_rosters_snapshot(
 
     Raises ValueError when Sleeper is not in `season`, as live_snapshot does.
     """
-    raw, fetched, week = fetch_live_week(repo, season, fetch_sleeper)
+    raw, fetched, week = fetch_live_week(repo, season, config, fetch_sleeper)
     # No refresh ran, so no source goes in the stale list here. The build still notes a gap in the saved history.
-    return _build_live(repo, season, raw, fetched, window_week(week.season_start, now), None, [], now)
+    return _build_live(repo, season, raw, fetched, window_week(week.season_start, now, config.tz), None, [],
+                       now)

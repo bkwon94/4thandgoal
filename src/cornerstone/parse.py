@@ -25,7 +25,7 @@ def team_name(user: dict) -> str:
     return (user.get("metadata") or {}).get("team_name") or user["display_name"]
 
 
-def _teams(raw: dict, brian_user: str) -> dict[int, Team]:
+def _teams(raw: dict, owner_username: str | None) -> dict[int, Team]:
     users = {u["user_id"]: u for u in raw["users"]}
     teams = {}
     for roster in raw["rosters"]:
@@ -41,7 +41,7 @@ def _teams(raw: dict, brian_user: str) -> dict[int, Team]:
             wins=settings["wins"],
             losses=settings["losses"],
             points_for=points_for,
-            is_brian=user["display_name"] == brian_user,
+            is_owner=user["display_name"] == owner_username,
         )
     return teams
 
@@ -196,13 +196,17 @@ def parse_trades(transactions: list[dict]) -> list[Trade]:
     ]
 
 
-def parse_week(raw: dict[str, object], brian_user: str = "bkwon", week: int | None = None) -> Week:
+def parse_week(raw: dict[str, object], owner_username: str | None = None, week: int | None = None) -> Week:
+    """The week of the raw data. The team of `owner_username` gets the owner flag.
+
+    Only the published page shows the owner flag, so the snapshot and the chart match pass no owner and flag no team.
+    """
     state = raw["state"]
     return Week(
         season=int(state["season"]),
         # state.week is the current NFL week, not the scored week, so use display_week by default.
         week=week if week is not None else state["display_week"],
-        teams=_teams(raw, brian_user),
+        teams=_teams(raw, owner_username),
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
         schedule=_schedule(raw),

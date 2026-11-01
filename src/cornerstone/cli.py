@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
+from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
 from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
@@ -31,7 +32,6 @@ from cornerstone.rubric import (
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
-from cornerstone.trades import EASTERN
 from cornerstone.writer import analyzer_call, claude_call
 
 
@@ -205,7 +205,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     return load_snapshot(raw_dir, history, chart, slow)
 
 
-def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+def _live_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
     """The snapshot of the league now. A given --chart file stands in for the chart read."""
     read_chart = chart_values
     if args.chart is not None:
@@ -215,7 +215,7 @@ def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         def read_chart(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
             return given
     try:
-        return live_snapshot(repo, args.season, now=datetime.now(EASTERN), read_chart=read_chart)
+        return live_snapshot(repo, args.season, config=config, now=datetime.now(config.tz), read_chart=read_chart)
     except ValueError as err:
         print(err)
         return None
@@ -254,7 +254,7 @@ def _print_as_of(snapshot: Snapshot) -> None:
         print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
 
 
-def run_analyze(repo: Path, args: argparse.Namespace) -> int:
+def run_analyze(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
     Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
@@ -266,7 +266,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     if sides is None:
         print("Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides.")
         return 2
-    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args)
     if snapshot is None:
         return 2
     try:
@@ -324,13 +324,13 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     return 0
 
 
-def run_find(repo: Path, args: argparse.Namespace) -> int:
+def run_find(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
     """Print the top win-win trades between the asker and the partner, each with its sides and its fairness."""
     # A plain line for the same roster twice, before the snapshot loads, so no load runs for nothing.
     if args.asker == args.partner:
         print("Give two different rosters for --asker and --partner.")
         return 2
-    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args)
     if snapshot is None:
         return 2
     for roster_id in (args.asker, args.partner):
@@ -399,19 +399,21 @@ def main(argv: list[str] | None = None) -> int:
     if not (repo / "pyproject.toml").exists():
         print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
         return 2
+    # The one config of the run. Every command that needs a league value gets it from here.
+    config = cornerstone_config()
     try:
         if args.command == "history":
             # History has no --week, so it skips resolve_week.
             season = args.season if args.season is not None else int(fetch_state()["season"])
-            weeks = run_history(repo, season, args.through, force=args.force)
+            weeks = run_history(repo, season, args.through, force=args.force, config=config)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
         if args.command == "analyze":
             # Analyze skips resolve_week. Without --week it reads Sleeper itself, and with --week it reads disk.
-            return run_analyze(repo, args)
+            return run_analyze(repo, args, config)
         if args.command == "find":
             # Find skips resolve_week for the same reason as analyze.
-            return run_find(repo, args)
+            return run_find(repo, args, config)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)
         if args.command == "build":
@@ -419,7 +421,7 @@ def main(argv: list[str] | None = None) -> int:
             fetch = not args.no_fetch and (
                 args.refetch or args.week is None or not has_raw(repo, season, week)
             )
-            page = run_build(repo, season, week, claude_call, fetch=fetch)
+            page = run_build(repo, season, week, claude_call, fetch=fetch, config=config)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)

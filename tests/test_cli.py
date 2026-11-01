@@ -425,6 +425,7 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     import pytest
 
     from cornerstone import cli, live
+    from cornerstone.config import cornerstone_config
     from cornerstone.sleeper import load_raw
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
@@ -435,10 +436,10 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
         cached.touch()
     monkeypatch.chdir(tmp_path)
-    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cli.EASTERN)
+    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cornerstone_config().tz)
     real = live.live_snapshot
     monkeypatch.setattr(cli, "live_snapshot", lambda repo, season, **kw: real(
-        repo, season, now=datetime(2026, 10, 19, 12, 0, tzinfo=cli.EASTERN),
+        repo, season, config=kw["config"], now=datetime(2026, 10, 19, 12, 0, tzinfo=kw["config"].tz),
         fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
         fetch_history_week=fetch_history_week,
