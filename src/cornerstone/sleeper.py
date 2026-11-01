@@ -63,12 +63,14 @@ class RawState(_Raw):
 
 
 class LeagueSettings(_Raw):
+    """The settings object of league.json: the scored week, the reserve slots, and the waiver budget."""
     last_scored_leg: int
     reserve_slots: int
     waiver_budget: int
 
 
 class RawLeague(_Raw):
+    """The league from league.json: the lineup slots, the settings, and the scoring."""
     roster_positions: list[str]
     settings: LeagueSettings
     scoring_settings: dict[str, float]
@@ -81,6 +83,7 @@ class UserMetadata(_Raw):
 
 
 class RawUser(_Raw):
+    """One user of the league from users.json."""
     user_id: str
     display_name: str
     avatar: str | None = None
@@ -88,6 +91,7 @@ class RawUser(_Raw):
 
 
 class RosterSettings(_Raw):
+    """The settings object of one roster in rosters.json: the record, the points, and the waiver state."""
     fpts: int
     # Sleeper leaves out the decimal part of a roster with no points.
     fpts_decimal: int = 0
@@ -98,6 +102,7 @@ class RosterSettings(_Raw):
 
 
 class RawRoster(_Raw):
+    """One roster of the league from rosters.json."""
     roster_id: int
     owner_id: str
     # A roster with no players has None in rosters.json.
@@ -121,6 +126,7 @@ class TransactionSettings(_Raw):
 
 
 class RawTransaction(_Raw):
+    """One move of one week from transactions.json: a waiver claim, a free agent pickup, or a trade."""
     transaction_id: str
     type: str
     status: str
@@ -141,7 +147,7 @@ class RawProjection(_Raw):
     stats: dict[str, float]
 
 
-class RowPlayer(_Raw):
+class RawStatPlayer(_Raw):
     position: str | None = None
 
 
@@ -151,20 +157,23 @@ class RawStatLine(_Raw):
     stats: dict[str, float]
     team: str | None = None
     game_id: str | None = None
-    player: RowPlayer | None = None
+    player: RawStatPlayer | None = None
 
 
 class RawTrending(_Raw):
+    """One row of trending.json: the adds of one player across all Sleeper leagues in the last day."""
     player_id: str
     count: int
 
 
 class SchedulePair(_Raw):
+    """One roster in one future week of schedule.json, with only the keys of its pair."""
     roster_id: int
     matchup_id: int | None
 
 
 class RawScheduleWeek(_Raw):
+    """One future week of schedule.json."""
     week: int
     matchups: list[SchedulePair]
 
@@ -176,7 +185,7 @@ class RawAheadWeek(_Raw):
 
 
 class RawBracketMatch(_Raw):
-    """One match of the winners bracket. No code reads it yet, so only the round and the match number are named."""
+    """One match of the winners bracket from bracket.json. A dump must give back the file, so the extras stay."""
     r: int
     m: int
 
@@ -199,7 +208,10 @@ class RawPastWeek(_Raw):
 
 
 class RawWeek(RawPastWeek):
-    """The whole raw set of one week: one field per raw file. A file that is not saved leaves its field None."""
+    """The whole raw set of one week: one field per raw file.
+
+    The schedule, the projections ahead, and the trending file can be absent. An absent one leaves its field None.
+    """
     state: RawState
     league: RawLeague
     users: list[RawUser]
