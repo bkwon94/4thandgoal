@@ -19,7 +19,7 @@ from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
 from cornerstone.ranks import RANKED_POSITIONS, in_pool, lineup_value, rank_table
 from cornerstone.slow_sources import SlowSources
-from cornerstone.sleeper import load_raw, read_fetch_time
+from cornerstone.sleeper import RawStatLine, RawWeek, load_raw, read_fetch_time
 from cornerstone.tunables import IN_PROGRESS_MINUTES
 
 logger = logging.getLogger(__name__)
@@ -204,12 +204,12 @@ class Snapshot(BaseModel):
         return copy
 
 
-def _games_with_a_stat_line(stats: list[dict]) -> int:
+def _games_with_a_stat_line(stats: list[RawStatLine]) -> int:
     """The count of distinct games with a stat line of a player who played. A line of an inactive player has no gp."""
-    return len({row["game_id"] for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0})
+    return len({row.game_id for row in stats if row.game_id and row.stats.get("gp", 0) > 0})
 
 
-def _teams_in_progress(stats: list[dict], kickoffs: dict[str, datetime], now: datetime) -> dict[str, str]:
+def _teams_in_progress(stats: list[RawStatLine], kickoffs: dict[str, datetime], now: datetime) -> dict[str, str]:
     """The game id of each NFL team with a played line whose game is in progress at `now`. GLOSSARY.md, "In progress".
 
     A game is in progress when `now` is past its kickoff by less than IN_PROGRESS_MINUTES.
@@ -219,14 +219,14 @@ def _teams_in_progress(stats: list[dict], kickoffs: dict[str, datetime], now: da
     length = timedelta(minutes=IN_PROGRESS_MINUTES)
     teams = {}
     for row in stats:
-        team, kickoff = row.get("team"), kickoffs.get(row.get("team") or "")
-        if (row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0 and kickoff is not None
+        team, kickoff = row.team, kickoffs.get(row.team or "")
+        if (row.game_id and row.stats.get("gp", 0) > 0 and kickoff is not None
                 and kickoff <= now < kickoff + length):
-            teams[team] = row["game_id"]
+            teams[team] = row.game_id
     return teams
 
 
-def _pending(stats: list[dict], week: int, wopr: dict[str, dict[int, int]] | None) -> dict[str, int]:
+def _pending(stats: list[RawStatLine], week: int, wopr: dict[str, dict[int, int]] | None) -> dict[str, int]:
     """The game count of each pending count of the known games, GLOSSARY.md "Pending". A count of 0 is left out.
 
     A game is pending for snaps when no line of a player who played has the team snap count. Sleeper posts the
@@ -236,12 +236,12 @@ def _pending(stats: list[dict], week: int, wopr: dict[str, dict[int, int]] | Non
     The usage count is per game, but the WOPR window is per player. A WR who played with no row keeps a window
     that ends at N-1, even when a teammate's row keeps his game out of the count.
     """
-    played = [row for row in stats if row.get("game_id") and (row.get("stats") or {}).get("gp", 0) > 0]
-    games = {row["game_id"] for row in played}
-    with_snaps = {row["game_id"] for row in played if "tm_off_snp" in row["stats"]}
+    played = [row for row in stats if row.game_id and row.stats.get("gp", 0) > 0]
+    games = {row.game_id for row in played}
+    with_snaps = {row.game_id for row in played if "tm_off_snp" in row.stats}
     counts = {"snaps": len(games - with_snaps)}
     if wopr is not None:
-        with_usage = {row["game_id"] for row in played if week in wopr.get(row["player_id"], {})}
+        with_usage = {row.game_id for row in played if week in wopr.get(row.player_id, {})}
         counts["usage"] = len(games - with_usage)
     return {name: count for name, count in counts.items() if count > 0}
 
@@ -292,21 +292,21 @@ def load_out_for_season(path: Path) -> set[str]:
     return {pid for pid, week in json.loads(path.read_text(encoding="utf-8")).items() if week == SEASON_MARK}
 
 
-def _projections_by_player(raw: dict[str, object], week: int) -> dict[str, dict[int, float]] | None:
+def _projections_by_player(raw: RawWeek, week: int) -> dict[str, dict[int, float]] | None:
     """The half-PPR projections of the raw week and the weeks ahead by player id and week.
 
     It is None when the raw data has no projections ahead.
     """
-    if "projections_ahead" not in raw:
+    if raw.projections_ahead is None:
         return None
     by_player: dict[str, dict[int, float]] = {}
-    for item in raw["projections"]:
-        points = (item.get("stats") or {}).get("pts_half_ppr")
+    for item in raw.projections:
+        points = item.stats.get("pts_half_ppr")
         if points is not None:
-            by_player.setdefault(item["player_id"], {})[week] = float(points)
-    for entry in raw["projections_ahead"]:
-        for pid, points in entry["projections"].items():
-            by_player.setdefault(pid, {})[int(entry["week"])] = float(points)
+            by_player.setdefault(item.player_id, {})[week] = float(points)
+    for entry in raw.projections_ahead:
+        for pid, points in entry.projections.items():
+            by_player.setdefault(pid, {})[entry.week] = float(points)
     return by_player
 
 
@@ -322,7 +322,7 @@ def load_snapshot(
                           returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file))
 
 
-def week_snapshot(raw: dict[str, object], history_root: Path, week: int) -> Snapshot:
+def week_snapshot(raw: RawWeek, history_root: Path, week: int) -> Snapshot:
     """The snapshot the weekly build of week N reads: the league after week N, as the analyzer sees it in week N + 1.
 
     The bye facts read the position rank and the lineup value, and neither needs a chart or a slow source.
@@ -334,7 +334,7 @@ def week_snapshot(raw: dict[str, object], history_root: Path, week: int) -> Snap
 
 
 def build_snapshot(
-        raw: dict[str, object], history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
+        raw: RawWeek, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
         trade_week: int | None = None, returns: dict[str, int] | None = None,
         now: datetime | None = None, out_for_season: set[str] | None = None) -> Snapshot:
@@ -347,9 +347,9 @@ def build_snapshot(
     `out_for_season` is the set of players the same file marks `season`.
     `now` is the clock of the request. With the kickoffs of the slow sources, it tells the known games in progress.
     """
-    # A failed live stats fetch gives None, and a raw can lack the key. The parses then read no lines.
-    stats_lines = raw.get("stats")
-    raw = {**raw, "stats": stats_lines or []}
+    # A failed live stats fetch gives None. The parses then read no lines.
+    stats_lines = raw.stats
+    raw = raw.model_copy(update={"stats": stats_lines or []})
     week = parse_week(raw)
     stale = list(stale or [])
     # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. The standings end there.
@@ -389,8 +389,8 @@ def build_snapshot(
                 weeks[trade_week] = parse_past_week(raw, trade_week)
                 stats_through = trade_week
     history = History(week=stats_through, weeks=weeks)
-    rosters = {r["roster_id"]: list(r["players"] or []) for r in raw["rosters"]}
-    entries = raw["players"]
+    rosters = {r.roster_id: list(r.players or []) for r in raw.rosters}
+    entries = raw.players
     players = {pid: _snapshot_player(pid, entries.get(pid) or {}) for pids in rosters.values() for pid in pids}
     # Without a loader result, every slow source is missing. With one, the loader names what it lacks.
     slow_missing = list(SLOW_SOURCES) if slow is None else list(slow.missing)
@@ -405,7 +405,7 @@ def build_snapshot(
         # Before week 1 the rosters give the records.
         standings=standings(week.model_copy(update={"week": completed_through}),
                             history.model_copy(update={"week": completed_through}) if completed_through else None),
-        roster_positions=raw["league"]["roster_positions"],
+        roster_positions=raw.league.roster_positions,
         players=players,
         chart=chart,
         stats=history,

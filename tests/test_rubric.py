@@ -1040,12 +1040,12 @@ def _collins_week_6(points: float | None):
     """An edit of the raw data that gives Collins `points` in week 6, or no week 6 line at all for None."""
     def edit(raw):
         if points is None:
-            raw["stats"] = [row for row in raw["stats"] if row["player_id"] != COLLINS]
-        for row in raw["stats"]:
-            if row["player_id"] == COLLINS:
-                row["stats"]["pts_half_ppr"] = points
-        for entry in raw["matchups"]:
-            players_points = entry.get("players_points") or {}
+            raw.stats = [row for row in raw.stats if row.player_id != COLLINS]
+        for row in raw.stats:
+            if row.player_id == COLLINS:
+                row.stats["pts_half_ppr"] = points
+        for entry in raw.matchups:
+            players_points = entry.players_points or {}
             if COLLINS in players_points:
                 if points is None:
                     del players_points[COLLINS]
@@ -1073,9 +1073,9 @@ def test_a_30_point_known_game_counts_in_the_recent_points_per_game_and_moves_th
 def _no_week_6_line(player_id: str):
     """An edit of the raw data that takes out the week 6 stat line and the week 6 points of the player."""
     def edit(raw):
-        raw["stats"] = [row for row in raw["stats"] if row["player_id"] != player_id]
-        for entry in raw["matchups"]:
-            (entry.get("players_points") or {}).pop(player_id, None)
+        raw.stats = [row for row in raw.stats if row.player_id != player_id]
+        for entry in raw.matchups:
+            (entry.players_points or {}).pop(player_id, None)
     return edit
 
 
@@ -1105,11 +1105,11 @@ def _no_snaps_in_the_game_of(player_id: str):
     Sleeper posts a Sunday game so on Sunday night: targets, points, and red zone touches, but no snaps.
     """
     def edit(raw):
-        game = next(row["game_id"] for row in raw["stats"] if row["player_id"] == player_id)
-        for row in raw["stats"]:
-            if row.get("game_id") == game:
+        game = next(row.game_id for row in raw.stats if row.player_id == player_id)
+        for row in raw.stats:
+            if row.game_id == game:
                 for key in ("off_snp", "tm_off_snp"):
-                    row["stats"].pop(key, None)
+                    row.stats.pop(key, None)
     return edit
 
 

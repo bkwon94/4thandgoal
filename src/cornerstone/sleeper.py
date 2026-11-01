@@ -10,6 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
+from pydantic import BaseModel, ConfigDict
 
 from cornerstone.files import write_bytes_atomic
 from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK, POOL_POSITIONS
@@ -45,6 +46,171 @@ PROJECTIONS_AHEAD_FILE = "projections_ahead.json"
 TRENDING_FILE = "trending.json"
 # The bucket holds 8, and the pool filter and the position filter drop some of the top adds, so 50 leaves room.
 TRENDING_PARAMS = {"lookback_hours": 24, "limit": 50}
+
+
+# The raw Sleeper shapes. The field names are the Sleeper names, so a reader sees the same key as in the file.
+# Each model holds only the fields the code reads. A field the code does not read stays as an extra, because the
+# raw files are saved as Sleeper sends them and a dump must give the file back.
+class _Raw(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+
+class RawState(_Raw):
+    """The NFL state: the season and the week that Sleeper shows."""
+    season: str
+    display_week: int
+    season_start_date: str
+
+
+class LeagueSettings(_Raw):
+    last_scored_leg: int
+    reserve_slots: int
+    waiver_budget: int
+
+
+class RawLeague(_Raw):
+    roster_positions: list[str]
+    settings: LeagueSettings
+    scoring_settings: dict[str, float]
+
+
+class UserMetadata(_Raw):
+    # A user who set no team name or avatar has no such key.
+    team_name: str | None = None
+    avatar: str | None = None
+
+
+class RawUser(_Raw):
+    user_id: str
+    display_name: str
+    avatar: str | None = None
+    metadata: UserMetadata | None = None
+
+
+class RosterSettings(_Raw):
+    fpts: int
+    # Sleeper leaves out the decimal part of a roster with no points.
+    fpts_decimal: int = 0
+    wins: int
+    losses: int
+    waiver_budget_used: int
+    waiver_position: int
+
+
+class RawRoster(_Raw):
+    roster_id: int
+    owner_id: str
+    # A roster with no players has None in rosters.json.
+    players: list[str] | None
+    settings: RosterSettings
+
+
+class RawMatchup(_Raw):
+    """One roster in one week. Two rows with the same matchup_id are a pair. A bye has matchup_id None."""
+    roster_id: int
+    matchup_id: int | None
+    points: float
+    # A saved past week can lack the lineup lists, so the parse of a past week reads them as empty.
+    players: list[str] | None = None
+    starters: list[str] | None = None
+    players_points: dict[str, float] | None = None
+
+
+class TransactionSettings(_Raw):
+    waiver_bid: int | None = None
+
+
+class RawTransaction(_Raw):
+    transaction_id: str
+    type: str
+    status: str
+    leg: int
+    # Milliseconds since the epoch.
+    created: int
+    roster_ids: list[int]
+    adds: dict[str, int] | None
+    drops: dict[str, int] | None
+    settings: TransactionSettings | None = None
+    # The DraftPick domain model checks each pick, so the raw pick stays a dict.
+    draft_picks: list[dict] | None = None
+
+
+class RawProjection(_Raw):
+    """One player's projection row for one week."""
+    player_id: str
+    stats: dict[str, float]
+
+
+class RowPlayer(_Raw):
+    position: str | None = None
+
+
+class RawStatLine(_Raw):
+    """One player's stat line for one week. A player whose game has not started has no game id yet."""
+    player_id: str
+    stats: dict[str, float]
+    team: str | None = None
+    game_id: str | None = None
+    player: RowPlayer | None = None
+
+
+class RawTrending(_Raw):
+    player_id: str
+    count: int
+
+
+class SchedulePair(_Raw):
+    roster_id: int
+    matchup_id: int | None
+
+
+class RawScheduleWeek(_Raw):
+    week: int
+    matchups: list[SchedulePair]
+
+
+class RawAheadWeek(_Raw):
+    """The half-PPR projection of each player in one week ahead, by player id."""
+    week: int
+    projections: dict[str, float]
+
+
+class RawBracketMatch(_Raw):
+    """One match of the winners bracket. No code reads it yet, so only the round and the match number are named."""
+    r: int
+    m: int
+
+
+class RawPastWeek(_Raw):
+    """The raw files of one past week that the history keeps."""
+    # A test or a caller sets a field with a plain list, so an assignment goes through the model too.
+    model_config = ConfigDict(extra="allow", validate_assignment=True)
+
+    matchups: list[RawMatchup]
+    transactions: list[RawTransaction]
+    # A failed live stats fetch gives None, so the snapshot can name the stats stale.
+    stats: list[RawStatLine] | None
+    projections: list[RawProjection]
+
+    def file_json(self, name: str) -> object:
+        """The JSON of the raw file `name`, in the shape Sleeper sent it."""
+        # exclude_unset keeps a default out of the dump, so a key that the file lacks stays absent.
+        return self.model_dump(mode="json", exclude_unset=True, include={name})[name]
+
+
+class RawWeek(RawPastWeek):
+    """The whole raw set of one week: one field per raw file. A file that is not saved leaves its field None."""
+    state: RawState
+    league: RawLeague
+    users: list[RawUser]
+    rosters: list[RawRoster]
+    matchups_next: list[RawMatchup]
+    # The players file has about 5 MB of entries in many shapes. Each reader takes the keys it needs.
+    players: dict[str, dict]
+    bracket: list[RawBracketMatch]
+    schedule: list[RawScheduleWeek] | None = None
+    projections_ahead: list[RawAheadWeek] | None = None
+    trending: list[RawTrending] | None = None
 
 
 def _position_params() -> list[tuple[str, str]]:
@@ -96,9 +262,9 @@ def _players(client: httpx.Client, players_cache: Path):
     return players
 
 
-def fetch_state() -> dict:
+def fetch_state() -> RawState:
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
-        return _get(client, f"{OFFICIAL_URL}/state/nfl")
+        return RawState.model_validate(_get(client, f"{OFFICIAL_URL}/state/nfl"))
 
 
 def fetch_news(player_id: str) -> list[dict]:
@@ -119,12 +285,12 @@ def read_fetch_time(raw_dir: Path) -> datetime | None:
         return None
 
 
-def read_prev_transactions(raw_dir: Path) -> list | None:
+def read_prev_transactions(raw_dir: Path) -> list[RawTransaction] | None:
     """The fresh transactions of week N-1 that fetch_week saved. None when no file is saved."""
     path = raw_dir / PREV_TRANSACTIONS_FILE
     if not path.exists():
         return None
-    return json.loads(path.read_text(encoding="utf-8"))
+    return [RawTransaction.model_validate(t) for t in json.loads(path.read_text(encoding="utf-8"))]
 
 
 def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
@@ -153,13 +319,14 @@ def _projections_ahead(client: httpx.Client, season: int, week: int, last: int =
     ]
 
 
-def fetch_projections_ahead(season: int, week: int) -> list[dict]:
+def fetch_projections_ahead(season: int, week: int) -> list[RawAheadWeek]:
     """The projections ahead of `week` through LAST_REGULAR_WEEK, in the entries that fetch_week saves.
 
     The trade grade reads no later week, so the live grade skips those calls.
     """
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
-        return _projections_ahead(client, season, week, LAST_REGULAR_WEEK)
+        ahead = _projections_ahead(client, season, week, LAST_REGULAR_WEEK)
+    return [RawAheadWeek.model_validate(entry) for entry in ahead]
 
 
 def _trending(client: httpx.Client) -> list[dict]:
@@ -218,7 +385,7 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
 
 
-def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, object], datetime]:
+def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
     """The raw data of the league now, in memory, and the time the rosters came back. It writes no weekly file.
 
     The key set is the same as load_raw gives, so the parse and the snapshot read it as a saved week.
@@ -235,7 +402,7 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[dict[str, objec
         stats = _get_or_none(client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params())
         data = _league_raw(client, league, season, week, players_cache,
                            {"state": state, "rosters": rosters, "stats": stats})
-    return data, fetched
+    return RawWeek.model_validate(data), fetched
 
 
 def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> None:
@@ -254,15 +421,15 @@ def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> No
         _write_json(out_dir / f"{name}.json", obj)
 
 
-def load_raw(raw_dir: Path) -> dict[str, object]:
-    raw = {}
+def load_raw(raw_dir: Path) -> RawWeek:
+    raw: dict[str, object] = {}
     for name in RAW_FILES:
         with (raw_dir / f"{name}.json").open(encoding="utf-8") as f:
             raw[name] = json.load(f)
     _read_if_exists(raw, "schedule", raw_dir / SCHEDULE_FILE)
     _read_if_exists(raw, "projections_ahead", raw_dir / PROJECTIONS_AHEAD_FILE)
     _read_if_exists(raw, "trending", raw_dir / TRENDING_FILE)
-    return raw
+    return RawWeek.model_validate(raw)
 
 
 def _read_if_exists(raw: dict[str, object], key: str, path: Path) -> None:

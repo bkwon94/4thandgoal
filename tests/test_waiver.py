@@ -22,8 +22,8 @@ def _raw(fixture_raw_dir, players: dict[str, dict], per_week: dict[str, float]) 
     """The week 6 raw with `players` added to the players file and a flat projection per week for each ID in
     `per_week`."""
     raw = load_raw(fixture_raw_dir)
-    raw["players"] = {**raw["players"], **players}
-    raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in AHEAD]
+    raw.players = {**raw.players, **players}
+    raw.projections_ahead = [{"week": w, "projections": dict(per_week)} for w in AHEAD]
     return raw
 
 
@@ -32,7 +32,7 @@ def _best_adds(raw) -> list[str]:
 
 
 def test_the_pool_holds_active_free_agents_with_a_team_and_a_fantasy_position(fixture_raw_dir):
-    rostered = load_raw(fixture_raw_dir)["rosters"][0]["players"][0]
+    rostered = load_raw(fixture_raw_dir).rosters[0].players[0]
     players = {
         "80001": _player("RB"),
         "80002": _player("WR"),
@@ -48,7 +48,7 @@ def test_the_pool_holds_active_free_agents_with_a_team_and_a_fantasy_position(fi
 def test_the_rest_of_season_projection_sums_weeks_7_to_17_with_the_bye_as_0(fixture_raw_dir):
     raw = _raw(fixture_raw_dir, {"80001": _player("WR")}, {})
     # 11 weeks ahead of week 6. Week 9 is the bye, so it has no projection and counts 0.
-    raw["projections_ahead"] = [
+    raw.projections_ahead = [
         {"week": w, "projections": {} if w == 9 else {"80001": 10.5 + w}} for w in AHEAD
     ]
     player = waiver_board(raw, 6, BUILT).buckets["best_adds"][0]
@@ -82,7 +82,7 @@ def test_two_runs_on_the_same_raw_give_the_same_board(fixture_raw_dir):
     # Equal projections force a tie, so the order of the tie must not follow the dict order.
     players = {f"8000{i}": _player("WR") for i in range(1, 6)}
     raw = _raw(fixture_raw_dir, players, {pid: 8.0 for pid in players})
-    backward = {**raw, "players": dict(reversed(raw["players"].items()))}
+    backward = raw.model_copy(update={"players": dict(reversed(raw.players.items()))})
     first = waiver_board(raw, 6, BUILT).model_dump_json()
     assert waiver_board(raw, 6, BUILT).model_dump_json() == first
     assert waiver_board(backward, 6, BUILT).model_dump_json() == first

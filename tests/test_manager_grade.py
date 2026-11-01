@@ -23,7 +23,7 @@ from cornerstone.tunables import GRADE_WEIGHTS, LAST_REGULAR_WEEK
 
 
 def _ahead(raw):
-    return {entry["week"]: entry["projections"] for entry in raw["projections_ahead"]}
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
 def _entries(raw_dir, root, with_snapshot=True):

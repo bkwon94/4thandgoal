@@ -18,7 +18,7 @@ from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
-from cornerstone.sleeper import load_raw
+from cornerstone.sleeper import RawAheadWeek, load_raw
 from cornerstone.snapshot import load_snapshot
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 
@@ -177,7 +177,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
 
     def before_kickoff(league_id, players_cache):
         raw = load_raw(fixture_raw_dir)
-        raw["stats"] = []
+        raw.stats = []
         return raw, FETCHED
 
     live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
@@ -217,7 +217,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_
 
     def before_kickoff(league_id, players_cache):
         raw = load_raw(free_agent_raw_dir)
-        raw["stats"] = []
+        raw.stats = []
         return raw, FETCHED
 
     live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
@@ -307,7 +307,7 @@ def test_on_the_tuesday_an_empty_stats_raw_week_leaves_a_good_saved_week_untouch
 
     def outage(league_id, players_cache):
         raw = load_raw(fixture_raw_dir)
-        raw["stats"] = []
+        raw.stats = []
         return raw, FETCHED
 
     live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=outage,
@@ -508,7 +508,7 @@ def sleeper_now(fixture_raw_dir):
     """The Sleeper fetch as fetch_live_raw gives it: the raw data with no projections ahead."""
     def fetch(league_id, players_cache):
         raw = load_raw(fixture_raw_dir)
-        raw.pop("projections_ahead")
+        raw.projections_ahead = None
         return raw, FETCHED
     return fetch
 
@@ -519,7 +519,7 @@ class ProjectionsRecorder:
 
     def __call__(self, season, week):
         self.calls.append((season, week))
-        return [{"week": 7, "projections": {"5850": 18.0}}]
+        return [RawAheadWeek(week=7, projections={"5850": 18.0})]
 
 
 class Clock:

@@ -23,8 +23,8 @@ def _player(position, team="KC", name="Free Agent"):
 def _raw(fixture_raw_dir, players, per_week):
     """The week 6 raw with `players` added and a flat projection per week, weeks 7 to 17, for each ID in `per_week`."""
     raw = load_raw(fixture_raw_dir)
-    raw["players"] = {**raw["players"], **players}
-    raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
+    raw.players = {**raw.players, **players}
+    raw.projections_ahead = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
     return raw
 
 
@@ -103,7 +103,7 @@ def test_a_rostered_player_with_three_falls_and_no_better_pool_player_stays_out_
 
 def _rostered_at(raw, position, count):
     """The first `count` rostered players at `position` by player ID."""
-    return [pid for pid in sorted(_rostered(raw)) if raw["players"][pid].get("position") == position][:count]
+    return [pid for pid in sorted(_rostered(raw)) if raw.players[pid].get("position") == position][:count]
 
 
 def test_the_drops_bucket_sorts_by_the_margin_and_holds_at_most_8(fixture_raw_dir):

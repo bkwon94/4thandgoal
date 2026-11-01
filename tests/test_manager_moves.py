@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from cornerstone.managers import managers
 from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
 from cornerstone.parse import parse_drops
+from cornerstone.sleeper import RawTransaction
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},
@@ -125,7 +126,7 @@ def test_the_drops_come_from_the_saved_transactions(fixture_history_root):
         if t["status"] == "complete" and t["type"] in ("waiver", "free_agent")
         for pid, rid in (t["drops"] or {}).items()
     }
-    drops = parse_drops(transactions)
+    drops = parse_drops([RawTransaction.model_validate(t) for t in transactions])
     assert expected
     assert {(d.player_id, d.roster_id) for d in drops} == expected
     # A trade drop is a side of the trade, so the drops leave it out.

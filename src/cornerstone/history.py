@@ -15,7 +15,9 @@ from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
-from cornerstone.sleeper import fetch_past_week, read_prev_transactions
+from cornerstone.sleeper import (
+    RawMatchup, RawPastWeek, RawTransaction, RawWeek, fetch_past_week, read_prev_transactions,
+)
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
@@ -64,17 +66,17 @@ def fetch_history(
     return fetched
 
 
-def _read_week(directory: Path) -> dict[str, object] | None:
+def _read_week(directory: Path) -> RawPastWeek | None:
     # A week with a missing file is left out, so a gap removes facts and never makes one wrong.
     if not all((directory / f"{name}.json").exists() for name in HISTORY_FILES):
         return None
-    return {
+    return RawPastWeek.model_validate({
         name: json.loads((directory / f"{name}.json").read_text())
         for name in HISTORY_FILES
-    }
+    })
 
 
-def _fresh_transactions(root: Path, week: int) -> list | None:
+def _fresh_transactions(root: Path, week: int) -> list[RawTransaction] | None:
     """The full leg of `week` that the fetch of the next week saved, or None when that file is not saved.
 
     The week N build runs before the Tuesday night waiver run, so the saved copy misses the adds after it.
@@ -92,7 +94,7 @@ def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
         if saved is not None:
             fresh = _fresh_transactions(root, past)
             if fresh is not None:
-                saved["transactions"] = fresh
+                saved.transactions = fresh
             weeks[past] = parse_past_week(saved, past)
     return weeks
 
@@ -105,7 +107,7 @@ def saved_through(root: Path, week: int) -> int:
     return last
 
 
-def load_history(root: Path, raw: dict[str, object], week: int) -> History:
+def load_history(root: Path, raw: RawWeek, week: int) -> History:
     weeks = load_saved_weeks(root, week - 1)
     # The current week comes from the raw data of this run, not from the cache.
     weeks[week] = parse_past_week(raw, week)
@@ -313,26 +315,27 @@ def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in HISTORY_FILES:
         shutil.copyfile(raw_dir / f"{name}.json", out_dir / f"{name}.json")
-    matchups = json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))
+    matchups = [RawMatchup.model_validate(m)
+                for m in json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))]
     players = json.loads((raw_dir / "players.json").read_text(encoding="utf-8"))
     _save_injuries(matchups, players, out_dir)
 
 
-def save_raw_to_history(raw: dict[str, object], out_dir: Path) -> None:
+def save_raw_to_history(raw: RawWeek, out_dir: Path) -> None:
     """Put the raw data of a week, held in memory, into the history. It writes the same files as save_week_to_history.
 
     The live path has no raw directory, so it writes the parsed raw data instead of a copy.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in HISTORY_FILES:
-        write_bytes_atomic(out_dir / f"{name}.json", json.dumps(raw[name]).encode("utf-8"))
-    _save_injuries(raw["matchups"], raw["players"], out_dir)
+        write_bytes_atomic(out_dir / f"{name}.json", json.dumps(raw.file_json(name)).encode("utf-8"))
+    _save_injuries(raw.matchups, raw.players, out_dir)
 
 
-def _save_injuries(matchups: list[dict], players: dict[str, dict], out_dir: Path) -> None:
+def _save_injuries(matchups: list[RawMatchup], players: dict[str, dict], out_dir: Path) -> None:
     injuries = {}
     for roster in matchups:
-        for player_id in roster["players"]:
+        for player_id in roster.players or []:
             status = (players.get(player_id) or {}).get("injury_status")
             if status:
                 injuries[player_id] = status

@@ -16,7 +16,7 @@ from cornerstone.models import ChartValues, NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_facts
-from cornerstone.sleeper import load_raw
+from cornerstone.sleeper import RawWeek, load_raw
 from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 
@@ -61,9 +61,9 @@ FREE_AGENTS = {
 }
 
 
-def with_free_agents(raw: dict, players: dict[str, dict] | None = None) -> dict:
+def with_free_agents(raw: RawWeek, players: dict[str, dict] | None = None) -> RawWeek:
     """The raw data with FREE_AGENTS, or `players`, added to the players file."""
-    return {**raw, "players": {**raw["players"], **(FREE_AGENTS if players is None else players)}}
+    return raw.model_copy(update={"players": {**raw.players, **(FREE_AGENTS if players is None else players)}})
 
 
 @pytest.fixture
@@ -72,7 +72,7 @@ def free_agent_raw_dir(tmp_path, fixture_raw_dir) -> Path:
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     players = raw_dir / "players.json"
-    players.write_text(json.dumps(with_free_agents({"players": json.loads(players.read_text())})["players"]))
+    players.write_text(json.dumps({**json.loads(players.read_text()), **FREE_AGENTS}))
     return raw_dir
 
 
@@ -96,7 +96,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
 
 def _window(raw, h):
     # The window ends at noon on purpose. It keeps the Tuesday trade as T6, the only late trade in the fixture.
-    return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
+    return trades_for_week(parse_trades(raw.transactions), h.weeks[5].trades,
                            default_cutoff(date(2026, 9, 9), 6, ET), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
 
 
@@ -196,6 +196,6 @@ def nfl_week6(fixture_nflverse_dir, fixture_raw_dir, tmp_path) -> NflverseWeek:
     cache.mkdir()
     for f in fixture_nflverse_dir.iterdir():
         shutil.copy(f, cache / f.name)
-    starters = sorted({p for entry in raw["matchups"] for p in entry["starters"] if p != "0"})
-    return nflverse_week(2026, 6, starters, raw["players"], cache, fetch=no_network,
-                         scoring=raw["league"]["scoring_settings"])
+    starters = sorted({p for entry in raw.matchups for p in entry.starters or [] if p != "0"})
+    return nflverse_week(2026, 6, starters, raw.players, cache, fetch=no_network,
+                         scoring=raw.league.scoring_settings)

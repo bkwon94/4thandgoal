@@ -22,14 +22,14 @@ ET = ZoneInfo("America/New_York")
 def _week(fixture_raw_dir, fixture_history_root, week):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
-    return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
+    return trades_for_week(parse_trades(raw.transactions), h.weeks[5].trades,
                            default_cutoff(date(2026, 9, 9), week, ET), default_cutoff(date(2026, 9, 9), week + 1, ET))
 
 
 def _six(fixture_raw_dir, fixture_history_root, until):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
-    return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
+    return trades_for_week(parse_trades(raw.transactions), h.weeks[5].trades,
                            default_cutoff(date(2026, 9, 9), 6, ET), until)
 
 
@@ -48,7 +48,7 @@ def test_week_7_window_holds_the_tuesday_trade(fixture_raw_dir, fixture_history_
 
 
 def _trade_at(fixture_raw_dir, created):
-    trade = parse_trades(load_raw(fixture_raw_dir)["transactions"])[0]
+    trade = parse_trades(load_raw(fixture_raw_dir).transactions)[0]
     return trade.model_copy(update={"created": created})
 
 

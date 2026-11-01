@@ -25,7 +25,7 @@ from cornerstone.nflverse import (
 from cornerstone.parse import parse_week
 from cornerstone.pipeline import nflverse_cache_dir
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
+from cornerstone.sleeper import RawAheadWeek, RawWeek, fetch_live_raw, fetch_past_week, fetch_projections_ahead
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
@@ -33,11 +33,11 @@ from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECON
 logger = logging.getLogger(__name__)
 
 # The Sleeper fetch takes the league id and the players cache file. It gives the raw data and the fetch time.
-SleeperFetcher = Callable[[str, Path], tuple[dict[str, object], datetime]]
+SleeperFetcher = Callable[[str, Path], tuple[RawWeek, datetime]]
 # The chart read takes the repo, the season start, the chart week, and the player lines.
 ChartReader = Callable[[Path, date, int, Iterable[PlayerLine]], ChartValues | None]
 # The projections fetch takes the season and the raw week. It gives the projections ahead of that week.
-ProjectionsFetcher = Callable[[int, int], list[dict]]
+ProjectionsFetcher = Callable[[int, int], list[RawAheadWeek]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
 # The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
@@ -120,9 +120,9 @@ class ProjectionsCache:
         self.max_age_seconds = max_age_seconds
         self.clock = clock
         self._lock = threading.Lock()
-        self._entries: dict[tuple[int, int], tuple[float, list[dict]]] = {}
+        self._entries: dict[tuple[int, int], tuple[float, list[RawAheadWeek]]] = {}
 
-    def get_or_fetch(self, season: int, week: int, fetch: ProjectionsFetcher) -> list[dict]:
+    def get_or_fetch(self, season: int, week: int, fetch: ProjectionsFetcher) -> list[RawAheadWeek]:
         """The projections ahead of `week` from memory within the window.
 
         Past it, `fetch` runs and the cache keeps its answer.
@@ -154,7 +154,7 @@ class RefreshResult:
 
 
 def fetch_current_week(
-        repo: Path, config: LeagueConfig, fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+        repo: Path, config: LeagueConfig, fetch_sleeper: SleeperFetcher) -> tuple[RawWeek, datetime, Week]:
     """The raw Sleeper data now, its fetch time in the league timezone, and its parsed week.
 
     The data is of the season that Sleeper is in.
@@ -165,7 +165,7 @@ def fetch_current_week(
 
 def fetch_live_week(
         repo: Path, season: int, config: LeagueConfig,
-        fetch_sleeper: SleeperFetcher) -> tuple[dict[str, object], datetime, Week]:
+        fetch_sleeper: SleeperFetcher) -> tuple[RawWeek, datetime, Week]:
     """The raw Sleeper data now, its fetch time, and its parsed week.
 
     Raises ValueError when Sleeper is not in `season`, because the cache and the history are per season.
@@ -215,14 +215,14 @@ def refresh_sources(
 
 
 def _build_live(
-        repo: Path, season: int, raw: dict[str, object], fetched: datetime, trade_week: int,
+        repo: Path, season: int, raw: RawWeek, fetched: datetime, trade_week: int,
         chart: ChartValues | None, stale: list[str], now: datetime) -> Snapshot:
     """The snapshot of the raw Sleeper data, with the slow sources and the returns read from the disk.
 
     `now` is the clock of the request, so the snapshot can tell the known games in progress.
     """
     root = history_root(repo, season)
-    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root, raw["league"]["scoring_settings"])
+    slow = load_slow_sources(nflverse_cache_dir(repo), season, trade_week, root, raw.league.scoring_settings)
     returns = load_returns(returns_path(repo, season))
     out_for_season = load_out_for_season(returns_path(repo, season))
     return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now,
@@ -255,7 +255,7 @@ def live_snapshot(
     # The weekly build saves the same week later and overwrites these files with the same data.
     # A Sleeper outage gives empty stats, so an empty week is not saved over a good saved copy.
     # A failed write must not stop the request, so the snapshot builds and notes the history as stale.
-    if week.week == trade_week - 1 and raw["stats"]:
+    if week.week == trade_week - 1 and raw.stats:
         try:
             save_raw_to_history(raw, history_dir(root, week.week))
         except OSError as error:
@@ -264,8 +264,9 @@ def live_snapshot(
                 stale.append("history")
     # Only the grade reads the projections ahead, so this route fetches them and the rosters route does not.
     # A fetcher that gives them already, as a saved week's raw data does, needs no fetch here.
-    if "projections_ahead" not in raw:
-        raw = {**raw, "projections_ahead": projections.get_or_fetch(season, week.week, fetch_projections)}
+    if raw.projections_ahead is None:
+        ahead = projections.get_or_fetch(season, week.week, fetch_projections)
+        raw = raw.model_copy(update={"projections_ahead": ahead})
     return _build_live(repo, season, raw, fetched, trade_week, result.chart, stale, now)
 
 

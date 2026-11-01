@@ -144,7 +144,9 @@ def _save_chart(tmp_path, parsed):
 
 
 def _sleeper_state(season):
-    return lambda: {"season": season, "season_start_date": "2026-09-09"}
+    from cornerstone.sleeper import RawState
+
+    return lambda: RawState(season=season, display_week=6, season_start_date="2026-09-09")
 
 
 def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_path, monkeypatch, capsys):

@@ -8,12 +8,15 @@ from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, re
 
 # The league config the fetches of these tests read.
 CONFIG = cornerstone_config()
+# The league fields that the raw model needs, with no rosters, slots, or scoring.
+EMPTY_LEAGUE = {"roster_positions": [], "scoring_settings": {},
+                "settings": {"last_scored_leg": 0, "reserve_slots": 0, "waiver_budget": 100}}
 
 def test_load_raw_returns_every_file(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert set(raw) == {*RAW_FILES, "schedule", "projections_ahead"}
-    assert raw["league"]["name"] == "Cornerstone League"
-    assert len(raw["matchups"]) == 12
+    assert raw.model_fields_set == {*RAW_FILES, "schedule", "projections_ahead"}
+    assert raw.league.name == "Cornerstone League"
+    assert len(raw.matchups) == 12
 
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
@@ -106,7 +109,7 @@ def test_load_raw_without_schedule(fixture_raw_dir, tmp_path):
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "schedule.json").unlink()
-    assert set(load_raw(raw_dir)) == {*RAW_FILES, "projections_ahead"}
+    assert load_raw(raw_dir).model_fields_set == {*RAW_FILES, "projections_ahead"}
 
 
 def _fake_projections_get(calls: list[str]):
@@ -170,9 +173,9 @@ def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
     ahead = sleeper.fetch_projections_ahead(2026, 6)
-    assert [entry["week"] for entry in ahead] == list(range(7, 15))
+    assert [entry.week for entry in ahead] == list(range(7, 15))
     assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
-    assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
+    assert ahead[0].model_dump() == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
 
 
 def _live_get(stats):
@@ -183,8 +186,8 @@ def _live_get(stats):
                 raise stats
             return stats
         if url.endswith("/state/nfl"):
-            return {"season": "2026", "display_week": 7}
-        return {} if url.endswith("/league/1") else []
+            return {"season": "2026", "display_week": 7, "season_start_date": "2026-09-09"}
+        return EMPTY_LEAGUE if url.endswith("/league/1") else []
     return get
 
 
@@ -197,7 +200,7 @@ def test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_
     # The snapshot names the stats as stale only for a failed fetch, so the two cases must differ in the raw.
     monkeypatch.setattr(sleeper, "_get", _live_get(httpx.ConnectError("down")))
     failed, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
-    assert failed["stats"] is None
+    assert failed.stats is None
     monkeypatch.setattr(sleeper, "_get", _live_get([]))
     empty, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
-    assert empty["stats"] == []
+    assert empty.stats == []

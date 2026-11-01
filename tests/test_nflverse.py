@@ -93,12 +93,12 @@ def test_read_injuries(fixture_nflverse_dir):
 
 
 def test_gsis_from_blob_strips_space(fixture_raw_dir):
-    assert gsis_id("5927", load_raw(fixture_raw_dir)["players"], {}) == "00-0035659"
+    assert gsis_id("5927", load_raw(fixture_raw_dir).players, {}) == "00-0035659"
 
 
 def test_gsis_from_id_map_for_golden(fixture_raw_dir, fixture_nflverse_dir):
     ids = read_id_map(fixture_nflverse_dir / "db_playerids.csv")
-    assert gsis_id("12501", load_raw(fixture_raw_dir)["players"], ids) == "00-0040667"
+    assert gsis_id("12501", load_raw(fixture_raw_dir).players, ids) == "00-0040667"
 
 
 def test_download_falls_back_to_a_stale_cache(tmp_path):

@@ -15,6 +15,7 @@ from cornerstone.models import (
 from cornerstone.parse import player_name
 from cornerstone.ranks import in_pool
 from cornerstone.sheet import Nums, fact
+from cornerstone.sleeper import RawWeek
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS,
@@ -34,7 +35,7 @@ TRENDING_REASON = "trending"
 
 
 def waiver_board(
-    raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
+    raw: RawWeek, week: int, built: datetime, nfl: NflverseWeek | None = None,
     claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None, returns: dict[str, int] | None = None,
 ) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
@@ -46,14 +47,14 @@ def waiver_board(
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
-    pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if in_pool(entry, rostered, pid)}
+    pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
     ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = _rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
-    inputs = waiver_buckets.BucketInputs(raw["players"], week, slow, returns or {},
+    inputs = waiver_buckets.BucketInputs(raw.players, week, slow, returns or {},
                                          lambda pid: rest_of_season(ahead, pid, week))
     players = [
         _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
@@ -97,21 +98,21 @@ def _return_week(entry: dict, player_id: str, inputs: waiver_buckets.BucketInput
     return inputs.return_week_of(player_id) if entry.get("injury_status") in OUT_STATUSES else None
 
 
-def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
+def _budgets(raw: RawWeek) -> list[BudgetRow]:
     """One row per roster in roster order: the league budget minus the budget used, and the waiver position."""
     return [
         BudgetRow(
-            roster_id=roster["roster_id"],
+            roster_id=roster.roster_id,
             budget_left=budget_left(raw, roster),
-            waiver_order=roster["settings"]["waiver_position"],
+            waiver_order=roster.settings.waiver_position,
         )
-        for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"])
+        for roster in sorted(raw.rosters, key=lambda r: r.roster_id)
     ]
 
 
-def _rostered(raw: dict[str, object]) -> set[str]:
+def _rostered(raw: RawWeek) -> set[str]:
     # A roster with no players has None in rosters.json.
-    return {pid for roster in raw["rosters"] for pid in roster.get("players") or []}
+    return {pid for roster in raw.rosters for pid in roster.players or []}
 
 
 def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[str, float]:
@@ -168,9 +169,9 @@ def _rank_key(p: WaiverPlayer) -> tuple[float, float, str]:
     return -p.board_score, -p.ros_projection, p.player_id
 
 
-def _trending_counts(raw: dict[str, object]) -> dict[str, int]:
+def _trending_counts(raw: RawWeek) -> dict[str, int]:
     """The trending count of each player in the trending file. A week with no file has no counts."""
-    return {row["player_id"]: row["count"] for row in raw.get("trending", [])}
+    return {row.player_id: row.count for row in raw.trending or []}
 
 
 def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:

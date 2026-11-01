@@ -3,15 +3,16 @@ The projections of the waiver board: the week N+1 projection and the rest of sea
 One place for the sum, so the pool and the drops bucket read a player the same way.
 """
 from cornerstone.numbers import r2
+from cornerstone.sleeper import RawWeek
 from cornerstone.tunables import LAST_SEASON_WEEK
 
 # The projections of each week ahead by player ID, keyed by week.
 Ahead = dict[int, dict[str, float]]
 
 
-def projections_ahead(raw: dict[str, object]) -> Ahead:
+def projections_ahead(raw: RawWeek) -> Ahead:
     """The projections ahead file of the raw files by week. A week with no file has no projections."""
-    return {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
 def next_week(ahead: Ahead, player_id: str, week: int) -> float:
