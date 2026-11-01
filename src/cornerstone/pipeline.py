@@ -263,7 +263,8 @@ def make_bundle(
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
     snapshot = week_snapshot(raw, history_root(repo, season), week)
-    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot)
+    bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot,
+                          today=started.date())
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.
@@ -305,6 +306,8 @@ def run_build(
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
     research: SearchCall | None = None,
+    # The clock is a parameter so a build is reproducible. The golden test is the first caller.
+    started: datetime | None = None,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_dir = directory / "raw"
@@ -319,7 +322,7 @@ def run_build(
 
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
-        repo, season, week, news, fetched=first_fetch.fetched if first_fetch else None,
+        repo, season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,
         nflverse=nflverse or fetch_nflverse(repo))
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
     # No argument means the real search. A test passes a fake one.
