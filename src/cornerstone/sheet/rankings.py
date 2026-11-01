@@ -4,6 +4,7 @@ The rankings chapter reads them, and the chapter itself comes from here.
 """
 from collections.abc import Callable
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
     TREND_WEEKS,
     head_to_head,
@@ -18,7 +19,7 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import round_half_up
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Nums, fact
+from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Context, Nums, fact
 from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
 
@@ -28,6 +29,21 @@ COMPONENT_WORDS = {
     "standing": "standing", "form": f"results over the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
     "scoring": "scoring",
 }
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the rankings chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return (
+        power_facts(bundle.power, bundle.team)
+        + rank_why_facts(bundle.history, bundle.power, bundle.before, bundle.team)
+        + odds_facts(bundle.odds, bundle.team)
+        + swing_facts(bundle.odds, [(nx.a, nx.b) for nx in bundle.next if nx.must_watch], bundle.team)
+        + odds_why_facts(bundle.odds, bundle.season_scores, bundle.projected, bundle.remaining, bundle.team)
+    )
 
 
 def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact]:

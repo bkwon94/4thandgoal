@@ -5,6 +5,7 @@ The next week chapter reads them.
 from collections.abc import Callable
 
 from cornerstone.adjusters import bye_covers_for_roster
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_nflverse import shootouts
 from cornerstone.models import (
     ByePlayer,
@@ -16,6 +17,15 @@ from cornerstone.models import (
 from cornerstone.numbers import count_noun, one_decimal_text
 from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
 from cornerstone.snapshot import Snapshot
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the next week chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return pick_facts(bundle) + next_facts(bundle) + shootout_facts(bundle)
 
 
 def pick_facts(c: Context) -> list[Fact]:

@@ -3,11 +3,21 @@ Builds the family of facts for each matchup: the result, the lines, the story, a
 The recap and Matchup of the Week chapters read them.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Fact,
     sub,
 )
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the matchups chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return matchup_fact_family(bundle)
 
 
 def matchup_fact_family(c: Context) -> list[Fact]:

@@ -3,11 +3,21 @@ Builds the award facts and the expected award facts.
 The awards and Game Changer chapters read them.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_nflverse import expected_awards
 from cornerstone.models import (
     Fact,
 )
 from cornerstone.sheet.base import AWARD_TITLES, Context, Nums, fact, _news_facts
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the awards chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return award_facts(bundle) + expected_award_facts(bundle)
 
 
 def award_facts(c: Context) -> list[Fact]:

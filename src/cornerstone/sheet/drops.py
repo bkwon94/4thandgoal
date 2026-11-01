@@ -4,11 +4,21 @@ They come from the nflverse data, so a week with no nflverse data has none.
 """
 from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     DropLine,
     Fact,
 )
 from cornerstone.sheet.base import Context, Nums, fact, _pregame_text, _weeks
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the drops chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return drop_facts(bundle) + injury_facts_nfl(bundle)
 
 
 def _drop_fact(c: Context, d: DropLine) -> list[Fact]:

@@ -4,6 +4,7 @@ The standings facts place each team against the last playoff spot.
 """
 from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Fact,
 )
@@ -18,6 +19,15 @@ CUT_PHRASES = {
     "at": "in the last playoff spot",
     "below": "{spots} outside the playoff spots",
 }
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the standings chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return standings_facts(bundle) + median_facts_sheet(bundle)
 
 
 def cut_phrase(rank: int, last_spot: int, n: Nums) -> str:

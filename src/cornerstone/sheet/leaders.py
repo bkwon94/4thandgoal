@@ -3,6 +3,7 @@ Builds the position leader facts, the position rank facts, and the history facts
 The position leaders chapter and the history caps read them.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
     TREND_WEEKS,
 )
@@ -16,6 +17,18 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import r2
 from cornerstone.sheet.base import Context, Nums, fact, _trend_text
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the leaders chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return (
+        rank_facts(bundle) + leader_facts(bundle) + strength_facts(bundle) + history_facts(bundle)
+        + player_trend_facts(bundle)
+    )
 
 
 def rank_facts(c: Context) -> list[Fact]:
