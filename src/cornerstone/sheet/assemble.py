@@ -24,7 +24,6 @@ from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, sentence_range, wee
 from cornerstone.sheet.rankings import rankings_chapter
 from cornerstone.snapshot import Snapshot
 
-
 # The fact groups of the sheet, in the order the sheet lists their facts. This list alone sets that order.
 # A group reads only the context and the league config, so it needs no file and no clock. Every group takes the
 # config, so the assembly calls each group the same way. A group reads a league number from it when it needs one.

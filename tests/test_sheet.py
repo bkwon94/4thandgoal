@@ -2,6 +2,7 @@
 Tests for the fact sheet, the bundle, and the week gate.
 They run on the recorded week 6 data.
 """
+import itertools
 import logging
 import re
 from datetime import date
@@ -15,6 +16,7 @@ from cornerstone.history import load_history
 from cornerstone.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
 from cornerstone.odds import playoff_odds
 from cornerstone.parse import parse_week
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import (
     Context,
     build_bundle,
@@ -32,7 +34,6 @@ from cornerstone.sheet import (
     week_dates,
     write_bundle,
 )
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 
 CONFIG = cornerstone_config()
@@ -341,7 +342,7 @@ def test_position_leaders_are_the_top_three_started_at_each_position(bundle):
     for p in ("QB", "RB", "WR", "TE", "DEF"):
         board = [leader for leader in leaders if leader.position == p]
         assert [leader.rank for leader in board] == [1, 2, 3]
-        assert all(a.line.points >= b.line.points for a, b in zip(board, board[1:]))
+        assert all(a.line.points >= b.line.points for a, b in itertools.pairwise(board))
     assert all(leader.line.started for leader in leaders)
     rbs = [
         (leader.line.name, leader.of, bundle.data.teams[leader.roster_id].name)

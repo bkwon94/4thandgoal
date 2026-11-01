@@ -4,6 +4,7 @@ The module caches the parsed read per week, so the image read runs once.
 """
 import base64
 import io
+import itertools
 import json
 import logging
 import re
@@ -181,7 +182,7 @@ def guard_results(chart: ChartRead, week: int, prior_rows: int | None) -> dict[s
     values = [row.value for row in chart.rows]
     return {
         "header week": chart.week == week,
-        "trade values never rise": all(b <= a for a, b in zip(values, values[1:])),
+        "trade values never rise": all(b <= a for a, b in itertools.pairwise(values)),
         "trade values are half points from 0 to 100": all(0 <= v <= 100 and v * 2 == int(v * 2) for v in values),
         "positions are RB, WR, TE, or QB": all(row.position in POSITIONS for row in chart.rows),
         f"at least {MIN_ROWS} rows": len(values) >= MIN_ROWS,

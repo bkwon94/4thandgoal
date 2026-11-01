@@ -21,7 +21,6 @@ from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
 from cornerstone.tunables import SWING_FLAT, TREND_WEEKS, WHY_MOVE_AT, WHY_ODDS_AT
 
-
 # The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
 # reading it as scoring, which the .trend fact covers.
 COMPONENT_WORDS = {

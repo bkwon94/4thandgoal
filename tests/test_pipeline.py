@@ -11,34 +11,48 @@ import shutil
 import subprocess
 import tempfile
 from datetime import datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
+from fakes import fixture_nflverse, no_claims, no_network, no_news
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import HISTORY_FILES, load_saved_weeks
-from cornerstone.paths import history_dir, history_root, week_dir
-from cornerstone.models import History
-from cornerstone.parse import parse_week
-from pathlib import Path
-
 from cornerstone.models import (
-    Blurb, NflverseWeek, ResearchClaim, ResearchOut, Sentence, Verdict, VerifyOut,
+    Blurb,
+    History,
+    NflverseWeek,
+    ResearchClaim,
+    ResearchOut,
+    Sentence,
+    Verdict,
+    VerifyOut,
 )
 from cornerstone.nflverse import nflverse_week
-from cornerstone.power_rankings import power_rankings
+from cornerstone.parse import parse_week
+from cornerstone.paths import history_dir, history_root, week_dir
 from cornerstone.pipeline import (
-    BuildStopped, _nflverse_for_week, _rankings_chapter, _write_managers, _write_rankings, make_bundle, read_verify,
-    run_build, run_page_json, run_rankings, run_rewrite,
+    BuildStopped,
+    _nflverse_for_week,
+    _rankings_chapter,
+    _write_managers,
+    _write_rankings,
+    make_bundle,
+    read_verify,
+    run_build,
+    run_page_json,
+    run_rankings,
+    run_rewrite,
 )
+from cornerstone.power_rankings import power_rankings
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
-from fakes import fixture_nflverse, no_claims, no_network, no_news
 
 ET = ZoneInfo("America/New_York")
 # The league config the builds and fetches of these tests read.
@@ -48,7 +62,7 @@ CONFIG = cornerstone_config()
 def _fake(system, user, model):
     if model.__name__ == "VerifyOut":
         return VerifyOut(verdicts=[Verdict(index=0, supported=True, reason="ok")])
-    fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.M).group(1)
+    fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE).group(1)
     return model(sentences=[Sentence(text="Fact sentence.", fact_ids=[fid])] * 2)
 
 
@@ -304,10 +318,10 @@ class _RankingsWriter:
 
     def __call__(self, system, user, model):
         if model.__name__ == "VerifyOut":
-            count = len(re.findall(r"^\d+\. ", user, re.M))
+            count = len(re.findall(r"^\d+\. ", user, re.MULTILINE))
             return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(count)])
         self.writer_calls += 1
-        found = re.findall(r"^- (PR\.(\d+)): (.*)$", user, re.M)
+        found = re.findall(r"^- (PR\.(\d+)): (.*)$", user, re.MULTILINE)
         listed = re.search(r"^Cite each of these facts in its team's sentences: (.*)\.$", user, re.MULTILINE)
         required = listed.group(1).split(", ") if listed else []
         return model(sentences=[
@@ -620,7 +634,7 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir, offline):
     def rewrite_fake(system, user, model):
         if model.__name__ == "VerifyOut":
             return VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(2)])
-        fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.M).group(1)
+        fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.MULTILINE).group(1)
         return model(sentences=[Sentence(text="Rewritten median sentence.", fact_ids=[fid])] * 2)
 
     page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **offline, config=CONFIG)

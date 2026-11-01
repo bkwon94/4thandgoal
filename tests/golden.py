@@ -10,11 +10,12 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from fakes import fixture_nflverse, no_claims, no_news
+
 from cornerstone.config import cornerstone_config
 from cornerstone.paths import history_root, week_dir
 from cornerstone.pipeline import run_build
 from cornerstone.writer import WriterError
-from fakes import fixture_nflverse, no_claims, no_news
 
 FIXTURES = Path(__file__).parent / "fixtures"
 GOLDEN_DIR = FIXTURES / "golden"

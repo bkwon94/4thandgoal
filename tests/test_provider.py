@@ -7,6 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from fakes import HISTORY_FIXTURES, FixtureProvider, fixture_nflverse, no_claims, no_news
+
 from cornerstone.config import cornerstone_config
 from cornerstone.history import fetch_history
 from cornerstone.paths import history_root, week_dir
@@ -15,7 +17,6 @@ from cornerstone.provider.base import Provider
 from cornerstone.provider.raw import RawPastWeek, RawWeek
 from cornerstone.provider.sleeper import SLEEPER, SleeperProvider
 from cornerstone.writer import WriterError
-from fakes import HISTORY_FIXTURES, FixtureProvider, fixture_nflverse, no_claims, no_news
 
 CONFIG = cornerstone_config()
 

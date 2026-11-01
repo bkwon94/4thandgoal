@@ -14,7 +14,7 @@ def _no_nflverse(season, week, player_ids, players):
 
 
 def test_help_lists_commands():
-    out = subprocess.run(["uv", "run", "cornerstone", "--help"], capture_output=True, text=True)
+    out = subprocess.run(["uv", "run", "cornerstone", "--help"], capture_output=True, text=True, check=False)
     assert out.returncode == 0
     for cmd in ("build", "publish", "rewrite", "history"):
         assert cmd in out.stdout

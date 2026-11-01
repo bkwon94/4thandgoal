@@ -9,8 +9,8 @@ import pytest
 from cornerstone.config import cornerstone_config
 from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
-from cornerstone.sheet import build_bundle
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.sheet import build_bundle
 from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, template_blurb, write_blurb
 
 CONFIG = cornerstone_config()
@@ -216,8 +216,8 @@ def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
     for sentence in (
         '"Brutal pickup."',
         '"Not even close."',
-        '"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
-        'with Brock Purdy as Top Scorer."',
+        ('"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
+        'with Brock Purdy as Top Scorer."'),
         '"Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out."',
         '"Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47 in an upset."',
         '"Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much."',
@@ -539,8 +539,8 @@ def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
 
 def test_the_research_call_alone_sends_the_web_search_tool(monkeypatch):
     from cornerstone.models import ResearchOut
-    from cornerstone.writer import claude_call
     from cornerstone.waiver_research import search_call
+    from cornerstone.writer import claude_call
 
     sent = _fake_client(monkeypatch)
     search_call("research system", "user text")

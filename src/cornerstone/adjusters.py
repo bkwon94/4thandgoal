@@ -13,17 +13,28 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.history import (
-    SHARE_DIRECTION_WEEKS, air_yards_share, carry_share, player_points, red_zone, scored_weeks,
+    SHARE_DIRECTION_WEEKS,
+    air_yards_share,
+    carry_share,
+    player_points,
+    red_zone,
+    scored_weeks,
     stats_complete,
 )
+from cornerstone.models import ByePlayer
 from cornerstone.names import last_name
-from cornerstone.numbers import round_half_up
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
-from cornerstone.models import ByePlayer
+from cornerstone.numbers import round_half_up
 from cornerstone.ranks import (
-    OUT_STATUSES, POSITION_ORDER, RANKED_POSITIONS, _back_in_a_known_game, _played_weeks, due_back_week,
-    lineup_value, projection_ahead,
+    OUT_STATUSES,
+    POSITION_ORDER,
+    RANKED_POSITIONS,
+    _back_in_a_known_game,
+    _played_weeks,
+    due_back_week,
+    lineup_value,
+    projection_ahead,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (

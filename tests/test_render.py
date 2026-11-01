@@ -11,12 +11,17 @@ from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
 from cornerstone.parse import parse_week
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.render import (
-    _saved_avatars, _saved_headshots, build_context, render_managers, render_rankings, render_week,
+    _saved_avatars,
+    _saved_headshots,
+    build_context,
+    render_managers,
+    render_rankings,
+    render_week,
 )
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
-from cornerstone.provider.sleeper import load_raw
 
 CONFIG = cornerstone_config()
 

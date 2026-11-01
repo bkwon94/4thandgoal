@@ -6,9 +6,9 @@ from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.numbers import round_half_up
 from cornerstone.models import TeamWeek, UsageWeek
 from cornerstone.nflverse_rows import _number, _rows, _sleeper_team, _yardline
+from cornerstone.numbers import round_half_up
 
 # The play types of an offensive play. A kneel, a spike, a penalty with no play, and a kick are not plays.
 PLAY_TYPES = ("pass", "run")

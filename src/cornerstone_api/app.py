@@ -65,7 +65,7 @@ def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
     """
     try:
         sources.refresh_current_season(settings.repo)
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001 - the app keeps running after a failed refresh
         logger.warning("The start-up refresh of the slow sources failed (%s)", type(error).__name__)
 
 

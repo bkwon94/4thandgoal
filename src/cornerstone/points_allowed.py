@@ -8,8 +8,8 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from cornerstone.paths import history_week_dir
 from cornerstone.nflverse import SKILL_POSITIONS
+from cornerstone.paths import history_week_dir
 
 
 class PositionAllowed(BaseModel):

@@ -89,7 +89,7 @@ def test_drivers_are_started_lines(fixture_raw_dir):
 
 
 def test_recent_moves_are_started_players_on_the_side(fixture_raw_dir):
-    wk, m, f = _matchup_4(fixture_raw_dir)
+    _wk, m, f = _matchup_4(fixture_raw_dir)
     started = {(s.roster_id, line.player_id) for s in (m.a, m.b) for line in s.lines if line.started}
     assert f.recent_moves
     assert all((mv.roster_id, mv.player_id) in started for mv in f.recent_moves)

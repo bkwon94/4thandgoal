@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from cornerstone.provider.raw import RawPastWeek, RawTrending, RawWeek
 from cornerstone.provider.sleeper import load_raw
 

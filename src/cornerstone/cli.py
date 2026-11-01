@@ -23,14 +23,29 @@ from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.paths import history_root, nflverse_cache_dir, raw_dir
 from cornerstone.pipeline import (
-    BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_page_json,
-    run_rankings, run_rewrite,
+    BuildStopped,
+    has_raw,
+    preview,
+    resolve_week,
+    run_build,
+    run_history,
+    run_page_json,
+    run_rankings,
+    run_rewrite,
 )
 from cornerstone.provider.raw import RawWeek
 from cornerstone.provider.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
 from cornerstone.rubric import (
-    MAX_SIDES, MIN_SIDES, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, verdict,
+    MAX_SIDES,
+    MIN_SIDES,
+    Fairness,
+    GivenPlayer,
+    ProposedTrade,
+    TradeSide,
+    fairness,
+    grade,
+    verdict,
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot

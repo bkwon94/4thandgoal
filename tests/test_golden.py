@@ -5,7 +5,6 @@ Run `make golden` to rewrite the saved copies after a change on purpose.
 import difflib
 
 import pytest
-
 from golden import GOLDEN_DIR, GOLDEN_FILES, build_golden
 
 

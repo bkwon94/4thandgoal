@@ -4,10 +4,20 @@ This is the only module that knows the shape of the raw data.
 """
 from collections import defaultdict
 from collections.abc import Sequence
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from cornerstone.models import (
-    DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, ProjectionsAhead, Side, Team, Trade, Week,
+    DraftPick,
+    Drop,
+    Matchup,
+    Move,
+    PastWeek,
+    PlayerLine,
+    ProjectionsAhead,
+    Side,
+    Team,
+    Trade,
+    Week,
 )
 from cornerstone.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
 
@@ -188,7 +198,7 @@ def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
     return [
         Trade(
             transaction_id=t.transaction_id,
-            created=datetime.fromtimestamp(t.created / 1000, tz=timezone.utc),
+            created=datetime.fromtimestamp(t.created / 1000, tz=UTC),
             roster_ids=t.roster_ids,
             adds=t.adds or {},
             drops=t.drops or {},

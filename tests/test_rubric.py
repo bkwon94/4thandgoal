@@ -9,23 +9,37 @@ from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 import pytest
-
 from conftest import strip_trend_numbers, with_carries, with_free_agents
 
 from cornerstone import rubric, tunables
-from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.adjusters import (
-    TREND, _byes_left, _return_bet, _wopr, best_lineup, bye_covers, due_back_week, lineup_value,
+    TREND,
+    _byes_left,
+    _return_bet,
+    _wopr,
+    best_lineup,
+    bye_covers,
+    due_back_week,
+    lineup_value,
     rubric_adjusters,
 )
+from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.config import cornerstone_config
 from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import (
-    Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
+    Adjuster,
+    Breakdown,
+    ProposedTrade,
+    TradeInputError,
+    TradeSide,
+    Verdict,
+    fairness,
+    grade,
+    verdict,
 )
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 from cornerstone.trade_facts import trade_fact_sheet

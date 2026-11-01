@@ -5,7 +5,7 @@ It writes one raw JSON file per endpoint and reads them back.
 import json
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -244,7 +244,7 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[RawWeek, dateti
         rosters = _get(client, f"{league}/rosters")
         # The code takes the time right after the rosters return, because the rosters are the freshest fact here.
         # The fetcher shape has no timezone, so the time is in UTC and the caller puts it in the league timezone.
-        fetched = datetime.now(timezone.utc)
+        fetched = datetime.now(UTC)
         # The stats are None on a failed call, so the snapshot names them stale. An empty list is no game yet.
         stats = _get_or_none(client, f"{UNOFFICIAL_URL}/stats/nfl/{season}/{week}", _position_params())
         data = _league_raw(client, league, season, week, players_cache,

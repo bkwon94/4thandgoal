@@ -5,9 +5,9 @@ The usage takes its targets and target share from this file, so the report count
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.numbers import round_half_up
 from cornerstone.models import UsageWeek
 from cornerstone.nflverse_rows import _number, _rows
+from cornerstone.numbers import round_half_up
 
 # The positions the usage covers. A defender can draw a target on a trick play, but he has no usage.
 # The Sleeper position map is the real gate, because only its skill players have a Sleeper ID in the gsis map.

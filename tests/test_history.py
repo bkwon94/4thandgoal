@@ -8,7 +8,6 @@ import shutil
 
 import pytest
 
-from cornerstone.paths import history_week_dir
 from cornerstone.history import (
     HISTORY_FILES,
     fetch_history,
@@ -24,6 +23,7 @@ from cornerstone.history import (
 )
 from cornerstone.models import UsageShare
 from cornerstone.parse import parse_moves, parse_week
+from cornerstone.paths import history_week_dir
 from cornerstone.provider.sleeper import fetch_past_week, load_raw
 
 

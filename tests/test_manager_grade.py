@@ -11,15 +11,24 @@ import pytest
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
-    GradeParts, SlotRank, _league_reads, depth_word, grade_letter, grade_read, grade_score, position_ranks,
-    projected_values, roster_grades, roster_parts,
+    GradeParts,
+    SlotRank,
+    _league_reads,
+    depth_word,
+    grade_letter,
+    grade_read,
+    grade_score,
+    position_ranks,
+    projected_values,
+    roster_grades,
+    roster_parts,
     season_points_per_game,
 )
 from cornerstone.managers import managers
 from cornerstone.models import ChartValues, History, PastWeek
 from cornerstone.parse import parse_week
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.season_inputs import SeasonInputs
 from cornerstone.snapshot import week_snapshot
 from cornerstone.tunables import GRADE_WEIGHTS
 

@@ -16,7 +16,12 @@ from cornerstone.sheet.base import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
-    normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
+    normalize_number,
+    number_failures,
+    remove_names,
+    repeat_failure,
+    team_mentions,
+    whole_word,
 )
 from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 

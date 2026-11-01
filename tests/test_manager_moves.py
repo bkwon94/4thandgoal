@@ -3,13 +3,13 @@ Tests for the moves of a managers entry: the adds, the drops, and the trades per
 They run on small histories built in the test, and on the saved transactions of the fixture history.
 """
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from cornerstone.managers import managers
 from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
 from cornerstone.parse import parse_drops
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.provider.raw import RawTransaction
+from cornerstone.season_inputs import SeasonInputs
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},
@@ -40,7 +40,7 @@ def _moves(weeks: list[PastWeek], roster_id: int = 1, players=PLAYERS) -> dict:
 
 def _trade(week: int) -> Trade:
     # Roster 1 gives the TE and gets the QB and the RB from roster 2.
-    return Trade(transaction_id=f"t{week}", created=datetime(2026, 9, 20, tzinfo=timezone.utc), roster_ids=[1, 2],
+    return Trade(transaction_id=f"t{week}", created=datetime(2026, 9, 20, tzinfo=UTC), roster_ids=[1, 2],
                  adds={"400": 1, "200": 1, "300": 2}, drops={"400": 2, "200": 2, "300": 1}, draft_picks=[])
 
 

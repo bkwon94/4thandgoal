@@ -188,7 +188,7 @@ def _download_bytes(url: str) -> bytes | None:
     """Fetch one image. Return None on any failure, so a build never stops on one avatar."""
     try:
         resp = httpx.get(url, timeout=AVATAR_TIMEOUT, follow_redirects=True)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - a build never stops on one avatar
         log.warning("Image fetch failed for %s: %s", url, exc)
         return None
     if resp.status_code != 200:
