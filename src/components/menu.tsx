@@ -10,11 +10,13 @@ import { currentPage } from "@/components/current-page";
 import { Dialog, DialogOverlay, DialogPopup, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { ThemeButton } from "@/components/theme-button";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { basePath } from "@/lib/config";
 import { DROP, DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 
 /* One place the menu links to. The href carries the base path, because every link is a plain anchor. */
 export type Destination = { label: string; href: string };
+
+/* The home link and the logo src of the brand, each with the base path. The logo src sits with the link, because it takes the base path the same way. */
+export type Brand = { home: string; logo: string };
 
 /* The destinations of the menu: the pages first, then the past weeks, newest first, under their own heading. */
 export type Destinations = { pages: Destination[]; pastWeeks: Destination[] };
@@ -28,6 +30,8 @@ type MenuProps = {
 type MenuIslandProps = MenuProps & {
   // The brand title of the masthead. It names the home link of the compact bar, where the logo shows with no title.
   title: string;
+  // The home link and the logo of the compact bar. The masthead passes its own.
+  brand: Brand;
 };
 
 /* The distance in px of the top and the bottom line of the icon from its middle line. */
@@ -195,11 +199,17 @@ function Row({ destinations, pageHref, label, className, withThemeButton }: RowP
   );
 }
 
-type CompactBarProps = { title: string; off: boolean; children: ReactNode; ref: Ref<HTMLDivElement> };
+type CompactBarProps = {
+  title: string;
+  brand: Brand;
+  off: boolean;
+  children: ReactNode;
+  ref: Ref<HTMLDivElement>;
+};
 
 /* The compact bar: a 44px black bar fixed to the top of the viewport, with the brand mark and the menu.
    It is fixed, so it takes no space in the page flow and the page under it never jumps. */
-function CompactBar({ title, off, children, ref }: CompactBarProps) {
+function CompactBar({ title, brand, off, children, ref }: CompactBarProps) {
   // The bar slides down from above the viewport and fades in, and leaves along the same path. With motion off it only cross-fades.
   const offset = off ? {} : { y: "-100%" };
   return (
@@ -218,8 +228,8 @@ function CompactBar({ title, off, children, ref }: CompactBarProps) {
       <div className="mx-auto flex h-full max-w-page items-center justify-between gap-sp-3 px-gutter">
         {/* The bar shows the logo with no title, so the logo names the home link. */}
         {/* The link takes the full height of the bar, so it is a 44px tap target around the 30px logo. */}
-        <a href={`${basePath}/`} className="flex h-touch flex-none items-center">
-          <img src={`${basePath}/images/logo.png`} alt={title} width={30} height={30} className="size-logo rounded-full" />
+        <a href={brand.home} className="flex h-touch flex-none items-center">
+          <img src={brand.logo} alt={title} width={30} height={30} className="size-logo rounded-full" />
         </a>
         {children}
       </div>
@@ -227,7 +237,7 @@ function CompactBar({ title, off, children, ref }: CompactBarProps) {
   );
 }
 
-export function Menu({ destinations, pageHref, title }: MenuIslandProps) {
+export function Menu({ destinations, pageHref, title, brand }: MenuIslandProps) {
   const [open, setOpen] = useState(false);
   const off = useMotionOff();
   const listId = useId();
@@ -301,7 +311,7 @@ export function Menu({ destinations, pageHref, title }: MenuIslandProps) {
         />
         <AnimatePresence>
           {barShown && (
-            <CompactBar ref={barRef} title={title} off={off}>
+            <CompactBar ref={barRef} title={title} brand={brand} off={off}>
               <Row destinations={destinations} pageHref={pageHref} label="Top bar menu" className="" withThemeButton />
               {/* The bar never renders with scripts off, so the theme button here needs no scripting rule. */}
               <ThemeButton className="ml-auto desktop:hidden" />

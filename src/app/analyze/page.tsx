@@ -7,7 +7,8 @@ import type { Metadata } from "next";
 import { Analyzer } from "@/components/analyzer";
 import { Masthead } from "@/components/masthead";
 import { PageColumn } from "@/components/page-column";
-import { basePath } from "@/lib/config";
+import { analyzeHref } from "@/lib/routes";
+import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Trade Analyzer · Cornerstone Fantasy Football League",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export default function AnalyzePage() {
   return (
     <>
-      <Masthead subtitle="Trade Analyzer" pageHref={`${basePath}/analyze/`} />
+      <Masthead {...mastheadProps()} subtitle="Trade Analyzer" pageHref={analyzeHref()} />
       <PageColumn>
         <Analyzer />
       </PageColumn>

@@ -1,5 +1,5 @@
 /**
- * One builder per destination. Each joins the base path to the route.
+ * One builder per href or src. Each joins the base path to the route.
  * The app layer calls them, so a link change starts in this file.
  */
 import { basePath } from "./config";
@@ -12,3 +12,5 @@ export const weekHref = (season: string, week: string) => `${basePath}/${season}
 export const waiverHref = (season: string, week: string) => `${weekHref(season, week)}waiver/`;
 export const managersHref = (season: string) => `${basePath}/${season}/managers/`;
 export const managerHref = (season: string, rosterId: number) => `${managersHref(season)}${rosterId}/`;
+/* The logo is a plain img on every page, so its src takes the base path like a link. */
+export const logoSrc = () => `${basePath}/images/logo.png`;

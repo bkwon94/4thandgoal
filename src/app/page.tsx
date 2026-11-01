@@ -10,19 +10,21 @@ import { Movement } from "@/components/rankings/power-rankings";
 import { Reveal } from "@/components/reveal";
 import { TeamsPrefetch } from "@/components/teams-prefetch";
 import { Blurb, Chapter, Label } from "@/components/week/parts";
-import { basePath, season } from "@/lib/config";
+import { season } from "@/lib/config";
 import { currentManagersHref } from "@/lib/data/manager-data";
 import { stagger } from "@/lib/motion";
 import { biggestMover } from "@/lib/format/rankings";
 import { loadRankings } from "@/lib/data/rankings-data";
+import { analyzeHref, homeHref, rankingsHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { listWeekSummaries } from "@/lib/data/week-data";
+import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Cornerstone Fantasy Football League",
 };
 
-/* A plain anchor, like the masthead link. An anchor skips the router, so the caller adds the base path by hand. */
+/* A plain anchor, like the masthead link. An anchor skips the router, so the caller passes an href with the base path. */
 function HomeRow({ href, first, children }: { href: string; first?: boolean; children: ReactNode }) {
   return (
     <a
@@ -50,7 +52,7 @@ export default function HomePage() {
     <>
       {/* A reader who opens the analyzer next sees the pickers at once, because the teams are already in session storage. */}
       <TeamsPrefetch />
-      <Masthead pageHref={`${basePath}/`}>
+      <Masthead {...mastheadProps()} pageHref={homeHref()}>
         <WeekLine label="SEASON" number={season} />
       </Masthead>
       <PageColumn>
@@ -65,7 +67,7 @@ export default function HomePage() {
             <Label heading>Tools</Label>
             {/* The row reveals first, so a new week never pushes it down or delays it. */}
             <Reveal delay={stagger(0)}>
-              <HomeRow href={`${basePath}/analyze/`} first>
+              <HomeRow href={analyzeHref()} first>
                 <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Trade Analyzer</b>
                 <span className="block text-meta text-mute">Grade a trade offer before you send it.</span>
                 <span className="block text-meta text-mute">League passphrase needed.</span>
@@ -85,7 +87,7 @@ export default function HomePage() {
             <Chapter>
               <Label heading>Power Rankings</Label>
               <Reveal delay={stagger(1)}>
-                <HomeRow href={`${basePath}/rankings/`} first>
+                <HomeRow href={rankingsHref()} first>
                   <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Top Three</b>
                   <ol className="m-0 mb-sp-1 list-none p-0">
                     {rankings.rows.slice(0, 3).map((row) => (
@@ -112,7 +114,7 @@ export default function HomePage() {
           {weeks.map((week, index) => (
             // Each row reveals once after the rows above it, with a short, capped stagger, so a row in a long season list never shows late.
             <Reveal key={week.href} delay={stagger(index + firstWeekStep)}>
-              <HomeRow href={`${basePath}${week.href}`} first={index === 0}>
+              <HomeRow href={week.href} first={index === 0}>
                 <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Week {week.number}</b>
                 <span className="block text-meta text-mute tabular-nums">{week.dates}</span>
               </HomeRow>

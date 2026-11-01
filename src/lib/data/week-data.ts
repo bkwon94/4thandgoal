@@ -5,8 +5,9 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the readers, which import this module.
+import { weekHref } from "../routes";
 import { weekPageSchema } from "../schemas/week";
-import type { WeekPage } from "../week-types";
+import type { WeekPage, WeekSummary } from "../week-types";
 
 /* The build and the tests both run from the repo root, so public/ sits under the working folder. */
 const PUBLIC_DIR = join(process.cwd(), "public");
@@ -48,13 +49,6 @@ export function loadWeek(season: string, week: string): WeekPage {
   return weekPageSchema.parse(page);
 }
 
-/* One row of the home page list. */
-export type WeekSummary = {
-  number: number;
-  dates: string;
-  href: string;
-};
-
 /* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */
 export function listWeekSummaries(): WeekSummary[] {
   return listWeeks()
@@ -64,7 +58,7 @@ export function listWeekSummaries(): WeekSummary[] {
       return {
         number: page.week,
         dates: page.dates,
-        href: `/${season}/${week}/`,
+        href: weekHref(season, week),
       };
     });
 }
