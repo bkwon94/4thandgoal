@@ -1,6 +1,6 @@
 # 05: Components take hrefs and the season as props, and the rule test
 
-**What to build:** The six components that build their own hrefs take them as props from the app layer. The two components that send the season in an API body take it as a prop. A test reads every file under the components folder and fails when a file imports the node fs, the config module, or a data loader, or reads the process env. ADR 0004 records the rule.
+**What to build:** The six components that build their own hrefs take them as props from the app layer. The two components that send the season in an API body take it as a prop. A test reads every file under the components folder and fails when a file imports the node fs, the config module, or a data loader, or reads the process env. ADR 0004 records the rule. This closes manager-pages site ticket 12: the week parts build the manager link by hand today, and after this ticket a link change touches only the routes module.
 
 **Blocked by:** 04
 
