@@ -2,8 +2,8 @@
 Builds the fact sheet and the bundle that the writer and the page read.
 The fact sheet is the only input the writer sees, so each fact carries every number as the page shows it.
 """
-# The package re-exports every name that a caller imported from the sheet module, so no caller changes when
-# the module becomes a package. Ticket 11 cuts the re-exports down.
+# The package re-exports the names that callers use. A caller that needs a chapter function imports it from
+# here, and a caller that needs only a base name imports cornerstone.sheet.base. Ticket 11 cuts the re-exports down.
 from cornerstone.sheet.assemble import build_bundle, read_bundle, write_bundle
 from cornerstone.sheet.base import (
     AWARD_TITLES,

@@ -1,6 +1,6 @@
 """
-The parts of the fact sheet that every chapter group shares: the number tokens, Nums, fact, and Context.
-Modules outside the sheet import from here, so they do not depend on a chapter module.
+The shared parts of the fact sheet: the number tokens, Nums, fact, Context and the odds it builds, the chapter
+tests, the week gate, and the text helpers that two chapters share. Modules outside the sheet import from here.
 """
 import logging
 import re
