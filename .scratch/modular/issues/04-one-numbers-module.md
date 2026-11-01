@@ -9,3 +9,4 @@
 - [ ] No module defines its own round, ordinal, or plural function. The two `_plural` helpers with different signatures become one function or two named functions.
 - [ ] No module imports a private name from another module for a number function.
 - [ ] No rounding result changes. The four golden tests pass with no golden change.
+- [ ] The module this ticket makes is in the `pyright` include list, and `make typecheck` passes.

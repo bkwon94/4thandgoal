@@ -11,3 +11,4 @@
 - [ ] The parser takes the owner's username from the config. `is_owner` replaces `is_brian` in the models and the tests.
 - [ ] The API settings still read the passphrase from the environment.
 - [ ] The four golden tests pass with no golden change.
+- [ ] The module this ticket makes is in the `pyright` include list, and `make typecheck` passes.
