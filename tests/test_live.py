@@ -516,7 +516,7 @@ class ProjectionsRecorder:
     def __init__(self):
         self.calls = []
 
-    def __call__(self, season, week):
+    def __call__(self, season, week, last_regular_week):
         self.calls.append((season, week))
         return [RawAheadWeek(week=7, projections={"5850": 18.0})]
 

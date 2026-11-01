@@ -323,7 +323,8 @@ def run_build(
     # The page and the season files read this one load of the raw week.
     # A fetch gives back the week it saved, so a fetched week loads once too.
     if fetch:
-        raw = provider.fetch_week(config.league_id(season), season, week, raw_path, players_cache(repo), config.tz)
+        raw = provider.fetch_week(config.league_id(season), season, week, raw_path, players_cache(repo), config.tz,
+                                  config.last_regular_week, config.last_season_week)
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
     else:

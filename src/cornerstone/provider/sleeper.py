@@ -13,7 +13,7 @@ import httpx
 
 from cornerstone.files import write_bytes_atomic
 from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawState, RawTransaction, RawWeek
-from cornerstone.tunables import LAST_REGULAR_WEEK, LAST_SEASON_WEEK, POOL_POSITIONS
+from cornerstone.tunables import POOL_POSITIONS
 
 logger = logging.getLogger(__name__)
 
@@ -134,19 +134,19 @@ def read_prev_transactions(raw_dir: Path) -> list[RawTransaction] | None:
     return [RawTransaction.model_validate(t) for t in json.loads(path.read_text(encoding="utf-8"))]
 
 
-def _schedule(client: httpx.Client, league: str, week: int) -> list[dict]:
-    """One entry per week from week + 2 to LAST_REGULAR_WEEK, with the roster id and matchup id of each row."""
+def _schedule(client: httpx.Client, league: str, week: int, last_regular_week: int) -> list[dict]:
+    """One entry per week from week + 2 to `last_regular_week`, with the roster id and matchup id of each row."""
     # Only the pair keys stay. A future week has zero points and a lineup that can still change.
     return [
         {"week": w, "matchups": [
             {"roster_id": row["roster_id"], "matchup_id": row["matchup_id"]}
             for row in _get(client, f"{league}/matchups/{w}")
         ]}
-        for w in range(week + 2, LAST_REGULAR_WEEK + 1)
+        for w in range(week + 2, last_regular_week + 1)
     ]
 
 
-def _projections_ahead(client: httpx.Client, season: int, week: int, last: int = LAST_SEASON_WEEK) -> list[dict]:
+def _projections_ahead(client: httpx.Client, season: int, week: int, last: int) -> list[dict]:
     """One entry per week from week + 1 to `last`, with the half-PPR projection of each player."""
     # Every player stays, so the waiver board can rank the waiver pool.
     # A player with no half-PPR projection has no entry.
@@ -160,13 +160,13 @@ def _projections_ahead(client: httpx.Client, season: int, week: int, last: int =
     ]
 
 
-def fetch_projections_ahead(season: int, week: int) -> list[RawAheadWeek]:
-    """The projections ahead of `week` through LAST_REGULAR_WEEK, in the entries that fetch_week saves.
+def fetch_projections_ahead(season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
+    """The projections ahead of `week` through `last_regular_week`, in the entries that fetch_week saves.
 
     The trade grade reads no later week, so the live grade skips those calls.
     """
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
-        ahead = _projections_ahead(client, season, week, LAST_REGULAR_WEEK)
+        ahead = _projections_ahead(client, season, week, last_regular_week)
     return [RawAheadWeek.model_validate(entry) for entry in ahead]
 
 
@@ -202,8 +202,14 @@ def _league_raw(
     return {name: known[name] if name in known else call() for name, call in calls.items()}
 
 
-def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo) -> None:
-    """Fetch the raw files of `week` into `raw_dir`. The saved fetch time is in the league timezone `tz`."""
+def fetch_week(
+        league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
+        last_regular_week: int, last_season_week: int) -> None:
+    """Fetch the raw files of `week` into `raw_dir`. The saved fetch time is in the league timezone `tz`.
+
+    The schedule runs to `last_regular_week`. The projections ahead run to `last_season_week`, because the waiver
+    board reads the fantasy playoffs too.
+    """
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
         # Week N-1 comes first, so the fetch time below is later than both calls.
@@ -212,8 +218,8 @@ def fetch_week(league_id: str, season: int, week: int, raw_dir: Path, players_ca
         # The code takes the time right after the call returns. The page shows it and the history keeps it.
         fetched = datetime.now(tz)
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
-        schedule = _schedule(client, league, week)
-        projections_ahead = _projections_ahead(client, season, week)
+        schedule = _schedule(client, league, week, last_regular_week)
+        projections_ahead = _projections_ahead(client, season, week, last_season_week)
         trending = _trending(client)
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
@@ -289,8 +295,9 @@ class SleeperProvider:
     """
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo) -> RawWeek:
-        fetch_week(league_id, season, week, raw_dir, players_cache, tz)
+            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int) -> RawWeek:
+        fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week, last_season_week)
         # The build reads the week from the saved files, so the model it gets is the one a rebuild loads.
         return load_raw(raw_dir)
 
@@ -304,8 +311,8 @@ class SleeperProvider:
     def fetch_players(self, players_cache: Path) -> dict[str, dict]:
         return fetch_players(players_cache)
 
-    def fetch_projections(self, season: int, week: int) -> list[RawAheadWeek]:
-        return fetch_projections_ahead(season, week)
+    def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
+        return fetch_projections_ahead(season, week, last_regular_week)
 
 
 # The one Sleeper provider. It holds no state, so every caller shares it.

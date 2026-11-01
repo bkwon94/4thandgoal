@@ -38,7 +38,8 @@ def _fake_trending_get(calls: list[tuple[str, object]]):
 def test_the_week_fetch_saves_the_trending_file(tmp_path, monkeypatch):
     calls: list[tuple[str, object]] = []
     monkeypatch.setattr(sleeper, "_get", _fake_trending_get(calls))
-    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
+    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz, CONFIG.last_regular_week,
+               CONFIG.last_season_week)
     saved = json.loads((tmp_path / "raw" / "trending.json").read_text())
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
     assert [dict(params) for url, params in calls if url == TRENDING_URL] == [{"lookback_hours": 24, "limit": 50}]
