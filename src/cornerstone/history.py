@@ -13,6 +13,7 @@ from typing import Literal
 from cornerstone.facts_league import TREND_WEEKS
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
+from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
 from cornerstone.sleeper import fetch_past_week, read_prev_transactions
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
@@ -139,11 +140,6 @@ def player_trend(history: History, player_id: str, through: int | None = None) -
     return beaten
 
 
-def _round_half_up(x: float, places: int = 0) -> float:
-    """Round half up. Python's round() rounds half to even."""
-    return float(Decimal(str(x)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
-
-
 def stats_complete(history: History, through: int) -> bool:
     """True when every week from 1 to `through` is present and has stat lines.
 
@@ -230,10 +226,10 @@ def _usage_share(
         return 100 * sum(numerator(history.weeks[w]) for w in ws) / sum(denominator(history.weeks[w]) for w in ws)
 
     if len(weeks) < SHARE_DIRECTION_WEEKS:
-        return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None, weeks_used=weeks)
+        return UsageShare(percent=int(round_half_up(pct(weeks))), weeks=len(weeks), direction=None, weeks_used=weeks)
     recent, prior = weeks[-SHARE_WEEKS:], weeks[-SHARE_DIRECTION_WEEKS:-SHARE_WEEKS]
     return UsageShare(
-        percent=int(_round_half_up(pct(recent))),
+        percent=int(round_half_up(pct(recent))),
         weeks=SHARE_WEEKS,
         direction=share_direction(pct(recent), pct(prior)),
         weeks_used=recent,

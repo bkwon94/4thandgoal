@@ -5,7 +5,7 @@ The usage takes its targets and target share from this file, so the report count
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.history import _round_half_up
+from cornerstone.numbers import round_half_up
 from cornerstone.models import UsageWeek
 from cornerstone.nflverse_rows import _number, _rows
 
@@ -25,7 +25,7 @@ class PlayerWeek(NamedTuple):
 
 def _percent(text: str) -> int:
     # nflverse writes a share as a fraction, such as 0.325. WOPR is on the same scale, so it takes the same factor.
-    return int(_round_half_up(100 * _number(text)))
+    return int(round_half_up(100 * _number(text)))
 
 
 def read_player_weeks(path: Path, first_week: int, week: int,
