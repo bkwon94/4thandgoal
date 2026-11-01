@@ -30,6 +30,7 @@ from cornerstone.paths import (
     history_dir, history_root, nflverse_cache_dir, players_cache, raw_dir, returns_path, week_dir, week_from_label,
 )
 from cornerstone.power_rankings import power_rankings
+from cornerstone.provider.base import Provider
 from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import (
@@ -37,7 +38,7 @@ from cornerstone.sheet import (
     write_bundle,
 )
 from cornerstone.sleeper import (
-    PROJECTIONS_AHEAD_FILE, RawWeek, fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time,
+    PROJECTIONS_AHEAD_FILE, SLEEPER, RawWeek, fetch_news, fetch_state, load_raw, read_fetch_time,
     read_prev_transactions,
 )
 from cornerstone.slow_sources import load_slow_sources
@@ -312,19 +313,22 @@ def run_build(
     config: LeagueConfig,
     # The loader is a seam: a test passes a counted one to prove the raw week loads once per build.
     raw_loader: RawLoader = load_raw,
+    # The provider is a seam too. The config gives it the league id and the timezone of the fetch.
+    provider: Provider = SLEEPER,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_path = raw_dir(repo, season, week)
     # A rebuild keeps the first window, also after a refetch, so a trade never moves to another page.
     saved = directory / "verify.json"
     first_fetch = _first_build(saved)
+    # The page and the season files read this one load of the raw week.
+    # A fetch gives back the week it saved, so a fetched week loads once too.
     if fetch:
-        fetch_week(config.league_id(season), season, week, raw_path, players_cache(repo), config.tz)
+        raw = provider.fetch_week(config.league_id(season), season, week, raw_path, players_cache(repo), config.tz)
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
-
-    # The page and the season files read this one load of the raw week.
-    raw = raw_loader(raw_path)
+    else:
+        raw = raw_loader(raw_path)
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
         repo, season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,

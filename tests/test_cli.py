@@ -43,6 +43,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     import shutil
 
     from cornerstone import cli, pipeline
+    from cornerstone.provider.sleeper import SLEEPER
 
     def no_fetch(*args, **kwargs):
         raise AssertionError("saved raw data must not be fetched again")
@@ -50,7 +51,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     def no_claude(*args, **kwargs):
         raise AssertionError("the gate must stop the build before any Claude call")
 
-    monkeypatch.setattr(pipeline, "fetch_week", no_fetch)
+    monkeypatch.setattr(SLEEPER, "fetch_week", no_fetch)
     # The gate stops this build first. The patch keeps any later build off the network.
     monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
     monkeypatch.setattr(cli, "claude_call", no_claude)

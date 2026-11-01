@@ -39,7 +39,7 @@ def test_fetch_state_has_week():
 def test_truncated_players_cache_refetches(tmp_path, monkeypatch):
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     cache = tmp_path / "cache" / "players.json"
     cache.parent.mkdir()
@@ -55,7 +55,7 @@ def test_truncated_players_cache_refetches(tmp_path, monkeypatch):
 def test_unofficial_non_json_body_gives_empty():
     import httpx
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     transport = httpx.MockTransport(lambda request: httpx.Response(200, text="<html>"))
     with httpx.Client(transport=transport) as client:
@@ -76,7 +76,7 @@ def _fake_get(calls: list[str]):
 def _fetch_schedule(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_get(calls))
@@ -136,7 +136,7 @@ def _fake_projections_get(calls: list[str]):
 def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
@@ -168,7 +168,7 @@ def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
 
 def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
     # The trade grade reads no week after the last regular week, so the live fetch skips those calls.
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
@@ -194,7 +194,7 @@ def _live_get(stats):
 def test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_empty_list(tmp_path, monkeypatch):
     import httpx
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     monkeypatch.setattr(sleeper, "_players", lambda client, cache: {})
     # The snapshot names the stats as stale only for a failed fetch, so the two cases must differ in the raw.

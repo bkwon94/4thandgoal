@@ -16,7 +16,7 @@ import httpx
 
 from cornerstone.chart import chart_values
 from cornerstone.config import LeagueConfig
-from cornerstone.history import fetch_history, save_raw_to_history
+from cornerstone.history import PastLegFetcher, fetch_history, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
     CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL,
@@ -25,7 +25,7 @@ from cornerstone.nflverse import (
 from cornerstone.parse import parse_week
 from cornerstone.paths import history_root, history_week_dir, nflverse_cache_dir, players_cache, returns_path
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import RawAheadWeek, RawWeek, fetch_live_raw, fetch_past_week, fetch_projections_ahead
+from cornerstone.sleeper import SLEEPER, RawAheadWeek, RawWeek
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
@@ -33,10 +33,12 @@ from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECON
 logger = logging.getLogger(__name__)
 
 # The Sleeper fetch takes the league id and the players cache file. It gives the raw data and the fetch time.
+# It has the shape of Provider.fetch_live. Each fetcher here stays a callable, so a test fakes one fetch, not five.
 SleeperFetcher = Callable[[str, Path], tuple[RawWeek, datetime]]
 # The chart read takes the repo, the season start, the chart week, and the player lines.
 ChartReader = Callable[[Path, date, int, Iterable[PlayerLine]], ChartValues | None]
 # The projections fetch takes the season and the raw week. It gives the projections ahead of that week.
+# It has the shape of Provider.fetch_projections.
 ProjectionsFetcher = Callable[[int, int], list[RawAheadWeek]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
@@ -180,7 +182,7 @@ def refresh_sources(
         repo: Path, season: int, now: datetime, week: Week, *,
         config: LeagueConfig,
         fetch_nflverse: Callable[[str], bytes] = http_get,
-        fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
+        fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
         read_chart: ChartReader | None = chart_values,
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
     """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
@@ -231,11 +233,11 @@ def _build_live(
 
 def live_snapshot(
         repo: Path, season: int, *, config: LeagueConfig, now: datetime,
-        fetch_sleeper: SleeperFetcher = fetch_live_raw,
+        fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live,
         fetch_nflverse: Callable[[str], bytes] = http_get,
-        fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week,
+        fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
         read_chart: ChartReader | None = chart_values,
-        fetch_projections: ProjectionsFetcher = fetch_projections_ahead,
+        fetch_projections: ProjectionsFetcher = SLEEPER.fetch_projections,
         projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.
 
@@ -272,7 +274,7 @@ def live_snapshot(
 
 def live_rosters_snapshot(
         repo: Path, season: int, *, config: LeagueConfig, now: datetime,
-        fetch_sleeper: SleeperFetcher = fetch_live_raw) -> Snapshot:
+        fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live) -> Snapshot:
     """The snapshot of the league now for the rosters only. The teams route reads it.
 
     It fetches only Sleeper. It reads the slow sources and the history from the disk as they are. It refreshes
