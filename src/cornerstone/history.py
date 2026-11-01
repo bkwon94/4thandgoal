@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Literal
 
 from cornerstone.facts_league import TREND_WEEKS
+from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
@@ -324,7 +325,7 @@ def save_raw_to_history(raw: dict[str, object], out_dir: Path) -> None:
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in HISTORY_FILES:
-        (out_dir / f"{name}.json").write_text(json.dumps(raw[name]), encoding="utf-8")
+        write_bytes_atomic(out_dir / f"{name}.json", json.dumps(raw[name]).encode("utf-8"))
     _save_injuries(raw["matchups"], raw["players"], out_dir)
 
 
@@ -335,4 +336,4 @@ def _save_injuries(matchups: list[dict], players: dict[str, dict], out_dir: Path
             status = (players.get(player_id) or {}).get("injury_status")
             if status:
                 injuries[player_id] = status
-    (out_dir / "injuries.json").write_text(json.dumps(injuries, indent=2), encoding="utf-8")
+    write_bytes_atomic(out_dir / "injuries.json", json.dumps(injuries, indent=2).encode("utf-8"))

@@ -25,7 +25,9 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.414",
     "pytest>=9.1.1",
+    "ruff==0.0.272",
 ]
 
 [tool.pytest.ini_options]
@@ -34,6 +36,12 @@ addopts = "-m 'not live'"
 
 [tool.ruff]
 line-length = 120
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+# Backlog: history.py has three errors. One is a Decimal type error in a round function. Two are the object type of the raw dict.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/cornerstone/files.py", "src/cornerstone/render.py"]
 
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.
