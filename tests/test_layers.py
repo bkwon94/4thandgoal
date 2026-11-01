@@ -48,8 +48,8 @@ LAYER_OF: dict[str, str] = {
     "ranks": "load",
     "standings_table": "load",
     "snapshot": "load",
+    "season_inputs": "load",
     # facts
-    "season_inputs": "facts",  # PRD: load. It imports snapshot.
     "sheet": "facts",
     "sheet.assemble": "facts",
     "sheet.awards": "facts",
