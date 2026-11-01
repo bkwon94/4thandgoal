@@ -21,6 +21,7 @@ from cornerstone.nflverse import (
 from cornerstone.sleeper import RawAheadWeek, load_raw
 from cornerstone.snapshot import load_snapshot
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
+from fakes import FixtureProvider
 
 ET = ZoneInfo("America/New_York")
 # The league config the builds and fetches of these tests read.
@@ -42,9 +43,7 @@ def live_repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
 
 @pytest.fixture
 def sleeper(fixture_raw_dir):
-    def fetch(league_id, players_cache):
-        return load_raw(fixture_raw_dir), FETCHED
-    return fetch
+    return FixtureProvider(fixture_raw_dir, fetched=FETCHED).fetch_live
 
 
 class ChartRecorder:

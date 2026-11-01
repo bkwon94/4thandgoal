@@ -17,9 +17,14 @@ from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
 from cornerstone.paths import history_raw_dir, history_week_dir
 from cornerstone.sleeper import (
-    RawMatchup, RawPastWeek, RawTransaction, RawWeek, fetch_past_week, read_prev_transactions,
+    SLEEPER, RawMatchup, RawPastWeek, RawTransaction, RawWeek, read_prev_transactions,
 )
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
+
+# The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
+# It has the shape of Provider.fetch_past_leg. The history reads the saved files and not the return, so a fake that
+# gives None fits too.
+PastLegFetcher = Callable[[str, int, int, Path], RawPastWeek | None]
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
@@ -42,7 +47,7 @@ def fetch_history(
     through: int,
     root: Path,
     force: bool = False,
-    fetch: Callable[[str, int, int, Path], None] = fetch_past_week,
+    fetch: PastLegFetcher = SLEEPER.fetch_past_leg,
 ) -> list[int]:
     fetched = []
     for week in range(1, through + 1):

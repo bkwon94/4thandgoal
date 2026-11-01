@@ -9,13 +9,14 @@ from pathlib import Path
 
 from cornerstone.chart import chart_values
 from cornerstone.config import LeagueConfig
+from cornerstone.history import PastLegFetcher
 from cornerstone.live import (
     ChartReader, RefreshResult, SleeperFetcher, fetch_current_week, fetch_live_week, live_rosters_snapshot,
     live_snapshot, refresh_sources,
 )
 from cornerstone.models import Week
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from cornerstone.sleeper import fetch_live_raw, fetch_past_week
+from cornerstone.sleeper import SLEEPER
 from cornerstone.snapshot import Snapshot
 
 
@@ -28,9 +29,9 @@ class Sources:
     # The trade window week depends on the time of the request, so the clock is a source too.
     # It has no default, because the clock reads the league timezone. The API entry gives it with the config.
     clock: Callable[[], datetime]
-    fetch_sleeper: SleeperFetcher = fetch_live_raw
+    fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live
     fetch_nflverse: Callable[[str], bytes] = http_get
-    fetch_history_week: Callable[[str, int, int, Path], None] = fetch_past_week
+    fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg
     read_chart: ChartReader = chart_values
 
     def snapshot(self, repo: Path, season: int) -> Snapshot:

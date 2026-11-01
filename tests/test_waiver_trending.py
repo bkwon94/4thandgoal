@@ -6,8 +6,8 @@ import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from cornerstone import sleeper
 from cornerstone.config import cornerstone_config
+from cornerstone.provider import sleeper
 from cornerstone.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
 
