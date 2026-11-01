@@ -217,7 +217,7 @@ def test_tone_examples_hold_every_picked_sentence(fixture_raw_dir):
         '"Brutal pickup."',
         '"Not even close."',
         ('"Lil Fridge rolled Brock ‘N’ Roll 126.79 to 88.31, and at least the Brock in the name showed up, '
-        'with Brock Purdy as Top Scorer."'),
+         'with Brock Purdy as Top Scorer."'),
         '"Ladd McConkey and Terry McLaurin, also on that roster, are now listed Out."',
         '"Return of T Mac flattened Unsolicited Dak Picks 120.29 to 81.47 in an upset."',
         '"Bo Girds cleared it by 2.79, and Amon-Ra Dawg Your Team missed it by exactly that much."',

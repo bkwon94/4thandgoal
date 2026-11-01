@@ -443,7 +443,7 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
                 (
                     x,
                     (f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
-                    f"{sub(x[0].projection, x[0].points)} under."),
+                     f"{sub(x[0].projection, x[0].points)} under."),
                 )
                 for x in sorted(
                     (x for x in with_projection if x[0].projection >= UNDERPERFORMER_MIN_PROJECTION),
@@ -458,7 +458,7 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
                 (
                     x,
                     (f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
-                    f"{sub(x[0].points, x[0].projection)} over."),
+                     f"{sub(x[0].points, x[0].projection)} over."),
                 )
                 for x in sorted(
                     with_projection,
