@@ -17,7 +17,8 @@ import httpx
 import pytest
 
 from cornerstone.config import cornerstone_config
-from cornerstone.history import HISTORY_FILES, history_dir, history_root, load_saved_weeks
+from cornerstone.history import HISTORY_FILES, load_saved_weeks
+from cornerstone.paths import history_dir, history_root, week_dir
 from cornerstone.models import History
 from cornerstone.parse import parse_week
 from pathlib import Path
@@ -29,7 +30,7 @@ from cornerstone.nflverse import nflverse_week
 from cornerstone.power_rankings import power_rankings
 from cornerstone.pipeline import (
     BuildStopped, _nflverse_for_week, _rankings_chapter, _write_managers, _write_rankings, make_bundle, read_verify,
-    run_build, run_page_json, run_rankings, run_rewrite, week_dir,
+    run_build, run_page_json, run_rankings, run_rewrite,
 )
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
@@ -133,7 +134,7 @@ def test_build_without_history_degrades(tmp_path, fixture_raw_dir, caplog, offli
 def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
-    out = history_dir(history_root(repo, 2026), 6)
+    out = history_dir(repo, 2026, 6)
     assert {p.stem for p in out.glob("*.json")} == {*HISTORY_FILES, "injuries"}
     injuries = json.loads((out / "injuries.json").read_text())
     assert injuries["2216"] == "Out"  # Mike Evans
@@ -793,7 +794,7 @@ def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir, offline)
 
 def _late_week_5_trade(repo):
     """A week 5 leg trade made after the build of week 5, so the history copy of week 5 lacks it."""
-    copy = history_dir(history_root(repo, 2026), 5) / "transactions.json"
+    copy = history_dir(repo, 2026, 5) / "transactions.json"
     trade = {**next(t for t in json.loads(copy.read_text()) if t["roster_ids"] == [2, 6]),
              "transaction_id": "late-week-5",
              "created": int(datetime(2026, 10, 14, 12, 0, tzinfo=ET).timestamp() * 1000)}

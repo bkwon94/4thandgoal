@@ -41,7 +41,8 @@ line-length = 120
 # Backlog: history.py has three errors. One is a Decimal type error in a round function. Two are the object type of the raw dict.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/cornerstone/config.py", "src/cornerstone/files.py", "src/cornerstone/numbers.py", "src/cornerstone/render.py"]
+include = ["src/cornerstone/config.py", "src/cornerstone/files.py", "src/cornerstone/numbers.py", "src/cornerstone/paths.py",
+           "src/cornerstone/render.py"]
 
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.

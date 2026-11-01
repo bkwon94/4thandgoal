@@ -16,6 +16,7 @@ from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
 from cornerstone.models import Blurb, Bundle, ChartValues, History, MatchupFacts, Team
 from cornerstone.odds import OddsResult
+from cornerstone.paths import site_week_dir
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet import AWARD_TITLES
 from cornerstone.snapshot import Snapshot
@@ -277,7 +278,7 @@ def _saved_headshots(bundle: Bundle, week_dir: Path) -> dict[str, str]:
 
 def _week_dir(site_dir: Path, bundle: Bundle) -> Path:
     """Return the week folder under the site folder. Make it if it is missing."""
-    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
+    week_dir = site_week_dir(site_dir, bundle.data.season, bundle.data.week)
     week_dir.mkdir(parents=True, exist_ok=True)
     return week_dir
 

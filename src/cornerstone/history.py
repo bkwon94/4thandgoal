@@ -15,6 +15,7 @@ from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
+from cornerstone.paths import history_raw_dir, history_week_dir
 from cornerstone.sleeper import fetch_past_week, read_prev_transactions
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
 
@@ -24,19 +25,6 @@ UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
 SHARE_SWING = 5
 # A direction needs two windows of SHARE_WEEKS weeks each.
 SHARE_DIRECTION_WEEKS = 2 * SHARE_WEEKS
-
-
-def history_root(repo: Path, season: int) -> Path:
-    return repo / "data" / str(season) / "history"
-
-
-def returns_path(repo: Path, season: int) -> Path:
-    """The hand-kept returns file of the season: the return week by player id, beside the history."""
-    return repo / "data" / str(season) / "returns.json"
-
-
-def history_dir(root: Path, week: int) -> Path:
-    return root / f"week-{week:02d}"
 
 
 def _is_saved(directory: Path) -> bool:
@@ -56,7 +44,7 @@ def fetch_history(
 ) -> list[int]:
     fetched = []
     for week in range(1, through + 1):
-        directory = history_dir(root, week)
+        directory = history_week_dir(root, week)
         if not force and _is_saved(directory):
             continue
         fetch(league_id, season, week, directory)
@@ -80,15 +68,14 @@ def _fresh_transactions(root: Path, week: int) -> list | None:
     The week N build runs before the Tuesday night waiver run, so the saved copy misses the adds after it.
     Sleeper keeps the leg at N until the next week starts, and the fetch of week N+1 saves the full leg.
     """
-    # The raw directory of a week sits beside the history root: data/{season}/week-NN/raw.
-    return read_prev_transactions(root.parent / f"week-{week + 1:02d}" / "raw")
+    return read_prev_transactions(history_raw_dir(root, week + 1))
 
 
 def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
     """The saved weeks 1 to `through`, by week. A week that is not saved has no entry."""
     weeks = {}
     for past in range(1, through + 1):
-        saved = _read_week(history_dir(root, past))
+        saved = _read_week(history_week_dir(root, past))
         if saved is not None:
             fresh = _fresh_transactions(root, past)
             if fresh is not None:
@@ -100,7 +87,7 @@ def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
 def saved_through(root: Path, week: int) -> int:
     """The last week at or after `week` such that every week from `week` to it is saved."""
     last = week
-    while _read_week(history_dir(root, last + 1)) is not None:
+    while _read_week(history_week_dir(root, last + 1)) is not None:
         last += 1
     return last
 

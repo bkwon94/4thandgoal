@@ -16,14 +16,14 @@ import httpx
 
 from cornerstone.chart import chart_values
 from cornerstone.config import LeagueConfig
-from cornerstone.history import fetch_history, history_dir, history_root, returns_path, save_raw_to_history
+from cornerstone.history import fetch_history, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
     CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL,
     STATS_PLAYER_URL, cache_path, download, http_get, is_fresh,
 )
 from cornerstone.parse import parse_week
-from cornerstone.pipeline import nflverse_cache_dir
+from cornerstone.paths import history_root, history_week_dir, nflverse_cache_dir, players_cache, returns_path
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.sleeper import fetch_live_raw, fetch_past_week, fetch_projections_ahead
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
@@ -159,7 +159,7 @@ def fetch_current_week(
 
     The data is of the season that Sleeper is in.
     """
-    raw, fetched = fetch_sleeper(config.current_league_id, repo / "data" / "cache" / "players.json")
+    raw, fetched = fetch_sleeper(config.current_league_id, players_cache(repo))
     return raw, fetched.astimezone(config.tz), parse_week(raw, config.owner_username)
 
 
@@ -257,7 +257,7 @@ def live_snapshot(
     # A failed write must not stop the request, so the snapshot builds and notes the history as stale.
     if week.week == trade_week - 1 and raw["stats"]:
         try:
-            save_raw_to_history(raw, history_dir(root, week.week))
+            save_raw_to_history(raw, history_week_dir(root, week.week))
         except OSError as error:
             logger.warning("Week %d not saved to history (%s), so the saved weeks stand", week.week, error)
             if "history" not in stale:
