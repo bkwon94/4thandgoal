@@ -4,9 +4,13 @@
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] No file under the week folder is imported from outside the week folder.
 - [ ] The components folder has no loose file at its top level except `current-page.ts`, or that file has a folder too.
 - [ ] Every fixture import points at the fixtures folder, and each fixture has a schema type.
 - [ ] The diff is moves and import paths only. `out/` has no diff against `main`.
+
+## Comments
+
+- 2026-10-31: merged into `main` from branch `modular-06-folders`, commits becc9ec and ff42b9c. 523 tests. The chapter rail is a part, since the managers page uses it. The three API fixtures moved in from `.scratch` with a wrapper. `managerHrefOrNull` sits in the routes module. The export markup is unchanged; the RSC module ids in the flight payload differ because they come from module paths. Two reviewers passed it after one fix pass.
