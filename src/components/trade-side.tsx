@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useId } from "react";
 import { XIcon } from "lucide-react";
-import type { Pick } from "@/components/trade-form";
+import type { PlayerPick } from "@/components/trade-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Team, TeamPlayer } from "@/lib/api";
 import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
@@ -23,9 +23,9 @@ type TradeSideProps = {
   // The picked team of this side, or undefined before a pick.
   team: Team | undefined;
   // The players this side gives, in the order of the pick, each with the id of its destination side.
-  picks: Pick[];
+  picks: PlayerPick[];
   // The other sides a player can go to, or null at two sides, where the destination is the other side and no To picker shows.
-  destinations: Destination[] | null;
+  destinations: SideChoice[] | null;
   onPickTeam: (rosterId: number) => void;
   onPickPlayers: (playerIds: string[]) => void;
   onPickDestination: (playerId: string, toSide: number) => void;
@@ -36,7 +36,7 @@ type TradeSideProps = {
 };
 
 /* Another side of the trade, by its id, with its team once picked. */
-type Destination = { id: number; team: Team | undefined };
+type SideChoice = { id: number; team: Team | undefined };
 
 /* The trigger of both pickers: a grey row as tall as a touch target, with a hover fill and a red focus ring. */
 const TRIGGER =
@@ -93,7 +93,7 @@ function DestinationPicker({
   locked,
 }: {
   value: number;
-  destinations: Destination[];
+  destinations: SideChoice[];
   onPick: (to: number) => void;
   locked: boolean;
 }) {
