@@ -8,6 +8,7 @@ from datetime import date
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
     GradeParts, SlotRank, _league_reads, depth_word, grade_letter, grade_read, grade_score, position_ranks,
@@ -22,6 +23,8 @@ from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 from cornerstone.tunables import GRADE_WEIGHTS, LAST_REGULAR_WEEK
 
+CONFIG = cornerstone_config()
+
 
 def _ahead(raw):
     return {entry.week: entry.projections for entry in raw.projections_ahead or []}
@@ -29,13 +32,13 @@ def _ahead(raw):
 
 def _entries(raw_dir, root, with_snapshot=True):
     raw = load_raw(raw_dir)
-    snapshot = week_snapshot(raw, root, 6) if with_snapshot else None
+    snapshot = week_snapshot(raw, root, 6, config=CONFIG) if with_snapshot else None
     inputs = SeasonInputs(history=load_history(root, raw, week=6), snapshot=snapshot, projections_ahead=_ahead(raw))
     return managers(inputs, parse_week(raw).teams)
 
 
 def _snapshot(raw_dir, root):
-    return week_snapshot(load_raw(raw_dir), root, 6)
+    return week_snapshot(load_raw(raw_dir), root, 6, config=CONFIG)
 
 
 def _depth(grade, position):
@@ -220,7 +223,7 @@ def test_a_starter_with_no_projection_ahead_is_a_hole(fixture_raw_dir, fixture_h
 def test_the_grade_is_null_without_projections_ahead(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     inputs = SeasonInputs(history=load_history(fixture_history_root, raw, week=6),
-                          snapshot=week_snapshot(raw, fixture_history_root, 6))
+                          snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG))
     entries = managers(inputs, parse_week(raw).teams)
     assert all(entry.grade is None for entry in entries)
 

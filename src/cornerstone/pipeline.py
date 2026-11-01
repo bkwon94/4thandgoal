@@ -262,7 +262,7 @@ def make_bundle(
     trades = _window_trades(repo, season, week, raw, parsed.season_start, history, config.tz)
     nfl = _nflverse_for_week(raw_dir(repo, season, week), raw, season, week, nflverse, _played_teams(parsed))
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
-    snapshot = week_snapshot(raw, history_root(repo, season), week)
+    snapshot = week_snapshot(raw, history_root(repo, season), week, config=config)
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot,
                           today=started.date())
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
@@ -375,7 +375,8 @@ def run_build(
     # The managers file reads the same saved history, so it comes right after the rankings file.
     # The snapshot, the projections ahead, and the chart load inside this try, so their failure skips only this file.
     try:
-        _write_managers(repo, season, week, bundle.data.teams, _season_inputs(repo, season, week, raw, history))
+        _write_managers(repo, season, week, bundle.data.teams,
+                        _season_inputs(repo, season, week, raw, history, config))
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
     return page
@@ -389,12 +390,13 @@ def _season_history(repo: Path, season: int, week: int) -> History:
     return History(week=through, weeks=load_saved_weeks(root, through))
 
 
-def _season_inputs(repo: Path, season: int, week: int, raw: dict | None, history: History) -> SeasonInputs:
+def _season_inputs(
+        repo: Path, season: int, week: int, raw: dict | None, history: History, config: LeagueConfig) -> SeasonInputs:
     """The inputs of the season files, from one load of the `raw` week and the saved `history`. None for `raw` means
     the week has no raw data, so the managers file goes out with no grade."""
     raw_path = raw_dir(repo, season, week)
     return SeasonInputs(
-        history=history, snapshot=_managers_snapshot(repo, season, week, raw),
+        history=history, snapshot=_managers_snapshot(repo, season, week, raw, config),
         projections_ahead=_projections_ahead(raw_path), chart=_managers_chart(repo, week, raw),
     )
 
@@ -472,14 +474,15 @@ def _season_raw(raw_path: Path) -> tuple[list[str] | None, dict[str, dict] | Non
     return slots, entries
 
 
-def _managers_snapshot(repo: Path, season: int, week: int, raw: dict | None) -> Snapshot | None:
+def _managers_snapshot(
+        repo: Path, season: int, week: int, raw: dict | None, config: LeagueConfig) -> Snapshot | None:
     """The analyzer's snapshot of the week for the roster grade. None, with one log line, when the week has no raw
     data."""
     # A saved week can lack its raw data. The file then goes out with no grade, so the page still ships.
     if raw is None:
         log.info("no raw data for week %d: managers.json has no roster grade", week)
         return None
-    return week_snapshot(raw, history_root(repo, season), week)
+    return week_snapshot(raw, history_root(repo, season), week, config=config)
 
 
 def _raw_for_season_files(repo: Path, season: int, week: int) -> dict | None:
@@ -574,7 +577,7 @@ def _rankings_chapter(bundle: Bundle, history: History) -> Chapter:
     return built
 
 
-def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
+def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, config: LeagueConfig) -> Path:
     """Write the rankings blurb of a saved week with one writer call, then rankings.json from the saved history.
     The writer runs for this week only. The other weeks keep the blurbs of the last file."""
     directory = week_dir(repo, season, week)
@@ -599,7 +602,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     # The command rebuilds the season files from the saved history, so the managers file comes along.
     # A thin history only logs: the rankings file is the output of the command.
     # The raw week loads after the rankings file, so a failed load of the grade inputs leaves that file written.
-    inputs = _season_inputs(repo, season, week, _raw_for_season_files(repo, season, week), season_history)
+    inputs = _season_inputs(repo, season, week, _raw_for_season_files(repo, season, week), season_history, config)
     _write_managers(repo, season, week, bundle.data.teams, inputs)
     return out
 

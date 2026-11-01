@@ -478,9 +478,10 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
 def test_the_known_games_line_names_each_pending_count(
         fixture_raw_dir, fixture_history_root, chart_week6, capsys, pending, line):
     from cornerstone import cli
+    from cornerstone.config import cornerstone_config
     from cornerstone.snapshot import KnownGames, load_snapshot
 
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=cornerstone_config())
     known = KnownGames(week=6, games=14, pending=pending)
     cli._print_as_of(snap.model_copy(update={"as_of": snap.as_of.model_copy(update={"known_games": known})}))
     assert line in capsys.readouterr().out

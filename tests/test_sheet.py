@@ -10,6 +10,7 @@ from decimal import ROUND_HALF_UP, Decimal
 import pytest
 
 from cornerstone import sheet
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
 from cornerstone.odds import playoff_odds
@@ -32,6 +33,8 @@ from cornerstone.sheet import (
 )
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
+
+CONFIG = cornerstone_config()
 
 
 @pytest.fixture
@@ -1019,7 +1022,8 @@ def test_thin_data_makes_no_bye_fact_not_even_a_none_fact(thin, fixture_raw_dir,
     # An empty history root saves no week, so the history holds week 6 alone.
     root = fixture_history_root if thin == "no schedule" else tmp_path
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(root, raw, week=6),
-                     nfl=None if thin == "no schedule" else nfl_week6, snapshot=week_snapshot(raw, root, 6))
+                     nfl=None if thin == "no schedule" else nfl_week6,
+                     snapshot=week_snapshot(raw, root, 6, config=CONFIG))
     assert not any(fid.startswith("NX.bye.") for fid in b.sheet.facts)
 
 
@@ -1030,7 +1034,7 @@ def test_a_bench_player_who_cannot_play_next_week_is_no_bye_cover(out, fixture_r
     # A return in week 9 keeps Marks out next week, and his projection ahead of 10 a game keeps him the best bench
     # back, so only the out rule can skip him. Out for the season, he cannot cover either.
     raw = load_raw(fixture_raw_dir)
-    snap = week_snapshot(raw, fixture_history_root, 6)
+    snap = week_snapshot(raw, fixture_history_root, 6, config=CONFIG)
     ahead = {**snap.projections_ahead, "12474": {week: 10.0 for week in range(9, 15)}}
     snap = snap.model_copy(update={"returns": {"12474": 9}, "projections_ahead": ahead} if out == "returns"
                            else {"out_for_season": {"12474"}})

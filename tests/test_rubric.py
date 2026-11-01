@@ -18,6 +18,7 @@ from cornerstone.adjusters import (
     TREND, _byes_left, _return_bet, _wopr, best_lineup, bye_covers, due_back_week, lineup_value,
     rubric_adjusters,
 )
+from cornerstone.config import cornerstone_config
 from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from cornerstone.models import ExpectedGame, ExpectedPoints
 from cornerstone.ranks import recent_points_per_game
@@ -30,6 +31,8 @@ from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.writer import load_prompt
 
+CONFIG = cornerstone_config()
+
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
 # Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5 on roster 7.
@@ -40,7 +43,7 @@ HARRISON, B_ROBINSON, BIJAN = "11628", "8154", "9509"
 
 @pytest.fixture
 def snap(fixture_raw_dir, fixture_history_root, chart_week6):
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
 
 
 def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=None):
@@ -52,7 +55,7 @@ def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=No
     if edit is not None:
         edit(raw)
     return build_snapshot(raw, history_root, chart, slow, trade_week=6,
-                          returns=load_returns(history_root.parent / "returns.json"), now=now)
+                          returns=load_returns(history_root.parent / "returns.json"), now=now, config=CONFIG)
 
 
 @pytest.fixture
@@ -67,7 +70,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
 
 
 def _trade(*sides, asker: int | None = None) -> ProposedTrade:
@@ -791,7 +794,7 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6):
     """The week 6 snapshot with the hand-set free agents of conftest. Bigsby RB51 is the best free agent at RB and
     Darren Waller TE9 the best at TE. No free agent at QB or WR has a position rank."""
     return build_snapshot(with_free_agents(load_raw(fixture_raw_dir)), fixture_history_root, chart_week6,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"))
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), config=CONFIG)
 
 
 def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_rank(fa_snap):
@@ -1273,7 +1276,7 @@ def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_valu
     # This case grades the trade on the Tuesday after week 6, so points per game cover weeks 3 to 6.
     # Mahomes at 15.14 takes the QB spot from Lamar Jackson at 19.66, and Brian Robinson starts at flex.
     # The best lineup of roster 7 changes by about -0.60, which is less than the fit threshold.
-    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7)
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7, config=CONFIG)
     rosters = dict(snap.rosters)
     rosters[7] = [pid for pid in rosters[7] if pid not in (MAHOMES, B_ROBINSON)] + [LAMAR]
     rosters[6] = [pid for pid in rosters[6] if pid != LAMAR] + [MAHOMES, B_ROBINSON]

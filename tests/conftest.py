@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import ChartValues, NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
@@ -19,6 +20,8 @@ from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_fa
 from cornerstone.sleeper import RawWeek, load_raw
 from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
+
+CONFIG = cornerstone_config()
 
 ET = ZoneInfo("America/New_York")
 
@@ -91,7 +94,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     return build_bundle(parse_week(raw), news=lambda pid: [],
                         history=load_history(fixture_history_root, raw, week=6),
-                        snapshot=week_snapshot(raw, fixture_history_root, 6))
+                        snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG))
 
 
 def _window(raw, h):
@@ -105,7 +108,7 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)
     return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=_window(raw, h), nfl=nfl,
-                        snapshot=week_snapshot(raw, history_root, 6))
+                        snapshot=week_snapshot(raw, history_root, 6, config=CONFIG))
 
 
 def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):

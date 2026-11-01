@@ -187,7 +187,7 @@ def _sources_line(snapshot: Snapshot) -> str:
     return f"Sources missing: {', '.join(missing)}."
 
 
-def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+def _saved_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
     """The snapshot of the saved week, or None after a plain line when the week has no raw data."""
     if not has_raw(repo, args.season, args.week):
         print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
@@ -202,7 +202,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
                              raw.league.scoring_settings)
-    return load_snapshot(raw_path, history, chart, slow)
+    return load_snapshot(raw_path, history, chart, slow, config=config)
 
 
 def _live_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
@@ -266,7 +266,7 @@ def run_analyze(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> i
     if sides is None:
         print("Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides.")
         return 2
-    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args, config)
     if snapshot is None:
         return 2
     try:
@@ -330,7 +330,7 @@ def run_find(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
     if args.asker == args.partner:
         print("Give two different rosters for --asker and --partner.")
         return 2
-    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args, config)
     if snapshot is None:
         return 2
     for roster_id in (args.asker, args.partner):
@@ -430,7 +430,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "page-json":
             print(run_page_json(repo, season, week))
         elif args.command == "rankings":
-            print(run_rankings(repo, season, week, claude_call))
+            print(run_rankings(repo, season, week, claude_call, config=config))
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, claude_call)
             print(page)

@@ -11,11 +11,11 @@ from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.parse import parse_week
 from cornerstone.sleeper import load_raw
 
-# Another league with the same raw data, owned by the manager of roster 12.
-OTHER = LeagueConfig(
+# Another league with the same raw data, owned by the manager of roster 12. Its sizes are those of Cornerstone.
+OTHER = cornerstone_config().model_copy(update=dict(
     slug="other", display_name="Other League", provider="sleeper", league_ids=((2026, "1"),),
     owner_username="pdurkim", timezone="America/Chicago", prompts_dir=Path("prompts"),
-)
+))
 
 
 def _owners(raw: dict, config: LeagueConfig) -> list[int]:

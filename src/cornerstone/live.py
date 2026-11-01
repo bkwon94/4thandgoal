@@ -218,7 +218,7 @@ def refresh_sources(
 
 def _build_live(
         repo: Path, season: int, raw: RawWeek, fetched: datetime, trade_week: int,
-        chart: ChartValues | None, stale: list[str], now: datetime) -> Snapshot:
+        chart: ChartValues | None, stale: list[str], now: datetime, config: LeagueConfig) -> Snapshot:
     """The snapshot of the raw Sleeper data, with the slow sources and the returns read from the disk.
 
     `now` is the clock of the request, so the snapshot can tell the known games in progress.
@@ -228,7 +228,7 @@ def _build_live(
     returns = load_returns(returns_path(repo, season))
     out_for_season = load_out_for_season(returns_path(repo, season))
     return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now,
-                          out_for_season=out_for_season)
+                          out_for_season=out_for_season, config=config)
 
 
 def live_snapshot(
@@ -269,7 +269,7 @@ def live_snapshot(
     if raw.projections_ahead is None:
         ahead = projections.get_or_fetch(season, week.week, fetch_projections)
         raw = raw.model_copy(update={"projections_ahead": ahead})
-    return _build_live(repo, season, raw, fetched, trade_week, result.chart, stale, now)
+    return _build_live(repo, season, raw, fetched, trade_week, result.chart, stale, now, config)
 
 
 def live_rosters_snapshot(
@@ -285,4 +285,4 @@ def live_rosters_snapshot(
     raw, fetched, week = fetch_live_week(repo, season, config, fetch_sleeper)
     # No refresh ran, so no source goes in the stale list here. The build still notes a gap in the saved history.
     return _build_live(repo, season, raw, fetched, window_week(week.season_start, now, config.tz), None, [],
-                       now)
+                       now, config)
