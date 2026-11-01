@@ -306,7 +306,7 @@ def run_build(
     fetch_bytes: BytesFetcher = _download_bytes,
     nflverse: NflverseFetcher | None = None,
     research: SearchCall | None = None,
-    # The clock is a parameter so a build is reproducible. The golden test is the first caller.
+    # The clock is a parameter so a build is reproducible.
     started: datetime | None = None,
 ) -> Path:
     directory = week_dir(repo, season, week)
