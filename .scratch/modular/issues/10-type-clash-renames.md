@@ -4,8 +4,12 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] No exported type name is defined in two modules. A grep per name proves it.
+- [x] No exported type name is defined in two modules, except where two schemas each own a type of that name, such as `Team` and `TradeSide`. A grep per name proves it.
 - [ ] The `TradeSide` component keeps its name, and its props type is named for the component.
 - [ ] `pnpm typecheck` and `pnpm test` pass. `out/` has no diff against `main`.
+
+## Comments
+
+- 2026-10-31: merged into `main` from branch `modular-10-type-renames`, commit 50775b7. The first criterion read too strictly: the PRD keeps one `Team` and one `TradeSide` per schema, so the criterion now says so. Two reviewers passed it.
