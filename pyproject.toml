@@ -25,7 +25,9 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.414",
     "pytest>=9.1.1",
+    "ruff==0.0.272",
 ]
 
 [tool.pytest.ini_options]
@@ -34,6 +36,13 @@ addopts = "-m 'not live'"
 
 [tool.ruff]
 line-length = 120
+
+# Only the modules that a ticket touches must pass, so the include list grows ticket by ticket.
+# Backlog: history.py fails on a Decimal type error in a round function and on the object type of the raw dict.
+# Every other module in src has not been checked.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/cornerstone/files.py", "src/cornerstone/render.py"]
 
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.
