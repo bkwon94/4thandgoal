@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Protocol, runtime_checkable
 from zoneinfo import ZoneInfo
 
-from cornerstone.provider.sleeper import RawAheadWeek, RawPastWeek, RawWeek
+from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
 
 
 # runtime_checkable lets a test check a fake with isinstance. It checks only that the five names exist.

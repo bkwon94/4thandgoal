@@ -12,7 +12,8 @@ from zoneinfo import ZoneInfo
 from cornerstone.models import ResearchOut
 from cornerstone.nflverse import nflverse_week
 from cornerstone.provider.base import Provider
-from cornerstone.provider.sleeper import RawAheadWeek, RawPastWeek, RawWeek, load_raw
+from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
+from cornerstone.provider.sleeper import load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"

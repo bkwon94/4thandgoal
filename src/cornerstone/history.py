@@ -24,7 +24,7 @@ from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE
 # The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
 # It has the shape of Provider.fetch_past_leg. The history reads the saved files and not the return, so a fake that
 # gives None fits too.
-PastLegFetcher = Callable[[str, int, int, Path], object]
+PastLegFetcher = Callable[[str, int, int, Path], RawPastWeek | None]
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
