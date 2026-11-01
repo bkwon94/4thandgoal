@@ -6,9 +6,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, useRef, useState, type ReactNode, type Ref } from "react";
-import { currentPage } from "@/components/current-page";
+import { currentPage } from "@/components/shell/current-page";
 import { Dialog, DialogOverlay, DialogPopup, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
-import { ThemeButton } from "@/components/theme-button";
+import { ThemeButton } from "@/components/shell/theme-button";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DROP, DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 

@@ -3,7 +3,10 @@
  * The weeks come newest first, in the order of the managers file. A week with no moves reads one quiet line.
  */
 import { Fragment } from "react";
-import { Chapter, Label, managerHref, TeamName } from "@/components/week/parts";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { TeamName } from "@/components/parts/team-name";
+import { managerHrefOrNull } from "@/lib/routes";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "@/lib/manager-types";
 import { cn } from "@/lib/utils";
 import { PlayerHeadshot } from "./player-headshot";
@@ -64,7 +67,7 @@ function TradeRow({ trade, managers, managersHref }: { trade: MoveTrade; manager
           {others.map((entry, i) => (
             <Fragment key={entry.roster_id}>
               {i > 0 && " And "}
-              <TeamName name={entry.team.name} href={managerHref(managersHref, entry.roster_id)} />
+              <TeamName name={entry.team.name} href={managerHrefOrNull(managersHref, entry.roster_id)} />
             </Fragment>
           ))}
         </div>

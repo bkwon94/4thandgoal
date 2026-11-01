@@ -8,11 +8,16 @@
 
 import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
-import { Reveal } from "@/components/reveal";
-import { avatarSrc, Blurb, Chapter, Label, managerHref, Who } from "@/components/week/parts";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { Reveal } from "@/components/parts/reveal";
+import { Who } from "@/components/parts/who";
+import { avatarSrc } from "@/lib/avatar";
 import { record } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";
+import { managerHrefOrNull } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import type { AvatarMap } from "@/lib/week-types";
 import { useSharedWeekChoice, useWeekChoice } from "./week-choice";
@@ -133,7 +138,7 @@ function Row({
       <div className={cn(GRID, "relative min-h-touch border-b-0 py-sp-1")}>
         <span>{row.rank}</span>
         <Movement movement={row.movement} />
-        <Who src={avatarSrc(avatars, row.roster_id)} name={row.name} href={managerHref(managersHref, row.roster_id)} />
+        <Who src={avatarSrc(avatars, row.roster_id)} name={row.name} href={managerHrefOrNull(managersHref, row.roster_id)} />
         <span className="text-right">{record(row.wins, row.losses)}</span>
         <span className="text-right">{playoffCell(row)}</span>
         {/* The header names these columns, so the cells hold only the rank. On a phone they move into the open row. */}

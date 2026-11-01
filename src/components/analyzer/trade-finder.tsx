@@ -5,9 +5,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "@/components/analyze-result";
-import { ErrorLine } from "@/components/error-line";
-import { TeamPicker } from "@/components/team-picker";
+import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "@/components/analyzer/analyze-result";
+import { ErrorLine } from "@/components/parts/error-line";
+import { TeamPicker } from "@/components/analyzer/team-picker";
 import { Button } from "@/components/ui/button";
 import type { FindResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postFind, toErrorLine, type Team } from "@/lib/api";

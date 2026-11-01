@@ -10,7 +10,9 @@ import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Pl
 import { swapToDefault } from "@/lib/headshot";
 import { knownGamesSegments } from "@/lib/format/known-games-segments";
 import { DURATION, rise, useMotionOff } from "@/lib/motion";
-import { Blurb, Chapter, Label } from "@/components/week/parts";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 import { cn } from "@/lib/utils";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */

@@ -1,0 +1,250 @@
+{
+  "season": 2026,
+  "trade_pair": {
+    "asker": {
+      "roster_id": 2,
+      "team": "All You Need Is Love"
+    },
+    "partner": {
+      "roster_id": 3,
+      "team": "Lil Fridge"
+    }
+  },
+  "trades": [
+    {
+      "sides": [
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "gives": [
+            {
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+            },
+            {
+              "player_id": "8126",
+              "name": "Wan'Dale Robinson",
+              "position": "WR",
+              "nfl_team": "TEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "2306",
+              "name": "Jameis Winston",
+              "position": "QB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
+            }
+          ]
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "gives": [
+            {
+              "player_id": "2306",
+              "name": "Jameis Winston",
+              "position": "QB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "10213",
+              "name": "Tre Tucker",
+              "position": "WR",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg"
+            },
+            {
+              "player_id": "8126",
+              "name": "Wan'Dale Robinson",
+              "position": "WR",
+              "nfl_team": "TEN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg"
+            }
+          ]
+        }
+      ],
+      "fairness": {
+        "state": "win_win",
+        "gives_more": null,
+        "sides": [
+          {
+            "roster_id": 2,
+            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+          },
+          {
+            "roster_id": 3,
+            "reason": "The best lineup gains after the trade."
+          }
+        ]
+      },
+      "reason": "All You Need Is Love gets Jameis Winston, the best player in the trade, with no loss to its lineup, and Lil Fridge gets Tre Tucker and Wan'Dale Robinson into its best lineup."
+    },
+    {
+      "sides": [
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "gives": [
+            {
+              "player_id": "12527",
+              "name": "Ashton Jeanty",
+              "position": "RB",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "11560",
+              "name": "Caleb Williams",
+              "position": "QB",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg"
+            },
+            {
+              "player_id": "5947",
+              "name": "Jakobi Meyers",
+              "position": "WR",
+              "nfl_team": "JAX",
+              "headshot": "https://sleepercdn.com/content/nfl/players/5947.jpg"
+            }
+          ]
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "gives": [
+            {
+              "player_id": "11560",
+              "name": "Caleb Williams",
+              "position": "QB",
+              "nfl_team": "CHI",
+              "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg"
+            },
+            {
+              "player_id": "5947",
+              "name": "Jakobi Meyers",
+              "position": "WR",
+              "nfl_team": "JAX",
+              "headshot": "https://sleepercdn.com/content/nfl/players/5947.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "12527",
+              "name": "Ashton Jeanty",
+              "position": "RB",
+              "nfl_team": "LV",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg"
+            }
+          ]
+        }
+      ],
+      "fairness": {
+        "state": "win_win",
+        "gives_more": null,
+        "sides": [
+          {
+            "roster_id": 2,
+            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Jeanty: snap share 61%, down, over weeks 4 and 5."
+          },
+          {
+            "roster_id": 3,
+            "reason": "The best lineup gains after the trade."
+          }
+        ]
+      },
+      "reason": "All You Need Is Love moves Ashton Jeanty as his snap share falls for Caleb Williams and Jakobi Meyers, and Lil Fridge gets Jeanty into its best lineup."
+    },
+    {
+      "sides": [
+        {
+          "roster_id": 2,
+          "team": "All You Need Is Love",
+          "gives": [
+            {
+              "player_id": "6770",
+              "name": "Joe Burrow",
+              "position": "QB",
+              "nfl_team": "CIN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "9228",
+              "name": "Bryce Young",
+              "position": "QB",
+              "nfl_team": "CAR",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg"
+            }
+          ]
+        },
+        {
+          "roster_id": 3,
+          "team": "Lil Fridge",
+          "gives": [
+            {
+              "player_id": "9228",
+              "name": "Bryce Young",
+              "position": "QB",
+              "nfl_team": "CAR",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9228.jpg"
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "6770",
+              "name": "Joe Burrow",
+              "position": "QB",
+              "nfl_team": "CIN",
+              "headshot": "https://sleepercdn.com/content/nfl/players/6770.jpg"
+            }
+          ]
+        }
+      ],
+      "fairness": {
+        "state": "win_win",
+        "gives_more": null,
+        "sides": [
+          {
+            "roster_id": 2,
+            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Young: snap share 100%, up, over weeks 3 and 4."
+          },
+          {
+            "roster_id": 3,
+            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+          }
+        ]
+      },
+      "reason": "All You Need Is Love gets Bryce Young as his snap share rises, and Lil Fridge gets Joe Burrow, the best player in the trade, with no loss to its lineup."
+    }
+  ],
+  "empty": null,
+  "as_of": {
+    "chart_week": 6,
+    "stats_through": 5,
+    "completed_through": 5,
+    "rosters_fetched": "2026-10-19T09:30:00-04:00",
+    "known_games": {
+      "week": 6,
+      "games": 0,
+      "in_progress": 0,
+      "pending": {}
+    }
+  },
+  "fallback": false,
+  "missing": [
+    "returns"
+  ],
+  "stale": []
+}

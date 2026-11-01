@@ -4,8 +4,8 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import fixtureJson from "../../.scratch/site-react/fixtures/analyze-response.json";
-import findJson from "../../.scratch/site-react/fixtures/find-response.json";
+import { analyzeResponse as fixtureJson } from "@/fixtures/api";
+import { findResponse as findJson } from "@/fixtures/api";
 import type { Team } from "@/lib/api";
 import { TradeForm } from "./trade-form";
 

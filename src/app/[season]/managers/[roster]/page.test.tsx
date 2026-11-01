@@ -8,9 +8,9 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "@/lib/week-page-fixture";
-import fixture from "@/components/managers/fixture.json";
-import { rankings as rankingsFixture } from "@/components/rankings/fixture";
+import { weekPageJson } from "@/fixtures/week-page-json";
+import { managers as fixture } from "@/fixtures/managers";
+import { rankings as rankingsFixture } from "@/fixtures/rankings";
 
 afterEach(() => {
   cleanup();

@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useId } from "react";
 import { XIcon } from "lucide-react";
-import type { PlayerPick } from "@/components/trade-form";
+import type { PlayerPick } from "@/components/analyzer/trade-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Team, TeamPlayer } from "@/lib/api";
 import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";

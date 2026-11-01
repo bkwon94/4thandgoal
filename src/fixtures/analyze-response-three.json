@@ -1,0 +1,260 @@
+{
+  "trade": {
+    "asker": 4,
+    "sides": [
+      {
+        "roster_id": 4,
+        "team": "Pukancun on 3",
+        "gives": [
+          {
+            "player_id": "7569",
+            "name": "Nico Collins",
+            "position": "WR",
+            "nfl_team": "HOU",
+            "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "to": 12
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "10236",
+            "name": "Dalton Kincaid",
+            "position": "TE",
+            "nfl_team": "BUF",
+            "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "from": 12
+          },
+          {
+            "player_id": "11628",
+            "name": "Marvin Harrison",
+            "position": "WR",
+            "nfl_team": "HOU",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11628.jpg",
+            "from": 7
+          }
+        ]
+      },
+      {
+        "roster_id": 12,
+        "team": "Amon-Ra Dawg Your Team",
+        "gives": [
+          {
+            "player_id": "10236",
+            "name": "Dalton Kincaid",
+            "position": "TE",
+            "nfl_team": "BUF",
+            "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "to": 4
+          },
+          {
+            "player_id": "8146",
+            "name": "Garrett Wilson",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "to": 7
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "7569",
+            "name": "Nico Collins",
+            "position": "WR",
+            "nfl_team": "HOU",
+            "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "from": 4
+          }
+        ]
+      },
+      {
+        "roster_id": 7,
+        "team": "To Infinity and Bijan",
+        "gives": [
+          {
+            "player_id": "11628",
+            "name": "Marvin Harrison",
+            "position": "WR",
+            "nfl_team": "HOU",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11628.jpg",
+            "to": 4
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "8146",
+            "name": "Garrett Wilson",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "from": 12
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 4,
+    "answer": "not_as_is",
+    "reason": "Another side does better, so ask for more.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "fair",
+    "gives_more": null,
+    "sides": [
+      {
+        "roster_id": 4,
+        "reason": "It gets more trade value than it gives. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      {
+        "roster_id": 12,
+        "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+      },
+      {
+        "roster_id": 7,
+        "reason": "The best lineup gains after the trade."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 4,
+      "analysis": "Nico Collins leads the trade in points per game.",
+      "chart": {
+        "lean": "more",
+        "reason": "It gets more trade value than it gives. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      "factors": [
+        {
+          "name": "roster fit",
+          "lean": "against",
+          "reason": "FLEX2 is a hole after the trade: Xavier Worthy is WR54."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "The team is out of the playoff race, and the trade is no bet on the future."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "The snap and target shares point both ways. Kincaid: snap share 71%, up, target share 26%, up, over weeks 5 and 6. Harrison: snap share 43%, down, over weeks 4 and 6. Collins: target share 21%, down, over weeks 5 and 6."
+        },
+        {
+          "name": "injury",
+          "lean": "even",
+          "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Marvin Harrison are not in the id map, so no report count ran for them."
+        },
+        {
+          "name": "handcuff",
+          "lean": "even",
+          "reason": "No player it gets is a handcuff."
+        },
+        {
+          "name": "schedule",
+          "lean": "against",
+          "reason": "The players it gets have more byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans against this side."
+        }
+      ]
+    },
+    {
+      "roster_id": 12,
+      "analysis": "Nico Collins leads the trade in points per game.",
+      "chart": {
+        "lean": "even",
+        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+      },
+      "factors": [
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "The team is neither in a playoff spot nor out of the race."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "The snap and target shares point both ways. Collins: target share 21%, down, over weeks 5 and 6. Kincaid: snap share 71%, up, target share 26%, up, over weeks 5 and 6. Wilson: target share 35%, down, over weeks 5 and 6."
+        },
+        {
+          "name": "injury",
+          "lean": "even",
+          "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
+        },
+        {
+          "name": "handcuff",
+          "lean": "even",
+          "reason": "No player it gets is a handcuff."
+        },
+        {
+          "name": "schedule",
+          "lean": "for",
+          "reason": "The players it gets have fewer byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans for this side."
+        }
+      ]
+    },
+    {
+      "roster_id": 7,
+      "analysis": "Nico Collins leads the trade in points per game.",
+      "chart": {
+        "lean": "less",
+        "reason": "It gives more trade value than it gets."
+      },
+      "factors": [
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "The best lineup gains after the trade."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "The team is neither in a playoff spot nor out of the race."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "The snap and target shares point both ways. Wilson: target share 35%, down, over weeks 5 and 6. Harrison: snap share 43%, down, over weeks 4 and 6."
+        },
+        {
+          "name": "injury",
+          "lean": "even",
+          "reason": "No player it gets is out for long or often on the injury report. Garrett Wilson is not in the id map, so no report count ran for him."
+        },
+        {
+          "name": "handcuff",
+          "lean": "even",
+          "reason": "No player it gets is a handcuff."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "The players it gets and the players it gives have the same count of byes left, and the playoff opponents are about as hard on both sides. The schedule is even."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 6,
+    "stats_through": 6,
+    "completed_through": 5,
+    "rosters_fetched": "2026-10-19T09:30:00-04:00",
+    "known_games": {
+      "week": 6,
+      "games": 14,
+      "in_progress": 0,
+      "pending": {
+        "usage": 8
+      }
+    }
+  },
+  "fallback": false,
+  "missing": [
+    "returns"
+  ],
+  "stale": []
+}

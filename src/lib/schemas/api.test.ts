@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { analyzeResponseSchema, findResponseSchema, teamsResponseSchema } from "./api";
 
-const FIXTURES = join(process.cwd(), ".scratch/site-react/fixtures");
+const FIXTURES = join(process.cwd(), "src/fixtures");
 
 function fixture(name: string): unknown {
   return JSON.parse(readFileSync(join(FIXTURES, name), "utf8"));

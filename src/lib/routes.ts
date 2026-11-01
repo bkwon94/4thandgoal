@@ -14,5 +14,9 @@ export const managersHref = (season: string) => `${basePath}/${season}/managers/
 /* A component holds only the managers index href, so it calls this for a manager page and keeps no path format of its own. */
 export const managerHrefFrom = (managersHref: string, rosterId: number) => `${managersHref}${rosterId}/`;
 export const managerHref = (season: string, rosterId: number) => managerHrefFrom(managersHref(season), rosterId);
+/* The manager page href of one team, or null when the season has no managers file, so a part renders the name as plain text.
+   managerHref is taken by the season form above, so this one takes the managers index href that a component holds. */
+export const managerHrefOrNull = (managersHref: string | null, rosterId: number) =>
+  managersHref === null ? null : managerHrefFrom(managersHref, rosterId);
 /* The logo is a plain img on every page, so its src takes the base path like a link. */
 export const logoSrc = () => `${basePath}/images/logo.png`;

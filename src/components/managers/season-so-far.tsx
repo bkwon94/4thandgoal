@@ -3,7 +3,8 @@
  * The three groups stack with air between them. Each line has one quiet label and one emphasis.
  */
 import type { ReactNode } from "react";
-import { Chapter, Label } from "@/components/week/parts";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 import { num } from "@/lib/format/format";
 import type { Bench, Manager, SeasonWeek } from "@/lib/manager-types";
 import { PointsLine } from "./points-line";

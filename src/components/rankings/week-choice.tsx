@@ -5,7 +5,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { WeekLine } from "@/components/week-line";
+import { WeekLine } from "@/components/parts/week-line";
 import type { RankingsWeek } from "@/lib/rankings-types";
 
 export type WeekChoice = { week: RankingsWeek; choose: (week: number) => void };

@@ -3,7 +3,7 @@
  * They need no render and no file reads.
  */
 import { describe, expect, it } from "vitest";
-import { rankings } from "@/components/rankings/fixture";
+import { rankings } from "@/fixtures/rankings";
 import { biggestMover } from "./rankings";
 
 const lastWeek = rankings.weeks.at(-1)!;

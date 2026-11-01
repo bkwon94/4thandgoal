@@ -2,7 +2,7 @@
  * Builds the masthead props that every page shares: the published weeks and the links of the menu.
  * It reads public/ at build time in the app layer, so the masthead itself reads no file and builds no route.
  */
-import type { MastheadLinks } from "@/components/masthead";
+import type { MastheadLinks } from "@/components/shell/masthead";
 import { currentManagersHref } from "@/lib/data/manager-data";
 import { currentWaiverHref } from "@/lib/data/waiver-data";
 import { listWeekSummaries } from "@/lib/data/week-data";

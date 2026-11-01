@@ -4,9 +4,9 @@
  * From the tablet tier that white is the form's chapter, a card on the grey body.
  */
 import type { Metadata } from "next";
-import { Analyzer } from "@/components/analyzer";
-import { Masthead } from "@/components/masthead";
-import { PageColumn } from "@/components/page-column";
+import { Analyzer } from "@/components/analyzer/analyzer";
+import { Masthead } from "@/components/shell/masthead";
+import { PageColumn } from "@/components/parts/page-column";
 import { finderOn, season } from "@/lib/config";
 import { analyzeHref } from "@/lib/routes";
 import { mastheadProps } from "@/app/masthead-props";

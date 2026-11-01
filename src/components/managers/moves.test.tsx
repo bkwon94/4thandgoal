@@ -6,7 +6,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { sleeperHeadshot } from "@/lib/headshot";
 import type { Manager, ManagerEntry } from "@/lib/manager-types";
-import fixture from "./fixture.json";
+import { managers as fixture } from "@/fixtures/managers";
 import { Moves } from "./moves";
 
 afterEach(() => {

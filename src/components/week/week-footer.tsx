@@ -4,7 +4,7 @@
  */
 import { cn } from "@/lib/utils";
 import type { WeekSummary } from "@/lib/week-types";
-import { Chapter } from "./parts";
+import { Chapter } from "@/components/parts/chapter";
 
 /* A plain anchor in the home row style, like the week rows of the home page. An anchor skips the router, so the week href carries the base path.
    The touch height keeps a short row a comfortable target. */

@@ -4,7 +4,7 @@
  */
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { firstSentence, week6 } from "./fixture";
+import { firstSentence, week6 } from "@/fixtures/week-page";
 import { NextWeek } from "./next-week";
 
 afterEach(() => {

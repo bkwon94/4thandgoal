@@ -7,8 +7,8 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "@/lib/week-page-fixture";
-import fixture from "@/components/rankings/fixture.json";
+import { weekPageJson } from "@/fixtures/week-page-json";
+import fixture from "@/fixtures/rankings.json";
 import { season } from "@/lib/config";
 import HomePage from "./page";
 

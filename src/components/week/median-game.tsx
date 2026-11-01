@@ -5,7 +5,9 @@
 import { gap, num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { Median } from "@/lib/week-types";
-import { Blurb, Chapter, Label } from "./parts";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 
 function Kpi({ value, label }: { value: string; label: string }) {
   return (

@@ -5,8 +5,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMarkHydrated } from "@/components/reveal";
-import { avatarSrc, Chapter, Label } from "@/components/week/parts";
+import { useMarkHydrated } from "@/components/parts/reveal";
+import { avatarSrc } from "@/lib/avatar";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 import { sleeperHeadshot, swapToDefault } from "@/lib/headshot";
 import { getTeamPick, setTeamPick } from "@/lib/team-pick";
 import { cn } from "@/lib/utils";

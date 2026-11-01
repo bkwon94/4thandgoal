@@ -6,7 +6,12 @@
 import { record } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, ByePlayer, NextGame, Team } from "@/lib/week-types";
-import { avatarSrc, Blurb, Chapter, Label, Tag, Who } from "./parts";
+import { avatarSrc } from "@/lib/avatar";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { Tag } from "@/components/parts/tag";
+import { Who } from "@/components/parts/who";
 
 /* The "vs" line and the bye subtitle share one indent, so both line up under the team names, past the avatar column. */
 const PAST_AVATAR = "pl-[calc(var(--spacing-avatar)+var(--spacing-sp-2))]";
