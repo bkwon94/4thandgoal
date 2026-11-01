@@ -4,11 +4,12 @@
  */
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "@/components/analyzer/analyze-result";
 import { ErrorLine } from "@/components/parts/error-line";
 import { TeamPicker } from "@/components/analyzer/team-picker";
 import { Button } from "@/components/ui/button";
+import { useRequest } from "@/hooks/use-request";
 import type { FindResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postFind, toErrorLine, type Team } from "@/lib/api";
 
@@ -88,19 +89,7 @@ export function TradeFinder({ teams, season, asker, passphrase, onUnauthorized, 
   const [partner, setPartner] = useState<number | null>(null);
   const [find, setFind] = useState<FindState>({ status: "idle" });
   // A late answer for an old partner must not overwrite the state of a new one.
-  const runId = useRef(0);
-  // The unmount effect aborts the call in flight, so a closed page does not wait on the API.
-  const controllerRef = useRef<AbortController | null>(null);
-  const unmounted = useRef(false);
-
-  useEffect(() => {
-    // React strict mode runs the cleanup and the effect again on mount, so the effect resets the flag.
-    unmounted.current = false;
-    return () => {
-      unmounted.current = true;
-      controllerRef.current?.abort();
-    };
-  }, []);
+  const request = useRequest();
 
   // The asker cannot trade with itself, so the picker lists the eleven other teams.
   const partners = teams.filter((team) => team.roster_id !== asker);
@@ -108,16 +97,15 @@ export function TradeFinder({ teams, season, asker, passphrase, onUnauthorized, 
 
   // A new partner makes the old cards stale, so a change clears them.
   function pickPartner(rosterId: number) {
-    runId.current += 1;
+    request.drop();
     setPartner(rosterId);
     setFind({ status: "idle" });
   }
 
   async function submit() {
     if (partner === null) return;
-    const id = ++runId.current;
-    const controller = new AbortController();
-    controllerRef.current = controller;
+    const run = request.start();
+    const { controller } = run;
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
@@ -126,10 +114,10 @@ export function TradeFinder({ teams, season, asker, passphrase, onUnauthorized, 
     setFind({ status: "finding" });
     try {
       const doc = await postFind(passphrase, { season, asker, partner }, controller.signal);
-      if (id === runId.current && !unmounted.current) setFind({ status: "done", doc });
+      if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
-      if (id !== runId.current || unmounted.current) return;
+      if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
       else setFind({ status: "error", ...toErrorLine(error, timedOut, "The search took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
 import { cn } from "@/lib/utils";
 
 type PassphraseDialogProps = {

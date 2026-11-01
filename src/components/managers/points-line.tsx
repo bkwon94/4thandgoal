@@ -8,7 +8,8 @@ import { motion, type Variants } from "framer-motion";
 import { type ReactNode, useId } from "react";
 import { VIEW_MARGIN } from "@/components/parts/reveal";
 import { count } from "@/lib/format/format";
-import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { SeasonWeek } from "@/lib/manager-types";
 

@@ -6,7 +6,8 @@
 
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { useEffect } from "react";
-import { DURATION, EASE_OUT, useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { DURATION, EASE_OUT } from "@/lib/motion";
 
 export function OddsCount({ value }: { value: number }) {
   const off = useMotionOff();

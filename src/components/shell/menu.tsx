@@ -10,7 +10,8 @@ import { currentPage } from "@/components/shell/current-page";
 import { Dialog, DialogOverlay, DialogPopup, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { ThemeButton } from "@/components/shell/theme-button";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { DROP, DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { DROP, DURATION, EASE_OUT, INSTANT, stagger } from "@/lib/motion";
 
 /* One place the menu links to. The href carries the base path, because every link is a plain anchor. */
 export type Destination = { label: string; href: string };

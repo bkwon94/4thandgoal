@@ -1,13 +1,8 @@
 /**
- * The one reduced-motion switch for the site, and the shared motion timings.
- * Every animated component reads useMotionOff, so the reduced-motion media query turns every animation off.
+ * The shared motion timings and the pure helpers that build motion props.
+ * The reduced-motion switch is useMotionOff in the hooks folder. A helper that builds motion props takes its result as the off flag.
  */
-import { useReducedMotion, type TargetAndTransition, type Transition } from "framer-motion";
-
-/* True when the reader asks the system for reduced motion. Framer Motion reads the media query once, when a component mounts. */
-export function useMotionOff(): boolean {
-  return useReducedMotion() === true;
-}
+import { type TargetAndTransition, type Transition } from "framer-motion";
 
 /* The brand ease-out from --ease-out in globals.css. Framer Motion needs the curve as numbers, not as a CSS value. */
 export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
