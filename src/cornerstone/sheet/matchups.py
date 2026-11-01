@@ -3,11 +3,20 @@ Builds the family of facts for each matchup: the result, the lines, the story, a
 The recap and Matchup of the Week chapters read them.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Fact,
     sub,
 )
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
+
+
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The result, the lines, the story, and the context of each matchup.
+
+    The Matchup of the Week, Game Changer, and recap chapters read them. The awards chapter reads each result.
+    """
+    return matchup_fact_family(context)
 
 
 def matchup_fact_family(c: Context) -> list[Fact]:

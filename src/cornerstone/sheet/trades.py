@@ -2,6 +2,8 @@
 Builds the trade facts and the inputs to the trade grade.
 Each trade gets its own facts, so a trade chapter cites only its own trade.
 """
+# The weekly assembly does not call this module, so it has no facts function and is not in FACT_GROUPS.
+# Only the trade bundle in the tests calls it.
 from decimal import Decimal
 
 from cornerstone.facts_league import (
@@ -21,7 +23,7 @@ from cornerstone.models import (
     UsageShare,
 )
 from cornerstone.numbers import r2
-from cornerstone.sheet.base import Context, Nums, fact, _trend_text, _weeks
+from cornerstone.sheet.base import Context, Nums, fact, trend_text, weeks_text
 from cornerstone.trades import is_late
 
 
@@ -95,7 +97,7 @@ def _player_trade_fact(c: Context, i: int, rid: int, pid: str, verb: str) -> Fac
         text += "."
     beaten = player_trend(c.history, pid, through=through) if c.history is not None else None
     if beaten is not None:
-        text += " " + _trend_text(line.name, beaten, n)
+        text += " " + trend_text(line.name, beaten, n)
     return fact(f"T{i}.{rid}.{verb}.{pid}", text, n, [team], [line.name])
 
 
@@ -224,7 +226,7 @@ def _injury_fact(c: Context, i: int, pid: str, through: int) -> Fact | None:
         return None
     n = Nums()
     name = c.lines[pid].name
-    count = _weeks(len(reports), n)
+    count = weeks_text(len(reports), n)
     if through in reports:
         text = (
             f"{name} was listed {reports[through]} on the NFL injury report in week {n(through)}, "

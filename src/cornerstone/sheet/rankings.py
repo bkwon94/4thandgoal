@@ -4,6 +4,7 @@ The rankings chapter reads them, and the chapter itself comes from here.
 """
 from collections.abc import Callable
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
     TREND_WEEKS,
     head_to_head,
@@ -18,7 +19,7 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import round_half_up
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Nums, fact
+from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Context, Nums, fact
 from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
 
@@ -28,6 +29,20 @@ COMPONENT_WORDS = {
     "standing": "standing", "form": f"results over the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
     "scoring": "scoring",
 }
+
+
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The power ranks, the odds, the swing of each Must Watch game, and the reasons for the ranks and the odds.
+
+    The rankings chapter reads them. The median chapter reads the odds, and the next week chapter reads the swings.
+    """
+    return (
+        power_facts(context.power, context.team)
+        + rank_why_facts(context.history, context.power, context.before, context.team)
+        + odds_facts(context.odds, context.team)
+        + swing_facts(context.odds, [(nx.a, nx.b) for nx in context.next if nx.must_watch], context.team)
+        + odds_why_facts(context.odds, context.season_scores, context.projected, context.remaining, context.team)
+    )
 
 
 def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact]:

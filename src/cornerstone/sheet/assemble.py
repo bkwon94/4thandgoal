@@ -18,21 +18,20 @@ from cornerstone.models import (
     Week,
     WeekData,
 )
-from cornerstone.sheet.awards import award_facts, expected_award_facts
-from cornerstone.sheet.base import BYE_FACT_PREFIX, SENTENCE_RANGES, Context, week_dates
-from cornerstone.sheet.drops import drop_facts, injury_facts_nfl
-from cornerstone.sheet.leaders import history_facts, leader_facts, player_trend_facts, rank_facts, strength_facts
-from cornerstone.sheet.matchups import matchup_fact_family
-from cornerstone.sheet.next_week import next_facts, pick_facts, shootout_facts
-from cornerstone.sheet.rankings import (
-    odds_facts, odds_why_facts, power_facts, rank_why_facts, rankings_chapter, swing_facts,
-)
-from cornerstone.sheet.standings import median_facts_sheet, standings_facts
-from cornerstone.sheet.week import injured_facts, recent_add_facts, week_facts
 from cornerstone.provider.sleeper import fetch_news
+from cornerstone.sheet import awards, drops, leaders, matchups, next_week, rankings, standings, week
+from cornerstone.sheet.base import BYE_FACT_PREFIX, SENTENCE_RANGES, Context, week_dates
+from cornerstone.sheet.rankings import rankings_chapter
 from cornerstone.snapshot import Snapshot
 
 
+# The fact groups of the sheet, in the order the sheet lists their facts. This list alone sets that order.
+# A group reads only the context and the league config, so it needs no file and no clock. Every group takes the
+# config, so the assembly calls each group the same way. A group reads a league number from it when it needs one.
+FACT_GROUPS: tuple[Callable[[Context, LeagueConfig], list[Fact]], ...] = (
+    week.facts, standings.facts, matchups.facts, awards.facts, next_week.facts, leaders.facts, drops.facts,
+    rankings.facts,
+)
 # A chapter cites at most this many facts with an ID that starts with "H." or "P.", so the writer
 # stays focused. The cap does not cover the position-rank facts.
 HISTORY_FACTS_MAX = 6
@@ -186,17 +185,7 @@ def build_bundle(
     config: LeagueConfig,
 ) -> Bundle:
     c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, config=config)
-    families = (
-        week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
-        matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
-        shootout_facts(c),
-        rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
-        drop_facts(c), injury_facts_nfl(c), power_facts(c.power, c.team),
-        rank_why_facts(c.history, c.power, c.before, c.team),
-        odds_facts(c.odds, c.team), swing_facts(c.odds, [(nx.a, nx.b) for nx in c.next if nx.must_watch], c.team),
-        odds_why_facts(c.odds, c.season_scores, c.projected, c.remaining, c.team),
-    )
-    facts = {f.id: f for family in families for f in family}
+    facts = {f.id: f for group in FACT_GROUPS for f in group(c, config)}
     data = WeekData(
         season=week.season,
         week=week.week,

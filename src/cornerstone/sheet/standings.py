@@ -4,6 +4,7 @@ The standings facts place each team against the last playoff spot.
 """
 from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Fact,
 )
@@ -18,6 +19,15 @@ CUT_PHRASES = {
     "at": "in the last playoff spot",
     "below": "{spots} outside the playoff spots",
 }
+
+
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The place of each team in the standings, and each score against the league median.
+
+    The Matchup of the Week, recap, median, next week, and rankings chapters read the standings. The median chapter
+    reads the median.
+    """
+    return standings_facts(context) + median_facts_sheet(context)
 
 
 def cut_phrase(rank: int, last_spot: int, n: Nums) -> str:

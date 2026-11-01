@@ -2,6 +2,7 @@
 The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team, the
 need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
 Each fact carries every number in its text.
+It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
 from cornerstone.adjusters import (
     FLEX_SLOTS, STRENGTH_SLOTS, Side, StartingSlot, allowed_positions, due_back_week, hole_sentence, team_race,

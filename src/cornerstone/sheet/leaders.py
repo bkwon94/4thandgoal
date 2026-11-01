@@ -3,6 +3,7 @@ Builds the position leader facts, the position rank facts, and the history facts
 The position leaders chapter and the history caps read them.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
     TREND_WEEKS,
 )
@@ -15,7 +16,19 @@ from cornerstone.models import (
     PlayerLine,
 )
 from cornerstone.numbers import r2
-from cornerstone.sheet.base import Context, Nums, fact, _trend_text
+from cornerstone.sheet.base import Context, Nums, fact, trend_text
+
+
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The position ranks, the position leaders, the schedule strength, and the team and player history.
+
+    The position leaders chapter reads the leaders, and the next week chapter reads the schedule strength. The ranks
+    and the history go to each chapter about the teams and players they name.
+    """
+    return (
+        rank_facts(context) + leader_facts(context) + strength_facts(context) + history_facts(context)
+        + player_trend_facts(context)
+    )
 
 
 def rank_facts(c: Context) -> list[Fact]:
@@ -121,5 +134,5 @@ def player_trend_facts(c: Context) -> list[Fact]:
         if not line.started or beaten is None:
             continue
         n = Nums()
-        out.append(fact(f"P.{pid}.trend", _trend_text(line.name, beaten, n), n, [], [line.name]))
+        out.append(fact(f"P.{pid}.trend", trend_text(line.name, beaten, n), n, [], [line.name]))
     return out

@@ -48,7 +48,6 @@ FIRST_WEEK = 6
 # The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
 # per team are the fewest scores the engine draws from. A week before it gets no odds.
 ODDS_FROM_WEEK = 6
-NEWS_MAX_CHARS = 300
 MOVE_WORDS = {"waiver": "waiver add", "free_agent": "free agent add", "trade": "trade"}
 AWARD_TITLES = {
     "game_changer": "Game Changer",
@@ -178,13 +177,13 @@ def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> 
     return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
-def _odds(
+def week_odds(
     week: Week, history: History | None,
     inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
     projected: dict[int, dict[int, float]] | None,
     config: LeagueConfig,
 ) -> OddsResult | None:
-    """The engine's odds after this week, or None when `_odds_inputs` gave no inputs.
+    """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
 
     The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
     """
@@ -197,7 +196,7 @@ def _odds(
     )
 
 
-def _odds_inputs(
+def odds_inputs(
     week: Week, history: History | None, config: LeagueConfig,
 ) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
     """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
@@ -290,9 +289,9 @@ class Context:
         )
         # The odds and the odds why read the same inputs, so the context builds them once.
         self.projected = projected_totals(week, config)
-        inputs = _odds_inputs(week, history, config)
+        inputs = odds_inputs(week, history, config)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
-        self.odds = _odds(week, history, inputs, self.projected, config)
+        self.odds = week_odds(week, history, inputs, self.projected, config)
         # The shootout storyline reads the same projected lineups as the odds.
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
                               snapshot.position_rank if snapshot is not None else None)
@@ -323,47 +322,11 @@ class Context:
         return f"scored {n(line.points)} on a {n(line.projection)} projection, {n(abs(gap))} {side}"
 
 
-def _news_facts(c: Context, gc) -> list[Fact]:
-    # News is an unofficial endpoint. A failure must never stop a build.
-    try:
-        items = c.news(gc.line.player_id)
-        # Items arrive in no promised order, and "published" is epoch milliseconds as a string.
-        newest = max(items, key=lambda i: int(i.get("published") or 0), default={})
-    except Exception:
-        logger.exception("News fetch failed for %s", gc.line.name)
-        return []
-    description = (newest.get("metadata") or {}).get("description") or ""
-    if not description:
-        return []
-    n = Nums()
-    text = f"Latest news on {gc.line.name}: {n.text(_cut_at_word(description, NEWS_MAX_CHARS))}"
-    return [fact("AW.game_changer.news", text, n, [], [gc.line.name])]
-
-
-def _cut_at_word(text: str, limit: int) -> str:
-    """Cut at the last whitespace before the limit, so no word or number is cut in half."""
-    if len(text) <= limit:
-        return text
-    head = text[:limit]
-    space = max(head.rfind(" "), head.rfind("\n"), head.rfind("\t"))
-    return (head[:space] if space > 0 else head).rstrip()
-
-
-def _trend_text(name: str, beaten: int, n: Nums) -> str:
+def trend_text(name: str, beaten: int, n: Nums) -> str:
     if beaten >= 2:
         return f"{name} has beaten projection in {n(beaten)} of the last {n(TREND_WEEKS)} weeks."
     return f"{name} has missed projection in {n(TREND_WEEKS - beaten)} of the last {n(TREND_WEEKS)} weeks."
 
 
-def _pregame_text(c: Context, pid: str) -> str | None:
-    """The final NFL injury report status of this week, or None when the player has none."""
-    if c.nfl is None or c.nfl.injuries is None:
-        return None
-    status = c.nfl.injuries.get(pid, {}).get(c.week.week)
-    if status is None:
-        return None
-    return f"{c.lines[pid].name} was listed {status} on the final NFL injury report before his game this week."
-
-
-def _weeks(count: int, n: Nums, adjective: str = "") -> str:
+def weeks_text(count: int, n: Nums, adjective: str = "") -> str:
     return f"{n(count)} {adjective}week" + ("" if count == 1 else "s")
