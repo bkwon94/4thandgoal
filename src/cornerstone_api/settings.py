@@ -6,6 +6,8 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from cornerstone.paths import results_cache_dir
+
 # The production league site and the two local dev servers of the site repo.
 DEFAULT_ORIGINS = ("https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000")
 
@@ -35,6 +37,6 @@ class Settings:
         return cls(
             passphrase=passphrase,
             repo=repo,
-            result_cache_dir=Path(cache) if cache else repo / "data" / "cache" / "results",
+            result_cache_dir=Path(cache) if cache else results_cache_dir(repo),
             allowed_origins=tuple(o.strip() for o in origins.split(",")) if origins else DEFAULT_ORIGINS,
         )

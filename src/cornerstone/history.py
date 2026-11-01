@@ -15,6 +15,7 @@ from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
 from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
+from cornerstone.paths import week_label
 from cornerstone.sleeper import fetch_past_week, read_prev_transactions
 from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
 
@@ -26,17 +27,8 @@ SHARE_SWING = 5
 SHARE_DIRECTION_WEEKS = 2 * SHARE_WEEKS
 
 
-def history_root(repo: Path, season: int) -> Path:
-    return repo / "data" / str(season) / "history"
-
-
-def returns_path(repo: Path, season: int) -> Path:
-    """The hand-kept returns file of the season: the return week by player id, beside the history."""
-    return repo / "data" / str(season) / "returns.json"
-
-
 def history_dir(root: Path, week: int) -> Path:
-    return root / f"week-{week:02d}"
+    return root / week_label(week)
 
 
 def _is_saved(directory: Path) -> bool:
@@ -81,7 +73,7 @@ def _fresh_transactions(root: Path, week: int) -> list | None:
     Sleeper keeps the leg at N until the next week starts, and the fetch of week N+1 saves the full leg.
     """
     # The raw directory of a week sits beside the history root: data/{season}/week-NN/raw.
-    return read_prev_transactions(root.parent / f"week-{week + 1:02d}" / "raw")
+    return read_prev_transactions(root.parent / week_label(week + 1) / "raw")
 
 
 def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:

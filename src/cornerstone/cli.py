@@ -17,13 +17,13 @@ from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
 from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
-from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
+from cornerstone.paths import history_root, nflverse_cache_dir, raw_dir
 from cornerstone.pipeline import (
-    BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_page_json,
-    run_rankings, run_rewrite, week_dir,
+    BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_page_json,
+    run_rankings, run_rewrite,
 )
 from cornerstone.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
@@ -192,8 +192,8 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     if not has_raw(repo, args.season, args.week):
         print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
         return None
-    raw_dir = week_dir(repo, args.season, args.week) / "raw"
-    raw = load_raw(raw_dir)
+    raw_path = raw_dir(repo, args.season, args.week)
+    raw = load_raw(raw_path)
     if args.chart is not None:
         chart = _given_chart(args.chart)
     else:
@@ -202,7 +202,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
                              raw["league"]["scoring_settings"])
-    return load_snapshot(raw_dir, history, chart, slow)
+    return load_snapshot(raw_path, history, chart, slow)
 
 
 def _live_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
@@ -355,7 +355,7 @@ def run_find(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
 
 def run_chart(repo: Path, season: int, week: int) -> int:
     """Print the parsed chart, every guard, and the match against the saved raw data of the week."""
-    raw = load_raw(week_dir(repo, season, week) / "raw") if has_raw(repo, season, week) else None
+    raw = load_raw(raw_dir(repo, season, week)) if has_raw(repo, season, week) else None
     if raw is not None:
         league = parse_week(raw)
         season_start = league.season_start

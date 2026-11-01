@@ -11,8 +11,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from cornerstone.config import cornerstone_config
-from cornerstone.history import history_root
-from cornerstone.pipeline import run_build, week_dir
+from cornerstone.paths import history_root, week_dir
+from cornerstone.pipeline import run_build
 from cornerstone.writer import WriterError
 from fakes import fixture_nflverse, no_claims, no_news
 
