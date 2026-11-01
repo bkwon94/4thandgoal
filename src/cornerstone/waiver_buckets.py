@@ -11,7 +11,7 @@ from cornerstone.adjusters import OUT_STATUSES, back_inside
 from cornerstone.models import Fact, WaiverPlayer
 from cornerstone.nflverse import gsis_id
 from cornerstone.parse import player_name
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import BUCKET_POSITIONS, LAST_SEASON_WEEK, SNEAKY_USAGE_FLOOR, TOP_HALF
 

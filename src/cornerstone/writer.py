@@ -12,7 +12,7 @@ import anthropic
 from pydantic import BaseModel, ValidationError
 
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
-from cornerstone.sheet import BYE_FACT_PREFIX, repeats_motw_headline
+from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")

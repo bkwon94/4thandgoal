@@ -9,7 +9,7 @@ import anthropic
 from pydantic import ValidationError
 
 from cornerstone.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
 from cornerstone.verifier import URL
 from cornerstone.waiver import DROPS

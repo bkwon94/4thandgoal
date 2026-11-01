@@ -12,7 +12,7 @@ from cornerstone.adjusters import OUT_STATUSES
 from cornerstone.paths import history_week_dir
 from cornerstone.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from cornerstone.parse import player_name, team_name
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.sleeper import RawRoster, RawTransaction, RawWeek
 from cornerstone.tunables import FLOOR_WEEKS, NEED_SHARE
 

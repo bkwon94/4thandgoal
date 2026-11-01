@@ -12,7 +12,7 @@ from cornerstone.models import Fact, UsageShare
 from cornerstone.numbers import plural
 from cornerstone.ranks import LINES, RANKED_POSITIONS
 from cornerstone.rubric import ProposedTrade, build_sides
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import STRENGTH_RANK
 
