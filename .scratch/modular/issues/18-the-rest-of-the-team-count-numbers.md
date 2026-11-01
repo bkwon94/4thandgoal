@@ -4,9 +4,13 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `grep -rn "12" src/cornerstone/tunables.py src/cornerstone/facts_league.py src/cornerstone/sheet/` finds no team-count literal.
 - [ ] A test with a config for a ten-team league changes the grade spare rank and the rankings range.
 - [ ] The four golden tests pass with no golden change.
 - [ ] `make typecheck` passes.
+
+## Comments
+
+- 2026-11-01: merged into `modular` from branch `modular-18-team-count`, commits c86fa8d, 8689707, and 30c1ffe. 1,514 tests collected. `team_count` is a config field, and the weekly and live parses raise if the league file holds another count. `grade_spare_rank`, `grade_strong_rank`, and `grade_soft_rank` are properties of the team count; the quarter rounds down. `shootout_top` stays a plain field set to 4, because its old comment names no formula. The median reads the middle ranks from the list length, since a past week holds no config. Two reviewers passed it after one fix pass.
