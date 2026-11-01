@@ -37,9 +37,8 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# Only the modules that a ticket touches must pass, so the include list grows ticket by ticket.
-# Backlog: history.py fails on a Decimal type error in a round function and on the object type of the raw dict.
-# Every other module in src has not been checked.
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+# Backlog: history.py has three errors. One is a Decimal type error in a round function. Two are the object type of the raw dict.
 [tool.pyright]
 typeCheckingMode = "basic"
 include = ["src/cornerstone/files.py", "src/cornerstone/render.py"]
