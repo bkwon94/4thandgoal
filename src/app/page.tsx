@@ -11,12 +11,12 @@ import { Reveal } from "@/components/reveal";
 import { TeamsPrefetch } from "@/components/teams-prefetch";
 import { Blurb, Chapter, Label } from "@/components/week/parts";
 import { basePath, season } from "@/lib/config";
-import { currentManagersHref } from "@/lib/manager-data";
+import { currentManagersHref } from "@/lib/data/manager-data";
 import { stagger } from "@/lib/motion";
-import { biggestMover } from "@/lib/rankings";
-import { loadRankings } from "@/lib/rankings-data";
+import { biggestMover } from "@/lib/format/rankings";
+import { loadRankings } from "@/lib/data/rankings-data";
 import { cn } from "@/lib/utils";
-import { listWeekSummaries } from "@/lib/week-data";
+import { listWeekSummaries } from "@/lib/data/week-data";
 
 export const metadata: Metadata = {
   title: "Cornerstone Fantasy Football League",

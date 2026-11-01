@@ -11,8 +11,8 @@ import { PageColumn } from "@/components/page-column";
 import { ChapterRail } from "@/components/week/chapter-rail";
 import { avatarSrc } from "@/components/week/parts";
 import { basePath } from "@/lib/config";
-import { loadManagers, seasonManagersHref } from "@/lib/manager-data";
-import { latestAvatars } from "@/lib/rankings-data";
+import { loadManagers, seasonManagersHref } from "@/lib/data/manager-data";
+import { latestAvatars } from "@/lib/data/rankings-data";
 
 type Params = { season: string; roster: string };
 type Props = { params: Promise<Params> };

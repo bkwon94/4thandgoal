@@ -3,7 +3,7 @@
  * It ports the .stage rules of the source stylesheet; the two gradients live in globals.css.
  */
 import { Reveal } from "@/components/reveal";
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import { DURATION, HERO_DELAY } from "@/lib/motion";
 import type { GameChanger as GameChangerData, HeadshotMap } from "@/lib/week-types";
 import { Blurb, Chapter, Headshot, Label } from "./parts";

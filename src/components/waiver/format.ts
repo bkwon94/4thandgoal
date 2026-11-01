@@ -2,7 +2,7 @@
  * The text formats of the waiver page: the team name, the meta line, the price, the trending line, the stance, and the drop line.
  * The field, the sheet, and the list share them, so a player reads the same in all three.
  */
-import { num, thousands } from "@/lib/format";
+import { num, thousands } from "@/lib/format/format";
 import type { ClaimStance, DropInfo, WaiverPlayer } from "@/lib/waiver-types";
 import type { Team } from "@/lib/week-types";
 

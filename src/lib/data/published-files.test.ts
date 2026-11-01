@@ -6,10 +6,10 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
-import { managersFileSchema } from "./schemas/managers";
-import { rankingsSchema } from "./schemas/rankings";
-import { waiverBoardSchema } from "./schemas/waiver";
-import { weekPageSchema } from "./schemas/week";
+import { managersFileSchema } from "../schemas/managers";
+import { rankingsSchema } from "../schemas/rankings";
+import { waiverBoardSchema } from "../schemas/waiver";
+import { weekPageSchema } from "../schemas/week";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 

@@ -4,7 +4,7 @@
  * A tile with no projections this week shows a note in place of the player.
  */
 import { Reveal } from "@/components/reveal";
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import { stagger } from "@/lib/motion";
 import type { Award, HeadshotMap } from "@/lib/week-types";
 import { Blurb, Chapter, Headshot, Label } from "./parts";

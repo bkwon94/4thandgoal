@@ -4,7 +4,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { weekPageSchema } from "./schemas/week";
+import { weekPageSchema } from "../schemas/week";
 import type { WeekPage } from "@/lib/week-types";
 
 /* The build and the tests both run from the repo root, so public/ sits under the working folder. */

@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
-import { ordinal } from "@/lib/format";
+import { ordinal } from "@/lib/format/format";
 import type { GradePart, ManagerGrade } from "@/lib/manager-types";
 import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
 

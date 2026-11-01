@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { shortName } from "@/lib/format";
+import { shortName } from "@/lib/format/format";
 import { sleeperHeadshot, swapToDefault } from "@/lib/headshot";
 import { DRIFT_EASE, DURATION, INSTANT, rise, stagger, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";

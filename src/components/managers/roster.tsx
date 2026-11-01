@@ -4,7 +4,7 @@
  */
 import { Reveal } from "@/components/reveal";
 import { Chapter, Label } from "@/components/week/parts";
-import { ordinal } from "@/lib/format";
+import { ordinal } from "@/lib/format/format";
 import { stagger } from "@/lib/motion";
 import type { Manager, SlotRank } from "@/lib/manager-types";
 

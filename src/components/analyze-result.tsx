@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Player, TradeSide } from "@/lib/analyze-types";
 import { swapToDefault } from "@/lib/headshot";
-import { knownGamesSegments } from "@/lib/known-games-segments";
+import { knownGamesSegments } from "@/lib/format/known-games-segments";
 import { DURATION, rise, useMotionOff } from "@/lib/motion";
 import { Blurb, Chapter, Label } from "@/components/week/parts";
 import { cn } from "@/lib/utils";

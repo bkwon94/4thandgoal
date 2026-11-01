@@ -9,8 +9,8 @@ import { PowerRankings } from "@/components/rankings/power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "@/components/rankings/week-choice";
 import { Blurb, Chapter, Label } from "@/components/week/parts";
 import { basePath } from "@/lib/config";
-import { seasonManagersHref } from "@/lib/manager-data";
-import { latestAvatars, loadRankings } from "@/lib/rankings-data";
+import { seasonManagersHref } from "@/lib/data/manager-data";
+import { latestAvatars, loadRankings } from "@/lib/data/rankings-data";
 
 export const metadata: Metadata = {
   title: "Power Rankings · Cornerstone Fantasy Football League",

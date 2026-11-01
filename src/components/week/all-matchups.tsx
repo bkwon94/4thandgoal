@@ -7,7 +7,7 @@
 import { motion } from "framer-motion";
 import { useId, useState } from "react";
 import { Reveal } from "@/components/reveal";
-import { num, shortName } from "@/lib/format";
+import { num, shortName } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, Matchup, MatchupSide } from "@/lib/week-types";

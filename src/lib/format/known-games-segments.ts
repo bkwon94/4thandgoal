@@ -2,7 +2,7 @@
  * The stats-through segments of the as-of line, shared by the analyze page and the finder page.
  * The first segment names the stats week, the known games, and the games in progress. Each pending count is its own segment.
  */
-import type { AsOf } from "./analyze-types";
+import type { AsOf } from "@/lib/analyze-types";
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
