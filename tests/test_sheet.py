@@ -17,6 +17,7 @@ from cornerstone.odds import playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     Context,
+    standings,
     build_bundle,
     check_week_is_buildable,
     fmt,
@@ -211,6 +212,14 @@ def test_a_team_level_with_the_cut_gets_one_fixed_phrase(bundle):
 
 def test_a_team_off_the_cut_keeps_its_games_from_the_cut(bundle):
     assert "1 game above the cut" in bundle.sheet.facts["S.5"].text
+
+
+def test_one_chapter_gives_the_facts_that_the_assembled_sheet_holds_for_it(bundle, fixture_raw_dir):
+    # A chapter reads only the bundle and the config, so the same inputs give the same facts as the assembly.
+    c = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
+    got = standings.facts(c, CONFIG)
+    assert got
+    assert got == [f for fid, f in bundle.sheet.facts.items() if fid.startswith(("S.", "MED."))]
 
 
 def _standing_text(fixture_raw_dir, rank, wins, losses, games_from_cut):
@@ -707,9 +716,9 @@ def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_ra
     raw = load_raw(fixture_raw_dir)
     raw.projections_ahead = None
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
-    inputs = sheet._odds_inputs(week, history, config=CONFIG)
-    plain = sheet._odds(week, history, inputs, projected_totals(week, config=CONFIG), config=CONFIG)
-    assert sheet._odds(week, history, inputs, None, config=CONFIG) == plain
+    inputs = sheet.odds_inputs(week, history, config=CONFIG)
+    plain = sheet.week_odds(week, history, inputs, projected_totals(week, config=CONFIG), config=CONFIG)
+    assert sheet.week_odds(week, history, inputs, None, config=CONFIG) == plain
 
 
 def _why_inputs(fixture_raw_dir, fixture_history_root):

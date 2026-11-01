@@ -177,13 +177,13 @@ def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> 
     return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
-def _odds(
+def week_odds(
     week: Week, history: History | None,
     inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
     projected: dict[int, dict[int, float]] | None,
     config: LeagueConfig,
 ) -> OddsResult | None:
-    """The engine's odds after this week, or None when `_odds_inputs` gave no inputs.
+    """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
 
     The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
     """
@@ -196,7 +196,7 @@ def _odds(
     )
 
 
-def _odds_inputs(
+def odds_inputs(
     week: Week, history: History | None, config: LeagueConfig,
 ) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
     """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
@@ -289,9 +289,9 @@ class Context:
         )
         # The odds and the odds why read the same inputs, so the context builds them once.
         self.projected = projected_totals(week, config)
-        inputs = _odds_inputs(week, history, config)
+        inputs = odds_inputs(week, history, config)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
-        self.odds = _odds(week, history, inputs, self.projected, config)
+        self.odds = week_odds(week, history, inputs, self.projected, config)
         # The shootout storyline reads the same projected lineups as the odds.
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
                               snapshot.position_rank if snapshot is not None else None)
