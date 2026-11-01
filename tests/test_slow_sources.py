@@ -74,7 +74,7 @@ def test_load_slow_sources_with_the_league_scoring_gives_the_expected_points(
         fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
     cache = _cache(fixture_nflverse_dir, tmp_path)
     shutil.copy(fixture_nflverse_dir / "ep_weekly_2026.csv", cache / "ep_weekly_2026.csv")
-    scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
+    scoring = load_raw(fixture_raw_dir).league.scoring_settings
     sources = load_slow_sources(cache, 2026, 6, fixture_history_root, scoring)
     # The trade week is 6, so the expected window ends at week 5, as every other grade input does.
     assert sources.expected.through_week == 5
@@ -85,7 +85,7 @@ def test_load_slow_sources_with_the_league_scoring_gives_the_expected_points(
 
 def test_load_slow_sources_without_the_expected_points_file_gives_none_and_names_it_as_missing(
         fixture_nflverse_dir, fixture_history_root, fixture_raw_dir, tmp_path):
-    scoring = load_raw(fixture_raw_dir)["league"]["scoring_settings"]
+    scoring = load_raw(fixture_raw_dir).league.scoring_settings
     sources = load_slow_sources(_cache(fixture_nflverse_dir, tmp_path), 2026, 6, fixture_history_root, scoring)
     assert sources.expected is None and sources.missing == NOT_IN_CACHE
 

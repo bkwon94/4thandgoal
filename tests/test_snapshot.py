@@ -168,7 +168,7 @@ BUF_MIA = "202610602"
 def _known_games_raw(fixture_raw_dir, drop_game=None):
     """The week 6 raw as a fetch on a game day of week 6 gives it, with the stat lines of `drop_game` left out."""
     raw = load_raw(fixture_raw_dir)
-    raw["stats"] = [row for row in raw["stats"] if row.get("game_id") != drop_game]
+    raw.stats = [row for row in raw.stats if row.game_id != drop_game]
     return raw
 
 
@@ -180,7 +180,7 @@ def test_a_trade_week_with_stat_lines_reads_its_known_games_and_keeps_the_standi
     assert snap.as_of.stats_through == 6
     assert snap.as_of.completed_through == 5
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
-    assert len({row["team"] for row in raw["stats"]}) == 26
+    assert len({row.team for row in raw.stats}) == 26
     assert snap.as_of.known_games == KnownGames(week=6, games=13, in_progress=0, pending={})
     assert snap.stale == []
 
@@ -198,7 +198,7 @@ def test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_
         fixture_raw_dir, fixture_history_root, chart_week6):
     # A good fetch before the first week 6 game gives an empty list. Nothing failed, so nothing is stale.
     raw = load_raw(fixture_raw_dir)
-    raw["stats"] = []
+    raw.stats = []
     snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
     assert snap.as_of.stats_through == 5
     assert snap.as_of.completed_through == 5
@@ -211,8 +211,8 @@ def test_a_trade_week_with_only_lines_of_active_players_keeps_the_bound_at_the_w
         fixture_raw_dir, fixture_history_root, chart_week6):
     # Before a kickoff Sleeper posts a line with only gms_active for each active player, and no game is played.
     raw = load_raw(fixture_raw_dir)
-    for row in raw["stats"]:
-        row["stats"] = {"gms_active": 1.0}
+    for row in raw.stats:
+        row.stats = {"gms_active": 1.0}
     snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
     assert snap.as_of.stats_through == 5
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
@@ -222,12 +222,10 @@ def test_a_trade_week_with_only_lines_of_active_players_keeps_the_bound_at_the_w
 
 def test_a_failed_stats_fetch_keeps_the_bound_at_the_week_before_and_names_the_stats_stale(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    # The fetch gives no stats when the call fails, and a raw can also lack the key.
+    # The fetch gives no stats when the call fails.
     failed = load_raw(fixture_raw_dir)
-    failed["stats"] = None
-    absent = load_raw(fixture_raw_dir)
-    del absent["stats"]
-    for raw in (failed, absent):
+    failed.stats = None
+    for raw in (failed,):
         snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6)
         assert snap.as_of.stats_through == 5
         assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
@@ -290,9 +288,9 @@ GB_GAME = "202610612"
 
 def _without_snaps(raw, game_ids):
     """The raw with no snap count on the lines of `game_ids`, as Sleeper posts a Sunday game on Sunday night."""
-    for row in raw["stats"]:
-        if row.get("game_id") in game_ids:
-            row["stats"] = {key: value for key, value in row["stats"].items() if key not in ("off_snp", "tm_off_snp")}
+    for row in raw.stats:
+        if row.game_id in game_ids:
+            row.stats = {key: value for key, value in row.stats.items() if key not in ("off_snp", "tm_off_snp")}
     return raw
 
 

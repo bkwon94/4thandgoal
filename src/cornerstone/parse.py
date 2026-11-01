@@ -3,55 +3,57 @@ Parse the raw Sleeper JSON into the domain models.
 This is the only module that knows the shape of the raw data.
 """
 from collections import defaultdict
+from collections.abc import Sequence
 from datetime import date, datetime, timezone
 
 from cornerstone.models import (
     DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, ProjectionsAhead, Side, Team, Trade, Week,
 )
+from cornerstone.sleeper import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")
 
 
-def _avatar_url(user: dict) -> str | None:
-    metadata_avatar = (user.get("metadata") or {}).get("avatar")
+def _avatar_url(user: RawUser) -> str | None:
+    metadata_avatar = user.metadata.avatar if user.metadata else None
     if metadata_avatar:
         return metadata_avatar
-    if user.get("avatar"):
-        return AVATAR_THUMB_URL.format(avatar=user["avatar"])
+    if user.avatar:
+        return AVATAR_THUMB_URL.format(avatar=user.avatar)
     return None
 
 
-def team_name(user: dict) -> str:
+def team_name(user: RawUser) -> str:
     """The team name the user set, else the display name."""
-    return (user.get("metadata") or {}).get("team_name") or user["display_name"]
+    return (user.metadata.team_name if user.metadata else None) or user.display_name
 
 
-def _teams(raw: dict, owner_username: str | None) -> dict[int, Team]:
-    users = {u["user_id"]: u for u in raw["users"]}
+def _teams(raw: RawWeek, owner_username: str | None) -> dict[int, Team]:
+    users = {u.user_id: u for u in raw.users}
     teams = {}
-    for roster in raw["rosters"]:
-        user = users[roster["owner_id"]]
-        settings = roster["settings"]
+    for roster in raw.rosters:
+        user = users[roster.owner_id]
+        settings = roster.settings
         # Sleeper splits the points into a whole part and a two-digit decimal part.
-        points_for = settings["fpts"] + settings.get("fpts_decimal", 0) / 100
-        teams[roster["roster_id"]] = Team(
-            roster_id=roster["roster_id"],
+        points_for = settings.fpts + settings.fpts_decimal / 100
+        teams[roster.roster_id] = Team(
+            roster_id=roster.roster_id,
             name=team_name(user),
-            owner=user["display_name"],
+            owner=user.display_name,
             avatar_url=_avatar_url(user),
-            wins=settings["wins"],
-            losses=settings["losses"],
+            wins=settings.wins,
+            losses=settings.losses,
             points_for=points_for,
-            is_owner=user["display_name"] == owner_username,
+            is_owner=user.display_name == owner_username,
         )
     return teams
 
 
-def _projection_map(raw: dict) -> dict[str, float | None]:
+def _projection_map(raw: RawWeek) -> dict[str, float | None]:
     return {
-        item["player_id"]: item["stats"].get("pts_half_ppr")
-        for item in raw["projections"]
+        item.player_id: item.stats.get("pts_half_ppr")
+        for item in raw.projections
     }
 
 
@@ -72,7 +74,7 @@ def _line(player_id, entry, roster_positions, projections, players, starters) ->
         name=player_name(player_id, player),
         position=player["position"] if player else "?",
         nfl_team=player.get("team") if player else None,
-        points=entry["players_points"].get(player_id, 0.0),
+        points=(entry.players_points or {}).get(player_id, 0.0),
         projection=projections.get(player_id),
         # Version 1 has no season history, so no season average exists yet.
         season_avg=None,
@@ -86,186 +88,187 @@ def _line(player_id, entry, roster_positions, projections, players, starters) ->
 EMPTY_SLOT = "0"
 
 
-def _side(entry: dict, roster_positions, projections, players) -> Side:
+def _side(entry: RawMatchup, roster_positions, projections, players) -> Side:
     # Sleeper marks an empty starter slot with "0". The starters list keeps it, so the slot
     # index of every other starter stays right, but "0" is never a player line.
-    starters = entry["starters"]
+    starters = entry.starters or []
     lines = [
         _line(pid, entry, roster_positions, projections, players, starters)
-        for pid in entry["players"]
+        for pid in entry.players or []
         if pid != EMPTY_SLOT
     ]
-    return Side(roster_id=entry["roster_id"], points=entry["points"], lines=lines)
+    return Side(roster_id=entry.roster_id, points=entry.points, lines=lines)
 
 
-def _matchups(raw: dict) -> list[Matchup]:
-    roster_positions = raw["league"]["roster_positions"]
+def _matchups(raw: RawWeek) -> list[Matchup]:
+    roster_positions = raw.league.roster_positions
     projections = _projection_map(raw)
     groups = defaultdict(list)
-    for entry in raw["matchups"]:
-        if entry["matchup_id"] is not None:
-            groups[entry["matchup_id"]].append(entry)
+    for entry in raw.matchups:
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry)
     matchups = []
     for matchup_id in sorted(groups):
-        first, second = sorted(groups[matchup_id], key=lambda e: e["roster_id"])
+        first, second = sorted(groups[matchup_id], key=lambda e: e.roster_id)
         matchups.append(Matchup(
             matchup_id=matchup_id,
-            a=_side(first, roster_positions, projections, raw["players"]),
-            b=_side(second, roster_positions, projections, raw["players"]),
+            a=_side(first, roster_positions, projections, raw.players),
+            b=_side(second, roster_positions, projections, raw.players),
         ))
     return matchups
 
 
-def _pairs(entries: list[dict]) -> list[tuple[int, int]]:
+def _pairs(entries: Sequence[RawMatchup | SchedulePair]) -> list[tuple[int, int]]:
     groups = defaultdict(list)
     for entry in entries:
-        if entry["matchup_id"] is not None:
-            groups[entry["matchup_id"]].append(entry["roster_id"])
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry.roster_id)
     # A pair is a matchup. A lone entry, such as a bye, has no opponent to name.
     return [tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2]
 
 
-def _next_matchups(raw: dict) -> list[tuple[int, int]]:
-    return _pairs(raw["matchups_next"])
+def _next_matchups(raw: RawWeek) -> list[tuple[int, int]]:
+    return _pairs(raw.matchups_next)
 
 
-def _schedule(raw: dict) -> dict[int, list[tuple[int, int]]]:
+def _schedule(raw: RawWeek) -> dict[int, list[tuple[int, int]]]:
     # A cached week can lack the schedule file, so it gives no weeks.
-    return {entry["week"]: _pairs(entry["matchups"]) for entry in raw.get("schedule", [])}
+    return {entry.week: _pairs(entry.matchups) for entry in raw.schedule or []}
 
 
-def _projections_ahead(raw: dict) -> ProjectionsAhead:
+def _projections_ahead(raw: RawWeek) -> ProjectionsAhead:
     # A cached week can lack the projections file, so it gives no weeks.
-    return {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
-def _rosters(raw: dict) -> dict[int, dict[str, str]]:
+def _rosters(raw: RawWeek) -> dict[int, dict[str, str]]:
     # A roster with no players has None in rosters.json. A player missing from the players file has position "?".
     return {
-        r["roster_id"]: {pid: (raw["players"].get(pid) or {}).get("position") or "?" for pid in r["players"] or []}
-        for r in raw["rosters"]
+        r.roster_id: {pid: (raw.players.get(pid) or {}).get("position") or "?" for pid in r.players or []}
+        for r in raw.rosters
     }
 
 
-def _roster_players(raw: dict) -> dict[str, tuple[str, str | None]]:
+def _roster_players(raw: RawWeek) -> dict[str, tuple[str, str | None]]:
     # A player missing from the players file has his id as the name and no NFL team.
-    players = raw["players"]
+    players = raw.players
     return {
         pid: (player_name(pid, players.get(pid)), (players.get(pid) or {}).get("team"))
-        for r in raw["rosters"] for pid in r["players"] or []
+        for r in raw.rosters for pid in r.players or []
     }
 
 
-def parse_moves(transactions: list[dict]) -> list[Move]:
+def parse_moves(transactions: list[RawTransaction]) -> list[Move]:
     moves = []
     for transaction in transactions:
-        if transaction["status"] != "complete" or transaction["type"] not in MOVE_KINDS:
+        if transaction.status != "complete" or transaction.type not in MOVE_KINDS:
             continue
-        settings = transaction.get("settings") or {}
-        for player_id, roster_id in (transaction["adds"] or {}).items():
+        for player_id, roster_id in (transaction.adds or {}).items():
             moves.append(Move(
                 player_id=player_id,
                 roster_id=roster_id,
-                kind=transaction["type"],
-                week=transaction["leg"],
-                bid=settings.get("waiver_bid"),
+                kind=transaction.type,
+                week=transaction.leg,
+                bid=transaction.settings.waiver_bid if transaction.settings else None,
             ))
     return moves
 
 
-def parse_drops(transactions: list[dict]) -> list[Drop]:
+def parse_drops(transactions: list[RawTransaction]) -> list[Drop]:
     """The drops of the complete waiver claims and free agent pickups. A trade drop is a side of its trade."""
     return [
-        Drop(player_id=player_id, roster_id=roster_id, week=transaction["leg"])
+        Drop(player_id=player_id, roster_id=roster_id, week=transaction.leg)
         for transaction in transactions
-        if transaction["status"] == "complete" and transaction["type"] in ("waiver", "free_agent")
-        for player_id, roster_id in (transaction["drops"] or {}).items()
+        if transaction.status == "complete" and transaction.type in ("waiver", "free_agent")
+        for player_id, roster_id in (transaction.drops or {}).items()
     ]
 
 
-def parse_trades(transactions: list[dict]) -> list[Trade]:
+def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
     return [
         Trade(
-            transaction_id=t["transaction_id"],
-            created=datetime.fromtimestamp(t["created"] / 1000, tz=timezone.utc),
-            roster_ids=t["roster_ids"],
-            adds=t["adds"] or {},
-            drops=t["drops"] or {},
-            draft_picks=[DraftPick(**pick) for pick in t.get("draft_picks") or []],
+            transaction_id=t.transaction_id,
+            created=datetime.fromtimestamp(t.created / 1000, tz=timezone.utc),
+            roster_ids=t.roster_ids,
+            adds=t.adds or {},
+            drops=t.drops or {},
+            draft_picks=[DraftPick(**pick) for pick in t.draft_picks or []],
         )
         for t in transactions
-        if t["type"] == "trade" and t["status"] == "complete"
+        if t.type == "trade" and t.status == "complete"
     ]
 
 
-def parse_week(raw: dict[str, object], owner_username: str | None = None, week: int | None = None) -> Week:
+def parse_week(raw: RawWeek, owner_username: str | None = None, week: int | None = None) -> Week:
     """The week of the raw data. The team of `owner_username` gets the owner flag.
 
     The weekly build and the live fetch pass the owner from the league config. The snapshot of a saved week, the
     chart match, and the chart command pass no owner, because no output of theirs shows the flag.
     """
-    state = raw["state"]
+    state = raw.state
     return Week(
-        season=int(state["season"]),
+        season=int(state.season),
         # state.week is the current NFL week, not the scored week, so use display_week by default.
-        week=week if week is not None else state["display_week"],
+        week=week if week is not None else state.display_week,
         teams=_teams(raw, owner_username),
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
         schedule=_schedule(raw),
         projections_ahead=_projections_ahead(raw),
-        moves=parse_moves(raw["transactions"]),
-        last_scored_week=raw["league"]["settings"]["last_scored_leg"],
-        season_start=date.fromisoformat(state["season_start_date"]),
+        moves=parse_moves(raw.transactions),
+        last_scored_week=raw.league.settings.last_scored_leg,
+        season_start=date.fromisoformat(state.season_start_date),
         # The reserve slot counts: matchups.json lists the injured reserve player with the others.
-        roster_slots=len(raw["league"]["roster_positions"]) + raw["league"]["settings"]["reserve_slots"],
-        roster_positions=raw["league"]["roster_positions"],
+        roster_slots=len(raw.league.roster_positions) + raw.league.settings.reserve_slots,
+        roster_positions=raw.league.roster_positions,
         rosters=_rosters(raw),
         roster_players=_roster_players(raw),
-        scoring=raw["league"]["scoring_settings"],
+        scoring=raw.league.scoring_settings,
         # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
-        stats={item["player_id"]: item["stats"] for item in raw.get("stats") or []},
+        stats={item.player_id: item.stats for item in raw.stats or []},
     )
 
 
-def parse_past_week(raw: dict[str, object], week: int) -> PastWeek:
-    entries = raw["matchups"]
+def parse_past_week(raw: RawPastWeek, week: int) -> PastWeek:
+    entries = raw.matchups
+    # The caller passes stats lines here. Only a failed live fetch gives None, and the snapshot replaces it first.
+    stats = raw.stats or []
     groups = defaultdict(list)
     points: dict[str, float] = {}
     for entry in entries:
-        if entry["matchup_id"] is not None:
-            groups[entry["matchup_id"]].append(entry["roster_id"])
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry.roster_id)
         # The empty slot "0" is not a player, so it never gets points.
         points.update({
-            pid: pts for pid, pts in (entry.get("players_points") or {}).items()
+            pid: pts for pid, pts in (entry.players_points or {}).items()
             if pid != EMPTY_SLOT
         })
     return PastWeek(
         week=week,
-        scores={e["roster_id"]: e["points"] for e in entries},
+        scores={e.roster_id: e.points for e in entries},
         pairs=[tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2],
         points=points,
         projections={
-            item["player_id"]: item["stats"]["pts_half_ppr"]
-            for item in raw["projections"]
-            if item["stats"].get("pts_half_ppr") is not None
+            item.player_id: item.stats["pts_half_ppr"]
+            for item in raw.projections
+            if item.stats.get("pts_half_ppr") is not None
         },
-        stats={item["player_id"]: item["stats"] for item in raw["stats"]},
-        moves=parse_moves(raw["transactions"]),
-        trades=parse_trades(raw["transactions"]),
+        stats={item.player_id: item.stats for item in stats},
+        moves=parse_moves(raw.transactions),
+        trades=parse_trades(raw.transactions),
         positions={
-            item["player_id"]: item["player"]["position"]
-            for item in raw["stats"]
-            if (item.get("player") or {}).get("position")
+            item.player_id: item.player.position
+            for item in stats
+            if item.player and item.player.position
         },
-        nfl_teams={item["player_id"]: item["team"] for item in raw["stats"] if item.get("team")},
+        nfl_teams={item.player_id: item.team for item in stats if item.team},
         # The empty slot "0" is not a player, so it is never a start.
         starters={
-            e["roster_id"]: [pid for pid in e.get("starters") or [] if pid != EMPTY_SLOT] for e in entries
+            e.roster_id: [pid for pid in e.starters or [] if pid != EMPTY_SLOT] for e in entries
         },
         # The empty slot "0" is not a player, so it is never on a roster.
         rosters={
-            e["roster_id"]: [pid for pid in e.get("players") or [] if pid != EMPTY_SLOT] for e in entries
+            e.roster_id: [pid for pid in e.players or [] if pid != EMPTY_SLOT] for e in entries
         },
-        drops=parse_drops(raw["transactions"]),
+        drops=parse_drops(raw.transactions),
     )

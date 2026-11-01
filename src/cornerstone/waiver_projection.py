@@ -4,12 +4,13 @@ One place for the sum, so the pool and the drops bucket read a player the same w
 """
 from cornerstone.models import ProjectionsAhead
 from cornerstone.numbers import r2
+from cornerstone.sleeper import RawWeek
 from cornerstone.tunables import LAST_SEASON_WEEK
 
 
-def projections_ahead(raw: dict[str, object]) -> ProjectionsAhead:
+def projections_ahead(raw: RawWeek) -> ProjectionsAhead:
     """The projections ahead file of the raw files by week. A week with no file has no projections."""
-    return {entry["week"]: entry["projections"] for entry in raw.get("projections_ahead", [])}
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
 def next_week(ahead: ProjectionsAhead, player_id: str, week: int) -> float:

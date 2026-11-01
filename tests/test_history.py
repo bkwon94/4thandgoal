@@ -77,12 +77,12 @@ def test_load_history_has_six_weeks(fixture_history_root, fixture_raw_dir):
 
 def test_a_saved_week_keeps_the_starters_of_each_roster(fixture_history_root, fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["matchups"][0]["starters"][1] = "0"
+    raw.matchups[0].starters[1] = "0"
     h = load_history(fixture_history_root, raw, week=6)
     assert h.weeks[3].starters[1] == ['8183', '13286', '9226', '2216', '8167', '11604', '3198', '7543', 'SF']
     # The empty slot "0" is not a starter.
-    assert "0" not in h.weeks[6].starters[raw["matchups"][0]["roster_id"]]
-    assert len(h.weeks[6].starters[raw["matchups"][0]["roster_id"]]) == 8
+    assert "0" not in h.weeks[6].starters[raw.matchups[0].roster_id]
+    assert len(h.weeks[6].starters[raw.matchups[0].roster_id]) == 8
 
 
 def test_a_saved_week_keeps_every_player_of_each_roster_with_his_points(fixture_history_root, fixture_raw_dir):
@@ -101,9 +101,9 @@ def test_a_saved_week_keeps_every_player_of_each_roster_with_his_points(fixture_
 
 def test_a_roster_with_an_empty_slot_keeps_every_player(fixture_history_root, fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    roster_id = raw["matchups"][0]["roster_id"]
-    benched = raw["matchups"][0]["starters"][1]
-    raw["matchups"][0]["starters"][1] = "0"
+    roster_id = raw.matchups[0].roster_id
+    benched = raw.matchups[0].starters[1]
+    raw.matchups[0].starters[1] = "0"
     h = load_history(fixture_history_root, raw, week=6)
     # The player out of the empty slot stays on the roster with his points.
     assert benched in h.weeks[6].rosters[roster_id]
@@ -121,7 +121,8 @@ def test_missing_week_is_incomplete(tmp_path, fixture_history_root, fixture_raw_
 
 def _add(player_id, roster_id):
     return {"status": "complete", "type": "free_agent", "leg": 1, "adds": {player_id: roster_id},
-            "drops": None, "settings": None}
+            "drops": None, "settings": None, "transaction_id": f"{player_id}-{roster_id}", "created": 0,
+            "roster_ids": [roster_id]}
 
 
 def test_a_saved_week_reads_the_fresh_transactions_of_the_next_week(tmp_path, fixture_history_root):
@@ -145,7 +146,7 @@ def test_a_saved_week_with_no_fresh_transactions_reads_the_saved_copy(tmp_path, 
 
 def test_parse_moves_matches_parse_week(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert parse_moves(raw["transactions"]) == parse_week(raw).moves
+    assert parse_moves(raw.transactions) == parse_week(raw).moves
 
 
 @pytest.mark.live

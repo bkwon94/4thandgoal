@@ -6,7 +6,7 @@ from datetime import date
 
 from cornerstone.config import cornerstone_config
 from cornerstone.parse import parse_week
-from cornerstone.sleeper import load_raw
+from cornerstone.sleeper import RawTransaction, load_raw
 
 
 def test_parse_week_teams_and_matchups(fixture_raw_dir):
@@ -29,7 +29,7 @@ def test_parse_week_lines_have_projection(fixture_raw_dir):
 
 def test_unknown_player_falls_back_to_id(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["players"].pop("8183")  # Brock Purdy
+    raw.players.pop("8183")  # Brock Purdy
     wk = parse_week(raw)
     lines = [line for m in wk.matchups for s in (m.a, m.b) for line in s.lines]
     purdy = next(line for line in lines if line.player_id == "8183")
@@ -56,8 +56,8 @@ def test_moves_are_complete_only(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
     wk = parse_week(raw)
     expected = sum(
-        len(t["adds"]) for t in raw["transactions"]
-        if t["status"] == "complete" and t["adds"]
+        len(t.adds) for t in raw.transactions
+        if t.status == "complete" and t.adds
     )
     assert expected > 0 and len(wk.moves) == expected
     assert {m.kind for m in wk.moves} <= {"waiver", "free_agent", "trade"}
@@ -73,32 +73,32 @@ def test_next_matchups_and_season_start(fixture_raw_dir):
 
 def test_empty_starter_slot_makes_no_line(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    entry = raw["matchups"][0]
-    entry["starters"][1] = "0"
-    entry["players"].append("0")
+    entry = raw.matchups[0]
+    entry.starters[1] = "0"
+    entry.players.append("0")
     wk = parse_week(raw)
     lines = [line for m in wk.matchups for s in (m.a, m.b) for line in s.lines]
     assert not any(line.player_id == "0" or line.name == "0" for line in lines)
-    third = next(line for line in lines if line.player_id == entry["starters"][2])
-    assert third.slot == raw["league"]["roster_positions"][2]
+    third = next(line for line in lines if line.player_id == entry.starters[2])
+    assert third.slot == raw.league.roster_positions[2]
 
 
 def test_next_matchups_keep_pairs_only(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["matchups_next"] = [
-        {"matchup_id": 1, "roster_id": 1},
-        {"matchup_id": 1, "roster_id": 2},
-        {"matchup_id": 2, "roster_id": 3},
-        {"matchup_id": None, "roster_id": 4},
+    raw.matchups_next = [
+        {"matchup_id": 1, "roster_id": 1, "points": 0.0},
+        {"matchup_id": 1, "roster_id": 2, "points": 0.0},
+        {"matchup_id": 2, "roster_id": 3, "points": 0.0},
+        {"matchup_id": None, "roster_id": 4, "points": 0.0},
     ]
     assert parse_week(raw).next_matchups == [(1, 2)]
 
 
 def test_trade_with_null_draft_picks_parses():
     from cornerstone.parse import parse_trades
-    trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405,
+    trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405, "leg": 6,
              "roster_ids": [2, 6], "adds": {"11610": 6}, "drops": {"11610": 2}, "draft_picks": None}
-    assert parse_trades([trade])[0].draft_picks == []
+    assert parse_trades([RawTransaction.model_validate(trade)])[0].draft_picks == []
 
 
 def test_schedule_pairs_per_week(fixture_raw_dir):
@@ -110,7 +110,7 @@ def test_schedule_pairs_per_week(fixture_raw_dir):
 
 def test_week_without_schedule_parses(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw.pop("schedule")
+    raw.schedule = None
     assert parse_week(raw).schedule == {}
 
 
@@ -122,10 +122,10 @@ def test_projections_ahead_per_week(fixture_raw_dir):
 
 def test_week_without_projections_ahead_parses(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw.pop("projections_ahead")
+    raw.projections_ahead = None
     assert parse_week(raw).projections_ahead == {}
 
 
 def test_roster_positions_are_the_league_slots(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert parse_week(raw).roster_positions == raw["league"]["roster_positions"]
+    assert parse_week(raw).roster_positions == raw.league.roster_positions

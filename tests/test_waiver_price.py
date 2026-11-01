@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.models import BoardScores, WaiverClaim, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
-from cornerstone.sleeper import load_raw
+from cornerstone.sleeper import RawWeek, load_raw
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history, price_players
 
@@ -17,13 +17,17 @@ BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 LINEUP = ["QB", "RB", "RB", "WR", "FLEX", "BN", "BN"]
 
 
-def _league(rosters: list[tuple[int, list[str | None]]]) -> dict:
+def _league(rosters: list[tuple[int, list[str | None]]]) -> RawWeek:
     """A league of 100 dollar budgets. Each roster is its budget left and the injury status of each of its RBs.
 
     Each roster also holds one healthy QB and one healthy WR, so no roster needs a QB or a WR.
     """
-    raw = {"league": {"settings": {"waiver_budget": 100}, "roster_positions": LINEUP},
-           "users": [], "rosters": [], "players": {}}
+    # The price reads only the league, the users, the rosters, and the players. The other files stay empty.
+    raw = {"league": {"settings": {"waiver_budget": 100, "last_scored_leg": 6, "reserve_slots": 0},
+                      "roster_positions": LINEUP, "scoring_settings": {}},
+           "users": [], "rosters": [], "players": {},
+           "state": {"season": "2026", "display_week": 6, "season_start_date": "2026-09-09"},
+           "matchups": [], "matchups_next": [], "transactions": [], "stats": [], "projections": [], "bracket": []}
     for roster_id, (left, rb_statuses) in enumerate(rosters, start=1):
         owned = {f"{roster_id}0": ("QB", None), f"{roster_id}1": ("WR", None)}
         owned |= {f"{roster_id}{2 + i}": ("RB", status) for i, status in enumerate(rb_statuses)}
@@ -32,8 +36,9 @@ def _league(rosters: list[tuple[int, list[str | None]]]) -> dict:
         raw["users"].append({"user_id": f"u{roster_id}", "display_name": f"owner{roster_id}",
                              "metadata": {"team_name": f"Team {roster_id}"}})
         raw["rosters"].append({"roster_id": roster_id, "owner_id": f"u{roster_id}", "players": list(owned),
-                               "settings": {"waiver_budget_used": 100 - left, "waiver_position": roster_id}})
-    return raw
+                               "settings": {"waiver_budget_used": 100 - left, "waiver_position": roster_id,
+                                            "fpts": 0, "wins": 0, "losses": 0}})
+    return RawWeek.model_validate(raw)
 
 
 def _free_agent(player_id: str, position: str, board_score: float = 0.75) -> WaiverPlayer:
@@ -115,7 +120,7 @@ def _last_like(raw: dict, position: str, claims: list[WaiverClaim]):
 
 def test_the_last_like_him_is_the_latest_winning_claim_at_the_position_with_the_team_and_the_week():
     raw = _league([(40, [None, None]), (60, [None, None]), (20, [None, None])])
-    raw["players"]["7101"] = {"position": "RB", "full_name": "Late Back", "team": "KC"}
+    raw.players["7101"] = {"position": "RB", "full_name": "Late Back", "team": "KC"}
     claims = [
         _claim("RB", 9, week=2, roster_id=1),
         WaiverClaim(player_id="7101", roster_id=2, position="RB", week=4, bid=3, won=True),
@@ -149,8 +154,8 @@ def test_every_number_in_the_price_fact_text_is_in_its_numbers():
 def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixture_raw_dir):
     # The week 6 budgets left: 90, 82, 72, 69, 67, 65, 61, 58, 51, 25, 19, and 9.
     raw = load_raw(fixture_raw_dir)
-    raw["players"]["80001"] = {"position": "RB", "team": "KC", "status": "Active", "full_name": "Free Back"}
-    raw["projections_ahead"] = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
+    raw.players["80001"] = {"position": "RB", "team": "KC", "status": "Active", "full_name": "Free Back"}
+    raw.projections_ahead = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
     # A $40 RB win in week 5 sets the floor at $41. The top expected bid is at most 35% of $90, $31.50.
     best = waiver_board(raw, 6, BUILT, claims=[_claim("RB", 40)]).buckets["best_adds"]
     price = next(p.price for p in best if p.player_id == "80001")
@@ -164,9 +169,9 @@ def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixtu
 
 def test_a_player_in_best_adds_and_trending_carries_one_price(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["players"]["80001"] = {"position": "WR", "team": "KC", "status": "Active", "full_name": "Hot Wideout"}
-    raw["projections_ahead"] = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
-    raw["trending"] = [{"player_id": "80001", "count": 5000}]
+    raw.players["80001"] = {"position": "WR", "team": "KC", "status": "Active", "full_name": "Hot Wideout"}
+    raw.projections_ahead = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
+    raw.trending = [{"player_id": "80001", "count": 5000}]
     buckets = waiver_board(raw, 6, BUILT).buckets
     best = next(p for p in buckets["best_adds"] if p.player_id == "80001")
     trending = next(p for p in buckets["trending"] if p.player_id == "80001")

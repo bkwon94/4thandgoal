@@ -25,8 +25,8 @@ def _player(position, name, team="KC", injury=None, status="Active"):
 def _raw(fixture_raw_dir, players, per_week):
     """The week 6 raw with `players` added and a flat projection per week, weeks 7 to 17, for each ID in `per_week`."""
     raw = load_raw(fixture_raw_dir)
-    raw["players"] = {**raw["players"], **{pid: {**e, "gsis_id": f"G{pid}"} for pid, e in players.items()}}
-    raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
+    raw.players = {**raw.players, **{pid: {**e, "gsis_id": f"G{pid}"} for pid, e in players.items()}}
+    raw.projections_ahead = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
     return raw
 
 
@@ -116,14 +116,14 @@ ROSTERED_RB = "11584"
 
 def _every_rb(raw, points):
     """A flat projection for every RB with a team in the players file, rostered or not."""
-    return {pid: points for pid, e in raw["players"].items() if e.get("position") == "RB" and e.get("team")}
+    return {pid: points for pid, e in raw.players.items() if e.get("position") == "RB" and e.get("team")}
 
 
 def _handcuff_raw(fixture_raw_dir, players, per_week):
     """The raw of a handcuff test: every RB projects 5 a week, then `per_week` sets the players of the test."""
     raw = _raw(fixture_raw_dir, players, {})
-    raw["projections_ahead"] = [{"week": w, "projections": _every_rb(raw, 5.0) | per_week} for w in range(7, 18)]
-    raw["players"][ROSTERED_RB] = {**raw["players"][ROSTERED_RB], "gsis_id": f"G{ROSTERED_RB}"}
+    raw.projections_ahead = [{"week": w, "projections": _every_rb(raw, 5.0) | per_week} for w in range(7, 18)]
+    raw.players[ROSTERED_RB] = {**raw.players[ROSTERED_RB], "gsis_id": f"G{ROSTERED_RB}"}
     return raw
 
 
@@ -187,7 +187,7 @@ def test_a_player_who_is_out_stays_out_of_best_adds_trending_and_sneaky(fixture_
     # The PUP back sits behind an injured starter and is trending, and he still lands in none of the three.
     players = {"80001": _player("RB", "Hurt Starter", injury="Out"), "80002": _player("RB", "PUP Back", injury="PUP")}
     raw = _raw(fixture_raw_dir, players, {"80001": 12.0, "80002": 30.0})
-    raw["trending"] = [{"player_id": "80002", "count": 900}]
+    raw.trending = [{"player_id": "80002", "count": 900}]
     board = waiver_board(raw, 6, BUILT, slow=_depth({"KC": {"RB": ["80001", "80002"]}}))
     for key in ("best_adds", "trending", "sneaky"):
         assert board.buckets[key] == [], key
@@ -203,7 +203,7 @@ def test_a_stash_needs_a_rest_of_season_projection_above_0(fixture_raw_dir):
 def test_every_player_carries_his_bye_his_injury_status_and_his_return_week(fixture_raw_dir):
     players = {"80001": _player("WR", "Hurt Star", injury="Out"), "80002": _player("WR", "Healthy Guy", team="BUF")}
     raw = _raw(fixture_raw_dir, players, {"80001": 15.0, "80002": 4.0})
-    raw["trending"] = [{"player_id": "80002", "count": 12}]
+    raw.trending = [{"player_id": "80002", "count": 12}]
     schedules = {"KC": TeamSchedule(bye_week=10, playoff_opponents={})}
     board = waiver_board(raw, 6, BUILT, slow=_depth({}, schedules=schedules), returns={"80001": 9})
     star = board.buckets["stashes"][0]

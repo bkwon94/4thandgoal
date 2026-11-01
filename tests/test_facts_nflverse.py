@@ -70,7 +70,7 @@ def test_stale_nflverse_week_degrades(fixture_nflverse_dir, fixture_raw_dir, tmp
     cache.mkdir()
     for f in fixture_nflverse_dir.iterdir():
         (cache / f.name).write_bytes(f.read_bytes())
-    stale = nflverse_week(2026, 7, [], raw["players"], cache, fetch=lambda url: b"")
+    stale = nflverse_week(2026, 7, [], raw.players, cache, fetch=lambda url: b"")
     assert stale.drops is None
     lines = drop_lines(parse_week(raw), stale)
     assert lines and all(line.value is None and line.end_zone is None for line in lines)

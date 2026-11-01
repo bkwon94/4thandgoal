@@ -903,8 +903,8 @@ def test_a_repeat_an_hour_later_on_unchanged_rosters_is_a_cache_hit(settings, fi
 def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
     """Sources whose Sleeper data drops one player, who is not in the trade, from a roster."""
     raw = load_raw(fixture_raw_dir)
-    roster = next(r for r in raw["rosters"] if r["roster_id"] == roster_id)
-    roster["players"] = roster["players"][:-1]
+    roster = next(r for r in raw.rosters if r.roster_id == roster_id)
+    roster.players = (roster.players or [])[:-1]
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (raw, FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
@@ -1310,7 +1310,7 @@ def find_sources(settings, sources, chart_week6, fixture_raw_dir):
     """
     def before_kickoff(league_id, players_cache):
         raw = load_raw(fixture_raw_dir)
-        raw["stats"] = []
+        raw.stats = []
         return raw, FETCHED
 
     sources = dataclasses.replace(sources, fetch_sleeper=before_kickoff)

@@ -25,7 +25,7 @@ from cornerstone.pipeline import (
     BuildStopped, has_raw, preview, resolve_week, run_build, run_history, run_page_json,
     run_rankings, run_rewrite,
 )
-from cornerstone.sleeper import fetch_state, load_raw
+from cornerstone.sleeper import RawWeek, fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
 from cornerstone.rubric import (
     MAX_SIDES, MIN_SIDES, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, verdict,
@@ -139,7 +139,7 @@ def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> li
     return built
 
 
-def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
+def _saved_chart_values(repo: Path, week: int, raw: RawWeek) -> ChartValues | None:
     """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
     # The chart module owns the rules for a saved read, so a bad or stale one gives None here too.
     chart = saved_chart_read(repo, week)
@@ -201,7 +201,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     history = history_root(repo, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
-                             raw["league"]["scoring_settings"])
+                             raw.league.scoring_settings)
     return load_snapshot(raw_path, history, chart, slow)
 
 
@@ -362,10 +362,10 @@ def run_chart(repo: Path, season: int, week: int) -> int:
     else:
         # Sleeper state, as in resolve_week, gives the start date of the season in progress only.
         state = fetch_state()
-        if int(state["season"]) != season:
+        if int(state.season) != season:
             print(f"No raw data is saved for week {week} of {season}. Build the week first.")
             return 2
-        season_start = date.fromisoformat(state["season_start_date"])
+        season_start = date.fromisoformat(state.season_start_date)
     check = check_chart(repo, season_start, week)
     if check is None:
         print(f"Week {week} has no chart. The log says why.")
@@ -385,7 +385,7 @@ def run_chart(repo: Path, season: int, week: int) -> int:
     lines = {line.player_id: line for line in week_lines(league)}
     values = match_chart(check.chart, lines.values()).values
     print(f"Matched {len(values)} of {len(check.chart.rows)} chart rows")
-    traded = {pid for t in parse_trades(raw["transactions"]) for pid in t.adds}
+    traded = {pid for t in parse_trades(raw.transactions) for pid in t.adds}
     unmatched = sorted(lines[pid].name if pid in lines else pid for pid in traded - values.keys())
     if unmatched:
         print("Unmatched traded players: " + ", ".join(unmatched))
@@ -404,7 +404,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "history":
             # History has no --week, so it skips resolve_week.
-            season = args.season if args.season is not None else int(fetch_state()["season"])
+            season = args.season if args.season is not None else int(fetch_state().season)
             weeks = run_history(repo, season, args.through, force=args.force, config=config)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0

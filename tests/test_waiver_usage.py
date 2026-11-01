@@ -20,8 +20,8 @@ def _player(position, team="KC", name="Free Agent"):
 def _raw(fixture_raw_dir, players, per_week):
     """The week 6 raw with `players` added and a flat projection per week, weeks 7 to 17, for each ID in `per_week`."""
     raw = load_raw(fixture_raw_dir)
-    raw["players"] = {**raw["players"], **players}
-    raw["projections_ahead"] = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
+    raw.players = {**raw.players, **players}
+    raw.projections_ahead = [{"week": w, "projections": dict(per_week)} for w in range(7, 18)]
     return raw
 
 

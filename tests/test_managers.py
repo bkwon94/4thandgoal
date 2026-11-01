@@ -39,7 +39,7 @@ def test_the_record_counts_both_games_of_every_week(fixture_raw_dir, fixture_his
 
 def test_each_entry_carries_named_best_adds_and_top_performers(fixture_raw_dir, fixture_history_root):
     history, teams = _inputs(fixture_raw_dir, fixture_history_root)
-    players = load_raw(fixture_raw_dir)["players"]
+    players = load_raw(fixture_raw_dir).players
     entries = managers(SeasonInputs(history=history), teams, players)
     assert any(e.best_adds for e in entries)
     for entry in entries:

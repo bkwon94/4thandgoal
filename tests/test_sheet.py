@@ -254,7 +254,7 @@ def test_no_injury_status_gets_no_injury_fact(bundle):
 
 def test_injury_fact_without_body_part_drops_the_parenthesis(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["players"]["11635"]["injury_body_part"] = None
+    raw.players["11635"]["injury_body_part"] = None
     b = build_bundle(parse_week(raw), news=lambda pid: [])
     assert b.sheet.facts["M5.inj.11635"].text == (
         "Ladd McConkey is now listed Out on Sleeper as of the Tuesday after this week's games. "
@@ -700,7 +700,7 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
 
 def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
-    raw.pop("projections_ahead")
+    raw.projections_ahead = None
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
     inputs = sheet._odds_inputs(week, history)
     plain = sheet._odds(week, history, inputs, projected_totals(week))
@@ -908,9 +908,9 @@ def test_a_roster_player_with_no_lineup_line_is_on_the_bye_list_and_not_key(
         fixture_raw_dir, fixture_history_root, nfl_week6):
     # A player added after the games is on the roster now, but the week 6 matchups give him no lineup line.
     raw = load_raw(fixture_raw_dir)
-    raw["players"] = {**raw["players"], "99999": {"full_name": "Late Add", "position": "WR", "team": "JAX"}}
-    raw["rosters"] = [{**r, "players": [*(r["players"] or []), "99999"]} if r["roster_id"] == 8 else r
-                      for r in raw["rosters"]]
+    raw.players = {**raw.players, "99999": {"full_name": "Late Add", "position": "WR", "team": "JAX"}}
+    raw.rosters = [r.model_copy(update={"players": [*(r.players or []), "99999"]}) if r.roster_id == 8 else r
+                   for r in raw.rosters]
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
                      nfl=nfl_week6)
     assert [(p.player_id, p.name, p.position, p.key) for p in _game(b, 3, 8).b_byes] == [

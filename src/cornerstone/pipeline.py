@@ -37,7 +37,8 @@ from cornerstone.sheet import (
     write_bundle,
 )
 from cornerstone.sleeper import (
-    PROJECTIONS_AHEAD_FILE, fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time, read_prev_transactions,
+    PROJECTIONS_AHEAD_FILE, RawWeek, fetch_news, fetch_state, fetch_week, load_raw, read_fetch_time,
+    read_prev_transactions,
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_returns, week_snapshot
@@ -51,7 +52,7 @@ from cornerstone.writer import ClaudeCall
 log = logging.getLogger(__name__)
 
 NewsFetcher = Callable[[str], list[dict]]
-RawLoader = Callable[[Path], dict]
+RawLoader = Callable[[Path], RawWeek]
 BytesFetcher = Callable[[str], bytes | None]
 # The fetch takes the season, the week, the rostered player IDs, the players file, the Sleeper
 # codes of the NFL teams whose started players played, and the league scoring.
@@ -77,8 +78,8 @@ def resolve_week(season: int | None, week: int | None) -> tuple[int, int]:
         return season, week
     state = fetch_state()
     # display_week is the week that people see in the Sleeper app.
-    return (season if season is not None else int(state["season"]),
-            week if week is not None else int(state["display_week"]))
+    return (season if season is not None else int(state.season),
+            week if week is not None else state.display_week)
 
 
 def read_verify(path: Path) -> VerifyFile:
@@ -94,7 +95,7 @@ def _save_blurbs(directory: Path, blurbs: dict[str, Blurb], verify: VerifyFile) 
     (directory / "verify.json").write_bytes(verify.model_dump_json(indent=2).encode("utf-8"))
 
 
-def _load_history_or_none(root: Path, raw: dict[str, object], week: int) -> History | None:
+def _load_history_or_none(root: Path, raw: RawWeek, week: int) -> History | None:
     # A bad past week never stops a build. The facts that need the history drop out.
     try:
         return load_history(root, raw, week)
@@ -104,7 +105,7 @@ def _load_history_or_none(root: Path, raw: dict[str, object], week: int) -> Hist
 
 
 def _window_trades(
-    repo: Path, season: int, week: int, raw: dict[str, object], season_start: date, history: History | None,
+    repo: Path, season: int, week: int, raw: RawWeek, season_start: date, history: History | None,
     tz: ZoneInfo,
 ) -> list[Trade]:
     # The window is the calendar span between two Tuesday cutoffs, so build time plays no part.
@@ -113,14 +114,14 @@ def _window_trades(
     # The fresh copy of week N-1 holds the trades made after its build. The history copy does not.
     fresh = read_prev_transactions(raw_dir(repo, season, week))
     if fresh is not None:
-        return trades_for_week(parse_trades(raw["transactions"]), parse_trades(fresh), after, until)
+        return trades_for_week(parse_trades(raw.transactions), parse_trades(fresh), after, until)
     last = history.weeks.get(week - 1) if history else None
     if last is None and week > 1:
         log.warning("week %d is not in the history: trades of its last hours may be missing", week - 1)
     elif week > 1:
         log.warning("no fresh transactions for week %d: the history copy stands in, "
                     "so a trade made after its build may be missing", week - 1)
-    return trades_for_week(parse_trades(raw["transactions"]), last.trades if last else [], after, until)
+    return trades_for_week(parse_trades(raw.transactions), last.trades if last else [], after, until)
 
 
 def fetch_nflverse(repo: Path) -> NflverseFetcher:
@@ -172,7 +173,7 @@ def _with_saved(nfl: NflverseWeek, saved: NflverseWeek) -> NflverseWeek:
 
 
 def _nflverse_for_week(
-    raw_path: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
+    raw_path: Path, raw: RawWeek, season: int, week: int, nflverse: NflverseFetcher | None,
     teams: set[str],
 ) -> NflverseWeek | None:
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
@@ -193,8 +194,8 @@ def _nflverse_for_week(
                 return saved
             log.info("week %d nflverse.json lacks %s, so the build fetches the extract again", week,
                      ", ".join(missing))
-        rostered = sorted({pid for entry in raw["matchups"] for pid in entry["players"] if pid != "0"})
-        nfl = nflverse(season, week, rostered, raw["players"], teams, raw["league"]["scoring_settings"])
+        rostered = sorted({pid for entry in raw.matchups for pid in entry.players or [] if pid != "0"})
+        nfl = nflverse(season, week, rostered, raw.players, teams, raw.league.scoring_settings)
         # The check reads the fresh flags, not the merged ones. A merged extract has every key, so the build would
         # never fetch a saved one again, though a degraded source cut its rows.
         complete = all(nfl.sources.get(key) for key in NFLVERSE_SOURCES)
