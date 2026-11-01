@@ -169,7 +169,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         all_rosters, "next_week", players=players_of(all_rosters) + bye_players,
     ))
     if c.power:
-        out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds))
+        out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds, c.config))
     return out
 
 

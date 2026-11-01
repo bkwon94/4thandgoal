@@ -11,6 +11,7 @@ from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.facts_league import standings
 from cornerstone.parse import parse_week
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.sheet.base import RANKINGS_CHAPTER, sentence_range
 
 # Another league with the same raw data, owned by the manager of roster 12. Its sizes are those of Cornerstone.
 OTHER = cornerstone_config().model_copy(update=dict(
@@ -59,3 +60,20 @@ def test_the_standings_cut_follows_the_playoff_spots_of_the_config(fixture_raw_d
     four = config.model_copy(update={"playoff_spots": 4})
     assert [s.in_playoffs for s in standings(week, config=config)].count(True) == config.playoff_spots
     assert [s.in_playoffs for s in standings(week, config=four)].count(True) == 4
+
+
+def test_a_ten_team_league_changes_the_grade_spare_rank_and_the_rankings_range():
+    # The spare rank and the rankings range follow the team count, so a smaller league asks for fewer of each.
+    config = cornerstone_config()
+    ten = config.model_copy(update={"team_count": 10})
+    assert ten.grade_spare_rank != config.grade_spare_rank
+    assert ten.grade_spare_rank == {"QB": 10, "RB": 20, "WR": 20, "TE": 10}
+    assert sentence_range(RANKINGS_CHAPTER, ten) != sentence_range(RANKINGS_CHAPTER, config)
+    assert sentence_range(RANKINGS_CHAPTER, ten) == (10, 30)
+
+
+def test_the_parse_stops_on_a_team_count_that_does_not_match_the_config(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    with pytest.raises(ValueError, match="10"):
+        parse_week(raw, team_count=10)
+    assert len(parse_week(raw, team_count=cornerstone_config().team_count).teams) == cornerstone_config().team_count

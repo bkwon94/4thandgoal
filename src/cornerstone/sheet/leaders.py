@@ -84,7 +84,7 @@ def strength_facts(c: Context) -> list[Fact]:
         # Version 1 knows only the next opponent, so the fact names next week, not the rest of the season.
         text = (
             f"{team}'s opponent next week has a win rate of {n(s.schedule_strength)}, "
-            f"ranked {n(s.strength_rank)} of {n(12)}, toughest first."
+            f"ranked {n(s.strength_rank)} of {n(c.config.team_count)}, toughest first."
         )
         out.append(fact(f"SOS.{s.roster_id}", text, n, [team], []))
     return out

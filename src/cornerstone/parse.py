@@ -199,12 +199,21 @@ def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
     ]
 
 
-def parse_week(raw: RawWeek, owner_username: str | None = None, week: int | None = None) -> Week:
+def parse_week(
+    raw: RawWeek, owner_username: str | None = None, week: int | None = None, team_count: int | None = None,
+) -> Week:
     """The week of the raw data. The team of `owner_username` gets the owner flag.
 
     The weekly build and the live fetch pass the owner from the league config. The snapshot of a saved week, the
     chart match, and the chart command pass no owner, because no output of theirs shows the flag.
+    The weekly build passes `team_count` from the league config. The config sets the ranks and the sizes that
+    depend on the team count, so a league file with another roster count stops the parse.
     """
+    if team_count is not None and len(raw.rosters) != team_count:
+        raise ValueError(
+            f"The league file has {len(raw.rosters)} rosters, but the league config says {team_count} teams. "
+            "Change team_count in the league config to match the league."
+        )
     state = raw.state
     return Week(
         season=int(state.season),

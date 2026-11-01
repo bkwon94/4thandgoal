@@ -109,7 +109,7 @@ def _team_fact(c: Context, i: int, rid: int) -> Fact | None:
     n = Nums()
     team = c.team(rid)
     wins, losses, _ = season_records(c.history, through)[rid]
-    text = f"{team} was {n.record(wins, losses)}, {n.ord(c.before[rid])} of {n(12)}, before the trade."
+    text = f"{team} was {n.record(wins, losses)}, {n.ord(c.before[rid])} of {n(c.config.team_count)}, before the trade."
     return fact(f"T{i}.{rid}.team", text, n, [team], [])
 
 

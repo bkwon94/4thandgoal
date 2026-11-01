@@ -70,14 +70,20 @@ SENTENCE_RANGES = {
     "median": (2, 4),
     # The third sentence leaves room for the swing of the Must Watch games. The byes next week need up to three more.
     "next_week": (2, 6),
-    # One to three sentences for each of the 12 teams.
-    "rankings": (12, 36),
 }
 RANKINGS_CHAPTER = "rankings"
 # The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
-# repeated team name: the 12-team chapters, such as awards and median, name many teams, and "they" is
+# repeated team name: the chapters about every team, such as awards and median, name many teams, and "they" is
 # unclear there.
 TWO_TEAM_CHAPTERS = ("motw", "game_changer")
+
+
+def sentence_range(key: str, config: LeagueConfig) -> tuple[int, int]:
+    """The (min, max) sentences of the chapter `key`. The rankings range follows the team count of `config`."""
+    if key == RANKINGS_CHAPTER:
+        # One to three sentences for each team.
+        return config.team_count, 3 * config.team_count
+    return SENTENCE_RANGES[key]
 
 
 def two_team_chapter(key: str) -> bool:
@@ -260,6 +266,9 @@ class Context:
         config: LeagueConfig,
     ) -> None:
         self.week = week
+        # The fact groups that build facts outside facts(context, config), such as the strength and trade facts,
+        # read the team count from it.
+        self.config = config
         # The publish date is a parameter so a build is reproducible. None reads the clock.
         self.today = today or date.today()
         self.history = history
@@ -274,7 +283,7 @@ class Context:
         self.by_rank = {s.roster_id: s for s in self.table}
         self.before = ranks_before(week, self.table, history)
         self.median = median_facts(week)
-        self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before)
+        self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before, config=config)
         self.drops = drop_lines(week, nfl)
         self.nfl = nfl
         self.chart = chart
@@ -294,7 +303,7 @@ class Context:
         self.odds = week_odds(week, history, inputs, self.projected, config)
         # The shootout storyline reads the same projected lineups as the odds.
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
-                              snapshot.position_rank if snapshot is not None else None)
+                              snapshot.position_rank if snapshot is not None else None, config=config)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
