@@ -81,6 +81,7 @@ export function Analyzer({ season, finderOn }: { season: number; finderOn: boole
   function handleStaleRosters() {
     if (!passphrase) return;
     clearStoredTeams();
+    // fetchAndStoreTeams takes no signal, so only the run guard applies.
     const run = request.start();
     fetchAndStoreTeams(passphrase)
       .then((list) => run.isCurrent() && setTeams({ status: "ready", teams: list }))

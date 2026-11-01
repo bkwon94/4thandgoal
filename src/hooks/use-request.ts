@@ -4,13 +4,14 @@
  */
 import { useEffect, useRef } from "react";
 
-export type Run = {
+type Run = {
   // The caller passes the signal to the call, and it aborts the controller on its own timeout.
   controller: AbortController;
   // False once a later run starts, a drop happens, or the component unmounts.
   isCurrent: () => boolean;
 };
 
+/* The run guard of one component. A caller starts a run per call and sets state only while the run is current. */
 export function useRequest() {
   // A late answer from an old run must not overwrite the state of a new one.
   const runId = useRef(0);

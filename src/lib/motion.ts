@@ -1,6 +1,6 @@
 /**
  * The shared motion timings and the pure helpers that build motion props.
- * The reduced-motion switch is useMotionOff in the hooks folder. Each helper takes its result as the off flag.
+ * The reduced-motion switch is useMotionOff in the hooks folder. A helper that builds motion props takes its result as the off flag.
  */
 import { type TargetAndTransition, type Transition } from "framer-motion";
 
