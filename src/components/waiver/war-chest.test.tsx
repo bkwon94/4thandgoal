@@ -5,9 +5,9 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { week6 } from "@/components/week/fixture";
+import { week6 } from "@/fixtures/week-page";
 import type { WaiverBoard, WaiverPlayer } from "@/lib/waiver-types";
-import { waiver } from "./fixture";
+import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "./war-chest";
 
 beforeEach(() => {

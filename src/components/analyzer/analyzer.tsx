@@ -5,13 +5,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ErrorLine } from "@/components/error-line";
-import { PassphraseDialog } from "@/components/passphrase-dialog";
-import { Reveal } from "@/components/reveal";
-import { TeamsSkeleton } from "@/components/teams-skeleton";
-import { TradeForm } from "@/components/trade-form";
+import { ErrorLine } from "@/components/parts/error-line";
+import { PassphraseDialog } from "@/components/analyzer/passphrase-dialog";
+import { Reveal } from "@/components/parts/reveal";
+import { TeamsSkeleton } from "@/components/analyzer/teams-skeleton";
+import { TradeForm } from "@/components/analyzer/trade-form";
 import { Button } from "@/components/ui/button";
-import { Chapter } from "@/components/week/parts";
+import { Chapter } from "@/components/parts/chapter";
 import { ApiError, retryText, type Team } from "@/lib/api";
 import { DURATION } from "@/lib/motion";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@/lib/passphrase";

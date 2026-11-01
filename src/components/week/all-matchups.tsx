@@ -6,12 +6,17 @@
 
 import { motion } from "framer-motion";
 import { useId, useState } from "react";
-import { Reveal } from "@/components/reveal";
+import { Reveal } from "@/components/parts/reveal";
 import { num, shortName } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, Matchup, MatchupSide } from "@/lib/week-types";
-import { Avatar, avatarSrc, Blurb, Chapter, Label, managerHref, TeamName } from "./parts";
+import { Avatar } from "@/components/parts/avatar";
+import { avatarSrc } from "@/lib/avatar";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { managerHref, TeamName } from "@/components/parts/team-name";
 
 /* The top scorer of one side, or a dash when the side started no one. */
 function Star({ side }: { side: MatchupSide }) {

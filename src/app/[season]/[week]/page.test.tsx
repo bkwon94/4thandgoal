@@ -7,7 +7,7 @@ import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "@/lib/week-page-fixture";
+import { weekPageJson } from "@/fixtures/week-page-json";
 import WeekPage from "./page";
 
 /* The nine chapters in the report's order: the id each chapter sets and the words of its own label. */

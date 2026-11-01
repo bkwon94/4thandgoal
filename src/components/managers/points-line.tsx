@@ -6,7 +6,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { type ReactNode, useId } from "react";
-import { VIEW_MARGIN } from "@/components/reveal";
+import { VIEW_MARGIN } from "@/components/parts/reveal";
 import { count } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";

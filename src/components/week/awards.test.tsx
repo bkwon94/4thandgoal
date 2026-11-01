@@ -5,7 +5,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { Awards } from "./awards";
-import { firstSentence, week6 } from "./fixture";
+import { firstSentence, week6 } from "@/fixtures/week-page";
 
 afterEach(() => {
   cleanup();

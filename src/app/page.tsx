@@ -4,12 +4,14 @@
  */
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Masthead, WeekLine } from "@/components/masthead";
-import { PageColumn } from "@/components/page-column";
+import { Masthead, WeekLine } from "@/components/shell/masthead";
+import { PageColumn } from "@/components/parts/page-column";
 import { Movement } from "@/components/rankings/power-rankings";
-import { Reveal } from "@/components/reveal";
-import { TeamsPrefetch } from "@/components/teams-prefetch";
-import { Blurb, Chapter, Label } from "@/components/week/parts";
+import { Reveal } from "@/components/parts/reveal";
+import { TeamsPrefetch } from "@/components/analyzer/teams-prefetch";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 import { season } from "@/lib/config";
 import { currentManagersHref } from "@/lib/data/manager-data";
 import { stagger } from "@/lib/motion";

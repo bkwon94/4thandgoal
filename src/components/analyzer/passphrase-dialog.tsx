@@ -5,7 +5,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ErrorLine } from "@/components/error-line";
+import { ErrorLine } from "@/components/parts/error-line";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";

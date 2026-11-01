@@ -5,7 +5,10 @@
 import { num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { HeadshotMap, LeaderBoard, LeaderRow } from "@/lib/week-types";
-import { Blurb, Chapter, Headshot, Label } from "./parts";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Headshot } from "@/components/parts/headshot";
+import { Label } from "@/components/parts/label";
 
 /* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left
    and truncates, so the points never leave the row. On a wide screen a half-width card drops the team under the player,

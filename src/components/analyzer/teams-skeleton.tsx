@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { SIDE_TITLES } from "@/components/trade-form";
+import { SIDE_TITLES } from "@/components/analyzer/trade-form";
 import { useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 

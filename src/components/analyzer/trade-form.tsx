@@ -7,10 +7,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import AnalyzeResult from "@/components/analyze-result";
-import { ErrorLine } from "@/components/error-line";
-import { TradeFinder } from "@/components/trade-finder";
-import { TradeSide } from "@/components/trade-side";
+import AnalyzeResult from "@/components/analyzer/analyze-result";
+import { ErrorLine } from "@/components/parts/error-line";
+import { TradeFinder } from "@/components/analyzer/trade-finder";
+import { TradeSide } from "@/components/analyzer/trade-side";
 import { Button } from "@/components/ui/button";
 import type { AnalyzeResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postAnalyze, toErrorLine, type Team } from "@/lib/api";

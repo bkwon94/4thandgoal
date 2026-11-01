@@ -8,8 +8,13 @@
 
 import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
-import { Reveal } from "@/components/reveal";
-import { avatarSrc, Blurb, Chapter, Label, managerHref, Who } from "@/components/week/parts";
+import { Reveal } from "@/components/parts/reveal";
+import { avatarSrc } from "@/lib/avatar";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { managerHref } from "@/components/parts/team-name";
+import { Who } from "@/components/parts/who";
 import { record } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";

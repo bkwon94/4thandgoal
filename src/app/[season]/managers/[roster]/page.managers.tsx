@@ -4,12 +4,12 @@
  */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Masthead } from "@/components/masthead";
+import { Masthead } from "@/components/shell/masthead";
 import { ManagerChapters, MANAGER_CHAPTERS } from "@/components/managers/manager-chapters";
 import { ManagerHero } from "@/components/managers/manager-hero";
-import { PageColumn } from "@/components/page-column";
+import { PageColumn } from "@/components/parts/page-column";
 import { ChapterRail } from "@/components/week/chapter-rail";
-import { avatarSrc } from "@/components/week/parts";
+import { avatarSrc } from "@/lib/avatar";
 import { loadManagers, seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managerHref } from "@/lib/routes";

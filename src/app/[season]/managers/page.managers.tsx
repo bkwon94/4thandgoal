@@ -3,9 +3,9 @@
  * The .managers.tsx name keeps it out of a build with no managers file: next.config adds the extension only when the file exists.
  */
 import type { Metadata } from "next";
-import { Masthead } from "@/components/masthead";
+import { Masthead } from "@/components/shell/masthead";
 import { ManagersIndex } from "@/components/managers/managers-index";
-import { PageColumn } from "@/components/page-column";
+import { PageColumn } from "@/components/parts/page-column";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managersHref } from "@/lib/routes";

@@ -3,8 +3,8 @@
  * It renders the masthead with the week line and the week sections from that JSON.
  */
 import type { Metadata } from "next";
-import { Masthead, WeekLine } from "@/components/masthead";
-import { PageColumn } from "@/components/page-column";
+import { Masthead, WeekLine } from "@/components/shell/masthead";
+import { PageColumn } from "@/components/parts/page-column";
 import { AllMatchups } from "@/components/week/all-matchups";
 import { ChapterRail, type RailChapter } from "@/components/week/chapter-rail";
 import { Awards } from "@/components/week/awards";

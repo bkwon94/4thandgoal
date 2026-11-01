@@ -5,7 +5,12 @@
 import { num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, MatchupSide, Pick } from "@/lib/week-types";
-import { Avatar, avatarSrc, Blurb, Chapter, Label, Tag } from "./parts";
+import { Avatar } from "@/components/parts/avatar";
+import { avatarSrc } from "@/lib/avatar";
+import { Blurb } from "@/components/parts/blurb";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
+import { Tag } from "@/components/parts/tag";
 
 /* A flex item cannot shrink below its longest word by default, so min-w-0 and hyphens keep a long team name inside a phone.
    From the tablet tier the cell fills its grid column, so each team sits at its edge of the row. */

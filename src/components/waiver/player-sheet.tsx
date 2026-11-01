@@ -7,7 +7,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { Blurb } from "@/components/week/parts";
+import { Blurb } from "@/components/parts/blurb";
 import { DURATION, rise, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { WaiverPlayer } from "@/lib/waiver-types";

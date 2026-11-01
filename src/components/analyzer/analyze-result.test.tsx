@@ -4,8 +4,8 @@
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import fixtureJson from "../../.scratch/site-react/fixtures/analyze-response.json";
-import threeJson from "../../.scratch/site-react/fixtures/analyze-response-three.json";
+import fixtureJson from "../../../.scratch/site-react/fixtures/analyze-response.json";
+import threeJson from "../../../.scratch/site-react/fixtures/analyze-response-three.json";
 import type { AnalyzeResponse, Decision, Fairness } from "@/lib/analyze-types";
 import AnalyzeResult from "./analyze-result";
 

@@ -2,7 +2,10 @@
  * The managers index: one card per team in standings order, with the avatar, the name, the owner, the record, and the grade letter.
  * A card is one link to the team's manager page. A phone stacks the cards; from the tablet tier up, two go per row.
  */
-import { Avatar, avatarSrc, Chapter, Label } from "@/components/week/parts";
+import { Avatar } from "@/components/parts/avatar";
+import { avatarSrc } from "@/lib/avatar";
+import { Chapter } from "@/components/parts/chapter";
+import { Label } from "@/components/parts/label";
 import { record } from "@/lib/format/format";
 import type { Managers } from "@/lib/manager-types";
 import { managerHrefFrom } from "@/lib/routes";

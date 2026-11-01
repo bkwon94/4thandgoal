@@ -3,12 +3,12 @@
  * It matches the masthead of the source stylesheet, so a reader cannot tell the two apart.
  */
 import type { ReactNode } from "react";
-import { currentPage } from "@/components/current-page";
-import { Menu, type Brand, type Destinations } from "@/components/menu";
+import { currentPage } from "@/components/shell/current-page";
+import { Menu, type Brand, type Destinations } from "@/components/shell/menu";
 import type { WeekSummary } from "@/lib/week-types";
 
 /* The week line lives in its own file, so a client component can import it. The pages import it from here. */
-export { WeekLine } from "@/components/week-line";
+export { WeekLine } from "@/components/parts/week-line";
 
 /* The links of the masthead and its menu, each with the base path. The app layer builds them with the route builders. */
 export type MastheadLinks = {

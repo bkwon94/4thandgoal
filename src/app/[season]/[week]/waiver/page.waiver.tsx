@@ -5,7 +5,7 @@
  */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Masthead, WeekLine } from "@/components/masthead";
+import { Masthead, WeekLine } from "@/components/shell/masthead";
 import { WarChest } from "@/components/waiver/war-chest";
 import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";
