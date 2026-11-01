@@ -5,3 +5,5 @@ the orchestrator. We split the modules into six layers: provider, model, load, f
 A test holds the map. A module imports only from its own layer or a lower one. The test fails on any
 upward import. The API package imports model, load, facts, and write, never output. We chose a test,
 not a move of files, so the rule applies before any file moves and the map stays explicit.
+
+The test is `tests/test_layers.py`. Its `LAYER_OF` dict is the map.
