@@ -592,7 +592,7 @@ def test_clinched_and_out_odds_facts_hold_no_digit():
 
 
 def test_a_week_before_the_odds_week_has_no_odds_facts(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
     assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)
@@ -691,7 +691,7 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
         seen.update(kwargs)
         return playoff_odds(*args, **kwargs)
 
-    monkeypatch.setattr(sheet, "playoff_odds", engine)
+    monkeypatch.setattr(sheet.base, "playoff_odds", engine)
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw)
     build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6))
@@ -775,7 +775,7 @@ def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixtur
 
 
 def test_no_odds_means_no_odds_why(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
     b = build_bundle(week, news=lambda pid: [], history=history)
     assert not any(fid.endswith(".why") and fid.startswith("ODDS.") for fid in b.sheet.facts)

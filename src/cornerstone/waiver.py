@@ -14,7 +14,7 @@ from cornerstone.models import (
 )
 from cornerstone.parse import player_name
 from cornerstone.ranks import in_pool
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.sleeper import RawWeek
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (

@@ -19,7 +19,7 @@ from cornerstone.odds import OddsResult
 from cornerstone.paths import site_week_dir
 from cornerstone.power_rankings import power_rankings
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sheet import AWARD_TITLES
+from cornerstone.sheet.base import AWARD_TITLES
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
