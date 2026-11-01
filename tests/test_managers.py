@@ -7,7 +7,7 @@ from cornerstone.history import load_history
 from cornerstone.managers import managers
 from cornerstone.parse import parse_week, player_name
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 
 def _inputs(raw_dir, root):

@@ -20,7 +20,8 @@ from cornerstone.points_allowed import PositionAllowed
 from cornerstone.parse import parse_past_week, player_name, parse_week
 from cornerstone.ranks import RANKED_POSITIONS, in_pool, lineup_value, rank_table
 from cornerstone.slow_sources import SlowSources
-from cornerstone.sleeper import RawStatLine, RawWeek, load_raw, read_fetch_time
+from cornerstone.provider.raw import RawStatLine, RawWeek
+from cornerstone.provider.sleeper import load_raw, read_fetch_time
 from cornerstone.tunables import IN_PROGRESS_MINUTES
 
 logger = logging.getLogger(__name__)

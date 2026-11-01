@@ -5,7 +5,7 @@ One place for the sum, so the pool and the drops bucket read a player the same w
 from cornerstone.config import LeagueConfig
 from cornerstone.models import ProjectionsAhead
 from cornerstone.numbers import r2
-from cornerstone.sleeper import RawWeek
+from cornerstone.provider.raw import RawWeek
 
 
 def projections_ahead(raw: RawWeek) -> ProjectionsAhead:

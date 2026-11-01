@@ -6,7 +6,7 @@ from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.models import Matchup, PlayerLine, Side, sub
 from cornerstone.numbers import r2
 from cornerstone.parse import parse_week
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 
 def _wk(d):

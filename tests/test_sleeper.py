@@ -4,7 +4,7 @@ Offline tests read recorded data. Live tests call the real Sleeper API.
 """
 import pytest
 from cornerstone.config import cornerstone_config
-from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, read_fetch_time
+from cornerstone.provider.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, read_fetch_time
 
 # The league config the fetches of these tests read.
 CONFIG = cornerstone_config()

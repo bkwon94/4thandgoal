@@ -24,7 +24,7 @@ from cornerstone.history import (
 )
 from cornerstone.models import UsageShare
 from cornerstone.parse import parse_moves, parse_week
-from cornerstone.sleeper import fetch_past_week, load_raw
+from cornerstone.provider.sleeper import fetch_past_week, load_raw
 
 
 def _fill_week_one(root):

@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 import pytest
-from cornerstone.sleeper import RawPastWeek, RawTrending, RawWeek, load_raw
+from cornerstone.provider.raw import RawPastWeek, RawTrending, RawWeek
+from cornerstone.provider.sleeper import load_raw
 
 
 def _same(dumped, data) -> bool:

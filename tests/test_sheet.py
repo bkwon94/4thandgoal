@@ -31,7 +31,7 @@ from cornerstone.sheet import (
     week_dates,
     write_bundle,
 )
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 
 CONFIG = cornerstone_config()

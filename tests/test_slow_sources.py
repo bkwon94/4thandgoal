@@ -5,7 +5,7 @@ It reads the cache and the history, so no test needs the network.
 import shutil
 
 from cornerstone.nflverse import read_id_map
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.slow_sources import load_slow_sources
 
 

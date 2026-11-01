@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.config import cornerstone_config
 from cornerstone.models import BoardScores, NflverseWeek, UsageWeek, WaiverPlayer
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.tunables import DROP_WEEKS, USAGE_SAVED_WEEKS
 from cornerstone.waiver import _rostered, waiver_board
 from cornerstone.waiver_drops import drop_candidates

@@ -145,7 +145,7 @@ def _save_chart(tmp_path, parsed):
 
 
 def _sleeper_state(season):
-    from cornerstone.sleeper import RawState
+    from cornerstone.provider.raw import RawState
 
     return lambda: RawState(season=season, display_week=6, season_start_date="2026-09-09")
 
@@ -201,7 +201,7 @@ def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw
     from cornerstone import cli
     from cornerstone.models import ChartRead, ChartRow
     from cornerstone.parse import parse_week
-    from cornerstone.sleeper import load_raw
+    from cornerstone.provider.sleeper import load_raw
 
     _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
     line = parse_week(load_raw(fixture_raw_dir)).matchups[0].a.lines[0]
@@ -429,7 +429,7 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
 
     from cornerstone import cli, live
     from cornerstone.config import cornerstone_config
-    from cornerstone.sleeper import load_raw
+    from cornerstone.provider.sleeper import load_raw
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")

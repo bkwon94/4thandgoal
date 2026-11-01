@@ -10,7 +10,7 @@ from cornerstone.history import load_history
 from cornerstone.models import History, PastWeek
 from cornerstone.parse import parse_week
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.tunables import POWER_WEIGHTS
 
 CONFIG = cornerstone_config()

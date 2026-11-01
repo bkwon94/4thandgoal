@@ -6,7 +6,8 @@ from datetime import date
 
 from cornerstone.config import cornerstone_config
 from cornerstone.parse import parse_week
-from cornerstone.sleeper import RawTransaction, load_raw
+from cornerstone.provider.raw import RawTransaction
+from cornerstone.provider.sleeper import load_raw
 
 
 def test_parse_week_teams_and_matchups(fixture_raw_dir):

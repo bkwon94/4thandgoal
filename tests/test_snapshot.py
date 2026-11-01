@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from cornerstone.config import cornerstone_config
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
 
