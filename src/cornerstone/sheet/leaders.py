@@ -16,7 +16,7 @@ from cornerstone.models import (
     PlayerLine,
 )
 from cornerstone.numbers import r2
-from cornerstone.sheet.base import Context, Nums, fact, _trend_text
+from cornerstone.sheet.base import Context, Nums, fact, trend_text
 
 
 def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
@@ -134,5 +134,5 @@ def player_trend_facts(c: Context) -> list[Fact]:
         if not line.started or beaten is None:
             continue
         n = Nums()
-        out.append(fact(f"P.{pid}.trend", _trend_text(line.name, beaten, n), n, [], [line.name]))
+        out.append(fact(f"P.{pid}.trend", trend_text(line.name, beaten, n), n, [], [line.name]))
     return out

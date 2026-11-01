@@ -9,7 +9,7 @@ from cornerstone.models import (
     DropLine,
     Fact,
 )
-from cornerstone.sheet.base import Context, Nums, fact, _pregame_text, _weeks
+from cornerstone.sheet.base import Context, Nums, fact, weeks_text
 
 
 def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
@@ -94,12 +94,22 @@ def injury_facts_nfl(c: Context) -> list[Fact]:
             out.append(fact(f"I.{pid}.pregame", pregame, Nums(), team, [line.name]))
         n = Nums()
         if week in weeks:
-            text = f"{line.name} has been on the NFL injury report {_weeks(sum(w <= week for w in weeks), n)}."
+            text = f"{line.name} has been on the NFL injury report {weeks_text(sum(w <= week for w in weeks), n)}."
         # A return claim needs proof of play: nflverse only lists the injured, so a gap alone is not a return.
         elif week - 1 in weeks and c.week.stats.get(pid, {}).get("gp", 0) > 0:
-            earlier = _weeks(sum(w < week for w in weeks), n, "earlier ")
+            earlier = weeks_text(sum(w < week for w in weeks), n, "earlier ")
             text = f"{line.name} was on the NFL injury report in {earlier} this season and plays this week."
         else:
             continue
         out.append(fact(f"I.{pid}.history", text, n, team, [line.name]))
     return out
+
+
+def _pregame_text(c: Context, pid: str) -> str | None:
+    """The final NFL injury report status of this week, or None when the player has none."""
+    if c.nfl is None or c.nfl.injuries is None:
+        return None
+    status = c.nfl.injuries.get(pid, {}).get(c.week.week)
+    if status is None:
+        return None
+    return f"{c.lines[pid].name} was listed {status} on the final NFL injury report before his game this week."

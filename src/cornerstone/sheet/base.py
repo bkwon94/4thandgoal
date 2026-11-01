@@ -48,7 +48,6 @@ FIRST_WEEK = 6
 # The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
 # per team are the fewest scores the engine draws from. A week before it gets no odds.
 ODDS_FROM_WEEK = 6
-NEWS_MAX_CHARS = 300
 MOVE_WORDS = {"waiver": "waiver add", "free_agent": "free agent add", "trade": "trade"}
 AWARD_TITLES = {
     "game_changer": "Game Changer",
@@ -323,47 +322,11 @@ class Context:
         return f"scored {n(line.points)} on a {n(line.projection)} projection, {n(abs(gap))} {side}"
 
 
-def _news_facts(c: Context, gc) -> list[Fact]:
-    # News is an unofficial endpoint. A failure must never stop a build.
-    try:
-        items = c.news(gc.line.player_id)
-        # Items arrive in no promised order, and "published" is epoch milliseconds as a string.
-        newest = max(items, key=lambda i: int(i.get("published") or 0), default={})
-    except Exception:
-        logger.exception("News fetch failed for %s", gc.line.name)
-        return []
-    description = (newest.get("metadata") or {}).get("description") or ""
-    if not description:
-        return []
-    n = Nums()
-    text = f"Latest news on {gc.line.name}: {n.text(_cut_at_word(description, NEWS_MAX_CHARS))}"
-    return [fact("AW.game_changer.news", text, n, [], [gc.line.name])]
-
-
-def _cut_at_word(text: str, limit: int) -> str:
-    """Cut at the last whitespace before the limit, so no word or number is cut in half."""
-    if len(text) <= limit:
-        return text
-    head = text[:limit]
-    space = max(head.rfind(" "), head.rfind("\n"), head.rfind("\t"))
-    return (head[:space] if space > 0 else head).rstrip()
-
-
-def _trend_text(name: str, beaten: int, n: Nums) -> str:
+def trend_text(name: str, beaten: int, n: Nums) -> str:
     if beaten >= 2:
         return f"{name} has beaten projection in {n(beaten)} of the last {n(TREND_WEEKS)} weeks."
     return f"{name} has missed projection in {n(TREND_WEEKS - beaten)} of the last {n(TREND_WEEKS)} weeks."
 
 
-def _pregame_text(c: Context, pid: str) -> str | None:
-    """The final NFL injury report status of this week, or None when the player has none."""
-    if c.nfl is None or c.nfl.injuries is None:
-        return None
-    status = c.nfl.injuries.get(pid, {}).get(c.week.week)
-    if status is None:
-        return None
-    return f"{c.lines[pid].name} was listed {status} on the final NFL injury report before his game this week."
-
-
-def _weeks(count: int, n: Nums, adjective: str = "") -> str:
+def weeks_text(count: int, n: Nums, adjective: str = "") -> str:
     return f"{n(count)} {adjective}week" + ("" if count == 1 else "s")
