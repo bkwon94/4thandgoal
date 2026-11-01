@@ -4,8 +4,12 @@
 
 **Blocked by:** 07
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] No `# PRD:` note remains in the layer map, or each one that remains has an ADR line that accepts it.
 - [ ] The layer test passes. The four golden tests pass with no golden change.
 - [ ] `make typecheck` passes.
+
+## Comments
+
+- 2026-11-01: merged into `modular` from branch `modular-17-lower-modules`, six commits fcd16e0 to 9434239 and the fix f4cd5cc. 1,511 tests collected. `TREND_WEEKS` lives in the tunables. `standings_table.py` in the load layer holds the standings functions the snapshot needs. `claude_errors.py` in the provider layer holds the two Claude error classes. `chart` takes the Claude call as a parameter through `claude_reader`. No `# PRD:` note remains. An independent graph script finds no upward edge. Two reviewers passed it after one fix pass.
