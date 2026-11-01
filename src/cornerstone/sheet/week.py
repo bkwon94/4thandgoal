@@ -3,10 +3,20 @@ Builds the week facts: the week line, the recent adds, and the injured starters.
 The recap chapters read them for the context of each game.
 """
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Fact,
 )
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact, week_dates
+
+
+def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
+    """The facts of the week chapter, in the order the sheet lists them.
+
+    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
+    config field.
+    """
+    return week_facts(bundle) + recent_add_facts(bundle) + injured_facts(bundle)
 
 
 def week_facts(c: Context) -> list[Fact]:

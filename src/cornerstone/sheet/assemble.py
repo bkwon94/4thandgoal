@@ -28,7 +28,7 @@ from cornerstone.sheet.rankings import (
     odds_facts, odds_why_facts, power_facts, rank_why_facts, rankings_chapter, swing_facts,
 )
 from cornerstone.sheet.standings import median_facts_sheet, standings_facts
-from cornerstone.sheet.week import injured_facts, recent_add_facts, week_facts
+from cornerstone.sheet import week as week_chapter
 from cornerstone.sleeper import fetch_news
 from cornerstone.snapshot import Snapshot
 
@@ -187,7 +187,7 @@ def build_bundle(
 ) -> Bundle:
     c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, config=config)
     families = (
-        week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
+        week_chapter.facts(c, config), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
         shootout_facts(c),
         rank_facts(c), leader_facts(c), strength_facts(c), history_facts(c), player_trend_facts(c),
