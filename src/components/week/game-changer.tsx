@@ -9,6 +9,7 @@ import type { GameChanger as GameChangerData, HeadshotMap } from "@/lib/week-typ
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Headshot } from "@/components/parts/headshot";
+import { headshotSrc } from "@/lib/headshot";
 import { Label } from "@/components/parts/label";
 
 export function GameChanger({
@@ -73,7 +74,11 @@ export function GameChanger({
           delay={HERO_DELAY.cutout}
           duration={DURATION.hero}
         >
-          <Headshot playerId={line.player_id} headshots={headshots} priority className="block h-auto w-full tablet:h-full tablet:object-bottom" />
+          <Headshot
+            src={headshotSrc(headshots, line.player_id)}
+            priority
+            className="flex-none object-cover block h-auto w-full tablet:h-full tablet:object-bottom"
+          />
         </Reveal>
       </div>
       {blurb && <Blurb dark>{blurb}</Blurb>}

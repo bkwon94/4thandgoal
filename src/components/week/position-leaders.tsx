@@ -8,6 +8,7 @@ import type { HeadshotMap, LeaderBoard, LeaderRow } from "@/lib/week-types";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Headshot } from "@/components/parts/headshot";
+import { headshotSrc } from "@/lib/headshot";
 import { Label } from "@/components/parts/label";
 
 /* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left
@@ -29,7 +30,11 @@ function Row({ row, headshots, wide }: { row: LeaderRow; headshots: HeadshotMap;
         )}
       >
         {/* The row headshot stays near the text height, so the row keeps about the height of a plain text row. */}
-        <Headshot playerId={row.player_id} headshots={headshots} lazy className="mr-sp-2 inline-block size-sp-5 rounded-full align-middle" />
+        <Headshot
+          src={headshotSrc(headshots, row.player_id)}
+          lazy
+          className="flex-none object-cover mr-sp-2 inline-block size-sp-5 rounded-full align-middle"
+        />
         <b>{row.player}</b>
         {row.nfl_team && (
           <>

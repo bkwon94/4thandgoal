@@ -7,11 +7,11 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Player, TradeSide } from "@/lib/analyze-types";
-import { swapToDefault } from "@/lib/headshot";
 import { knownGamesSegments } from "@/lib/format/known-games-segments";
 import { DURATION, rise, useMotionOff } from "@/lib/motion";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
+import { Headshot } from "@/components/parts/headshot";
 import { Label } from "@/components/parts/label";
 import { cn } from "@/lib/utils";
 
@@ -43,11 +43,9 @@ function PlayerChip({ player, move }: { player: Player; move?: Move }) {
   return (
     <li className="flex flex-col items-center overflow-hidden rounded-card bg-wht px-sp-2 pt-sp-2 pb-sp-3 text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative. */}
-      <img
+      <Headshot
         src={player.headshot}
-        alt=""
-        loading="lazy"
-        onError={swapToDefault}
+        lazy
         className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot self-stretch border-b-2 border-red bg-linear-to-b from-gry to-wht object-contain object-bottom"
       />
       <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>

@@ -7,7 +7,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { Team } from "@/lib/api";
-import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
+import { Avatar } from "@/components/parts/avatar";
+import { AVATAR_FALLBACK } from "@/lib/avatar";
 import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -85,12 +86,7 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
                 onChange={() => pick(team.roster_id)}
                 className="sr-only"
               />
-              <img
-                src={team.avatar ?? AVATAR_FALLBACK}
-                alt=""
-                onError={swapAvatarToDefault}
-                className="size-avatar flex-none rounded-full bg-wht object-cover"
-              />
+              <Avatar src={team.avatar ?? AVATAR_FALLBACK} className="flex-none rounded-full bg-wht object-cover" />
               <span className="flex min-w-0 flex-col">
                 <b className="text-row leading-tight font-extrabold">{team.team}</b>
                 <span className="text-meta text-mute group-has-checked:text-on-dark-muted">{team.manager}</span>
