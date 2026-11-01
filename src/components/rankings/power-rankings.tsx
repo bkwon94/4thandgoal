@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { avatarSrc, Blurb, Chapter, Label, managerHref, Who } from "@/components/week/parts";
+import { record } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, stagger, useMotionOff } from "@/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";
 import { cn } from "@/lib/utils";
@@ -133,7 +134,7 @@ function Row({
         <span>{row.rank}</span>
         <Movement movement={row.movement} />
         <Who src={avatarSrc(avatars, row.roster_id)} name={row.name} href={managerHref(managersHref, row.roster_id)} />
-        <span className="text-right">{`${row.wins}-${row.losses}`}</span>
+        <span className="text-right">{record(row.wins, row.losses)}</span>
         <span className="text-right">{playoffCell(row)}</span>
         {/* The header names these columns, so the cells hold only the rank. On a phone they move into the open row. */}
         {COMPONENTS.map(({ key }) => (

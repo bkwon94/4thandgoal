@@ -3,8 +3,7 @@
  * The first segment names the stats week, the known games, and the games in progress. Each pending count is its own segment.
  */
 import type { AsOf } from "@/lib/analyze-types";
-
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+import { count } from "./format";
 
 /* A document with no block, or no games read, gets the stats week alone, so the line never claims games it lacks. */
 export function knownGamesSegments(asOf: AsOf): string[] {
@@ -16,7 +15,7 @@ export function knownGamesSegments(asOf: AsOf): string[] {
 
   const inProgress = known.in_progress > 0 ? `, ${known.in_progress} in progress` : "";
   const pending = Object.entries(known.pending).map(
-    ([name, n]) => `${name.charAt(0).toUpperCase()}${name.slice(1)} pending for ${plural(n, "game")}`,
+    ([name, n]) => `${name.charAt(0).toUpperCase()}${name.slice(1)} pending for ${count(n, "game", "games")}`,
   );
-  return [`${stats}, plus ${plural(known.games, `week ${known.week} game`)}${inProgress}`, ...pending];
+  return [`${stats}, plus ${count(known.games, `week ${known.week} game`, `week ${known.week} games`)}${inProgress}`, ...pending];
 }

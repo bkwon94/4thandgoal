@@ -12,7 +12,7 @@ import { DURATION, rise, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { WaiverPlayer } from "@/lib/waiver-types";
 import type { Team } from "@/lib/week-types";
-import { beatenLine, holderLine, metaLine, STANCE, teamName, trendingLine } from "./format";
+import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine } from "./format";
 
 /* One box of the bid row: a small caps name, a big number, and the line that explains it. The hot box is the bid to win. */
 function BidBox({ name, value, hot, children }: { name: string; value: string; hot?: boolean; children: ReactNode }) {
@@ -59,7 +59,7 @@ export function PlayerSheet({
         // The key changes with the player, so a new player rises in once. The old one leaves at once, so a fast tap never waits.
         <motion.div key={player.player_id} data-reveal {...rise(off, { duration: DURATION.page })}>
           <h2 className="m-0 text-lead leading-tight font-extrabold tracking-snug">{player.name}</h2>
-          <div className="mt-sp-0 text-meta text-on-dark-muted tabular-nums">{metaLine(player)}</div>
+          <div className="mt-sp-0 text-meta text-on-dark-muted tabular-nums">{waiverMetaLine(player)}</div>
           {drop && (
             <>
               <div className="mt-sp-1 text-meta font-bold text-red-lt">{holderLine(drop)}</div>

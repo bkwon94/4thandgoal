@@ -7,20 +7,9 @@ import { num } from "@/lib/format/format";
 import type { ManagerPlayer } from "@/lib/manager-types";
 import { PlayerHeadshot } from "./player-headshot";
 
-/* A count with its word, singular for one: "1 game", "3 games". */
-export function count(n: number, word: string): string {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
-}
-
 /* The quiet line of a row. A null position adds no part, so the line starts at the next part. */
-export function metaLine(player: ManagerPlayer, ...parts: string[]): string {
+export function playerMetaLine(player: ManagerPlayer, ...parts: string[]): string {
   return [player.position, ...parts].filter(Boolean).join(" · ");
-}
-
-/* One decimal for a projection or a per game number, since a second decimal adds no news there: "26.3".
-   The round comes first, because toFixed alone rounds 15.85 down to 15.8 by its binary value. */
-export function oneDecimal(x: number): string {
-  return (Math.round(x * 10) / 10).toFixed(1);
 }
 
 /* Each line carries data-line, so the tests read the lines of a row in order. */

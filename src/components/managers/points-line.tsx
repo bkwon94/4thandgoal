@@ -7,6 +7,7 @@
 import { motion, type Variants } from "framer-motion";
 import { type ReactNode, useId } from "react";
 import { VIEW_MARGIN } from "@/components/reveal";
+import { count } from "@/lib/format/format";
 import { DURATION, EASE_OUT, INSTANT, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { SeasonWeek } from "@/lib/manager-types";
@@ -19,11 +20,6 @@ const PAD_X = 8;
 const PAD_Y = 10;
 /* The stroke of the draw mask, in viewBox units. It is wider than the team line at every tier, so the mask covers the line whole. */
 const MASK_STROKE = 6;
-
-/* A count with its noun, such as "1 win" or "4 losses". */
-function count(n: number, one: string, many: string): string {
-  return `${n} ${n === 1 ? one : many}`;
-}
 
 /* The short summary a screen reader reads in place of the dots. */
 function summary(weeks: SeasonWeek[]): string {

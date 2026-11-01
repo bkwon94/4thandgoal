@@ -4,6 +4,7 @@
  */
 import { Avatar, avatarSrc, Chapter, Label } from "@/components/week/parts";
 import { basePath } from "@/lib/config";
+import { record } from "@/lib/format/format";
 import type { Managers } from "@/lib/manager-types";
 import type { AvatarMap } from "@/lib/week-types";
 
@@ -26,7 +27,7 @@ export function ManagersIndex({ managers, avatars }: { managers: Managers; avata
                 <span className="block text-body leading-tight font-extrabold text-ink">{manager.team.name}</span>
                 <span className="mt-sp-0 block text-meta text-mute">{manager.team.owner}</span>
               </span>
-              <span className="flex-none font-semibold whitespace-nowrap text-mute tabular-nums">{`${manager.wins}-${manager.losses}`}</span>
+              <span className="flex-none font-semibold whitespace-nowrap text-mute tabular-nums">{record(manager.wins, manager.losses)}</span>
               {/* The grade letter is the one quiet number at the right end, after the record. A roster with no grade shows a dash. */}
               <span className="w-sp-6 flex-none text-center font-extrabold text-mute">{manager.grade ? manager.grade.letter : "—"}</span>
             </a>

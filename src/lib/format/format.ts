@@ -32,3 +32,19 @@ export function ordinal(place: number): string {
   const suffix = { 1: "st", 2: "nd", 3: "rd" }[place % 10] ?? "th";
   return `${place}${suffix}`;
 }
+
+/* A win-loss record: "5-2". One helper keeps the pages and the tests on the same string. */
+export function record(wins: number, losses: number): string {
+  return `${wins}-${losses}`;
+}
+
+/* One decimal for a projection or a per game number, since a second decimal adds no news there: "26.3".
+   The round comes first, because toFixed alone rounds 15.85 down to 15.8 by its binary value. */
+export function oneDecimal(x: number): string {
+  return (Math.round(x * 10) / 10).toFixed(1);
+}
+
+/* A count with its noun, singular for one: "1 win", "4 losses". The caller gives both forms, so an odd plural stays right. */
+export function count(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
