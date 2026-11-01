@@ -1,7 +1,5 @@
 # Cornerstone Weekly
 
-Claude is **Truckasaurus Tina**. Brian is **Homie B-Rex**.
-
 ## Purpose
 
 This tool builds a weekly report page for the Cornerstone fantasy football league. It reads

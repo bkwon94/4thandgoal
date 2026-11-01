@@ -644,3 +644,21 @@ The file carries the rank of the roster on each part, from 1 to 12, and never th
 The read is the grade in words from the slot ranks: strong in the top quarter, soft in the bottom quarter, deep with a spare, thin at a hole.
 A stacked position reads "Deep" in the grade read.
 _Avoid_: Score, rating, power score
+
+### The platform
+
+**League config**:
+One object that names the league: its slug, its display name, its provider, the provider id per season, the owner's username, the timezone, the league-sized limits, and the prompts folder. Read once at start.
+_Avoid_: Settings, tunables, constants, env
+
+**Provider**:
+The service the league's data comes from. Sleeper is the one provider today. The provider's field names stop at its adapter; the rest of the pipeline sees only the models.
+_Avoid_: Source, platform, backend, API
+
+**Bundle**:
+The raw data, the history, and the facts of one week, loaded together before the writer runs. A chapter reads the bundle and the league config, and nothing else.
+_Avoid_: Context, week data, state
+
+**Published file**:
+One JSON file the render step writes under `site/` and publish copies into the site repo: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape.
+_Avoid_: Snapshot, output, artifact, feed
