@@ -19,15 +19,15 @@ from cornerstone.numbers import r2
 from cornerstone.sheet.base import Context, Nums, fact, trend_text
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the leaders chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The position ranks, the position leaders, the schedule strength, and the team and player history.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The position leaders chapter reads the leaders, and the next week chapter reads the schedule strength. The ranks
+    and the history go to each chapter about the teams and players they name.
     """
     return (
-        rank_facts(bundle) + leader_facts(bundle) + strength_facts(bundle) + history_facts(bundle)
-        + player_trend_facts(bundle)
+        rank_facts(context) + leader_facts(context) + strength_facts(context) + history_facts(context)
+        + player_trend_facts(context)
     )
 
 

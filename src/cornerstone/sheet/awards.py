@@ -17,13 +17,12 @@ logger = logging.getLogger(__name__)
 NEWS_MAX_CHARS = 300
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the awards chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The awards, the expected awards, and the latest news on the Game Changer.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The awards and Game Changer chapters read them.
     """
-    return award_facts(bundle) + expected_award_facts(bundle)
+    return award_facts(context) + expected_award_facts(context)
 
 
 def award_facts(c: Context) -> list[Fact]:

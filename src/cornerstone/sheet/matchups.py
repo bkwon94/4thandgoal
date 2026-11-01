@@ -11,13 +11,12 @@ from cornerstone.models import (
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the matchups chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The result, the lines, the story, and the context of each matchup.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The Matchup of the Week, Game Changer, and recap chapters read them. The awards chapter reads each result.
     """
-    return matchup_fact_family(bundle)
+    return matchup_fact_family(context)
 
 
 def matchup_fact_family(c: Context) -> list[Fact]:

@@ -19,13 +19,12 @@ from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
 from cornerstone.snapshot import Snapshot
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the next week chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The pick, the next matchups, the storylines, the byes, and the shootouts.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The Matchup of the Week chapter reads the pick. The next week chapter reads the rest.
     """
-    return pick_facts(bundle) + next_facts(bundle) + shootout_facts(bundle)
+    return pick_facts(context) + next_facts(context) + shootout_facts(context)
 
 
 def pick_facts(c: Context) -> list[Fact]:

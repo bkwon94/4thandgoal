@@ -21,13 +21,13 @@ CUT_PHRASES = {
 }
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the standings chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The place of each team in the standings, and each score against the league median.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The Matchup of the Week, recap, median, next week, and rankings chapters read the standings. The median chapter
+    reads the median.
     """
-    return standings_facts(bundle) + median_facts_sheet(bundle)
+    return standings_facts(context) + median_facts_sheet(context)
 
 
 def cut_phrase(rank: int, last_spot: int, n: Nums) -> str:

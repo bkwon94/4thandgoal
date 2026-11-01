@@ -31,18 +31,17 @@ COMPONENT_WORDS = {
 }
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the rankings chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The power ranks, the odds, the swing of each Must Watch game, and the reasons for the ranks and the odds.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The rankings chapter reads them. The median chapter reads the odds, and the next week chapter reads the swings.
     """
     return (
-        power_facts(bundle.power, bundle.team)
-        + rank_why_facts(bundle.history, bundle.power, bundle.before, bundle.team)
-        + odds_facts(bundle.odds, bundle.team)
-        + swing_facts(bundle.odds, [(nx.a, nx.b) for nx in bundle.next if nx.must_watch], bundle.team)
-        + odds_why_facts(bundle.odds, bundle.season_scores, bundle.projected, bundle.remaining, bundle.team)
+        power_facts(context.power, context.team)
+        + rank_why_facts(context.history, context.power, context.before, context.team)
+        + odds_facts(context.odds, context.team)
+        + swing_facts(context.odds, [(nx.a, nx.b) for nx in context.next if nx.must_watch], context.team)
+        + odds_why_facts(context.odds, context.season_scores, context.projected, context.remaining, context.team)
     )
 
 

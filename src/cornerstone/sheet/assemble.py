@@ -25,9 +25,10 @@ from cornerstone.sheet.rankings import rankings_chapter
 from cornerstone.snapshot import Snapshot
 
 
-# Each chapter of the sheet, in the order the sheet lists its facts. This list alone decides that order.
-# A chapter takes the bundle and the league config and reads nothing else, so it needs no file and no clock.
-CHAPTER_FACTS: tuple[Callable[[Context, LeagueConfig], list[Fact]], ...] = (
+# The fact groups of the sheet, in the order the sheet lists their facts. This list alone sets that order.
+# A group reads only the context and the league config, so it needs no file and no clock. Every group takes the
+# config, so the assembly calls each group the same way. A group reads a league number from it when it needs one.
+FACT_GROUPS: tuple[Callable[[Context, LeagueConfig], list[Fact]], ...] = (
     week.facts, standings.facts, matchups.facts, awards.facts, next_week.facts, leaders.facts, drops.facts,
     rankings.facts,
 )
@@ -184,7 +185,7 @@ def build_bundle(
     config: LeagueConfig,
 ) -> Bundle:
     c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, config=config)
-    facts = {f.id: f for chapter in CHAPTER_FACTS for f in chapter(c, config)}
+    facts = {f.id: f for group in FACT_GROUPS for f in group(c, config)}
     data = WeekData(
         season=week.season,
         week=week.week,

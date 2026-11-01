@@ -17,7 +17,6 @@ from cornerstone.odds import playoff_odds
 from cornerstone.parse import parse_week
 from cornerstone.sheet import (
     Context,
-    standings,
     build_bundle,
     check_week_is_buildable,
     fmt,
@@ -26,6 +25,7 @@ from cornerstone.sheet import (
     power_facts,
     projected_totals,
     read_bundle,
+    standings,
     standings_facts,
     storyline_facts,
     swing_facts,
@@ -214,10 +214,10 @@ def test_a_team_off_the_cut_keeps_its_games_from_the_cut(bundle):
     assert "1 game above the cut" in bundle.sheet.facts["S.5"].text
 
 
-def test_one_chapter_gives_the_facts_that_the_assembled_sheet_holds_for_it(bundle, fixture_raw_dir):
-    # A chapter reads only the bundle and the config, so the same inputs give the same facts as the assembly.
-    c = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
-    got = standings.facts(c, CONFIG)
+def test_one_fact_group_gives_the_facts_that_the_assembled_sheet_holds_for_it(bundle, fixture_raw_dir):
+    # A group reads only the context and the config, so the same inputs give the same facts as the assembly.
+    context = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
+    got = standings.facts(context, CONFIG)
     assert got
     assert got == [f for fid, f in bundle.sheet.facts.items() if fid.startswith(("S.", "MED."))]
 

@@ -12,13 +12,12 @@ from cornerstone.models import (
 from cornerstone.sheet.base import Context, Nums, fact, weeks_text
 
 
-def facts(bundle: Context, config: LeagueConfig) -> list[Fact]:
-    """The facts of the drops chapter, in the order the sheet lists them.
+def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+    """The drops and the NFL injury report of each started player, from the nflverse data.
 
-    Every chapter takes the same two inputs, so the assembly calls each one the same way. This chapter reads no
-    config field.
+    The Matchup of the Week, Game Changer, awards, and recap chapters read them.
     """
-    return drop_facts(bundle) + injury_facts_nfl(bundle)
+    return drop_facts(context) + injury_facts_nfl(context)
 
 
 def _drop_fact(c: Context, d: DropLine) -> list[Fact]:
