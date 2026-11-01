@@ -310,7 +310,7 @@ def opener_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[st
 
 
 def code_check(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, prompts_dir: Path, used_words: Collection[str] = frozenset()
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, used_words: Collection[str] = frozenset(), *, prompts_dir: Path
 ) -> list[str]:
     """The code rules on one blurb. `used_words` are the once-per-page words that another chapter already said."""
     failures: list[str] = []
@@ -441,7 +441,7 @@ def code_check(
     return failures
 
 
-def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, prompts_dir: Path) -> tuple[str, str]:
+def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: Path) -> tuple[str, str]:
     # The vocabulary comes first so the verifier judges stat terms by the writer's definitions.
     system = "\n\n".join(load_prompt(prompts_dir, name) for name in ("vocabulary.md", "verifier.md"))
     # The verifier sees every chapter fact, cited or not, so a true claim with a missed
@@ -462,9 +462,9 @@ def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, prom
 
 
 def claude_verify(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, prompts_dir: Path, call: ClaudeCall
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, *, prompts_dir: Path
 ) -> list[Verdict]:
-    system, user = build_verifier_prompt(blurb, chapter, sheet, prompts_dir)
+    system, user = build_verifier_prompt(blurb, chapter, sheet, prompts_dir=prompts_dir)
     verdicts = call(system, user, VerifyOut).verdicts
     n, m = len(verdicts), len(blurb.sentences)
     if n != m:
@@ -474,14 +474,14 @@ def claude_verify(
 
 
 def verify_blurb(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, prompts_dir: Path, call: ClaudeCall,
-    used_words: Collection[str] = frozenset(),
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(),
+    *, prompts_dir: Path,
 ) -> VerifyResult:
-    failures = code_check(blurb, chapter, sheet, prompts_dir, used_words)
+    failures = code_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir)
     # A code failure is final, so skip the paid Claude call.
     if failures:
         return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False)
-    verdicts = claude_verify(blurb, chapter, sheet, prompts_dir, call)
+    verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir)
     return VerifyResult(
         chapter=chapter.key,
         code_failures=[],
@@ -500,7 +500,8 @@ def _feedback(result: VerifyResult) -> str:
 
 
 def write_and_verify(
-    chapter: Chapter, sheet: FactSheet, prompts_dir: Path, call: ClaudeCall, used_words: Collection[str] = frozenset()
+    chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(), *,
+    prompts_dir: Path,
 ) -> tuple[Blurb, list[VerifyResult]]:
     results: list[VerifyResult] = []
     # The used words go to every attempt, so a retry for another failure still hears them.
@@ -508,7 +509,7 @@ def write_and_verify(
     feedback = None
     for attempt in (1, 2):
         try:
-            blurb = write_blurb(chapter, sheet, prompts_dir, call, feedback, page_words, attempt)
+            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt, prompts_dir=prompts_dir)
         except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
             # A writer error is a failed attempt, not a crash of the whole report.
             log.warning("writer failed for %s: %s", chapter.key, err)
@@ -520,7 +521,7 @@ def write_and_verify(
             )
         else:
             try:
-                result = verify_blurb(blurb, chapter, sheet, prompts_dir, call, used_words)
+                result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir)
             except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)

@@ -250,7 +250,7 @@ def test_a_rewrite_puts_the_saved_odds_in_the_rankings_file(tmp_path, fixture_ra
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     # With no rankings file, the odds can come only from the saved facts.
     _rankings(repo).unlink()
-    run_rewrite(repo, 2026, 6, "rankings", _fake, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "rankings", _fake, config=CONFIG)
     data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
     odds = read_bundle(week_dir(repo, 2026, 6) / "facts.json").odds
     assert odds is not None
@@ -441,7 +441,7 @@ def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, f
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     # The plain fake falls back, so the build leaves the blurbs empty.
     assert all(b == [] for b in _week6_blurbs(repo).values())
-    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **offline, config=CONFIG)
     blurbs = _week6_blurbs(repo)
     assert len(blurbs) == 12
     chapter = next(c for c in read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.chapters if c.key == "rankings")
@@ -463,7 +463,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
         raise AssertionError("a rewrite ran the odds engine")
 
     monkeypatch.setattr("cornerstone.sheet.base.playoff_odds", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, config=CONFIG)
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds
 
@@ -497,7 +497,7 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
         raise AssertionError("a rewrite ran the waiver engine")
 
     monkeypatch.setattr("cornerstone.pipeline.waiver_board", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, config=CONFIG)
     assert _waiver(repo) == built
 
 
@@ -538,7 +538,7 @@ def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path
     def no_search(system, user):
         raise AssertionError("a rewrite ran the search")
 
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**offline, "research": no_search}, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**offline, "research": no_search}, config=CONFIG)
     assert _waiver(repo) == built
 
 
@@ -582,7 +582,7 @@ def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir, off
     path.write_text(json.dumps(chapters))
     assert read_verify(path).build is None
 
-    run_rewrite(repo, 2026, 6, "median", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "median", _fake, **offline, config=CONFIG)
 
     assert read_verify(path).build is None
     assert set(read_verify(path).chapters) == set(chapters)
@@ -593,7 +593,7 @@ def test_rewrite_keeps_the_build_record(tmp_path, fixture_raw_dir, offline):
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     path = week_dir(repo, 2026, 6) / "verify.json"
     before = read_verify(path).build
-    run_rewrite(repo, 2026, 6, "median", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "median", _fake, **offline, config=CONFIG)
     assert read_verify(path).build == before
 
 
@@ -623,7 +623,7 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir, offline):
         fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.M).group(1)
         return model(sentences=[Sentence(text="Rewritten median sentence.", fact_ids=[fid])] * 2)
 
-    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **offline, config=CONFIG)
     after = json.loads(path.read_text())
     assert set(before) == set(after)
     text = [s["text"] for s in after["median"]["sentences"]]
@@ -637,7 +637,7 @@ def test_rewrite_unknown_chapter_lists_valid_keys(tmp_path, fixture_raw_dir, off
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     with pytest.raises(ValueError, match="median"):
-        run_rewrite(repo, 2026, 6, "nope", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+        run_rewrite(repo, 2026, 6, "nope", _fake, **offline, config=CONFIG)
 
 
 def _git(cwd, *args):
@@ -822,8 +822,7 @@ def test_no_fetcher_and_no_file_builds_without_nflverse(tmp_path, fixture_raw_di
 def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
-    run_rewrite(repo, 2026, 6, "median", _fake, **{**offline, "nflverse": _forbidden_nflverse},
-                prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "median", _fake, **{**offline, "nflverse": _forbidden_nflverse}, config=CONFIG)
 
 
 def _late_week_5_trade(repo):
@@ -1047,7 +1046,7 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
 
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
-    def spy(chapter, sheet, prompts_dir, call, used_words=frozenset()):
+    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir):
         seen[chapter.key] = set(used_words)
         text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
         sentences = [Sentence(text=text, fact_ids=[chapter.fact_ids[0]])] if chapter.fact_ids else []
@@ -1087,7 +1086,7 @@ def test_a_rewrite_sees_lucky_from_an_earlier_saved_blurb(tmp_path, fixture_raw_
     _saved_lucky(repo, "motw")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, config=CONFIG)
     assert seen["awards"] == {"lucky"}
 
 
@@ -1097,7 +1096,7 @@ def test_a_rewrite_of_an_earlier_chapter_sees_a_later_lucky(tmp_path, fixture_ra
     _saved_lucky(repo, "median")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, config=CONFIG)
     assert seen["awards"] == {"lucky"}
 
 
@@ -1107,7 +1106,7 @@ def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_r
     _saved_lucky(repo, "awards")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, prompts_dir=CONFIG.prompts_dir)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline, config=CONFIG)
     assert seen["awards"] == set()
 
 
