@@ -132,8 +132,8 @@ def fetch_nflverse(repo: Path) -> NflverseFetcher:
     return fetch
 
 
-def load_nflverse(raw_dir: Path) -> NflverseWeek | None:
-    path = raw_dir / "nflverse.json"
+def load_nflverse(raw_path: Path) -> NflverseWeek | None:
+    path = raw_path / "nflverse.json"
     if not path.exists():
         return None
     return NflverseWeek.model_validate_json(path.read_text(encoding="utf-8"))
@@ -170,7 +170,7 @@ def _with_saved(nfl: NflverseWeek, saved: NflverseWeek) -> NflverseWeek:
 
 
 def _nflverse_for_week(
-    raw_dir: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
+    raw_path: Path, raw: dict[str, object], season: int, week: int, nflverse: NflverseFetcher | None,
     teams: set[str],
 ) -> NflverseWeek | None:
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
@@ -181,7 +181,7 @@ def _nflverse_for_week(
     """
     saved = None
     try:
-        saved = load_nflverse(raw_dir)
+        saved = load_nflverse(raw_path)
         if nflverse is None:
             return saved
         # A key the file does not hold loads as None, so only the set fields tell an old file from a new one.
@@ -200,7 +200,7 @@ def _nflverse_for_week(
             nfl = _with_saved(nfl, saved)
         # A degraded extract is not saved, so the next build tries the sources again.
         if complete:
-            _save_nflverse(raw_dir / "nflverse.json", nfl)
+            _save_nflverse(raw_path / "nflverse.json", nfl)
         return nfl
     except Exception as err:  # noqa: BLE001 - the outer guard: the module catches only HTTP errors
         # The saved file stays as it was, and the build goes on with the facts it holds.
@@ -306,12 +306,12 @@ def run_build(
     config: LeagueConfig,
 ) -> Path:
     directory = week_dir(repo, season, week)
-    raw = raw_dir(repo, season, week)
+    raw_path = raw_dir(repo, season, week)
     # A rebuild keeps the first window, also after a refetch, so a trade never moves to another page.
     saved = directory / "verify.json"
     first_fetch = _first_build(saved)
     if fetch:
-        fetch_week(config.league_id(season), season, week, raw, players_cache(repo), config.tz)
+        fetch_week(config.league_id(season), season, week, raw_path, players_cache(repo), config.tz)
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
 
@@ -341,7 +341,7 @@ def run_build(
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     # The page is built by now, so a history problem only logs a warning.
     try:
-        save_week_to_history(raw, history_dir(repo, season, week))
+        save_week_to_history(raw_path, history_dir(repo, season, week))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
@@ -398,40 +398,40 @@ def _write_managers(
             "history holds %d of the %d weeks the file needs: managers.json not written", through, MANAGERS_MIN_WEEKS,
         )
         return None
-    raw = raw_dir(repo, season, week)
-    slots, players = _season_raw(raw)
+    raw_path = raw_dir(repo, season, week)
+    slots, players = _season_raw(raw_path)
     week_awards = saved_awards({n: week_dir(repo, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
         history, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
-        snapshot=snapshot, projections_ahead=_projections_ahead(raw), chart=_managers_chart(repo, week, raw),
+        snapshot=snapshot, projections_ahead=_projections_ahead(raw_path), chart=_managers_chart(repo, week, raw_path),
     )
 
 
-def _managers_chart(repo: Path, week: int, raw_dir: Path) -> ChartValues | None:
+def _managers_chart(repo: Path, week: int, raw_path: Path) -> ChartValues | None:
     """The trade values of the saved chart read of the week for the roster grade. None, with one log line, when no
     read is saved or the week has no raw data. It never fetches or reads an image."""
-    chart = saved_chart_read(repo, week) if raw_dir.exists() else None
+    chart = saved_chart_read(repo, week) if raw_path.exists() else None
     if chart is None:
         # The grade still goes out. Its trade value part is 0 for every roster.
         log.info("no saved chart read for week %d: the roster grade has no trade value", week)
         return None
-    return match_chart(chart, week_lines(parse_week(load_raw(raw_dir))))
+    return match_chart(chart, week_lines(parse_week(load_raw(raw_path))))
 
 
-def _projections_ahead(raw_dir: Path) -> dict[int, dict[str, float]] | None:
+def _projections_ahead(raw_path: Path) -> dict[int, dict[str, float]] | None:
     """The projections ahead of the roster grade, by week and player id, from the raw projections ahead file.
     No file gives None, so the entries carry no grade."""
-    path = raw_dir / PROJECTIONS_AHEAD_FILE
+    path = raw_path / PROJECTIONS_AHEAD_FILE
     if not path.exists():
         return None
     return {entry["week"]: entry["projections"] for entry in json.loads(path.read_text(encoding="utf-8"))}
 
 
-def _season_raw(raw_dir: Path) -> tuple[list[str] | None, dict[str, dict] | None]:
+def _season_raw(raw_path: Path) -> tuple[list[str] | None, dict[str, dict] | None]:
     """The roster slots and the players of the managers file, from the raw league and players files.
     The roster slots do not change in a season, so the raw files of the built week serve every saved week.
     No league file gives no slots, so the entries carry no bench points. No players file reads ids."""
-    league, players = raw_dir / "league.json", raw_dir / "players.json"
+    league, players = raw_path / "league.json", raw_path / "players.json"
     slots = json.loads(league.read_text(encoding="utf-8"))["roster_positions"] if league.exists() else None
     entries = json.loads(players.read_text(encoding="utf-8")) if players.exists() else None
     return slots, entries
@@ -440,12 +440,12 @@ def _season_raw(raw_dir: Path) -> tuple[list[str] | None, dict[str, dict] | None
 def _managers_snapshot(repo: Path, season: int, week: int) -> Snapshot | None:
     """The analyzer's snapshot of the week for the roster grade. None, with one log line, when the week has no raw
     data."""
-    raw = raw_dir(repo, season, week)
+    raw_path = raw_dir(repo, season, week)
     # A saved week can lack its raw data. The file then goes out with no grade, so the page still ships.
-    if not raw.exists():
+    if not raw_path.exists():
         log.info("no raw data for week %d: managers.json has no roster grade", week)
         return None
-    return week_snapshot(load_raw(raw), history_root(repo, season), week)
+    return week_snapshot(load_raw(raw_path), history_root(repo, season), week)
 
 
 def _load_saved_week(repo: Path, season: int, week: int) -> tuple[Bundle, dict[str, Blurb]]:

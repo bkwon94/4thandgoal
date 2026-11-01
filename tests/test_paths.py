@@ -4,8 +4,9 @@ The expected strings are literal, so a change to the layout fails here first.
 from pathlib import Path
 
 from cornerstone.paths import (
-    chart_image, chart_read, charts_dir, history_dir, history_root, nflverse_cache_dir, players_cache, raw_dir,
-    results_cache_dir, returns_path, season_dir, site_week_dir, week_dir, week_from_label, week_label,
+    chart_image, chart_read, charts_dir, history_dir, history_raw_dir, history_root, history_week_dir,
+    nflverse_cache_dir, players_cache, raw_dir, results_cache_dir, returns_path, season_dir, site_week_dir, week_dir,
+    week_from_label, week_label,
 )
 
 REPO = Path("/repo")
@@ -72,3 +73,11 @@ def test_chart_read_is_a_json_named_for_the_week():
 
 def test_results_cache_dir_is_in_the_cache():
     assert results_cache_dir(REPO) == Path("/repo/data/cache/results")
+
+
+def test_history_week_dir_is_a_week_under_a_given_root():
+    assert history_week_dir(Path("/h"), 6) == Path("/h/week-06")
+
+
+def test_history_raw_dir_sits_beside_the_history_root():
+    assert history_raw_dir(Path("/repo/data/2026/history"), 7) == Path("/repo/data/2026/week-07/raw")

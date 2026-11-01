@@ -3,24 +3,24 @@ The functions take no config yet. The layout does not name the league, so a late
 """
 from pathlib import Path
 
-WEEK_PREFIX = "week-"
+_WEEK_PREFIX = "week-"
 
 
 def week_label(week: int) -> str:
-    return f"{WEEK_PREFIX}{week:02d}"
+    return f"{_WEEK_PREFIX}{week:02d}"
 
 
 def week_from_label(text: str) -> int:
     """The week number of a label such as `week-07`, or of a file stem that is a label."""
-    return int(text.removeprefix(WEEK_PREFIX))
+    return int(text.removeprefix(_WEEK_PREFIX))
 
 
-def season_root(repo: Path, season: int) -> Path:
+def _season_root(repo: Path, season: int) -> Path:
     return repo / "data" / str(season)
 
 
 def week_dir(repo: Path, season: int, week: int) -> Path:
-    return season_root(repo, season) / week_label(week)
+    return _season_root(repo, season) / week_label(week)
 
 
 def raw_dir(repo: Path, season: int, week: int) -> Path:
@@ -28,16 +28,26 @@ def raw_dir(repo: Path, season: int, week: int) -> Path:
 
 
 def history_root(repo: Path, season: int) -> Path:
-    return season_root(repo, season) / "history"
+    return _season_root(repo, season) / "history"
+
+
+def history_week_dir(root: Path, week: int) -> Path:
+    """A week under a given history root, for the readers that hold the root and not the repo."""
+    return root / week_label(week)
 
 
 def history_dir(repo: Path, season: int, week: int) -> Path:
-    return history_root(repo, season) / week_label(week)
+    return history_week_dir(history_root(repo, season), week)
+
+
+def history_raw_dir(root: Path, week: int) -> Path:
+    """The raw directory of a week, which sits beside the history root: data/{season}/week-NN/raw."""
+    return root.parent / week_label(week) / "raw"
 
 
 def returns_path(repo: Path, season: int) -> Path:
     """The hand-kept returns file of the season: the return week by player id, beside the history."""
-    return season_root(repo, season) / "returns.json"
+    return _season_root(repo, season) / "returns.json"
 
 
 def season_dir(site: Path, season: int) -> Path:
@@ -48,21 +58,21 @@ def site_week_dir(site: Path, season: int, week: int) -> Path:
     return season_dir(site, season) / week_label(week)
 
 
-def cache_dir(repo: Path) -> Path:
+def _cache_dir(repo: Path) -> Path:
     return repo / "data" / "cache"
 
 
 def players_cache(repo: Path) -> Path:
-    return cache_dir(repo) / "players.json"
+    return _cache_dir(repo) / "players.json"
 
 
 def nflverse_cache_dir(repo: Path) -> Path:
     """The one nflverse cache directory. The fetch fills it and the analyze command reads it."""
-    return cache_dir(repo) / "nflverse"
+    return _cache_dir(repo) / "nflverse"
 
 
 def charts_dir(repo: Path) -> Path:
-    return cache_dir(repo) / "charts"
+    return _cache_dir(repo) / "charts"
 
 
 def chart_image(repo: Path, week: int) -> Path:
@@ -74,4 +84,4 @@ def chart_read(repo: Path, week: int) -> Path:
 
 
 def results_cache_dir(repo: Path) -> Path:
-    return cache_dir(repo) / "results"
+    return _cache_dir(repo) / "results"

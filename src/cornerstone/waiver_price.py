@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 from cornerstone.adjusters import OUT_STATUSES
-from cornerstone.history import history_dir
+from cornerstone.paths import history_week_dir
 from cornerstone.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from cornerstone.parse import player_name, team_name
 from cornerstone.sheet import Nums, fact
@@ -24,7 +24,7 @@ def bid_history(root: Path, raw: dict[str, object], week: int) -> list[WaiverCla
     positions = {pid: entry.get("position") for pid, entry in raw["players"].items()}
     claims = []
     for past in range(1, week):
-        path = history_dir(root, past) / "transactions.json"
+        path = history_week_dir(root, past) / "transactions.json"
         # A week that is not saved has no claims, so a gap lowers the floor and never makes a claim wrong.
         if path.exists():
             claims += _claims(json.loads(path.read_text()), positions)
