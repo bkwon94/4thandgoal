@@ -21,7 +21,7 @@ from cornerstone.parse import parse_week
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
-from cornerstone.tunables import GRADE_WEIGHTS, LAST_REGULAR_WEEK
+from cornerstone.tunables import GRADE_WEIGHTS
 
 CONFIG = cornerstone_config()
 
@@ -173,13 +173,14 @@ def test_the_grade_is_null_without_a_snapshot(fixture_raw_dir, fixture_history_r
 
 
 def test_the_value_is_the_mean_over_the_weeks_ahead_with_a_missing_week_as_0():
-    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}})
+    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}}, CONFIG)
     assert values == {"a": 15.0, "b": 2.0}
 
 
 def test_the_value_stops_at_the_last_regular_week():
-    ahead = {LAST_REGULAR_WEEK - 1: {"a": 10.0}, LAST_REGULAR_WEEK: {"a": 20.0}, LAST_REGULAR_WEEK + 1: {"a": 90.0}}
-    assert projected_values(ahead) == {"a": 15.0}
+    last = CONFIG.last_regular_week
+    ahead = {last - 1: {"a": 10.0}, last: {"a": 20.0}, last + 1: {"a": 90.0}}
+    assert projected_values(ahead, CONFIG) == {"a": 15.0}
 
 
 def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixture_raw_dir, fixture_history_root):
@@ -190,11 +191,11 @@ def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixtu
     ahead = _ahead(load_raw(fixture_raw_dir))
     ahead = {week: {**projections, cold: 99.0} for week, projections in ahead.items()}
     positions = {pid: player.position for pid, player in snapshot.players.items()}
-    assert position_ranks(projected_values(ahead), positions)[cold] == 1
+    assert position_ranks(projected_values(ahead, CONFIG), positions)[cold] == 1
 
 
 def test_a_player_with_no_projection_ahead_has_no_rank():
-    ranks = position_ranks(projected_values({7: {"a": 10.0}}), {"a": "QB", "b": "QB"})
+    ranks = position_ranks(projected_values({7: {"a": 10.0}}, CONFIG), {"a": "QB", "b": "QB"})
     assert ranks == {"a": 1}
 
 

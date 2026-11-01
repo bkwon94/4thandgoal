@@ -403,14 +403,14 @@ FIT_BANNED = re.compile(r"\b(replacements?|tiers?|floors?|gaps?)\b", re.IGNORECA
 
 def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block():
     fit, handcuff = _prompt_section("Roster fit"), _prompt_section("Handcuff")
-    assert "`LINE_RB_WR` at RB and WR, and `LINE_QB_TE` at QB and TE" in fit
+    assert "`line_rb_wr` at RB and WR, and `line_qb_te` at QB and TE" in fit
     assert "A hole is a starting slot that holds a player below the line, or holds no player." in fit
     assert "A new hole with no lineup gain is one step down." in fit
     assert "A gain that opens a new hole is no step, because the two cancel." in fit
     assert "A new hole blocks this step too, and the step is none." in fit
     assert "The block covers a lineup loss only. A new hole still steps down." in handcuff
     assert "broad" not in handcuff
-    assert tunables.LINE_RB_WR == 36 and tunables.LINE_QB_TE == 24
+    assert CONFIG.line_rb_wr == 36 and CONFIG.line_qb_te == 24
 
 
 def test_the_rubric_prompt_states_the_no_cover_hole():
@@ -430,7 +430,7 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
 def test_the_rubric_prompt_states_that_depth_and_strength_are_facts_and_never_move_the_step():
     fit = _prompt_section("Roster fit")
     assert "Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of " \
-           "`STRENGTH_RANK` or better." in fit
+           "`strength_rank` or better." in fit
     assert "Depth and strength are facts for the analysis. They never move the step." in fit
 
 
@@ -786,7 +786,7 @@ def test_a_trade_that_drops_the_top_24_starter_count_from_four_to_three_gives_a_
                                         "position rank of 24 or better go from 4 to 3.")
     assert {"24", "4", "3"} <= set(sheet["2.strength"].numbers)
     assert "12.strength" not in sheet
-    assert tunables.STRENGTH_RANK == 24
+    assert CONFIG.strength_rank == 24
 
 
 @pytest.fixture
@@ -1558,7 +1558,7 @@ def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
     # Sleeper's IR status alone is not the mark, so the player is due back and reads as out with no near return.
     snap = _with_status(snap, SAQUON, "IR")
     assert SAQUON not in snap.out_for_season
-    assert due_back_week(snap, SAQUON) == tunables.RETURN_BY_WEEK
+    assert due_back_week(snap, SAQUON) == CONFIG.return_by_week
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
 
@@ -1624,7 +1624,7 @@ def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
     # top 12. He is still 24th of the 25 players on the chart.
     snap = _with_values(_with_status(snap, STAR, "Out"), {STAR: 2.0})
     fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
-    assert tunables.STAR_RANK_BY_POSITION["RB"] == 12
+    assert CONFIG.star_rank_by_position["RB"] == 12
     assert _adjuster(fourth, "upside").step == 0
     assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out with no near return."
 
@@ -1966,13 +1966,13 @@ def test_the_clamp_holds_three_steps_up_to_one(snap):
     assert first.final_letter == "D"
 
 
-def test_the_clamp_holds_three_steps_down_to_one(snap, monkeypatch):
+def test_the_clamp_holds_three_steps_down_to_one(snap):
     # Roster 5, a contender, gets Rice for Cook. Its best lineup loses now for a player with no return week,
     # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
     # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
     # Rice at 40 would be a star return bet, which the injury exempts, so no player is a star here.
-    monkeypatch.setattr("cornerstone.adjusters.STAR_RANK_BY_POSITION", {})
-    fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(snap, {RICE: 40.0, COOK: 20.0}))
+    no_stars = snap.model_copy(update={"config": CONFIG.model_copy(update={"star_rank_by_position": {}})})
+    fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(no_stars, {RICE: 40.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
     assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0]
     assert fifth.final_letter == "B"
@@ -2193,7 +2193,7 @@ def _before_real_trade(snap, index: int):
 # fixture and the returns file: trade values from the week 6 chart, points per game over weeks 2 to 5,
 # standings through week 5, and shares of weeks 4 and 5 against weeks 2 and 3. Trade week N is 6, so a bye in
 # week 6 or later is left. Roster 4 is a seller at 1-9. Roster 6 is a contender. Rosters 7, 8, 11, and 12 are
-# in the middle at 4-6. A star is in the top of his position on the chart, by STAR_RANK_BY_POSITION. The chart holds
+# in the middle at 4-6. A star is in the top of his position on the chart, by star_rank_by_position. The chart holds
 # 16 RBs, so every player on it but Rhamondre Stevenson and Braelon Allen, the 13th and 14th RB, is a star. A star
 # out now and not out for the season is a star return bet: the upside steps up for him, and the injury leaves him
 # alone.

@@ -22,8 +22,8 @@ from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
 from cornerstone.models import ByePlayer
 from cornerstone.ranks import (
-    LINES, OUT_STATUSES, POSITION_ORDER, _back_in_a_known_game, _played_weeks, due_back_week, lineup_value,
-    projection_ahead,
+    OUT_STATUSES, POSITION_ORDER, RANKED_POSITIONS, _back_in_a_known_game, _played_weeks, due_back_week,
+    lineup_value, projection_ahead,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
@@ -32,13 +32,9 @@ from cornerstone.tunables import (
     FIT_THRESHOLD,
     HANDCUFF_CARRY_SHARE,
     INJURY_WEEKS,
-    RETURN_BY_WEEK,
     RETURN_WINDOW_WEEKS,
-    STRENGTH_RANK,
     SCHEDULE_RANK_GAP,
-    SELLER_GAP,
     SHARE_WEEKS,
-    STAR_RANK_BY_POSITION,
     WOPR_SWING,
 )
 
@@ -211,13 +207,13 @@ class StartingSlot(NamedTuple):
         no rank is below the line, because he has no stat line to start on. A starter a middle team gets, who has his
         bye in the trade week, is a hole too.
         """
-        if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in LINES:
+        if self.roster_slot not in FLEX_SLOTS and self.roster_slot not in RANKED_POSITIONS:
             return False
         if self.player is None:
             return True
         if self.bye_now or (self.absence is not None and not self.absence.covered):
             return True
-        line = LINES.get(snapshot.players[self.player].position)
+        line = snapshot.config.lines.get(snapshot.players[self.player].position)
         return line is not None and (self.rank is None or self.rank > line)
 
 
@@ -249,7 +245,7 @@ def _last_window_week(snapshot: Snapshot) -> int:
 
 def _above_the_line(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player holds a position rank at or above the line of his position. K and DEF have no line."""
-    line = LINES.get(snapshot.players[player_id].position)
+    line = snapshot.config.lines.get(snapshot.players[player_id].position)
     rank = snapshot.position_rank(player_id)
     return line is not None and rank is not None and rank <= line
 
@@ -281,7 +277,7 @@ def _with_absences(starting: list[StartingSlot], bench: list[str], snapshot: Sna
             marked.append(slot)
             continue
         # The hole read and the lineup value read the same return week, so a player out with no return week counts
-        # as back at RETURN_BY_WEEK, past the window, and his slot is a hole.
+        # as back at the return-by week, past the window, and his slot is a hole.
         if not _out_now(snapshot, slot.player):
             marked.append(slot)
             continue
@@ -365,15 +361,16 @@ class Side(BaseModel):
         return (count(snapshot.rosters[self.roster_id]),
                 count(_roster_after(snapshot, self.roster_id, self.gives, self.gets)))
 
-    def strength(self) -> tuple[int, int]:
-        """The count of RB1, RB2, WR1, and WR2 starters at or better than STRENGTH_RANK, before and after the trade.
+    def strength(self, snapshot: Snapshot) -> tuple[int, int]:
+        """The count of RB1, RB2, WR1, and WR2 starters at or better than the strength rank, before and after the trade.
 
         GLOSSARY.md, "Strength". It is a fact for the analysis, never a step. A starter outside the top 24 but above
         the line is weak, not a hole.
         """
         def count(slots: list[StartingSlot]) -> int:
             return sum(1 for slot in slots
-                       if slot.name in STRENGTH_SLOTS and slot.rank is not None and slot.rank <= STRENGTH_RANK)
+                       if slot.name in STRENGTH_SLOTS and slot.rank is not None
+                       and slot.rank <= snapshot.config.strength_rank)
         return count(self.slots_before), count(self.slots_after)
 
 
@@ -624,7 +621,7 @@ def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "selle
     if standing.in_playoffs:
         return "contender"
     # games_from_cut is the team's wins minus the wins of the team in the last playoff spot.
-    if -standing.games_from_cut > SELLER_GAP:
+    if -standing.games_from_cut > snapshot.config.seller_gap:
         return "seller"
     return "middle"
 
@@ -635,23 +632,24 @@ def back_inside(week: int | None, after: int, by: int) -> bool:
 
 
 def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
-    """True when the returns file has the player due back after the last completed week and by RETURN_BY_WEEK.
+    """True when the returns file has the player due back after the last completed week and by the return-by week.
 
     A player who played in the known games of his return week is back, so he is no return bet.
     """
     # A player out for the season is never a return bet, even with a stale returns row. ADR 0005.
     return (player_id not in snapshot.out_for_season
-            and back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through, RETURN_BY_WEEK)
+            and back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through,
+                            snapshot.config.return_by_week)
             and not _back_in_a_known_game(snapshot, player_id))
 
 
 def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
-    """Why the player is not back by RETURN_BY_WEEK, or None when he is back by then or is not out."""
+    """Why the player is not back by the return-by week, or None when he is back by then or is not out."""
     if player_id in snapshot.out_for_season:
         return "is out for the season"
     week = snapshot.returns.get(player_id)
     if week is not None:
-        return "is not due back before the playoffs" if week > RETURN_BY_WEEK else None
+        return "is not due back before the playoffs" if week > snapshot.config.return_by_week else None
     if snapshot.players[player_id].injury_status in OUT_STATUSES:
         return "has no return week on file"
     return None
@@ -959,19 +957,20 @@ def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
 def _star(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player's chart value is in the top of his position on the league's chart. GLOSSARY.md, "Star".
 
-    The rank is over every player at his position on the chart, not the roster. STAR_RANK_BY_POSITION sets the count
-    per position, and a position not in it has no stars. A tie shares the better rank, so a tie at the edge makes
+    The rank is over every player at his position on the chart, not the roster. The star ranks of the config set the
+    count per position, and a position not in it has no stars. A tie shares the better rank, so a tie at the edge makes
     every tied player a star. With no chart, or with the player not on it, he is no star.
     """
     if snapshot.chart is None or player_id not in snapshot.chart.values:
         return False
     position = snapshot.players[player_id].position
-    if position not in STAR_RANK_BY_POSITION:
+    star_ranks = snapshot.config.star_rank_by_position
+    if position not in star_ranks:
         return False
     value = snapshot.chart.values[player_id]
     above = sum(1 for pid, other in snapshot.chart.values.items()
                 if other > value and pid in snapshot.players and snapshot.players[pid].position == position)
-    return 1 + above <= STAR_RANK_BY_POSITION[position]
+    return 1 + above <= star_ranks[position]
 
 
 def _star_return_bet(snapshot: Snapshot, player_id: str) -> bool:
