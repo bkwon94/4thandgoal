@@ -14,7 +14,7 @@ import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, t
 import type { AvatarMap, Team } from "@/lib/week-types";
 import { DriftField } from "./drift-field";
 import { SLOTS } from "./field-layout";
-import { holderLine, waiverMetaLine, priceText, teamName } from "./format";
+import { holderLine, priceText, teamName, waiverMetaLine } from "./format";
 import { PlayerSheet } from "./player-sheet";
 import { TeamPick } from "./team-pick";
 

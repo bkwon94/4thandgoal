@@ -12,7 +12,7 @@ import { DURATION, rise, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { WaiverPlayer } from "@/lib/waiver-types";
 import type { Team } from "@/lib/week-types";
-import { beatenLine, holderLine, waiverMetaLine, STANCE, teamName, trendingLine } from "./format";
+import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine } from "./format";
 
 /* One box of the bid row: a small caps name, a big number, and the line that explains it. The hot box is the bid to win. */
 function BidBox({ name, value, hot, children }: { name: string; value: string; hot?: boolean; children: ReactNode }) {
