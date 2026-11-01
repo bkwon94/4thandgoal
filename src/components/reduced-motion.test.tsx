@@ -91,14 +91,14 @@ describe("Reduced motion", () => {
   });
 
   it("shows the picked team in the trigger at once", async () => {
-    render(<TradeForm teams={TEAMS} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     expect(screen.getByRole("combobox", { name: "Your Team" }).textContent).toContain("Pukancun on 3");
   });
 
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
-    render(<TradeForm teams={TEAMS} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
     await choose(screen.getByRole("combobox", { name: "Pukancun on 3 Gives" }), "Ana One");
@@ -113,7 +113,7 @@ describe("Reduced motion", () => {
 
 describe("Reduced motion on the trade form", () => {
   it("adds a side and a picked row at rest, and removes a side at once", async () => {
-    render(<TradeForm teams={TEAMS} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
     fireEvent.click(screen.getByRole("button", { name: "Add a Team" }));

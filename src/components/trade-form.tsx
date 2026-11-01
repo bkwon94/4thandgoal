@@ -14,7 +14,6 @@ import { TradeSide } from "@/components/trade-side";
 import { Button } from "@/components/ui/button";
 import type { AnalyzeResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postAnalyze, toErrorLine, type Team } from "@/lib/api";
-import { finderOn, season } from "@/lib/config";
 import { DURATION, enterExit, SWEEP_EASE, useMotionOff } from "@/lib/motion";
 import { countEvent } from "@/lib/usage";
 
@@ -29,6 +28,10 @@ type GradeState =
 
 type TradeFormProps = {
   teams: Team[];
+  // The league season the analyze body sends, and the build flag that shows the finder.
+  // The page reads both from the config, so the form imports no config.
+  season: number;
+  finderOn: boolean;
   passphrase: string;
   // The passphrase is wrong, so the page clears it and asks again.
   onUnauthorized: () => void;
@@ -153,7 +156,7 @@ function GradingStatus() {
   );
 }
 
-export function TradeForm({ teams, passphrase, onUnauthorized, onRostersStale, children = stackParts }: TradeFormProps) {
+export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized, onRostersStale, children = stackParts }: TradeFormProps) {
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
@@ -403,6 +406,7 @@ export function TradeForm({ teams, passphrase, onUnauthorized, onRostersStale, c
           <TradeFinder
             key={myTeam.roster_id}
             teams={teams}
+            season={season}
             asker={myTeam.roster_id}
             passphrase={passphrase}
             onUnauthorized={onUnauthorized}

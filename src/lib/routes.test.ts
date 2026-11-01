@@ -19,6 +19,7 @@ const builders: [string, (routes: Routes) => string, string][] = [
   ["waiverHref", (r) => r.waiverHref("2026", "week-06"), "/2026/week-06/waiver/"],
   ["managersHref", (r) => r.managersHref("2026"), "/2026/managers/"],
   ["managerHref", (r) => r.managerHref("2026", 7), "/2026/managers/7/"],
+  ["managerHrefFrom", (r) => r.managerHrefFrom(r.managersHref("2026"), 7), "/2026/managers/7/"],
 ];
 
 describe("routes", () => {

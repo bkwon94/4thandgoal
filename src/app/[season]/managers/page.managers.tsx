@@ -33,7 +33,7 @@ export default async function ManagersPage({ params }: Props) {
     <>
       <Masthead {...mastheadProps()} subtitle="Managers" pageHref={managersHref(season)} />
       <PageColumn>
-        <ManagersIndex managers={managers} avatars={latestAvatars(managers.season)} />
+        <ManagersIndex managers={managers} avatars={latestAvatars(managers.season)} managersHref={managersHref(season)} />
       </PageColumn>
     </>
   );

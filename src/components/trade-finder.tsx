@@ -11,7 +11,6 @@ import { TeamPicker } from "@/components/team-picker";
 import { Button } from "@/components/ui/button";
 import type { FindResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postFind, toErrorLine, type Team } from "@/lib/api";
-import { season } from "@/lib/config";
 
 // The finder grades every small swap of the pair and makes one Claude call, so it waits as long as a cold grade.
 const TIMEOUT_MS = 60_000;
@@ -24,6 +23,8 @@ type FindState =
 
 type TradeFinderProps = {
   teams: Team[];
+  // The league season the find body sends. The page reads it from the config, so the finder imports no config.
+  season: number;
   // The roster id of the team that asks. The first side of the trade form, "Your Team", sets it.
   asker: number;
   passphrase: string;
@@ -83,7 +84,7 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
   );
 }
 
-export function TradeFinder({ teams, asker, passphrase, onUnauthorized, onRostersStale, onOpen, locked = false }: TradeFinderProps) {
+export function TradeFinder({ teams, season, asker, passphrase, onUnauthorized, onRostersStale, onOpen, locked = false }: TradeFinderProps) {
   const [partner, setPartner] = useState<number | null>(null);
   const [find, setFind] = useState<FindState>({ status: "idle" });
   // A late answer for an old partner must not overwrite the state of a new one.

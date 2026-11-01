@@ -46,7 +46,7 @@ beforeEach(() => {
   onOpen.mockReset();
   onRostersStale.mockReset();
   vi.stubGlobal("fetch", fetchStub);
-  render(<TradeFinder teams={TEAMS} asker={2} passphrase="localtest" onUnauthorized={onUnauthorized} onRostersStale={onRostersStale} onOpen={onOpen} />);
+  render(<TradeFinder teams={TEAMS} season={2026} asker={2} passphrase="localtest" onUnauthorized={onUnauthorized} onRostersStale={onRostersStale} onOpen={onOpen} />);
 });
 
 afterEach(() => {
