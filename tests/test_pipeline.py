@@ -34,6 +34,7 @@ from cornerstone.pipeline import (
 )
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
+from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sleeper import load_raw
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
@@ -189,13 +190,44 @@ def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixtur
     assert _managers(repo).read_text(encoding="utf-8") == built
 
 
+def test_a_build_loads_the_raw_week_once(tmp_path, fixture_raw_dir, fixture_history_root, offline):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    loads = []
+
+    def counted(path):
+        loads.append(path)
+        return load_raw(path)
+
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, raw_loader=counted, config=CONFIG)
+    # The page, the rankings file, and the managers file all read the one load.
+    assert _managers(repo).exists()
+    assert loads == [week_dir(repo, 2026, 6) / "raw"]
+
+
+def test_a_failed_grade_input_still_writes_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, offline,
+                                                            caplog):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+
+    def corrupt_after_load(path):
+        raw = load_raw(path)
+        # The page reads the loaded week. The grade inputs of the managers file then read a broken projections file.
+        (path / "projections_ahead.json").write_text("not json", encoding="utf-8")
+        return raw
+
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, raw_loader=corrupt_after_load, config=CONFIG)
+    assert _rankings(repo).exists()
+    assert not _managers(repo).exists()
+    assert "managers.json not written for week 6" in caplog.text
+
+
 def test_a_thin_history_writes_no_managers_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
     repo = _repo(tmp_path, fixture_raw_dir)
     # One saved week is under the two the file needs.
     shutil.copytree(fixture_history_root / "week-01", history_root(repo, 2026) / "week-01")
     teams = parse_week(load_raw(fixture_raw_dir)).teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
-    assert _write_managers(repo, 2026, 1, teams) is None
+    history = History(week=1, weeks=load_saved_weeks(history_root(repo, 2026), 1))
+    assert _write_managers(repo, 2026, 1, teams, SeasonInputs(history=history)) is None
     assert not _managers(repo).exists()
     lines = [r for r in caplog.records if r.name == "cornerstone.pipeline" and "managers.json" in r.getMessage()]
     assert len(lines) == 1
@@ -233,7 +265,8 @@ def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     teams = read_bundle(week_dir(repo, 2026, 6) / "facts.json").data.teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
-    out = _write_rankings(repo, 2026, 5, teams)
+    history = History(week=6, weeks=load_saved_weeks(history_root(repo, 2026), 6))
+    out = _write_rankings(repo, 2026, 5, teams, SeasonInputs(history=history))
     data = json.loads(out.read_text(encoding="utf-8"))
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
     assert "covers weeks 1 to 6, past the built week 5" in caplog.text
