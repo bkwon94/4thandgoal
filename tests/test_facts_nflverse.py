@@ -14,7 +14,7 @@ from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamW
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_week
 from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 CONFIG = cornerstone_config()
 

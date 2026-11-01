@@ -7,7 +7,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from cornerstone.config import cornerstone_config
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.waiver import waiver_board
 
 CONFIG = cornerstone_config()

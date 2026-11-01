@@ -17,7 +17,8 @@ from cornerstone.models import ChartValues, NflverseWeek, Trade
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_facts
-from cornerstone.sleeper import RawWeek, load_raw
+from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 

@@ -18,7 +18,8 @@ from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_
 from cornerstone.nflverse import (
     DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
 )
-from cornerstone.sleeper import RawAheadWeek, load_raw
+from cornerstone.provider.raw import RawAheadWeek
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import load_snapshot
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from fakes import FixtureProvider

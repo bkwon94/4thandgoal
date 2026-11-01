@@ -36,9 +36,9 @@ from cornerstone.sheet import (
     RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
     write_bundle,
 )
-from cornerstone.sleeper import (
-    PROJECTIONS_AHEAD_FILE, SLEEPER, RawWeek, fetch_news, fetch_state, load_raw, read_fetch_time,
-    read_prev_transactions,
+from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.sleeper import (
+    PROJECTIONS_AHEAD_FILE, SLEEPER, fetch_news, fetch_state, load_raw, read_fetch_time, read_prev_transactions,
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_returns, week_snapshot

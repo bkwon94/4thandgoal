@@ -14,7 +14,7 @@ from cornerstone.history import load_history
 from cornerstone.models import DraftPick, NflverseWeek, Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
 
 CONFIG = cornerstone_config()

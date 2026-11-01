@@ -7,7 +7,7 @@ from cornerstone.numbers import round_half_up
 from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
 from cornerstone.parse import player_name, team_name
 from cornerstone.sheet.base import Nums, fact
-from cornerstone.sleeper import RawWeek
+from cornerstone.provider.raw import RawWeek
 from cornerstone.tunables import BUCKET_POSITIONS, DROP_WEEKS
 from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
 

@@ -15,7 +15,7 @@ from cornerstone.analysis import AnalysisOut, analyze
 from cornerstone.config import cornerstone_config
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 CONFIG = cornerstone_config()

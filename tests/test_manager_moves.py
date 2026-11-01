@@ -9,7 +9,7 @@ from cornerstone.managers import managers
 from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
 from cornerstone.parse import parse_drops
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sleeper import RawTransaction
+from cornerstone.provider.raw import RawTransaction
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},

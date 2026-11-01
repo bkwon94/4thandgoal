@@ -23,7 +23,7 @@ from cornerstone.history import load_history
 from cornerstone.models import History, PastWeek, Standing
 from cornerstone.parse import parse_week
 from cornerstone.sheet import projected_totals
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 CONFIG = cornerstone_config()
 
