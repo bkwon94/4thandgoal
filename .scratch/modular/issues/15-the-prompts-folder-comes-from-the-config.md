@@ -4,9 +4,13 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `grep -rn "resources.files" src/` finds nothing. Every prompt read takes its folder from the config.
 - [ ] A test builds a config with a different prompts folder and sees the writer read a prompt from it.
 - [ ] The four golden tests pass with no golden change.
 - [ ] `make typecheck` passes.
+
+## Comments
+
+- 2026-11-01: merged into `modular` from branch `modular-15-prompts`, commits 24b1b10, ca79dc0, and 24e4c84. 1,510 tests collected. `load_prompt` takes the folder; the writer and the verifier take `prompts_dir` keyword-only; the analysis and the finder read it through the snapshot's config. Fourteen files, not eighteen. Two reviewers passed it after one fix pass.
