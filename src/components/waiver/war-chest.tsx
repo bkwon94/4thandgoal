@@ -5,7 +5,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMarkHydrated } from "@/components/parts/reveal";
+import { useMarkHydrated } from "@/hooks/use-mark-hydrated";
 import { avatarSrc } from "@/lib/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";

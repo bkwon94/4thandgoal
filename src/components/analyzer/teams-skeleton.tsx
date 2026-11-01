@@ -5,7 +5,7 @@
 "use client";
 
 import { SIDE_TITLES } from "@/components/analyzer/trade-form";
-import { useMotionOff } from "@/lib/motion";
+import { useMotionOff } from "@/hooks/use-motion-off";
 import { cn } from "@/lib/utils";
 
 /* The form starts with two sides, so the placeholder shows their titles. */

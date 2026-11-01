@@ -12,9 +12,11 @@ import { ErrorLine } from "@/components/parts/error-line";
 import { TradeFinder } from "@/components/analyzer/trade-finder";
 import { TradeSide } from "@/components/analyzer/trade-side";
 import { Button } from "@/components/ui/button";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { useRequest } from "@/hooks/use-request";
 import type { AnalyzeResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postAnalyze, toErrorLine, type Team } from "@/lib/api";
-import { DURATION, enterExit, SWEEP_EASE, useMotionOff } from "@/lib/motion";
+import { DURATION, enterExit, SWEEP_EASE } from "@/lib/motion";
 import { countEvent } from "@/lib/usage";
 
 // A cold grade takes about 30 seconds and the server caches the result, so a long wait beats a retry.
@@ -162,23 +164,11 @@ export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized,
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
   // A late answer from an old trade must not overwrite the state of a new one.
-  const runId = useRef(0);
-  // The unmount effect aborts the call in flight, so a closed page does not wait on the API.
-  const controllerRef = useRef<AbortController | null>(null);
-  const unmounted = useRef(false);
+  const request = useRequest();
   // A finder card asks for the full result, so the page scrolls the result into view when the grade ends.
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollToResult = useRef(false);
   const off = useMotionOff();
-
-  useEffect(() => {
-    // React strict mode runs the cleanup and the effect again on mount, so the effect resets the flag.
-    unmounted.current = false;
-    return () => {
-      unmounted.current = true;
-      controllerRef.current?.abort();
-    };
-  }, []);
 
   // The scroll waits for the result, because the result is not in the page until the grade ends.
   useEffect(() => {
@@ -208,7 +198,7 @@ export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized,
 
   /* A change to the trade makes the old result stale, so it clears the result and drops a late answer to the old trade. */
   function changeTrade(update: (current: Sides) => Sides) {
-    runId.current += 1;
+    request.drop();
     setSides(update);
     setGrade({ status: "idle" });
   }
@@ -279,11 +269,10 @@ export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized,
     const toGrade = trade ?? { sides, season };
     const askerId = toGrade.sides[0].rosterId;
     if (askerId === null || !everySideTrades(toGrade.sides)) return;
-    const id = ++runId.current;
+    const run = request.start();
+    const { controller } = run;
     // Only a finder card passes a trade, and only that path scrolls to the result.
     scrollToResult.current = trade !== undefined;
-    const controller = new AbortController();
-    controllerRef.current = controller;
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
@@ -308,10 +297,10 @@ export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized,
         },
         controller.signal,
       );
-      if (id === runId.current && !unmounted.current) setGrade({ status: "done", doc });
+      if (run.isCurrent()) setGrade({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
-      if (id !== runId.current || unmounted.current) return;
+      if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
       else setGrade({ status: "error", ...toErrorLine(error, timedOut, "The grade took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();

@@ -5,8 +5,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, type ReactNode } from "react";
-import { DURATION, EASE_OUT, INSTANT, RISE, useMotionOff } from "@/lib/motion";
+import { type ReactNode } from "react";
+import { useMarkHydrated } from "@/hooks/use-mark-hydrated";
+import { useMotionOff } from "@/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT, RISE } from "@/lib/motion";
 
 /* The content reveals a little after its top edge enters the screen, so the reader sees the motion and not only its end. */
 export const VIEW_MARGIN = "0% 0% -8% 0%";
@@ -16,14 +18,6 @@ const SHOWN = { opacity: 1, y: 0 };
 // A box with no rise only fades in, for a backdrop such as the hero glow.
 const FADE_HIDDEN = { opacity: 0 };
 const FADE_SHOWN = { opacity: 1 };
-
-/* Sets data-hydrated on the root once the script runs. The attribute turns off the CSS safety rule in globals.css,
-   so Framer Motion owns every reveal after hydration. The set is the same each time, so the first caller is enough. */
-export function useMarkHydrated() {
-  useEffect(() => {
-    document.documentElement.setAttribute("data-hydrated", "");
-  }, []);
-}
 
 type RevealProps = {
   children?: ReactNode;
