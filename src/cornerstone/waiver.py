@@ -8,7 +8,7 @@ from typing import NamedTuple
 
 from cornerstone import waiver_buckets
 from cornerstone.adjusters import OUT_STATUSES
-from cornerstone.history import _round_half_up
+from cornerstone.numbers import round_half_up
 from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
 )
@@ -315,7 +315,7 @@ def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
 
 def _percent(fraction: float) -> int:
     """The fraction as a whole percent, rounded half up as every number on the page."""
-    return int(_round_half_up(100 * fraction))
+    return int(round_half_up(100 * fraction))
 
 
 def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamRanks], week: int) -> list[Fact]:

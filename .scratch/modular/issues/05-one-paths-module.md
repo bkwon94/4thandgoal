@@ -9,3 +9,4 @@
 - [ ] A grep for the week label format string finds the paths module and nothing else.
 - [ ] The orchestrator and the history module share one week directory function.
 - [ ] The directory layout on disk is unchanged. The four golden tests pass with no golden change.
+- [ ] The module this ticket makes is in the `pyright` include list, and `make typecheck` passes.

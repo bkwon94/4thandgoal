@@ -9,6 +9,7 @@ from cornerstone.adjusters import (
 )
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
+from cornerstone.numbers import plural
 from cornerstone.ranks import LINES, RANKED_POSITIONS
 from cornerstone.rubric import ProposedTrade, build_sides
 from cornerstone.sheet import Nums, fact
@@ -20,10 +21,6 @@ _RACE_TEXT = {
     "seller": "a seller out of the playoff race",
     "middle": "a middle team, neither in a playoff spot nor out of the race",
 }
-
-
-def _plural(count: int, one: str, many: str) -> str:
-    return one if count == 1 else many
 
 
 def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
@@ -40,7 +37,7 @@ def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
         text = f"{who} has no scored game before the trade."
     else:
         text = (f"{who} scored {n(profile[0])} points per game over {n(profile[1])} "
-                f"{_plural(profile[1], 'game', 'games')} before the trade")
+                f"{plural(profile[1], 'game', 'games')} before the trade")
         rank = season_rank(snapshot.stats, pid, through)
         if rank is not None:
             # "Position rank" is the league rank by lineup value, so this rank by season points has its own words.
@@ -65,7 +62,7 @@ def _share_fact(snapshot: Snapshot, pid: str, kind: str, share: UsageShare | Non
     label = "snap share" if kind == "usage" else "target share"
     if share.direction is None:
         text = (f"{name}'s {label} was {n(share.percent)} percent over {n(share.weeks)} "
-                f"{_plural(share.weeks, 'game', 'games')} before the trade.")
+                f"{plural(share.weeks, 'game', 'games')} before the trade.")
     else:
         text = (f"{name}'s {label} was {n(share.percent)} percent over the last {n(share.weeks)} weeks before "
                 f"the trade, {share.direction} from the {n(share.weeks)} weeks before that.")
@@ -79,8 +76,8 @@ def _redzone_fact(snapshot: Snapshot, pid: str) -> Fact | None:
     n = Nums()
     name = snapshot.players[pid].name
     targets, carries = zone
-    text = (f"{name} had {n(targets)} red-zone {_plural(targets, 'target', 'targets')} and {n(carries)} "
-            f"red-zone {_plural(carries, 'carry', 'carries')} this season before the trade.")
+    text = (f"{name} had {n(targets)} red-zone {plural(targets, 'target', 'targets')} and {n(carries)} "
+            f"red-zone {plural(carries, 'carry', 'carries')} this season before the trade.")
     return fact(f"{pid}.redzone", text, n, [], [name])
 
 
@@ -109,7 +106,7 @@ def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
         text += "."
     weeks = _report_weeks(snapshot, pid)
     if weeks:
-        text += (f" He was on the NFL injury report in {n(weeks)} {_plural(weeks, 'week', 'weeks')} "
+        text += (f" He was on the NFL injury report in {n(weeks)} {plural(weeks, 'week', 'weeks')} "
                  "this season before the trade.")
     return fact(f"{pid}.injury", text, n, [], [player.name])
 
@@ -148,7 +145,7 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
              for pos in positions]
     spots = max(0, len(snapshot.roster_positions) - len(after))
     joined = depth[0] if len(depth) == 1 else ", ".join(depth[:-1]) + " and " + depth[-1]
-    text = f"{team} has {joined} after the trade and {n(spots)} open roster {_plural(spots, 'spot', 'spots')}."
+    text = f"{team} has {joined} after the trade and {n(spots)} open roster {plural(spots, 'spot', 'spots')}."
     return fact(f"{rid}.need", text, n, [team], [])
 
 

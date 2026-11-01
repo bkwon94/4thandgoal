@@ -5,7 +5,7 @@ Every number comes from code, and every derived number is exact to two decimals.
 import logging
 from collections import defaultdict
 from collections.abc import Callable
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
@@ -23,9 +23,9 @@ from cornerstone.models import (
     Standing,
     Storyline,
     Week,
-    r2,
     sub,
 )
+from cornerstone.numbers import one_decimal, ordinal, r2
 from cornerstone.tunables import (
     KEY_STARTER_SHORT_STARTS,
     KEY_STARTER_STARTS,
@@ -338,7 +338,7 @@ def next_week(
         a, b = by_roster[a_id], by_roster[b_id]
         stories = _storylines(week, a, b, history)
         if a_id in top and b_id in top:
-            stories.append(_story("shootout", totals=(_one_decimal(ahead[a_id]), _one_decimal(ahead[b_id]))))
+            stories.append(_story("shootout", totals=(one_decimal(ahead[a_id]), one_decimal(ahead[b_id]))))
         games.append((a, b, _sorted_storylines(stories)))
     # sorted() is stable, so a tie in score and gap keeps the order of the schedule.
     ranked = sorted(
@@ -407,11 +407,6 @@ def _sorted_storylines(stories: list[Storyline]) -> list[Storyline]:
     return sorted(stories, key=lambda s: (-s.weight, order.index(s.kind)))
 
 
-def _one_decimal(x: float) -> float:
-    """Round half up to one decimal. Python's round() gives 118.7 for 118.75."""
-    return float(Decimal(str(x)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
-
-
 def _story(kind: str, **fields) -> Storyline:
     return Storyline(kind=kind, weight=STORYLINE_WEIGHTS[kind], **fields)
 
@@ -420,7 +415,7 @@ def _reason(week: Week, a: Standing, b: Standing, stories: list[Storyline]) -> s
     """One sentence on the top two storylines, with the numbers. A game with no storyline names the two ranks."""
     if not stories:
         hi, lo = sorted((a.rank, b.rank))
-        return f"{_ordinal(hi)} vs {_ordinal(lo)}"
+        return f"{ordinal(hi)} vs {ordinal(lo)}"
     clauses = [_clause(week, a, b, s) for s in stories[:2]]
     if len(clauses) == 1:
         text = " ".join(x for x in clauses[0] if x)
@@ -459,14 +454,7 @@ def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | N
         x, y = s.totals
         return None, f"lineups project {x:.1f} and {y:.1f} in a projected shootout"
     hi, lo = sorted((a.rank, b.rank))
-    return None, f"{_ordinal(hi)} and {_ordinal(lo)} meet at the top of the table"
-
-
-def _ordinal(n: int) -> str:
-    if n % 100 in (11, 12, 13):
-        return f"{n}th"
-    suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-    return f"{n}{suffix}"
+    return None, f"{ordinal(hi)} and {ordinal(lo)} meet at the top of the table"
 
 
 def _located_lines(week: Week) -> list[tuple[PlayerLine, int, int]]:

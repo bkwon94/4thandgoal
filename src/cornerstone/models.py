@@ -3,17 +3,13 @@ Domain models for one week of the league.
 They are plain data, so the rest of the code does not read raw Sleeper JSON.
 """
 from datetime import date, datetime
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 from typing import Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
+from cornerstone.numbers import r2
 from cornerstone.odds import OddsResult
-
-
-def r2(x: float) -> float:
-    """Round half up to two decimals. Python's round() gives 2.78 for 2.785."""
-    return float(Decimal(str(x)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
 def sub(a: float, b: float) -> float:

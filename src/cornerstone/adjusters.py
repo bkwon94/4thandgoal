@@ -13,10 +13,11 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.history import (
-    SHARE_DIRECTION_WEEKS, _round_half_up, air_yards_share, carry_share, player_points, red_zone, scored_weeks,
+    SHARE_DIRECTION_WEEKS, air_yards_share, carry_share, player_points, red_zone, scored_weeks,
     stats_complete,
 )
 from cornerstone.names import last_name
+from cornerstone.numbers import round_half_up
 from cornerstone.nflverse import SKILL_POSITIONS, TeamSchedule
 from cornerstone.nflverse_expected import WINDOW_MIN_GAMES, window_gap
 from cornerstone.models import ByePlayer
@@ -542,7 +543,7 @@ def _due_back_note(snapshot: Snapshot, player_id: str) -> str:
     A player out with no returns row has no known return, so the sentence says he counts as back, not that he is due.
     """
     name, week = snapshot.players[player_id].name, due_back_week(snapshot, player_id)
-    # The quantize keeps the Decimal exact. _round_half_up goes through a float, which can print a long tail.
+    # The quantize keeps the Decimal exact. round_half_up goes through a float, which can print a long tail.
     ahead = projection_ahead(snapshot, player_id).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
     if player_id not in snapshot.returns:
         return (f"{name} has no return week on file, so he counts as back in week {week} "
@@ -742,7 +743,7 @@ def _wopr(snapshot: Snapshot, player_id: str) -> _WoprWindow | None:
     recent = sum(by_week[week] for week in weeks[-SHARE_WEEKS:]) / SHARE_WEEKS
     prior = sum(by_week[week] for week in weeks[:-SHARE_WEEKS]) / (SHARE_DIRECTION_WEEKS - SHARE_WEEKS)
     direction = "up" if recent - prior >= WOPR_SWING else "down" if prior - recent >= WOPR_SWING else "flat"
-    return _WoprWindow(value=int(_round_half_up(recent)), direction=direction, weeks_used=weeks[-SHARE_WEEKS:])
+    return _WoprWindow(value=int(round_half_up(recent)), direction=direction, weeks_used=weeks[-SHARE_WEEKS:])
 
 
 def _directions(snapshot: Snapshot, players: list[str]) -> set[str]:
@@ -1051,7 +1052,7 @@ def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
     freed = [pid for pid in side.gets if pid not in side.handcuffs and _behind_a_starter(snapshot, pid, after)]
     # The gate compares the exact share. The reason shows it rounded, as every other percent in a reason.
     parts.extend(f"{snapshot.players[pid].name} backs up the team's own starter but takes "
-                 f"{int(_round_half_up(_carry_share(snapshot, pid)))}% of the carries, so he counts as a running back."
+                 f"{int(round_half_up(_carry_share(snapshot, pid)))}% of the carries, so he counts as a running back."
                  for pid in freed)
     reason = " ".join(parts) if parts else "No player it gets is a handcuff."
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.

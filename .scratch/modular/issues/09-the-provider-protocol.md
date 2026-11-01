@@ -10,3 +10,4 @@
 - [ ] The orchestrator, the live module, and the history module call the provider through the protocol type, with the config for the league id.
 - [ ] The fake fetcher in the conftest is annotated as the protocol, and `pyright` accepts it.
 - [ ] The four golden tests pass with no golden change.
+- [ ] The module this ticket makes is in the `pyright` include list, and `make typecheck` passes.

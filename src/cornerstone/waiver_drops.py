@@ -2,7 +2,7 @@
 The drops bucket of the waiver board: rostered players whose snap share fell three weeks in a row.
 Pure code over the raw files and the usage, so the same inputs give the same bucket.
 """
-from cornerstone.history import _round_half_up
+from cornerstone.numbers import round_half_up
 from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
 from cornerstone.parse import player_name, team_name
 from cornerstone.sheet import Nums, fact
@@ -35,7 +35,7 @@ def drop_candidates(
                 continue
             info = DropInfo(roster_id=roster["roster_id"], holder=team_name(users[roster["owner_id"]]),
                             beaten_by=top.player_id, beaten_by_name=top.name,
-                            margin=_round_half_up((top.ros_projection - ros) / remaining, 1))
+                            margin=round_half_up((top.ros_projection - ros) / remaining, 1))
             candidates.append(_candidate(pid, entry, info, next_week(ahead, pid, week), ros))
     return sorted(candidates, key=lambda c: (-c.drop.margin, c.player_id))
 

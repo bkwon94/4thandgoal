@@ -2,7 +2,7 @@
 The projections of the waiver board: the week N+1 projection and the rest of season projection of one player.
 One place for the sum, so the pool and the drops bucket read a player the same way.
 """
-from cornerstone.models import r2
+from cornerstone.numbers import r2
 from cornerstone.tunables import LAST_SEASON_WEEK
 
 # The projections of each week ahead by player ID, keyed by week.

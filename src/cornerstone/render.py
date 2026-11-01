@@ -12,6 +12,7 @@ import httpx
 from pydantic import TypeAdapter
 
 from cornerstone.facts_league import LEADER_POSITIONS, season_records
+from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
 from cornerstone.models import Blurb, Bundle, ChartValues, History, MatchupFacts, Team
 from cornerstone.odds import OddsResult
@@ -206,7 +207,7 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
             continue
         ext = Path(urlparse(team.avatar_url).path).suffix.lstrip(".") or "jpg"
         avatar_dir.mkdir(parents=True, exist_ok=True)
-        (avatar_dir / f"{rid}.{ext}").write_bytes(content)
+        write_bytes_atomic(avatar_dir / f"{rid}.{ext}", content)
         paths[rid] = f"avatars/{rid}.{ext}"
     return paths
 
@@ -252,7 +253,7 @@ def _download_headshots(
             continue
         # The CDN serves PNG bytes, even under the .jpg name of a player URL.
         headshot_dir.mkdir(parents=True, exist_ok=True)
-        (headshot_dir / f"{player_id}.png").write_bytes(content)
+        write_bytes_atomic(headshot_dir / f"{player_id}.png", content)
         paths[player_id] = f"headshots/{player_id}.png"
     return paths
 
@@ -288,7 +289,7 @@ def _write_page_json(context: dict, week_dir: Path) -> Path:
     plain = TypeAdapter(dict).dump_python(context, mode="json")
     body = {"schema_version": PAGE_SCHEMA_VERSION, **plain}
     out = week_dir / "page.json"
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
@@ -305,7 +306,7 @@ def render_waiver(bundle: Bundle, site_dir: Path) -> Path | None:
         return None
     body = {"schema_version": WAIVER_SCHEMA_VERSION, **bundle.waiver.model_dump(mode="json")}
     out = _week_dir(site_dir, bundle) / "waiver.json"
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
@@ -380,7 +381,7 @@ def render_rankings(
                 row["odds"] = row_odds
     body = {"schema_version": RANKINGS_SCHEMA_VERSION, "season": season, "weeks": weeks}
     season_dir.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
@@ -405,7 +406,7 @@ def render_managers(
         ],
     }
     season_dir.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 

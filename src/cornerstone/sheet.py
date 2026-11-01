@@ -12,7 +12,6 @@ from pathlib import Path
 from cornerstone.adjusters import bye_covers_for_roster, pick_lineup
 from cornerstone.facts_league import (
     TREND_WEEKS,
-    _ordinal,
     awards,
     head_to_head,
     matchup_of_the_week,
@@ -27,7 +26,6 @@ from cornerstone.facts_league import (
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines, expected_awards, shootouts, volume_ranks
 from cornerstone.history import (
-    _round_half_up,
     player_trend,
     points_per_game,
     red_zone,
@@ -54,9 +52,9 @@ from cornerstone.models import (
     UsageShare,
     Week,
     WeekData,
-    r2,
     sub,
 )
+from cornerstone.numbers import count_noun, one_decimal_text, ordinal, r2, round_half_up
 from cornerstone.odds import OddsResult, playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sleeper import fetch_news
@@ -198,7 +196,7 @@ class Nums:
 
     def ord(self, n: int) -> str:
         self.seen.append(str(n))
-        return _ordinal(n)
+        return ordinal(n)
 
     def record(self, wins: int, losses: int) -> str:
         self.seen += [str(wins), str(losses), f"{wins}-{losses}"]
@@ -715,7 +713,7 @@ def _cover_fact(snapshot: Snapshot, roster_id: int, team: str, starter: ByePlaye
     player = snapshot.players[cover]
     text = (f"With {starter.name} on bye, his slot falls to {player.name}, "
             f"{_ranked(player.position, snapshot.position_rank(cover), n)}, "
-            f"with {_one_decimal(snapshot.lineup_value(cover), n)} a game.")
+            f"with {_note_decimal(snapshot.lineup_value(cover), n)} a game.")
     return fact(fid, text, n, [team], [starter.name, player.name])
 
 
@@ -758,7 +756,7 @@ def _storyline_text(
         return " ".join(sides) + " The game is near the cut."
     if s.kind == "shootout":
         x, y = s.totals
-        return (f"{a} projects {_one_decimal(x, n)} and {b} projects {_one_decimal(y, n)} for next week. "
+        return (f"{a} projects {_note_decimal(x, n)} and {b} projects {_note_decimal(y, n)} for next week. "
                 "Both best lineups rank in the top four of the league, so the game is a shootout.")
     if s.kind == "table":
         return (f"{a} ({n.ord(by_rank[nx.a].rank)}) and {b} ({n.ord(by_rank[nx.b].rank)}) both rank in the top "
@@ -781,15 +779,17 @@ def _last_games(count: int, n: Nums) -> str:
     return "its last game" if count == 1 else f"its last {n(count)} games"
 
 
-def _one_decimal(x: float, n: Nums) -> str:
-    # One decimal is enough for a rate in percentage points, and a fixed form keeps "4.0" from reading as a count.
-    s = f"{_round_half_up(x, 1):.1f}"
+def _note_decimal(x: float, n: Nums) -> str:
+    # The text form lives in `numbers`. This wrapper records the number, so the check of the numbers still sees it.
+    s = one_decimal_text(x)
     n.seen.append(s)
     return s
 
 
-def _plural(count: int, word: str, n: Nums) -> str:
-    return f"{n(count)} {word}" + ("" if count == 1 else "s")
+def _note_count(count: int, word: str, n: Nums) -> str:
+    # The wording lives in `numbers`. This wrapper records the count, so the check of the numbers still sees it.
+    n.seen.append(str(count))
+    return count_noun(count, word)
 
 
 def shootout_facts(c: Context) -> list[Fact]:
@@ -803,8 +803,8 @@ def shootout_facts(c: Context) -> list[Fact]:
         # Short sentences, and the unit once, so the writer cannot turn the rate into a percent.
         text = (
             f"{s.away} at {s.home} next week is a shootout. {s.away}'s pass rate over expected is "
-            f"{_one_decimal(s.away_rate, n)} percentage points over {_last_games(s.away_games, n)}. "
-            f"{s.home}'s is {_one_decimal(s.home_rate, n)} over {_last_games(s.home_games, n)}."
+            f"{_note_decimal(s.away_rate, n)} percentage points over {_last_games(s.away_games, n)}. "
+            f"{s.home}'s is {_note_decimal(s.home_rate, n)} over {_last_games(s.home_games, n)}."
         )
         starters = [
             (side.roster_id, line.name)
@@ -817,7 +817,7 @@ def shootout_facts(c: Context) -> list[Fact]:
         if starters:
             rosters = {rid for rid, _ in starters}
             text += (
-                f" {_plural(len(starters), 'league starter', n)} on {_plural(len(rosters), 'roster', n)}: "
+                f" {_note_count(len(starters), 'league starter', n)} on {_note_count(len(rosters), 'roster', n)}: "
                 + "; ".join(f"{c.team(rid)} ({', '.join(names)})" for rid, names in shown.items())
             )
             more = len(starters) - SHOOTOUT_NAMES_MAX
@@ -883,7 +883,7 @@ def odds_why_facts(
             continue
         n = Nums()
         name = team(rid)
-        season = int(_round_half_up(pace[rid]))
+        season = int(round_half_up(pace[rid]))
         # A pace read aloud as "eighty" or "eleven" takes "an", so the sentence reads right at any score.
         article = "an" if 80 <= season < 90 or season in (8, 11, 18) else "a"
         # The two ends read as words, so "1st easiest" and "12th easiest" never appear.
@@ -894,7 +894,7 @@ def odds_why_facts(
         else:
             schedule = f"the {n.ord(rank[rid])} easiest"
         text = (
-            f"{name} projects {n(int(_round_half_up(sum(ahead) / len(ahead))))} a week from here against "
+            f"{name} projects {n(int(round_half_up(sum(ahead) / len(ahead))))} a week from here against "
             f"{article} {n(season)} pace, with {schedule} remaining schedule."
         )
         out.append(fact(f"ODDS.{rid}.why", text, n, [name], []))
