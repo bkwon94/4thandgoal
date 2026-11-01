@@ -14,6 +14,7 @@ const SIZES = { avatar: "size-avatar", headshot: "size-headshot", ring: "size-ri
 export function Avatar({
   src,
   size = "avatar",
+  // The shared avatar class list is the default, so a caller with no override renders the same markup as every plain avatar.
   className = "flex-none rounded-full bg-gry object-cover",
 }: {
   src: string;
