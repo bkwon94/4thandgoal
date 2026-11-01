@@ -5,12 +5,12 @@ They run on the fixture history, and on small histories built for one rule each.
 import pytest
 
 from cornerstone.config import cornerstone_config
-from cornerstone.facts_league import standings
 from cornerstone.history import load_history
 from cornerstone.models import History, PastWeek
 from cornerstone.parse import parse_week
 from cornerstone.power_rankings import power_rankings
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.standings_table import standings
 from cornerstone.tunables import POWER_WEIGHTS
 
 CONFIG = cornerstone_config()

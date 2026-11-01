@@ -267,9 +267,9 @@ def test_no_projections_for_a_roster_or_a_week_gives_no_shift():
 
 
 def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_history_root):
-    from cornerstone.facts_league import season_records
     from cornerstone.history import load_history
     from cornerstone.provider.sleeper import load_raw
+    from cornerstone.standings_table import season_records
 
     history = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
     records = season_records(history, 6)

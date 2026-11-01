@@ -6,9 +6,6 @@ Each trade gets its own facts, so a trade chapter cites only its own trade.
 # Only the trade bundle in the tests calls it.
 from decimal import Decimal
 
-from cornerstone.facts_league import (
-    season_records,
-)
 from cornerstone.history import (
     player_trend,
     points_per_game,
@@ -24,6 +21,7 @@ from cornerstone.models import (
 )
 from cornerstone.numbers import r2
 from cornerstone.sheet.base import Context, Nums, fact, trend_text, weeks_text
+from cornerstone.standings_table import season_records
 from cornerstone.trades import is_late
 
 

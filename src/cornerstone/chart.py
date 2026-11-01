@@ -9,6 +9,7 @@ import logging
 import re
 from collections.abc import Callable, Iterable
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 from typing import NamedTuple
 
@@ -17,11 +18,11 @@ import httpx
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ValidationError
 
+from cornerstone.claude_errors import RefusalError, WriterError
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import ChartRead, ChartValues, PlayerLine
 from cornerstone.paths import chart_image, chart_read, charts_dir, week_from_label
 from cornerstone.trades import cutoff_date
-from cornerstone.writer import RefusalError, WriterError, parse_call
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,9 @@ STRIP_OVERLAP = 80
 
 # (strips, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ChartReader = Callable[[list[bytes], type[BaseModel]], BaseModel]
+# (content, output_model) -> parsed output: the writer's parse_call in a run.
+# The caller passes it, so this module imports no writer and stays in the provider layer.
+ParseCall = Callable[[list[dict], type[BaseModel]], BaseModel]
 
 
 def http_get(url: str) -> bytes:
@@ -127,13 +131,18 @@ def _fallback(repo: Path, week: int) -> Path | None:
     return None
 
 
-def claude_read(strips: list[bytes], output_model: type[BaseModel]) -> BaseModel:
-    """Send the strips in order, then one text block, through the writer's client and parse path."""
+def claude_read(strips: list[bytes], output_model: type[BaseModel], call: ParseCall) -> BaseModel:
+    """Send the strips in order, then one text block, through `call`, the writer's client and parse path."""
     content = [{"type": "image",
                 "source": {"type": "base64", "media_type": "image/png", "data": base64.b64encode(s).decode()}}
                for s in strips]
     content.append({"type": "text", "text": CHART_PROMPT})
-    return parse_call(content, output_model)
+    return call(content, output_model)
+
+
+def claude_reader(call: ParseCall) -> ChartReader:
+    """The Claude read of the chart through `call`. The CLI and the API pass the writer's parse_call."""
+    return partial(claude_read, call=call)
 
 
 def cut_strips(png: bytes) -> list[bytes]:
@@ -251,8 +260,8 @@ def _read_png(png: Path, read: ChartReader) -> ChartRead | None:
     return None
 
 
-def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get,
-                read: ChartReader = claude_read) -> ChartCheck | None:
+def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+                read: ChartReader) -> ChartCheck | None:
     """The chart week, its parsed read, and the guard results, or None when no read exists. It never raises.
 
     After an outage the chart week can be an earlier week than the one asked for.
@@ -279,13 +288,13 @@ def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str]
     return ChartCheck(chart_week, parsed, guards)
 
 
-def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get,
-               read: ChartReader = claude_read) -> tuple[int, ChartRead] | None:
+def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+               read: ChartReader) -> tuple[int, ChartRead] | None:
     """The chart week and its parsed read, or None. It never raises, so a build goes on without trade values.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
-    check = check_chart(repo, season_start, week, fetch, read)
+    check = check_chart(repo, season_start, week, fetch, read=read)
     if check is None:
         return None
     failed = [name for name, ok in check.guards.items() if not ok]
@@ -300,7 +309,7 @@ def _write_json(path: Path, parsed: ChartRead) -> None:
 
 
 def chart_values(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine],
-                 fetch: Callable[[str], bytes] = http_get, read: ChartReader = claude_read) -> ChartValues | None:
+                 fetch: Callable[[str], bytes] = http_get, *, read: ChartReader) -> ChartValues | None:
     """The trade values of the players the chart lists, or None when the week has no good chart."""
-    loaded = load_chart(repo, season_start, week, fetch, read)
+    loaded = load_chart(repo, season_start, week, fetch, read=read)
     return match_chart(loaded[1], lines) if loaded else None

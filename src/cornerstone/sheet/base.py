@@ -10,7 +10,6 @@ from datetime import date, timedelta
 from cornerstone.adjusters import pick_lineup
 from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
-    TREND_WEEKS,
     awards,
     matchup_of_the_week,
     next_week,
@@ -18,8 +17,6 @@ from cornerstone.facts_league import (
     position_ranks,
     ranks_before,
     season_history,
-    season_records,
-    standings,
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
@@ -40,6 +37,8 @@ from cornerstone.numbers import ordinal, r2
 from cornerstone.odds import playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.snapshot import Snapshot
+from cornerstone.standings_table import season_records, standings
+from cornerstone.tunables import TREND_WEEKS
 
 
 logger = logging.getLogger(__name__)

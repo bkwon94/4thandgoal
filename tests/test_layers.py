@@ -40,14 +40,19 @@ LAYER_OF: dict[str, str] = {
     "nflverse_players": "provider",
     "nflverse_usage": "provider",
     "files": "provider",
+    "chart": "provider",
+    "claude_errors": "provider",
     # load
     "parse": "load",
     "slow_sources": "load",
     "points_allowed": "load",
+    "history": "load",
+    "ranks": "load",
+    "standings_table": "load",
+    "snapshot": "load",
+    "season_inputs": "load",
+    "live": "load",
     # facts
-    "history": "facts",  # PRD: load. It imports TREND_WEEKS from facts_league.
-    "snapshot": "facts",  # PRD: load. It imports facts_league and ranks.
-    "season_inputs": "facts",  # PRD: load. It imports snapshot.
     "sheet": "facts",
     "sheet.assemble": "facts",
     "sheet.awards": "facts",
@@ -63,7 +68,6 @@ LAYER_OF: dict[str, str] = {
     "odds": "facts",
     "adjusters": "facts",
     "rubric": "facts",
-    "ranks": "facts",
     "rank_score": "facts",
     "waiver": "facts",
     "waiver_buckets": "facts",
@@ -87,8 +91,6 @@ LAYER_OF: dict[str, str] = {
     "analysis": "write",
     "finder_reasons": "write",
     "waiver_research": "write",
-    "chart": "write",  # PRD: provider. It imports parse_call and the writer errors from writer.
-    "live": "write",  # PRD: load. It imports chart.
     # output
     "render": "output",
     "publish": "output",
