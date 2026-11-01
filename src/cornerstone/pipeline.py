@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 from pydantic import TypeAdapter
 
 from cornerstone.chart import match_chart, saved_chart_read
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import season_records, standings_order
 from cornerstone.history import (
     fetch_history, history_dir, history_root, load_history, load_saved_weeks, returns_path, save_week_to_history,
@@ -47,8 +48,6 @@ from cornerstone.waiver_research import SearchCall, research_board, search_call
 from cornerstone.writer import ClaudeCall
 
 log = logging.getLogger(__name__)
-
-LEAGUE_ID = "1386167364424318976"
 
 NewsFetcher = Callable[[str], list[dict]]
 BytesFetcher = Callable[[str], bytes | None]
@@ -108,10 +107,11 @@ def _load_history_or_none(root: Path, raw: dict[str, object], week: int) -> Hist
 
 def _window_trades(
     repo: Path, season: int, week: int, raw: dict[str, object], season_start: date, history: History | None,
+    tz: ZoneInfo,
 ) -> list[Trade]:
     # The window is the calendar span between two Tuesday cutoffs, so build time plays no part.
-    after = default_cutoff(season_start, week)
-    until = default_cutoff(season_start, week + 1)
+    after = default_cutoff(season_start, week, tz)
+    until = default_cutoff(season_start, week + 1, tz)
     # The fresh copy of week N-1 holds the trades made after its build. The history copy does not.
     fresh = read_prev_transactions(week_dir(repo, season, week) / "raw")
     if fresh is not None:
@@ -220,13 +220,13 @@ def _nflverse_for_week(
         return None
 
 
-def _raw_fetch_time(repo: Path, season: int, week: int) -> datetime | None:
+def _raw_fetch_time(repo: Path, season: int, week: int, tz: ZoneInfo) -> datetime | None:
     """The write time of raw/transactions.json, the closest stand-in for a fetch time that was not saved."""
     # Version 1 saved no fetch time, so this happens for week 6 only. The write time is closer to the
     # real fetch time than the build start is.
     path = week_dir(repo, season, week) / "raw" / "transactions.json"
     try:
-        written = datetime.fromtimestamp(path.stat().st_mtime, ZoneInfo("America/New_York"))
+        written = datetime.fromtimestamp(path.stat().st_mtime, tz)
     except OSError:
         return None
     log.warning(
@@ -244,22 +244,25 @@ def make_bundle(
     started: datetime | None = None,
     fetched: datetime | None = None,
     nflverse: NflverseFetcher | None = None,
+    *,
+    config: LeagueConfig,
 ) -> tuple[Bundle, BuildRecord]:
     """Load the raw data, run the week gate, load the history, and build the bundle and the waiver board."""
     raw = load_raw(week_dir(repo, season, week) / "raw")
-    parsed = parse_week(raw, week=week)
+    parsed = parse_week(raw, config.owner_username, week=week)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
     message = check_week_is_buildable(week, parsed.last_scored_week)
     if message:
         raise BuildStopped(message)
 
     history = _load_history_or_none(history_root(repo, season), raw, week)
-    started = started or datetime.now(ZoneInfo("America/New_York"))
-    until = fetched or read_fetch_time(week_dir(repo, season, week) / "raw") or _raw_fetch_time(repo, season, week)
+    started = started or datetime.now(config.tz)
+    until = (fetched or read_fetch_time(week_dir(repo, season, week) / "raw")
+             or _raw_fetch_time(repo, season, week, config.tz))
     if until is None:
         log.warning("no fetch time for week %d: the fetch time falls back to the build start", week)
         until = started
-    trades = _window_trades(repo, season, week, raw, parsed.season_start, history)
+    trades = _window_trades(repo, season, week, raw, parsed.season_start, history, config.tz)
     nfl = _nflverse_for_week(week_dir(repo, season, week) / "raw", raw, season, week, nflverse, _played_teams(parsed))
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
     snapshot = week_snapshot(raw, history_root(repo, season), week)
@@ -308,6 +311,8 @@ def run_build(
     research: SearchCall | None = None,
     # The clock is a parameter so a build is reproducible.
     started: datetime | None = None,
+    *,
+    config: LeagueConfig,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_dir = directory / "raw"
@@ -316,14 +321,14 @@ def run_build(
     first_fetch = _first_build(saved)
     if fetch:
         players_cache = repo / "data" / "cache" / "players.json"
-        fetch_week(LEAGUE_ID, season, week, raw_dir, players_cache)
+        fetch_week(config.league_id(season), season, week, raw_dir, players_cache, config.tz)
     elif not has_raw(repo, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
 
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
         repo, season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,
-        nflverse=nflverse or fetch_nflverse(repo))
+        nflverse=nflverse or fetch_nflverse(repo), config=config)
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
     # No argument means the real search. A test passes a fake one.
     if bundle.waiver is not None:
@@ -563,8 +568,8 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall) -> Path:
     return out
 
 
-def run_history(repo: Path, season: int, through: int, force: bool = False) -> list[int]:
-    return fetch_history(LEAGUE_ID, season, through, history_root(repo, season), force=force)
+def run_history(repo: Path, season: int, through: int, force: bool = False, *, config: LeagueConfig) -> list[int]:
+    return fetch_history(config.league_id(season), season, through, history_root(repo, season), force=force)
 
 
 def preview(page: Path) -> None:

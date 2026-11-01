@@ -23,18 +23,18 @@ def _week(fixture_raw_dir, fixture_history_root, week):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
     return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
-                           default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1))
+                           default_cutoff(date(2026, 9, 9), week, ET), default_cutoff(date(2026, 9, 9), week + 1, ET))
 
 
 def _six(fixture_raw_dir, fixture_history_root, until):
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
     return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
-                           default_cutoff(date(2026, 9, 9), 6), until)
+                           default_cutoff(date(2026, 9, 9), 6, ET), until)
 
 
 def test_default_cutoff_week_6():
-    assert default_cutoff(date(2026, 9, 9), 6) == datetime(2026, 10, 13, 8, 0, tzinfo=ET)
+    assert default_cutoff(date(2026, 9, 9), 6, ET) == datetime(2026, 10, 13, 8, 0, tzinfo=ET)
 
 
 def test_week_6_window_holds_the_five_trades_before_the_cutoff(fixture_raw_dir, fixture_history_root):
@@ -54,7 +54,7 @@ def _trade_at(fixture_raw_dir, created):
 
 def _holds(trade, week):
     return trades_for_week(
-        [trade], [], default_cutoff(date(2026, 9, 9), week), default_cutoff(date(2026, 9, 9), week + 1)
+        [trade], [], default_cutoff(date(2026, 9, 9), week, ET), default_cutoff(date(2026, 9, 9), week + 1, ET)
     )
 
 

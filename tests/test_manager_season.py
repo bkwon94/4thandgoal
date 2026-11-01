@@ -21,7 +21,7 @@ def _teams() -> dict[int, Team]:
     return {
         rid: Team(
             roster_id=rid, name=f"Team {rid}", owner=f"Owner {rid}", avatar_url=None,
-            wins=0, losses=0, points_for=0.0, is_brian=False,
+            wins=0, losses=0, points_for=0.0, is_owner=False,
         )
         for rid in range(1, 13)
     }

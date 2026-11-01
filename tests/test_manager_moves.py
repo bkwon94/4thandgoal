@@ -17,7 +17,7 @@ PLAYERS = {
 }
 TEAMS = {
     rid: Team(roster_id=rid, name=f"Team {rid}", owner=f"owner{rid}", avatar_url=None, wins=0, losses=0,
-              points_for=0.0, is_brian=False)
+              points_for=0.0, is_owner=False)
     for rid in range(1, 13)
 }
 # The record of an entry needs a full week of twelve rosters in six pairs.

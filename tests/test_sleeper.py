@@ -3,7 +3,11 @@ Tests for the Sleeper client.
 Offline tests read recorded data. Live tests call the real Sleeper API.
 """
 import pytest
+from cornerstone.config import cornerstone_config
 from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, read_fetch_time
+
+# The league config the fetches of these tests read.
+CONFIG = cornerstone_config()
 
 def test_load_raw_returns_every_file(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
@@ -13,14 +17,14 @@ def test_load_raw_returns_every_file(fixture_raw_dir):
 
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
     assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {
         *RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead", "trending"}
 
 
 @pytest.mark.live
 def test_fetch_week_records_the_fetch_time(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
     assert read_fetch_time(tmp_path / "raw").tzinfo is not None
 
 
@@ -73,7 +77,7 @@ def _fetch_schedule(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
     return json.loads((tmp_path / "raw" / "schedule.json").read_text()), calls
 
 
@@ -133,7 +137,7 @@ def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, li
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
     return json.loads((tmp_path / "raw" / "projections_ahead.json").read_text()), calls
 
 

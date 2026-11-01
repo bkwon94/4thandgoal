@@ -7,10 +7,13 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from cornerstone import sleeper
+from cornerstone.config import cornerstone_config
 from cornerstone.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
+# The league config the builds and fetches of these tests read.
+CONFIG = cornerstone_config()
 
 TRENDING_URL = "https://api.sleeper.app/v1/players/nfl/trending/add"
 
@@ -28,7 +31,7 @@ def _fake_trending_get(calls: list[tuple[str, object]]):
 def test_the_week_fetch_saves_the_trending_file(tmp_path, monkeypatch):
     calls: list[tuple[str, object]] = []
     monkeypatch.setattr(sleeper, "_get", _fake_trending_get(calls))
-    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz)
     saved = json.loads((tmp_path / "raw" / "trending.json").read_text())
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
     assert [dict(params) for url, params in calls if url == TRENDING_URL] == [{"lookback_hours": 24, "limit": 50}]

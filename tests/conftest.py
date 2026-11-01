@@ -97,7 +97,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
 def _window(raw, h):
     # The window ends at noon on purpose. It keeps the Tuesday trade as T6, the only late trade in the fixture.
     return trades_for_week(parse_trades(raw["transactions"]), h.weeks[5].trades,
-                           default_cutoff(date(2026, 9, 9), 6), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+                           default_cutoff(date(2026, 9, 9), 6, ET), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
 
 
 def _trade_bundle(raw_dir, history_root, nfl=None):

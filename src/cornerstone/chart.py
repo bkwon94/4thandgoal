@@ -19,7 +19,7 @@ from pydantic import BaseModel, ValidationError
 
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import ChartRead, ChartValues, PlayerLine
-from cornerstone.trades import default_cutoff
+from cornerstone.trades import cutoff_date
 from cornerstone.writer import RefusalError, WriterError, parse_call
 
 logger = logging.getLogger(__name__)
@@ -98,8 +98,8 @@ def fetch_chart(season_start: date, week: int, charts: Path, fetch: Callable[[st
     # A PNG that is in the cache wins, so a hand-placed file stays and the build never re-fetches.
     if path.exists():
         return path
-    start = default_cutoff(season_start, week).date()
-    end = default_cutoff(season_start, week + 1).date()
+    start = cutoff_date(season_start, week)
+    end = cutoff_date(season_start, week + 1)
     try:
         url = _file_for_week(json.loads(fetch(MEDIA_URL)), start, end)
     except (httpx.HTTPError, ValueError, KeyError, TypeError) as error:
