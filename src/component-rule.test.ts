@@ -1,6 +1,7 @@
 /**
  * Holds every file under src/components/ to the rule of ADR 0004: a component takes data and returns markup.
- * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env, and names the file and the line.
+ * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env.
+ * A failure names the file and the line.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -48,7 +49,7 @@ describe("the component rule", () => {
     expect(sourceFiles().length).toBeGreaterThan(0);
   });
 
-  it("finds no component that reads a file, reads the env, or imports the config", () => {
+  it("finds no component that reads a file, reads the env, imports the config, or imports a loader", () => {
     const found = sourceFiles().flatMap(breaches);
     if (found.length > 0) throw new Error(`A component breaks ADR 0004. Pass the value as a prop from src/app/:\n${found.join("\n")}`);
   });
