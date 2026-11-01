@@ -295,8 +295,11 @@ class Context:
         nfl: NflverseWeek | None = None,
         chart: ChartValues | None = None,
         snapshot: Snapshot | None = None,
+        today: date | None = None,
     ) -> None:
         self.week = week
+        # The publish date is a parameter so a build is reproducible. None reads the clock.
+        self.today = today or date.today()
         self.history = history
         self.trades = trades if trades is not None else []
         self.news = news
@@ -362,7 +365,7 @@ def week_facts(c: Context) -> list[Fact]:
     n = Nums()
     week_text = f"This is week {n(w.week)} of the {n(w.season)} season, {n.text(week_dates(w.season_start, w.week))}."
     n2 = Nums()
-    publish = f"The report was published on {n2.text(date.today().strftime('%a %b %-d, %Y'))}."
+    publish = f"The report was published on {n2.text(c.today.strftime('%a %b %-d, %Y'))}."
     return [
         fact("W.week", week_text, n, [], []),
         fact("W.publish", publish, n2, [], []),
@@ -1743,8 +1746,9 @@ def build_bundle(
     trades: list[Trade] | None = None,
     nfl: NflverseWeek | None = None,
     snapshot: Snapshot | None = None,
+    today: date | None = None,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl, snapshot=snapshot)
+    c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),
@@ -1760,7 +1764,7 @@ def build_bundle(
         season=week.season,
         week=week.week,
         dates=week_dates(week.season_start, week.week),
-        publish_date=date.today().strftime("%a %b %-d, %Y"),
+        publish_date=c.today.strftime("%a %b %-d, %Y"),
         teams=week.teams,
         matchups=c.mfacts,
         median=c.median,

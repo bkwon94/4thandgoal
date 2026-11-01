@@ -35,6 +35,7 @@ from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.sleeper import load_raw
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
+from fakes import fixture_nflverse, no_claims, no_network, no_news
 
 ET = ZoneInfo("America/New_York")
 
@@ -46,10 +47,6 @@ def _fake(system, user, model):
     return model(sentences=[Sentence(text="Fact sentence.", fact_ids=[fid])] * 2)
 
 
-def _no_news(player_id):
-    return []
-
-
 def _no_bytes(url):
     return None
 
@@ -57,18 +54,6 @@ def _no_bytes(url):
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 NFLVERSE_KEYS = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffverse", "nflverse_snaps", "ffopportunity",
                  "nflverse_stats_player")
-
-
-def _no_network(url):
-    raise AssertionError(f"network call to {url}")
-
-
-def _fixture_nflverse(season, week, player_ids, players, teams, scoring):
-    """The recorded nflverse files, read through the real parser from a fresh cache."""
-    cache = Path(tempfile.mkdtemp())
-    for f in NFLVERSE_FIXTURES.iterdir():
-        shutil.copy(f, cache / f.name)
-    return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network, scoring=scoring)
 
 
 def _no_bytes_nflverse(url):
@@ -83,11 +68,11 @@ def _forbidden_nflverse(season, week, player_ids, players, teams, scoring):
     raise AssertionError("the saved extract must not be fetched again")
 
 
-def _no_claims(system, user):
-    return ResearchOut(claims=[])
-
-
-OFFLINE = {"news": _no_news, "fetch_bytes": _no_bytes, "nflverse": _fixture_nflverse, "research": _no_claims}
+@pytest.fixture
+def offline(tmp_path_factory):
+    """The build inputs with no network call. The nflverse cache sits outside the test repo, so no build reads it."""
+    return {"news": no_news, "fetch_bytes": _no_bytes,
+            "nflverse": fixture_nflverse(tmp_path_factory.mktemp("nflverse")), "research": no_claims}
 
 
 def _ordinal(n):
@@ -101,9 +86,9 @@ def _repo(tmp_path, fixture_raw_dir):
     return tmp_path
 
 
-def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir):
+def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert page == repo / "site" / "2026" / "week-06" / "page.json"
     for f in ("facts.json", "blurbs.json", "verify.json"):
         assert (week_dir(repo, 2026, 6) / f).exists()
@@ -128,23 +113,23 @@ def _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root):
     return repo
 
 
-def test_build_records_the_history_source(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_records_the_history_source(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     record = read_verify(week_dir(repo, 2026, 6) / "verify.json").build
     assert record.sources["history"] is True
 
 
-def test_build_without_history_degrades(tmp_path, fixture_raw_dir, caplog):
+def test_build_without_history_degrades(tmp_path, fixture_raw_dir, caplog, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources["history"] is False
     assert "history incomplete" in caplog.text
 
 
-def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir):
+def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     out = history_dir(history_root(repo, 2026), 6)
     assert {p.stem for p in out.glob("*.json")} == {*HISTORY_FILES, "injuries"}
     injuries = json.loads((out / "injuries.json").read_text())
@@ -156,9 +141,9 @@ def _rankings(repo):
     return repo / "site" / "2026" / "rankings.json"
 
 
-def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert page.exists()
     built = _rankings(repo).read_text(encoding="utf-8")
     data = json.loads(built)
@@ -173,9 +158,10 @@ def _managers(repo):
     return repo / "site" / "2026" / "managers.json"
 
 
-def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root,
+                                                               offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     built = _managers(repo).read_text(encoding="utf-8")
     data = json.loads(built)
     assert data["schema_version"] == 1
@@ -211,9 +197,9 @@ def test_a_thin_history_writes_no_managers_file(tmp_path, fixture_raw_dir, fixtu
     assert len(lines) == 1
 
 
-def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
     # The odds come from the saved facts of the build, so the file and the facts agree.
     odds = read_bundle(week_dir(repo, 2026, 6) / "facts.json").odds
@@ -223,9 +209,9 @@ def test_build_puts_the_odds_of_the_week_in_the_rankings_file(tmp_path, fixture_
     assert all("odds" not in row for w in data["weeks"][:-1] for row in w["rows"])
 
 
-def test_a_rewrite_puts_the_saved_odds_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_a_rewrite_puts_the_saved_odds_in_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     # With no rankings file, the odds can come only from the saved facts.
     _rankings(repo).unlink()
     run_rewrite(repo, 2026, 6, "rankings", _fake)
@@ -236,10 +222,11 @@ def test_a_rewrite_puts_the_saved_odds_in_the_rankings_file(tmp_path, fixture_ra
         assert row["odds"] == {k: getattr(odds.teams[row["roster_id"]], k) for k in RANKINGS_ODDS_KEYS}
 
 
-def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root, caplog,
+                                                       offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     # The build saves week 6, so the history runs through week 6.
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     teams = read_bundle(week_dir(repo, 2026, 6) / "facts.json").data.teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
     out = _write_rankings(repo, 2026, 5, teams)
@@ -248,18 +235,18 @@ def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir
     assert "covers weeks 1 to 6, past the built week 5" in caplog.text
 
 
-def test_incomplete_history_skips_the_rankings_file_and_the_page_builds(tmp_path, fixture_raw_dir, caplog):
+def test_incomplete_history_skips_the_rankings_file_and_the_page_builds(tmp_path, fixture_raw_dir, caplog, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert page.exists()
     assert not _rankings(repo).exists()
     assert not _managers(repo).exists()
     assert "history incomplete" in caplog.text
 
 
-def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     _rankings(repo).unlink()
     run_page_json(repo, 2026, 6)
     # The page-json command leaves the season file alone.
@@ -292,9 +279,9 @@ class _RankingsWriter:
         ])
 
 
-def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     # A saved week with no rankings chapter has no PR facts.
     facts = week_dir(repo, 2026, 6) / "facts.json"
     bundle = read_bundle(facts)
@@ -316,10 +303,10 @@ def test_rankings_command_writes_twelve_blurbs_with_one_call(tmp_path, fixture_r
 
 
 def test_rankings_command_adds_the_rank_why_facts_to_an_older_saved_chapter(
-    tmp_path, fixture_raw_dir, fixture_history_root,
+    tmp_path, fixture_raw_dir, fixture_history_root, offline,
 ):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     # A week saved before the rank why facts has a rankings chapter with no .why ids.
     facts = week_dir(repo, 2026, 6) / "facts.json"
     bundle = read_bundle(facts)
@@ -340,10 +327,10 @@ def test_rankings_command_adds_the_rank_why_facts_to_an_older_saved_chapter(
 
 
 def test_rankings_command_lists_the_saved_odds_why_facts_in_an_older_saved_chapter(
-    tmp_path, fixture_raw_dir, fixture_history_root,
+    tmp_path, fixture_raw_dir, fixture_history_root, offline,
 ):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     # The saved facts hold the odds why, but the saved chapter lists only the rank why.
     facts = week_dir(repo, 2026, 6) / "facts.json"
     bundle = read_bundle(facts)
@@ -359,10 +346,10 @@ def test_rankings_command_lists_the_saved_odds_why_facts_in_an_older_saved_chapt
 
 
 def test_a_saved_pr_fact_with_an_old_rank_is_rebuilt_from_the_history_and_the_rules(
-    tmp_path, fixture_raw_dir, fixture_history_root,
+    tmp_path, fixture_raw_dir, fixture_history_root, offline,
 ):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
     history = History(week=6, weeks=load_saved_weeks(history_root(repo, 2026), 6))
     rows = power_rankings(history, 6)[6]
@@ -380,7 +367,7 @@ def test_a_saved_pr_fact_with_an_old_rank_is_rebuilt_from_the_history_and_the_ru
     assert f"is {_ordinal(row.power_rank)} in the power rankings" in bundle.sheet.facts[stale.id].text
 
 
-def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
 
     def call(system, user, model):
@@ -388,7 +375,7 @@ def test_build_writes_the_rankings_blurb_into_the_file(tmp_path, fixture_raw_dir
         fake = _RankingsWriter() if "Chapter: Power rankings" in user else _fake
         return fake(system, user, model)
 
-    run_build(repo, 2026, 6, call, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, call, fetch=False, **offline)
     data = json.loads(_rankings(repo).read_text(encoding="utf-8"))
     week6 = next(w for w in data["weeks"] if w["week"] == 6)
     assert all(len(row["blurb"]) == 1 for row in week6["rows"])
@@ -399,9 +386,9 @@ def _week6_blurbs(repo):
     return {row["roster_id"]: row["blurb"] for w in data["weeks"] if w["week"] == 6 for row in w["rows"]}
 
 
-def test_a_fallback_rankings_blurb_keeps_the_saved_blurbs(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_a_fallback_rankings_blurb_keeps_the_saved_blurbs(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     run_rankings(repo, 2026, 6, _RankingsWriter())
     saved = _week6_blurbs(repo)
     assert all(len(b) == 1 for b in saved.values())
@@ -412,12 +399,12 @@ def test_a_fallback_rankings_blurb_keeps_the_saved_blurbs(tmp_path, fixture_raw_
     assert _week6_blurbs(repo) == saved
 
 
-def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     # The plain fake falls back, so the build leaves the blurbs empty.
     assert all(b == [] for b in _week6_blurbs(repo).values())
-    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **OFFLINE)
+    run_rewrite(repo, 2026, 6, "rankings", _RankingsWriter(), **offline)
     blurbs = _week6_blurbs(repo)
     assert len(blurbs) == 12
     chapter = next(c for c in read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.chapters if c.key == "rankings")
@@ -427,9 +414,9 @@ def test_a_rankings_rewrite_reaches_the_season_file(tmp_path, fixture_raw_dir, f
 
 
 def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixture_raw_dir, fixture_history_root,
-                                                                  monkeypatch):
+                                                                  monkeypatch, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     saved = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     odds = {fid: f for fid, f in saved.items() if fid.startswith(("ODDS.", "SW."))}
     # 12 odds facts, 12 odds why facts, and 2 swing facts.
@@ -439,7 +426,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
         raise AssertionError("a rewrite ran the odds engine")
 
     monkeypatch.setattr("cornerstone.sheet.playoff_odds", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline)
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds
 
@@ -448,9 +435,9 @@ def _waiver(repo):
     return json.loads((repo / "site" / "2026" / "week-06" / "waiver.json").read_text())
 
 
-def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir):
+def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     body = _waiver(repo)
     assert body["schema_version"] == 1
     assert body["week"] == 6
@@ -462,9 +449,10 @@ def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir)
     assert body["budgets"][0] == {"roster_id": 1, "budget_left": 69, "waiver_order": 1}
 
 
-def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_path, fixture_raw_dir, monkeypatch):
+def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_path, fixture_raw_dir, monkeypatch,
+                                                                          offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     built = _waiver(repo)
     (repo / "site" / "2026" / "week-06" / "waiver.json").unlink()
 
@@ -472,7 +460,7 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
         raise AssertionError("a rewrite ran the waiver engine")
 
     monkeypatch.setattr("cornerstone.pipeline.waiver_board", no_engine)
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **offline)
     assert _waiver(repo) == built
 
 
@@ -499,10 +487,10 @@ def _one_claim(asked):
     return call
 
 
-def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path, fixture_raw_dir):
+def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path, fixture_raw_dir, offline):
     repo = _repo_with_free_agent(tmp_path, fixture_raw_dir)
     asked = []
-    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "research": _one_claim(asked)})
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "research": _one_claim(asked)})
     assert len(asked) == 1 and "Free Agent" in asked[0]
     player = _waiver(repo)["buckets"]["best_adds"][0]
     assert [c["text"] for c in player["research"]] == ["He is the WR2 now."]
@@ -513,79 +501,80 @@ def test_the_build_researches_once_and_a_rewrite_reads_the_saved_claims(tmp_path
     def no_search(system, user):
         raise AssertionError("a rewrite ran the search")
 
-    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**OFFLINE, "research": no_search})
+    run_rewrite(repo, 2026, 6, "next_week", _fake, **{**offline, "research": no_search})
     assert _waiver(repo) == built
 
 
-def test_a_search_failure_for_every_player_flags_the_missing_experts_and_the_build_completes(tmp_path, fixture_raw_dir):
+def test_a_search_failure_for_every_player_flags_the_missing_experts_and_the_build_completes(
+        tmp_path, fixture_raw_dir, offline):
     repo = _repo_with_free_agent(tmp_path, fixture_raw_dir)
 
     def down(system, user):
         raise WriterError("no parsed output")
 
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "research": down})
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "research": down})
     assert page.exists()
     body = _waiver(repo)
     assert body["experts_missing"] is True
     assert body["buckets"]["best_adds"][0]["research"] == []
 
 
-def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir):
+def test_rankings_command_stops_on_an_incomplete_history(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     with pytest.raises(BuildStopped, match="history"):
         run_rankings(repo, 2026, 6, _fake)
 
 
-def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog):
+def test_build_survives_a_history_save_failure(tmp_path, fixture_raw_dir, caplog, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     # A file in place of the history directory makes the save fail.
     root = history_root(repo, 2026)
     root.parent.mkdir(parents=True, exist_ok=True)
     root.write_text("not a directory")
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert page.exists()
     assert "week 6 not saved to history" in caplog.text
 
 
-def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir):
+def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     path = week_dir(repo, 2026, 6) / "verify.json"
     chapters = json.loads(path.read_text())["chapters"]
     path.write_text(json.dumps(chapters))
     assert read_verify(path).build is None
 
-    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "median", _fake, **offline)
 
     assert read_verify(path).build is None
     assert set(read_verify(path).chapters) == set(chapters)
 
 
-def test_rewrite_keeps_the_build_record(tmp_path, fixture_raw_dir):
+def test_rewrite_keeps_the_build_record(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     path = week_dir(repo, 2026, 6) / "verify.json"
     before = read_verify(path).build
-    run_rewrite(repo, 2026, 6, "median", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "median", _fake, **offline)
     assert read_verify(path).build == before
 
 
-def test_build_stops_on_unscored_week(tmp_path, fixture_raw_dir):
+def test_build_stops_on_unscored_week(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     shutil.copytree(week_dir(repo, 2026, 6) / "raw", week_dir(repo, 2026, 7) / "raw")
     with pytest.raises(BuildStopped, match="not final"):
-        run_build(repo, 2026, 7, _fake, fetch=False, **OFFLINE)
+        run_build(repo, 2026, 7, _fake, fetch=False, **offline)
 
 
-def test_build_stops_without_raw_data(tmp_path):
+def test_build_stops_without_raw_data(tmp_path, offline):
     with pytest.raises(BuildStopped, match="No raw data for week 6"):
-        run_build(tmp_path, 2026, 6, _fake, fetch=False, **OFFLINE)
+        run_build(tmp_path, 2026, 6, _fake, fetch=False, **offline)
 
 
-def test_rewrite_one_chapter(tmp_path, fixture_raw_dir):
+def test_rewrite_one_chapter(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     path = week_dir(repo, 2026, 6) / "blurbs.json"
     before = json.loads(path.read_text())
 
@@ -597,7 +586,7 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir):
         fid = re.search(r"^- ([A-Z][\w.]*): ", user, re.M).group(1)
         return model(sentences=[Sentence(text="Rewritten median sentence.", fact_ids=[fid])] * 2)
 
-    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **OFFLINE)
+    page = run_rewrite(repo, 2026, 6, "median", rewrite_fake, **offline)
     after = json.loads(path.read_text())
     assert set(before) == set(after)
     text = [s["text"] for s in after["median"]["sentences"]]
@@ -607,11 +596,11 @@ def test_rewrite_one_chapter(tmp_path, fixture_raw_dir):
     assert "Rewritten median sentence." in page.read_text()
 
 
-def test_rewrite_unknown_chapter_lists_valid_keys(tmp_path, fixture_raw_dir):
+def test_rewrite_unknown_chapter_lists_valid_keys(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     with pytest.raises(ValueError, match="median"):
-        run_rewrite(repo, 2026, 6, "nope", _fake, **OFFLINE)
+        run_rewrite(repo, 2026, 6, "nope", _fake, **offline)
 
 
 def _git(cwd, *args):
@@ -625,7 +614,7 @@ def _init(path):
     _git(path, "config", "user.name", "Test")
 
 
-def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo, site_repo = tmp_path / "source", tmp_path / "site"
     _init(repo)
     _init(site_repo)
@@ -633,7 +622,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     shutil.copytree(fixture_history_root, history_root(repo, 2026))
     (repo / "src").mkdir()
     (repo / "src" / "code.py").write_text("x = 1\n")
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
 
     url = run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
 
@@ -653,7 +642,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     assert _git(repo, "log", "-1", "--format=%s").strip() == "Week 6 report"
 
 
-def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeypatch, caplog):
+def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeypatch, caplog, offline):
     repo, site_repo = tmp_path / "source", tmp_path / "site"
     _init(repo)
     _init(site_repo)
@@ -661,7 +650,7 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     monkeypatch.setattr("cornerstone.pipeline.check_week_is_buildable", lambda *args: None)
     for week in (6, 7):
         shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, week) / "raw")
-        run_build(repo, 2026, week, _fake, fetch=False, **OFFLINE)
+        run_build(repo, 2026, week, _fake, fetch=False, **offline)
     assert (repo / "site" / "2026" / "week-07" / "page.json").exists()
 
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
@@ -690,12 +679,12 @@ def test_publish_requires_git_checkout(tmp_path):
         run_publish(tmp_path, 2026, 6, site_repo=tmp_path / "missing", push=False)
 
 
-def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir):
+def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, offline):
     repo, site_repo = tmp_path / "source", tmp_path / "site"
     _init(repo)
     _init(site_repo)
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
     (repo / "notes.txt").write_text("untracked\n")
 
@@ -709,21 +698,21 @@ def _fetched(repo, when):
 
 
 def test_window_holds_the_five_trades_before_the_cutoff_whatever_the_fetch_time(
-        tmp_path, fixture_raw_dir, fixture_history_root):
+        tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     _fetched(repo, datetime(2026, 10, 21, 9, 0, tzinfo=ET))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
     assert len(bundle.data.trades) == 5
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(2026, 10, 21, 9, 0, tzinfo=ET)
 
 
-def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_rebuild_keeps_the_first_fetch_time(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     _fetched(repo, datetime(2026, 10, 20, 12, 0, tzinfo=ET))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     _fetched(repo, datetime(2026, 10, 21, 9, 0, tzinfo=ET))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert read_verify(week_dir(repo, 2026, 6) / "verify.json").build.fetched == datetime(
         2026, 10, 20, 12, 0, tzinfo=ET
     )
@@ -734,7 +723,7 @@ def test_fetch_time_without_a_saved_one_comes_from_the_raw_write_time(
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     fetched = datetime(2026, 10, 20, 8, 0, tzinfo=ET)
     os.utime(week_dir(repo, 2026, 6) / "raw" / "transactions.json", (fetched.timestamp(), fetched.timestamp()))
-    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, started=datetime(2026, 10, 22, 12, 0, tzinfo=ET))
+    bundle, record = make_bundle(repo, 2026, 6, news=no_news, started=datetime(2026, 10, 22, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 5 and record.fetched == fetched
     assert record.fetched.tzinfo == ET
     assert "transactions.json" in caplog.text
@@ -744,9 +733,9 @@ def _nflverse_path(repo):
     return week_dir(repo, 2026, 6) / "raw" / "nflverse.json"
 
 
-def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir, fixture_history_root):
+def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert _nflverse_path(repo).exists()
     sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
     assert sources == {"history": True, "nflverse_pbp": True, "nflverse_ftn": True,
@@ -754,33 +743,33 @@ def test_build_writes_the_nflverse_extract_and_sources(tmp_path, fixture_raw_dir
                        "nflverse_stats_player": True}
 
 
-def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir):
+def test_saved_extract_is_not_fetched_again(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _forbidden_nflverse})
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": _forbidden_nflverse})
 
 
-def test_nflverse_down_still_builds(tmp_path, fixture_raw_dir):
+def test_nflverse_down_still_builds(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _down_nflverse})
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": _down_nflverse})
     assert page.exists() and "count only this week" not in page.read_text()
 
 
-def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixture_raw_dir):
+def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": _down_nflverse})
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": _down_nflverse})
     assert not _nflverse_path(repo).exists()
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     saved = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
     assert all(saved.sources.values())
 
 
-def test_a_crashing_fetcher_never_stops_the_build(tmp_path, fixture_raw_dir, caplog):
+def test_a_crashing_fetcher_never_stops_the_build(tmp_path, fixture_raw_dir, caplog, offline):
     def crash(season, week, player_ids, players, teams, scoring):
         raise OSError("disk gone")
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": crash})
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": crash})
     assert page.exists()
     assert not _nflverse_path(repo).exists()
     assert "nflverse unavailable" in caplog.text
@@ -788,14 +777,14 @@ def test_a_crashing_fetcher_never_stops_the_build(tmp_path, fixture_raw_dir, cap
 
 def test_no_fetcher_and_no_file_builds_without_nflverse(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
-    _, record = make_bundle(repo, 2026, 6, news=_no_news)
+    _, record = make_bundle(repo, 2026, 6, news=no_news)
     assert not any(record.sources.get(k) for k in NFLVERSE_KEYS)
 
 
-def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir):
+def test_rewrite_takes_the_nflverse_argument(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
-    run_rewrite(repo, 2026, 6, "median", _fake, **{**OFFLINE, "nflverse": _forbidden_nflverse})
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
+    run_rewrite(repo, 2026, 6, "median", _fake, **{**offline, "nflverse": _forbidden_nflverse})
 
 
 def _late_week_5_trade(repo):
@@ -810,7 +799,7 @@ def _late_week_5_trade(repo):
 def test_window_reads_the_fresh_transactions_of_the_week_before(tmp_path, fixture_raw_dir, fixture_history_root):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     (week_dir(repo, 2026, 6) / "raw" / "transactions_prev.json").write_text(json.dumps(_late_week_5_trade(repo)))
-    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    bundle, _ = make_bundle(repo, 2026, 6, news=no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert [t.transaction_id for t in bundle.data.trades].count("late-week-5") == 1
     assert len(bundle.data.trades) == 6
 
@@ -819,19 +808,19 @@ def test_window_without_fresh_transactions_reads_the_history_copy(
     tmp_path, fixture_raw_dir, fixture_history_root, caplog
 ):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
+    bundle, _ = make_bundle(repo, 2026, 6, news=no_news, fetched=datetime(2026, 10, 20, 12, 0, tzinfo=ET))
     assert len(bundle.data.trades) == 5
     assert "no fresh transactions for week 5" in caplog.text
 
 
-def test_build_gives_the_fetch_the_teams_that_played(tmp_path, fixture_raw_dir):
+def test_build_gives_the_fetch_the_teams_that_played(tmp_path, fixture_raw_dir, offline):
     seen = []
 
     def record(season, week, player_ids, players, teams, scoring):
         seen.append(teams)
-        return _fixture_nflverse(season, week, player_ids, players, teams, scoring)
+        return offline["nflverse"](season, week, player_ids, players, teams, scoring)
 
-    _, record_ = make_bundle(_repo(tmp_path, fixture_raw_dir), 2026, 6, news=_no_news, nflverse=record)
+    _, record_ = make_bundle(_repo(tmp_path, fixture_raw_dir), 2026, 6, news=no_news, nflverse=record)
     # 28 NFL teams in 14 games had a started player with a Sleeper gp above 0.
     assert len(seen[0]) == 28 and "LAR" in seen[0]
     assert record_.sources["nflverse_pbp"] is True
@@ -849,10 +838,10 @@ def test_partial_week_is_not_saved(tmp_path, fixture_raw_dir):
                 rows = [line for line in f if "2026_06_ARI_LA" not in line]
             with opener(cache / name, "wt", encoding="utf-8", newline="") as f:
                 f.writelines(rows)
-        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network, scoring=scoring)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=no_network, scoring=scoring)
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=partial)
+    _, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=partial)
     assert record.sources["nflverse_pbp"] is False
     assert not _nflverse_path(repo).exists()
 
@@ -865,10 +854,10 @@ def test_a_file_without_the_monday_night_game_is_not_saved(tmp_path, fixture_raw
             shutil.copy(f, cache / f.name)
         lines = (cache / "ep_weekly_2026.csv").read_text().splitlines(keepends=True)
         (cache / "ep_weekly_2026.csv").write_text("".join(line for line in lines if "2026_06_WAS_SF" not in line))
-        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=_no_network, scoring=scoring)
+        return nflverse_week(season, week, player_ids, players, cache, teams, fetch=no_network, scoring=scoring)
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=lagged)
+    _, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=lagged)
     assert record.sources["ffopportunity"] is False and record.sources["nflverse_pbp"] is True
     assert not _nflverse_path(repo).exists()
 
@@ -883,28 +872,28 @@ def test_a_missing_player_file_sets_its_flag_false_and_is_not_saved(tmp_path, fi
                              scoring=scoring)
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=no_player_file)
+    _, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=no_player_file)
     assert record.sources["nflverse_stats_player"] is False and record.sources["nflverse_pbp"] is True
     assert not _nflverse_path(repo).exists()
 
 
-def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir, fixture_history_root, caplog):
+def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir, fixture_history_root, caplog, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text('{"transactions": "not a ti')
     (week_dir(repo, 2026, 6) / "verify.json").write_text('{"chapters": {')
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert page.exists()
     for name in ("fetched.json", "week-06/verify.json"):
         assert name in caplog.text
 
 
-def test_a_failed_save_keeps_the_fetched_extract(tmp_path, fixture_raw_dir, caplog):
+def test_a_failed_save_keeps_the_fetched_extract(tmp_path, fixture_raw_dir, caplog, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     raw = week_dir(repo, 2026, 6) / "raw"
     # A read-only raw directory makes the write of nflverse.json fail after a good fetch.
     raw.chmod(0o555)
     try:
-        bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+        bundle, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=offline["nflverse"])
     finally:
         raw.chmod(0o755)
     assert record.sources["nflverse_pbp"] is True and bundle.data.drop_source == "nflverse"
@@ -920,12 +909,12 @@ def _old_extract(repo):
     return path
 
 
-def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, fixture_raw_dir, caplog):
+def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, fixture_raw_dir, caplog, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     path = _old_extract(repo)
     with caplog.at_level(logging.INFO, logger="cornerstone.pipeline"):
-        _, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+        _, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=offline["nflverse"])
     saved = json.loads(path.read_text())
     assert saved["usage"] and saved["expected"] and saved["next_games"] and saved["bye_weeks"]
     assert record.sources["nflverse_stats_player"] is True
@@ -933,7 +922,7 @@ def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, 
             "so the build fetches the extract again") in caplog.text
 
 
-def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_raw_dir):
+def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_raw_dir, offline):
     # With no FTN file the fresh extract has no drops, but the play by play still gives the usage.
     def no_ftn(season, week, player_ids, players, teams, scoring):
         cache = Path(tempfile.mkdtemp())
@@ -944,16 +933,16 @@ def test_a_refetch_with_a_source_down_keeps_the_saved_drops(tmp_path, fixture_ra
                              scoring=scoring)
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     before = _old_extract(repo).read_text()
-    bundle, record = make_bundle(repo, 2026, 6, news=_no_news, nflverse=no_ftn)
+    bundle, record = make_bundle(repo, 2026, 6, news=no_news, nflverse=no_ftn)
     assert bundle.data.drop_source == "nflverse" and record.sources["nflverse_ftn"] is True
     assert record.sources["nflverse_snaps"] is True
     # The fresh extract is degraded, so the file keeps the old content and the next build fetches again.
     assert _nflverse_path(repo).read_text() == before
 
 
-def test_a_refetch_without_ffverse_keeps_the_saved_keys(tmp_path, fixture_raw_dir):
+def test_a_refetch_without_ffverse_keeps_the_saved_keys(tmp_path, fixture_raw_dir, offline):
     # With no ID map the refetch still runs, but it matches fewer players, so its dicts are smaller, not None.
     def no_ffverse(season, week, player_ids, players, teams, scoring):
         cache = Path(tempfile.mkdtemp())
@@ -964,7 +953,7 @@ def test_a_refetch_without_ffverse_keeps_the_saved_keys(tmp_path, fixture_raw_di
                              scoring=scoring)
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     full = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
     before = _old_extract(repo).read_text()
     raw_dir = week_dir(repo, 2026, 6) / "raw"
@@ -975,15 +964,15 @@ def test_a_refetch_without_ffverse_keeps_the_saved_keys(tmp_path, fixture_raw_di
     assert _nflverse_path(repo).read_text() == before
 
 
-def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, caplog):
+def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, caplog, offline):
     def crash(season, week, player_ids, players, teams, scoring):
         raise OSError("disk gone")
 
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     path = _old_extract(repo)
     before = path.read_bytes()
-    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**OFFLINE, "nflverse": crash})
+    page = run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": crash})
     assert page.exists() and path.read_bytes() == before
     # The build goes on with the drops of the saved extract.
     bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
@@ -991,7 +980,7 @@ def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, cap
     assert "nflverse refetch failed" in caplog.text
 
 
-def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fixture_raw_dir, monkeypatch):
+def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fixture_raw_dir, monkeypatch, offline):
     from cornerstone import cli
 
     def no_claude(*args, **kwargs):
@@ -1001,7 +990,7 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
     repo.mkdir()
     (repo / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     page_json = repo / "site" / "2026" / "week-06" / "page.json"
     page_json.unlink()
     monkeypatch.setattr(cli, "claude_call", no_claude)
@@ -1034,12 +1023,12 @@ def _saved_lucky(repo, key):
     path.write_text(json.dumps(saved), encoding="utf-8")
 
 
-def test_build_reserves_the_award_words_and_carries_lucky(tmp_path, fixture_raw_dir, monkeypatch):
+def test_build_reserves_the_award_words_and_carries_lucky(tmp_path, fixture_raw_dir, monkeypatch, offline):
     # The fixture week has both awards, so every chapter but awards starts with both words used.
     repo = _repo(tmp_path, fixture_raw_dir)
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     facts = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert "AW.lucky" in facts and "AW.unlucky" in facts
     assert seen["awards"] == set()
@@ -1047,43 +1036,43 @@ def test_build_reserves_the_award_words_and_carries_lucky(tmp_path, fixture_raw_
     # A "lucky" in an earlier chapter reaches the awards chapter.
     seen.clear()
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen, "game_changer"))
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     assert seen["awards"] == {"lucky"}
 
 
-def test_a_rewrite_sees_lucky_from_an_earlier_saved_blurb(tmp_path, fixture_raw_dir, monkeypatch):
+def test_a_rewrite_sees_lucky_from_an_earlier_saved_blurb(tmp_path, fixture_raw_dir, monkeypatch, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     _saved_lucky(repo, "motw")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline)
     assert seen["awards"] == {"lucky"}
 
 
-def test_a_rewrite_of_an_earlier_chapter_sees_a_later_lucky(tmp_path, fixture_raw_dir, monkeypatch):
+def test_a_rewrite_of_an_earlier_chapter_sees_a_later_lucky(tmp_path, fixture_raw_dir, monkeypatch, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     _saved_lucky(repo, "median")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline)
     assert seen["awards"] == {"lucky"}
 
 
-def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_raw_dir, monkeypatch):
+def test_a_rewrite_does_not_count_the_chapter_against_itself(tmp_path, fixture_raw_dir, monkeypatch, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
-    run_build(repo, 2026, 6, _fake, fetch=False, **OFFLINE)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline)
     _saved_lucky(repo, "awards")
     seen = {}
     monkeypatch.setattr("cornerstone.pipeline.write_and_verify", _spy_write_and_verify(seen))
-    run_rewrite(repo, 2026, 6, "awards", _fake, **OFFLINE)
+    run_rewrite(repo, 2026, 6, "awards", _fake, **offline)
     assert seen["awards"] == set()
 
 
 def test_the_bundle_reads_the_position_rank_and_the_bye_cover_from_the_week_snapshot(
-        tmp_path, fixture_raw_dir, fixture_history_root):
+        tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
-    bundle, _ = make_bundle(repo, 2026, 6, news=_no_news, nflverse=_fixture_nflverse)
+    bundle, _ = make_bundle(repo, 2026, 6, news=no_news, nflverse=offline["nflverse"])
     assert bundle.sheet.facts["NX.bye.12.7523"].text.startswith("Trevor Lawrence, QB10, is on bye in week 7")
     assert "NX.bye.5.8138.cover" in bundle.sheet.facts
