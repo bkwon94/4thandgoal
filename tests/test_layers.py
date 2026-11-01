@@ -45,6 +45,7 @@ LAYER_OF: dict[str, str] = {
     "slow_sources": "load",
     "points_allowed": "load",
     "history": "load",
+    "ranks": "load",
     # facts
     "snapshot": "facts",  # PRD: load. It imports facts_league and ranks.
     "season_inputs": "facts",  # PRD: load. It imports snapshot.
@@ -63,7 +64,6 @@ LAYER_OF: dict[str, str] = {
     "odds": "facts",
     "adjusters": "facts",
     "rubric": "facts",
-    "ranks": "facts",
     "rank_score": "facts",
     "waiver": "facts",
     "waiver_buckets": "facts",
