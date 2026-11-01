@@ -16,8 +16,8 @@ LAYERS = ["model", "provider", "load", "facts", "write", "output"]
 API_TOP_LAYER = "write"
 
 # The key is the module path under cornerstone. A package key names its __init__ file. The root package is "".
-# A module may sit above its PRD layer only with a "# PRD:" note that names the import that forces it.
-# The map moves no file. Ticket 17 cuts those imports and lowers the modules to their PRD layer.
+# A "# PRD:" note marks a module that sits above its PRD layer because of the import the note names.
+# The map moves no file. The note goes when the import goes.
 LAYER_OF: dict[str, str] = {
     "": "model",
     # model
@@ -202,7 +202,8 @@ def test_no_module_imports_from_a_higher_layer():
             if theirs is None:
                 continue
             if LAYERS.index(theirs) > LAYERS.index(own):
-                who = "the API (which may import up to write)" if is_api else f"layer {own}"
-                breaches.append(f"{name} ({who}) -> {target} (layer {theirs}): an upward import")
-    assert not breaches, "Each module imports only from its own layer or a lower one (ADR 0007):\n" + "\n".join(
+                who = "the API, which may import every layer below output" if is_api else f"layer {own}"
+                breaches.append(
+                    f"{name} -> {target}: an upward import. {name} is in {who}. {target} is in layer {theirs}.")
+    assert not breaches, "Each module imports only from its own layer or a lower one. See ADR 0007.\n" + "\n".join(
         breaches)
