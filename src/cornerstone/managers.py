@@ -4,7 +4,6 @@ Pure code over the saved history. The render module writes the entries as manage
 """
 from pydantic import BaseModel
 
-from cornerstone.facts_league import season_records
 from cornerstone.manager_grade import ManagerGrade, roster_grades
 from cornerstone.manager_moves import Moves, roster_moves
 from cornerstone.manager_players import BestAdd, TopPerformer, best_adds, top_performers
@@ -12,6 +11,7 @@ from cornerstone.manager_season import AwardCounts, Bench, SeasonWeek, award_cou
 from cornerstone.models import Team
 from cornerstone.parse import player_name
 from cornerstone.season_inputs import SeasonInputs
+from cornerstone.standings_table import season_records
 
 # Under two saved weeks a manager page has too little to show, so the file waits for the second week.
 MIN_WEEKS = 2
