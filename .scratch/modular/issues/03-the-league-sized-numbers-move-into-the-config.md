@@ -2,7 +2,7 @@
 
 **What to build:** The numbers that would change with a different league leave the tunables and join the config: the playoff spots, the bye count, the last regular and season weeks, the return-by week, the star and line ranks, the strength rank, and the seller gap. The tunables keep the algorithm settings: the trade bands, the simulation runs, the weights, the waiver sizes, and the API limits.
 
-**Blocked by:** 02
+**Blocked by:** 02, 05, 08
 
 **Status:** ready-for-agent
 
@@ -10,3 +10,7 @@
 - [ ] Every reader of a moved number takes it from the config parameter.
 - [ ] The tunables module has no number that names the team count or the league calendar.
 - [ ] The four golden tests pass with no golden change.
+
+## Comments
+
+- 2026-10-31: the first build attempt stopped. The ten numbers have readers in twelve modules with no config in reach: adjusters, ranks, trade_facts, manager_grade, facts_league, odds, sheet, the three waiver modules, sleeper, and the API cache. Most read through the snapshot in about forty call sites. Decision: this ticket runs after 05 and 08 merge, so no file is edited in two places at once. Design: `Snapshot` carries the `LeagueConfig` it was built from, set in `week_snapshot` and the live snapshot, so the snapshot readers take the numbers from `snapshot.config`. The odds and the standings take `config` as a parameter. A test that builds a `Snapshot` passes `cornerstone_config()`. The ticket may touch more than twelve files; it is one logical change.

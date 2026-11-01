@@ -6,7 +6,9 @@ from collections import defaultdict
 from collections.abc import Sequence
 from datetime import date, datetime, timezone
 
-from cornerstone.models import DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, Side, Team, Trade, Week
+from cornerstone.models import (
+    DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, ProjectionsAhead, Side, Team, Trade, Week,
+)
 from cornerstone.sleeper import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
@@ -134,7 +136,7 @@ def _schedule(raw: RawWeek) -> dict[int, list[tuple[int, int]]]:
     return {entry.week: _pairs(entry.matchups) for entry in raw.schedule or []}
 
 
-def _projections_ahead(raw: RawWeek) -> dict[int, dict[str, float]]:
+def _projections_ahead(raw: RawWeek) -> ProjectionsAhead:
     # A cached week can lack the projections file, so it gives no weeks.
     return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 

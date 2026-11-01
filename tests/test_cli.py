@@ -135,9 +135,9 @@ def _pad_rows(value):
 
 
 def _save_chart(tmp_path, parsed):
-    from cornerstone.chart import chart_dir
+    from cornerstone.paths import charts_dir
 
-    charts = chart_dir(tmp_path)
+    charts = charts_dir(tmp_path)
     charts.mkdir(parents=True)
     # A saved parse means the command makes no fetch and no Claude call.
     (charts / "week-06.json").write_text(parsed.model_dump_json())

@@ -8,6 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from cornerstone.paths import season_dir, site_week_dir, week_label
+
 SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://cpcfantasy.com/"
 
@@ -16,7 +18,7 @@ log = logging.getLogger(__name__)
 
 def site_page_url(season: int, week: int) -> str:
     """The public URL of one week's page."""
-    return f"{SITE_URL}{season}/week-{week:02d}/"
+    return f"{SITE_URL}{season}/{week_label(week)}/"
 
 
 class PublishError(Exception):
@@ -40,7 +42,7 @@ def _commit_if_staged(cwd: Path, message: str, *paths: str) -> None:
 
 
 def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO, push: bool = True) -> str:
-    page = repo / "site" / str(season) / f"week-{week:02d}" / "page.json"
+    page = site_week_dir(repo / "site", season, week) / "page.json"
     if not page.exists():
         raise PublishError(f"{page} does not exist. Build the week first.")
     # Check the site repo before the first commit, so a bad path leaves no half-done publish.
@@ -54,18 +56,18 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     # stay off the public site. The site repo is a Next.js app. It renders the pages and the home
     # page from these folders.
     public_dir = site_repo / "public"
-    week_path = Path(str(season)) / f"week-{week:02d}"
+    week_path = Path(str(season)) / week_label(week)
     shutil.copytree(
         repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
     )
     # The season file holds every week to date, so it goes out with the week in the same commit.
-    rankings = repo / "site" / str(season) / "rankings.json"
+    rankings = season_dir(repo / "site", season) / "rankings.json"
     if rankings.exists():
         shutil.copy2(rankings, public_dir / str(season) / "rankings.json")
     else:
         log.warning("%s missing: the publish goes out without rankings.json", rankings)
     # The managers file is a season file too. A thin history has none, so a missing file only warns.
-    managers = repo / "site" / str(season) / "managers.json"
+    managers = season_dir(repo / "site", season) / "managers.json"
     if managers.exists():
         shutil.copy2(managers, public_dir / str(season) / "managers.json")
     else:

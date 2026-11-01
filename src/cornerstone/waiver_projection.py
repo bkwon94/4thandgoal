@@ -2,25 +2,23 @@
 The projections of the waiver board: the week N+1 projection and the rest of season projection of one player.
 One place for the sum, so the pool and the drops bucket read a player the same way.
 """
+from cornerstone.models import ProjectionsAhead
 from cornerstone.numbers import r2
 from cornerstone.sleeper import RawWeek
 from cornerstone.tunables import LAST_SEASON_WEEK
 
-# The projections of each week ahead by player ID, keyed by week.
-Ahead = dict[int, dict[str, float]]
 
-
-def projections_ahead(raw: RawWeek) -> Ahead:
+def projections_ahead(raw: RawWeek) -> ProjectionsAhead:
     """The projections ahead file of the raw files by week. A week with no file has no projections."""
     return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
-def next_week(ahead: Ahead, player_id: str, week: int) -> float:
+def next_week(ahead: ProjectionsAhead, player_id: str, week: int) -> float:
     """The projection of week N+1 after week `week`. A player with none, such as on a bye, gets 0."""
     return r2(ahead.get(week + 1, {}).get(player_id, 0.0))
 
 
-def rest_of_season(ahead: Ahead, player_id: str, week: int) -> float:
+def rest_of_season(ahead: ProjectionsAhead, player_id: str, week: int) -> float:
     """The sum of the projections of weeks N+1 to LAST_SEASON_WEEK.
 
     A week with no projection, such as his bye, counts 0.

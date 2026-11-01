@@ -7,6 +7,7 @@ import json
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import managers
 from cornerstone.models import History, PastWeek, Team
+from cornerstone.season_inputs import SeasonInputs
 
 # One QB, two RB, two WR, and a FLEX start. The bench slots do not start.
 SLOTS = ["QB", "RB", "WR", "FLEX", "BN", "BN"]
@@ -39,7 +40,7 @@ def _week(number: int, points: dict[str, float], starters: list[str], score: flo
 
 
 def _entry(history: History, **season):
-    return next(e for e in managers(history, _teams(), **season) if e.roster_id == 1)
+    return next(e for e in managers(SeasonInputs(history=history), _teams(), **season) if e.roster_id == 1)
 
 
 def test_a_week_with_a_known_best_lineup_counts_the_bench_points():
@@ -110,7 +111,8 @@ def test_the_awards_count_from_the_saved_facts_of_two_weeks(tmp_path):
     week_2 = facts("week-02", [("top_scorer", 1), ("underperformer", 3)])
     points = {"q1": 20.0, "r1": 15.0, "r2": 12.0, "w1": 10.0, "w2": 3.0}
     weeks = {n: _week(n, points, ["q1", "r1", "w1", "w2"]) for n in (1, 2)}
-    entries = managers(History(week=2, weeks=weeks), _teams(), week_awards=saved_awards({1: week_1, 2: week_2}))
+    inputs = SeasonInputs(history=History(week=2, weeks=weeks))
+    entries = managers(inputs, _teams(), week_awards=saved_awards({1: week_1, 2: week_2}))
     by_roster = {e.roster_id: e.awards.model_dump() for e in entries}
     assert by_roster[1] == {"top_scorer": 2, "mvb": 0, "game_changer": 1, "underperformer": 0}
     assert by_roster[2] == {"top_scorer": 0, "mvb": 1, "game_changer": 0, "underperformer": 0}

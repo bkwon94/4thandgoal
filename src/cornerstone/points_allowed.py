@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from cornerstone.history import history_dir
+from cornerstone.paths import history_week_dir
 from cornerstone.nflverse import SKILL_POSITIONS
 
 
@@ -21,7 +21,7 @@ class PositionAllowed(BaseModel):
 
 
 def _stat_lines(root: Path, week: int) -> list[dict] | None:
-    path = history_dir(root, week) / "stats.json"
+    path = history_week_dir(root, week) / "stats.json"
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8")) or None
