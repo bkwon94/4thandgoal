@@ -9,7 +9,6 @@ from typing import Literal
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from cornerstone.numbers import r2
-from cornerstone.odds import OddsResult
 
 # The projections of each week ahead by player ID, keyed by week. A plain alias, so any dict of that shape fits.
 ProjectionsAhead = dict[int, dict[str, float]]
@@ -608,6 +607,36 @@ class DropInfo(BaseModel):
     beaten_by_name: str
     # The rest of season projection of beaten_by minus his, per remaining week, to one decimal.
     margin: float
+
+
+# The playoff status of a roster in the odds engine.
+Status = Literal["in", "out", "open"]
+
+
+class TeamOdds(BaseModel):
+    """The odds of one roster. Each odds number is a whole percent."""
+    roster_id: int
+    playoff: int
+    bye: int
+    # The most likely seed. None when the playoff odds are below SEED_SHOW_AT.
+    seed: int | None
+    status: Status
+
+
+class Swing(BaseModel):
+    """The playoff odds of both sides of one next-week game. Each side has its odds after a win and after a loss."""
+    a: int
+    b: int
+    a_win: int
+    a_loss: int
+    b_win: int
+    b_loss: int
+
+
+class OddsResult(BaseModel):
+    """The odds of every roster, keyed by roster ID, and the swing of each next-week game in pair order."""
+    teams: dict[int, TeamOdds]
+    swings: list[Swing]
 
 
 class Bundle(BaseModel):

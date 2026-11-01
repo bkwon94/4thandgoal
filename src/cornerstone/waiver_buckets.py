@@ -5,12 +5,11 @@ The code is pure: it reads the scored pool, the depth charts, the injury report,
 from collections.abc import Callable
 from typing import NamedTuple
 
-# A module import, not a name import: the engine imports this module, and this one reads its rank scores.
-from cornerstone import waiver
 from cornerstone.adjusters import OUT_STATUSES, back_inside
 from cornerstone.models import Fact, WaiverPlayer
 from cornerstone.nflverse import gsis_id
 from cornerstone.parse import player_name
+from cornerstone.rank_score import rank_scores
 from cornerstone.sheet.base import Nums, fact
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import BUCKET_POSITIONS, LAST_SEASON_WEEK, SNEAKY_USAGE_FLOOR, TOP_HALF
@@ -119,7 +118,7 @@ def _rb_scores(inputs: BucketInputs) -> dict[str, float]:
     """The rank score of the rest of season projection of every RB with a team, rostered or not."""
     rbs = {pid: "RB" for pid, entry in inputs.sleeper_players.items()
            if (entry or {}).get("position") == "RB" and entry.get("team")}
-    return waiver._rank_scores(rbs, {pid: inputs.ros_of(pid) for pid in rbs})
+    return rank_scores(rbs, {pid: inputs.ros_of(pid) for pid in rbs})
 
 
 def return_week(player_id: str, gsis: str | None, week: int, returns: dict[str, int],

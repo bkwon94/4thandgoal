@@ -29,13 +29,14 @@ from cornerstone.models import (
     FactSheet,
     History,
     NflverseWeek,
+    OddsResult,
     PlayerLine,
     Trade,
     Week,
     sub,
 )
 from cornerstone.numbers import ordinal, r2
-from cornerstone.odds import OddsResult, playoff_odds
+from cornerstone.odds import playoff_odds
 from cornerstone.power_rankings import power_rankings
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import LAST_REGULAR_WEEK

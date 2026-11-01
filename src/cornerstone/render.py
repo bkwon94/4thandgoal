@@ -14,9 +14,9 @@ from pydantic import TypeAdapter
 from cornerstone.facts_league import LEADER_POSITIONS, season_records
 from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
-from cornerstone.models import Blurb, Bundle, History, MatchupFacts, Team
-from cornerstone.odds import OddsResult
+from cornerstone.models import Blurb, Bundle, History, MatchupFacts, OddsResult, Team
 from cornerstone.paths import site_week_dir
+from cornerstone.player_ids import headshot_url, is_def
 from cornerstone.power_rankings import power_rankings
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet.base import AWARD_TITLES
@@ -211,20 +211,6 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
         write_bytes_atomic(avatar_dir / f"{rid}.{ext}", content)
         paths[rid] = f"avatars/{rid}.{ext}"
     return paths
-
-
-def is_def(player_id: str) -> bool:
-    """Whether a player ID is a DEF.
-    Sleeper gives a DEF the team abbreviation as its player ID, and a player a numeric ID."""
-    return not player_id.isdigit()
-
-
-def headshot_url(player_id: str, is_def: bool) -> str:
-    """The Sleeper CDN URL for a player's headshot.
-    A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
-    if is_def:
-        return f"https://sleepercdn.com/images/team_logos/nfl/{player_id.lower()}.png"
-    return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg"
 
 
 def _headshot_players(bundle: Bundle) -> list[tuple[str, bool]]:

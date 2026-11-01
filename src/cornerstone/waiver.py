@@ -13,6 +13,7 @@ from cornerstone.models import (
     BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
 )
 from cornerstone.parse import player_name
+from cornerstone.rank_score import rank_scores
 from cornerstone.ranks import in_pool
 from cornerstone.sheet.base import Nums, fact
 from cornerstone.sleeper import RawWeek
@@ -50,7 +51,7 @@ def waiver_board(
     pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
     ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
-    projection = _rank_scores(positions, ros)
+    projection = rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
@@ -113,25 +114,6 @@ def _budgets(raw: RawWeek) -> list[BudgetRow]:
 def _rostered(raw: RawWeek) -> set[str]:
     # A roster with no players has None in rosters.json.
     return {pid for roster in raw.rosters for pid in roster.players or []}
-
-
-def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[str, float]:
-    """The rank score of each key: the rank of its value inside its group, from 1 for the highest to 0.
-
-    The group is the position for a player and one group for every team. Keys with the same value share the
-    better rank.
-    """
-    by_position: dict[str, list[float]] = {}
-    for pid, position in positions.items():
-        by_position.setdefault(position, []).append(values[pid])
-    for ranked in by_position.values():
-        ranked.sort(reverse=True)
-    scores = {}
-    for pid, position in positions.items():
-        ranked = by_position[position]
-        ahead_of = ranked.index(values[pid])
-        scores[pid] = 1.0 if len(ranked) == 1 else round(1 - ahead_of / (len(ranked) - 1), 4)
-    return scores
 
 
 def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float, scores: BoardScores,
@@ -256,7 +238,7 @@ def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], 
                 + _opportunities(position, last)[1] - _opportunities(position, before)[1])
         if rise > 0:
             rises[pid] = rise
-    return _rank_scores({pid: positions[pid] for pid in rises}, rises)
+    return rank_scores({pid: positions[pid] for pid in rises}, rises)
 
 
 class TeamRates(NamedTuple):
@@ -294,9 +276,9 @@ def _team_rates(environment: dict[str, list[TeamWeek]], week: int) -> dict[str, 
 
 def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
     every = dict.fromkeys(rates, "NFL")
-    pace = _rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
-    neutral = _rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
-    rush = _rank_scores(every, {t: r.rush_success for t, r in rates.items()})
+    pace = rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
+    neutral = rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
+    rush = rank_scores(every, {t: r.rush_success for t, r in rates.items()})
     faster = sorted((r.plays_per_game for r in rates.values()), reverse=True)
     return {t: TeamRanks(rates=r, pace=pace[t], neutral_pass=neutral[t], rush_success=rush[t],
                          pace_place=faster.index(r.plays_per_game) + 1)

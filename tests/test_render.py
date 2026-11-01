@@ -8,8 +8,7 @@ import pytest
 from pydantic import TypeAdapter
 
 from cornerstone.history import load_history
-from cornerstone.models import Blurb, Sentence
-from cornerstone.odds import OddsResult, TeamOdds
+from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
 from cornerstone.parse import parse_week
 from cornerstone.render import (
     _saved_avatars, _saved_headshots, build_context, render_managers, render_rankings, render_week,

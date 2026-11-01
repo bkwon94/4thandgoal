@@ -12,11 +12,11 @@ from cornerstone.models import (
     Chapter,
     Fact,
     History,
+    OddsResult,
     PowerRow,
     Standing,
 )
 from cornerstone.numbers import round_half_up
-from cornerstone.odds import OddsResult
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet.base import RANKINGS_CHAPTER, SENTENCE_RANGES, Nums, fact
 from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT

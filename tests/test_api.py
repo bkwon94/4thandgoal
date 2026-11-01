@@ -31,7 +31,7 @@ from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from cornerstone.ranks import recent_points_per_game
-from cornerstone.render import is_def
+from cornerstone.player_ids import is_def
 from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
 from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import SnapshotPlayer

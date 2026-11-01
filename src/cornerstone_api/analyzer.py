@@ -14,7 +14,7 @@ from cornerstone.adjusters import Adjuster, Lean
 from cornerstone.analysis import Analysis
 from cornerstone.finder import NO_WIN_WIN, FinderTrade, find_win_wins
 from cornerstone.finder_reasons import FinderReasons
-from cornerstone.render import headshot_url, is_def
+from cornerstone.player_ids import headshot_url, is_def
 from cornerstone.rubric import ProposedTrade, TradeInputError, check_trade, fairness
 from cornerstone.snapshot import Snapshot
 from cornerstone_api.cache import cache_key, finder_cache_key
