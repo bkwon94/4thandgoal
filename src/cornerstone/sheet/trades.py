@@ -2,6 +2,8 @@
 Builds the trade facts and the inputs to the trade grade.
 Each trade gets its own facts, so a trade chapter cites only its own trade.
 """
+# The weekly assembly does not call this module, so it has no facts function and is not in CHAPTER_FACTS.
+# Only the trade bundle in the tests calls it. Ticket 19 decides whether it joins the assembly or goes.
 from decimal import Decimal
 
 from cornerstone.facts_league import (

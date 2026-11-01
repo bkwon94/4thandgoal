@@ -1,6 +1,7 @@
 """
 League-wide facts: standings, awards, Matchup of the Week, next week, position ranks, and position leaders.
 Every number comes from code, and every derived number is exact to two decimals.
+It builds league models, not facts. The sheet reads these models through Context, so this module is not a chapter.
 """
 import logging
 from collections import defaultdict
