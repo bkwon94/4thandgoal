@@ -5,7 +5,7 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { Chapter } from "@/components/week/parts";
-import { ordinal } from "@/lib/format";
+import { ordinal } from "@/lib/format/format";
 import { DURATION, REVEAL_STAGGER } from "@/lib/motion";
 import type { Manager, ManagerGrade } from "@/lib/manager-types";
 import { GradeMark, GradePopover } from "./grade-popover";

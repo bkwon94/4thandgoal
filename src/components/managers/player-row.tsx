@@ -3,7 +3,7 @@
  * The headshot, the name over one quiet line, and at the right end the points over one quiet line.
  */
 import type { ReactNode } from "react";
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import type { ManagerPlayer } from "@/lib/manager-types";
 import { PlayerHeadshot } from "./player-headshot";
 

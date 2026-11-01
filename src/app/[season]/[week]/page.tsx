@@ -17,8 +17,8 @@ import { Standings } from "@/components/week/standings";
 import { Trades } from "@/components/week/trades";
 import { WeekFooter } from "@/components/week/week-footer";
 import { basePath } from "@/lib/config";
-import { seasonManagersHref } from "@/lib/manager-data";
-import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/week-data";
+import { seasonManagersHref } from "@/lib/data/manager-data";
+import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 
 type Props = { params: Promise<WeekRef> };
 

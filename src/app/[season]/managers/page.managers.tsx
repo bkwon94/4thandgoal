@@ -7,8 +7,8 @@ import { Masthead } from "@/components/masthead";
 import { ManagersIndex } from "@/components/managers/managers-index";
 import { PageColumn } from "@/components/page-column";
 import { basePath } from "@/lib/config";
-import { loadManagers } from "@/lib/manager-data";
-import { latestAvatars } from "@/lib/rankings-data";
+import { loadManagers } from "@/lib/data/manager-data";
+import { latestAvatars } from "@/lib/data/rankings-data";
 
 type Props = { params: Promise<{ season: string }> };
 

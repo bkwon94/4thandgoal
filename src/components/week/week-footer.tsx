@@ -4,7 +4,7 @@
  */
 import { basePath } from "@/lib/config";
 import { cn } from "@/lib/utils";
-import type { WeekSummary } from "@/lib/week-data";
+import type { WeekSummary } from "@/lib/data/week-data";
 import { Chapter } from "./parts";
 
 /* A plain anchor in the home row style, like the week rows of the home page. An anchor skips the router, so the base path goes in by hand.

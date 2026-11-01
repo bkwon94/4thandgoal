@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { Chapter, Label } from "@/components/week/parts";
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import type { Bench, Manager, SeasonWeek } from "@/lib/manager-types";
 import { PointsLine } from "./points-line";
 

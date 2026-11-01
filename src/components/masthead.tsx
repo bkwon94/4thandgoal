@@ -6,9 +6,9 @@ import type { ReactNode } from "react";
 import { currentPage } from "@/components/current-page";
 import { Menu, type Destinations } from "@/components/menu";
 import { basePath } from "@/lib/config";
-import { currentManagersHref } from "@/lib/manager-data";
-import { currentWaiverHref } from "@/lib/waiver-data";
-import { listWeekSummaries, type WeekSummary } from "@/lib/week-data";
+import { currentManagersHref } from "@/lib/data/manager-data";
+import { currentWaiverHref } from "@/lib/data/waiver-data";
+import { listWeekSummaries, type WeekSummary } from "@/lib/data/week-data";
 
 /* The week line lives in its own file, so a client component can import it. The pages import it from here. */
 export { WeekLine } from "@/components/week-line";

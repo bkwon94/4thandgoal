@@ -4,8 +4,8 @@
  */
 import type { NextConfig } from "next";
 import { basePath } from "./src/lib/config";
-import { managersRouteOn } from "./src/lib/manager-data";
-import { waiverRouteOn } from "./src/lib/waiver-data";
+import { managersRouteOn } from "./src/lib/data/manager-data";
+import { waiverRouteOn } from "./src/lib/data/waiver-data";
 
 const nextConfig: NextConfig = {
   output: "export",

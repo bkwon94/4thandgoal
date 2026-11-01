@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import type { WeekSummary } from "@/lib/week-data";
+import type { WeekSummary } from "@/lib/data/week-data";
 import { Masthead } from "./masthead";
 
 /* One published week, as listWeekSummaries returns it. */

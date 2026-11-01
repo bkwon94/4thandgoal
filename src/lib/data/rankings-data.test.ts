@@ -6,7 +6,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "./week-page-fixture";
+import { weekPageJson } from "@/lib/week-page-fixture";
 import fixture from "@/components/rankings/fixture.json";
 
 afterEach(() => {

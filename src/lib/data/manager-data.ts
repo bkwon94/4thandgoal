@@ -5,12 +5,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports this module, and its loader does not resolve the alias.
-// Type imports keep the alias, because TypeScript erases them before the loader runs.
-import { basePath } from "./config";
-import { managersFileSchema } from "./schemas/managers";
-import type { Manager, ManagerEntry, Managers } from "@/lib/manager-types";
+import { managersHref } from "../routes";
+import { managersFileSchema } from "../schemas/managers";
+import type { Manager, ManagerEntry, Managers } from "../manager-types";
 import { latestSeason, loadRankings } from "./rankings-data";
-import type { RankingsRow } from "@/lib/rankings-types";
+import type { RankingsRow } from "../rankings-types";
 
 /* The managers file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;
@@ -61,10 +60,11 @@ export function loadManagers(): Managers | null {
 }
 
 /* The masthead link to the managers index of the latest season. A season with no file has no route, so no link.
-   The link is a plain anchor, so it carries the base path by hand. */
+   The link is a plain anchor, so the route builder puts the base path in it. */
 export function currentManagersHref(): string | null {
   const file = managersFile();
-  return file !== null && existsSync(file) ? `${basePath}/${latestSeason()}/managers/` : null;
+  const season = latestSeason();
+  return file !== null && season !== null && existsSync(file) ? managersHref(season) : null;
 }
 
 /* The managers index of the season a page shows, for the links from its team names.

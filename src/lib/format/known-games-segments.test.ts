@@ -3,7 +3,7 @@
  * The cases follow the as-of block of the result document.
  */
 import { describe, expect, it } from "vitest";
-import type { AsOf } from "./analyze-types";
+import type { AsOf } from "@/lib/analyze-types";
 import { knownGamesSegments } from "./known-games-segments";
 
 const base: AsOf = { chart_week: 7, stats_through: 6, rosters_fetched: "2026-10-26T09:30:00-04:00" };

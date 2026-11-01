@@ -2,7 +2,7 @@
  * The position leaders: one card per position with the top started players, then the blurb.
  * At phone width each row keeps one line; the tablet tier and up put two cards per row.
  */
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { HeadshotMap, LeaderBoard, LeaderRow } from "@/lib/week-types";
 import { Blurb, Chapter, Headshot, Label } from "./parts";

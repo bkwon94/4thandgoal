@@ -2,7 +2,7 @@
  * The matchup of the week: the label with the reason tag, the score row with both teams, and the blurb.
  * It ports the #motw chapter of the Jinja week page.
  */
-import { num } from "@/lib/format";
+import { num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, MatchupSide, Pick } from "@/lib/week-types";
 import { Avatar, avatarSrc, Blurb, Chapter, Label, Tag } from "./parts";
