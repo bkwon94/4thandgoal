@@ -4,9 +4,13 @@
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] No module-level import cycle. The two indirect cycles behind `TYPE_CHECKING` stay and are named in a comment.
 - [ ] The API package imports nothing from render, pipeline, or cli.
 - [ ] The model module imports no logic module.
 - [ ] The four golden tests and the API tests pass with no golden change.
+
+## Comments
+
+- 2026-11-01: merged into `modular` from branch `modular-06-cycles`, commits cfaf3ea and 89dba96. 1,505 tests collected. The one direct cycle was the waiver pair; `rank_scores` now sits in `rank_score.py`. The live module had already dropped the orchestrator in ticket 05. `OddsResult`, `TeamOdds`, `Swing`, and `OddsStatus` sit in `models.py`. `is_def` and `headshot_url` sit in `player_ids.py`. An independent graph script finds no cycle and no API edge into render, pipeline, or cli. Two reviewers passed it after one fix pass.
