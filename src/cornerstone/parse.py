@@ -199,7 +199,8 @@ def parse_trades(transactions: list[dict]) -> list[Trade]:
 def parse_week(raw: dict[str, object], owner_username: str | None = None, week: int | None = None) -> Week:
     """The week of the raw data. The team of `owner_username` gets the owner flag.
 
-    Only the published page shows the owner flag, so the snapshot and the chart match pass no owner and flag no team.
+    The weekly build and the live fetch pass the owner from the league config. The snapshot of a saved week, the
+    chart match, and the chart command pass no owner, because no output of theirs shows the flag.
     """
     state = raw["state"]
     return Week(

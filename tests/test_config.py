@@ -13,7 +13,7 @@ from cornerstone.sleeper import load_raw
 
 # Another league with the same raw data, owned by the manager of roster 12.
 OTHER = LeagueConfig(
-    slug="other", display_name="Other League", provider="sleeper", league_ids={2026: "1"},
+    slug="other", display_name="Other League", provider="sleeper", league_ids=((2026, "1"),),
     owner_username="pdurkim", timezone="America/Chicago", prompts_dir=Path("prompts"),
 )
 
