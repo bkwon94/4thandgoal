@@ -12,3 +12,5 @@ export const weekHref = (season: string, week: string) => `${basePath}/${season}
 export const waiverHref = (season: string, week: string) => `${weekHref(season, week)}waiver/`;
 export const managersHref = (season: string) => `${basePath}/${season}/managers/`;
 export const managerHref = (season: string, rosterId: number) => `${managersHref(season)}${rosterId}/`;
+/* The logo is a plain img on every page, so its src takes the base path like a link. */
+export const logoSrc = () => `${basePath}/images/logo.png`;

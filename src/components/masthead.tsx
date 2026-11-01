@@ -5,13 +5,23 @@
 import type { ReactNode } from "react";
 import { currentPage } from "@/components/current-page";
 import { Menu, type Destinations } from "@/components/menu";
-import { basePath } from "@/lib/config";
-import { currentManagersHref } from "@/lib/data/manager-data";
-import { currentWaiverHref } from "@/lib/data/waiver-data";
-import { listWeekSummaries, type WeekSummary } from "@/lib/data/week-data";
+import type { WeekSummary } from "@/lib/week-types";
 
 /* The week line lives in its own file, so a client component can import it. The pages import it from here. */
 export { WeekLine } from "@/components/week-line";
+
+/* The links of the masthead and its menu, each with the base path. The app layer builds them with the route builders. */
+export type MastheadLinks = {
+  home: string;
+  rankings: string;
+  analyze: string;
+  // The src of the brand logo. It sits with the links, because it takes the base path the same way.
+  logo: string;
+  // The managers index. A season with no managers file has no route, so no link.
+  managers: string | null;
+  // The waiver page of the latest week with a file. A build with the flag off has no route, so no link.
+  waiver: string | null;
+};
 
 type MastheadProps = {
   // The brand line. It defaults to the league name, which every page shows.
@@ -20,31 +30,26 @@ type MastheadProps = {
   subtitle?: string;
   // The week line under the brand. Pages with no week line leave it out.
   children?: ReactNode;
-  // The waiver page link of the menu. Left out, the masthead reads the current week from public/, and a build with the flag off gets null.
-  // A test passes a value to set the link without a temp public/ folder.
-  waiverHref?: string | null;
-  // The managers index link of the menu. Left out, the masthead reads public/, and a season with no managers file gets null.
-  // A test passes a value to set the link without a temp public/ folder.
-  managersHref?: string | null;
-  // The published weeks, newest first. Left out, the masthead reads them from public/ at build time.
-  // A test passes a list to set the menu without a temp public/ folder.
-  weeks?: WeekSummary[];
+  // The published weeks, newest first. The app layer reads them from public/ at build time, so the masthead reads no file.
+  weeks: WeekSummary[];
+  // The links of the brand and the menu. The app layer passes them, so the masthead builds no route.
+  links: MastheadLinks;
   // The href of the open page, with the base path. A static export cannot read the request path, so each page passes its own.
   pageHref?: string;
 };
 
 /* The one list of destinations of the menu. The newest week is the current week, and the rest are the past weeks. */
-function destinationsOf(weeks: WeekSummary[], waiverHref: string | null, managersHref: string | null): Destinations {
+function destinationsOf(weeks: WeekSummary[], links: MastheadLinks): Destinations {
   const [current, ...past] = weeks;
-  const week = (summary: WeekSummary) => ({ label: `Week ${summary.number}`, href: `${basePath}${summary.href}` });
+  const week = (summary: WeekSummary) => ({ label: `Week ${summary.number}`, href: summary.href });
   return {
     pages: [
-      { label: "Home", href: `${basePath}/` },
+      { label: "Home", href: links.home },
       ...(current ? [week(current)] : []),
-      { label: "Power Rankings", href: `${basePath}/rankings/` },
-      ...(managersHref ? [{ label: "Managers", href: managersHref }] : []),
-      { label: "Trade Analyzer", href: `${basePath}/analyze/` },
-      ...(waiverHref ? [{ label: "Waiver Wire", href: waiverHref }] : []),
+      { label: "Power Rankings", href: links.rankings },
+      ...(links.managers ? [{ label: "Managers", href: links.managers }] : []),
+      { label: "Trade Analyzer", href: links.analyze },
+      ...(links.waiver ? [{ label: "Waiver Wire", href: links.waiver }] : []),
     ],
     pastWeeks: past.map(week),
   };
@@ -54,12 +59,11 @@ export function Masthead({
   title = "Cornerstone Fantasy Football League",
   subtitle,
   children,
-  waiverHref = currentWaiverHref(),
-  managersHref = currentManagersHref(),
-  weeks = listWeekSummaries(),
+  weeks,
+  links,
   pageHref,
 }: MastheadProps) {
-  const destinations = destinationsOf(weeks, waiverHref, managersHref);
+  const destinations = destinationsOf(weeks, links);
   return (
     // The black band spans the viewport at every tier. The inner box takes the page column, so the content lines up with the page below.
     <header className="bg-blk text-on-dark">
@@ -71,9 +75,9 @@ export function Masthead({
           {/* A plain anchor, not next/link: the home page is a static page with no shared state, so the client router adds nothing. */}
           {/* The link is at least 44px tall, so it is a comfortable tap target on a phone. */}
           {/* In the grid of the desktop tier the link keeps the width of its content, so the empty space of the cell is no link. */}
-          <a href={`${basePath}/`} className="flex min-h-touch items-center gap-sp-3 text-inherit no-underline desktop:justify-self-start">
+          <a href={links.home} className="flex min-h-touch items-center gap-sp-3 text-inherit no-underline desktop:justify-self-start">
             {/* The title next to the logo names the link, so the logo is decorative. */}
-            <img src={`${basePath}/images/logo.png`} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
+            <img src={links.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
             <div className="h-divider w-px bg-mute" />
             <div>
               {/* The brand name stays as it is under a page translator. Where the title must wrap, the balance splits it into even lines. */}
@@ -83,7 +87,7 @@ export function Masthead({
               {subtitle && <div className="text-label tracking-caps text-on-dark-muted uppercase">{subtitle}</div>}
             </div>
           </a>
-          <Menu destinations={destinations} pageHref={pageHref} title={title} />
+          <Menu destinations={destinations} pageHref={pageHref} title={title} homeHref={links.home} logoSrc={links.logo} />
         </div>
         {/* The menu sheet needs the script, so a reader with scripts off gets the same destinations as a plain row of links. */}
         <noscript>

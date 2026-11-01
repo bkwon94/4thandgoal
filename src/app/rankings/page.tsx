@@ -8,9 +8,10 @@ import { PageColumn } from "@/components/page-column";
 import { PowerRankings } from "@/components/rankings/power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "@/components/rankings/week-choice";
 import { Blurb, Chapter, Label } from "@/components/week/parts";
-import { basePath } from "@/lib/config";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars, loadRankings } from "@/lib/data/rankings-data";
+import { rankingsHref } from "@/lib/routes";
+import { mastheadProps } from "../masthead-props";
 
 export const metadata: Metadata = {
   title: "Power Rankings · Cornerstone Fantasy Football League",
@@ -23,7 +24,7 @@ export default function RankingsPage() {
       {rankings && rankings.weeks.length > 0 ? (
         // The provider holds the chosen week, so the masthead week line and the table read the same week.
         <WeekChoiceProvider weeks={rankings.weeks}>
-          <Masthead subtitle="Power Rankings" pageHref={`${basePath}/rankings/`}>
+          <Masthead {...mastheadProps()} subtitle="Power Rankings" pageHref={rankingsHref()}>
             <ChosenWeekLine />
           </Masthead>
           <PageColumn>
@@ -36,7 +37,7 @@ export default function RankingsPage() {
         </WeekChoiceProvider>
       ) : (
         <>
-          <Masthead subtitle="Power Rankings" pageHref={`${basePath}/rankings/`} />
+          <Masthead {...mastheadProps()} subtitle="Power Rankings" pageHref={rankingsHref()} />
           <PageColumn>
             <Chapter>
               <Label heading>Power Rankings</Label>

@@ -19,6 +19,8 @@ import { WeekFooter } from "@/components/week/week-footer";
 import { basePath } from "@/lib/config";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
+import { weekHref } from "@/lib/routes";
+import { mastheadProps } from "../../masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 
@@ -61,12 +63,13 @@ export default async function WeekPage({ params }: Props) {
   ];
   // The footer links the nearest published weeks of the same season on each side. The list is newest first,
   // so the first lower number is the prior week and the last higher number is the next week.
-  const seasonWeeks = listWeekSummaries().filter((summary) => summary.href.startsWith(`/${season}/`));
+  // Each href carries the base path, so the season folder does too.
+  const seasonWeeks = listWeekSummaries().filter((summary) => summary.href.startsWith(`${basePath}/${season}/`));
   const prior = seasonWeeks.find((summary) => summary.number < page.week) ?? null;
   const next = seasonWeeks.filter((summary) => summary.number > page.week).at(-1) ?? null;
   return (
     <>
-      <Masthead subtitle="League Weekly" pageHref={`${basePath}/${season}/${week}/`}>
+      <Masthead {...mastheadProps()} subtitle="League Weekly" pageHref={weekHref(season, week)}>
         <WeekLine label="WEEK" number={page.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">
           {/* One string, so React writes one text node and the browser kerns the line as one run. */}

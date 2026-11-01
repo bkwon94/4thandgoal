@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import type { WeekSummary } from "@/lib/data/week-data";
+import type { WeekSummary } from "@/lib/week-types";
 import { Masthead } from "./masthead";
 
 /* One published week, as listWeekSummaries returns it. */
@@ -15,7 +15,14 @@ const TO_LIGHT = "Switch to light theme";
 
 /* The masthead of the week 7 report, with the waiver flag off. */
 function renderWeekMasthead() {
-  render(<Masthead subtitle="League Weekly" weeks={WEEKS} pageHref="/2026/week-07/" waiverHref={null} />);
+  render(
+    <Masthead
+      subtitle="League Weekly"
+      weeks={WEEKS}
+      links={{ home: "/", rankings: "/rankings/", analyze: "/analyze/", logo: "/images/logo.png", managers: null, waiver: null }}
+      pageHref="/2026/week-07/"
+    />,
+  );
 }
 
 /* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */

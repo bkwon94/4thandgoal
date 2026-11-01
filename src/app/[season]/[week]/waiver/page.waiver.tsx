@@ -7,10 +7,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Masthead, WeekLine } from "@/components/masthead";
 import { WarChest } from "@/components/waiver/war-chest";
-import { basePath } from "@/lib/config";
 import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";
+import { waiverHref, weekHref } from "@/lib/routes";
 import type { AvatarMap } from "@/lib/week-types";
+import { mastheadProps } from "../../../masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 
@@ -38,8 +39,9 @@ const BUILT = new Intl.DateTimeFormat("en-US", {
 
 /* The week JSON avatar paths are relative to the week folder, but this route sits one folder down, so each path gets the folder in front. */
 function weekAvatars(season: string, week: string, avatars: AvatarMap): AvatarMap {
-  const folder = `${basePath}/${season}/${week}`;
-  return Object.fromEntries(Object.entries(avatars).map(([id, path]) => [id, `${folder}/${path}`]));
+  // The week href ends in a slash, so the path joins it with no slash of its own.
+  const folder = weekHref(season, week);
+  return Object.fromEntries(Object.entries(avatars).map(([id, path]) => [id, `${folder}${path}`]));
 }
 
 export default async function WaiverPage({ params }: Props) {
@@ -49,7 +51,7 @@ export default async function WaiverPage({ params }: Props) {
   const page = loadWeek(season, week);
   return (
     <>
-      <Masthead subtitle="Waiver Wire" pageHref={`${basePath}/${season}/${week}/waiver/`}>
+      <Masthead {...mastheadProps()} subtitle="Waiver Wire" pageHref={waiverHref(season, week)}>
         <WeekLine label="WEEK" number={board.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{`Built ${BUILT.format(new Date(board.built))}`}</div>
       </Masthead>

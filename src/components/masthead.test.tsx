@@ -4,8 +4,8 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import type { WeekSummary } from "@/lib/data/week-data";
-import { Masthead } from "./masthead";
+import type { WeekSummary } from "@/lib/week-types";
+import { Masthead, type MastheadLinks } from "./masthead";
 
 /* Three published weeks, newest first, as listWeekSummaries returns them. */
 const WEEKS: WeekSummary[] = [
@@ -14,16 +14,28 @@ const WEEKS: WeekSummary[] = [
   { number: 5, dates: "Oct 8 – Oct 12, 2026", href: "/2026/week-05/" },
 ];
 
-/* The masthead of the week 7 report, with the waiver flag off and no managers file. A test overrides a prop to change one value. */
-function renderWeekMasthead(props: Partial<Parameters<typeof Masthead>[0]> = {}) {
+/* The links of a build with no base path, the waiver flag off, and no managers file. */
+const LINKS: MastheadLinks = {
+  home: "/",
+  rankings: "/rankings/",
+  analyze: "/analyze/",
+  logo: "/images/logo.png",
+  managers: null,
+  waiver: null,
+};
+
+/* The masthead of the week 7 report, with the waiver flag off and no managers file. A test overrides a link to change one value. */
+function renderWeekMasthead({
+  waiverHref = null,
+  managersHref = null,
+  pageHref = "/2026/week-07/",
+}: { waiverHref?: string | null; managersHref?: string | null; pageHref?: string } = {}) {
   render(
     <Masthead
       subtitle="League Weekly"
       weeks={WEEKS}
-      pageHref="/2026/week-07/"
-      waiverHref={null}
-      managersHref={null}
-      {...props}
+      links={{ ...LINKS, waiver: waiverHref, managers: managersHref }}
+      pageHref={pageHref}
     />,
   );
 }
@@ -129,7 +141,7 @@ afterAll(() => {
 
 describe("Masthead", () => {
   it("shows the title and the subtitle in the home link", () => {
-    render(<Masthead subtitle="Trade Analyzer" />);
+    render(<Masthead subtitle="Trade Analyzer" weeks={WEEKS} links={LINKS} />);
     const home = brandLink(/Cornerstone Fantasy Football League/);
     expect(home.textContent).toContain("Cornerstone Fantasy Football League");
     expect(home.textContent).toContain("Trade Analyzer");
@@ -138,7 +150,7 @@ describe("Masthead", () => {
 
   it("shows the week line children under the brand", () => {
     render(
-      <Masthead subtitle="League Weekly">
+      <Masthead subtitle="League Weekly" weeks={WEEKS} links={LINKS}>
         <p>Week 6</p>
       </Masthead>,
     );
@@ -147,19 +159,19 @@ describe("Masthead", () => {
   });
 
   it("shows a custom title in place of the default brand", () => {
-    render(<Masthead title="Custom Brand" subtitle="League Weekly" />);
+    render(<Masthead title="Custom Brand" subtitle="League Weekly" weeks={WEEKS} links={LINKS} />);
     const home = brandLink(/Custom Brand/);
     expect(home.textContent).toContain("Custom Brand");
     expect(home.textContent).not.toContain("Cornerstone Fantasy Football League");
   });
 
   it("shows no week line when there are no children", () => {
-    render(<Masthead subtitle="Trade Analyzer" />);
+    render(<Masthead subtitle="Trade Analyzer" weeks={WEEKS} links={LINKS} />);
     expect(screen.queryByText("Week 6")).toBeNull();
   });
 
   it("shows no subtitle when none is given", () => {
-    render(<Masthead />);
+    render(<Masthead weeks={WEEKS} links={LINKS} />);
     expect(brandLink(/Cornerstone Fantasy Football League/).textContent).toBe("Cornerstone Fantasy Football League");
   });
 

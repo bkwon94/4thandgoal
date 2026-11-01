@@ -6,9 +6,10 @@ import type { Metadata } from "next";
 import { Masthead } from "@/components/masthead";
 import { ManagersIndex } from "@/components/managers/managers-index";
 import { PageColumn } from "@/components/page-column";
-import { basePath } from "@/lib/config";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
+import { managersHref } from "@/lib/routes";
+import { mastheadProps } from "../../masthead-props";
 
 type Props = { params: Promise<{ season: string }> };
 
@@ -30,7 +31,7 @@ export default async function ManagersPage({ params }: Props) {
   const managers = loadManagers()!;
   return (
     <>
-      <Masthead subtitle="Managers" pageHref={`${basePath}/${season}/managers/`} />
+      <Masthead {...mastheadProps()} subtitle="Managers" pageHref={managersHref(season)} />
       <PageColumn>
         <ManagersIndex managers={managers} avatars={latestAvatars(managers.season)} />
       </PageColumn>

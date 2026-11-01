@@ -2,17 +2,16 @@
  * The week footer: the last row of the weekly report, with a link to the prior week on the left and the next week on the right.
  * It is a server component. The page finds both weeks at build time, so a new week needs no code change.
  */
-import { basePath } from "@/lib/config";
 import { cn } from "@/lib/utils";
-import type { WeekSummary } from "@/lib/data/week-data";
+import type { WeekSummary } from "@/lib/week-types";
 import { Chapter } from "./parts";
 
-/* A plain anchor in the home row style, like the week rows of the home page. An anchor skips the router, so the base path goes in by hand.
+/* A plain anchor in the home row style, like the week rows of the home page. An anchor skips the router, so the week href carries the base path.
    The touch height keeps a short row a comfortable target. */
 function WeekLink({ week, rel }: { week: WeekSummary; rel: "prev" | "next" }) {
   return (
     <a
-      href={`${basePath}${week.href}`}
+      href={week.href}
       rel={rel}
       className={cn(
         "press group block min-h-touch border-b border-rule pb-sp-3 text-inherit no-underline",
