@@ -12,9 +12,9 @@ from cornerstone.models import (
     PlayerLine,
     Side,
     Week,
-    r2,
     sub,
 )
+from cornerstone.numbers import r2
 
 
 def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
