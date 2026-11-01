@@ -25,7 +25,8 @@ from cornerstone.nflverse import (
 from cornerstone.parse import parse_week
 from cornerstone.paths import history_root, history_week_dir, nflverse_cache_dir, players_cache, returns_path
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import SLEEPER, RawAheadWeek, RawWeek
+from cornerstone.provider.raw import RawAheadWeek, RawWeek
+from cornerstone.provider.sleeper import SLEEPER
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS

@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.facts_league import standings
 from cornerstone.parse import parse_week
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 # Another league with the same raw data, owned by the manager of roster 12. Its sizes are those of Cornerstone.
 OTHER = cornerstone_config().model_copy(update=dict(

@@ -34,7 +34,6 @@ LAYER_OF: dict[str, str] = {
     "provider.base": "provider",
     "provider.raw": "provider",
     "provider.sleeper": "provider",
-    "sleeper": "provider",
     "nflverse": "provider",
     "nflverse_rows": "provider",
     "nflverse_expected": "provider",

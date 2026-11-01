@@ -17,7 +17,7 @@ from cornerstone.parse import player_name
 from cornerstone.rank_score import rank_scores
 from cornerstone.ranks import in_pool
 from cornerstone.sheet.base import Nums, fact
-from cornerstone.sleeper import RawWeek
+from cornerstone.provider.raw import RawWeek
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
     BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS,

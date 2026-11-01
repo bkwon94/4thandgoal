@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.config import cornerstone_config
 from cornerstone.provider import sleeper
-from cornerstone.sleeper import fetch_week, load_raw
+from cornerstone.provider.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))

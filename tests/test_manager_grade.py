@@ -19,7 +19,7 @@ from cornerstone.managers import managers
 from cornerstone.models import ChartValues, History, PastWeek
 from cornerstone.parse import parse_week
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import week_snapshot
 from cornerstone.tunables import GRADE_WEIGHTS
 

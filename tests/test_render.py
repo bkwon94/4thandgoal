@@ -16,7 +16,7 @@ from cornerstone.render import (
 )
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 CONFIG = cornerstone_config()
 

@@ -16,7 +16,7 @@ from cornerstone.live import (
 )
 from cornerstone.models import Week
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from cornerstone.sleeper import SLEEPER
+from cornerstone.provider.sleeper import SLEEPER
 from cornerstone.snapshot import Snapshot
 
 

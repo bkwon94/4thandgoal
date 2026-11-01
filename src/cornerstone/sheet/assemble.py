@@ -18,10 +18,10 @@ from cornerstone.models import (
     Week,
     WeekData,
 )
+from cornerstone.provider.sleeper import fetch_news
 from cornerstone.sheet import awards, drops, leaders, matchups, next_week, rankings, standings, week
 from cornerstone.sheet.base import BYE_FACT_PREFIX, SENTENCE_RANGES, Context, week_dates
 from cornerstone.sheet.rankings import rankings_chapter
-from cornerstone.sleeper import fetch_news
 from cornerstone.snapshot import Snapshot
 
 

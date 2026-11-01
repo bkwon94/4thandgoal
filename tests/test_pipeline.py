@@ -35,7 +35,7 @@ from cornerstone.pipeline import (
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
 from fakes import fixture_nflverse, no_claims, no_network, no_news
