@@ -4,6 +4,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { weekPageSchema } from "./schemas/week";
 import type { WeekPage } from "@/lib/week-types";
 
 /* The build and the tests both run from the repo root, so public/ sits under the working folder. */
@@ -42,7 +43,8 @@ export function loadWeek(season: string, week: string): WeekPage {
       `${file} has schema_version ${String(page.schema_version)}, but this site reads schema_version ${SCHEMA_VERSION}.`,
     );
   }
-  return page as WeekPage;
+  // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.
+  return weekPageSchema.parse(page);
 }
 
 /* One row of the home page list. */
