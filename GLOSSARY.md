@@ -133,3 +133,25 @@ _Avoid_: Studs, stars, leaders
 **Season numbers**:
 The four numbers under the points line: the season high, the season low, the streak, and the record against the median.
 _Avoid_: Stats row, shelf, summary
+
+### The code
+
+**Part**:
+A component that takes data and returns markup, shared across pages: the chapter card, the team name, the player row, the points line. A part never reads a file, the env, or a route.
+_Avoid_: Widget, shared component, common component, block
+
+**Primitive**:
+A shadcn control under the parts: a button, a select, a dialog, a popover. A primitive knows nothing of the league.
+_Avoid_: Base component, atom, ui element
+
+**Shell**:
+The parts that frame every page: the masthead, the menu, the compact bar, and the theme button.
+_Avoid_: Layout, chrome, frame, nav
+
+**Published file**:
+One JSON file the pipeline publishes into `public/`, such as a week page, the rankings, or the managers file. The pipeline owns its shape, and the site reads it with one loader.
+_Avoid_: Snapshot, data file, feed, export
+
+**Loader**:
+The one build-time reader of a published file. It checks the shape and hands typed data to the app layer. Only the app layer calls a loader.
+_Avoid_: Fetcher, reader, data module

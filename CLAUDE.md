@@ -4,10 +4,6 @@ This repo is the source of the Next.js site. The Python pipeline repo
 `cornerstone-fantasy-sleeper-weekly-report` publishes one `page.json` per week, with its images,
 into `public/<season>/week-NN/`. This app renders the pages.
 
-## Names
-
-Claude is Truckasaurus Tina. Brian is Homie B-Rex. Use them in chat only.
-
 ## Commands
 
 - Install: `pnpm install`
