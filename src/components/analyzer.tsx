@@ -26,7 +26,8 @@ type TeamsState =
 
 const WRONG_PASSPHRASE = "That passphrase is wrong.";
 
-export function Analyzer() {
+/* The season and the finder flag come from the page, so the analyzer and the form under it import no config. */
+export function Analyzer({ season, finderOn }: { season: number; finderOn: boolean }) {
   // Undefined until the effect reads storage. Local storage does not exist during the static build.
   const [passphrase, setPassphraseState] = useState<string | null | undefined>(undefined);
   const [authError, setAuthError] = useState<string | undefined>();
@@ -120,7 +121,7 @@ export function Analyzer() {
   if (teams.status !== "ready" || !passphrase) return <Chapter>{states}</Chapter>;
 
   return (
-    <TradeForm teams={teams.teams} passphrase={passphrase} onUnauthorized={handleUnauthorized} onRostersStale={handleStaleRosters}>
+    <TradeForm teams={teams.teams} season={season} finderOn={finderOn} passphrase={passphrase} onUnauthorized={handleUnauthorized} onRostersStale={handleStaleRosters}>
       {/* The result sits after the chapter, not inside it, so its own chapters read as cards under the form card. */}
       {({ form, result }) => (
         <>

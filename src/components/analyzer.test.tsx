@@ -111,7 +111,7 @@ async function submitPassphrase(value: string) {
 
 describe("Analyzer", () => {
   it("shows the dialog and no pickers on first load", async () => {
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     expect(await screen.findByRole("dialog")).toBeTruthy();
     expect(screen.queryByText("Your Team")).toBeNull();
     expect(fetchStub).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe("Analyzer", () => {
 
   it("fetches the teams with the header after a submit and shows both pickers", async () => {
     answer(200, TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     await submitPassphrase("localtest");
 
     expect(await screen.findByText("Pick the Teams")).toBeTruthy();
@@ -136,7 +136,7 @@ describe("Analyzer", () => {
   it("skips the dialog when a passphrase is stored", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByText("Pick the Teams")).toBeTruthy();
     expect(screen.queryByRole("dialog")).toBeNull();
@@ -146,7 +146,7 @@ describe("Analyzer", () => {
   it("clears the passphrase on a 401, shows the error, and fetches again after a new submit", async () => {
     localStorage.setItem("cpc.passphrase", "wrong");
     answer(401, { detail: "bad passphrase" });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByText("That passphrase is wrong.")).toBeTruthy();
     expect(screen.getByRole("dialog")).toBeTruthy();
@@ -161,21 +161,21 @@ describe("Analyzer", () => {
   it("shows the wait time on a 429", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(429, { detail: "slow down" }, { "Retry-After": "30" });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     expect(await screen.findByText("Too many requests. Try again in 30 seconds.")).toBeTruthy();
   });
 
   it("shows the wait in hours on a 429 with a Retry-After over an hour", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(429, { detail: "slow down" }, { "Retry-After": "50000" });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     expect(await screen.findByText("Too many requests. Try again in 14 hours.")).toBeTruthy();
   });
 
   it("shows skeleton rows before the teams arrive, then the pickers", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     const release = answerLater(TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByRole("status", { name: "Loading teams" })).toBeTruthy();
     expect(screen.queryByText("Pick the Teams")).toBeNull();
@@ -190,7 +190,7 @@ describe("Analyzer", () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     storeEntry(STORED, 60_000);
     const release = answerLater(TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     // The fetch has not answered, so the pickers come from the store.
     expect(await screen.findByText("Pick the Teams")).toBeTruthy();
@@ -208,7 +208,7 @@ describe("Analyzer", () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     storeEntry(STORED, 6 * 60_000);
     const release = answerLater(TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByRole("status", { name: "Loading teams" })).toBeTruthy();
     expect(screen.queryByText("Stored Sliders")).toBeNull();
@@ -222,7 +222,7 @@ describe("Analyzer", () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     storeEntry(STORED, 60_000);
     answer(500);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByText("Pick the Teams")).toBeTruthy();
     await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(1));
@@ -237,7 +237,7 @@ describe("Analyzer", () => {
     localStorage.setItem("cpc.passphrase", "wrong");
     storeEntry(STORED, 60_000);
     answer(401, { detail: "bad passphrase" });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
 
     expect(await screen.findByText("That passphrase is wrong.")).toBeTruthy();
     expect(screen.getByRole("dialog")).toBeTruthy();
@@ -254,7 +254,7 @@ describe("Analyzer", () => {
       60_000,
     );
     const release = answerLater({ teams: ROSTERS });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     await screen.findByText("Pick the Teams");
 
     await pickTrade();
@@ -273,7 +273,7 @@ describe("Analyzer", () => {
   it("clears the store and fetches the teams again on a 422 from analyze", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, { teams: ROSTERS });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     await screen.findByText("Pick the Teams");
     expect(sessionStorage.getItem(STORE_KEY)).not.toBeNull();
 
@@ -296,7 +296,7 @@ describe("Analyzer", () => {
   it("shows a retry button when the API fails, and the button fetches again", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(500);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     expect(await screen.findByText("The API did not answer. Try again.")).toBeTruthy();
 
     answer(200, TEAMS);
@@ -307,7 +307,7 @@ describe("Analyzer", () => {
   it("puts the sides in order, each with its pickers, and the grade button after the sides", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, { teams: ROSTERS });
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     await screen.findByText("Pick the Teams");
     await choose(teamTrigger("Your Team"), "Gridiron Ghosts");
     await choose(teamTrigger("Team Two"), "Blitz Bakers");
@@ -330,7 +330,7 @@ describe("Analyzer", () => {
   it("leaves the team that the other side holds out of its picker", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     answer(200, TEAMS);
-    render(<Analyzer />);
+    render(<Analyzer season={2026} finderOn={false} />);
     await screen.findByText("Pick the Teams");
 
     await choose(teamTrigger("Your Team"), "Gridiron Ghosts");

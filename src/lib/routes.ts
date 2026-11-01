@@ -11,6 +11,8 @@ export const analyzeHref = () => `${basePath}/analyze/`;
 export const weekHref = (season: string, week: string) => `${basePath}/${season}/${week}/`;
 export const waiverHref = (season: string, week: string) => `${weekHref(season, week)}waiver/`;
 export const managersHref = (season: string) => `${basePath}/${season}/managers/`;
-export const managerHref = (season: string, rosterId: number) => `${managersHref(season)}${rosterId}/`;
+/* A component holds only the managers index href, so it calls this for a manager page and keeps no path format of its own. */
+export const managerHrefFrom = (managersHref: string, rosterId: number) => `${managersHref}${rosterId}/`;
+export const managerHref = (season: string, rosterId: number) => managerHrefFrom(managersHref(season), rosterId);
 /* The logo is a plain img on every page, so its src takes the base path like a link. */
 export const logoSrc = () => `${basePath}/images/logo.png`;

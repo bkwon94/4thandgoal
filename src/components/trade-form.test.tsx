@@ -9,14 +9,8 @@ import findJson from "../../.scratch/site-react/fixtures/find-response.json";
 import type { Team } from "@/lib/api";
 import { TradeForm } from "./trade-form";
 
-// The finder flag is a build-time value, so the tests switch it through a mock of the config module.
-const flags = vi.hoisted(() => ({ finderOn: false }));
-vi.mock("@/lib/config", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/config")>()),
-  get finderOn() {
-    return flags.finderOn;
-  },
-}));
+// The finder flag is a prop from the page, so each render passes the flag the test sets.
+let finderOn = false;
 
 const player = (id: string, name: string) => ({
   player_id: id,
@@ -98,7 +92,7 @@ beforeEach(() => {
   fetchStub.mockReset();
   onUnauthorized.mockReset();
   vi.stubGlobal("fetch", fetchStub);
-  render(<TradeForm teams={TEAMS} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+  render(<TradeForm teams={TEAMS} season={2026} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
 });
 
 afterEach(() => {
@@ -435,7 +429,7 @@ describe("TradeForm with three or four sides", () => {
 
   beforeEach(() => {
     cleanup();
-    render(<TradeForm teams={FOUR_TEAMS} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    render(<TradeForm teams={FOUR_TEAMS} season={2026} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
   });
 
   /* Picks a team on each of the first three sides and one player on each. */
@@ -580,7 +574,7 @@ describe("TradeForm with three or four sides", () => {
 /* The finder cards hand their trade to the form. The fixture finder pair is roster 2 and roster 3, so these tests render those teams. */
 describe("TradeForm with the finder", () => {
   afterEach(() => {
-    flags.finderOn = false;
+    finderOn = false;
   });
 
   const [first] = findJson.trades;
@@ -595,8 +589,8 @@ describe("TradeForm with the finder", () => {
 
   beforeEach(() => {
     cleanup();
-    flags.finderOn = true;
-    render(<TradeForm teams={pairTeams} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    finderOn = true;
+    render(<TradeForm teams={pairTeams} season={2026} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
   });
 
   it("shows the finder when the flag is on", async () => {
@@ -612,9 +606,9 @@ describe("TradeForm with the finder", () => {
   });
 
   it("hides the finder when the flag is off, with my team picked", async () => {
-    flags.finderOn = false;
+    finderOn = false;
     cleanup();
-    render(<TradeForm teams={pairTeams} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    render(<TradeForm teams={pairTeams} season={2026} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
     await pickTeam("Your Team", "All You Need Is Love");
     expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
   });

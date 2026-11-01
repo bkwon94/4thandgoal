@@ -4,12 +4,11 @@
  */
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
-import { basePath } from "@/lib/config";
+import { AVATAR_FALLBACK } from "@/lib/avatar";
 import { HEADSHOT_FALLBACK } from "@/lib/headshot";
+import { managerHrefFrom } from "@/lib/routes";
 import type { AvatarMap, HeadshotMap } from "@/lib/week-types";
 import { cn } from "@/lib/utils";
-
-const AVATAR_FALLBACK = `${basePath}/images/avatar-default.svg`;
 
 /* The JSON paths are relative to the week folder. The route ends in a slash, so the browser resolves them as given. */
 export function avatarSrc(avatars: AvatarMap, rosterId: number): string {
@@ -102,7 +101,7 @@ export function Avatar({ src }: { src: string }) {
 
 /* The manager page of one team, from the managers index href of the season. A season with no managers file has no href. */
 export function managerHref(managersHref: string | null, rosterId: number): string | null {
-  return managersHref === null ? null : `${managersHref}${rosterId}/`;
+  return managersHref === null ? null : managerHrefFrom(managersHref, rosterId);
 }
 
 /* A team name, as a link to the manager page when the season has one, else as plain text.

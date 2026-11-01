@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Analyzer } from "@/components/analyzer";
 import { Masthead } from "@/components/masthead";
 import { PageColumn } from "@/components/page-column";
+import { finderOn, season } from "@/lib/config";
 import { analyzeHref } from "@/lib/routes";
 import { mastheadProps } from "@/app/masthead-props";
 
@@ -19,7 +20,7 @@ export default function AnalyzePage() {
     <>
       <Masthead {...mastheadProps()} subtitle="Trade Analyzer" pageHref={analyzeHref()} />
       <PageColumn>
-        <Analyzer />
+        <Analyzer season={season} finderOn={finderOn} />
       </PageColumn>
     </>
   );

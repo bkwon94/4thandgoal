@@ -4,11 +4,11 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { basePath } from "@/lib/config";
+import { AVATAR_FALLBACK } from "@/lib/avatar";
 import type { Team } from "@/lib/api";
 import { TeamPicker } from "./team-picker";
 
-const DEFAULT_SRC = `${basePath}/images/avatar-default.svg`;
+const DEFAULT_SRC = AVATAR_FALLBACK;
 
 function team(avatar: string | null): Team {
   return { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar, players: [] };
