@@ -274,8 +274,8 @@ def _value_facts(c: Context, i: int, trade: Trade) -> list[Fact]:
         n = Nums()
         team = c.team(rid)
 
-        def total(got: bool) -> float:
-            # Decimal sums keep a half-point total exact.
+        def total(got: bool, rid: int = rid) -> float:
+            # Decimal sums keep a half-point total exact. The default binds the roster of this pass.
             pids = [pid for pid in _moved(trade, rid, got) if pid in valued]
             return float(sum((Decimal(str(values[pid])) for pid in pids), Decimal(0)))
 

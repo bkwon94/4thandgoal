@@ -11,18 +11,24 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
+from fakes import FixtureProvider
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import save_week_to_history
 from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
 from cornerstone.nflverse import (
-    DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL, STATS_PLAYER_URL, cache_path,
+    DEPTH_CHARTS_URL,
+    FFIDS_URL,
+    FFOPPORTUNITY_URL,
+    INJURIES_URL,
+    SCHEDULES_URL,
+    STATS_PLAYER_URL,
+    cache_path,
 )
 from cornerstone.provider.raw import RawAheadWeek
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import load_snapshot
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
-from fakes import FixtureProvider
 
 ET = ZoneInfo("America/New_York")
 # The league config the builds and fetches of these tests read.

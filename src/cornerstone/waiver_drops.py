@@ -2,12 +2,14 @@
 The drops bucket of the waiver board: rostered players whose snap share fell three weeks in a row.
 Pure code over the raw files and the usage, so the same inputs give the same bucket.
 """
+import itertools
+
 from cornerstone.config import LeagueConfig
-from cornerstone.numbers import round_half_up
 from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
+from cornerstone.numbers import round_half_up
 from cornerstone.parse import player_name, team_name
-from cornerstone.sheet.base import Nums, fact
 from cornerstone.provider.raw import RawWeek
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import BUCKET_POSITIONS, DROP_WEEKS
 from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
 
@@ -63,7 +65,7 @@ def _falls(rows: list[UsageWeek], week: int) -> bool:
     shares = [by_week.get(w) for w in range(week - DROP_WEEKS, week + 1)]
     if None in shares:
         return False
-    return all(later < earlier for earlier, later in zip(shares, shares[1:]))
+    return all(later < earlier for earlier, later in itertools.pairwise(shares))
 
 
 def _candidate(player_id: str, entry: dict, info: DropInfo, week_projection: float, ros: float) -> WaiverPlayer:

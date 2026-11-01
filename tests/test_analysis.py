@@ -7,15 +7,14 @@ import re
 import shutil
 
 import pytest
-
 from conftest import with_free_agents
 
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
 from cornerstone.config import cornerstone_config
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 CONFIG = cornerstone_config()
@@ -331,17 +330,17 @@ def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
 
 @pytest.mark.parametrize("analysis_text", [
     # The period in a name ends no sentence.
-    "Amon-Ra St. Brown is not in the trade. Garrett Wilson starts. His target share went up. "
-    "He moves to a new roster. He is a starter.",
+    ("Amon-Ra St. Brown is not in the trade. Garrett Wilson starts. His target share went up. "
+     "He moves to a new roster. He is a starter."),
     # The period in a decimal ends no sentence.
-    "Garrett Wilson scored 14.2 points per game before the trade. He starts. His target share went up. "
-    "He moves to a new roster. He is a starter.",
+    ("Garrett Wilson scored 14.2 points per game before the trade. He starts. His target share went up. "
+     "He moves to a new roster. He is a starter."),
     # Claude writes the short form of a name, a suffix, and "vs." with a decimal in the same analysis.
-    "St. Brown is not in the trade, and Garrett Wilson scored 14.2 points per game. Harrison Jr. lost snaps. "
-    "Garrett Wilson vs. Devaughn Vele is close. St. Brown stays put. He is a starter.",
+    ("St. Brown is not in the trade, and Garrett Wilson scored 14.2 points per game. Harrison Jr. lost snaps. "
+     "Garrett Wilson vs. Devaughn Vele is close. St. Brown stays put. He is a starter."),
     # A run of initials ends no sentence, in a full name and in a form the snapshot does not hold.
-    "Garrett Wilson starts. A.J. Brown is not in the trade. D.J. Moore is not in it either. "
-    "His target share went up. He is a starter.",
+    ("Garrett Wilson starts. A.J. Brown is not in the trade. D.J. Moore is not in it either. "
+     "His target share went up. He is a starter."),
 ])
 def test_a_period_in_a_name_or_a_decimal_ends_no_sentence(trade, snap, analysis_text):
     # Five sentences pass. A miscount gives six, which fails.

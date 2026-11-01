@@ -11,7 +11,6 @@ from cornerstone.models import (
 )
 from cornerstone.sheet.base import AWARD_TITLES, Context, Nums, fact
 
-
 logger = logging.getLogger(__name__)
 
 NEWS_MAX_CHARS = 300

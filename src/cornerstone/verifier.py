@@ -53,7 +53,7 @@ REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
 WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
 # Each chapter is one call, so a page-wide cap on this closer cannot hold. The closer is banned outright.
-AND_THATS_TAIL = re.compile(r",\s*and that(?:'|’)?s\b[^,]*$", re.I)
+AND_THATS_TAIL = re.compile(r",\s*and that(?:'|’)?s\b[^,]*$", re.IGNORECASE)
 # Two rankings teams whose first sentences share this many opening words read as one stock row.
 OPENER_WORDS = 3
 # The writer uses curly quotes and dashes, so the plain ASCII set alone misses them.
@@ -82,7 +82,7 @@ def without_urls(text: str) -> str:
 
 def normalize_number(number: str) -> str:
     number = number.replace(",", "")
-    return number[:-2] if number.endswith(".0") else number
+    return number.removesuffix(".0")
 
 
 def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:

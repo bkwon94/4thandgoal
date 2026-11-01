@@ -5,7 +5,14 @@ Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
 from cornerstone.adjusters import (
-    FLEX_SLOTS, STRENGTH_SLOTS, Side, StartingSlot, allowed_positions, due_back_week, hole_sentence, team_race,
+    FLEX_SLOTS,
+    STRENGTH_SLOTS,
+    Side,
+    StartingSlot,
+    allowed_positions,
+    due_back_week,
+    hole_sentence,
+    team_race,
     trade_handcuffs,
 )
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share

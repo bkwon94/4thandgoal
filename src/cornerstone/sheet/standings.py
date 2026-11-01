@@ -11,7 +11,6 @@ from cornerstone.models import (
 from cornerstone.numbers import r2
 from cornerstone.sheet.base import Context, Nums, fact
 
-
 # The phrase for a team with the wins of the last playoff spot, keyed by its place against that spot.
 # A team below it fills in its spots below the last playoff spot as a digit, such as "2 spots".
 CUT_PHRASES = {

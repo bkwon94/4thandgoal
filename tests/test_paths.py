@@ -4,9 +4,23 @@ The expected strings are literal, so a change to the layout fails here first.
 from pathlib import Path
 
 from cornerstone.paths import (
-    chart_image, chart_read, charts_dir, history_dir, history_raw_dir, history_root, history_week_dir,
-    nflverse_cache_dir, players_cache, raw_dir, results_cache_dir, returns_path, season_dir, site_week_dir, week_dir,
-    week_from_label, week_label,
+    chart_image,
+    chart_read,
+    charts_dir,
+    history_dir,
+    history_raw_dir,
+    history_root,
+    history_week_dir,
+    nflverse_cache_dir,
+    players_cache,
+    raw_dir,
+    results_cache_dir,
+    returns_path,
+    season_dir,
+    site_week_dir,
+    week_dir,
+    week_from_label,
+    week_label,
 )
 
 REPO = Path("/repo")

@@ -163,7 +163,8 @@ def points_per_game(history: History, player_id: str, through: int) -> tuple[flo
     if not weeks:
         return (0.0, 0)
     # Sleeper leaves out a stat whose value is 0, so a game with no pts_half_ppr scored 0.
-    total = sum(Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks)
+    # The Decimal start keeps the sum a Decimal for the type checker. The weeks are never empty here.
+    total = sum((Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks), Decimal(0))
     mean = (total / len(weeks)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
     return (float(mean), len(weeks))
 

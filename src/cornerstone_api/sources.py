@@ -12,8 +12,14 @@ from cornerstone.chart import chart_values, claude_reader
 from cornerstone.config import LeagueConfig
 from cornerstone.history import PastLegFetcher
 from cornerstone.live import (
-    ChartReader, RefreshResult, SleeperFetcher, fetch_current_week, fetch_live_week, live_rosters_snapshot,
-    live_snapshot, refresh_sources,
+    ChartReader,
+    RefreshResult,
+    SleeperFetcher,
+    fetch_current_week,
+    fetch_live_week,
+    live_rosters_snapshot,
+    live_snapshot,
+    refresh_sources,
 )
 from cornerstone.models import Week
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, http_get
@@ -34,7 +40,8 @@ class Sources:
     fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live
     fetch_nflverse: Callable[[str], bytes] = http_get
     fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg
-    read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))
+    # One shared partial is safe as the default, because it holds no state that a call changes.
+    read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 
     def snapshot(self, repo: Path, season: int) -> Snapshot:
         """The live snapshot of the league now. It raises ValueError when Sleeper is not in `season`."""

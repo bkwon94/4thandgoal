@@ -14,10 +14,10 @@ from cornerstone.sheet.base import RANKINGS_CHAPTER, sentence_range
 from cornerstone.standings_table import standings
 
 # Another league with the same raw data, owned by the manager of roster 12. Its sizes are those of Cornerstone.
-OTHER = cornerstone_config().model_copy(update=dict(
-    slug="other", display_name="Other League", provider="sleeper", league_ids=((2026, "1"),),
-    owner_username="pdurkim", timezone="America/Chicago", prompts_dir=Path("prompts"),
-))
+OTHER = cornerstone_config().model_copy(update={
+    "slug": "other", "display_name": "Other League", "provider": "sleeper", "league_ids": ((2026, "1"),),
+    "owner_username": "pdurkim", "timezone": "America/Chicago", "prompts_dir": Path("prompts"),
+})
 
 
 def _owners(raw: dict, config: LeagueConfig) -> list[int]:

@@ -6,8 +6,8 @@ from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
 from cornerstone.parse import parse_week
-from cornerstone.sheet import build_bundle
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.sheet import build_bundle
 from cornerstone.verifier import (
     build_verifier_prompt,
     claude_verify,
@@ -480,7 +480,6 @@ def test_writer_with_no_output_twice_falls_back(fixture_raw_dir):
     def fake(system, user, model):
         if model.__name__ == "VerifyOut":
             raise AssertionError("no verifier call expected")
-        return None
 
     blurb, results = write_and_verify(ch, sheet, fake, prompts_dir=PROMPTS)
     assert blurb.fallback and len(results) == 2

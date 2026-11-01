@@ -40,7 +40,6 @@ from cornerstone.snapshot import Snapshot
 from cornerstone.standings_table import season_records, standings
 from cornerstone.tunables import TREND_WEEKS
 
-
 logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
@@ -154,7 +153,7 @@ class Nums:
     def __init__(self) -> None:
         self.seen: list[str] = []
 
-    def __call__(self, x: float | int) -> str:
+    def __call__(self, x: float) -> str:
         s = str(x) if isinstance(x, int) else fmt(x)
         self.seen.append(s)
         return s

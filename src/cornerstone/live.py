@@ -18,14 +18,23 @@ from cornerstone.config import LeagueConfig
 from cornerstone.history import PastLegFetcher, fetch_history, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
 from cornerstone.nflverse import (
-    CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, FFIDS_URL, FFOPPORTUNITY_URL, INJURIES_URL, SCHEDULES_URL,
-    STATS_PLAYER_URL, cache_path, download, http_get, is_fresh,
+    CACHE_MAX_AGE_SECONDS,
+    DEPTH_CHARTS_URL,
+    FFIDS_URL,
+    FFOPPORTUNITY_URL,
+    INJURIES_URL,
+    SCHEDULES_URL,
+    STATS_PLAYER_URL,
+    cache_path,
+    download,
+    http_get,
+    is_fresh,
 )
 from cornerstone.parse import parse_week
 from cornerstone.paths import history_root, history_week_dir, nflverse_cache_dir, players_cache, returns_path
-from cornerstone.slow_sources import load_slow_sources
 from cornerstone.provider.raw import RawAheadWeek, RawWeek
 from cornerstone.provider.sleeper import SLEEPER
+from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
@@ -106,7 +115,7 @@ def _read_chart(
     """
     try:
         return read_chart(repo, season_start, week, lines), False
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001 - the docstring says why: no error may stop the service
         logger.warning("Chart read for week %d failed (%s), so the week has no chart", week, type(error).__name__)
         return None, True
 

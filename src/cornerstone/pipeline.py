@@ -19,25 +19,57 @@ from cornerstone.history import fetch_history, load_history, load_saved_weeks, s
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.models import (
-    Blurb, BuildRecord, Bundle, Chapter, ChartValues, History, NflverseWeek, OddsResult, ProjectionsAhead, Team, Trade,
-    VerifyFile, VerifyResult, Week, week_lines,
+    Blurb,
+    BuildRecord,
+    Bundle,
+    Chapter,
+    ChartValues,
+    History,
+    NflverseWeek,
+    OddsResult,
+    ProjectionsAhead,
+    Team,
+    Trade,
+    VerifyFile,
+    VerifyResult,
+    Week,
+    week_lines,
 )
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.paths import (
-    history_dir, history_root, nflverse_cache_dir, players_cache, raw_dir, returns_path, week_dir, week_from_label,
+    history_dir,
+    history_root,
+    nflverse_cache_dir,
+    players_cache,
+    raw_dir,
+    returns_path,
+    week_dir,
+    week_from_label,
 )
 from cornerstone.power_rankings import power_rankings
 from cornerstone.provider.base import Provider
+from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.sleeper import (
+    PROJECTIONS_AHEAD_FILE,
+    SLEEPER,
+    fetch_news,
+    fetch_state,
+    load_raw,
+    read_fetch_time,
+    read_prev_transactions,
+)
 from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import (
-    RANKINGS_CHAPTER, build_bundle, check_week_is_buildable, power_facts, rank_why_facts, rankings_chapter, read_bundle,
+    RANKINGS_CHAPTER,
+    build_bundle,
+    check_week_is_buildable,
+    power_facts,
+    rank_why_facts,
+    rankings_chapter,
+    read_bundle,
     write_bundle,
-)
-from cornerstone.provider.raw import RawWeek
-from cornerstone.provider.sleeper import (
-    PROJECTIONS_AHEAD_FILE, SLEEPER, fetch_news, fetch_state, load_raw, read_fetch_time, read_prev_transactions,
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_returns, week_snapshot

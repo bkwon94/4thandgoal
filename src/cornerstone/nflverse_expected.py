@@ -6,8 +6,8 @@ from decimal import Decimal
 from pathlib import Path
 
 from cornerstone.models import ExpectedGame, ExpectedPoints
-from cornerstone.numbers import r2
 from cornerstone.nflverse_rows import _number, _rows
+from cornerstone.numbers import r2
 
 # The file scores full PPR: 1 point per reception and -2 per interception.
 FILE_REC = 1.0

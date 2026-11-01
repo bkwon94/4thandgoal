@@ -18,27 +18,33 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
-
 from conftest import strip_trend_numbers
+from fastapi.testclient import TestClient
 
 from cornerstone.adjusters import ROSTER_FIT, TREND
 from cornerstone.analysis import (
-    Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
+    Analysis,
+    SideAnalysis,
+    _allowed,
+    _breakdown_text,
+    _letter_failures,
+    _prose_failures,
+    analyze,
+    code_only,
 )
 from cornerstone.config import cornerstone_config
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
-from cornerstone.ranks import recent_points_per_game
 from cornerstone.player_ids import is_def
-from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
 from cornerstone.provider.sleeper import load_raw
+from cornerstone.ranks import recent_points_per_game
+from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
 from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
-from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
+from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources

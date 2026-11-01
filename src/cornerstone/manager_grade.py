@@ -14,7 +14,11 @@ from cornerstone.models import History, ProjectionsAhead
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS,
+    GRADE_BANDS,
+    GRADE_BELOW_BANDS,
+    GRADE_DEPTH_SPARES,
+    GRADE_HOLE_COST,
+    GRADE_WEIGHTS,
 )
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
