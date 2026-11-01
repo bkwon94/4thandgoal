@@ -14,7 +14,7 @@ import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, t
 import type { AvatarMap, Team } from "@/lib/week-types";
 import { DriftField } from "./drift-field";
 import { SLOTS } from "./field-layout";
-import { holderLine, metaLine, priceText, teamName } from "./format";
+import { holderLine, waiverMetaLine, priceText, teamName } from "./format";
 import { PlayerSheet } from "./player-sheet";
 import { TeamPick } from "./team-pick";
 
@@ -120,7 +120,7 @@ function RestList({
                 <span className="flex min-w-0 flex-col">
                   <b className="font-extrabold">{player.name}</b>
                   <span className="text-meta text-on-dark-muted">
-                    {player.drop ? `${metaLine(player)} · ${holderLine(player.drop)}` : metaLine(player)}
+                    {player.drop ? `${waiverMetaLine(player)} · ${holderLine(player.drop)}` : waiverMetaLine(player)}
                   </span>
                 </span>
                 <span className="text-right font-bold">{priceText(player)}</span>

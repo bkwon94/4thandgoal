@@ -5,7 +5,7 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { Chapter } from "@/components/week/parts";
-import { ordinal } from "@/lib/format/format";
+import { ordinal, record } from "@/lib/format/format";
 import { DURATION, REVEAL_STAGGER } from "@/lib/motion";
 import type { Manager, ManagerGrade } from "@/lib/manager-types";
 import { GradeMark, GradePopover } from "./grade-popover";
@@ -72,7 +72,7 @@ export function ManagerHero({ manager, avatar, teams }: { manager: Manager; avat
           </h1>
           <div className="mt-sp-1 text-meta text-mute">{manager.team.owner}</div>
           <div className="mt-sp-1 text-body text-ink-2 tabular-nums">
-            <span className="font-semibold text-ink">{`${manager.wins}-${manager.losses}`}</span>
+            <span className="font-semibold text-ink">{record(manager.wins, manager.losses)}</span>
             {` · ${ordinal(manager.standing)} of ${teams}`}
           </div>
         </div>

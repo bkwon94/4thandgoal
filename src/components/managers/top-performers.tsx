@@ -3,8 +3,9 @@
  * Each row shows the points total and, under it, the points per game started.
  */
 import { Chapter, Label } from "@/components/week/parts";
+import { count, oneDecimal } from "@/lib/format/format";
 import type { Manager } from "@/lib/manager-types";
-import { count, metaLine, oneDecimal, PlayerRow, PlayerRows } from "./player-row";
+import { PlayerRow, PlayerRows, playerMetaLine } from "./player-row";
 
 export function TopPerformers({ manager }: { manager: Manager }) {
   return (
@@ -15,7 +16,7 @@ export function TopPerformers({ manager }: { manager: Manager }) {
           <PlayerRow
             key={performer.player_id}
             player={performer}
-            meta={metaLine(performer, count(performer.games, "start"))}
+            meta={playerMetaLine(performer, count(performer.games, "start", "starts"))}
             points={performer.points}
             under={`${oneDecimal(performer.per_game)} a game`}
           />

@@ -13,7 +13,7 @@ const QUIET_LABEL = "text-label leading-tight font-bold tracking-wide text-mute 
 
 /* The position, then the detail. The players file can lack a player, so a null position drops out of the line.
    A trade row has no detail past the position, so an empty detail drops out too. */
-function metaLine(position: string | null, detail: string) {
+function moveMetaLine(position: string | null, detail: string) {
   return [position, detail].filter(Boolean).join(" · ");
 }
 
@@ -30,7 +30,7 @@ function PlayerRow({ player, detail }: { player: ManagerPlayer; detail: string }
       <PlayerHeadshot playerId={player.player_id} />
       <span className="flex min-w-0 flex-col">
         <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
-        <span className="text-meta text-mute">{metaLine(player.position, detail)}</span>
+        <span className="text-meta text-mute">{moveMetaLine(player.position, detail)}</span>
       </span>
     </li>
   );

@@ -5,6 +5,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { week6 } from "@/components/week/fixture";
+import { record } from "@/lib/format/format";
 import { rankings } from "./fixture";
 import { Movement, PowerRankings } from "./power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "./week-choice";
@@ -111,8 +112,8 @@ describe("PowerRankings", () => {
 
   it("shows a dash in the playoff cell for a row with no odds", () => {
     render(<PowerRankings weeks={[firstWeek]} avatars={week6.avatars} />);
-    const record = `${firstWeek.rows[0].wins}-${firstWeek.rows[0].losses}`;
-    const cell = within(rows()[0]).getByText(record).nextElementSibling!;
+    const firstRecord = record(firstWeek.rows[0].wins, firstWeek.rows[0].losses);
+    const cell = within(rows()[0]).getByText(firstRecord).nextElementSibling!;
     expect(within(cell as HTMLElement).getByText("–")).toBeTruthy();
     expect(within(cell as HTMLElement).getByText("No odds")).toBeTruthy();
   });
@@ -288,7 +289,7 @@ describe("The week chips", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
     fireEvent.click(chip(firstWeek.week));
     for (const [index, row] of firstWeek.rows.entries()) {
-      const cell = within(rows()[index]).getByText(`${row.wins}-${row.losses}`).nextElementSibling as HTMLElement;
+      const cell = within(rows()[index]).getByText(record(row.wins, row.losses)).nextElementSibling as HTMLElement;
       expect(within(cell).getByText("–")).toBeTruthy();
       expect(rows()[index].textContent).not.toMatch(/Bye/);
     }

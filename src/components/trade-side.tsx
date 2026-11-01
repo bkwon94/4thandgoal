@@ -11,6 +11,7 @@ import type { PlayerPick } from "@/components/trade-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Team, TeamPlayer } from "@/lib/api";
 import { AVATAR_FALLBACK, swapAvatarToDefault } from "@/lib/avatar";
+import { count } from "@/lib/format/format";
 import { HEADSHOT_FALLBACK, swapToDefault } from "@/lib/headshot";
 import { enterExit, useMotionOff } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -80,9 +81,9 @@ function PlayerText({ player }: { player: TeamPlayer }) {
 }
 
 /* The trigger text of the player picker: the count once the side gives a player. */
-function countText(count: number): string {
-  if (count === 0) return "Pick Players";
-  return `${count} ${count === 1 ? "Player" : "Players"}`;
+function countText(n: number): string {
+  if (n === 0) return "Pick Players";
+  return count(n, "Player", "Players");
 }
 
 /* The small To picker of a picked row. It sits in the meta line, so the row reads "Name", then "WR NYJ · To <Team>". */

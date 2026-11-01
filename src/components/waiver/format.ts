@@ -12,7 +12,7 @@ export function teamName(teams: Record<string, Team>, rosterId: number): string 
 }
 
 /* The position, the team, the bye, the injury status, and the return week, each only when the file has it. */
-export function metaLine(player: WaiverPlayer): string {
+export function waiverMetaLine(player: WaiverPlayer): string {
   const parts = [player.position, player.team];
   if (player.bye != null) parts.push(`Bye ${player.bye}`);
   if (player.injury_status) parts.push(player.injury_status);
@@ -27,8 +27,8 @@ export function priceText(player: WaiverPlayer): string | null {
 
 /* The trending count with a thousands separator, or null when he is not in the trending file. */
 export function trendingLine(player: WaiverPlayer): string | null {
-  const count = player.trending_count ?? 0;
-  return count > 0 ? `${thousands(count)} adds on Sleeper in the last day` : null;
+  const adds = player.trending_count ?? 0;
+  return adds > 0 ? `${thousands(adds)} adds on Sleeper in the last day` : null;
 }
 
 /* The words for each stance. The record type makes the compiler ask for a label when the pipeline adds a stance. */

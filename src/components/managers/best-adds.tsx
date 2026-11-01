@@ -3,8 +3,9 @@
  * Each row shows the points and, under them, the projection over the same weeks.
  */
 import { Chapter, Label } from "@/components/week/parts";
+import { count, oneDecimal } from "@/lib/format/format";
 import type { Manager } from "@/lib/manager-types";
-import { count, metaLine, oneDecimal, PlayerRow, PlayerRows } from "./player-row";
+import { PlayerRow, PlayerRows, playerMetaLine } from "./player-row";
 
 export function BestAdds({ manager }: { manager: Manager }) {
   return (
@@ -15,7 +16,7 @@ export function BestAdds({ manager }: { manager: Manager }) {
           <PlayerRow
             key={add.player_id}
             player={add}
-            meta={metaLine(add, `Added week ${add.week}`, count(add.games, "game"))}
+            meta={playerMetaLine(add, `Added week ${add.week}`, count(add.games, "game", "games"))}
             points={add.points}
             under={`${oneDecimal(add.projection)} proj`}
           />

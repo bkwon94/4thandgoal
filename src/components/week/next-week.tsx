@@ -3,6 +3,7 @@
  * The week number comes from the page, so the label reads the week after the one on the page.
  * A phone stacks the cards; from the tablet tier up, two go per row, so a card has room for a bye subtitle.
  */
+import { record } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, ByePlayer, NextGame, Team } from "@/lib/week-types";
 import { avatarSrc, Blurb, Chapter, Label, Tag, Who } from "./parts";
@@ -36,7 +37,7 @@ function Side({ team, avatars }: { team: Team; avatars: AvatarMap }) {
     <>
       <div className="flex min-w-0 items-center gap-sp-2">
         <Who src={avatarSrc(avatars, team.roster_id)} name={team.name} fill />
-        <span className="flex-none font-semibold whitespace-nowrap text-mute tabular-nums">{`${team.wins}-${team.losses}`}</span>
+        <span className="flex-none font-semibold whitespace-nowrap text-mute tabular-nums">{record(team.wins, team.losses)}</span>
       </div>
       {team.byes && team.byes.length > 0 && <ByeLine byes={team.byes} />}
     </>

@@ -3,6 +3,7 @@
  * Points always show two decimals, so the column lines up in tabular figures.
  */
 import { Fragment, type ReactNode } from "react";
+import { record } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, TableRow } from "@/lib/week-types";
 import { avatarSrc, Blurb, Chapter, Label, managerHref, Who } from "./parts";
@@ -74,7 +75,8 @@ export function Standings({
                   name={row.team.name}
                   href={managerHref(managersHref, row.team.roster_id)}
                 />,
-                `${row.standing.wins}-${row.standing.losses}`,
+                record(row.standing.wins, row.standing.losses),
+                // num would drop the trailing zero of 698.30, so the column keeps toFixed to line up the decimals.
                 row.standing.points_for.toFixed(2),
               ]}
             />
