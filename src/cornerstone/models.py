@@ -610,7 +610,7 @@ class DropInfo(BaseModel):
 
 
 # The playoff status of a roster in the odds engine.
-Status = Literal["in", "out", "open"]
+OddsStatus = Literal["in", "out", "open"]
 
 
 class TeamOdds(BaseModel):
@@ -620,7 +620,7 @@ class TeamOdds(BaseModel):
     bye: int
     # The most likely seed. None when the playoff odds are below SEED_SHOW_AT.
     seed: int | None
-    status: Status
+    status: OddsStatus
 
 
 class Swing(BaseModel):

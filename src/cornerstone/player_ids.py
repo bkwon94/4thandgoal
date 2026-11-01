@@ -1,6 +1,6 @@
 """
-What a Sleeper player ID tells: whether the player is a DEF, and the URL of his headshot.
-The page writer and the API both read it, so it sits in the model layer beside the player models.
+A Sleeper player ID tells two things: whether the player is a DEF, and the URL of its headshot.
+The page writer and the API both read it, so it is in the model layer with the player models.
 """
 
 

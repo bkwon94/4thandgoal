@@ -6,7 +6,7 @@ import random
 from collections import Counter
 from typing import Literal
 
-from cornerstone.models import OddsResult, Status, Swing, TeamOdds
+from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
 from cornerstone.tunables import (
     BYE_COUNT,
     PLAYOFF_SPOTS,
@@ -166,7 +166,7 @@ def _median(scores: list[float]) -> float:
     return (ordered[middle - 1] + ordered[middle]) / 2
 
 
-def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> Status:
+def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
     """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
 
     `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
@@ -182,7 +182,7 @@ def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_le
     return "open"
 
 
-def _shown(status: Status, made: int, runs: int) -> int:
+def _shown(status: OddsStatus, made: int, runs: int) -> int:
     """The odds as shown: 100 for `in`, 0 for `out`, and the whole percent clamped to 1 to 99 for `open`."""
     if status == "in":
         return 100
@@ -203,7 +203,7 @@ def _bye_status(
     return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[_status(roster_id, records, weeks_left, bye_count)]
 
 
-def _shown_bye(bye_status: ByeStatus, status: Status, byes: int, runs: int, playoff: int) -> int:
+def _shown_bye(bye_status: ByeStatus, status: OddsStatus, byes: int, runs: int, playoff: int) -> int:
     """The bye odds as shown: 100 for `bye_sure`, 0 for `bye_gone` or `out`, else clamped to 1 to 99.
 
     A bye needs a playoff spot, so the open bye odds never read above the shown playoff odds.
@@ -221,7 +221,9 @@ def _percent(part: int, total: int) -> int:
     return (200 * part + total) // (2 * total)
 
 
-def _swing(a: int, b: int, half: dict[str, list[int]], status: dict[int, Status], teams: dict[int, TeamOdds]) -> Swing:
+def _swing(
+    a: int, b: int, half: dict[str, list[int]], status: dict[int, OddsStatus], teams: dict[int, TeamOdds],
+) -> Swing:
     """Both sides' odds in the runs where side a won and in the runs where side b won.
 
     A half with no run falls back to the full odds, since the runs never saw that result.
