@@ -29,7 +29,7 @@ from cornerstone.sheet.rankings import (
 )
 from cornerstone.sheet.standings import median_facts_sheet, standings_facts
 from cornerstone.sheet.week import injured_facts, recent_add_facts, week_facts
-from cornerstone.sleeper import fetch_news
+from cornerstone.provider.sleeper import fetch_news
 from cornerstone.snapshot import Snapshot
 
 

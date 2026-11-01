@@ -25,7 +25,7 @@ from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import (
     Adjuster, Breakdown, ProposedTrade, TradeInputError, TradeSide, Verdict, fairness, grade, verdict,
 )
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources, load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 from cornerstone.trade_facts import trade_fact_sheet

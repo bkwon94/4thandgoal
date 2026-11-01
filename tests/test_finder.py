@@ -17,7 +17,7 @@ from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
 from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from cornerstone.slow_sources import load_slow_sources
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
 CONFIG = cornerstone_config()

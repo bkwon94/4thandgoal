@@ -33,7 +33,7 @@ from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDU
 from cornerstone.ranks import recent_points_per_game
 from cornerstone.player_ids import is_def
 from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document

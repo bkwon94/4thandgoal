@@ -9,7 +9,7 @@ from datetime import date, datetime, timezone
 from cornerstone.models import (
     DraftPick, Drop, Matchup, Move, PastWeek, PlayerLine, ProjectionsAhead, Side, Team, Trade, Week,
 )
-from cornerstone.sleeper import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
+from cornerstone.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
 
 AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
 MOVE_KINDS = ("waiver", "free_agent", "trade")

@@ -10,7 +10,7 @@ from cornerstone.config import cornerstone_config
 from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, load_prompt, template_blurb, write_blurb
 
 CONFIG = cornerstone_config()

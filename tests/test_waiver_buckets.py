@@ -9,7 +9,7 @@ from cornerstone.config import cornerstone_config
 from cornerstone.models import NflverseWeek, UsageWeek
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.sheet import NUMBER_TOKEN
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.slow_sources import SlowSources
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_buckets import return_week

@@ -7,7 +7,7 @@ from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.sheet import build_bundle
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.verifier import (
     build_verifier_prompt,
     claude_verify,
