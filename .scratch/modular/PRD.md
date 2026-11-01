@@ -96,7 +96,7 @@ checks its work against them.
 - One paths module in the model layer holds `week_label`, `week_dir`, `raw_dir`, `history_dir`, `site_week_dir`, `season_dir`, and the chart paths. The config and the repo root build them.
 - Cycles: the odds result model moves into the model module. The league id and the nflverse cache directory leave the orchestrator. The live module then no longer imports it. The two waiver modules get a shared third module. The two indirect cycles stay until the layer test flags them.
 - The API no longer imports render. The headshot URL and the defense check move into a model-layer module beside the player models.
-- Six layers: provider, model, load, facts, write, output. The layer test holds the map as a dict of module name to layer. It fails on any import from a higher layer. The API imports model, load, facts, and write. In this feature the map is a test, not a folder move.
+- Six layers: model, provider, load, facts, write, output. The model layer is lowest because the provider returns the models. The layer test holds the map as a dict of module name to layer. It fails on any import from a higher layer. The API imports model, load, facts, and write. In this feature the map is a test, not a folder move.
 - A frozen `SeasonInputs` dataclass holds the snapshot, the projections ahead, the history, and the chart. The build saves the week. Then it makes `SeasonInputs` once and passes it to the rankings and the managers writers. `ProjectionsAhead` is a type alias for the dict shape and nothing more.
 - History and render use the atomic write helper.
 - Pin `ruff` in the development dependencies. `pyright` runs in basic mode with a make target. Only the modules a ticket touches must pass.

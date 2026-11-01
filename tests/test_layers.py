@@ -9,22 +9,17 @@ SRC = Path(__file__).resolve().parent.parent / "src"
 PACKAGE = "cornerstone"
 API = "cornerstone_api"
 
-LAYERS = ["provider", "model", "load", "facts", "write", "output"]
+# The model layer is lowest because the provider returns the models, so the provider must import them.
+LAYERS = ["model", "provider", "load", "facts", "write", "output"]
 
 # The API serves the analyzer, so it may use any layer up to write. It must never reach the page code in output.
 API_TOP_LAYER = "write"
 
 # The key is the module path under cornerstone. A package key names its __init__ file. The root package is "".
-# Each "PRD:" comment marks a module that sits higher than the PRD list puts it. Its imports today need the higher
-# layer, and this map moves no file. A later ticket can cut the import and move the module back down.
+# A module may sit above its PRD layer only with a "# PRD:" note that names the import that forces it.
+# The map moves no file. Ticket 17 cuts those imports and lowers the modules to their PRD layer.
 LAYER_OF: dict[str, str] = {
     "": "model",
-    # provider
-    "provider": "provider",
-    "provider.base": "provider",
-    "provider.raw": "provider",
-    "files": "provider",
-    "nflverse_rows": "provider",
     # model
     "models": "model",
     "config": "model",
@@ -34,12 +29,18 @@ LAYER_OF: dict[str, str] = {
     "tunables": "model",
     "player_ids": "model",
     "trades": "model",
-    "provider.sleeper": "model",  # PRD: provider. It imports tunables.
-    "sleeper": "model",  # PRD: provider. It re-exports provider.sleeper.
-    "nflverse": "model",  # PRD: provider. It imports models and tunables.
-    "nflverse_expected": "model",  # PRD: provider. It imports models and numbers.
-    "nflverse_players": "model",  # PRD: provider. It imports models and numbers. It does not import history.
-    "nflverse_usage": "model",  # PRD: provider. It imports models and numbers. It does not import history.
+    # provider
+    "provider": "provider",
+    "provider.base": "provider",
+    "provider.raw": "provider",
+    "provider.sleeper": "provider",
+    "sleeper": "provider",
+    "nflverse": "provider",
+    "nflverse_rows": "provider",
+    "nflverse_expected": "provider",
+    "nflverse_players": "provider",
+    "nflverse_usage": "provider",
+    "files": "provider",
     # load
     "parse": "load",
     "slow_sources": "load",
