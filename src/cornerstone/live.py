@@ -8,13 +8,14 @@ import threading
 import time
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from functools import partial
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
 
-from cornerstone.chart import chart_values
+from cornerstone.chart import chart_values, claude_reader
 from cornerstone.config import LeagueConfig
 from cornerstone.history import PastLegFetcher, fetch_history, save_raw_to_history
 from cornerstone.models import ChartValues, PlayerLine, Week, week_lines
@@ -30,6 +31,7 @@ from cornerstone.provider.sleeper import SLEEPER
 from cornerstone.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from cornerstone.trades import default_cutoff
 from cornerstone.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
+from cornerstone.writer import parse_call
 
 logger = logging.getLogger(__name__)
 
@@ -186,7 +188,7 @@ def refresh_sources(
         config: LeagueConfig,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
-        read_chart: ChartReader | None = chart_values,
+        read_chart: ChartReader | None = partial(chart_values, read=claude_reader(parse_call)),
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
     """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
 
@@ -239,7 +241,7 @@ def live_snapshot(
         fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live,
         fetch_nflverse: Callable[[str], bytes] = http_get,
         fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
-        read_chart: ChartReader | None = chart_values,
+        read_chart: ChartReader | None = partial(chart_values, read=claude_reader(parse_call)),
         fetch_projections: ProjectionsFetcher = SLEEPER.fetch_projections,
         projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.

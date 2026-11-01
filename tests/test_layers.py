@@ -29,6 +29,7 @@ LAYER_OF: dict[str, str] = {
     "tunables": "model",
     "player_ids": "model",
     "trades": "model",
+    "claude_errors": "model",
     # provider
     "provider": "provider",
     "provider.base": "provider",
@@ -40,6 +41,7 @@ LAYER_OF: dict[str, str] = {
     "nflverse_players": "provider",
     "nflverse_usage": "provider",
     "files": "provider",
+    "chart": "provider",
     # load
     "parse": "load",
     "slow_sources": "load",
@@ -88,7 +90,6 @@ LAYER_OF: dict[str, str] = {
     "analysis": "write",
     "finder_reasons": "write",
     "waiver_research": "write",
-    "chart": "write",  # PRD: provider. It imports parse_call and the writer errors from writer.
     "live": "write",  # PRD: load. It imports chart.
     # output
     "render": "output",

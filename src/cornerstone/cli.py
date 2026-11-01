@@ -7,6 +7,7 @@ import argparse
 import logging
 from collections.abc import Iterable
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 
 import httpx
@@ -14,7 +15,7 @@ from pydantic import ValidationError
 
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
-from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
+from cornerstone.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
 from cornerstone.live import live_snapshot
@@ -33,7 +34,7 @@ from cornerstone.rubric import (
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
-from cornerstone.writer import analyzer_call, claude_call
+from cornerstone.writer import analyzer_call, claude_call, parse_call
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -208,7 +209,7 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) 
 
 def _live_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
     """The snapshot of the league now. A given --chart file stands in for the chart read."""
-    read_chart = chart_values
+    read_chart = partial(chart_values, read=claude_reader(parse_call))
     if args.chart is not None:
         given = _given_chart(args.chart)
 
@@ -367,7 +368,7 @@ def run_chart(repo: Path, season: int, week: int) -> int:
             print(f"No raw data is saved for week {week} of {season}. Build the week first.")
             return 2
         season_start = date.fromisoformat(state.season_start_date)
-    check = check_chart(repo, season_start, week)
+    check = check_chart(repo, season_start, week, read=claude_reader(parse_call))
     if check is None:
         print(f"Week {week} has no chart. The log says why.")
         return 1
