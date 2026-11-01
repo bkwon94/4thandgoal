@@ -2,25 +2,13 @@
  * The client for the site API. Each call sends the league passphrase in the X-League-Passphrase header.
  * A failed call throws an ApiError, and the caller decides what the reader sees.
  */
+import type { z, ZodType } from "zod";
 import type { AnalyzeResponse, FindResponse } from "@/lib/analyze-types";
 import { apiUrl, season } from "@/lib/config";
+import { analyzeResponseSchema, findResponseSchema, playerSchema, teamSchema, teamsResponseSchema } from "@/lib/schemas/api";
 
-export type TeamPlayer = {
-  player_id: string;
-  name: string;
-  position: string;
-  nfl_team: string;
-  headshot: string;
-};
-
-export type Team = {
-  roster_id: number;
-  team: string;
-  manager: string;
-  // The live API may not send the avatar yet, so fetchTeams fills a missing field with null.
-  avatar: string | null;
-  players: TeamPlayer[];
-};
+export type TeamPlayer = z.infer<typeof playerSchema>;
+export type Team = z.infer<typeof teamSchema>;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -49,6 +37,16 @@ async function errorDetail(response: Response): Promise<string | undefined> {
     // The body is not JSON, so it has no detail.
   }
   return undefined;
+}
+
+/* A body that fails its schema is a 502 with the path of each bad field.
+   The fault is upstream, and a retry cannot fix a wrong shape, so toErrorLine offers no retry for it.
+   The client throws it here, so a component never gets a wrong shape. */
+function parseBody<S extends ZodType>(schema: S, body: unknown, route: string): z.output<S> {
+  const result = schema.safeParse(body);
+  if (result.success) return result.data;
+  const issues = result.error.issues.map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`);
+  throw new ApiError(502, `The API sent a wrong body for ${route}. ${issues.join("; ")}`);
 }
 
 /* Builds the ApiError for a failed response. Every call of the client uses it. */
@@ -87,6 +85,8 @@ export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: s
   if (timedOut) return { message: timeoutMessage, retry: true };
   if (error instanceof ApiError) {
     if (error.status === 422) return { message: error.message, retry: false };
+    // A wrong body is a fault of the API, so a retry cannot fix it.
+    if (error.status === 502) return { message: "The API sent an answer the site cannot read.", retry: false };
     if (error.status === 429) return { message: retryText(error.retryAfter), retry: false };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
@@ -101,8 +101,7 @@ export async function fetchTeams(passphrase: string): Promise<Team[]> {
     headers: { "X-League-Passphrase": passphrase },
   });
   if (!response.ok) throw await toApiError(response);
-  const body = (await response.json()) as { teams: (Omit<Team, "avatar"> & { avatar?: string | null })[] };
-  return body.teams.map((team) => ({ ...team, avatar: team.avatar ?? null }));
+  return parseBody(teamsResponseSchema, await response.json(), "/teams").teams;
 }
 
 /* A given player and the roster id of the side he goes to. See ADR 0003. */
@@ -119,8 +118,14 @@ export type AnalyzeRequest = {
   sides: AnalyzeSide[];
 };
 
-/* Posts a JSON body with the passphrase and reads the JSON answer. The caller owns the AbortSignal and sets the timeout. */
-async function postJson<T>(path: string, passphrase: string, body: unknown, signal: AbortSignal): Promise<T> {
+/* Posts a JSON body with the passphrase and reads the JSON answer. It checks the answer against the schema. The caller owns the AbortSignal and sets the timeout. */
+async function postJson<S extends ZodType>(
+  path: string,
+  schema: S,
+  passphrase: string,
+  body: unknown,
+  signal: AbortSignal,
+): Promise<z.output<S>> {
   const response = await fetch(`${apiUrl}${path}`, {
     method: "POST",
     headers: { "X-League-Passphrase": passphrase, "Content-Type": "application/json" },
@@ -128,12 +133,12 @@ async function postJson<T>(path: string, passphrase: string, body: unknown, sign
     signal,
   });
   if (!response.ok) throw await toApiError(response);
-  return (await response.json()) as T;
+  return parseBody(schema, await response.json(), path);
 }
 
 /* The caller owns the AbortSignal, because a cold week can take 20 seconds and the caller sets the timeout. */
 export function postAnalyze(passphrase: string, body: AnalyzeRequest, signal: AbortSignal): Promise<AnalyzeResponse> {
-  return postJson("/analyze", passphrase, body, signal);
+  return postJson("/analyze", analyzeResponseSchema, passphrase, body, signal);
 }
 
 /* The body of the find route: the season, the roster that asks, and the partner roster. */
@@ -141,5 +146,5 @@ export type FindRequest = { season: number; asker: number; partner: number };
 
 /* The finder grades every small swap of the pair, so a cold call can be slow. The caller owns the AbortSignal, as with postAnalyze. */
 export function postFind(passphrase: string, body: FindRequest, signal: AbortSignal): Promise<FindResponse> {
-  return postJson("/find", passphrase, body, signal);
+  return postJson("/find", findResponseSchema, passphrase, body, signal);
 }
