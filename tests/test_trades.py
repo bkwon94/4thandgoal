@@ -9,12 +9,15 @@ from importlib import resources
 from zoneinfo import ZoneInfo
 
 from conftest import _decisive_trade, _trade_inputs, grade_inputs, recap_facts
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import DraftPick, NflverseWeek, Trade
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 from cornerstone.trades import default_cutoff, is_late, trades_for_week
+
+CONFIG = cornerstone_config()
 
 ET = ZoneInfo("America/New_York")
 
@@ -211,7 +214,8 @@ def test_tied_matchup_gets_no_swing_fact(fixture_raw_dir):
     trade = Trade(transaction_id="tie", created=datetime(2026, 10, 14, tzinfo=ET),
                   roster_ids=[m.b.roster_id, m.a.roster_id],
                   adds={star.player_id: m.a.roster_id}, drops={star.player_id: m.b.roster_id}, draft_picks=[])
-    assert "tied" in build_bundle(week, news=lambda pid: [], trades=[trade]).sheet.facts["M1.result"].text
+    bundle = build_bundle(week, news=lambda pid: [], trades=[trade], config=CONFIG)
+    assert "tied" in bundle.sheet.facts["M1.result"].text
     f = recap_facts(week, trades=[trade])
     assert f"T1.{m.a.roster_id}.swing" not in f and f"T1.{m.b.roster_id}.swing" not in f
 

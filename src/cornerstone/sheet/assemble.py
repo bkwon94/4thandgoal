@@ -6,6 +6,7 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -181,8 +182,10 @@ def build_bundle(
     nfl: NflverseWeek | None = None,
     snapshot: Snapshot | None = None,
     today: date | None = None,
+    *,
+    config: LeagueConfig,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today)
+    c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, config=config)
     families = (
         week_facts(c), recent_add_facts(c), injured_facts(c), standings_facts(c), median_facts_sheet(c),
         matchup_fact_family(c), award_facts(c), expected_award_facts(c), pick_facts(c), next_facts(c),

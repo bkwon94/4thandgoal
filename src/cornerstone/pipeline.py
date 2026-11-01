@@ -248,7 +248,7 @@ def make_bundle(
         raw = load_raw(raw_dir(repo, season, week))
     parsed = parse_week(raw, config.owner_username, week=week)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
-    message = check_week_is_buildable(week, parsed.last_scored_week)
+    message = check_week_is_buildable(week, parsed.last_scored_week, config)
     if message:
         raise BuildStopped(message)
 
@@ -264,7 +264,7 @@ def make_bundle(
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
     snapshot = week_snapshot(raw, history_root(repo, season), week, config=config)
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot,
-                          today=started.date())
+                          today=started.date(), config=config)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.

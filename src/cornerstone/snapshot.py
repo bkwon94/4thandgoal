@@ -412,7 +412,8 @@ def build_snapshot(
         # The history passes with that bound too, so its check for a full season stops there.
         # Before week 1 the rosters give the records.
         standings=standings(week.model_copy(update={"week": completed_through}),
-                            history.model_copy(update={"week": completed_through}) if completed_through else None),
+                            history.model_copy(update={"week": completed_through}) if completed_through else None,
+                            config=config),
         roster_positions=raw.league.roster_positions,
         players=players,
         chart=chart,

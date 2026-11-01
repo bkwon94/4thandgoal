@@ -7,6 +7,7 @@ import json
 import pytest
 from pydantic import TypeAdapter
 
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
 from cornerstone.parse import parse_week
@@ -17,9 +18,11 @@ from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
 from cornerstone.sleeper import load_raw
 
+CONFIG = cornerstone_config()
+
 
 def _bundle(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [])
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG)
 
 
 def _blurbs(bundle):

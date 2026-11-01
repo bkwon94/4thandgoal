@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.facts_league import (
     awards,
     key_starters,
@@ -24,6 +25,8 @@ from cornerstone.parse import parse_week
 from cornerstone.sheet import projected_totals
 from cornerstone.sleeper import load_raw
 
+CONFIG = cornerstone_config()
+
 
 def _setup(d):
     wk = parse_week(load_raw(d))
@@ -33,7 +36,7 @@ def _setup(d):
 
 def test_standings_order_and_cut(fixture_raw_dir):
     wk, _ = _setup(fixture_raw_dir)
-    t = standings(wk)
+    t = standings(wk, config=CONFIG)
     names = [wk.teams[s.roster_id].name for s in t]
     assert names[:3] == ["Lil Fridge", "London Cooking", "Bo Girds"]
     assert names[-1] == "Pukancun on 3"
@@ -55,7 +58,7 @@ def test_awards_one_player_one_tile(fixture_raw_dir):
 
 def test_motw_is_closest(fixture_raw_dir):
     wk, mf = _setup(fixture_raw_dir)
-    pick = matchup_of_the_week(wk, mf, standings(wk))
+    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG))
     assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
     assert set(pick.scores) == {"closeness", "upset", "table", "stakes"}
 
@@ -66,7 +69,7 @@ def _motw_with(fixture_raw_dir, margins, before=None, far_from_cut=(), ranks=Non
     mf = [f.model_copy(update={"margin": margins.get(f.matchup_id, f.margin)}) for f in mf]
     table = [
         s.model_copy(update={"games_from_cut": 3}) if s.roster_id in far_from_cut else s
-        for s in standings(wk)
+        for s in standings(wk, config=CONFIG)
     ]
     table = [s.model_copy(update={"rank": (ranks or {}).get(s.roster_id, s.rank)}) for s in table]
     return matchup_of_the_week(wk, mf, table, {**ranks_before(wk, table), **(before or {})})
@@ -94,7 +97,7 @@ def test_motw_label_is_closest_finish_for_the_closest_game(fixture_raw_dir):
     # Matchup 4 has the smallest margin and also the biggest upset. Closeness weighs more.
     wk, mf = _setup(fixture_raw_dir)
     assert min(mf, key=lambda f: f.margin).matchup_id == 4
-    pick = matchup_of_the_week(wk, mf, standings(wk))
+    pick = matchup_of_the_week(wk, mf, standings(wk, config=CONFIG))
     assert pick.matchup_id == 4 and pick.reason == "Closest Finish"
 
 
@@ -110,7 +113,7 @@ def test_motw_label_falls_back_to_the_nearest_to_best_with_no_lead(fixture_raw_d
 
 def test_next_week_two_must_watch(fixture_raw_dir):
     wk, _ = _setup(fixture_raw_dir)
-    nx = next_week(wk, standings(wk))
+    nx = next_week(wk, standings(wk, config=CONFIG))
     assert len(nx) == 6 and sum(n.must_watch for n in nx) == 2
     assert all(n.reason for n in nx if n.must_watch)
     # The text names ranks and makes no claim about who falls.
@@ -134,7 +137,7 @@ def test_position_ranks(fixture_raw_dir):
 
 def test_ranks_before_is_a_permutation(fixture_raw_dir):
     wk, _ = _setup(fixture_raw_dir)
-    before = ranks_before(wk, standings(wk))
+    before = ranks_before(wk, standings(wk, config=CONFIG))
     assert set(before) == set(wk.teams)
     assert sorted(before.values()) == list(range(1, 13))
 
@@ -159,7 +162,7 @@ def test_ranks_before_take_off_this_week(fixture_raw_dir):
     # Bo Girds 7-3 on 613.54 (2nd), Return of T Mac 4-6 on 498.68 (9th), and
     # Unsolicited Dak Picks 4-6 on 513.44 (7th).
     wk, _ = _setup(fixture_raw_dir)
-    before = ranks_before(wk, standings(wk))
+    before = ranks_before(wk, standings(wk, config=CONFIG))
     by_name = {wk.teams[rid].name: rank for rid, rank in before.items()}
     assert by_name["behold the lamb"] == 11
     assert by_name["Bo Girds"] == 2
@@ -175,7 +178,7 @@ def test_standings_come_from_history(fixture_raw_dir, fixture_history_root):
     wk, _ = _setup(fixture_raw_dir)
     for t in wk.teams.values():
         t.wins, t.losses, t.points_for = 0, 0, 0.0
-    t = standings(wk, _history(fixture_raw_dir, fixture_history_root))
+    t = standings(wk, _history(fixture_raw_dir, fixture_history_root), config=CONFIG)
     rows = {wk.teams[s.roster_id].name: (s.rank, s.wins, s.losses, s.points_for) for s in t}
     assert rows["Lil Fridge"] == (1, 10, 2, 739.67)
     assert rows["Bo Girds"] == (3, 8, 4, 723.15)
@@ -184,16 +187,17 @@ def test_standings_come_from_history(fixture_raw_dir, fixture_history_root):
 
 def test_schedule_strength_comes_from_history(fixture_raw_dir, fixture_history_root):
     wk, _ = _setup(fixture_raw_dir)
-    real = [s.schedule_strength for s in standings(wk)]
+    real = [s.schedule_strength for s in standings(wk, config=CONFIG)]
     for t in wk.teams.values():
         t.wins, t.losses = 0, 1
-    assert [s.schedule_strength for s in standings(wk, _history(fixture_raw_dir, fixture_history_root))] == real
+    history = _history(fixture_raw_dir, fixture_history_root)
+    assert [s.schedule_strength for s in standings(wk, history, config=CONFIG)] == real
 
 
 def test_ranks_before_from_history(fixture_raw_dir, fixture_history_root):
     wk, _ = _setup(fixture_raw_dir)
     h = _history(fixture_raw_dir, fixture_history_root)
-    before = ranks_before(wk, standings(wk, h), h)
+    before = ranks_before(wk, standings(wk, h, config=CONFIG), h)
     by_name = {wk.teams[rid].name: rank for rid, rank in before.items()}
     assert (by_name["behold the lamb"], by_name["Bo Girds"]) == (11, 2)
     assert (by_name["Return of T Mac"], by_name["Unsolicited Dak Picks"]) == (9, 7)
@@ -202,7 +206,7 @@ def test_ranks_before_from_history(fixture_raw_dir, fixture_history_root):
 def test_incomplete_history_falls_back_with_a_warning(fixture_raw_dir, caplog):
     wk, _ = _setup(fixture_raw_dir)
     h = History(week=6, weeks={})
-    assert standings(wk, h) == standings(wk)
+    assert standings(wk, h, config=CONFIG) == standings(wk, config=CONFIG)
     assert "history incomplete" in caplog.text
 
 
@@ -216,7 +220,7 @@ def test_motw_week_7_label_is_the_nearest_to_best():
     wk = parse_week(raw)
     history = load_history(season_root / "history", raw, 7)
     mf = [matchup_facts(m, wk.moves, 7) for m in wk.matchups]
-    table = standings(wk, history)
+    table = standings(wk, history, config=CONFIG)
     pick = matchup_of_the_week(wk, mf, table, ranks_before(wk, table, history))
     assert pick.matchup_id == 1 and pick.reason == "Top of the Table"
 
@@ -424,7 +428,7 @@ def test_week_6_storylines_and_must_watch(fixture_raw_dir, fixture_history_root)
     # No two teams of next week met in weeks 1 to 6, and no game has two of the top four in the standings.
     wk, _ = _setup(fixture_raw_dir)
     h = _history(fixture_raw_dir, fixture_history_root)
-    nx = next_week(wk, standings(wk, h), h, projected_totals(wk))
+    nx = next_week(wk, standings(wk, h, config=CONFIG), h, projected_totals(wk, config=CONFIG))
     assert [(n.a, n.b, [s.kind for s in n.storylines]) for n in nx] == [
         (3, 8, ["streak", "cut"]),
         (1, 9, ["cut"]),
@@ -457,7 +461,7 @@ def test_week_7_must_watch_games_and_reasons():
     raw = load_raw(season_root / "week-07" / "raw")
     wk = parse_week(raw)
     history = load_history(season_root / "history", raw, 7)
-    nx = next_week(wk, standings(wk, history), history, projected_totals(wk))
+    nx = next_week(wk, standings(wk, history, config=CONFIG), history, projected_totals(wk, config=CONFIG))
     assert [(n.a, n.b, n.reason) for n in nx if n.must_watch] == [
         (8, 10, "Return of T Mac puts a 4-game win streak on the line, and both sit near the cut"),
         (6, 7, "Bo Girds puts a 3-game loss streak on the line, and To Infinity and Bijan a 3-game loss streak"),
