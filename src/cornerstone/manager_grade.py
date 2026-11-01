@@ -92,7 +92,7 @@ def _names(positions: list[str]) -> str:
     return ", ".join(positions[:-1]) + ", and " + positions[-1]
 
 
-def grade_read(slots: list[SlotRank], config: LeagueConfig) -> str:
+def grade_read(slots: list[SlotRank], *, config: LeagueConfig) -> str:
     """The grade in words, from the slot ranks: the strong positions, the deep ones, the soft ones, and the thin ones.
 
     A position is strong in the top quarter of the league and soft in the bottom quarter. A thin position is a hole,
@@ -171,7 +171,7 @@ def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
             letter=grade_letter(grade_score(parts[rid])),
             slots=slots,
             parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
-            read=grade_read(slots, inputs.snapshot.config),
+            read=grade_read(slots, config=inputs.snapshot.config),
         )
     return grades
 

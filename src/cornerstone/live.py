@@ -164,7 +164,7 @@ def fetch_current_week(
     The data is of the season that Sleeper is in.
     """
     raw, fetched = fetch_sleeper(config.current_league_id, players_cache(repo))
-    return raw, fetched.astimezone(config.tz), parse_week(raw, config.owner_username)
+    return raw, fetched.astimezone(config.tz), parse_week(raw, config.owner_username, team_count=config.team_count)
 
 
 def fetch_live_week(

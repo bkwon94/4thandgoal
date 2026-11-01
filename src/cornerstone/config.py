@@ -39,6 +39,9 @@ class LeagueConfig(BaseModel):
     # The count of teams in the league. It must match the roster count of the league file, so the build passes it to
     # the parse, and the parse stops on a mismatch. The ranks and the sizes below that name 12 teams follow it.
     team_count: int
+    # Both best projected lineups for next week rank this high or higher for a shootout. GLOSSARY.md, "Projected
+    # shootout": the top four of the league.
+    shootout_top: int
     # Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
     # The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.
     playoff_spots: int
@@ -94,21 +97,19 @@ class LeagueConfig(BaseModel):
 
     @property
     def grade_strong_rank(self) -> int:
-        """The slot rank that reads "strong" in the grade sentence. The top quarter of a 12-team league is strong."""
+        """The slot rank that reads "strong" in the grade sentence. The top quarter of a 12-team league is strong.
+
+        The quarter rounds down, so a ten-team league reads ranks 1 and 2 strong.
+        """
         return self.team_count // 4
 
     @property
     def grade_soft_rank(self) -> int:
-        """The slot rank that reads "soft" in the grade sentence. The bottom quarter of a 12-team league is soft."""
-        return self.team_count - self.team_count // 4 + 1
+        """The slot rank that reads "soft" in the grade sentence. The bottom quarter of a 12-team league is soft.
 
-    @property
-    def shootout_top(self) -> int:
-        """Both best projected lineups for next week rank this high or higher of the 12 for a shootout.
-
-        GLOSSARY.md, "Shootout". The top third of the league is four teams of 12.
+        The quarter rounds down, so a ten-team league reads ranks 9 and 10 soft.
         """
-        return self.team_count // 3
+        return self.team_count - self.team_count // 4 + 1
 
     @property
     def tz(self) -> ZoneInfo:
@@ -139,6 +140,7 @@ def cornerstone_config() -> LeagueConfig:
         timezone="America/New_York",
         prompts_dir=Path(__file__).parent / "prompts",
         team_count=12,
+        shootout_top=4,
         playoff_spots=6,
         seller_gap=2,
         return_by_week=14,

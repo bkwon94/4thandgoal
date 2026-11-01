@@ -265,8 +265,8 @@ class Context:
         config: LeagueConfig,
     ) -> None:
         self.week = week
-        # The fact groups that build facts outside facts(context, config), such as the strength and trade facts,
-        # read the team count from it.
+        # The trade facts, the chapter list, and the rankings chapter take only the context, so they read the team
+        # count from it.
         self.config = config
         # The publish date is a parameter so a build is reproducible. None reads the clock.
         self.today = today or date.today()

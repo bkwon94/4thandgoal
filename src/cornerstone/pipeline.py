@@ -578,7 +578,7 @@ def _rankings_chapter(bundle: Bundle, history: History, config: LeagueConfig) ->
     )
     bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
     bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
-    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, config)
+    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, config=config)
     bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
     return built
 

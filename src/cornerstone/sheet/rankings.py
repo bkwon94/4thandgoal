@@ -268,7 +268,7 @@ def required_why_ids(
 
 def rankings_chapter(
     facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], table: list[Standing],
-    odds: OddsResult | None, config: LeagueConfig,
+    odds: OddsResult | None, *, config: LeagueConfig,
 ) -> Chapter:
     """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
 

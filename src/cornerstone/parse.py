@@ -206,8 +206,8 @@ def parse_week(
 
     The weekly build and the live fetch pass the owner from the league config. The snapshot of a saved week, the
     chart match, and the chart command pass no owner, because no output of theirs shows the flag.
-    The weekly build passes `team_count` from the league config. The config sets the ranks and the sizes that
-    depend on the team count, so a league file with another roster count stops the parse.
+    The weekly build and the live fetch pass `team_count` from the league config. The config sets the ranks and the
+    sizes that depend on the team count, so a league file with another roster count stops the parse.
     """
     if team_count is not None and len(raw.rosters) != team_count:
         raise ValueError(

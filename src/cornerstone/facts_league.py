@@ -100,7 +100,7 @@ def upset_signal(winner_rank_before: int, loser_rank_before: int, *, config: Lea
     return max(0, (winner_rank_before - loser_rank_before) / (config.team_count - 1))
 
 
-def _table_signal(rank_a: int, rank_b: int, config: LeagueConfig) -> float:
+def _table_signal(rank_a: int, rank_b: int, *, config: LeagueConfig) -> float:
     return 1 - (rank_a + rank_b - 3) / (2 * (config.team_count - 1))
 
 
@@ -143,7 +143,7 @@ def matchup_of_the_week(
                 if f.winner is not None
                 else 0.0
             ),
-            "table": _table_signal(a.rank, b.rank, config),
+            "table": _table_signal(a.rank, b.rank, config=config),
             "stakes": _stakes_signal(a, b),
         })
     best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}

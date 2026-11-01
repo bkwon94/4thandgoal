@@ -24,7 +24,7 @@ def facts(context: Context, config: LeagueConfig) -> list[Fact]:
     and the history go to each chapter about the teams and players they name.
     """
     return (
-        rank_facts(context) + leader_facts(context) + strength_facts(context) + history_facts(context)
+        rank_facts(context) + leader_facts(context) + strength_facts(context, config) + history_facts(context)
         + player_trend_facts(context)
     )
 
@@ -72,7 +72,7 @@ def _volume_fact(c: Context, fid: str, position: str, line: PlayerLine, team: st
     return fact(fid, text, n, [team], [line.name])
 
 
-def strength_facts(c: Context) -> list[Fact]:
+def strength_facts(c: Context, config: LeagueConfig) -> list[Fact]:
     out = []
     for s in c.table:
         if s.schedule_strength is None:
@@ -82,7 +82,7 @@ def strength_facts(c: Context) -> list[Fact]:
         # Version 1 knows only the next opponent, so the fact names next week, not the rest of the season.
         text = (
             f"{team}'s opponent next week has a win rate of {n(s.schedule_strength)}, "
-            f"ranked {n(s.strength_rank)} of {n(c.config.team_count)}, toughest first."
+            f"ranked {n(s.strength_rank)} of {n(config.team_count)}, toughest first."
         )
         out.append(fact(f"SOS.{s.roster_id}", text, n, [team], []))
     return out
