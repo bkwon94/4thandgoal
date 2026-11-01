@@ -261,7 +261,7 @@ class Context:
         config: LeagueConfig,
     ) -> None:
         self.week = week
-        # The league sizes, such as the playoff spots and the last regular week, come from the config.
+        # Each chapter takes the config next, so the context keeps the one config of the build for them.
         self.config = config
         # The publish date is a parameter so a build is reproducible. None reads the clock.
         self.today = today or date.today()

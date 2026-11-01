@@ -1,6 +1,6 @@
 """
-The tunable table: every number of the trade analyzer rubric, the power rankings, the playoff odds,
-the waiver board, and the next-week storylines.
+The tunable table: every algorithm number of the trade analyzer rubric, the power rankings, the playoff odds,
+the waiver board, and the next-week storylines. The numbers that change with the size of the league are in config.py.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -29,25 +29,6 @@ LINEUP_WEEKS = 4
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
-# The line: the last position rank a starter can hold. GLOSSARY.md, "The line". A starting slot with a player
-# below the line is a hole. The league has 12 teams. Each starts 2 RB and 2 WR, and the 2 flex spots take about
-# one more of each, so 36 backs and 36 receivers start each week.
-LINE_RB_WR = 36
-# Each of the 12 teams starts 1 QB and 1 TE. Rank 24 covers one starter and one backup per team.
-LINE_QB_TE = 24
-# Strength: the position rank a RB1, RB2, WR1, or WR2 starter must hold or beat to count. GLOSSARY.md, "Strength".
-# The 12 teams each start 2 RB and 2 WR, so rank 24 is the last back or receiver an average team starts at RB2 or WR2.
-STRENGTH_RANK = 24
-
-# Standing: a contender holds a playoff spot by record, and a seller is far out of the last spot.
-# The count of playoff spots. The league ranks by wins, then by points for. The weekly facts read it too.
-PLAYOFF_SPOTS = 6
-# A seller has more than this many wins fewer than the team in the last playoff spot.
-# The league scores a median game each week, so each week gives two results, and two games are one week of results.
-SELLER_GAP = 2
-# The last week of the regular season. When the side gets a player who is due back by this week,
-# the trade is a return bet.
-RETURN_BY_WEEK = 14
 
 # Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
 # The count of scored weeks in each window. The share helpers in history.py read it, so both windows change here.
@@ -64,12 +45,6 @@ INJURY_WEEKS = 3
 # player to cover him. Three weeks is the trade week and the next two. A pickup or another trade can rarely fix a
 # slot sooner.
 RETURN_WINDOW_WEEKS = 2
-
-# Upside: a star is a player in the top of his position on the league's chart, by this count. GLOSSARY.md, "Star".
-# The counts are the starter tier of a 12-team one-QB league: 1 QB, 2 RB, 2 WR, and 1 TE per team, with the top half
-# of each tier. The chart is a one-QB chart and ranks QBs low, so an overall rank misses them. A position not in the
-# map has no stars.
-STAR_RANK_BY_POSITION = {"QB": 6, "RB": 12, "WR": 12, "TE": 6}
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
 # A backup who takes 25% of his team's carries scores points of his own, so he counts as a running back.
@@ -155,8 +130,6 @@ PROJECTION_WEIGHT = 0.5
 # The lowest playoff odds, in percent, that show the most likely seed.
 # Below it the seed rests on fewer than half the runs.
 SEED_SHOW_AT = 50
-# The count of top seeds that get a bye. The bracket gives seeds 1 and 2 a bye in week 15.
-BYE_COUNT = 2
 # The least gap, in points, between a side's win and loss odds that counts as a swing.
 # A smaller gap is noise, not a stake.
 SWING_FLAT = 5
@@ -167,12 +140,6 @@ SWING_FLAT = 5
 WHY_MOVE_AT = 2
 # The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
 WHY_ODDS_AT = 25
-
-# The season edges. The regular season ends at week 14. The playoff bracket, not the round robin, decides later weeks.
-LAST_REGULAR_WEEK = 14
-# The last week of the NFL fantasy season. A waiver add plays the fantasy playoffs too, so his rest of
-# season projection runs to this week.
-LAST_SEASON_WEEK = 17
 
 # The waiver board ranks the waiver pool into buckets.
 # The weights of the three board scores. Usage leads and projection is a tiebreak, because the projection
