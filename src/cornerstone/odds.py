@@ -2,6 +2,7 @@
 The playoff odds engine: a Monte Carlo of the remaining weeks that gives each roster its odds and seed.
 It also gives the swing of each next-week game. Pure code: no network and no Claude.
 """
+import math
 import random
 from collections import Counter
 from typing import Literal
@@ -9,9 +10,8 @@ from typing import Literal
 from cornerstone.config import LeagueConfig
 from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
 from cornerstone.tunables import (
+    LEVEL_SHRINK_WEEKS,
     PROJECTION_WEIGHT,
-    RECENT_WEEKS,
-    RECENT_WEIGHT,
     SEED_SHOW_AT,
     SIM_RUNS,
 )
@@ -32,13 +32,21 @@ def playoff_odds(
     runs: int = SIM_RUNS,
     projected: dict[int, dict[int, float]] | None = None,
     projection_weight: float = PROJECTION_WEIGHT,
+    shrink_weeks: float = LEVEL_SHRINK_WEEKS,
 ) -> OddsResult:
     """The playoff odds after week `week`.
 
     `scores` holds each roster's played-week scores, oldest first. `records` holds the real wins, losses,
     and points for. `remaining` holds the pairs of each remaining week; the first week is week N+1.
+    Each run first draws each roster's level: a normal around its season average, shrunk toward the league
+    average with weight n over n plus `shrink_weeks`, where n is the count of the roster's played weeks.
+    The standard error of the level is the league spread over the square root of n plus `shrink_weeks`.
+    The league spread is the standard deviation of every played score from its own roster's average.
+    Then each remaining week's score is a normal around the level with the league spread.
     `projected` holds the projected best-lineup total of each roster, by roster ID and week. Each drawn
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
+    The gap reads from the raw average, not the shrunk level, because it measures the change in the roster,
+    and the shrink already sits in the level.
     `config` gives the count of playoff spots and the count of byes.
     """
     playoff_spots, bye_count = config.playoff_spots, config.bye_count
@@ -55,7 +63,17 @@ def playoff_odds(
     # The random seed derives from the season and the week, so the same inputs give the same odds.
     rng = random.Random(season * 100 + week)
     order = [remaining[w] for w in sorted(remaining)]
-    weights = {rid: _draw_weights(scores[rid]) for rid in rosters}
+    played = [s for rid in rosters for s in scores[rid]]
+    league_mean = sum(played) / len(played)
+    averages = {rid: sum(scores[rid]) / len(scores[rid]) for rid in rosters}
+    # The spread is pooled over the league, because a roster's few scores do not pin its own spread.
+    # If every roster has one score, or every roster is flat, the spread is 0 and every draw is the mean.
+    spread = math.sqrt(sum((s - averages[rid]) ** 2 for rid in rosters for s in scores[rid]) / len(played))
+    mean, se = {}, {}
+    for rid in rosters:
+        n = len(scores[rid])
+        mean[rid] = (n * averages[rid] + shrink_weeks * league_mean) / (n + shrink_weeks)
+        se[rid] = spread / math.sqrt(n + shrink_weeks)
     shifts = _shifts(scores, projected, sorted(remaining), projection_weight) if projected else None
     next_pairs = order[0]
     made: Counter[int] = Counter()
@@ -64,7 +82,9 @@ def playoff_odds(
     # Per next-week pair and per winner, three counts: the runs, the runs side a made it, the runs side b made it.
     halves = {pair: {"a": [0, 0, 0], "b": [0, 0, 0]} for pair in next_pairs}
     for _ in range(runs):
-        drawn = {rid: rng.choices(scores[rid], cum_weights=weights[rid], k=weeks_left) for rid in rosters}
+        # The draws read the rosters in sorted order and the weeks in order, so the seed gives the same odds.
+        level = {rid: rng.gauss(mean[rid], se[rid]) for rid in rosters}
+        drawn = {rid: [rng.gauss(level[rid], spread) for _ in range(weeks_left)] for rid in rosters}
         if shifts:
             drawn = {rid: [score + shift for score, shift in zip(d, shifts[rid])] for rid, d in drawn.items()}
         table = _run(records, order, drawn)
@@ -97,15 +117,6 @@ def playoff_odds(
         )
     swings = [_swing(a, b, halves[(a, b)], status, teams) for a, b in next_pairs]
     return OddsResult(teams=teams, swings=swings)
-
-
-def _draw_weights(values: list[float]) -> list[float]:
-    """The cumulative draw weights of a roster's played-week scores. The last RECENT_WEEKS weeks weigh more."""
-    cum, total = [], 0.0
-    for i in range(len(values)):
-        total += RECENT_WEIGHT if i >= len(values) - RECENT_WEEKS else 1
-        cum.append(total)
-    return cum
 
 
 def _shifts(

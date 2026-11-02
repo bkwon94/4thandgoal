@@ -748,11 +748,12 @@ def test_one_odds_why_fact_per_team(hbundle):
 
 def test_rankings_chapter_requires_the_why_of_each_mover_and_of_odds_against_the_record(hbundle):
     ch = next(c for c in hbundle.sheet.chapters if c.key == "rankings")
-    # Teams 1, 6, 7, 8, 9, 10, and 11 moved 2 or more places. Team 12 is 4-8 at 32%, and team 2 is 7-5 at 21%.
-    # Team 10 at 6-6 is at .500, so its odds of 26% require no odds why.
+    # Teams 1, 6, 7, 8, 9, 10, and 11 moved 2 or more places. Team 12 is 4-8 at 35%.
+    # Team 2 is 7-5 at 46%, so its odds agree with its record and require no odds why.
+    # Team 10 at 6-6 is at .500, so its odds of 30% require no odds why.
     assert sorted(ch.required) == sorted([
         "PR.1.why", "PR.6.why", "PR.7.why", "PR.8.why", "PR.9.why", "PR.10.why", "PR.11.why",
-        "ODDS.12.why", "ODDS.2.why",
+        "ODDS.12.why",
     ])
 
 

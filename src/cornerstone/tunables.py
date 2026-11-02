@@ -122,13 +122,12 @@ POWER_WEIGHTS = {"standing": 0.10, "form": 0.60, "schedule_played": 0.10, "scori
 # The playoff odds engine: a Monte Carlo of the remaining weeks, one table per run.
 # The count of runs. At 5,000 runs one percent is 50 runs, so the sample error of an odds number is under 1 percent.
 SIM_RUNS = 5000
-# The count of latest played weeks that weigh more in the score draw, so the draw follows the current form.
-RECENT_WEEKS = 3
-# The weight of each recent week in the score draw. An older week weighs 1. At 1.25 with 6 weeks played,
-# the last 3 weeks are 56 percent of the draws; at 2 they are 67 percent, too much trust in 3 scores.
-RECENT_WEIGHT = 1.25
+# The weight of the league average in a roster's level is k over n plus k, with k this count of weeks.
+# At 5 with 7 weeks played, the roster's own average carries 58 percent. On week 7, k from 3 to 8 lands within 3 points.
+LEVEL_SHRINK_WEEKS = 5
 # The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
 # Past scores know the team's level, and the projection knows that week's roster. Half each, Brian's call.
+# The gap reads from the raw average, so at 1 a draw is the shrunk level plus the full gap, not the projection itself.
 PROJECTION_WEIGHT = 0.5
 # The lowest playoff odds, in percent, that show the most likely seed.
 # Below it the seed rests on fewer than half the runs.

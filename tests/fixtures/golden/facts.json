@@ -11205,11 +11205,11 @@
       },
       "ODDS.1": {
         "id": "ODDS.1",
-        "text": "Brock ‘N’ Roll makes the playoffs in about 57% of runs, with a bye in 1%, most often as the 6th seed.",
+        "text": "Brock ‘N’ Roll makes the playoffs in about 60% of runs, with a bye in 8%, most often as the 5th seed.",
         "numbers": [
-          "57",
-          "1",
-          "6"
+          "60",
+          "8",
+          "5"
         ],
         "teams": [
           "Brock ‘N’ Roll"
@@ -11218,10 +11218,10 @@
       },
       "ODDS.2": {
         "id": "ODDS.2",
-        "text": "All You Need Is Love makes the playoffs in about 21% of runs, with a bye in 1%.",
+        "text": "All You Need Is Love makes the playoffs in about 46% of runs, with a bye in 4%.",
         "numbers": [
-          "21",
-          "1"
+          "46",
+          "4"
         ],
         "teams": [
           "All You Need Is Love"
@@ -11230,10 +11230,10 @@
       },
       "ODDS.3": {
         "id": "ODDS.3",
-        "text": "Lil Fridge makes the playoffs in about 99% of runs, with a bye in 79%, most often as the 1st seed.",
+        "text": "Lil Fridge makes the playoffs in about 96% of runs, with a bye in 59%, most often as the 1st seed.",
         "numbers": [
-          "99",
-          "79",
+          "96",
+          "59",
           "1"
         ],
         "teams": [
@@ -11255,11 +11255,11 @@
       },
       "ODDS.5": {
         "id": "ODDS.5",
-        "text": "London Cooking makes the playoffs in about 99% of runs, with a bye in 67%, most often as the 2nd seed.",
+        "text": "London Cooking makes the playoffs in about 96% of runs, with a bye in 60%, most often as the 1st seed.",
         "numbers": [
-          "99",
-          "67",
-          "2"
+          "96",
+          "60",
+          "1"
         ],
         "teams": [
           "London Cooking"
@@ -11268,11 +11268,11 @@
       },
       "ODDS.6": {
         "id": "ODDS.6",
-        "text": "Bo Girds makes the playoffs in about 99% of runs, with a bye in 46%, most often as the 3rd seed.",
+        "text": "Bo Girds makes the playoffs in about 91% of runs, with a bye in 41%, most often as the 2nd seed.",
         "numbers": [
-          "99",
-          "46",
-          "3"
+          "91",
+          "41",
+          "2"
         ],
         "teams": [
           "Bo Girds"
@@ -11281,9 +11281,9 @@
       },
       "ODDS.7": {
         "id": "ODDS.7",
-        "text": "To Infinity and Bijan makes the playoffs in about 3% of runs, with a bye in 1%.",
+        "text": "To Infinity and Bijan makes the playoffs in about 6% of runs, with a bye in 1%.",
         "numbers": [
-          "3",
+          "6",
           "1"
         ],
         "teams": [
@@ -11293,10 +11293,9 @@
       },
       "ODDS.8": {
         "id": "ODDS.8",
-        "text": "Return of T Mac makes the playoffs in about 76% of runs, with a bye in 3%, most often as the 4th seed.",
+        "text": "Return of T Mac makes the playoffs in about 44% of runs, with a bye in 4%.",
         "numbers": [
-          "76",
-          "3",
+          "44",
           "4"
         ],
         "teams": [
@@ -11306,10 +11305,10 @@
       },
       "ODDS.9": {
         "id": "ODDS.9",
-        "text": "Maye d'force B with U makes the playoffs in about 79% of runs, with a bye in 4%, most often as the 4th seed.",
+        "text": "Maye d'force B with U makes the playoffs in about 78% of runs, with a bye in 20%, most often as the 4th seed.",
         "numbers": [
-          "79",
-          "4",
+          "78",
+          "20",
           "4"
         ],
         "teams": [
@@ -11319,10 +11318,10 @@
       },
       "ODDS.10": {
         "id": "ODDS.10",
-        "text": "behold the lamb makes the playoffs in about 26% of runs, with a bye in 1%.",
+        "text": "behold the lamb makes the playoffs in about 30% of runs, with a bye in 2%.",
         "numbers": [
-          "26",
-          "1"
+          "30",
+          "2"
         ],
         "teams": [
           "behold the lamb"
@@ -11331,9 +11330,9 @@
       },
       "ODDS.11": {
         "id": "ODDS.11",
-        "text": "Unsolicited Dak Picks makes the playoffs in about 6% of runs, with a bye in 1%.",
+        "text": "Unsolicited Dak Picks makes the playoffs in about 18% of runs, with a bye in 1%.",
         "numbers": [
-          "6",
+          "18",
           "1"
         ],
         "teams": [
@@ -11343,10 +11342,10 @@
       },
       "ODDS.12": {
         "id": "ODDS.12",
-        "text": "Amon-Ra Dawg Your Team makes the playoffs in about 32% of runs, with a bye in 1%.",
+        "text": "Amon-Ra Dawg Your Team makes the playoffs in about 35% of runs, with a bye in 2%.",
         "numbers": [
-          "32",
-          "1"
+          "35",
+          "2"
         ],
         "teams": [
           "Amon-Ra Dawg Your Team"
@@ -11355,11 +11354,12 @@
       },
       "SW.3v8": {
         "id": "SW.3v8",
-        "text": "The playoff odds of Lil Fridge stay near 99% either way. A win puts the playoff odds of Return of T Mac at 84%, a loss at 68%.",
+        "text": "A win puts the playoff odds of Lil Fridge at 99%, a loss at 93%. A win puts the playoff odds of Return of T Mac at 55%, a loss at 32%.",
         "numbers": [
           "99",
-          "84",
-          "68"
+          "93",
+          "55",
+          "32"
         ],
         "teams": [
           "Lil Fridge",
@@ -11369,12 +11369,12 @@
       },
       "SW.10v11": {
         "id": "SW.10v11",
-        "text": "A win puts the playoff odds of behold the lamb at 37%, a loss at 19%. A win puts the playoff odds of Unsolicited Dak Picks at 9%, a loss at 2%.",
+        "text": "A win puts the playoff odds of behold the lamb at 45%, a loss at 21%. A win puts the playoff odds of Unsolicited Dak Picks at 23%, a loss at 8%.",
         "numbers": [
-          "37",
-          "19",
-          "9",
-          "2"
+          "45",
+          "21",
+          "23",
+          "8"
         ],
         "teams": [
           "behold the lamb",
@@ -13138,7 +13138,6 @@
           "PR.9.why",
           "PR.6.why",
           "PR.10.why",
-          "ODDS.2.why",
           "PR.1.why",
           "ODDS.12.why",
           "PR.7.why",
@@ -13151,22 +13150,22 @@
     "teams": {
       "1": {
         "roster_id": 1,
-        "playoff": 57,
-        "bye": 1,
-        "seed": 6,
+        "playoff": 60,
+        "bye": 8,
+        "seed": 5,
         "status": "open"
       },
       "2": {
         "roster_id": 2,
-        "playoff": 21,
-        "bye": 1,
+        "playoff": 46,
+        "bye": 4,
         "seed": null,
         "status": "open"
       },
       "3": {
         "roster_id": 3,
-        "playoff": 99,
-        "bye": 79,
+        "playoff": 96,
+        "bye": 59,
         "seed": 1,
         "status": "open"
       },
@@ -13179,57 +13178,57 @@
       },
       "5": {
         "roster_id": 5,
-        "playoff": 99,
-        "bye": 67,
-        "seed": 2,
+        "playoff": 96,
+        "bye": 60,
+        "seed": 1,
         "status": "open"
       },
       "6": {
         "roster_id": 6,
-        "playoff": 99,
-        "bye": 46,
-        "seed": 3,
+        "playoff": 91,
+        "bye": 41,
+        "seed": 2,
         "status": "open"
       },
       "7": {
         "roster_id": 7,
-        "playoff": 3,
+        "playoff": 6,
         "bye": 1,
         "seed": null,
         "status": "open"
       },
       "8": {
         "roster_id": 8,
-        "playoff": 76,
-        "bye": 3,
-        "seed": 4,
+        "playoff": 44,
+        "bye": 4,
+        "seed": null,
         "status": "open"
       },
       "9": {
         "roster_id": 9,
-        "playoff": 79,
-        "bye": 4,
+        "playoff": 78,
+        "bye": 20,
         "seed": 4,
         "status": "open"
       },
       "10": {
         "roster_id": 10,
-        "playoff": 26,
-        "bye": 1,
+        "playoff": 30,
+        "bye": 2,
         "seed": null,
         "status": "open"
       },
       "11": {
         "roster_id": 11,
-        "playoff": 6,
+        "playoff": 18,
         "bye": 1,
         "seed": null,
         "status": "open"
       },
       "12": {
         "roster_id": 12,
-        "playoff": 32,
-        "bye": 1,
+        "playoff": 35,
+        "bye": 2,
         "seed": null,
         "status": "open"
       }
@@ -13239,49 +13238,49 @@
         "a": 3,
         "b": 8,
         "a_win": 99,
-        "a_loss": 99,
-        "b_win": 84,
-        "b_loss": 68
+        "a_loss": 93,
+        "b_win": 55,
+        "b_loss": 32
       },
       {
         "a": 1,
         "b": 9,
-        "a_win": 74,
-        "a_loss": 49,
-        "b_win": 85,
-        "b_loss": 67
+        "a_win": 76,
+        "a_loss": 50,
+        "b_win": 87,
+        "b_loss": 66
       },
       {
         "a": 10,
         "b": 11,
-        "a_win": 37,
-        "a_loss": 19,
-        "b_win": 9,
-        "b_loss": 2
+        "a_win": 45,
+        "a_loss": 21,
+        "b_win": 23,
+        "b_loss": 8
       },
       {
         "a": 5,
         "b": 12,
-        "a_win": 99,
-        "a_loss": 99,
-        "b_win": 46,
-        "b_loss": 31
+        "a_win": 98,
+        "a_loss": 90,
+        "b_win": 53,
+        "b_loss": 27
       },
       {
         "a": 2,
         "b": 6,
-        "a_win": 34,
-        "a_loss": 18,
-        "b_win": 99,
-        "b_loss": 99
+        "a_win": 62,
+        "a_loss": 36,
+        "b_win": 96,
+        "b_loss": 84
       },
       {
         "a": 4,
         "b": 7,
-        "a_win": 1,
+        "a_win": 2,
         "a_loss": 1,
-        "b_win": 5,
-        "b_loss": 1
+        "b_win": 10,
+        "b_loss": 2
       }
     ]
   },

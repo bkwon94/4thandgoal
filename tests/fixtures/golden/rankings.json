@@ -945,9 +945,9 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 99,
-            "bye": 67,
-            "seed": 2,
+            "playoff": 96,
+            "bye": 60,
+            "seed": 1,
             "status": "open"
           }
         },
@@ -966,8 +966,8 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 99,
-            "bye": 79,
+            "playoff": 96,
+            "bye": 59,
             "seed": 1,
             "status": "open"
           }
@@ -987,9 +987,9 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 76,
-            "bye": 3,
-            "seed": 4,
+            "playoff": 44,
+            "bye": 4,
+            "seed": null,
             "status": "open"
           }
         },
@@ -1008,8 +1008,8 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 79,
-            "bye": 4,
+            "playoff": 78,
+            "bye": 20,
             "seed": 4,
             "status": "open"
           }
@@ -1029,9 +1029,9 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 99,
-            "bye": 46,
-            "seed": 3,
+            "playoff": 91,
+            "bye": 41,
+            "seed": 2,
             "status": "open"
           }
         },
@@ -1050,8 +1050,8 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 26,
-            "bye": 1,
+            "playoff": 30,
+            "bye": 2,
             "seed": null,
             "status": "open"
           }
@@ -1071,8 +1071,8 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 21,
-            "bye": 1,
+            "playoff": 46,
+            "bye": 4,
             "seed": null,
             "status": "open"
           }
@@ -1092,9 +1092,9 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 57,
-            "bye": 1,
-            "seed": 6,
+            "playoff": 60,
+            "bye": 8,
+            "seed": 5,
             "status": "open"
           }
         },
@@ -1113,8 +1113,8 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 32,
-            "bye": 1,
+            "playoff": 35,
+            "bye": 2,
             "seed": null,
             "status": "open"
           }
@@ -1134,7 +1134,7 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 3,
+            "playoff": 6,
             "bye": 1,
             "seed": null,
             "status": "open"
@@ -1176,7 +1176,7 @@
           },
           "blurb": [],
           "odds": {
-            "playoff": 6,
+            "playoff": 18,
             "bye": 1,
             "seed": null,
             "status": "open"
