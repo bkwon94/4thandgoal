@@ -8,12 +8,25 @@ from typing import Literal
 from pydantic import BaseModel, model_validator
 
 from cornerstone.adjusters import (
-    ADJUSTERS, SCHEDULE, Adjuster, Lean, Side, build_side, lineup_value, named, trade_handcuffs,
+    ADJUSTERS,
+    SCHEDULE,
+    Adjuster,
+    Lean,
+    Side,
+    build_side,
+    lineup_value,
+    named,
+    trade_handcuffs,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
-    ACCEPT_AT_OR_ABOVE, CLAMP_STEPS, CONSOLIDATION_MARGIN, DECLINE_AT_OR_BELOW, LOPSIDED_AT_OR_BELOW,
-    START_LETTER_BANDS, WIN_WIN_AT_OR_ABOVE,
+    ACCEPT_AT_OR_ABOVE,
+    CLAMP_STEPS,
+    CONSOLIDATION_MARGIN,
+    DECLINE_AT_OR_BELOW,
+    LOPSIDED_AT_OR_BELOW,
+    START_LETTER_BANDS,
+    WIN_WIN_AT_OR_ABOVE,
 )
 
 # The breakdown per side holds no trade value, sum, or ratio.

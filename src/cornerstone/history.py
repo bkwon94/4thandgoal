@@ -10,11 +10,19 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Literal
 
-from cornerstone.facts_league import TREND_WEEKS
+from cornerstone.files import write_bytes_atomic
 from cornerstone.models import History, PastWeek, UsageShare
+from cornerstone.numbers import round_half_up
 from cornerstone.parse import parse_past_week
-from cornerstone.sleeper import fetch_past_week, read_prev_transactions
-from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS
+from cornerstone.paths import history_raw_dir, history_week_dir
+from cornerstone.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawWeek
+from cornerstone.provider.sleeper import SLEEPER, read_prev_transactions
+from cornerstone.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS, TREND_WEEKS
+
+# The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
+# It has the shape of Provider.fetch_past_leg. The history reads the saved files and not the return, so a fake that
+# gives None fits too.
+PastLegFetcher = Callable[[str, int, int, Path], RawPastWeek | None]
 
 HISTORY_FILES: tuple[str, ...] = ("matchups", "transactions", "stats", "projections")
 UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
@@ -22,19 +30,6 @@ UNOFFICIAL_FILES: tuple[str, ...] = ("stats", "projections")
 SHARE_SWING = 5
 # A direction needs two windows of SHARE_WEEKS weeks each.
 SHARE_DIRECTION_WEEKS = 2 * SHARE_WEEKS
-
-
-def history_root(repo: Path, season: int) -> Path:
-    return repo / "data" / str(season) / "history"
-
-
-def returns_path(repo: Path, season: int) -> Path:
-    """The hand-kept returns file of the season: the return week by player id, beside the history."""
-    return repo / "data" / str(season) / "returns.json"
-
-
-def history_dir(root: Path, week: int) -> Path:
-    return root / f"week-{week:02d}"
 
 
 def _is_saved(directory: Path) -> bool:
@@ -50,11 +45,11 @@ def fetch_history(
     through: int,
     root: Path,
     force: bool = False,
-    fetch: Callable[[str, int, int, Path], None] = fetch_past_week,
+    fetch: PastLegFetcher = SLEEPER.fetch_past_leg,
 ) -> list[int]:
     fetched = []
     for week in range(1, through + 1):
-        directory = history_dir(root, week)
+        directory = history_week_dir(root, week)
         if not force and _is_saved(directory):
             continue
         fetch(league_id, season, week, directory)
@@ -62,35 +57,34 @@ def fetch_history(
     return fetched
 
 
-def _read_week(directory: Path) -> dict[str, object] | None:
+def _read_week(directory: Path) -> RawPastWeek | None:
     # A week with a missing file is left out, so a gap removes facts and never makes one wrong.
     if not all((directory / f"{name}.json").exists() for name in HISTORY_FILES):
         return None
-    return {
+    return RawPastWeek.model_validate({
         name: json.loads((directory / f"{name}.json").read_text())
         for name in HISTORY_FILES
-    }
+    })
 
 
-def _fresh_transactions(root: Path, week: int) -> list | None:
+def _fresh_transactions(root: Path, week: int) -> list[RawTransaction] | None:
     """The full leg of `week` that the fetch of the next week saved, or None when that file is not saved.
 
     The week N build runs before the Tuesday night waiver run, so the saved copy misses the adds after it.
     Sleeper keeps the leg at N until the next week starts, and the fetch of week N+1 saves the full leg.
     """
-    # The raw directory of a week sits beside the history root: data/{season}/week-NN/raw.
-    return read_prev_transactions(root.parent / f"week-{week + 1:02d}" / "raw")
+    return read_prev_transactions(history_raw_dir(root, week + 1))
 
 
 def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
     """The saved weeks 1 to `through`, by week. A week that is not saved has no entry."""
     weeks = {}
     for past in range(1, through + 1):
-        saved = _read_week(history_dir(root, past))
+        saved = _read_week(history_week_dir(root, past))
         if saved is not None:
             fresh = _fresh_transactions(root, past)
             if fresh is not None:
-                saved["transactions"] = fresh
+                saved.transactions = fresh
             weeks[past] = parse_past_week(saved, past)
     return weeks
 
@@ -98,12 +92,12 @@ def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
 def saved_through(root: Path, week: int) -> int:
     """The last week at or after `week` such that every week from `week` to it is saved."""
     last = week
-    while _read_week(history_dir(root, last + 1)) is not None:
+    while _read_week(history_week_dir(root, last + 1)) is not None:
         last += 1
     return last
 
 
-def load_history(root: Path, raw: dict[str, object], week: int) -> History:
+def load_history(root: Path, raw: RawWeek, week: int) -> History:
     weeks = load_saved_weeks(root, week - 1)
     # The current week comes from the raw data of this run, not from the cache.
     weeks[week] = parse_past_week(raw, week)
@@ -138,11 +132,6 @@ def player_trend(history: History, player_id: str, through: int | None = None) -
     return beaten
 
 
-def _round_half_up(x: float, places: int = 0) -> float:
-    """Round half up. Python's round() rounds half to even."""
-    return float(Decimal(str(x)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP))
-
-
 def stats_complete(history: History, through: int) -> bool:
     """True when every week from 1 to `through` is present and has stat lines.
 
@@ -174,7 +163,8 @@ def points_per_game(history: History, player_id: str, through: int) -> tuple[flo
     if not weeks:
         return (0.0, 0)
     # Sleeper leaves out a stat whose value is 0, so a game with no pts_half_ppr scored 0.
-    total = sum(Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks)
+    # The Decimal start keeps the sum a Decimal for the type checker. The weeks are never empty here.
+    total = sum((Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks), Decimal(0))
     mean = (total / len(weeks)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
     return (float(mean), len(weeks))
 
@@ -229,10 +219,10 @@ def _usage_share(
         return 100 * sum(numerator(history.weeks[w]) for w in ws) / sum(denominator(history.weeks[w]) for w in ws)
 
     if len(weeks) < SHARE_DIRECTION_WEEKS:
-        return UsageShare(percent=int(_round_half_up(pct(weeks))), weeks=len(weeks), direction=None, weeks_used=weeks)
+        return UsageShare(percent=int(round_half_up(pct(weeks))), weeks=len(weeks), direction=None, weeks_used=weeks)
     recent, prior = weeks[-SHARE_WEEKS:], weeks[-SHARE_DIRECTION_WEEKS:-SHARE_WEEKS]
     return UsageShare(
-        percent=int(_round_half_up(pct(recent))),
+        percent=int(round_half_up(pct(recent))),
         weeks=SHARE_WEEKS,
         direction=share_direction(pct(recent), pct(prior)),
         weeks_used=recent,
@@ -316,27 +306,28 @@ def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in HISTORY_FILES:
         shutil.copyfile(raw_dir / f"{name}.json", out_dir / f"{name}.json")
-    matchups = json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))
+    matchups = [RawMatchup.model_validate(m)
+                for m in json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))]
     players = json.loads((raw_dir / "players.json").read_text(encoding="utf-8"))
     _save_injuries(matchups, players, out_dir)
 
 
-def save_raw_to_history(raw: dict[str, object], out_dir: Path) -> None:
+def save_raw_to_history(raw: RawWeek, out_dir: Path) -> None:
     """Put the raw data of a week, held in memory, into the history. It writes the same files as save_week_to_history.
 
     The live path has no raw directory, so it writes the parsed raw data instead of a copy.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in HISTORY_FILES:
-        (out_dir / f"{name}.json").write_text(json.dumps(raw[name]), encoding="utf-8")
-    _save_injuries(raw["matchups"], raw["players"], out_dir)
+        write_bytes_atomic(out_dir / f"{name}.json", json.dumps(raw.file_json(name)).encode("utf-8"))
+    _save_injuries(raw.matchups, raw.players, out_dir)
 
 
-def _save_injuries(matchups: list[dict], players: dict[str, dict], out_dir: Path) -> None:
+def _save_injuries(matchups: list[RawMatchup], players: dict[str, dict], out_dir: Path) -> None:
     injuries = {}
     for roster in matchups:
-        for player_id in roster["players"]:
+        for player_id in roster.players or []:
             status = (players.get(player_id) or {}).get("injury_status")
             if status:
                 injuries[player_id] = status
-    (out_dir / "injuries.json").write_text(json.dumps(injuries, indent=2), encoding="utf-8")
+    write_bytes_atomic(out_dir / "injuries.json", json.dumps(injuries, indent=2).encode("utf-8"))

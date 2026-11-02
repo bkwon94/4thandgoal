@@ -12,11 +12,16 @@ from cornerstone.adjusters import STEP_WORDS, UPSIDE
 from cornerstone.models import Fact
 from cornerstone.names import NAME_SUFFIXES
 from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdict, grade, verdict
-from cornerstone.sheet import NUMBER_TOKEN
+from cornerstone.sheet.base import NUMBER_TOKEN
 from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
-    normalize_number, number_failures, remove_names, repeat_failure, team_mentions, whole_word,
+    normalize_number,
+    number_failures,
+    remove_names,
+    repeat_failure,
+    team_mentions,
+    whole_word,
 )
 from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 
@@ -130,7 +135,8 @@ def build_analysis_prompt(
     trade: ProposedTrade, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...], code_verdict: Verdict,
     facts: dict[str, Fact], feedback: str | None,
 ) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
+    # The snapshot carries the league config, so the prompts come from the folder that the config names.
+    system = "\n\n".join(load_prompt(snapshot.config.prompts_dir, name) for name in PROMPT_FILES)
     lines = []
     for block in trade_side_lines(trade, snapshot, breakdowns):
         lines += [*block, ""]

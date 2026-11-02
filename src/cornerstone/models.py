@@ -3,17 +3,15 @@ Domain models for one week of the league.
 They are plain data, so the rest of the code does not read raw Sleeper JSON.
 """
 from datetime import date, datetime
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
-from cornerstone.odds import OddsResult
+from cornerstone.numbers import r2
 
-
-def r2(x: float) -> float:
-    """Round half up to two decimals. Python's round() gives 2.78 for 2.785."""
-    return float(Decimal(str(x)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+# The projections of each week ahead by player ID, keyed by week. A plain alias, so any dict of that shape fits.
+ProjectionsAhead = dict[int, dict[str, float]]
 
 
 def sub(a: float, b: float) -> float:
@@ -22,6 +20,10 @@ def sub(a: float, b: float) -> float:
 
 
 class Team(BaseModel):
+    # The published files and the site schema name the owner flag is_brian, so the field keeps that name on the wire.
+    # A saved facts file holds is_brian too, so a read takes either name.
+    model_config = ConfigDict(serialize_by_alias=True)
+
     roster_id: int
     name: str
     owner: str
@@ -29,7 +31,7 @@ class Team(BaseModel):
     wins: int
     losses: int
     points_for: float
-    is_brian: bool
+    is_owner: bool = Field(validation_alias=AliasChoices("is_owner", "is_brian"), serialization_alias="is_brian")
 
 
 class PlayerLine(BaseModel):
@@ -181,7 +183,7 @@ class Week(BaseModel):
     # The pairs of weeks N+2 to 14, keyed by week, in the shape of next_matchups.
     schedule: dict[int, list[tuple[int, int]]] = {}
     # The half-PPR projection of each rostered player in weeks N+1 to 14, by week and player id.
-    projections_ahead: dict[int, dict[str, float]] = {}
+    projections_ahead: ProjectionsAhead = {}
     # The league's lineup slots, in Sleeper's order, such as QB, RB, RB, WR, and BN.
     roster_positions: list[str] = []
     # The position of each player on each current roster in rosters.json, by roster id and player id.
@@ -605,6 +607,36 @@ class DropInfo(BaseModel):
     beaten_by_name: str
     # The rest of season projection of beaten_by minus his, per remaining week, to one decimal.
     margin: float
+
+
+# The playoff status of a roster in the odds engine.
+OddsStatus = Literal["in", "out", "open"]
+
+
+class TeamOdds(BaseModel):
+    """The odds of one roster. Each odds number is a whole percent."""
+    roster_id: int
+    playoff: int
+    bye: int
+    # The most likely seed. None when the playoff odds are below SEED_SHOW_AT.
+    seed: int | None
+    status: OddsStatus
+
+
+class Swing(BaseModel):
+    """The playoff odds of both sides of one next-week game. Each side has its odds after a win and after a loss."""
+    a: int
+    b: int
+    a_win: int
+    a_loss: int
+    b_win: int
+    b_loss: int
+
+
+class OddsResult(BaseModel):
+    """The odds of every roster, keyed by roster ID, and the swing of each next-week game in pair order."""
+    teams: dict[int, TeamOdds]
+    swings: list[Swing]
 
 
 class Bundle(BaseModel):

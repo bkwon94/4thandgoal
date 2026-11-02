@@ -6,7 +6,7 @@ import logging
 import re
 import string
 from collections.abc import Collection
-from importlib import resources
+from pathlib import Path
 
 import anthropic
 from pydantic import ValidationError
@@ -20,8 +20,8 @@ from cornerstone.models import (
     VerifyResult,
 )
 from cornerstone.names import last_name
-from cornerstone.sheet import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
-from cornerstone.writer import ClaudeCall, RefusalError, WriterError, template_blurb, write_blurb
+from cornerstone.sheet.base import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
+from cornerstone.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
 WHICH_TAIL = re.compile(r",\s*which\b", re.IGNORECASE)
 # Each chapter is one call, so a page-wide cap on this closer cannot hold. The closer is banned outright.
-AND_THATS_TAIL = re.compile(r",\s*and that(?:'|’)?s\b[^,]*$", re.I)
+AND_THATS_TAIL = re.compile(r",\s*and that(?:'|’)?s\b[^,]*$", re.IGNORECASE)
 # Two rankings teams whose first sentences share this many opening words read as one stock row.
 OPENER_WORDS = 3
 # The writer uses curly quotes and dashes, so the plain ASCII set alone misses them.
@@ -82,7 +82,7 @@ def without_urls(text: str) -> str:
 
 def normalize_number(number: str) -> str:
     number = number.replace(",", "")
-    return number[:-2] if number.endswith(".0") else number
+    return number.removesuffix(".0")
 
 
 def _numbers(fids: list[str], sheet: FactSheet) -> set[str]:
@@ -114,9 +114,9 @@ def number_failures(bare: str, cited_numbers: set[str], cited_text: str) -> list
     return failures
 
 
-def _banned(heading: str) -> list[str]:
+def _banned(prompts_dir: Path, heading: str) -> list[str]:
     """The comma list on the line after a vocabulary heading, such as "## Banned words"."""
-    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    text = load_prompt(prompts_dir, "vocabulary.md")
     line = text.split(heading, 1)[1].strip().splitlines()[0]
     return [w.strip().rstrip(".") for w in line.split(":", 1)[1].split(",")]
 
@@ -310,7 +310,7 @@ def opener_failures(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> list[st
 
 
 def code_check(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, used_words: Collection[str] = frozenset()
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, used_words: Collection[str] = frozenset(), *, prompts_dir: Path
 ) -> list[str]:
     """The code rules on one blurb. `used_words` are the once-per-page words that another chapter already said."""
     failures: list[str] = []
@@ -323,8 +323,9 @@ def code_check(
     in_scope_last_words = {last.split()[-1] for last in in_scope_last if last}
     # Lowercase, because whole_word ignores case.
     scope_team_words = {w.lower() for t in chapter.scope_teams for w in t.split()}
-    banned = _banned("## Banned words")
-    banned_phrases = _banned("## Banned phrases")
+    # The banned lists live in the vocabulary prompt, so the writer and the check read the same words.
+    banned = _banned(prompts_dir, "## Banned words")
+    banned_phrases = _banned(prompts_dir, "## Banned phrases")
     always_allowed = _week_numbers(sheet)
     reactions = 0
     bares: list[str] = []
@@ -440,13 +441,9 @@ def code_check(
     return failures
 
 
-def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> tuple[str, str]:
+def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: Path) -> tuple[str, str]:
     # The vocabulary comes first so the verifier judges stat terms by the writer's definitions.
-    prompts = resources.files("cornerstone.prompts")
-    system = "\n\n".join(
-        prompts.joinpath(name).read_text(encoding="utf-8").strip()
-        for name in ("vocabulary.md", "verifier.md")
-    )
+    system = "\n\n".join(load_prompt(prompts_dir, name) for name in ("vocabulary.md", "verifier.md"))
     # The verifier sees every chapter fact, cited or not, so a true claim with a missed
     # citation is not judged false. Facts outside the chapter never reach it.
     lines = [
@@ -465,9 +462,9 @@ def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet) -> t
 
 
 def claude_verify(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, *, prompts_dir: Path
 ) -> list[Verdict]:
-    system, user = build_verifier_prompt(blurb, chapter, sheet)
+    system, user = build_verifier_prompt(blurb, chapter, sheet, prompts_dir=prompts_dir)
     verdicts = call(system, user, VerifyOut).verdicts
     n, m = len(verdicts), len(blurb.sentences)
     if n != m:
@@ -477,13 +474,14 @@ def claude_verify(
 
 
 def verify_blurb(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(),
+    *, prompts_dir: Path,
 ) -> VerifyResult:
-    failures = code_check(blurb, chapter, sheet, used_words)
+    failures = code_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir)
     # A code failure is final, so skip the paid Claude call.
     if failures:
         return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False)
-    verdicts = claude_verify(blurb, chapter, sheet, call)
+    verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir)
     return VerifyResult(
         chapter=chapter.key,
         code_failures=[],
@@ -502,7 +500,8 @@ def _feedback(result: VerifyResult) -> str:
 
 
 def write_and_verify(
-    chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset()
+    chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(), *,
+    prompts_dir: Path,
 ) -> tuple[Blurb, list[VerifyResult]]:
     results: list[VerifyResult] = []
     # The used words go to every attempt, so a retry for another failure still hears them.
@@ -510,7 +509,7 @@ def write_and_verify(
     feedback = None
     for attempt in (1, 2):
         try:
-            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt)
+            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt, prompts_dir=prompts_dir)
         except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
             # A writer error is a failed attempt, not a crash of the whole report.
             log.warning("writer failed for %s: %s", chapter.key, err)
@@ -522,7 +521,7 @@ def write_and_verify(
             )
         else:
             try:
-                result = verify_blurb(blurb, chapter, sheet, call, used_words)
+                result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir)
             except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)

@@ -1,5 +1,5 @@
 """
-The position rank and what it reads: the lineup value of each player, his due-back week, the line, and the pool rule.
+The position rank and what it reads: the lineup value of each player, his due-back week, and the pool rule.
 It imports no snapshot at run time, so the snapshot, the adjusters, and the waiver board all import it with no cycle.
 """
 from __future__ import annotations
@@ -9,9 +9,7 @@ from typing import TYPE_CHECKING
 
 from cornerstone.history import player_points
 from cornerstone.models import PastWeek
-from cornerstone.tunables import (
-    LAST_REGULAR_WEEK, LINE_QB_TE, LINE_RB_WR, LINEUP_WEEKS, POOL_POSITIONS, RETURN_BY_WEEK,
-)
+from cornerstone.tunables import LINEUP_WEEKS, POOL_POSITIONS
 
 if TYPE_CHECKING:
     # The snapshot module imports this one, so the snapshot is a name for the type checker only.
@@ -21,8 +19,8 @@ if TYPE_CHECKING:
 POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 
 # Injury report statuses that keep a player out of games. A player with one of them and no row in the
-# returns file has no known return, so the standing adjuster counts him as back after RETURN_BY_WEEK.
-# The lineup value counts him as due back at RETURN_BY_WEEK, so his projection ahead gives his value.
+# returns file has no known return, so the standing adjuster counts him as back after the return-by week of the
+# league config. The lineup value counts him as due back at that week, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 
@@ -53,12 +51,13 @@ def _played_weeks(snapshot: Snapshot, player_id: str) -> list[PastWeek]:
 
 
 def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
-    """The mean of the player's weekly projections from his due-back week through LAST_REGULAR_WEEK.
+    """The mean of the player's weekly projections from his due-back week through the last regular week.
 
     A week with no projection row, such as a bye, is no game. With no row in those weeks, he counts for 0.
     """
     rows = snapshot.projections_ahead.get(player_id, {})
-    weeks = [rows[week] for week in range(due_back_week(snapshot, player_id), LAST_REGULAR_WEEK + 1) if week in rows]
+    last = snapshot.config.last_regular_week
+    weeks = [rows[week] for week in range(due_back_week(snapshot, player_id), last + 1) if week in rows]
     if not weeks:
         return Decimal(0)
     return sum((Decimal(str(points)) for points in weeks), Decimal(0)) / len(weeks)
@@ -114,10 +113,6 @@ def rank_table(snapshot: Snapshot) -> dict[str, list[str]]:
             for position in RANKED_POSITIONS}
 
 
-# The line at each ranked position. GLOSSARY.md, "The line". K and DEF have no line, so their slots are never holes.
-LINES = {"QB": LINE_QB_TE, "RB": LINE_RB_WR, "WR": LINE_RB_WR, "TE": LINE_QB_TE}
-
-
 def _has_known_game(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player has a game played in the known games of the trade week."""
     if snapshot.as_of.stats_through <= snapshot.as_of.completed_through:
@@ -138,8 +133,9 @@ def _back_in_a_known_game(snapshot: Snapshot, player_id: str) -> bool:
 def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     """The week the player counts as back, or None when he is not due back.
 
-    The returns file gives the week. A player out with no row counts as back at RETURN_BY_WEEK, the week the standing
-    adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must start at that week.
+    The returns file gives the week. A player out with no row counts as back at the return-by week of the config, the
+    week the standing adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must
+    start at that week.
     A week through the last completed week is no return ahead, so he is not due back.
     A player with a returns row by the trade week who played in its known games is back, so he is not due back.
     A player out for the season has no return, so he is never due back. GLOSSARY.md, "Out for the season".
@@ -152,7 +148,7 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     # The position rank reads players on no roster, and the snapshot holds no injury status for them.
     player = snapshot.players.get(player_id)
     if week is None and player is not None and player.injury_status in OUT_STATUSES:
-        week = RETURN_BY_WEEK
+        week = snapshot.config.return_by_week
     return week if week is not None and week > snapshot.as_of.completed_through else None
 
 

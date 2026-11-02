@@ -8,7 +8,15 @@ from pydantic import BaseModel
 
 from cornerstone.adjusters import OUT_STATUSES, is_handcuff, trade_handcuffs
 from cornerstone.rubric import (
-    LETTERS, Breakdown, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, unlisted_players,
+    LETTERS,
+    Breakdown,
+    Fairness,
+    GivenPlayer,
+    ProposedTrade,
+    TradeSide,
+    fairness,
+    grade,
+    unlisted_players,
 )
 from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import FINDER_TOP

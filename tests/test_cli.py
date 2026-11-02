@@ -14,7 +14,8 @@ def _no_nflverse(season, week, player_ids, players):
 
 
 def test_help_lists_commands():
-    out = subprocess.run(["uv", "run", "cornerstone", "--help"], capture_output=True, text=True)
+    # The test asserts the return code itself.
+    out = subprocess.run(["uv", "run", "cornerstone", "--help"], capture_output=True, text=True, check=False)
     assert out.returncode == 0
     for cmd in ("build", "publish", "rewrite", "history"):
         assert cmd in out.stdout
@@ -43,6 +44,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     import shutil
 
     from cornerstone import cli, pipeline
+    from cornerstone.provider.sleeper import SLEEPER
 
     def no_fetch(*args, **kwargs):
         raise AssertionError("saved raw data must not be fetched again")
@@ -50,7 +52,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     def no_claude(*args, **kwargs):
         raise AssertionError("the gate must stop the build before any Claude call")
 
-    monkeypatch.setattr(pipeline, "fetch_week", no_fetch)
+    monkeypatch.setattr(SLEEPER, "fetch_week", no_fetch)
     # The gate stops this build first. The patch keeps any later build off the network.
     monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
     monkeypatch.setattr(cli, "claude_call", no_claude)
@@ -135,16 +137,18 @@ def _pad_rows(value):
 
 
 def _save_chart(tmp_path, parsed):
-    from cornerstone.chart import chart_dir
+    from cornerstone.paths import charts_dir
 
-    charts = chart_dir(tmp_path)
+    charts = charts_dir(tmp_path)
     charts.mkdir(parents=True)
     # A saved parse means the command makes no fetch and no Claude call.
     (charts / "week-06.json").write_text(parsed.model_dump_json())
 
 
 def _sleeper_state(season):
-    return lambda: {"season": season, "season_start_date": "2026-09-09"}
+    from cornerstone.provider.raw import RawState
+
+    return lambda: RawState(season=season, display_week=6, season_start_date="2026-09-09")
 
 
 def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_path, monkeypatch, capsys):
@@ -198,7 +202,7 @@ def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw
     from cornerstone import cli
     from cornerstone.models import ChartRead, ChartRow
     from cornerstone.parse import parse_week
-    from cornerstone.sleeper import load_raw
+    from cornerstone.provider.sleeper import load_raw
 
     _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
     line = parse_week(load_raw(fixture_raw_dir)).matchups[0].a.lines[0]
@@ -425,7 +429,8 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     import pytest
 
     from cornerstone import cli, live
-    from cornerstone.sleeper import load_raw
+    from cornerstone.config import cornerstone_config
+    from cornerstone.provider.sleeper import load_raw
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
@@ -435,10 +440,10 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
         cached.touch()
     monkeypatch.chdir(tmp_path)
-    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cli.EASTERN)
+    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cornerstone_config().tz)
     real = live.live_snapshot
     monkeypatch.setattr(cli, "live_snapshot", lambda repo, season, **kw: real(
-        repo, season, now=datetime(2026, 10, 19, 12, 0, tzinfo=cli.EASTERN),
+        repo, season, config=kw["config"], now=datetime(2026, 10, 19, 12, 0, tzinfo=kw["config"].tz),
         fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
         fetch_history_week=fetch_history_week,
@@ -474,9 +479,10 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
 def test_the_known_games_line_names_each_pending_count(
         fixture_raw_dir, fixture_history_root, chart_week6, capsys, pending, line):
     from cornerstone import cli
+    from cornerstone.config import cornerstone_config
     from cornerstone.snapshot import KnownGames, load_snapshot
 
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=cornerstone_config())
     known = KnownGames(week=6, games=14, pending=pending)
     cli._print_as_of(snap.model_copy(update={"as_of": snap.as_of.model_copy(update={"known_games": known})}))
     assert line in capsys.readouterr().out

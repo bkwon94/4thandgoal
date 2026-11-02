@@ -3,11 +3,13 @@ Tests for the moves of a managers entry: the adds, the drops, and the trades per
 They run on small histories built in the test, and on the saved transactions of the fixture history.
 """
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from cornerstone.managers import managers
 from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
 from cornerstone.parse import parse_drops
+from cornerstone.provider.raw import RawTransaction
+from cornerstone.season_inputs import SeasonInputs
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},
@@ -17,7 +19,7 @@ PLAYERS = {
 }
 TEAMS = {
     rid: Team(roster_id=rid, name=f"Team {rid}", owner=f"owner{rid}", avatar_url=None, wins=0, losses=0,
-              points_for=0.0, is_brian=False)
+              points_for=0.0, is_owner=False)
     for rid in range(1, 13)
 }
 # The record of an entry needs a full week of twelve rosters in six pairs.
@@ -32,13 +34,13 @@ def _week(n: int, moves=(), drops=(), trades=()) -> PastWeek:
 
 def _moves(weeks: list[PastWeek], roster_id: int = 1, players=PLAYERS) -> dict:
     history = History(week=len(weeks), weeks={w.week: w for w in weeks})
-    entry = next(e for e in managers(history, TEAMS, players=players) if e.roster_id == roster_id)
+    entry = next(e for e in managers(SeasonInputs(history=history), TEAMS, players=players) if e.roster_id == roster_id)
     return entry.model_dump(mode="json")["moves"]
 
 
 def _trade(week: int) -> Trade:
     # Roster 1 gives the TE and gets the QB and the RB from roster 2.
-    return Trade(transaction_id=f"t{week}", created=datetime(2026, 9, 20, tzinfo=timezone.utc), roster_ids=[1, 2],
+    return Trade(transaction_id=f"t{week}", created=datetime(2026, 9, 20, tzinfo=UTC), roster_ids=[1, 2],
                  adds={"400": 1, "200": 1, "300": 2}, drops={"400": 2, "200": 2, "300": 1}, draft_picks=[])
 
 
@@ -125,7 +127,7 @@ def test_the_drops_come_from_the_saved_transactions(fixture_history_root):
         if t["status"] == "complete" and t["type"] in ("waiver", "free_agent")
         for pid, rid in (t["drops"] or {}).items()
     }
-    drops = parse_drops(transactions)
+    drops = parse_drops([RawTransaction.model_validate(t) for t in transactions])
     assert expected
     assert {(d.player_id, d.roster_id) for d in drops} == expected
     # A trade drop is a side of the trade, so the drops leave it out.

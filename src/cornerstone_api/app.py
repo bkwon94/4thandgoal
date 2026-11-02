@@ -8,12 +8,14 @@ On start, the real app refreshes the slow sources in a background thread, so the
 import hmac
 import logging
 import threading
+from datetime import datetime
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
+from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.finder_reasons import write_reasons
 from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE, TEAMS_CACHE_SECONDS
 from cornerstone_api import analyzer as analyzer_routes
@@ -63,12 +65,12 @@ def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
     """
     try:
         sources.refresh_current_season(settings.repo)
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001 - the app keeps running after a failed refresh
         logger.warning("The start-up refresh of the slow sources failed (%s)", type(error).__name__)
 
 
 def create_app(
-        settings: Settings, sources: Sources | None = None,
+        settings: Settings, config: LeagueConfig, sources: Sources | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
     """The app for these settings. Tests give fixture-backed sources, an analyzer, and a finder reason writer.
@@ -78,13 +80,13 @@ def create_app(
     """
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
-    app.state.sources = sources or Sources()
+    app.state.sources = sources or Sources(config, clock=lambda: datetime.now(config.tz))
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.teams_cache = TeamsCache(TEAMS_CACHE_SECONDS)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
     # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
     app.state.grade_limiter = GradeLimiter(
-        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE)
+        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE, config.tz)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
@@ -126,5 +128,6 @@ def create_app(
 
 
 def app_from_env() -> FastAPI:
-    """The app with the settings from the environment. The uvicorn factory flag calls it."""
-    return create_app(Settings.from_env(), refresh_on_start=True)
+    """The app with the settings from the environment and the league config. The uvicorn factory flag calls it."""
+    # The one config of the process. The passphrase stays in the settings, because it is a secret and not the league.
+    return create_app(Settings.from_env(), cornerstone_config(), refresh_on_start=True)

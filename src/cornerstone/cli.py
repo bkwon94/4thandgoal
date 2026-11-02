@@ -7,6 +7,7 @@ import argparse
 import logging
 from collections.abc import Iterable
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 
 import httpx
@@ -14,25 +15,41 @@ from pydantic import ValidationError
 
 from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
-from cornerstone.chart import chart_values, check_chart, match_chart, saved_chart_read
+from cornerstone.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
+from cornerstone.config import LeagueConfig, cornerstone_config
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
-from cornerstone.history import history_root
 from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
 from cornerstone.parse import parse_trades, parse_week
+from cornerstone.paths import history_root, nflverse_cache_dir, raw_dir
 from cornerstone.pipeline import (
-    BuildStopped, has_raw, nflverse_cache_dir, preview, resolve_week, run_build, run_history, run_page_json,
-    run_rankings, run_rewrite, week_dir,
+    BuildStopped,
+    has_raw,
+    preview,
+    resolve_week,
+    run_build,
+    run_history,
+    run_page_json,
+    run_rankings,
+    run_rewrite,
 )
-from cornerstone.sleeper import fetch_state, load_raw
+from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.sleeper import fetch_state, load_raw
 from cornerstone.publish import PublishError, run_publish, site_page_url
 from cornerstone.rubric import (
-    MAX_SIDES, MIN_SIDES, Fairness, GivenPlayer, ProposedTrade, TradeSide, fairness, grade, verdict,
+    MAX_SIDES,
+    MIN_SIDES,
+    Fairness,
+    GivenPlayer,
+    ProposedTrade,
+    TradeSide,
+    fairness,
+    grade,
+    verdict,
 )
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import Snapshot, load_snapshot
-from cornerstone.trades import EASTERN
-from cornerstone.writer import analyzer_call, claude_call
+from cornerstone.writer import analyzer_call, claude_call, parse_call
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -139,7 +156,7 @@ def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> li
     return built
 
 
-def _saved_chart_values(repo: Path, week: int, raw: dict) -> ChartValues | None:
+def _saved_chart_values(repo: Path, week: int, raw: RawWeek) -> ChartValues | None:
     """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
     # The chart module owns the rules for a saved read, so a bad or stale one gives None here too.
     chart = saved_chart_read(repo, week)
@@ -187,13 +204,13 @@ def _sources_line(snapshot: Snapshot) -> str:
     return f"Sources missing: {', '.join(missing)}."
 
 
-def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+def _saved_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
     """The snapshot of the saved week, or None after a plain line when the week has no raw data."""
     if not has_raw(repo, args.season, args.week):
         print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
         return None
-    raw_dir = week_dir(repo, args.season, args.week) / "raw"
-    raw = load_raw(raw_dir)
+    raw_path = raw_dir(repo, args.season, args.week)
+    raw = load_raw(raw_path)
     if args.chart is not None:
         chart = _given_chart(args.chart)
     else:
@@ -201,13 +218,13 @@ def _saved_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
     history = history_root(repo, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
-                             raw["league"]["scoring_settings"])
-    return load_snapshot(raw_dir, history, chart, slow)
+                             raw.league.scoring_settings)
+    return load_snapshot(raw_path, history, chart, slow, config=config)
 
 
-def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
+def _live_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
     """The snapshot of the league now. A given --chart file stands in for the chart read."""
-    read_chart = chart_values
+    read_chart = partial(chart_values, read=claude_reader(parse_call))
     if args.chart is not None:
         given = _given_chart(args.chart)
 
@@ -215,7 +232,7 @@ def _live_snapshot(repo: Path, args: argparse.Namespace) -> Snapshot | None:
         def read_chart(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
             return given
     try:
-        return live_snapshot(repo, args.season, now=datetime.now(EASTERN), read_chart=read_chart)
+        return live_snapshot(repo, args.season, config=config, now=datetime.now(config.tz), read_chart=read_chart)
     except ValueError as err:
         print(err)
         return None
@@ -254,7 +271,7 @@ def _print_as_of(snapshot: Snapshot) -> None:
         print(f"Refresh failed, so the cache is old or absent: {', '.join(snapshot.stale)}.")
 
 
-def run_analyze(repo: Path, args: argparse.Namespace) -> int:
+def run_analyze(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
     Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
@@ -266,7 +283,7 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     if sides is None:
         print("Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides.")
         return 2
-    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args, config)
     if snapshot is None:
         return 2
     try:
@@ -324,13 +341,13 @@ def run_analyze(repo: Path, args: argparse.Namespace) -> int:
     return 0
 
 
-def run_find(repo: Path, args: argparse.Namespace) -> int:
+def run_find(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> int:
     """Print the top win-win trades between the asker and the partner, each with its sides and its fairness."""
     # A plain line for the same roster twice, before the snapshot loads, so no load runs for nothing.
     if args.asker == args.partner:
         print("Give two different rosters for --asker and --partner.")
         return 2
-    snapshot = _live_snapshot(repo, args) if args.week is None else _saved_snapshot(repo, args)
+    snapshot = _live_snapshot(repo, args, config) if args.week is None else _saved_snapshot(repo, args, config)
     if snapshot is None:
         return 2
     for roster_id in (args.asker, args.partner):
@@ -355,18 +372,18 @@ def run_find(repo: Path, args: argparse.Namespace) -> int:
 
 def run_chart(repo: Path, season: int, week: int) -> int:
     """Print the parsed chart, every guard, and the match against the saved raw data of the week."""
-    raw = load_raw(week_dir(repo, season, week) / "raw") if has_raw(repo, season, week) else None
+    raw = load_raw(raw_dir(repo, season, week)) if has_raw(repo, season, week) else None
     if raw is not None:
         league = parse_week(raw)
         season_start = league.season_start
     else:
         # Sleeper state, as in resolve_week, gives the start date of the season in progress only.
         state = fetch_state()
-        if int(state["season"]) != season:
+        if int(state.season) != season:
             print(f"No raw data is saved for week {week} of {season}. Build the week first.")
             return 2
-        season_start = date.fromisoformat(state["season_start_date"])
-    check = check_chart(repo, season_start, week)
+        season_start = date.fromisoformat(state.season_start_date)
+    check = check_chart(repo, season_start, week, read=claude_reader(parse_call))
     if check is None:
         print(f"Week {week} has no chart. The log says why.")
         return 1
@@ -385,7 +402,7 @@ def run_chart(repo: Path, season: int, week: int) -> int:
     lines = {line.player_id: line for line in week_lines(league)}
     values = match_chart(check.chart, lines.values()).values
     print(f"Matched {len(values)} of {len(check.chart.rows)} chart rows")
-    traded = {pid for t in parse_trades(raw["transactions"]) for pid in t.adds}
+    traded = {pid for t in parse_trades(raw.transactions) for pid in t.adds}
     unmatched = sorted(lines[pid].name if pid in lines else pid for pid in traded - values.keys())
     if unmatched:
         print("Unmatched traded players: " + ", ".join(unmatched))
@@ -399,19 +416,21 @@ def main(argv: list[str] | None = None) -> int:
     if not (repo / "pyproject.toml").exists():
         print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
         return 2
+    # The one config of the run. Every command that needs a league value gets it from here.
+    config = cornerstone_config()
     try:
         if args.command == "history":
             # History has no --week, so it skips resolve_week.
-            season = args.season if args.season is not None else int(fetch_state()["season"])
-            weeks = run_history(repo, season, args.through, force=args.force)
+            season = args.season if args.season is not None else int(fetch_state().season)
+            weeks = run_history(repo, season, args.through, force=args.force, config=config)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
         if args.command == "analyze":
             # Analyze skips resolve_week. Without --week it reads Sleeper itself, and with --week it reads disk.
-            return run_analyze(repo, args)
+            return run_analyze(repo, args, config)
         if args.command == "find":
             # Find skips resolve_week for the same reason as analyze.
-            return run_find(repo, args)
+            return run_find(repo, args, config)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week)
         if args.command == "build":
@@ -419,7 +438,7 @@ def main(argv: list[str] | None = None) -> int:
             fetch = not args.no_fetch and (
                 args.refetch or args.week is None or not has_raw(repo, season, week)
             )
-            page = run_build(repo, season, week, claude_call, fetch=fetch)
+            page = run_build(repo, season, week, claude_call, fetch=fetch, config=config)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
@@ -428,9 +447,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "page-json":
             print(run_page_json(repo, season, week))
         elif args.command == "rankings":
-            print(run_rankings(repo, season, week, claude_call))
+            print(run_rankings(repo, season, week, claude_call, config=config))
         elif args.command == "rewrite":
-            page = run_rewrite(repo, season, week, args.chapter, claude_call)
+            page = run_rewrite(repo, season, week, args.chapter, claude_call, config=config)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)

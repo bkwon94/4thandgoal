@@ -6,8 +6,8 @@ The fact text lives in sheet.py with the other facts.
 from decimal import Decimal
 from typing import NamedTuple
 
-from cornerstone.history import _round_half_up
 from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Shootout, TeamWeek, Week, sub
+from cornerstone.numbers import round_half_up
 
 # The fewest points a starter must score under or over his expected points to win the unlucky or lucky award.
 # A smaller gap in one game is noise, so a quiet week gives no award. The commissioner tunes it.
@@ -115,7 +115,7 @@ def _recent_rate(weeks: list[TeamWeek]) -> tuple[float, int] | None:
         return None
     # The sums weigh each play the same, so a week with few plays does not count as much as a full one.
     # The fact shows one decimal, so the check reads the same value and never calls a "0.0" rate positive.
-    return _round_half_up(sum(w.pass_oe for w in recent) / plays, 1), len(recent)
+    return round_half_up(sum(w.pass_oe for w in recent) / plays, 1), len(recent)
 
 
 def shootouts(nfl: NflverseWeek | None) -> list[Shootout]:

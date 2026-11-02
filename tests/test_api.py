@@ -18,31 +18,40 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
-
 from conftest import strip_trend_numbers
+from fastapi.testclient import TestClient
 
 from cornerstone.adjusters import ROSTER_FIT, TREND
 from cornerstone.analysis import (
-    Analysis, SideAnalysis, _allowed, _breakdown_text, _letter_failures, _prose_failures, analyze, code_only,
+    Analysis,
+    SideAnalysis,
+    _allowed,
+    _breakdown_text,
+    _letter_failures,
+    _prose_failures,
+    analyze,
+    code_only,
 )
+from cornerstone.config import cornerstone_config
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from cornerstone.player_ids import is_def
+from cornerstone.provider.sleeper import load_raw
 from cornerstone.ranks import recent_points_per_game
-from cornerstone.render import is_def
 from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
-from cornerstone.sleeper import load_raw
 from cornerstone.snapshot import SnapshotPlayer
 from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
-from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
+from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 
 ET = ZoneInfo("America/New_York")
+# The league config the builds and fetches of these tests read.
+CONFIG = cornerstone_config()
 FETCHED = datetime(2026, 10, 19, 9, 30, tzinfo=ET)
 # Monday night before the week 7 cutoff, so the trade week and the chart week are 6.
 NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
@@ -79,7 +88,7 @@ def sources(fixture_raw_dir, chart_week6):
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines: chart_week6,
-        clock=lambda: NOW,
+        clock=lambda: NOW, config=CONFIG,
     )
 
 
@@ -144,7 +153,7 @@ TRADE = {"season": 2026, "sides": _sides(["7569"], ["10236", "8146"]), "asker": 
 
 
 def _client(settings, sources, analyzer=None):
-    return TestClient(create_app(settings, sources=sources, analyzer=analyzer))
+    return TestClient(create_app(settings, CONFIG, sources=sources, analyzer=analyzer))
 
 
 def test_health_needs_no_passphrase(settings, sources):
@@ -292,7 +301,8 @@ def test_the_start_up_refresh_refreshes_the_current_season_once(settings, source
     monkeypatch.setattr("cornerstone_api.sources.refresh_sources",
                         lambda repo, season, now, week, **kwargs: calls.append((season, kwargs["max_age_seconds"])))
     sleeper = CountingSleeper(fixture_raw_dir)
-    app = create_app(settings, sources=dataclasses.replace(sources, fetch_sleeper=sleeper), refresh_on_start=True)
+    app = create_app(settings, CONFIG, sources=dataclasses.replace(sources, fetch_sleeper=sleeper),
+                     refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
     # The refresh keeps the normal max age, so it fetches only the files older than a day.
     assert calls == [(2026, CACHE_MAX_AGE_SECONDS)]
@@ -302,7 +312,7 @@ def test_the_start_up_refresh_refreshes_the_current_season_once(settings, source
 def test_the_start_up_refresh_is_off_unless_the_app_asks_for_it(settings, sources, monkeypatch):
     calls = []
     monkeypatch.setattr(Sources, "refresh_current_season", lambda self, repo, **kwargs: calls.append(repo))
-    app = create_app(settings, sources=sources)
+    app = create_app(settings, CONFIG, sources=sources)
     assert app.state.refresh_thread is None
     assert calls == []
 
@@ -312,7 +322,7 @@ def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings,
         raise httpx.ConnectError("no network")
 
     monkeypatch.setattr(Sources, "refresh_current_season", raising)
-    app = create_app(settings, sources=sources, refresh_on_start=True)
+    app = create_app(settings, CONFIG, sources=sources, refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
     assert "start-up refresh of the slow sources failed (ConnectError)" in caplog.text
     client = TestClient(app)
@@ -475,7 +485,7 @@ def _no_chart_sources(fixture_raw_dir):
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW)
+        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW, config=CONFIG)
 
 
 def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fixture_raw_dir):
@@ -863,7 +873,7 @@ def _at(fixture_raw_dir, chart, fetched):
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW)
+        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, config=CONFIG)
 
 
 def test_a_repeat_is_a_cache_hit_with_one_claude_call(settings, fixture_raw_dir, chart_week6):
@@ -899,12 +909,12 @@ def test_a_repeat_an_hour_later_on_unchanged_rosters_is_a_cache_hit(settings, fi
 def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
     """Sources whose Sleeper data drops one player, who is not in the trade, from a roster."""
     raw = load_raw(fixture_raw_dir)
-    roster = next(r for r in raw["rosters"] if r["roster_id"] == roster_id)
-    roster["players"] = roster["players"][:-1]
+    roster = next(r for r in raw.rosters if r.roster_id == roster_id)
+    roster.players = (roster.players or [])[:-1]
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (raw, FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW)
+        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, config=CONFIG)
 
 
 def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
@@ -1064,7 +1074,7 @@ def test_grades_at_once_on_many_threads_never_pass_the_day_limit(tmp_path):
 
     # Each read of the clock is 61 seconds on, so only the day limit can stop a grade.
     ticks = itertools.count()
-    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, tmp_path / GRADE_COUNTS_FILE,
+    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, tmp_path / GRADE_COUNTS_FILE, CONFIG.tz,
                            clock=lambda: NOW + timedelta(seconds=61 * next(ticks)))
     with ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(lambda _: limiter.hit("203.0.113.1"), range(GRADES_PER_DAY + 5)))
@@ -1306,7 +1316,7 @@ def find_sources(settings, sources, chart_week6, fixture_raw_dir):
     """
     def before_kickoff(league_id, players_cache):
         raw = load_raw(fixture_raw_dir)
-        raw["stats"] = []
+        raw.stats = []
         return raw, FETCHED
 
     sources = dataclasses.replace(sources, fetch_sleeper=before_kickoff)
@@ -1341,7 +1351,7 @@ class FakeFinderClaude:
 
 def _find_client(settings, sources, fake, clock=None):
     """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
-    client = TestClient(create_app(settings, sources=sources, analyzer=StubAnalyzer(),
+    client = TestClient(create_app(settings, CONFIG, sources=sources, analyzer=StubAnalyzer(),
                                    finder_reasons=functools.partial(write_reasons, call=fake)))
     if clock is not None:
         client.app.state.grade_limiter.clock = clock

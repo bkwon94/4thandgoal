@@ -6,11 +6,9 @@ import random
 from collections import Counter
 from typing import Literal
 
-from pydantic import BaseModel
-
+from cornerstone.config import LeagueConfig
+from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
 from cornerstone.tunables import (
-    BYE_COUNT,
-    PLAYOFF_SPOTS,
     PROJECTION_WEIGHT,
     RECENT_WEEKS,
     RECENT_WEIGHT,
@@ -18,36 +16,9 @@ from cornerstone.tunables import (
     SIM_RUNS,
 )
 
-Status = Literal["in", "out", "open"]
 ByeStatus = Literal["bye_sure", "bye_gone", "open"]
 # A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
 MAX_WINS_PER_WEEK = 2
-
-
-class TeamOdds(BaseModel):
-    """The odds of one roster. Each odds number is a whole percent."""
-    roster_id: int
-    playoff: int
-    bye: int
-    # The most likely seed. None when the playoff odds are below SEED_SHOW_AT.
-    seed: int | None
-    status: Status
-
-
-class Swing(BaseModel):
-    """The playoff odds of both sides of one next-week game. Each side has its odds after a win and after a loss."""
-    a: int
-    b: int
-    a_win: int
-    a_loss: int
-    b_win: int
-    b_loss: int
-
-
-class OddsResult(BaseModel):
-    """The odds of every roster, keyed by roster ID, and the swing of each next-week game in pair order."""
-    teams: dict[int, TeamOdds]
-    swings: list[Swing]
 
 
 def playoff_odds(
@@ -57,8 +28,7 @@ def playoff_odds(
     *,
     season: int,
     week: int,
-    playoff_spots: int = PLAYOFF_SPOTS,
-    bye_count: int = BYE_COUNT,
+    config: LeagueConfig,
     runs: int = SIM_RUNS,
     projected: dict[int, dict[int, float]] | None = None,
     projection_weight: float = PROJECTION_WEIGHT,
@@ -69,7 +39,9 @@ def playoff_odds(
     and points for. `remaining` holds the pairs of each remaining week; the first week is week N+1.
     `projected` holds the projected best-lineup total of each roster, by roster ID and week. Each drawn
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
+    `config` gives the count of playoff spots and the count of byes.
     """
+    playoff_spots, bye_count = config.playoff_spots, config.bye_count
     if len(records) % 2:
         raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
     weeks_left = len(remaining)
@@ -177,7 +149,8 @@ def _run(
 def _table_order(wins: dict[int, int], points: dict[int, float]) -> list[int]:
     """The roster IDs in seed order: most wins first, then most points for, then the lower roster ID.
 
-    The same order as standings_order in facts_league.py. Roster ID is the last key, so a full tie has one fixed order.
+    The same order as standings_order in standings_table.py.
+    Roster ID is the last key, so a full tie has one fixed order.
     """
     return sorted(wins, key=lambda rid: (-wins[rid], -points[rid], rid))
 
@@ -185,7 +158,7 @@ def _table_order(wins: dict[int, int], points: dict[int, float]) -> list[int]:
 def _median(scores: list[float]) -> float:
     """The line of the median game: the mean of the two middle scores, the 6th and 7th of 12.
 
-    The same rule as week_median in facts_league.py, for any even count of rosters.
+    The same rule as week_median in standings_table.py, for any even count of rosters.
     Floats are exact here. The mean equals a score only when both middle scores are equal.
     Then it equals that score exactly, so a tie stays a tie.
     """
@@ -194,7 +167,7 @@ def _median(scores: list[float]) -> float:
     return (ordered[middle - 1] + ordered[middle]) / 2
 
 
-def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> Status:
+def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
     """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
 
     `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
@@ -210,7 +183,7 @@ def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_le
     return "open"
 
 
-def _shown(status: Status, made: int, runs: int) -> int:
+def _shown(status: OddsStatus, made: int, runs: int) -> int:
     """The odds as shown: 100 for `in`, 0 for `out`, and the whole percent clamped to 1 to 99 for `open`."""
     if status == "in":
         return 100
@@ -231,7 +204,7 @@ def _bye_status(
     return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[_status(roster_id, records, weeks_left, bye_count)]
 
 
-def _shown_bye(bye_status: ByeStatus, status: Status, byes: int, runs: int, playoff: int) -> int:
+def _shown_bye(bye_status: ByeStatus, status: OddsStatus, byes: int, runs: int, playoff: int) -> int:
     """The bye odds as shown: 100 for `bye_sure`, 0 for `bye_gone` or `out`, else clamped to 1 to 99.
 
     A bye needs a playoff spot, so the open bye odds never read above the shown playoff odds.
@@ -249,7 +222,9 @@ def _percent(part: int, total: int) -> int:
     return (200 * part + total) // (2 * total)
 
 
-def _swing(a: int, b: int, half: dict[str, list[int]], status: dict[int, Status], teams: dict[int, TeamOdds]) -> Swing:
+def _swing(
+    a: int, b: int, half: dict[str, list[int]], status: dict[int, OddsStatus], teams: dict[int, TeamOdds],
+) -> Swing:
     """Both sides' odds in the runs where side a won and in the runs where side b won.
 
     A half with no run falls back to the full odds, since the runs never saw that result.

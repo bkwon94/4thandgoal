@@ -9,42 +9,43 @@ from pathlib import Path
 from typing import NamedTuple
 
 from cornerstone.adjusters import OUT_STATUSES
-from cornerstone.history import history_dir
 from cornerstone.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from cornerstone.parse import player_name, team_name
-from cornerstone.sheet import Nums, fact
+from cornerstone.paths import history_week_dir
+from cornerstone.provider.raw import RawRoster, RawTransaction, RawWeek
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import FLOOR_WEEKS, NEED_SHARE
 
 # Sleeper marks a claim that won as complete and a claim that lost as failed.
 CLAIM_RESULTS = {"complete": True, "failed": False}
 
 
-def bid_history(root: Path, raw: dict[str, object], week: int) -> list[WaiverClaim]:
+def bid_history(root: Path, raw: RawWeek, week: int) -> list[WaiverClaim]:
     """Every waiver claim of weeks 1 to `week`: the saved history before `week`, and the raw files of `week`."""
-    positions = {pid: entry.get("position") for pid, entry in raw["players"].items()}
+    positions = {pid: entry.get("position") for pid, entry in raw.players.items()}
     claims = []
     for past in range(1, week):
-        path = history_dir(root, past) / "transactions.json"
+        path = history_week_dir(root, past) / "transactions.json"
         # A week that is not saved has no claims, so a gap lowers the floor and never makes a claim wrong.
         if path.exists():
-            claims += _claims(json.loads(path.read_text()), positions)
-    return claims + _claims(raw["transactions"], positions)
+            claims += _claims([RawTransaction.model_validate(t) for t in json.loads(path.read_text())], positions)
+    return claims + _claims(raw.transactions, positions)
 
 
-def _claims(transactions: list[dict], positions: dict[str, str | None]) -> list[WaiverClaim]:
+def _claims(transactions: list[RawTransaction], positions: dict[str, str | None]) -> list[WaiverClaim]:
     return [
         WaiverClaim(
             player_id=player_id,
             roster_id=roster_id,
             position=positions.get(player_id),
-            week=t["leg"],
+            week=t.leg,
             # A claim with no bid set is a $0 claim.
-            bid=(t.get("settings") or {}).get("waiver_bid") or 0,
-            won=CLAIM_RESULTS[t["status"]],
+            bid=(t.settings.waiver_bid if t.settings else None) or 0,
+            won=CLAIM_RESULTS[t.status],
         )
         for t in transactions
-        if t["type"] == "waiver" and t["status"] in CLAIM_RESULTS
-        for player_id, roster_id in (t["adds"] or {}).items()
+        if t.type == "waiver" and t.status in CLAIM_RESULTS
+        for player_id, roster_id in (t.adds or {}).items()
     ]
 
 
@@ -64,16 +65,16 @@ class ExpectedBid(NamedTuple):
 
 
 def price_players(
-    players: list[WaiverPlayer], raw: dict[str, object], claims: list[WaiverClaim], week: int,
+    players: list[WaiverPlayer], raw: RawWeek, claims: list[WaiverClaim], week: int,
 ) -> list[WaiverPlayer]:
     """Each player of `players` with his price after week `week`. A rival is every roster, the viewer's too."""
     rivals = _rivals(raw)
     teams = {r.roster_id: r.team for r in rivals}
     # Only the dedicated slots count. A FLEX slot takes any of several positions, so no one position needs it.
-    slots = Counter(raw["league"]["roster_positions"])
+    slots = Counter(raw.league.roster_positions)
     return [
         p.model_copy(update={"price": _price(p, rivals, slots[p.position], week,
-                                             _last_like(p.position, claims, raw["players"], teams))})
+                                             _last_like(p.position, claims, raw.players, teams))})
         for p in players
     ]
 
@@ -129,18 +130,18 @@ def _expected_bid(rival: Rival, player: WaiverPlayer, slots: int) -> ExpectedBid
     return ExpectedBid(rival=rival, need=need, amount=rival.budget_left * share * player.board_score)
 
 
-def budget_left(raw: dict[str, object], roster: dict) -> int:
+def budget_left(raw: RawWeek, roster: RawRoster) -> int:
     """The league budget minus the budget the roster used."""
-    return raw["league"]["settings"]["waiver_budget"] - roster["settings"]["waiver_budget_used"]
+    return raw.league.settings.waiver_budget - roster.settings.waiver_budget_used
 
 
-def _rivals(raw: dict[str, object]) -> list[Rival]:
-    users = {u["user_id"]: u for u in raw["users"]}
+def _rivals(raw: RawWeek) -> list[Rival]:
+    users = {u.user_id: u for u in raw.users}
     rivals = []
-    for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"]):
+    for roster in sorted(raw.rosters, key=lambda r: r.roster_id):
         # A roster with no players has None in rosters.json.
-        entries = [raw["players"].get(pid) or {} for pid in roster.get("players") or []]
+        entries = [raw.players.get(pid) or {} for pid in roster.players or []]
         healthy = Counter(e.get("position") for e in entries if e.get("injury_status") not in OUT_STATUSES)
-        rivals.append(Rival(roster_id=roster["roster_id"], team=team_name(users[roster["owner_id"]]),
+        rivals.append(Rival(roster_id=roster.roster_id, team=team_name(users[roster.owner_id]),
                             budget_left=budget_left(raw, roster), healthy=healthy))
     return rivals

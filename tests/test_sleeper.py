@@ -3,24 +3,34 @@ Tests for the Sleeper client.
 Offline tests read recorded data. Live tests call the real Sleeper API.
 """
 import pytest
-from cornerstone.sleeper import RAW_FILES, load_raw, fetch_week, fetch_state, read_fetch_time
+
+from cornerstone.config import cornerstone_config
+from cornerstone.provider.sleeper import RAW_FILES, fetch_state, fetch_week, load_raw, read_fetch_time
+
+# The league config the fetches of these tests read.
+CONFIG = cornerstone_config()
+# The league fields that the raw model needs, with no rosters, slots, or scoring.
+EMPTY_LEAGUE = {"roster_positions": [], "scoring_settings": {},
+                "settings": {"last_scored_leg": 0, "reserve_slots": 0, "waiver_budget": 100}}
 
 def test_load_raw_returns_every_file(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert set(raw) == {*RAW_FILES, "schedule", "projections_ahead"}
-    assert raw["league"]["name"] == "Cornerstone League"
-    assert len(raw["matchups"]) == 12
+    assert raw.model_fields_set == {*RAW_FILES, "schedule", "projections_ahead"}
+    assert raw.league.name == "Cornerstone League"
+    assert len(raw.matchups) == 12
 
 @pytest.mark.live
 def test_fetch_week_writes_every_file(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     assert {p.stem for p in (tmp_path / "raw").glob("*.json")} == {
         *RAW_FILES, "fetched", "transactions_prev", "schedule", "projections_ahead", "trending"}
 
 
 @pytest.mark.live
 def test_fetch_week_records_the_fetch_time(tmp_path):
-    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1386167364424318976", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     assert read_fetch_time(tmp_path / "raw").tzinfo is not None
 
 
@@ -32,7 +42,7 @@ def test_fetch_state_has_week():
 def test_truncated_players_cache_refetches(tmp_path, monkeypatch):
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     cache = tmp_path / "cache" / "players.json"
     cache.parent.mkdir()
@@ -48,7 +58,7 @@ def test_truncated_players_cache_refetches(tmp_path, monkeypatch):
 def test_unofficial_non_json_body_gives_empty():
     import httpx
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     transport = httpx.MockTransport(lambda request: httpx.Response(200, text="<html>"))
     with httpx.Client(transport=transport) as client:
@@ -69,11 +79,12 @@ def _fake_get(calls: list[str]):
 def _fetch_schedule(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     return json.loads((tmp_path / "raw" / "schedule.json").read_text()), calls
 
 
@@ -102,7 +113,7 @@ def test_load_raw_without_schedule(fixture_raw_dir, tmp_path):
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "schedule.json").unlink()
-    assert set(load_raw(raw_dir)) == {*RAW_FILES, "projections_ahead"}
+    assert load_raw(raw_dir).model_fields_set == {*RAW_FILES, "projections_ahead"}
 
 
 def _fake_projections_get(calls: list[str]):
@@ -129,11 +140,12 @@ def _fake_projections_get(calls: list[str]):
 def _fetch_projections_ahead(tmp_path, monkeypatch, week: int) -> tuple[list, list[str]]:
     import json
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
-    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json")
+    fetch_week("1", 2026, week, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz,
+               CONFIG.last_regular_week, CONFIG.last_season_week)
     return json.loads((tmp_path / "raw" / "projections_ahead.json").read_text()), calls
 
 
@@ -161,14 +173,14 @@ def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
 
 def test_fetch_projections_ahead_stops_at_the_last_regular_week(monkeypatch):
     # The trade grade reads no week after the last regular week, so the live fetch skips those calls.
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     calls: list[str] = []
     monkeypatch.setattr(sleeper, "_get", _fake_projections_get(calls))
-    ahead = sleeper.fetch_projections_ahead(2026, 6)
-    assert [entry["week"] for entry in ahead] == list(range(7, 15))
+    ahead = sleeper.fetch_projections_ahead(2026, 6, CONFIG.last_regular_week)
+    assert [entry.week for entry in ahead] == list(range(7, 15))
     assert [url.rsplit("/", 1)[1] for url in calls] == [str(w) for w in range(7, 15)]
-    assert ahead[0] == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
+    assert ahead[0].model_dump() == {"week": 7, "projections": {"10": 17.0, "99": 5.0}}
 
 
 def _live_get(stats):
@@ -179,21 +191,21 @@ def _live_get(stats):
                 raise stats
             return stats
         if url.endswith("/state/nfl"):
-            return {"season": "2026", "display_week": 7}
-        return {} if url.endswith("/league/1") else []
+            return {"season": "2026", "display_week": 7, "season_start_date": "2026-09-09"}
+        return EMPTY_LEAGUE if url.endswith("/league/1") else []
     return get
 
 
 def test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_empty_list(tmp_path, monkeypatch):
     import httpx
 
-    from cornerstone import sleeper
+    from cornerstone.provider import sleeper
 
     monkeypatch.setattr(sleeper, "_players", lambda client, cache: {})
     # The snapshot names the stats as stale only for a failed fetch, so the two cases must differ in the raw.
     monkeypatch.setattr(sleeper, "_get", _live_get(httpx.ConnectError("down")))
     failed, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
-    assert failed["stats"] is None
+    assert failed.stats is None
     monkeypatch.setattr(sleeper, "_get", _live_get([]))
     empty, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json")
-    assert empty["stats"] == []
+    assert empty.stats == []

@@ -2,28 +2,32 @@
 The fact sheet of a proposed trade: per traded player the grade inputs and the trade value, per side the team, the
 need, and the roster fit reads. Every player stat ends at the known games and every record at week N-1.
 Each fact carries every number in its text.
+It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
 from cornerstone.adjusters import (
-    FLEX_SLOTS, STRENGTH_SLOTS, Side, StartingSlot, allowed_positions, due_back_week, hole_sentence, team_race,
+    FLEX_SLOTS,
+    STRENGTH_SLOTS,
+    Side,
+    StartingSlot,
+    allowed_positions,
+    due_back_week,
+    hole_sentence,
+    team_race,
     trade_handcuffs,
 )
 from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from cornerstone.models import Fact, UsageShare
-from cornerstone.ranks import LINES, RANKED_POSITIONS
+from cornerstone.numbers import plural
+from cornerstone.ranks import RANKED_POSITIONS
 from cornerstone.rubric import ProposedTrade, build_sides
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.snapshot import Snapshot
-from cornerstone.tunables import STRENGTH_RANK
 
 _RACE_TEXT = {
     "contender": "a contender in a playoff spot",
     "seller": "a seller out of the playoff race",
     "middle": "a middle team, neither in a playoff spot nor out of the race",
 }
-
-
-def _plural(count: int, one: str, many: str) -> str:
-    return one if count == 1 else many
 
 
 def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
@@ -40,7 +44,7 @@ def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
         text = f"{who} has no scored game before the trade."
     else:
         text = (f"{who} scored {n(profile[0])} points per game over {n(profile[1])} "
-                f"{_plural(profile[1], 'game', 'games')} before the trade")
+                f"{plural(profile[1], 'game', 'games')} before the trade")
         rank = season_rank(snapshot.stats, pid, through)
         if rank is not None:
             # "Position rank" is the league rank by lineup value, so this rank by season points has its own words.
@@ -65,7 +69,7 @@ def _share_fact(snapshot: Snapshot, pid: str, kind: str, share: UsageShare | Non
     label = "snap share" if kind == "usage" else "target share"
     if share.direction is None:
         text = (f"{name}'s {label} was {n(share.percent)} percent over {n(share.weeks)} "
-                f"{_plural(share.weeks, 'game', 'games')} before the trade.")
+                f"{plural(share.weeks, 'game', 'games')} before the trade.")
     else:
         text = (f"{name}'s {label} was {n(share.percent)} percent over the last {n(share.weeks)} weeks before "
                 f"the trade, {share.direction} from the {n(share.weeks)} weeks before that.")
@@ -79,8 +83,8 @@ def _redzone_fact(snapshot: Snapshot, pid: str) -> Fact | None:
     n = Nums()
     name = snapshot.players[pid].name
     targets, carries = zone
-    text = (f"{name} had {n(targets)} red-zone {_plural(targets, 'target', 'targets')} and {n(carries)} "
-            f"red-zone {_plural(carries, 'carry', 'carries')} this season before the trade.")
+    text = (f"{name} had {n(targets)} red-zone {plural(targets, 'target', 'targets')} and {n(carries)} "
+            f"red-zone {plural(carries, 'carry', 'carries')} this season before the trade.")
     return fact(f"{pid}.redzone", text, n, [], [name])
 
 
@@ -109,7 +113,7 @@ def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
         text += "."
     weeks = _report_weeks(snapshot, pid)
     if weeks:
-        text += (f" He was on the NFL injury report in {n(weeks)} {_plural(weeks, 'week', 'weeks')} "
+        text += (f" He was on the NFL injury report in {n(weeks)} {plural(weeks, 'week', 'weeks')} "
                  "this season before the trade.")
     return fact(f"{pid}.injury", text, n, [], [player.name])
 
@@ -148,7 +152,7 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
              for pos in positions]
     spots = max(0, len(snapshot.roster_positions) - len(after))
     joined = depth[0] if len(depth) == 1 else ", ".join(depth[:-1]) + " and " + depth[-1]
-    text = f"{team} has {joined} after the trade and {n(spots)} open roster {_plural(spots, 'spot', 'spots')}."
+    text = f"{team} has {joined} after the trade and {n(spots)} open roster {plural(spots, 'spot', 'spots')}."
     return fact(f"{rid}.need", text, n, [team], [])
 
 
@@ -195,14 +199,14 @@ def _strength_fact(snapshot: Snapshot, side: Side) -> Fact | None:
 
     "Top 24" carries no hyphen, because the number rule reads "-24" as a negative number.
     """
-    before, after = side.strength()
+    before, after = side.strength(snapshot)
     if before == after:
         return None
     n = Nums()
     team = snapshot.teams[side.roster_id].name
     slots = n.text(", ".join(STRENGTH_SLOTS[:-1]) + f", and {STRENGTH_SLOTS[-1]}")
-    text = (f"For {team}, the starters at {slots} with a position rank of {n(STRENGTH_RANK)} or better go from "
-            f"{n(before)} to {n(after)}.")
+    text = (f"For {team}, the starters at {slots} with a position rank of {n(snapshot.config.strength_rank)} or better "
+            f"go from {n(before)} to {n(after)}.")
     return fact(f"{side.roster_id}.strength", text, n, [team], [])
 
 
@@ -282,6 +286,6 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     for graded in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
         facts += [_slot_fact(snapshot, graded, pid) for pid in graded.gets]
         facts += [_hole_fact(snapshot, graded, slot) for slot in graded.new_holes(snapshot)]
-        facts += [_depth_fact(snapshot, graded, position) for position in LINES]
+        facts += [_depth_fact(snapshot, graded, position) for position in RANKED_POSITIONS]
         facts.append(_strength_fact(snapshot, graded))
     return {f.id: f for f in facts if f is not None}

@@ -4,12 +4,13 @@ The search call is a parameter, so a test injects a fake and the build passes th
 """
 import logging
 from collections.abc import Callable
+from pathlib import Path
 
 import anthropic
 from pydantic import ValidationError
 
 from cornerstone.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
 from cornerstone.verifier import URL
 from cornerstone.waiver import DROPS
@@ -44,7 +45,7 @@ def research_players(board: WaiverBoard) -> list[WaiverPlayer]:
     return list(seen.values())[:RESEARCH_PLAYERS]
 
 
-def build_research_prompt(p: WaiverPlayer, board: WaiverBoard) -> tuple[str, str]:
+def build_research_prompt(p: WaiverPlayer, board: WaiverBoard, prompts_dir: Path) -> tuple[str, str]:
     """The system prompt and the user message of the search on one player.
     The facts let a claim back or dispute them."""
     lines = [
@@ -56,7 +57,7 @@ def build_research_prompt(p: WaiverPlayer, board: WaiverBoard) -> tuple[str, str
         "",
         f"Give at most {CLAIMS_PER_PLAYER} claims.",
     ]
-    return load_prompt("research.md"), "\n".join(lines)
+    return load_prompt(prompts_dir, "research.md"), "\n".join(lines)
 
 
 def _claims(out: ResearchOut) -> list[ResearchClaim]:
@@ -78,7 +79,7 @@ def research_facts(p: WaiverPlayer, claims: list[ResearchClaim]) -> list[Fact]:
     return facts
 
 
-def research_board(board: WaiverBoard, call: SearchCall) -> WaiverBoard:
+def research_board(board: WaiverBoard, call: SearchCall, prompts_dir: Path) -> WaiverBoard:
     """The board with the research claims and the research facts of each ranked player.
 
     A failure for one player logs and leaves him with no claim. A failure for every player also sets
@@ -88,7 +89,7 @@ def research_board(board: WaiverBoard, call: SearchCall) -> WaiverBoard:
     claims: dict[str, list[ResearchClaim]] = {}
     for p in players:
         try:
-            out = call(*build_research_prompt(p, board))
+            out = call(*build_research_prompt(p, board, prompts_dir))
             # Any call, real or injected, can come back empty. That is a failure for this player.
             if out is None:
                 raise WriterError(f"no parsed output for the research on {p.name}")

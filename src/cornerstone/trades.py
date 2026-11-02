@@ -7,13 +7,19 @@ from zoneinfo import ZoneInfo
 
 from cornerstone.models import Trade, Week
 
-EASTERN = ZoneInfo("America/New_York")
+
+def cutoff_date(season_start: date, week: int) -> date:
+    """The Tuesday after week N-1, the date of the cutoff that opens week N. The chart reads only the date."""
+    return season_start + timedelta(days=6 + 7 * (week - 2))
 
 
-def default_cutoff(season_start: date, week: int) -> datetime:
-    """08:00 on the Tuesday after week N-1. It opens the window of week N and closes the window of week N-1."""
-    tuesday = season_start + timedelta(days=6 + 7 * (week - 2))
-    return datetime(tuesday.year, tuesday.month, tuesday.day, 8, 0, tzinfo=EASTERN)
+def default_cutoff(season_start: date, week: int, tz: ZoneInfo) -> datetime:
+    """08:00 on the Tuesday after week N-1 in the league timezone `tz`.
+
+    It opens the window of week N and closes the window of week N-1.
+    """
+    tuesday = cutoff_date(season_start, week)
+    return datetime(tuesday.year, tuesday.month, tuesday.day, 8, 0, tzinfo=tz)
 
 
 def trades_for_week(

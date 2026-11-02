@@ -5,14 +5,15 @@ The template blurb is the safe fallback when the writer fails twice.
 import logging
 import re
 from collections.abc import Callable
-from importlib import resources
+from pathlib import Path
 from typing import TypeVar
 
 import anthropic
 from pydantic import BaseModel, ValidationError
 
+from cornerstone.claude_errors import RefusalError, WriterError
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
-from cornerstone.sheet import BYE_FACT_PREFIX, repeats_motw_headline
+from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
@@ -49,14 +50,6 @@ ANALYZER_EFFORT = "medium"
 log = logging.getLogger(__name__)
 
 _client: anthropic.Anthropic | None = None
-
-
-class RefusalError(Exception):
-    """Claude refused the request, so there is no parsed output."""
-
-
-class WriterError(Exception):
-    """Claude gave no parsed output, for example when the output does not fit the model."""
 
 
 def _get_client() -> anthropic.Anthropic:
@@ -156,14 +149,15 @@ def call_with_retry(
     return None
 
 
-def load_prompt(name: str) -> str:
-    return resources.files("cornerstone.prompts").joinpath(name).read_text(encoding="utf-8").strip()
+def load_prompt(prompts_dir: Path, name: str) -> str:
+    """One prompt file from the prompts folder of the league config, so a league can bring its own prompts."""
+    return (prompts_dir / name).read_text(encoding="utf-8").strip()
 
 
 def build_writer_prompt(
-    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None
+    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None, *, prompts_dir: Path
 ) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(name) for name in PROMPT_FILES)
+    system = "\n\n".join(load_prompt(prompts_dir, name) for name in PROMPT_FILES)
     lines = [
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",
@@ -191,8 +185,10 @@ def write_blurb(
     feedback: str | None = None,
     page_words: str | None = None,
     attempt: int = 1,
+    *,
+    prompts_dir: Path,
 ) -> Blurb:
-    system, user = build_writer_prompt(chapter, sheet, feedback, page_words)
+    system, user = build_writer_prompt(chapter, sheet, feedback, page_words, prompts_dir=prompts_dir)
     out = call(system, user, WriterOut)
     # Any call, real or injected, can come back empty. That is a failed attempt, not a blurb.
     if out is None:

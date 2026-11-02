@@ -6,9 +6,9 @@ from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.history import _round_half_up
 from cornerstone.models import TeamWeek, UsageWeek
 from cornerstone.nflverse_rows import _number, _rows, _sleeper_team, _yardline
+from cornerstone.numbers import round_half_up
 
 # The play types of an offensive play. A kneel, a spike, a penalty with no play, and a kick are not plays.
 PLAY_TYPES = ("pass", "run")
@@ -32,7 +32,7 @@ class SnapWeek(NamedTuple):
 
 
 def _share(part: int, whole: int) -> int:
-    return int(_round_half_up(100 * part / whole)) if whole else 0
+    return int(round_half_up(100 * part / whole)) if whole else 0
 
 
 def _regular_week(row: dict[str, str], season_key: str) -> int | None:
@@ -68,7 +68,7 @@ def read_snaps(
         if row_week is not None and pid is not None and first_week <= row_week <= week:
             # nflverse writes the snap share as a fraction, such as 0.71.
             out[(pid, row_week)] = SnapWeek(snaps=int(_number(row["offense_snaps"])),
-                                            share=int(_round_half_up(100 * _number(row["offense_pct"]))),
+                                            share=int(round_half_up(100 * _number(row["offense_pct"]))),
                                             team=_sleeper_team(row["team"]))
     return out
 

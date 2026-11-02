@@ -8,33 +8,46 @@ from datetime import date
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.manager_grade import (
-    GradeParts, SlotRank, _league_reads, depth_word, grade_letter, grade_read, grade_score, position_ranks,
-    projected_values, roster_grades, roster_parts,
+    GradeParts,
+    SlotRank,
+    _league_reads,
+    depth_word,
+    grade_letter,
+    grade_read,
+    grade_score,
+    position_ranks,
+    projected_values,
+    roster_grades,
+    roster_parts,
     season_points_per_game,
 )
 from cornerstone.managers import managers
 from cornerstone.models import ChartValues, History, PastWeek
 from cornerstone.parse import parse_week
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
+from cornerstone.season_inputs import SeasonInputs
 from cornerstone.snapshot import week_snapshot
-from cornerstone.tunables import GRADE_WEIGHTS, LAST_REGULAR_WEEK
+from cornerstone.tunables import GRADE_WEIGHTS
+
+CONFIG = cornerstone_config()
 
 
 def _ahead(raw):
-    return {entry["week"]: entry["projections"] for entry in raw["projections_ahead"]}
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
 
 
 def _entries(raw_dir, root, with_snapshot=True):
     raw = load_raw(raw_dir)
-    snapshot = week_snapshot(raw, root, 6) if with_snapshot else None
-    return managers(load_history(root, raw, week=6), parse_week(raw).teams, snapshot=snapshot,
-                    projections_ahead=_ahead(raw))
+    snapshot = week_snapshot(raw, root, 6, config=CONFIG) if with_snapshot else None
+    inputs = SeasonInputs(history=load_history(root, raw, week=6), snapshot=snapshot, projections_ahead=_ahead(raw))
+    return managers(inputs, parse_week(raw).teams)
 
 
 def _snapshot(raw_dir, root):
-    return week_snapshot(load_raw(raw_dir), root, 6)
+    return week_snapshot(load_raw(raw_dir), root, 6, config=CONFIG)
 
 
 def _depth(grade, position):
@@ -153,8 +166,9 @@ def test_a_roster_that_leads_a_part_ranks_1_on_it(fixture_raw_dir, fixture_histo
     ahead, history = _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root)
     # Roster 5 alone has chart value, so it leads the trade value part.
     chart = ChartValues(week=6, date=date(2026, 10, 14), values={pid: 50.0 for pid in snapshot.rosters[5]})
-    grades = roster_grades(snapshot, ahead, history, chart)
-    parts = roster_parts(snapshot, ahead, history, chart)
+    inputs = SeasonInputs(snapshot=snapshot, projections_ahead=ahead, history=history, chart=chart)
+    grades = roster_grades(inputs)
+    parts = roster_parts(inputs)
     assert {part.key: part.rank for part in grades[5].parts}["trade_value"] == 1
     for key in GRADE_WEIGHTS:
         leader = max(parts, key=lambda rid: (getattr(parts[rid], key), -rid))
@@ -168,13 +182,14 @@ def test_the_grade_is_null_without_a_snapshot(fixture_raw_dir, fixture_history_r
 
 
 def test_the_value_is_the_mean_over_the_weeks_ahead_with_a_missing_week_as_0():
-    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}})
+    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}}, CONFIG)
     assert values == {"a": 15.0, "b": 2.0}
 
 
 def test_the_value_stops_at_the_last_regular_week():
-    ahead = {LAST_REGULAR_WEEK - 1: {"a": 10.0}, LAST_REGULAR_WEEK: {"a": 20.0}, LAST_REGULAR_WEEK + 1: {"a": 90.0}}
-    assert projected_values(ahead) == {"a": 15.0}
+    last = CONFIG.last_regular_week
+    ahead = {last - 1: {"a": 10.0}, last: {"a": 20.0}, last + 1: {"a": 90.0}}
+    assert projected_values(ahead, CONFIG) == {"a": 15.0}
 
 
 def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixture_raw_dir, fixture_history_root):
@@ -185,11 +200,11 @@ def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixtu
     ahead = _ahead(load_raw(fixture_raw_dir))
     ahead = {week: {**projections, cold: 99.0} for week, projections in ahead.items()}
     positions = {pid: player.position for pid, player in snapshot.players.items()}
-    assert position_ranks(projected_values(ahead), positions)[cold] == 1
+    assert position_ranks(projected_values(ahead, CONFIG), positions)[cold] == 1
 
 
 def test_a_player_with_no_projection_ahead_has_no_rank():
-    ranks = position_ranks(projected_values({7: {"a": 10.0}}), {"a": "QB", "b": "QB"})
+    ranks = position_ranks(projected_values({7: {"a": 10.0}}, CONFIG), {"a": "QB", "b": "QB"})
     assert ranks == {"a": 1}
 
 
@@ -198,7 +213,8 @@ def test_a_starter_out_with_a_projection_ahead_is_no_hole(fixture_raw_dir, fixtu
     # Roster 1 starts 10229 at WR with the status Out and no return week on file.
     assert snapshot.players["10229"].injury_status == "Out"
     history = _history(fixture_raw_dir, fixture_history_root)
-    grade = roster_grades(snapshot, _roster_ahead(snapshot, 1), history, None)[1]
+    inputs = SeasonInputs(snapshot=snapshot, projections_ahead=_roster_ahead(snapshot, 1), history=history)
+    grade = roster_grades(inputs)[1]
     assert _depth(grade, "WR") != "thin"
     assert all(slot.depth != "thin" for slot in grade.slots)
 
@@ -210,13 +226,15 @@ def test_a_starter_with_no_projection_ahead_is_a_hole(fixture_raw_dir, fixture_h
     for projections in ahead.values():
         del projections["8183"]
     history = _history(fixture_raw_dir, fixture_history_root)
-    assert _depth(roster_grades(snapshot, ahead, history, None)[1], "QB") == "thin"
+    inputs = SeasonInputs(snapshot=snapshot, projections_ahead=ahead, history=history)
+    assert _depth(roster_grades(inputs)[1], "QB") == "thin"
 
 
 def test_the_grade_is_null_without_projections_ahead(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
-    entries = managers(load_history(fixture_history_root, raw, week=6), parse_week(raw).teams,
-                       snapshot=week_snapshot(raw, fixture_history_root, 6))
+    inputs = SeasonInputs(history=load_history(fixture_history_root, raw, week=6),
+                          snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG))
+    entries = managers(inputs, parse_week(raw).teams)
     assert all(entry.grade is None for entry in entries)
 
 
@@ -242,13 +260,14 @@ def test_a_roster_that_scored_a_lot_but_projects_low_ranks_higher(fixture_raw_di
     ahead = _ahead(load_raw(fixture_raw_dir))
     # Roster 1 projects low: each of its players projects 0.1 a week.
     ahead = {week: {**projections, **{pid: 0.1 for pid in snapshot.rosters[1]}} for week, projections in ahead.items()}
-    before = roster_parts(snapshot, ahead, _history(fixture_raw_dir, fixture_history_root), None)[1]
+    before = roster_parts(SeasonInputs(snapshot=snapshot, projections_ahead=ahead,
+                                       history=_history(fixture_raw_dir, fixture_history_root)))[1]
     history = _history(fixture_raw_dir, fixture_history_root)
     for past in history.weeks.values():
         for pid in snapshot.rosters[1]:
             past.points[pid] = 60.0
             past.positions[pid] = snapshot.players[pid].position
-    after = roster_parts(snapshot, ahead, history, None)[1]
+    after = roster_parts(SeasonInputs(snapshot=snapshot, projections_ahead=ahead, history=history))[1]
     assert after.production == 1.0
     assert after.projection == before.projection
     assert grade_score(after) > grade_score(before)
@@ -258,8 +277,8 @@ def test_a_roster_with_high_chart_values_ranks_higher(fixture_raw_dir, fixture_h
     snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
     ahead, history = _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root)
     chart = ChartValues(week=6, date=date(2026, 10, 14), values={pid: 50.0 for pid in snapshot.rosters[1]})
-    before = roster_parts(snapshot, ahead, history, None)
-    after = roster_parts(snapshot, ahead, history, chart)
+    before = roster_parts(SeasonInputs(snapshot=snapshot, projections_ahead=ahead, history=history))
+    after = roster_parts(SeasonInputs(snapshot=snapshot, projections_ahead=ahead, history=history, chart=chart))
     assert after[1].trade_value == 1.0
     assert all(after[rid].trade_value == 0.0 for rid in after if rid != 1)
     assert grade_score(after[1]) > grade_score(before[1])
@@ -267,7 +286,8 @@ def test_a_roster_with_high_chart_values_ranks_higher(fixture_raw_dir, fixture_h
 
 def _reads(raw_dir, root):
     snapshot = _snapshot(raw_dir, root)
-    return _league_reads(snapshot, _ahead(load_raw(raw_dir)), _history(raw_dir, root), None)
+    return _league_reads(SeasonInputs(snapshot=snapshot, projections_ahead=_ahead(load_raw(raw_dir)),
+                                      history=_history(raw_dir, root)))
 
 
 def test_the_depth_part_puts_the_lowest_depth_total_at_0_and_the_highest_at_1(fixture_raw_dir, fixture_history_root):
@@ -292,8 +312,8 @@ def test_the_places_read_puts_the_lowest_places_total_at_0_and_the_highest_at_1(
 
 def test_no_chart_gives_0_for_the_trade_value_part(fixture_raw_dir, fixture_history_root):
     snapshot = _snapshot(fixture_raw_dir, fixture_history_root)
-    parts = roster_parts(snapshot, _ahead(load_raw(fixture_raw_dir)), _history(fixture_raw_dir, fixture_history_root),
-                         None)
+    parts = roster_parts(SeasonInputs(snapshot=snapshot, projections_ahead=_ahead(load_raw(fixture_raw_dir)),
+                                      history=_history(fixture_raw_dir, fixture_history_root)))
     assert all(part.trade_value == 0.0 for part in parts.values())
 
 
@@ -312,4 +332,4 @@ def _slot(position, rank, depth="fine"):
     ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 4), _slot("TE", 7)], "Middle of the league at every position."),
 ])
 def test_the_grade_read_names_the_strong_deep_soft_and_thin_positions(slots, read):
-    assert grade_read(slots) == read
+    assert grade_read(slots, config=CONFIG) == read

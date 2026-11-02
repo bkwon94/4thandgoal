@@ -12,9 +12,9 @@ from cornerstone.models import (
     PlayerLine,
     Side,
     Week,
-    r2,
     sub,
 )
+from cornerstone.numbers import r2
 
 
 def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
@@ -27,7 +27,7 @@ def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:
 
     sides = (m.a, m.b)
     all_lines = [line for side in sides for line in side.lines]
-    gap = lambda line: abs(sub(line.points, line.projection))  # noqa: E731
+    gap = lambda line: abs(sub(line.points, line.projection))
 
     # A line with no projection has no gap, so it can never drive the result.
     # A bench line decides nothing, and a tie has no result to drive.

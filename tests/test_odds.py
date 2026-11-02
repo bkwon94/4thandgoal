@@ -6,11 +6,16 @@ import time
 
 import pytest
 
+from cornerstone.config import cornerstone_config
 from cornerstone.odds import playoff_odds
+
+CONFIG = cornerstone_config()
 
 SEASON = 2026
 # The fixture league: 4 rosters, 2 weeks played, 2 weeks left, 2 playoff spots, 1 bye, 200 runs.
 SPOTS, BYES, RUNS = 2, 1, 200
+# The fixture league is smaller than Cornerstone, so its config has its own playoff spots and byes.
+SMALL = cornerstone_config().model_copy(update={"playoff_spots": SPOTS, "bye_count": BYES})
 SCORES = {1: [120.0, 95.0], 2: [101.0, 110.0], 3: [88.0, 130.0], 4: [99.0, 85.0]}
 RECORDS = {1: (3, 1, 215.0), 2: (2, 2, 211.0), 3: (2, 2, 218.0), 4: (1, 3, 184.0)}
 REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
@@ -19,7 +24,7 @@ REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
 def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, runs=RUNS, **kwargs):
     return playoff_odds(
         scores, records, remaining, season=SEASON, week=week,
-        playoff_spots=SPOTS, bye_count=BYES, runs=runs, **kwargs,
+        config=SMALL, runs=runs, **kwargs,
     )
 
 
@@ -85,7 +90,7 @@ def test_a_roster_that_wins_every_drawn_game_lands_at_the_1_seed():
 def test_the_bye_goes_to_the_top_seeds():
     records = {1: (4, 0, 300.0), 2: (3, 1, 250.0), 3: (2, 2, 250.0), 4: (1, 3, 260.0)}
     result = playoff_odds(
-        SCORES, records, {}, season=SEASON, week=4, playoff_spots=SPOTS, bye_count=2, runs=RUNS,
+        SCORES, records, {}, season=SEASON, week=4, config=SMALL.model_copy(update={"bye_count": 2}), runs=RUNS,
     )
     assert [result.teams[rid].bye for rid in (1, 2, 3, 4)] == [100, 100, 0, 0]
 
@@ -262,9 +267,9 @@ def test_no_projections_for_a_roster_or_a_week_gives_no_shift():
 
 
 def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_history_root):
-    from cornerstone.facts_league import season_records
     from cornerstone.history import load_history
-    from cornerstone.sleeper import load_raw
+    from cornerstone.provider.sleeper import load_raw
+    from cornerstone.standings_table import season_records
 
     history = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
     records = season_records(history, 6)
@@ -272,7 +277,7 @@ def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_histo
     # Weeks 7 to 14 replay the pairs of weeks 1 to 6, then weeks 1 and 2, so the case has 8 full weeks.
     remaining = {7 + i: history.weeks[i % 6 + 1].pairs for i in range(8)}
     start = time.perf_counter()
-    result = playoff_odds(scores, records, remaining, season=SEASON, week=6, playoff_spots=6, bye_count=2)
+    result = playoff_odds(scores, records, remaining, season=SEASON, week=6, config=CONFIG)
     assert time.perf_counter() - start < 10
     total = sum(t.playoff for t in result.teams.values())
-    assert abs(total - 6 * 100) <= len(records)
+    assert abs(total - CONFIG.playoff_spots * 100) <= len(records)

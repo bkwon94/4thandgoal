@@ -11,13 +11,16 @@ from urllib.parse import urlparse
 import httpx
 from pydantic import TypeAdapter
 
-from cornerstone.facts_league import LEADER_POSITIONS, season_records
+from cornerstone.facts_league import LEADER_POSITIONS
+from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
-from cornerstone.models import Blurb, Bundle, ChartValues, History, MatchupFacts, Team
-from cornerstone.odds import OddsResult
+from cornerstone.models import Blurb, Bundle, History, MatchupFacts, OddsResult, Team
+from cornerstone.paths import site_week_dir
+from cornerstone.player_ids import headshot_url, is_def
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet import AWARD_TITLES
-from cornerstone.snapshot import Snapshot
+from cornerstone.season_inputs import SeasonInputs
+from cornerstone.sheet.base import AWARD_TITLES
+from cornerstone.standings_table import season_records
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
@@ -185,7 +188,7 @@ def _download_bytes(url: str) -> bytes | None:
     """Fetch one image. Return None on any failure, so a build never stops on one avatar."""
     try:
         resp = httpx.get(url, timeout=AVATAR_TIMEOUT, follow_redirects=True)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - a build never stops on one avatar
         log.warning("Image fetch failed for %s: %s", url, exc)
         return None
     if resp.status_code != 200:
@@ -206,23 +209,9 @@ def _download_avatars(bundle: Bundle, avatar_dir: Path, fetch_bytes: Callable[[s
             continue
         ext = Path(urlparse(team.avatar_url).path).suffix.lstrip(".") or "jpg"
         avatar_dir.mkdir(parents=True, exist_ok=True)
-        (avatar_dir / f"{rid}.{ext}").write_bytes(content)
+        write_bytes_atomic(avatar_dir / f"{rid}.{ext}", content)
         paths[rid] = f"avatars/{rid}.{ext}"
     return paths
-
-
-def is_def(player_id: str) -> bool:
-    """Whether a player ID is a DEF.
-    Sleeper gives a DEF the team abbreviation as its player ID, and a player a numeric ID."""
-    return not player_id.isdigit()
-
-
-def headshot_url(player_id: str, is_def: bool) -> str:
-    """The Sleeper CDN URL for a player's headshot.
-    A DEF has no headshot, and its player ID is the team abbreviation, so it maps to the team logo."""
-    if is_def:
-        return f"https://sleepercdn.com/images/team_logos/nfl/{player_id.lower()}.png"
-    return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg"
 
 
 def _headshot_players(bundle: Bundle) -> list[tuple[str, bool]]:
@@ -252,7 +241,7 @@ def _download_headshots(
             continue
         # The CDN serves PNG bytes, even under the .jpg name of a player URL.
         headshot_dir.mkdir(parents=True, exist_ok=True)
-        (headshot_dir / f"{player_id}.png").write_bytes(content)
+        write_bytes_atomic(headshot_dir / f"{player_id}.png", content)
         paths[player_id] = f"headshots/{player_id}.png"
     return paths
 
@@ -276,7 +265,7 @@ def _saved_headshots(bundle: Bundle, week_dir: Path) -> dict[str, str]:
 
 def _week_dir(site_dir: Path, bundle: Bundle) -> Path:
     """Return the week folder under the site folder. Make it if it is missing."""
-    week_dir = site_dir / str(bundle.data.season) / f"week-{bundle.data.week:02d}"
+    week_dir = site_week_dir(site_dir, bundle.data.season, bundle.data.week)
     week_dir.mkdir(parents=True, exist_ok=True)
     return week_dir
 
@@ -288,7 +277,7 @@ def _write_page_json(context: dict, week_dir: Path) -> Path:
     plain = TypeAdapter(dict).dump_python(context, mode="json")
     body = {"schema_version": PAGE_SCHEMA_VERSION, **plain}
     out = week_dir / "page.json"
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
@@ -305,7 +294,7 @@ def render_waiver(bundle: Bundle, site_dir: Path) -> Path | None:
         return None
     body = {"schema_version": WAIVER_SCHEMA_VERSION, **bundle.waiver.model_dump(mode="json")}
     out = _week_dir(site_dir, bundle) / "waiver.json"
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
@@ -380,32 +369,27 @@ def render_rankings(
                 row["odds"] = row_odds
     body = {"schema_version": RANKINGS_SCHEMA_VERSION, "season": season, "weeks": weeks}
     season_dir.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 
 def render_managers(
-    history: History, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None, *,
-    roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
-    snapshot: Snapshot | None = None, projections_ahead: dict[int, dict[str, float]] | None = None,
-    chart: ChartValues | None = None,
+    inputs: SeasonInputs, season: int, teams: dict[int, Team], site_dir: Path, players: dict[str, dict] | None = None,
+    *, roster_slots: list[str] | None = None, week_awards: dict[int, list[tuple[str, int]]] | None = None,
 ) -> Path:
-    """Write managers.json for the season: one entry per roster through the history week, in roster id order.
-    The players and the keywords go to managers for the names, the bench, the awards shelf, and the grade."""
+    """Write managers.json for the season: one entry per roster through the history week of the `inputs`, in roster
+    id order. The `inputs` give the grade. The players and the keywords give the names, the bench, and the awards."""
     season_dir = site_dir / str(season)
     out = season_dir / "managers.json"
     body = {
-        "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": history.week,
+        "schema_version": MANAGERS_SCHEMA_VERSION, "season": season, "through": inputs.history.week,
         "managers": [
             entry.model_dump(mode="json")
-            for entry in managers(
-                history, teams, players, roster_slots=roster_slots, week_awards=week_awards, snapshot=snapshot,
-                projections_ahead=projections_ahead, chart=chart,
-            )
+            for entry in managers(inputs, teams, players, roster_slots=roster_slots, week_awards=week_awards)
         ],
     }
     season_dir.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
     return out
 
 

@@ -4,11 +4,13 @@ The module caches the parsed read per week, so the image read runs once.
 """
 import base64
 import io
+import itertools
 import json
 import logging
 import re
 from collections.abc import Callable, Iterable
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 from typing import NamedTuple
 
@@ -17,10 +19,11 @@ import httpx
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, ValidationError
 
+from cornerstone.claude_errors import RefusalError, WriterError
 from cornerstone.files import write_bytes_atomic
 from cornerstone.models import ChartRead, ChartValues, PlayerLine
-from cornerstone.trades import default_cutoff
-from cornerstone.writer import RefusalError, WriterError, parse_call
+from cornerstone.paths import chart_image, chart_read, charts_dir, week_from_label
+from cornerstone.trades import cutoff_date
 
 logger = logging.getLogger(__name__)
 
@@ -64,16 +67,15 @@ STRIP_OVERLAP = 80
 
 # (strips, output_model) -> parsed output. Tests pass a fake in place of Claude.
 ChartReader = Callable[[list[bytes], type[BaseModel]], BaseModel]
+# (content, output_model) -> parsed output: the writer's parse_call in a run.
+# The caller passes it, so this module imports no writer and stays in the provider layer.
+ParseCall = Callable[[list[dict], type[BaseModel]], BaseModel]
 
 
 def http_get(url: str) -> bytes:
     response = httpx.get(url, headers={"User-Agent": USER_AGENT}, follow_redirects=True, timeout=TIMEOUT_SECONDS)
     response.raise_for_status()
     return response.content
-
-
-def chart_dir(repo: Path) -> Path:
-    return repo / "data" / "cache" / "charts"
 
 
 def _file_for_week(listing: list[dict], start: date, end: date) -> str | None:
@@ -88,23 +90,19 @@ def _file_for_week(listing: list[dict], start: date, end: date) -> str | None:
     return max(dated)[1] if dated else None
 
 
-def _png_path(charts: Path, week: int) -> Path:
-    return charts / f"week-{week:02d}.png"
-
-
-def fetch_chart(season_start: date, week: int, charts: Path, fetch: Callable[[str], bytes] = http_get) -> Path | None:
+def fetch_chart(season_start: date, week: int, repo: Path, fetch: Callable[[str], bytes] = http_get) -> Path | None:
     """The cached PNG of the week. It never raises: an outage gives the PNG of a recent earlier week or None."""
-    path = _png_path(charts, week)
+    path = chart_image(repo, week)
     # A PNG that is in the cache wins, so a hand-placed file stays and the build never re-fetches.
     if path.exists():
         return path
-    start = default_cutoff(season_start, week).date()
-    end = default_cutoff(season_start, week + 1).date()
+    start = cutoff_date(season_start, week)
+    end = cutoff_date(season_start, week + 1)
     try:
         url = _file_for_week(json.loads(fetch(MEDIA_URL)), start, end)
     except (httpx.HTTPError, ValueError, KeyError, TypeError) as error:
         logger.warning("The chart list failed (%s)", error)
-        return _fallback(charts, week)
+        return _fallback(repo, week)
     if url is None:
         logger.warning("The site lists no chart for week %d, so the week gets no trade values", week)
         return None
@@ -112,20 +110,20 @@ def fetch_chart(season_start: date, week: int, charts: Path, fetch: Callable[[st
         body = fetch(url)
     except httpx.HTTPError as error:
         logger.warning("The chart download of %s failed (%s)", url, error)
-        return _fallback(charts, week)
+        return _fallback(repo, week)
     # A body that is not a PNG never goes into the cache, so the next run fetches again.
     if not body.startswith(PNG_SIGNATURE):
         logger.warning("The chart download of %s is not a PNG", url)
-        return _fallback(charts, week)
-    charts.mkdir(parents=True, exist_ok=True)
+        return _fallback(repo, week)
+    charts_dir(repo).mkdir(parents=True, exist_ok=True)
     write_bytes_atomic(path, body)
     return path
 
 
-def _fallback(charts: Path, week: int) -> Path | None:
+def _fallback(repo: Path, week: int) -> Path | None:
     """The cached PNG of the newest of the STAND_IN_WEEKS weeks before the week, never a later week."""
     for earlier in range(week - 1, week - 1 - STAND_IN_WEEKS, -1):
-        stand_in = _png_path(charts, earlier)
+        stand_in = chart_image(repo, earlier)
         if stand_in.exists():
             logger.warning("The chart fetch failed, so the chart of week %d stands in for week %d", earlier, week)
             return stand_in
@@ -134,13 +132,18 @@ def _fallback(charts: Path, week: int) -> Path | None:
     return None
 
 
-def claude_read(strips: list[bytes], output_model: type[BaseModel]) -> BaseModel:
-    """Send the strips in order, then one text block, through the writer's client and parse path."""
+def claude_read(strips: list[bytes], output_model: type[BaseModel], call: ParseCall) -> BaseModel:
+    """Send the strips in order, then one text block, through `call`, the writer's client and parse path."""
     content = [{"type": "image",
                 "source": {"type": "base64", "media_type": "image/png", "data": base64.b64encode(s).decode()}}
                for s in strips]
     content.append({"type": "text", "text": CHART_PROMPT})
-    return parse_call(content, output_model)
+    return call(content, output_model)
+
+
+def claude_reader(call: ParseCall) -> ChartReader:
+    """The Claude read of the chart through `call`. The CLI and the API pass the writer's parse_call."""
+    return partial(claude_read, call=call)
 
 
 def cut_strips(png: bytes) -> list[bytes]:
@@ -179,7 +182,7 @@ def guard_results(chart: ChartRead, week: int, prior_rows: int | None) -> dict[s
     values = [row.value for row in chart.rows]
     return {
         "header week": chart.week == week,
-        "trade values never rise": all(b <= a for a, b in zip(values, values[1:])),
+        "trade values never rise": all(b <= a for a, b in itertools.pairwise(values)),
         "trade values are half points from 0 to 100": all(0 <= v <= 100 and v * 2 == int(v * 2) for v in values),
         "positions are RB, WR, TE, or QB": all(row.position in POSITIONS for row in chart.rows),
         f"at least {MIN_ROWS} rows": len(values) >= MIN_ROWS,
@@ -222,26 +225,22 @@ def _saved_read(path: Path) -> ChartRead | None:
         return None
 
 
-def _current_saved_read(charts: Path, week: int) -> ChartRead | None:
+def _current_saved_read(repo: Path, week: int) -> ChartRead | None:
     """The saved read of the week, unless a hand-placed PNG is newer than it. A newer PNG wins and is read again."""
-    json_path, png = _json_path(charts, week), _png_path(charts, week)
+    json_path, png = chart_read(repo, week), chart_image(repo, week)
     if png.exists() and json_path.exists() and png.stat().st_mtime > json_path.stat().st_mtime:
         return None
     return _saved_read(json_path)
 
 
-def _json_path(charts: Path, week: int) -> Path:
-    return charts / f"week-{week:02d}.json"
-
-
 def saved_chart_read(repo: Path, week: int) -> ChartRead | None:
     """The saved read of the week under the cache rules, or None. It never fetches or reads an image."""
-    return _current_saved_read(chart_dir(repo), week)
+    return _current_saved_read(repo, week)
 
 
-def _prior_row_count(charts: Path, week: int) -> int | None:
+def _prior_row_count(repo: Path, week: int) -> int | None:
     """The row count of the saved read of the week before, or None when no good read is saved."""
-    prior = _saved_read(_json_path(charts, week - 1))
+    prior = _saved_read(chart_read(repo, week - 1))
     return len(prior.rows) if prior else None
 
 
@@ -262,42 +261,41 @@ def _read_png(png: Path, read: ChartReader) -> ChartRead | None:
     return None
 
 
-def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get,
-                read: ChartReader = claude_read) -> ChartCheck | None:
+def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+                read: ChartReader) -> ChartCheck | None:
     """The chart week, its parsed read, and the guard results, or None when no read exists. It never raises.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
-    charts = chart_dir(repo)
     chart_week = week
-    parsed = _current_saved_read(charts, week)
+    parsed = _current_saved_read(repo, week)
     fresh = False
     if parsed is None:
-        png = fetch_chart(season_start, week, charts, fetch)
+        png = fetch_chart(season_start, week, repo, fetch)
         if png is None:
             return None
-        chart_week = int(png.stem.removeprefix("week-"))
-        parsed = _current_saved_read(charts, chart_week)
+        chart_week = week_from_label(png.stem)
+        parsed = _current_saved_read(repo, chart_week)
         if parsed is None:
             parsed = _read_png(png, read)
             if parsed is None:
                 return None
             fresh = True
     # A saved read passed the guards before the save. A second check catches a guard added since then.
-    guards = guard_results(parsed, chart_week, _prior_row_count(charts, chart_week))
+    guards = guard_results(parsed, chart_week, _prior_row_count(repo, chart_week))
     # On a failed guard the PNG stays for a hand check. No JSON is written, so the next run reads the image again.
     if fresh and all(guards.values()):
-        _write_json(_json_path(charts, chart_week), parsed)
+        _write_json(chart_read(repo, chart_week), parsed)
     return ChartCheck(chart_week, parsed, guards)
 
 
-def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get,
-               read: ChartReader = claude_read) -> tuple[int, ChartRead] | None:
+def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+               read: ChartReader) -> tuple[int, ChartRead] | None:
     """The chart week and its parsed read, or None. It never raises, so a build goes on without trade values.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
-    check = check_chart(repo, season_start, week, fetch, read)
+    check = check_chart(repo, season_start, week, fetch, read=read)
     if check is None:
         return None
     failed = [name for name, ok in check.guards.items() if not ok]
@@ -312,7 +310,7 @@ def _write_json(path: Path, parsed: ChartRead) -> None:
 
 
 def chart_values(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine],
-                 fetch: Callable[[str], bytes] = http_get, read: ChartReader = claude_read) -> ChartValues | None:
+                 fetch: Callable[[str], bytes] = http_get, *, read: ChartReader) -> ChartValues | None:
     """The trade values of the players the chart lists, or None when the week has no good chart."""
-    loaded = load_chart(repo, season_start, week, fetch, read)
+    loaded = load_chart(repo, season_start, week, fetch, read=read)
     return match_chart(loaded[1], lines) if loaded else None

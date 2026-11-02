@@ -4,7 +4,7 @@
 SEASON ?= 2026
 
 .DEFAULT_GOAL := help
-.PHONY: need-week need-main help install test lint check build publish page-json rankings analyze api deploy logs push
+.PHONY: need-week need-main help install test golden lint typecheck check build publish page-json rankings analyze api deploy logs push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -15,8 +15,16 @@ install: ## Install the dependencies
 test: ## Run the tests
 	uv run pytest -q
 
+# A golden change must show in review, so commit the rewritten files with the code that changed them.
+golden: ## Rewrite the four golden files from the week 6 fixtures
+	uv run python tests/golden.py
+
 lint: ## Check the code style
 	uv run ruff check src tests
+
+# Only the modules that a ticket touches must pass. The include list is in pyproject.toml.
+typecheck: ## Check the types of the listed modules in basic mode
+	uv run pyright
 
 check: lint test ## Run lint, then the tests
 

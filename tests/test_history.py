@@ -11,7 +11,6 @@ import pytest
 from cornerstone.history import (
     HISTORY_FILES,
     fetch_history,
-    history_dir,
     load_history,
     load_saved_weeks,
     player_trend,
@@ -24,11 +23,12 @@ from cornerstone.history import (
 )
 from cornerstone.models import UsageShare
 from cornerstone.parse import parse_moves, parse_week
-from cornerstone.sleeper import fetch_past_week, load_raw
+from cornerstone.paths import history_week_dir
+from cornerstone.provider.sleeper import fetch_past_week, load_raw
 
 
 def _fill_week_one(root):
-    done = history_dir(root, 1)
+    done = history_week_dir(root, 1)
     done.mkdir(parents=True)
     for name in HISTORY_FILES:
         (done / f"{name}.json").write_text('[{"player_id": "1"}]')
@@ -53,7 +53,7 @@ def test_fetch_history_force_refetches(tmp_path):
 def test_fetch_history_refetches_a_week_with_a_missing_file(tmp_path):
     root = tmp_path / "history"
     _fill_week_one(root)
-    (history_dir(root, 1) / "stats.json").unlink()
+    (history_week_dir(root, 1) / "stats.json").unlink()
     fetched = fetch_history("L", 2026, 1, root, fetch=lambda lid, s, w, d: None)
     assert fetched == [1]
 
@@ -61,7 +61,7 @@ def test_fetch_history_refetches_a_week_with_a_missing_file(tmp_path):
 def test_fetch_history_refetches_a_week_with_empty_stats(tmp_path):
     root = tmp_path / "history"
     _fill_week_one(root)
-    (history_dir(root, 1) / "stats.json").write_text("[]")
+    (history_week_dir(root, 1) / "stats.json").write_text("[]")
     fetched = fetch_history("L", 2026, 1, root, fetch=lambda lid, s, w, d: None)
     assert fetched == [1]
 
@@ -77,12 +77,12 @@ def test_load_history_has_six_weeks(fixture_history_root, fixture_raw_dir):
 
 def test_a_saved_week_keeps_the_starters_of_each_roster(fixture_history_root, fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    raw["matchups"][0]["starters"][1] = "0"
+    raw.matchups[0].starters[1] = "0"
     h = load_history(fixture_history_root, raw, week=6)
     assert h.weeks[3].starters[1] == ['8183', '13286', '9226', '2216', '8167', '11604', '3198', '7543', 'SF']
     # The empty slot "0" is not a starter.
-    assert "0" not in h.weeks[6].starters[raw["matchups"][0]["roster_id"]]
-    assert len(h.weeks[6].starters[raw["matchups"][0]["roster_id"]]) == 8
+    assert "0" not in h.weeks[6].starters[raw.matchups[0].roster_id]
+    assert len(h.weeks[6].starters[raw.matchups[0].roster_id]) == 8
 
 
 def test_a_saved_week_keeps_every_player_of_each_roster_with_his_points(fixture_history_root, fixture_raw_dir):
@@ -101,9 +101,9 @@ def test_a_saved_week_keeps_every_player_of_each_roster_with_his_points(fixture_
 
 def test_a_roster_with_an_empty_slot_keeps_every_player(fixture_history_root, fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    roster_id = raw["matchups"][0]["roster_id"]
-    benched = raw["matchups"][0]["starters"][1]
-    raw["matchups"][0]["starters"][1] = "0"
+    roster_id = raw.matchups[0].roster_id
+    benched = raw.matchups[0].starters[1]
+    raw.matchups[0].starters[1] = "0"
     h = load_history(fixture_history_root, raw, week=6)
     # The player out of the empty slot stays on the roster with his points.
     assert benched in h.weeks[6].rosters[roster_id]
@@ -121,13 +121,14 @@ def test_missing_week_is_incomplete(tmp_path, fixture_history_root, fixture_raw_
 
 def _add(player_id, roster_id):
     return {"status": "complete", "type": "free_agent", "leg": 1, "adds": {player_id: roster_id},
-            "drops": None, "settings": None}
+            "drops": None, "settings": None, "transaction_id": f"{player_id}-{roster_id}", "created": 0,
+            "roster_ids": [roster_id]}
 
 
 def test_a_saved_week_reads_the_fresh_transactions_of_the_next_week(tmp_path, fixture_history_root):
     root = tmp_path / "2026" / "history"
-    shutil.copytree(fixture_history_root / "week-01", history_dir(root, 1))
-    (history_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
+    shutil.copytree(fixture_history_root / "week-01", history_week_dir(root, 1))
+    (history_week_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
     raw = tmp_path / "2026" / "week-02" / "raw"
     raw.mkdir(parents=True)
     (raw / "transactions_prev.json").write_text(json.dumps([_add("SF", 1), _add("HOU", 6)]))
@@ -137,15 +138,15 @@ def test_a_saved_week_reads_the_fresh_transactions_of_the_next_week(tmp_path, fi
 
 def test_a_saved_week_with_no_fresh_transactions_reads_the_saved_copy(tmp_path, fixture_history_root):
     root = tmp_path / "2026" / "history"
-    shutil.copytree(fixture_history_root / "week-01", history_dir(root, 1))
-    (history_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
+    shutil.copytree(fixture_history_root / "week-01", history_week_dir(root, 1))
+    (history_week_dir(root, 1) / "transactions.json").write_text(json.dumps([_add("SF", 1)]))
     moves = load_saved_weeks(root, 1)[1].moves
     assert [(m.player_id, m.roster_id) for m in moves] == [("SF", 1)]
 
 
 def test_parse_moves_matches_parse_week(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    assert parse_moves(raw["transactions"]) == parse_week(raw).moves
+    assert parse_moves(raw.transactions) == parse_week(raw).moves
 
 
 @pytest.mark.live

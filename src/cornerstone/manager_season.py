@@ -9,8 +9,10 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from cornerstone.adjusters import fill_slots
-from cornerstone.facts_league import head_to_head, week_median
-from cornerstone.models import History, PastWeek, r2
+from cornerstone.facts_league import head_to_head
+from cornerstone.models import History, PastWeek
+from cornerstone.numbers import r2
+from cornerstone.standings_table import week_median
 
 # The award keys the shelf counts. The Overachiever award is not on the shelf.
 SHELF_KEYS = ("top_scorer", "mvb", "game_changer", "underperformer")

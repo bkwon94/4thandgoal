@@ -13,7 +13,7 @@ import httpx
 from cornerstone.models import UsageWeek
 from cornerstone.nflverse import STATS_PLAYER_URL, nflverse_week
 from cornerstone.nflverse_players import PlayerWeek, read_player_weeks, with_player_weeks
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 STATS_PLAYER = FIXTURES / "stats_player_week_2026.csv.gz"
@@ -80,7 +80,7 @@ def _boom(url):
 
 def test_with_the_file_gone_the_usage_keeps_our_count_and_the_flag_is_false(tmp_path, fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    nfl = nflverse_week(2026, 6, [], raw["players"], _cache_without_the_file(tmp_path), fetch=_boom)
+    nfl = nflverse_week(2026, 6, [], raw.players, _cache_without_the_file(tmp_path), fetch=_boom)
     golden = nfl.usage[GOLDEN][0]
     assert (golden.targets, golden.target_share, golden.air_yards_share, golden.wopr) == (4, 100, None, None)
     assert nfl.sources["nflverse_stats_player"] is False

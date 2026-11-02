@@ -12,10 +12,22 @@ import httpx
 import pytest
 
 from cornerstone.nflverse import (
-    DEPTH_CHARTS_URL, PBP_URL, SCHEDULES_URL, download, gsis_id, http_get, nflverse_week,
-    read_depth_charts, read_drops, read_games, read_id_map, read_injuries, read_kickoffs, read_schedules,
+    DEPTH_CHARTS_URL,
+    PBP_URL,
+    SCHEDULES_URL,
+    download,
+    gsis_id,
+    http_get,
+    nflverse_week,
+    read_depth_charts,
+    read_drops,
+    read_games,
+    read_id_map,
+    read_injuries,
+    read_kickoffs,
+    read_schedules,
 )
-from cornerstone.sleeper import load_raw
+from cornerstone.provider.sleeper import load_raw
 
 
 def _boom(url):
@@ -93,12 +105,12 @@ def test_read_injuries(fixture_nflverse_dir):
 
 
 def test_gsis_from_blob_strips_space(fixture_raw_dir):
-    assert gsis_id("5927", load_raw(fixture_raw_dir)["players"], {}) == "00-0035659"
+    assert gsis_id("5927", load_raw(fixture_raw_dir).players, {}) == "00-0035659"
 
 
 def test_gsis_from_id_map_for_golden(fixture_raw_dir, fixture_nflverse_dir):
     ids = read_id_map(fixture_nflverse_dir / "db_playerids.csv")
-    assert gsis_id("12501", load_raw(fixture_raw_dir)["players"], ids) == "00-0040667"
+    assert gsis_id("12501", load_raw(fixture_raw_dir).players, ids) == "00-0040667"
 
 
 def test_download_falls_back_to_a_stale_cache(tmp_path):

@@ -1,12 +1,14 @@
 """
-League-wide facts: standings, awards, Matchup of the Week, next week, position ranks, and position leaders.
+League-wide models: awards, ranks before the week, Matchup of the Week, next week, position ranks, and position leaders.
 Every number comes from code, and every derived number is exact to two decimals.
+The models are not facts. The sheet reads them through Context, so this module is not a fact group.
 """
 import logging
 from collections import defaultdict
 from collections.abc import Callable
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
+from cornerstone.config import LeagueConfig
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
@@ -23,22 +25,20 @@ from cornerstone.models import (
     Standing,
     Storyline,
     Week,
-    r2,
     sub,
 )
+from cornerstone.numbers import one_decimal, ordinal, r2
+from cornerstone.standings_table import season_records
 from cornerstone.tunables import (
     KEY_STARTER_SHORT_STARTS,
     KEY_STARTER_STARTS,
     KEY_STARTER_WEEKS,
-    PLAYOFF_SPOTS,
     STORYLINE_WEIGHTS,
+    TREND_WEEKS,
 )
 
 logger = logging.getLogger(__name__)
 
-TEAM_COUNT = 12
-# The team trend is the mean of this many latest weeks.
-TREND_WEEKS = 3
 # A recent move adds this many points to the Game Changer score.
 MOVE_BONUS = 5
 UNDERPERFORMER_MIN_PROJECTION = 10
@@ -48,99 +48,12 @@ WEIGHTS = {"closeness": 0.4, "upset": 0.25, "table": 0.2, "stakes": 0.15}
 STREAK_ON_THE_LINE = 3
 # Both teams ranked this high or higher in the standings meet at the top of the table.
 TABLE_TOP = 4
-# Both best projected lineups for next week rank this high or higher of the 12 for a shootout. GLOSSARY.md, "Shootout".
-SHOOTOUT_TOP = 4
 REASONS = {
     "closeness": "Closest Finish",
     "upset": "Upset",
     "table": "Top of the Table",
     "stakes": "Playoff Stakes",
 }
-
-
-def season_records(history: History, through: int) -> dict[int, tuple[int, int, float]]:
-    """Wins, losses, and points for of each roster over weeks 1 to `through`.
-
-    Each week is two games: the head-to-head game and the game against the median.
-    A tie in a game counts as neither a win nor a loss.
-    """
-    wins: dict[int, int] = defaultdict(int)
-    losses: dict[int, int] = defaultdict(int)
-    points: dict[int, Decimal] = defaultdict(Decimal)
-
-    def settle(roster_id: int, mine: Decimal, theirs: Decimal) -> None:
-        if mine > theirs:
-            wins[roster_id] += 1
-        elif mine < theirs:
-            losses[roster_id] += 1
-
-    for number in range(1, through + 1):
-        scores = {rid: Decimal(str(p)) for rid, p in history.weeks[number].scores.items()}
-        median = week_median(history.weeks[number])
-        for a, b in history.weeks[number].pairs:
-            settle(a, scores[a], scores[b])
-            settle(b, scores[b], scores[a])
-        for rid, score in scores.items():
-            settle(rid, score, median)
-            points[rid] += score
-    return {rid: (wins[rid], losses[rid], r2(float(points[rid]))) for rid in points}
-
-
-def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
-    """The roster IDs in standings order: most wins first, then most points for.
-
-    The standings and the power rankings both use this order, so the two cannot drift.
-    """
-    return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
-
-
-def standings(week: Week, history: History | None = None) -> list[Standing]:
-    if history is not None and history.complete():
-        records = season_records(history, week.week)
-    else:
-        if history is not None:
-            logger.warning("history incomplete: standings from rosters.json")
-        records = {
-            t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
-        }
-    ordered = standings_order(records)
-    cut_wins = records[ordered[PLAYOFF_SPOTS - 1]][0]
-    strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
-    # Rank the highest strength first. A team with no next matchup has no rank.
-    by_strength = sorted(
-        (rid for rid, s in strength.items() if s is not None),
-        key=lambda rid: -strength[rid],
-    )
-    strength_rank = {rid: i + 1 for i, rid in enumerate(by_strength)}
-    return [
-        Standing(
-            rank=i + 1,
-            roster_id=rid,
-            wins=records[rid][0],
-            losses=records[rid][1],
-            points_for=records[rid][2],
-            in_playoffs=i + 1 <= PLAYOFF_SPOTS,
-            games_from_cut=records[rid][0] - cut_wins,
-            schedule_strength=strength[rid],
-            strength_rank=strength_rank.get(rid),
-        )
-        for i, rid in enumerate(ordered)
-    ]
-
-
-def _schedule_strength(
-    week: Week, roster_id: int, records: dict[int, tuple[int, int, float]]
-) -> float | None:
-    """Mean win rate of the remaining opponents. Version 1 has only the next one."""
-    opponents = [
-        b if a == roster_id else a
-        for a, b in week.next_matchups
-        if roster_id in (a, b)
-    ]
-    if not opponents:
-        return None
-    rates = [records[o][0] / (records[o][0] + records[o][1]) for o in opponents]
-    return r2(sum(rates) / len(rates))
 
 
 def ranks_before(
@@ -182,13 +95,13 @@ def ranks_before(
     return {rid: i + 1 for i, rid in enumerate(ordered)}
 
 
-def upset_signal(winner_rank_before: int, loser_rank_before: int) -> float:
+def upset_signal(winner_rank_before: int, loser_rank_before: int, *, config: LeagueConfig) -> float:
     """An upset is a winner ranked below the loser before the week."""
-    return max(0, (winner_rank_before - loser_rank_before) / (TEAM_COUNT - 1))
+    return max(0, (winner_rank_before - loser_rank_before) / (config.team_count - 1))
 
 
-def _table_signal(rank_a: int, rank_b: int) -> float:
-    return 1 - (rank_a + rank_b - 3) / (2 * (TEAM_COUNT - 1))
+def _table_signal(rank_a: int, rank_b: int, *, config: LeagueConfig) -> float:
+    return 1 - (rank_a + rank_b - 3) / (2 * (config.team_count - 1))
 
 
 def _stakes_signal(a: Standing, b: Standing) -> float:
@@ -200,6 +113,8 @@ def matchup_of_the_week(
     mfacts: list[MatchupFacts],
     table: list[Standing],
     before: dict[int, int] | None = None,
+    *,
+    config: LeagueConfig,
 ) -> Pick:
     """Pick the matchup with the highest weighted total of the four signals.
 
@@ -224,11 +139,11 @@ def matchup_of_the_week(
         signals.append({
             "closeness": 1 - f.margin / max_margin if max_margin else 1.0,
             "upset": (
-                upset_signal(before[f.winner], before[f.loser])
+                upset_signal(before[f.winner], before[f.loser], config=config)
                 if f.winner is not None
                 else 0.0
             ),
-            "table": _table_signal(a.rank, b.rank),
+            "table": _table_signal(a.rank, b.rank, config=config),
             "stakes": _stakes_signal(a, b),
         })
     best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
@@ -320,6 +235,8 @@ def next_week(
     week: Week, table: list[Standing], history: History | None = None,
     projected: dict[int, dict[int, float]] | None = None, bye_weeks: dict[str, int] | None = None,
     rank: Callable[[str], int | None] | None = None,
+    *,
+    config: LeagueConfig,
 ) -> list[NextMatchup]:
     """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
 
@@ -332,13 +249,13 @@ def next_week(
     by_roster = {s.roster_id: s for s in table}
     ahead = {rid: by_week[week.week + 1] for rid, by_week in (projected or {}).items() if week.week + 1 in by_week}
     # A tie in the total goes to the lower roster id, so the top four is the same on every build.
-    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:SHOOTOUT_TOP])
+    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:config.shootout_top])
     games = []
     for a_id, b_id in week.next_matchups:
         a, b = by_roster[a_id], by_roster[b_id]
         stories = _storylines(week, a, b, history)
         if a_id in top and b_id in top:
-            stories.append(_story("shootout", totals=(_one_decimal(ahead[a_id]), _one_decimal(ahead[b_id]))))
+            stories.append(_story("shootout", totals=(one_decimal(ahead[a_id]), one_decimal(ahead[b_id]))))
         games.append((a, b, _sorted_storylines(stories)))
     # sorted() is stable, so a tie in score and gap keeps the order of the schedule.
     ranked = sorted(
@@ -407,11 +324,6 @@ def _sorted_storylines(stories: list[Storyline]) -> list[Storyline]:
     return sorted(stories, key=lambda s: (-s.weight, order.index(s.kind)))
 
 
-def _one_decimal(x: float) -> float:
-    """Round half up to one decimal. Python's round() gives 118.7 for 118.75."""
-    return float(Decimal(str(x)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
-
-
 def _story(kind: str, **fields) -> Storyline:
     return Storyline(kind=kind, weight=STORYLINE_WEIGHTS[kind], **fields)
 
@@ -420,7 +332,7 @@ def _reason(week: Week, a: Standing, b: Standing, stories: list[Storyline]) -> s
     """One sentence on the top two storylines, with the numbers. A game with no storyline names the two ranks."""
     if not stories:
         hi, lo = sorted((a.rank, b.rank))
-        return f"{_ordinal(hi)} vs {_ordinal(lo)}"
+        return f"{ordinal(hi)} vs {ordinal(lo)}"
     clauses = [_clause(week, a, b, s) for s in stories[:2]]
     if len(clauses) == 1:
         text = " ".join(x for x in clauses[0] if x)
@@ -459,14 +371,7 @@ def _clause(week: Week, a: Standing, b: Standing, s: Storyline) -> tuple[str | N
         x, y = s.totals
         return None, f"lineups project {x:.1f} and {y:.1f} in a projected shootout"
     hi, lo = sorted((a.rank, b.rank))
-    return None, f"{_ordinal(hi)} and {_ordinal(lo)} meet at the top of the table"
-
-
-def _ordinal(n: int) -> str:
-    if n % 100 in (11, 12, 13):
-        return f"{n}th"
-    suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-    return f"{n}{suffix}"
+    return None, f"{ordinal(hi)} and {ordinal(lo)} meet at the top of the table"
 
 
 def _located_lines(week: Week) -> list[tuple[PlayerLine, int, int]]:
@@ -537,8 +442,8 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
             [
                 (
                     x,
-                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
-                    f"{sub(x[0].projection, x[0].points)} under.",
+                    (f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                     f"{sub(x[0].projection, x[0].points)} under."),
                 )
                 for x in sorted(
                     (x for x in with_projection if x[0].projection >= UNDERPERFORMER_MIN_PROJECTION),
@@ -552,8 +457,8 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
             [
                 (
                     x,
-                    f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
-                    f"{sub(x[0].points, x[0].projection)} over.",
+                    (f"{x[0].name} scored {x[0].points} on a {x[0].projection} projection, "
+                     f"{sub(x[0].points, x[0].projection)} over."),
                 )
                 for x in sorted(
                     with_projection,
@@ -694,13 +599,6 @@ def _streak(history: History, roster_id: int, through: int) -> int:
             break
         run += result
     return run
-
-
-def week_median(week: PastWeek) -> Decimal:
-    """The exact median score of one week, the line of the median game."""
-    ordered = sorted((Decimal(str(p)) for p in week.scores.values()), reverse=True)
-    # The same median as median_facts: the mean of the 6th and 7th scores.
-    return (ordered[5] + ordered[6]) / 2
 
 
 def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:

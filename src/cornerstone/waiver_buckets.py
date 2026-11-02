@@ -5,15 +5,15 @@ The code is pure: it reads the scored pool, the depth charts, the injury report,
 from collections.abc import Callable
 from typing import NamedTuple
 
-# A module import, not a name import: the engine imports this module, and this one reads its rank scores.
-from cornerstone import waiver
 from cornerstone.adjusters import OUT_STATUSES, back_inside
+from cornerstone.config import LeagueConfig
 from cornerstone.models import Fact, WaiverPlayer
 from cornerstone.nflverse import gsis_id
 from cornerstone.parse import player_name
-from cornerstone.sheet import Nums, fact
+from cornerstone.rank_score import rank_scores
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.slow_sources import SlowSources
-from cornerstone.tunables import BUCKET_POSITIONS, LAST_SEASON_WEEK, SNEAKY_USAGE_FLOOR, TOP_HALF
+from cornerstone.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
 
 SNEAKY = "sneaky"
 STASHES = "stashes"
@@ -38,6 +38,8 @@ class BucketInputs(NamedTuple):
     returns: dict[str, int]
     # The rest of season projection of any player, a rostered one too.
     ros_of: Callable[[str], float]
+    # The league sizes. A stash must be back by the last season week.
+    config: LeagueConfig
 
     def gsis_of(self, player_id: str) -> str | None:
         """The gsis_id of the player. The id map fills the IDs that the Sleeper players file lacks."""
@@ -105,7 +107,7 @@ def _stashes(players: list[WaiverPlayer], inputs: BucketInputs,
         if p.position not in BUCKET_POSITIONS or p.ros_projection <= 0:
             continue
         player_above = above_by_player.get(p.player_id)
-        if (p.injury_status in OUT_STATUSES and back_inside(p.return_week, inputs.week, LAST_SEASON_WEEK)
+        if (p.injury_status in OUT_STATUSES and back_inside(p.return_week, inputs.week, inputs.config.last_season_week)
                 and p.scores.projection >= TOP_HALF):
             stashes.append(_entry(p, RETURN, player_above))
         elif (p.position == "RB" and player_above is not None and player_above.starter
@@ -119,7 +121,7 @@ def _rb_scores(inputs: BucketInputs) -> dict[str, float]:
     """The rank score of the rest of season projection of every RB with a team, rostered or not."""
     rbs = {pid: "RB" for pid, entry in inputs.sleeper_players.items()
            if (entry or {}).get("position") == "RB" and entry.get("team")}
-    return waiver._rank_scores(rbs, {pid: inputs.ros_of(pid) for pid in rbs})
+    return rank_scores(rbs, {pid: inputs.ros_of(pid) for pid in rbs})
 
 
 def return_week(player_id: str, gsis: str | None, week: int, returns: dict[str, int],

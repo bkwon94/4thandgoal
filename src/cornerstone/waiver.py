@@ -8,16 +8,31 @@ from typing import NamedTuple
 
 from cornerstone import waiver_buckets
 from cornerstone.adjusters import OUT_STATUSES
-from cornerstone.history import _round_half_up
+from cornerstone.config import LeagueConfig
 from cornerstone.models import (
-    BoardScores, BudgetRow, Fact, NflverseWeek, TeamWeek, UsageWeek, WaiverBoard, WaiverClaim, WaiverPlayer,
+    BoardScores,
+    BudgetRow,
+    Fact,
+    NflverseWeek,
+    TeamWeek,
+    UsageWeek,
+    WaiverBoard,
+    WaiverClaim,
+    WaiverPlayer,
 )
+from cornerstone.numbers import round_half_up
 from cornerstone.parse import player_name
+from cornerstone.provider.raw import RawWeek
+from cornerstone.rank_score import rank_scores
 from cornerstone.ranks import in_pool
-from cornerstone.sheet import Nums, fact
+from cornerstone.sheet.base import Nums, fact
 from cornerstone.slow_sources import SlowSources
 from cornerstone.tunables import (
-    BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS,
+    BOARD_WEIGHTS,
+    BUCKET_POSITIONS,
+    BUCKET_SIZE,
+    PER_POSITION,
+    USAGE_WEEKS,
 )
 from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
@@ -34,8 +49,9 @@ TRENDING_REASON = "trending"
 
 
 def waiver_board(
-    raw: dict[str, object], week: int, built: datetime, nfl: NflverseWeek | None = None,
+    raw: RawWeek, week: int, built: datetime, nfl: NflverseWeek | None = None,
     claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None, returns: dict[str, int] | None = None,
+    *, config: LeagueConfig,
 ) -> WaiverBoard:
     """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
 
@@ -43,18 +59,19 @@ def waiver_board(
     score and an environment score of 0. `claims` is the bid history of the season, the input of the price
     floor and the last like him. `slow` gives the depth charts and the injury report of the sneaky and stash
     buckets. None leaves out every rule that needs them. `returns` is the hand-kept return week by player ID.
+    `config` gives the last season week, where the rest of season projection ends.
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
-    pool = {pid: entry for pid, entry in sorted(raw["players"].items()) if in_pool(entry, rostered, pid)}
-    ros = {pid: rest_of_season(ahead, pid, week) for pid in pool}
+    pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
+    ros = {pid: rest_of_season(ahead, pid, week, config) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
-    projection = _rank_scores(positions, ros)
+    projection = rank_scores(positions, ros)
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
-    inputs = waiver_buckets.BucketInputs(raw["players"], week, slow, returns or {},
-                                         lambda pid: rest_of_season(ahead, pid, week))
+    inputs = waiver_buckets.BucketInputs(raw.players, week, slow, returns or {},
+                                         lambda pid: rest_of_season(ahead, pid, week, config), config)
     players = [
         _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
                      BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
@@ -82,7 +99,7 @@ def waiver_board(
     # Drop candidates come after the price step, so a drop candidate never carries a price. The bucket has no
     # cap per position, as one roster can hold several fading players at one position.
     # A player who is out cannot replace a drop candidate this week, so drops compare against the healthy pool.
-    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy)[:BUCKET_SIZE]
+    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy, config)[:BUCKET_SIZE]
     return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
 
 
@@ -97,40 +114,21 @@ def _return_week(entry: dict, player_id: str, inputs: waiver_buckets.BucketInput
     return inputs.return_week_of(player_id) if entry.get("injury_status") in OUT_STATUSES else None
 
 
-def _budgets(raw: dict[str, object]) -> list[BudgetRow]:
+def _budgets(raw: RawWeek) -> list[BudgetRow]:
     """One row per roster in roster order: the league budget minus the budget used, and the waiver position."""
     return [
         BudgetRow(
-            roster_id=roster["roster_id"],
+            roster_id=roster.roster_id,
             budget_left=budget_left(raw, roster),
-            waiver_order=roster["settings"]["waiver_position"],
+            waiver_order=roster.settings.waiver_position,
         )
-        for roster in sorted(raw["rosters"], key=lambda r: r["roster_id"])
+        for roster in sorted(raw.rosters, key=lambda r: r.roster_id)
     ]
 
 
-def _rostered(raw: dict[str, object]) -> set[str]:
+def _rostered(raw: RawWeek) -> set[str]:
     # A roster with no players has None in rosters.json.
-    return {pid for roster in raw["rosters"] for pid in roster.get("players") or []}
-
-
-def _rank_scores(positions: dict[str, str], values: dict[str, float]) -> dict[str, float]:
-    """The rank score of each key: the rank of its value inside its group, from 1 for the highest to 0.
-
-    The group is the position for a player and one group for every team. Keys with the same value share the
-    better rank.
-    """
-    by_position: dict[str, list[float]] = {}
-    for pid, position in positions.items():
-        by_position.setdefault(position, []).append(values[pid])
-    for ranked in by_position.values():
-        ranked.sort(reverse=True)
-    scores = {}
-    for pid, position in positions.items():
-        ranked = by_position[position]
-        ahead_of = ranked.index(values[pid])
-        scores[pid] = 1.0 if len(ranked) == 1 else round(1 - ahead_of / (len(ranked) - 1), 4)
-    return scores
+    return {pid for roster in raw.rosters for pid in roster.players or []}
 
 
 def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float, scores: BoardScores,
@@ -168,9 +166,9 @@ def _rank_key(p: WaiverPlayer) -> tuple[float, float, str]:
     return -p.board_score, -p.ros_projection, p.player_id
 
 
-def _trending_counts(raw: dict[str, object]) -> dict[str, int]:
+def _trending_counts(raw: RawWeek) -> dict[str, int]:
     """The trending count of each player in the trending file. A week with no file has no counts."""
-    return {row["player_id"]: row["count"] for row in raw.get("trending", [])}
+    return {row.player_id: row.count for row in raw.trending or []}
 
 
 def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:
@@ -255,7 +253,7 @@ def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], 
                 + _opportunities(position, last)[1] - _opportunities(position, before)[1])
         if rise > 0:
             rises[pid] = rise
-    return _rank_scores({pid: positions[pid] for pid in rises}, rises)
+    return rank_scores({pid: positions[pid] for pid in rises}, rises)
 
 
 class TeamRates(NamedTuple):
@@ -293,9 +291,9 @@ def _team_rates(environment: dict[str, list[TeamWeek]], week: int) -> dict[str, 
 
 def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
     every = dict.fromkeys(rates, "NFL")
-    pace = _rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
-    neutral = _rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
-    rush = _rank_scores(every, {t: r.rush_success for t, r in rates.items()})
+    pace = rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
+    neutral = rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
+    rush = rank_scores(every, {t: r.rush_success for t, r in rates.items()})
     faster = sorted((r.plays_per_game for r in rates.values()), reverse=True)
     return {t: TeamRanks(rates=r, pace=pace[t], neutral_pass=neutral[t], rush_success=rush[t],
                          pace_place=faster.index(r.plays_per_game) + 1)
@@ -315,7 +313,7 @@ def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
 
 def _percent(fraction: float) -> int:
     """The fraction as a whole percent, rounded half up as every number on the page."""
-    return int(_round_half_up(100 * fraction))
+    return int(round_half_up(100 * fraction))
 
 
 def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamRanks], week: int) -> list[Fact]:
