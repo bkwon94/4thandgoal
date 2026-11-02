@@ -8,7 +8,7 @@ or a tracked `CLAUDE.md` other than the root one.
 
 **Blocked by:** 03 (the report shape and its helper).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] A package folder is each folder directly under `src/components/` and under `src/lib/`, plus `src/lib/` and `src/hooks/`. Today that is 13 folders.
 - [x] The list: `components/analyzer`, `managers`, `parts`, `rankings`, `shell`, `ui`, `waiver`, `week`; `lib`, `lib/data`, `lib/format`, `lib/schemas`; `hooks`.
@@ -24,3 +24,7 @@ or a tracked `CLAUDE.md` other than the root one.
 - [x] A test runs the rule on a temporary folder with one source file and no README, and finds one offense.
 - [x] `docs/adr/0006-the-rules-are-checks.md` gains "A README in each package folder".
 - [x] `pnpm check` passes. `pnpm check:export` still passes, because no README lands in `public/`.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-04-readmes`, commits 4cb81e3, 44df29a, 70e5f71, fe1bb7c, c0d9530, and ee26402, with `--no-ff`. 559 tests pass, `pnpm check` green, no README in `out/` or `public/`. 13 READMEs, 17 to 24 lines each. The rule finds the folders and holds no list. A truth review checked every Ports and Does-not-do line against the code with grep and found two false lines, in `parts` and `managers`, both fixed; `rankings`, `lib`, and `schemas` had three overclaims, fixed. Two notes for later: `GLOSSARY.md` gives "Sheet" one meaning and the waiver code uses it for the open player, which needs a ticket; `components/week/standings.tsx` formats in place and not through `lib/format`. Two reviewers passed it after one fix pass. Read 159 files, 140 of them header comments only: all files under src/components, src/lib, src/hooks; the ticket; the PRD; ~/repos/zero/docs/VISION.md; One ADRs 0001 and 0007; src/suppression-rule.test.ts, src/component-rule.test.ts, src/rule-report.ts; ADRs 0004, 0005, 0006; GLOSSARY.md, package.json, vitest.config.ts, next.config.ts, scripts/check-export.mjs, src/lib/headshot.ts, src/app/masthead-props.ts.
