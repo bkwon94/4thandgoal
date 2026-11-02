@@ -19,12 +19,16 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `playoff_odds` draws a level per roster per run and a normal score per week around it.
-- [ ] `LEVEL_SHRINK_WEEKS` is in `tunables.py`. `RECENT_WEEKS`, `RECENT_WEIGHT`, and `_draw_weights` are gone.
-- [ ] A test shows that a roster with a wide spread of past scores gets no better odds than one with the same average and a narrow spread.
-- [ ] A test shows the shrink: with k above 0, a roster's drawn level sits between its average and the league average.
-- [ ] The week 7 odds from the saved data match the Level column above within 3 points.
-- [ ] `make golden` ran, and the golden diff is named in the close comment.
-- [ ] `ruff`, `make typecheck`, and the full suite pass.
+- [x] `playoff_odds` draws a level per roster per run and a normal score per week around it.
+- [x] `LEVEL_SHRINK_WEEKS` is in `tunables.py`. `RECENT_WEEKS`, `RECENT_WEIGHT`, and `_draw_weights` are gone.
+- [x] A test shows that a roster with a wide spread of past scores gets no better odds than one with the same average and a narrow spread.
+- [x] A test shows the shrink: with k above 0, a roster's drawn level sits between its average and the league average.
+- [x] The week 7 odds from the saved data match the Level column above within 3 points.
+- [x] `make golden` ran, and the golden diff is named in the close comment.
+- [x] `ruff`, `make typecheck`, and the full suite pass.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `odds-level-01-level-draw`, commits 1b135b1, aebd3e4, and e03a6f2. 1,483 tests collected. The week 7 odds from the saved data match the Level column exactly. Golden change: `facts.json` and `rankings.json` only, in the `ODDS.` and `SW.` facts and the odds rows of week 6; the rankings chapter drops `ODDS.2.why` because team 2 rose from 21 to 46. Week 6 top three: 99, 99, 99 to 96, 96, 91. `page.json` and `managers.json` unchanged. The projection shift keeps its gap from the raw average, since it measures the roster change and the shrink already sits in the level. Two notes for later: the pooled spread divides by the count of scores, so it reads about 7 percent low at 7 weeks; the wide-against-narrow test allows a 5-point gap. Two reviewers passed it after one fix pass.
