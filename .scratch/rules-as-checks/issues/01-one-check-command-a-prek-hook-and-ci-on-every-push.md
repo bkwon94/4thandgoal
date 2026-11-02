@@ -8,7 +8,7 @@ push. ADR 0006 records the rule.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `package.json` scripts: `"check": "pnpm typecheck && pnpm test && pnpm build && pnpm check:export"` and `"check:fast": "pnpm typecheck && pnpm test"`.
 - [ ] `Makefile`: the `check` target runs `pnpm check`. Its four lines go, so the list of steps lives in one place.
@@ -25,3 +25,7 @@ push. ADR 0006 records the rule.
 - [ ] Proof of the publish path: `cornerstone publish` commits this repo from Brian's shell, so the hook runs there too. The launchd job only builds and never commits. After the hook install, run one `make publish` by hand with the hook in place before the week 9 publish.
 - [ ] If the hook fails under that PATH, stop and return `STUCK:`. A failed hook stops the Tuesday publish.
 - [ ] Ask Brian before the first push of the branch. The Check run on that push is green.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-01-check`, commits c73e594, b781cf7, and df14a66, with `--no-ff`. Two reviewers passed it in the earlier session. The hook is not installed yet: `pnpm hook:install` runs in the main checkout after the week 8 page is live, so the first hooked publish is watched. The first push runs the Check job for the first time. Built before the files-read habit, so no file list.
