@@ -12,8 +12,10 @@ tested.
 
 **Status:** ready-for-agent
 
-- [x] `spread` divides by `len(played) - rosters_with_two_or_more`. A roster with one score adds no square and no
-  degree of freedom.
+- [x] `spread` divides by `sum(len(scores[rid]) - 1 for rid in rosters)`, the pooled degrees of freedom. A roster
+  with one score adds no square and no degree of freedom.
+  - Choice: the ticket first said `len(played) - rosters_with_two_or_more`. That form gives a one-score roster one
+    degree of freedom and makes the zero guard unreachable, so the standard form won.
 - [x] If the divisor is 0, the spread is 0 and every draw is the mean. Keep the comment that says so.
 - [x] The comment above `spread` says why the divisor drops one per roster.
 - [x] The docstring of `playoff_odds` still reads true. Change "standard deviation" only if the sentence now lies.

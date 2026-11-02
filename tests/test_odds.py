@@ -296,6 +296,7 @@ def test_a_wide_spread_of_past_scores_gives_no_better_odds_than_a_narrow_spread(
 def test_two_rosters_with_one_score_each_give_a_spread_of_0():
     # A roster with one score adds no degree of freedom, so the divisor is 0 and the spread is 0.
     # Every draw is then the shrunk mean, so roster 1 wins every game and makes it in every run.
+    # Both rosters are open, so the odds clamp to 99 and 1.
     config = SMALL.model_copy(update={"playoff_spots": 1, "bye_count": 1})
     records = {1: (1, 1, 100.0), 2: (1, 1, 90.0)}
     result = playoff_odds({1: [100.0], 2: [90.0]}, records, {2: [(1, 2)], 3: [(1, 2)]},
