@@ -8,7 +8,7 @@ every push. ADR 0009 records the rule.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `Makefile`: `check: lint typecheck test`. A new `rules` target runs `uv run pytest -q tests/test_layers.py $(wildcard tests/test_rule_*.py)`. A new `check-fast: lint typecheck rules`. Each target has a `##` help line.
 - [ ] Choice: every later rule test is named `tests/test_rule_<topic>.py`, so `make rules` finds it with no edit.
@@ -24,3 +24,7 @@ every push. ADR 0009 records the rule.
 - [ ] Proof of the publish path: `cornerstone publish` commits this repo from Brian's shell, with a pathspec, so the hook runs there too. The launchd job only builds and never commits. After the hook install, run one `make publish` by hand with the hook in place before the week 9 publish. A stray untracked file with a lint error under `src/` or `tests/` stops that commit, so check `git status` first.
 - [ ] Ask Brian before the first push of the branch. The Check run on that push is green.
 - [ ] If a test fails only in CI, because it reads an untracked file or the network, fix the test here. If the fix is large, return `STUCK:` with the test name.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-01-check`, commits 7f5e800 and 84c0809, with `--no-ff`. Two reviewers passed it in the earlier session. The hook is not installed yet: `prek install` runs in the main checkout after the week 8 page is live, so the first hooked publish is watched. The first push runs the Check job for the first time. No golden change. Built before the files-read habit, so no file list.
