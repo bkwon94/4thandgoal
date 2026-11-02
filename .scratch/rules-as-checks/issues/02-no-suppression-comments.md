@@ -21,4 +21,4 @@ site has none today, so the test is a guard from the first day. The allow list s
 - [x] Each offense prints the report shape of ticket 03, with the fix: "Fix the type or the code. If the line must stay, add it to the allow list with its reason."
 - [x] A test runs the rule on one source string with a `@ts-ignore` line and finds one offense.
 - [x] `docs/adr/0006-the-rules-are-checks.md` gains "No suppression comment": the rule, the allow list, and why this departs from One.
-- [ ] `pnpm check` passes.
+- [x] `pnpm check` passes.
