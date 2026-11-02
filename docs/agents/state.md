@@ -4,7 +4,7 @@ One row for each feature under `.scratch/` with an open ticket. The close commen
 
 | Feature | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- |
-| agent-habits | 02 a-state-file-lists-each-open-feature-and-its-next-step | | |
+| agent-habits | 03 a-deploy-step-for-the-fly-api-behind-the-check-and-an-approval | | Brian decides: approve each deploy by hand, or deploy on each green push |
 | known-games | 08 the-site-renders-the-known-games-line | | |
 | manager-pages | 12 drop-awards-from-managers-entry | | |
 | modular | 20 remove-the-chart-parameter-of-context | | |
