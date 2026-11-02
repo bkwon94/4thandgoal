@@ -129,7 +129,12 @@ class FakeWriter:
         self.calls.append(WriterCall(content, output_model, system, cache_ttl, effort, tools))
         if not self.answers:
             raise WriterError(f"the fake writer has no answer left for {output_model.__name__}")
-        return self.answers.pop(0)
+        answer = self.answers.pop(0)
+        # A test that queues the wrong model fails here with a plain message, not later on a missing field.
+        if not isinstance(answer, output_model):
+            raise TypeError(
+                f"the next answer is a {type(answer).__name__}, and the call asks for {output_model.__name__}")
+        return answer
 
 
 # The annotation makes pyright prove that the fake has the method of the Writer protocol, with the same types.

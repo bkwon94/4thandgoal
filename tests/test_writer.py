@@ -539,6 +539,15 @@ def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
             "expected. Mention at most one shootout. Pick the one with the most league starters in it.") in system
 
 
+def test_the_fake_writer_raises_a_type_error_when_the_answer_is_not_the_asked_model():
+    from fakes import FakeWriter
+
+    from cornerstone.models import ResearchOut
+
+    with pytest.raises(TypeError, match="the next answer is a ResearchOut, and the call asks for WriterOut"):
+        FakeWriter([ResearchOut(claims=[])]).parse("user text", WriterOut)
+
+
 def test_the_research_call_alone_sends_the_web_search_tool():
     from cornerstone.models import ResearchOut
     from cornerstone.waiver_research import search_call

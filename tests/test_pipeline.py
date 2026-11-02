@@ -1057,6 +1057,16 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(
     assert len(data["matchups"]) == 6
 
 
+def test_a_build_with_no_search_sends_the_research_through_the_writer(
+        tmp_path, free_agent_raw_dir, offline, fake_writer):
+    # The free agents give the waiver board ranked players, so the research has players to search.
+    repo = _repo(tmp_path / "repo", free_agent_raw_dir)
+    # The gate tests stop before the research, so this build runs past it with the search left out.
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "research": None}, writer=fake_writer, config=CONFIG)
+    # The fake has no answer, so each search fails and the build goes on. Each call to the writer is a search.
+    assert fake_writer.calls and {call.output_model for call in fake_writer.calls} == {ResearchOut}
+
+
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
     def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir):

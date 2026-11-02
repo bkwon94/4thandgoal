@@ -64,11 +64,7 @@ class ClaudeWriter:
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
     ) -> BaseModel:
-        """One user message to Claude, parsed into the output model.
-
-        The system prompt goes out as one cached block. `cache_ttl` None keeps the default five-minute lifetime.
-        `effort` sets the depth of the answer. `tools` adds server tools, such as web search.
-        """
+        """The Claude call of `Writer.parse`. The docstring of the protocol in claude_port.py gives the arguments."""
         # One client per writer: it holds the connection pool. The first call makes it, so an import needs no API key.
         if self._client is None:
             self._client = anthropic.Anthropic()

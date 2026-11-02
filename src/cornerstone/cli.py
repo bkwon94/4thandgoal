@@ -439,7 +439,8 @@ def main(
         return 2
     # The one config of the run. Every command that needs a league value gets it from here.
     config = cornerstone_config()
-    # The three Claude calls of the CLI. The chart read and the analyzer call get the writer in their commands.
+    # The Claude calls of the CLI. The chart read and the analyzer call get the writer in their commands.
+    # The build gets the writer too, for its research call.
     call = partial(claude_call, writer=writer)
     try:
         if args.command == "history":
@@ -461,7 +462,7 @@ def main(
             fetch = not args.no_fetch and (
                 args.refetch or args.week is None or not has_raw(repo, season, week)
             )
-            page = run_build(repo, season, week, call, fetch=fetch, config=config, provider=provider)
+            page = run_build(repo, season, week, call, fetch=fetch, config=config, provider=provider, writer=writer)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
