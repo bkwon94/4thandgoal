@@ -1,0 +1,20 @@
+# lib/data: the loaders of the published files
+
+## Knows
+
+- One loader per published file: the week page, the rankings file, the managers file, and `waiver.json`.
+- Where each file sits under `public/`, and which week folders hold a waiver file.
+- The join of the managers file with the last week of the rankings file.
+- Whether the waiver route and the managers route are on. `next.config.ts` builds each one only when its file exists.
+- The test of every published file against its schema, in `published-files.test.ts`.
+
+## Ports
+
+- The reads of `public/` with `node:fs`, at build time only.
+
+## Does not do
+
+- It owns no shape. The pipeline owns each shape, and `lib/schemas/` holds the schemas (ADR 0005).
+- It runs in no browser. Only the app layer and `next.config.ts` call a loader (ADR 0004).
+- It writes no file. The pipeline publishes every file under `public/`.
+- It formats no number. `lib/format/` holds the formats.
