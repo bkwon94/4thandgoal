@@ -11,6 +11,8 @@ Use Node 22 or newer. The `.nvmrc` pins 22.
 pnpm install
 ```
 
+Install the commit hook one time per clone with `prek install`, or `pnpm hook:install`. Each worktree then reads its own branch's `.pre-commit-config.yaml`.
+
 ## Run
 
 ```
@@ -42,6 +44,8 @@ pnpm test
 pnpm typecheck
 ```
 
+`pnpm check` runs typecheck, test, build, and `check:export`. CI runs it on every push. `pnpm check:fast` runs typecheck and test. The commit hook runs it. The hook does not run `pnpm install`. If the hook fails in a worktree with no `node_modules`, run `pnpm install`.
+
 ## Schema version
 
 The week pages read `page.json` at schema version 2. The build fails loud on any other version.
@@ -60,8 +64,8 @@ All values are build-time. Only `src/lib/config.ts` reads them.
 ## Deploy
 
 A push to `main` builds the site and deploys it. The workflow is `.github/workflows/deploy.yml`.
-It installs, checks types, runs the tests, builds the export, and checks the export. A failed
-step stops the deploy.
+It installs the packages and runs `pnpm check`. That script checks the types, runs the tests, builds the export,
+and checks the export. A failed step stops the deploy.
 
 The Pages source is GitHub Actions. The `CNAME` file in `public/` keeps the custom domain.
 
