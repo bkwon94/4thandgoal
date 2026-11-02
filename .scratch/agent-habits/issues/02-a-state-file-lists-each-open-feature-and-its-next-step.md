@@ -8,7 +8,7 @@ ticket. A rule test fails when a feature has an open ticket and no line, or a li
 
 **Blocked by:** `rules-as-checks` site ticket 03, the report shape. The rule test uses its helper.
 
-**Status:** needs-triage
+**Status:** ready-for-agent
 
 - [ ] `docs/agents/state.md` has one table: Feature, Next ticket, Blocked by, Hold. Under 30 lines.
 - [ ] The Hold column names a date or an event, such as "week 8 page live", or is empty.
