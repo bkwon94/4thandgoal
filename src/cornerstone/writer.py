@@ -12,6 +12,7 @@ import anthropic
 from pydantic import BaseModel, ValidationError
 
 from cornerstone.claude_errors import RefusalError, WriterError
+from cornerstone.claude_port import Writer
 from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
 
@@ -49,74 +50,93 @@ ANALYZER_EFFORT = "medium"
 
 log = logging.getLogger(__name__)
 
-_client: anthropic.Anthropic | None = None
+
+class ClaudeWriter:
+    """The Claude implementation of the Writer port. Every Claude call in the tool goes through `parse`.
+
+    A test passes a stub client to check the request shape. With no client, the writer makes one on its first call.
+    """
+
+    def __init__(self, client: anthropic.Anthropic | None = None):
+        self._client = client
+
+    def parse(
+        self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
+        cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+    ) -> BaseModel:
+        """One user message to Claude, parsed into the output model.
+
+        The system prompt goes out as one cached block. `cache_ttl` None keeps the default five-minute lifetime.
+        `effort` sets the depth of the answer. `tools` adds server tools, such as web search.
+        """
+        # One client per writer: it holds the connection pool. The first call makes it, so an import needs no API key.
+        if self._client is None:
+            self._client = anthropic.Anthropic()
+        # The chart read has no system prompt, so the argument goes out only when there is one.
+        extra = {}
+        if system is not None:
+            cache_control = {"type": "ephemeral"}
+            if cache_ttl is not None:
+                cache_control["ttl"] = cache_ttl
+            extra["system"] = [
+                {"type": "text", "text": system, "cache_control": cache_control}
+            ]
+        # Only the research call searches the web, so every other call sends no tools.
+        if tools is not None:
+            extra["tools"] = tools
+        response = self._client.messages.parse(
+            model=MODEL,
+            max_tokens=16000,
+            messages=[{"role": "user", "content": content}],
+            output_format=output_model,
+            output_config={"effort": effort},
+            **extra,
+        )
+        # A cache read of zero on a repeat call shows a cold or unstable prefix.
+        usage = response.usage
+        # A response with no usage skips the log line. The parsed output still counts.
+        if usage is not None:
+            log.info(
+                "%s call: cache_creation_input_tokens=%s cache_read_input_tokens=%s"
+                " input_tokens=%s",
+                output_model.__name__,
+                usage.cache_creation_input_tokens,
+                usage.cache_read_input_tokens,
+                usage.input_tokens,
+            )
+        if response.stop_reason == "refusal":
+            raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
+        if response.parsed_output is None:
+            raise WriterError(f"Claude gave no parsed output for {output_model.__name__}.")
+        return response.parsed_output
 
 
-def _get_client() -> anthropic.Anthropic:
-    # One client per process: it holds the connection pool.
-    global _client
-    if _client is None:
-        _client = anthropic.Anthropic()
-    return _client
+# The one writer of the process, so the process has one client. The three functions below call it by default.
+WRITER = ClaudeWriter()
 
 
 def parse_call(
     content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
     cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+    *, writer: Writer | None = None,
 ) -> BaseModel:
-    """One user message to Claude, parsed into the output model.
+    """`Writer.parse` on `writer`, or on WRITER when `writer` is None. Every Claude call in the tool goes through here.
 
-    Every Claude call in the tool goes through here. The system prompt goes out as
-    one cached block. `cache_ttl` None keeps the default five-minute lifetime.
-    `effort` sets the depth of the answer. `tools` adds server tools, such as web search.
+    The CLI passes its writer, and a test passes a fake.
     """
-    # The chart read has no system prompt, so the argument goes out only when there is one.
-    extra = {}
-    if system is not None:
-        cache_control = {"type": "ephemeral"}
-        if cache_ttl is not None:
-            cache_control["ttl"] = cache_ttl
-        extra["system"] = [
-            {"type": "text", "text": system, "cache_control": cache_control}
-        ]
-    # Only the research call searches the web, so every other call sends no tools.
-    if tools is not None:
-        extra["tools"] = tools
-    response = _get_client().messages.parse(
-        model=MODEL,
-        max_tokens=16000,
-        messages=[{"role": "user", "content": content}],
-        output_format=output_model,
-        output_config={"effort": effort},
-        **extra,
-    )
-    # A cache read of zero on a repeat call shows a cold or unstable prefix.
-    usage = response.usage
-    # A response with no usage skips the log line. The parsed output still counts.
-    if usage is not None:
-        log.info(
-            "%s call: cache_creation_input_tokens=%s cache_read_input_tokens=%s"
-            " input_tokens=%s",
-            output_model.__name__,
-            usage.cache_creation_input_tokens,
-            usage.cache_read_input_tokens,
-            usage.input_tokens,
-        )
-    if response.stop_reason == "refusal":
-        raise RefusalError(f"Claude refused the request for {output_model.__name__}.")
-    if response.parsed_output is None:
-        raise WriterError(f"Claude gave no parsed output for {output_model.__name__}.")
-    return response.parsed_output
+    return (WRITER if writer is None else writer).parse(content, output_model, system, cache_ttl, effort, tools)
 
 
-def claude_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
-    return parse_call(user, output_model, system)
+def claude_call(system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None) -> BaseModel:
+    return parse_call(user, output_model, system, writer=writer)
 
 
-def analyzer_call(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
+def analyzer_call(
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+) -> BaseModel:
     """The analyzer's Claude call. It is `claude_call` with the one-hour lifetime."""
     return parse_call(
-        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT
+        user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=ANALYZER_EFFORT, writer=writer
     )
 
 

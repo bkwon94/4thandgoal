@@ -10,9 +10,9 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 
 **Status:** ready-for-agent
 
-- [ ] `src/cornerstone/claude_port.py`, layer `provider` in `LAYER_OF`, beside `claude_errors`: `class Writer(Protocol)` with one method `parse`. It has the signature of today's `parse_call`, which every Claude call goes through.
-- [ ] `writer.py`: `ClaudeWriter(client: anthropic.Anthropic | None = None)` implements `Writer`. `parse` holds the body of `parse_call`. It makes the client on its first call, never at import. `_get_client` and the module `_client` go.
-- [ ] Choice: `parse_call`, `claude_call`, and `analyzer_call` stay as thin functions over one module `ClaudeWriter()`. Their nine import sites do not change.
+- [x] `src/cornerstone/claude_port.py`, layer `provider` in `LAYER_OF`, beside `claude_errors`: `class Writer(Protocol)` with one method `parse`. It has the signature of today's `parse_call`, which every Claude call goes through.
+- [x] `writer.py`: `ClaudeWriter(client: anthropic.Anthropic | None = None)` implements `Writer`. `parse` holds the body of `parse_call`. It makes the client on its first call, never at import. `_get_client` and the module `_client` go.
+- [x] Choice: `parse_call`, `claude_call`, and `analyzer_call` stay as thin functions over one module `ClaudeWriter()`. Their nine import sites do not change.
 - [ ] `cli.main(argv, *, writer: Writer | None = None, provider: Provider = SLEEPER, fetch_state=fetch_state)`. The CLI builds its three calls from `writer`.
 - [ ] Choice: `fetch_state` stays a one-fetch callable, not a sixth `Provider` method, as ticket 09 of `modular` kept for live and history.
 - [ ] `tests/fakes.py` gains `FakeWriter`, annotated as `Writer`, beside `FixtureProvider`. It takes a list of answers, keeps each call in `calls`, and gives the next answer. With no answer left, it raises `WriterError`, as a failed Claude call does. `tests/conftest.py` gains a `fake_writer` fixture.

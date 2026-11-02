@@ -43,8 +43,9 @@ line-length = 120
 # leaders.py 1, next_week.py 11, trades.py 2.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/cornerstone/config.py", "src/cornerstone/files.py", "src/cornerstone/history.py", "src/cornerstone/live.py",
-           "src/cornerstone/numbers.py", "src/cornerstone/paths.py", "src/cornerstone/player_ids.py", "src/cornerstone/provider",
+include = ["src/cornerstone/claude_port.py", "src/cornerstone/config.py", "src/cornerstone/files.py",
+           "src/cornerstone/history.py", "src/cornerstone/live.py", "src/cornerstone/numbers.py",
+           "src/cornerstone/paths.py", "src/cornerstone/player_ids.py", "src/cornerstone/provider",
            "src/cornerstone/rank_score.py", "src/cornerstone/render.py", "src/cornerstone/season_inputs.py",
            "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
            "src/cornerstone_api/cache.py", "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
