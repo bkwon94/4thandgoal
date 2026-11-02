@@ -1,8 +1,10 @@
 """
-Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0007.
+Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0007,
+and that a module outside the sheet package imports only cornerstone.sheet or cornerstone.sheet.base.
 It reads the import lines with ast and imports no pipeline code.
 """
 import ast
+from collections.abc import Callable
 from pathlib import Path
 
 from rule_report import Offense, report
@@ -102,6 +104,11 @@ LAYER_OF: dict[str, str] = {
 
 ADR = "docs/adr/0007-six-layers-import-downward-only.md"
 UPWARD_RULE = "a module imports only from its own layer or a lower one"
+SHEET = f"{PACKAGE}.sheet"
+# The base module holds the names that the chapters share, so a caller outside the sheet may import it too.
+SHEET_ENTRIES = {SHEET, f"{SHEET}.base"}
+SHEET_RULE = "outside the sheet package, a module imports only cornerstone.sheet or cornerstone.sheet.base"
+SHEET_FIX = "re-export the name from cornerstone/sheet/__init__.py, or import it from cornerstone.sheet.base."
 
 
 def _module_name(path: Path, src: Path) -> str:
@@ -151,11 +158,27 @@ def _top_level_imports(tree: ast.Module) -> list[ast.Import | ast.ImportFrom]:
     return found
 
 
-def _targets(name: str, path: Path, modules: dict[str, Path]) -> dict[str, int]:
-    """The modules of the two packages that one module imports at load, each with the line of its first import."""
+def _every_import(tree: ast.Module) -> list[ast.Import | ast.ImportFrom]:
+    """Every import in the module: at load, under TYPE_CHECKING, and inside a function, in line order."""
+    found = [node for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))]
+    return sorted(found, key=lambda node: node.lineno)
+
+
+def _targets(
+    name: str,
+    path: Path,
+    modules: dict[str, Path],
+    read: Callable[[ast.Module], list[ast.Import | ast.ImportFrom]] = _top_level_imports,
+) -> dict[str, int]:
+    """The modules of the two packages that one module imports, each with the line of its first import.
+
+    By default it reads only the imports at load, because only those can make an import cycle.
+    With read=_every_import, it reads every import, because an import inside a function still uses the module.
+    """
     package = name if path.name == "__init__.py" else name.rpartition(".")[0]
+    tree = ast.parse(path.read_text())
     targets: dict[str, int] = {}
-    for node in _top_level_imports(ast.parse(path.read_text())):
+    for node in read(tree):
         if isinstance(node, ast.Import):
             bases = [alias.name for alias in node.names]
             for base in bases:
@@ -265,6 +288,30 @@ def _import_offenses(src: Path) -> list[Offense]:
     return offenses
 
 
+def _sheet_entry_offenses(src: Path) -> list[Offense]:
+    """The imports of a sheet module other than the two entries, from a module outside the sheet package.
+
+    The rule does not read tests/, so a chapter test may import its chapter module.
+    """
+    modules = _modules(src)
+    offenses: list[Offense] = []
+    for name, path in modules.items():
+        if name == SHEET or name.startswith(f"{SHEET}."):
+            continue
+        for target, line in sorted(_targets(name, path, modules, read=_every_import).items()):
+            if target.startswith(f"{SHEET}.") and target not in SHEET_ENTRIES:
+                offenses.append(Offense(
+                    path=_repo_path(path, src),
+                    line=line,
+                    rule_id="layers/sheet-entry",
+                    what=f"{name} imports {target}.",
+                    rule=SHEET_RULE,
+                    adr=ADR,
+                    fix=SHEET_FIX,
+                ))
+    return offenses
+
+
 def test_every_module_has_a_layer():
     offenses = _no_layer_offenses(SRC)
     assert not offenses, report(offenses)
@@ -277,6 +324,11 @@ def test_the_map_names_only_modules_that_exist():
 
 def test_no_module_imports_from_a_higher_layer():
     offenses = _import_offenses(SRC)
+    assert not offenses, report(offenses)
+
+
+def test_no_module_outside_the_sheet_imports_a_chapter_module():
+    offenses = _sheet_entry_offenses(SRC)
     assert not offenses, report(offenses)
 
 
@@ -315,3 +367,24 @@ def test_the_rule_finds_a_stale_entry(tmp_path):
     offenses = _stale_entry_offenses(tmp_path / "src", {"": "model", "models": "model"})
     assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
         ("tests/test_layers.py", _layer_of_lines()["models"], "layers/stale-entry")]
+
+
+def test_the_rule_finds_a_module_that_imports_a_chapter_module(tmp_path):
+    src = tmp_path / "src"
+    sheet = src / PACKAGE / "sheet"
+    sheet.mkdir(parents=True)
+    (src / PACKAGE / "__init__.py").write_text("")
+    (sheet / "__init__.py").write_text("")
+    (sheet / "next_week.py").write_text("")
+    # The import is inside a function, so the rule must read more than the imports at load.
+    (src / PACKAGE / "writer.py").write_text(
+        '"""A write module."""\n\n\ndef write():\n    from cornerstone.sheet import next_week\n')
+    assert _sheet_entry_offenses(src) == [Offense(
+        path="src/cornerstone/writer.py",
+        line=5,
+        rule_id="layers/sheet-entry",
+        what="cornerstone.writer imports cornerstone.sheet.next_week.",
+        rule=SHEET_RULE,
+        adr=ADR,
+        fix=SHEET_FIX,
+    )]

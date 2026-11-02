@@ -2,8 +2,9 @@
 Builds the fact sheet and the bundle that the writer and the page read.
 The fact sheet is the only input the writer sees, so each fact carries every number as the page shows it.
 """
-# The package re-exports only the names that callers outside the sheet use. A caller that needs only a base
-# name imports cornerstone.sheet.base, and a caller that needs one chapter imports that chapter module.
+# The package re-exports only the names that callers outside the sheet use. Outside the sheet package, a module
+# imports only cornerstone.sheet or cornerstone.sheet.base. A chapter name that a caller needs goes in this file.
+# The test test_no_module_outside_the_sheet_imports_a_chapter_module in tests/test_layers.py holds the rule.
 from cornerstone.sheet.assemble import build_bundle, read_bundle, write_bundle
 from cornerstone.sheet.base import (
     NUMBER_TOKEN,
