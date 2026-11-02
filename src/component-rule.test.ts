@@ -3,7 +3,8 @@
  * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env.
  * A failure names the file and the line.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { type Offense, report } from "./rule-report";
@@ -85,5 +86,18 @@ describe("the component rule", () => {
   it("finds one offense in a component that imports a loader", () => {
     const found = offenses("src/components/week/standings.tsx", 'import { weekData } from "@/lib/data/week-data";\n');
     expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "components/no-loader", line: 1 }]);
+  });
+
+  it("finds one offense in a component file on disk that imports a loader", () => {
+    // The file goes through the same disk path as the real tree, so a break in the read also fails here.
+    const dir = mkdtempSync(join(tmpdir(), "component-rule-"));
+    try {
+      const file = join(dir, "standings.tsx");
+      writeFileSync(file, 'import { weekData } from "@/lib/data/week-data";\n');
+      const found = fileOffenses(file);
+      expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "components/no-loader", line: 1 }]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

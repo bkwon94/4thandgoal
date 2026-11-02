@@ -2,7 +2,8 @@
  * Parses every published JSON file under public/ with its Zod schema.
  * A shape change from the pipeline fails here, and the message names the file and the bad field.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
@@ -34,7 +35,7 @@ function shapeOffenses(schema: ZodType, file: string): Offense[] {
     what: issue.message,
     rule: "the pipeline owns the published shape, and each file under public/ matches its Zod schema",
     adr: "docs/adr/0005-the-published-shape-has-one-owner.md",
-    fix: "Change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file.",
+    fix: "change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file.",
   }));
 }
 
@@ -51,5 +52,22 @@ describe.each([
     expect(files.length).toBeGreaterThanOrEqual(least);
     const found = files.flatMap((file) => shapeOffenses(schema, file));
     if (found.length > 0) throw new Error(report(found));
+  });
+});
+
+describe("the published shape rule", () => {
+  it("finds one offense in a page.json on disk with one bad field", () => {
+    // A real page with one field of the wrong type, so the schema reports that field and no other.
+    const page = JSON.parse(readFileSync(filesNamed("page.json")[0], "utf8"));
+    const dir = mkdtempSync(join(tmpdir(), "published-shape-"));
+    try {
+      const file = join(dir, "page.json");
+      writeFileSync(file, JSON.stringify({ ...page, season: "2026" }));
+      const found = shapeOffenses(weekPageSchema, file);
+      expect(found.map(({ ruleId }) => ruleId)).toEqual(["published/shape"]);
+      expect(`${found[0].path}:${found[0].line}`).toMatch(/page\.json:season$/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

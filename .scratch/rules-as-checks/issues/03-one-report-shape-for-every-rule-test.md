@@ -24,7 +24,8 @@ src/components/week/standings.tsx:4  components/no-loader
 - [x] Choice: the helper sits in `src/` beside the rule tests. It imports no app code, so the build never bundles it.
 - [x] Choice: the rule id is `<topic>/<name>`. The topics: `components`, `published`, `suppression`, `readme`.
 - [x] `component-rule.test.ts` ids: `components/no-fs`, `components/no-config`, `components/no-loader`, `components/no-env`. ADR 0004. Each has a fix sentence.
-- [x] `published-files.test.ts` id: `published/shape`. ADR `docs/adr/0005-the-published-shape-has-one-owner.md`. The fix: "Change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file."
+- [x] `published-files.test.ts` id: `published/shape`. ADR `docs/adr/0005-the-published-shape-has-one-owner.md`. The fix: "change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file."
+  - Choice: the ticket text had two forms after "Fix: ", and the lowercase form won.
 - [x] Choice: a JSON parse gives no line, so a `published/shape` location is the file and the field path, such as `public/2026/week-07/page.json:games.0.byes`. Line 2 holds the Zod message.
 - [x] Both tests still find at least one file, as today, so an empty tree cannot pass.
 - [x] A test of the helper compares `report` of one offense with the text above, byte for byte.
