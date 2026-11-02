@@ -29,5 +29,5 @@ src/components/week/standings.tsx:4  components/no-loader
 - [x] Both tests still find at least one file, as today, so an empty tree cannot pass.
 - [x] A test of the helper compares `report` of one offense with the text above, byte for byte.
 - [x] A test runs the component rule on one source string that imports `@/lib/data/week-data`, and reads one `components/no-loader` offense with line 1.
-- [ ] `docs/adr/0006-the-rules-are-checks.md` gains "The report of an offense", with the example above.
-- [ ] `pnpm check` passes.
+- [x] `docs/adr/0006-the-rules-are-checks.md` gains "The report of an offense", with the example above.
+- [x] `pnpm check` passes.
