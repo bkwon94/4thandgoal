@@ -12,7 +12,7 @@ prompt, and every new reason pass `ste`.
 **Blocked by:** 03 (A bye or a return with no cover is a hole), 04 (Depth, strength, and slot facts for Claude),
 05 (The best free agent at a hole).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The report lists every hand-worked trade whose letter moves, with old and new letters and the cause.
 - [ ] Brian has said yes or no to each moved grade, and the ledger records each ruling.
@@ -20,3 +20,7 @@ prompt, and every new reason pass `ste`.
 - [ ] A live finder call offers no trade that leaves a starting slot below the line.
 - [ ] `ste` passes on the glossary entries, ADR 0003, and the rubric prompt.
 - [ ] The suite passes on main after the merge, and ruff is clean.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.

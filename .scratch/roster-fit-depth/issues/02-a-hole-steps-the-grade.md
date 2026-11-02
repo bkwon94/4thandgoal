@@ -18,7 +18,7 @@ report of this ticket lists every week 6 hand-worked trade whose letter moves, w
 
 **Blocked by:** 01 (The rank table and the cache key).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A side that gives two backs and gets two receivers, with its RB2 slot then below the line, steps down and the reason names the slot, the player, and his rank.
 - [ ] A side that gets a back who fills a hole at RB2 and gains in the lineup steps up.
@@ -32,3 +32,7 @@ report of this ticket lists every week 6 hand-worked trade whose letter moves, w
 - [ ] No reason or prompt uses "replacement", "tier", "floor", or "gap".
 - [ ] Every existing fit test passes unchanged or with a named reason change in the build report.
 - [ ] The build report lists every hand-worked trade whose letter moves, with old and new letters.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.

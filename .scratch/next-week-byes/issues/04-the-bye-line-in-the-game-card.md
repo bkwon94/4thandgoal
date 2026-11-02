@@ -6,4 +6,8 @@ Repo: the site `cpcfantasyfootball`. The same ticket sits in its tracker. This c
 
 **Blocked by:** 01 (the `byes` shape in the page JSON).
 
-**Status:** ready-for-agent
+**Status:** done
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 9d9ecc8. Status set to done by the state-file sweep of agent-habits 02.

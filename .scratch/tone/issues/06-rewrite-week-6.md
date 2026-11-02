@@ -6,9 +6,13 @@ Spec: `.scratch/tone/PRD.md`, section "Week 6 rewrite and republish".
 
 **Blocked by:** 05 Install the approved examples.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] All twelve chapters rewritten, no fallback.
 - [ ] Every blurb read. A comment at the bottom of this file lists any sentence that still reads like the old shape, with the chapter.
 - [ ] No sentence on the page holds a banned phrase, a second ", which" tail, or a second reaction.
 - [ ] The page is built for week 6. Brian runs the publish.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

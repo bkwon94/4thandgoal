@@ -12,7 +12,7 @@ and the finder key hash the free-agent ids per position.
 
 **Blocked by:** 02 (A hole steps the grade).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The week 6 fixture snapshot lists the free agents at RB, and a named Inactive player is not among them.
 - [ ] A free agent on injured reserve with no out tag is not among them.
@@ -21,3 +21,7 @@ and the finder key hash the free-agent ids per position.
 - [ ] A hole at a position with no eligible free agent gets a fact that says so.
 - [ ] A new free agent at RB changes the grade key and the finder key.
 - [ ] The analysis checker accepts a sentence that quotes the cited free agent's rank.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.

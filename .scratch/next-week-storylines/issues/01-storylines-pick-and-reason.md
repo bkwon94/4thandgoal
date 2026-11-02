@@ -10,7 +10,7 @@ goes away. The page rows keep their shape.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A team on 3 straight head-to-head wins gives its game the streak storyline; 2 straight does not; the median game never counts.
 - [ ] Both teams in the top four projected lineups give a shootout with both totals; one team fifth gives none.
@@ -20,3 +20,7 @@ goes away. The page rows keep their shape.
 - [ ] The reason is one sentence of 25 words or fewer that names the top two storylines with their numbers.
 - [ ] The six weights live in the tunables.
 - [ ] Every existing next-week and swing test passes, or changes with a named reason.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 3fe2bf4. Status set to done by the state-file sweep of agent-habits 02.

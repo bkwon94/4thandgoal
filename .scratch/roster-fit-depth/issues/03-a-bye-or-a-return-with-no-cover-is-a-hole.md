@@ -14,7 +14,7 @@ kind.
 
 **Blocked by:** 02 (A hole steps the grade).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A starter with his bye in week N+1 and a bench player above the line at his position is no hole.
 - [ ] A starter with his bye in week N+1 and no bench cover above the line is a hole, and the reason names the week.
@@ -25,3 +25,7 @@ kind.
 - [ ] A trade that gives away the only bench cover for a bye in the window opens a new hole and steps down.
 - [ ] With no schedule map, no bye hole reads and the reason names the missing schedules.
 - [ ] The rubric prompt states the no-cover kind, and `ste` passes on the new text.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.

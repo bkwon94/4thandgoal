@@ -6,7 +6,7 @@ Spec: `.scratch/tone/PRD.md`, sections "The reaction sentence" and "Glossary".
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Writer rule 1 says every claim cites a fact, and one reaction sentence per blurb may cite none, with the four limits and "put it after the sentence it reacts to".
 - [ ] The verifier prompt has one line: a sentence with no fact IDs and no claim is supported.
@@ -21,3 +21,5 @@ Spec: `.scratch/tone/PRD.md`, sections "The reaction sentence" and "Glossary".
 ## Comments
 
 - 2026-10-22: built on `tone` at `e0e11a9`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

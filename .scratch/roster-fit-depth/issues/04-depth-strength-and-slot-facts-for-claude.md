@@ -13,7 +13,7 @@ Depth and strength never move the step.
 
 **Blocked by:** 02 (A hole steps the grade).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The fact sheet for a trade names, per player a side gets, the slot he takes and the player he pushes out.
 - [ ] A player the side gets who starts in no slot gets a fact that says he sits on the bench.
@@ -23,3 +23,7 @@ Depth and strength never move the step.
 - [ ] The analysis checker accepts a sentence that quotes a cited depth count or strength count.
 - [ ] The result document has no new field and the site renders the grade with no change.
 - [ ] Every existing analysis test passes unchanged.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.

@@ -6,7 +6,7 @@ Spec: `.scratch/tone/PRD.md`, sections "The voice" and "Vocabulary out of the pr
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The tone prompt opens with the chat voice as the spec words it.
 - [ ] The tone prompt has no "two jokes" line and has the "no filler sentence" line.
@@ -18,3 +18,5 @@ Spec: `.scratch/tone/PRD.md`, sections "The voice" and "Vocabulary out of the pr
 ## Comments
 
 - 2026-10-22: built on `tone` at `9d55907, fixes in 021f5f0`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

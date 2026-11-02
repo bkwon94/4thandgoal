@@ -14,7 +14,7 @@ counts as a running back." The glossary entry "Handcuff" says what a handcuff is
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A backup running back at 38% carry share over his last 3 played games is not a handcuff: his lineup value counts in roster fit, the trend adjuster can step for him, and the finder can trade him.
 - [ ] A backup at 15% carry share is a handcuff, as today.
@@ -24,3 +24,7 @@ counts as a running back." The glossary entry "Handcuff" says what a handcuff is
 - [ ] The gate is in the tunables file with a why comment.
 - [ ] The glossary "Handcuff" entry states the gate in plain words.
 - [ ] Real-data check: the hand-worked week 6 trades in the rubric tests, with the old and new values named in the report for any that change.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 2434bab. Status set to done by the state-file sweep of agent-habits 02.

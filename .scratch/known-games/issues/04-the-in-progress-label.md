@@ -12,7 +12,7 @@ an input, so a test can set it.
 
 **Blocked by:** 02 (The known-games week).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] With a clock 2 hours after a 1 pm kickoff, the game is in progress and the block counts it.
 - [ ] With a clock 5 hours after kickoff, the game is final and the block counts zero in progress.
@@ -21,3 +21,7 @@ an input, so a test can set it.
 - [ ] The adjuster steps are the same with the label on and off.
 - [ ] The words "live", "partial", and "current week" appear in no reason and no stamp.
 - [ ] The prose checks of the analysis pass on a reason with the label.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 4ff0564. Status set to done by the state-file sweep of agent-habits 02.
