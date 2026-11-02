@@ -23,4 +23,4 @@ ticket. A rule test fails when a feature has an open ticket and no line, or a li
 - [x] The test runs its rule on one temporary tracker folder with one open ticket and an empty state file, and
   finds one offense.
 - [x] `docs/agents/issue-tracker.md` says: the close comment of a ticket updates the state file in the same commit.
-- [ ] `make check` passes.
+- [x] `make check` passes.
