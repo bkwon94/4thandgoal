@@ -18,8 +18,8 @@ Write all output in Simplified Technical English. Rules: `~/.claude/rules/commun
 
 ## Where the work sits
 
-`docs/agents/state.md` lists each open feature, its next ticket, and its blocker. A cold agent reads it after this file,
-then reads one ticket in the tracker.
+`docs/agents/state.md` lists each open feature, its next ticket, and its blocker. An agent new to the repo reads it
+after this file, then reads one ticket in the tracker.
 
 ## Tracker
 

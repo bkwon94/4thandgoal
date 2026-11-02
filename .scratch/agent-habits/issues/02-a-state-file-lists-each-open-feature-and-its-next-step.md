@@ -17,10 +17,11 @@ ticket. A rule test fails when a feature has an open ticket and no line, or a li
   state file under a heading "Where the work sits".
 - [x] The rule test, id `tracker/state-file`, reads each `.scratch/*/issues/*.md` and its Status line. An open
   status is any status that is not done and not wontfix.
-- [x] The test fails on a feature with an open ticket and no row. The fix line: "Add a row to
-  `docs/agents/state.md`."
-- [x] The test fails on a row with no open ticket. The fix line: "Remove the row. The feature is done."
+- [x] The test fails on a feature with an open ticket and no row. The fix line: "add a row to
+  docs/agents/state.md."
+- [x] The test fails on a row with no open ticket. The fix line: "remove the row, because the feature is done."
 - [x] The test runs its rule on one temporary tracker folder with one open ticket and an empty state file, and
   finds one offense.
+- [x] Choice: the house fix form is one lowercase sentence.
 - [x] `docs/agents/issue-tracker.md` says: the close comment of a ticket updates the state file in the same commit.
 - [x] `pnpm check` passes.

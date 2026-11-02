@@ -21,5 +21,5 @@ keeps it true.
 
 ## Holds
 
-- The prek hook is not installed. After the week 8 page is live, run `pnpm hook:install` in the main checkout.
+- No one has installed the prek hook yet. After the week 8 page is live, run `pnpm hook:install` in the main checkout.
 - Nothing uncommitted may sit on `main` at publish time, because the publish stages every file.

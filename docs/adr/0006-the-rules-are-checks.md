@@ -79,8 +79,8 @@ choose to read the next level. A `CLAUDE.md` also ties the layout to one tool. T
 
 ## The state file
 
-A cold agent reads `CLAUDE.md`, then `docs/agents/state.md`, then one ticket. A handoff file that one
-session writes for the next drifts from the tracker, so the state file replaces it. The file has one
+An agent new to the repo reads `CLAUDE.md`, then `docs/agents/state.md`, then one ticket. A handoff file that one
+session writes for the next goes out of date, so the state file replaces it. The file has one
 table with the columns Feature, Next ticket, Blocked by, and Hold. It lists open features only. A
 done feature leaves the file, and the tracker keeps its history.
 
