@@ -29,7 +29,7 @@ typecheck: ## Check the types of the listed modules in basic mode
 # The CI job on every push runs this target. See docs/adr/0009-the-rules-are-checks.md.
 check: lint typecheck test ## Run lint, typecheck, and all the tests
 
-# Each rule test is named tests/test_rule_<topic>.py, so this target finds a new one with no edit.
+# Name a rule test tests/test_rule_<topic>.py. This target finds each one with no edit.
 rules: ## Run the rule tests
 	uv run pytest -q tests/test_layers.py $(wildcard tests/test_rule_*.py)
 

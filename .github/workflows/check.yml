@@ -6,6 +6,10 @@ on:
   push:
   workflow_dispatch:
 
+# The job only reads the repo, so the token gets no write scope.
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
