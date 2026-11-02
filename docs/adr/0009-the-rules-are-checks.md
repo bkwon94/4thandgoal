@@ -35,7 +35,7 @@ src/cornerstone/waiver.py:12  layers/upward-import
 - Line 3 gives the rule in one sentence, and the path of its ADR.
 - Line 4 gives the fix.
 
-The rule id is `<topic>/<name>`. The topics are `layers`, `suppression`, `readme`, and `ports`. The
+The rule id is `<topic>/<name>`. The topics are `layers`, `suppression`, `readme`, `tracker`, and `ports`. The
 report starts with the count, such as "2 offenses.", and puts a blank line between two offenses. A
 rule test asserts `not offenses, report(offenses)`, so pytest prints the report when the test fails.
 One 0013 also gives a column. This report does not, because a rule here names a whole line.
@@ -81,3 +81,15 @@ the rule in one place.
 `readme/length`, and `readme/no-claude-md`. The `CLAUDE.md` rule reads `git ls-files`, so a staged
 file counts. The test checks that each README exists and has the right shape. It cannot check that
 the text is true, so review checks that.
+
+## The state file
+
+A cold agent reads `CLAUDE.md`, then `docs/agents/state.md`, then the ticket. The state file has one
+table with one row for each feature that has an open ticket. A ticket is open when its Status is not
+`done` and not `wontfix`. A done feature leaves the file, and the tracker holds its history. The
+state file replaces the handoff file, because a handoff is a copy of the tracker that drifts.
+
+`tests/test_rule_tracker.py` holds the rule, with the id `tracker/state-file`. It fails on an open
+feature with no row, and on a row with no open feature. It reads only the tickets that
+`git ls-files .scratch` lists, so the hook and CI read the same set. Untracked files under `.scratch/`
+are notes, not the tracker. The test cannot check the next ticket or the hold, so review checks them.
