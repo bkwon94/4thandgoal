@@ -39,3 +39,22 @@ The rule id is `<topic>/<name>`. The topics are `layers`, `suppression`, `readme
 report starts with the count, such as "2 offenses.", and puts a blank line between two offenses. A
 rule test asserts `not offenses, report(offenses)`, so pytest prints the report when the test fails.
 One 0013 also gives a column. This report does not, because a rule here names a whole line.
+
+## No suppression comment
+
+No comment silences a rule. `tests/test_rule_suppressions.py` reads every `*.py` file under `src/` and
+`tests/`. It fails on `noqa`, `type: ignore`, and `pyright: ignore`, with no regard to case. The rule
+id is `suppression/comment`. The test builds each pattern from two parts, so its own file holds no
+match. The test skips no file, because a file exclusion hides new code from the rule.
+
+A line that must stay lives in the allow list, the `ALLOW` dict of the test. No other place may hold
+one. The key is the path and the line text, not the line number, so an entry stays true when a line
+above it moves. The value is the reason. An entry with no match fails the test, so a stale entry
+cannot stay. To find out if a marker silences a real offense, run
+`uv run ruff check src tests --extend-select RUF100`. Do not use `--select RUF100`: it turns off every
+other rule, so each marker then shows as unused.
+
+One 0013 allows no suppression at all. Here the allow list is the one departure from One. The reason:
+ruff owns its rules, and we do not fork them or turn one off to clear a marker. ruff 0.17.3 enables
+BLE001 and RUF009 by default. Five lines catch a broad error or call `partial` in a default, and each
+must stay. So the list starts with these five lines.

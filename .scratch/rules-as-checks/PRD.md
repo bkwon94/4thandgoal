@@ -44,7 +44,7 @@ The lines are the location and rule id, what is wrong here, the rule with its AD
 - **The hook tool is prek.** One uses it, Brian has it, and each worktree reads its own branch's config.
 - **The hook runs a fast subset, and CI runs everything.** `--no-verify` is banned, so the hook must stay under 30 seconds. Today the subsets take about 3 and 17 seconds.
 - **The publish commit runs the hook.** The site hook parses the new JSON before the push, so a bad shape stops the publish.
-- **The allow list is the one departure from One.** One allows no suppression. Here a line that must stay goes in the allow list of the suppression test, with the file, the line text, and the reason. No other place may hold one. The reason: ruff and `tsc` own their rules, and we do not fork them. The list starts empty, because all five `noqa` lines name a rule that ruff does not select.
+- **The allow list is the one departure from One.** One allows no suppression. Here a line that must stay goes in the allow list of the suppression test, with the file, the line text, and the reason. No other place may hold one. The reason: ruff and `tsc` own their rules, and we do not fork them. The site list starts empty. The pipeline list starts with its five `noqa` lines, because ruff 0.17.3 enables BLE001 and RUF009 by default.
 - **A fake is not a mock mode.** A fake at a port is a test double that only tests import. A mock mode is a runtime switch that serves fake data. The mock mode stays banned.
 - **A gate starts at zero offenses** (One 0013). A rule ticket fixes every offense it finds.
 - **Each ticket names its proof** (One 0014): the command and the test.
