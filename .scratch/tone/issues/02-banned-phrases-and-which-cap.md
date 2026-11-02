@@ -6,7 +6,7 @@ Spec: `.scratch/tone/PRD.md`, section "Banned phrases".
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The vocabulary file has a "Banned phrases" section with the four phrases on one line.
 - [ ] The code check fails a sentence with a banned phrase, matched as whole words after the names are removed, with the phrase in the message.
@@ -20,3 +20,5 @@ Spec: `.scratch/tone/PRD.md`, section "Banned phrases".
 ## Comments
 
 - 2026-10-22: built on `tone` at `8d3b94d`, two Opus reviews, one fix pass. Awaits Brian merge with `--no-ff`.
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

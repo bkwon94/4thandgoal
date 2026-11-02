@@ -9,7 +9,7 @@ the Sunday WOPR. The refresh route's forced refresh, max age zero, still fetches
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] An injuries file 7 hours old refreshes on the live path, and the result names it as refreshed.
 - [ ] A player weeks file 7 hours old refreshes on the live path.
@@ -17,3 +17,7 @@ the Sunday WOPR. The refresh route's forced refresh, max age zero, still fetches
 - [ ] A failed 6-hour refresh keeps the old file and does not name it stale while the file is under a day old.
 - [ ] The refresh route with max age zero fetches every source.
 - [ ] Every existing live test passes unchanged.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 980fea3. Status set to done by the state-file sweep of agent-habits 02.

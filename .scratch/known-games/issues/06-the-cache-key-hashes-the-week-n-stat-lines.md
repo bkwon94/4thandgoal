@@ -10,7 +10,7 @@ roster changes nothing. The document version bumps, so every result cached under
 
 **Blocked by:** 02 (The known-games week).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A repeat grade in the cache window with the same week N lines is a cache hit with one Claude call.
 - [ ] A week N line of a rostered player that gains 6 points gives a new key.
@@ -18,3 +18,7 @@ roster changes nothing. The document version bumps, so every result cached under
 - [ ] No week N lines and empty week N lines give the same key as each other and a different key from any line.
 - [ ] The finder key changes the same way.
 - [ ] The document version is 6 and a result cached under 5 never serves.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge b348170. Status set to done by the state-file sweep of agent-habits 02.

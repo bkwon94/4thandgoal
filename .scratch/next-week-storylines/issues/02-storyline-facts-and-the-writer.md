@@ -10,9 +10,13 @@ verifies clean.
 
 **Blocked by:** 01.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Every storyline of every game has a fact with the right id and its numbers.
 - [ ] The analysis checker accepts a sentence that quotes a cited streak length or projected total.
 - [ ] The writer prompt carries the new rule, and `ste` passes on it by a hand read.
 - [ ] The saved week 7 real-data check names the two Must Watch games and their reasons.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 3fe2bf4. Status set to done by the state-file sweep of agent-habits 02.

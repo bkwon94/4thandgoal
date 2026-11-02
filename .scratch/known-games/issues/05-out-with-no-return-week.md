@@ -12,7 +12,7 @@ player with a week in the returns file grades as today. A player with a healthy 
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A player tagged Out with no returns entry and 20 points a game over his last 3 games takes his projection ahead from week 14 as lineup value, and the fit reason names him and the 14.
 - [ ] The injury adjuster still docks one step for him.
@@ -22,3 +22,7 @@ player with a week in the returns file grades as today. A player with a healthy 
 - [ ] The cache key changes when a rostered player's status moves into the out set, because the content hash reads the rows the grade now reads.
 - [ ] A rubric test whose subject is lineup value, roster fit, or injury pins the new grade when its fixture has an out player with no returns row, and the build report names the old and the new value for each.
 - [ ] A rubric test whose subject is something else keeps its grade, with a setup change so its premise holds when the old setup had an out player with no returns row.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 3dc9635. Status set to done by the state-file sweep of agent-habits 02.

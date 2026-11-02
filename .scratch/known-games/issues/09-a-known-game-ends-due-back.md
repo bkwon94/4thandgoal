@@ -12,7 +12,7 @@ key reads the same rule, so a first game after a return is a new key.
 
 **Blocked by:** 02 (The known-games week), 05 (Out with no return week), 06 (The cache key hashes the week N stat lines).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A player with a returns row of week 7 and a week 7 stat line with a game played takes his recent points per game, which count week 7, and the fit note has no return week for him.
 - [ ] A player with a returns row of week 7 and no week 7 line takes his projection ahead from week 7, as ticket 05 gives.
@@ -21,3 +21,7 @@ key reads the same rule, so a first game after a return is a new key.
 - [ ] The trend adjuster reads his week 7 share, because the known game ends the exemption the trend gives a due-back player.
 - [ ] The cache key changes when his first week 7 line arrives.
 - [ ] The finder no longer leaves him out of a trade once he has a known game.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 0c0418b. Status set to done by the state-file sweep of agent-habits 02.

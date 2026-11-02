@@ -11,7 +11,7 @@ target share from weeks 5 to 7 reads as two spans, as the reason does today when
 
 **Blocked by:** 02 (The known-games week).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A week 7 line with targets and points but no snap fields leaves the snap share at its weeks 1 to 6 window and never reads the game as zero snaps.
 - [ ] The same line moves the target share and the points per game.
@@ -20,3 +20,7 @@ target share from weeks 5 to 7 reads as two spans, as the reason does today when
 - [ ] With a player file that has week 7, the WOPR window reads it and WOPR is not pending.
 - [ ] A week 7 line with snaps present is pending for nothing and the snap share reads it.
 - [ ] Every rubric test for a saved week passes unchanged.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge d6bd298. Status set to done by the state-file sweep of agent-habits 02.

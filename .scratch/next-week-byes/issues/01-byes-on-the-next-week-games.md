@@ -10,7 +10,7 @@ one line.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The past week model keeps each roster's starters for that week, read from the saved matchups. The empty slot "0" is not a starter.
 - [x] A pure function gives a roster's key starters from its starters per completed week: 3 of the last 4, then 2 of 3, then 2 of 2, none under 2 weeks. QB, RB, WR, TE only. FLEX counts. The counts are tunables.
@@ -20,3 +20,7 @@ one line.
 - [x] No schedule, no history, or fewer than 2 completed weeks: empty lists, one log line that names the missing source, no raise.
 - [x] Tests on the week 6 fixture bundle read the lists. Unit tests cover the key starter rule with 4, 3, 2, and 1 weeks, a FLEX start, a new add, a K and a DEF. The thin data case has a test.
 - [x] `uv run pytest -q` and `uv run ruff check src tests` pass.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 9d9ecc8. Status set to done by the state-file sweep of agent-habits 02.

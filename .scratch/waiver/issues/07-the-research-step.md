@@ -19,7 +19,7 @@ player with the web search tool. A claim with no URL is dropped.
 
 **Blocked by:** 02 Usage and environment.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `research.md` names the real Yahoo sources and the search cost per call with the price page URL and the date.
 - [x] A fake search call that returns a claim with no URL leaves that claim out.
@@ -45,3 +45,7 @@ player with the web search tool. A claim with no URL is dropped.
   1 search and returned 1 claim.
 - The cost is about $0.14 per player with tokens, and about $4.50 a week at 32 players. Source:
   https://platform.claude.com/docs/en/about-claude/pricing, read 2026-10-23.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge c80eeb7. Status set to done by the state-file sweep of agent-habits 02.

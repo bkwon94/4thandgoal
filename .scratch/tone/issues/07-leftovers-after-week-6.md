@@ -15,7 +15,7 @@ Spec: `.scratch/tone/PRD.md`. This ticket amends "The voice".
 
 **Blocked by:** None. Main holds tickets 01 to 06.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The prompt changes above are in, with a prompt text test for each new line.
 - [ ] The code check fails a blurb of 3 or more sentences where every sentence has a digit, with a test.
@@ -26,3 +26,5 @@ Spec: `.scratch/tone/PRD.md`. This ticket amends "The voice".
 ## Comments
 
 - 2026-10-22: found after the tone 06 rewrite. Flags listed by the rewrite agent: four "In an upset" openers; "without him, that is a loss" twice; "is now listed Out" in four recaps; a "who" tail in recap_2; "decider" in three chapters; zero jokes in recap_3, recap_4, game_changer; recap_4 repeats motw sentences 0 and 2 verbatim.
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

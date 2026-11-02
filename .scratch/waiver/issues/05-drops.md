@@ -10,7 +10,7 @@ a week higher".
 
 **Blocked by:** 02 Usage and environment.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] A rostered player with three falling weeks and a better pool player at his position lands in drops with his roster named.
 - [x] A rostered player with two falling weeks does not land in drops.
@@ -30,3 +30,5 @@ a week higher".
 - A drop candidate has only the drop fact. The scores are 0, as the bucket never ranks by board score.
 - The pool and the drops bucket share one rest of season sum in `waiver_projection.py`.
 - A manager with a team pick sees his own drop candidates first: the site does this, not the engine.
+
+- 2026-11-02: `main` holds the merge f009215. Status set to done by the state-file sweep of agent-habits 02.

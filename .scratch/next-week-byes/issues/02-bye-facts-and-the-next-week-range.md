@@ -9,7 +9,7 @@ brief says the byes are part of the preview. A week 7 build passes the verifier 
 
 **Blocked by:** 01 (byes on the next-week games).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The weekly build loads the analyzer's snapshot from the files of the week, with no chart and no slow sources, and reads position rank from it. The bye list sorts the non-key players by that rank.
 - [x] A bye cover per key starter on bye: the bench player with the highest lineup value who can fill his slot, from the lineup slots the best-lineup code builds. One bench player covers one slot. No such player means no cover.
@@ -20,3 +20,7 @@ brief says the byes are part of the preview. A week 7 build passes the verifier 
 - [x] Tests on the week 6 fixture bundle read the fact texts and numbers, the chapter's fact ids, and the range. A test covers a key starter with no cover.
 - [x] `make build WEEK=7` in the worktree passes the verifier, and the Next Week blurb cites at least one bye fact.
 - [x] `uv run pytest -q` and `uv run ruff check src tests` pass.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 9d9ecc8. Status set to done by the state-file sweep of agent-habits 02.

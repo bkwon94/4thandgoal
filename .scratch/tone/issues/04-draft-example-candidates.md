@@ -8,7 +8,7 @@ Spec: `.scratch/tone/PRD.md`, section "The example set".
 
 **Blocked by:** 01 Reaction sentence, 02 Banned phrases and the ", which" cap, 03 The group chat voice.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The week 6 blurbs file is copied aside before the first rewrite and restored after the last.
 - [ ] Five chapters rewritten under the new prompts, one call each, no fallback.
@@ -47,3 +47,5 @@ No number: 5, 7, 14. Reaction: 5, 14. Roast by team name: 9. Plain phrase for a 
 Pick 6 to 8 for Brian.
 
 - 2026-10-22: Brian picked 5, 14, 9, 7, 11, 15, 4.
+
+- 2026-11-02: `main` holds the merge, on the word of tone ticket 09, `09-leftovers-after-the-second-rewrite.md`. Status set to done by the state-file sweep of agent-habits 02.

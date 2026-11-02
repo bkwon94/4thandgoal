@@ -17,7 +17,7 @@ the bid, the player, the position, the week, and whether it won.
 
 **Blocked by:** 01 The week file, thin.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The bid history across the saved weeks holds every claim with its bid and its result.
 - [x] A rival with a positional need raises the price more than a rival without one.
@@ -32,3 +32,5 @@ the bid, the player, the position, the week, and whether it won.
 
 - The last like him matches on position alone, because a past claim has no bucket tier.
 - The rival list holds every roster, the viewer's too, so a viewer's own need can raise his own price. This is a known limit.
+
+- 2026-11-02: `main` holds the merge 6af4bdf. Status set to done by the state-file sweep of agent-habits 02.

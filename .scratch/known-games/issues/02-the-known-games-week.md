@@ -15,7 +15,7 @@ the stats as stale. A saved week grades exactly as today. The Tuesday roll and t
 
 **Blocked by:** 01 (Two bounds in the stamp).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A live raw with week 7 stat lines for 26 teams and a history through week 6 gives a player stat bound of 7, a standings bound of 6, and a known-games block with 13 games read.
 - [ ] A player with a week 7 line of 30 points has a recent points per game that counts it, and his roster's best lineup moves with it.
@@ -27,3 +27,7 @@ the stats as stale. A saved week grades exactly as today. The Tuesday roll and t
 - [ ] On the Tuesday after the cutoff the raw week still joins the history as today and the known-games week is the new trade week with zero games read.
 - [ ] The finder reads the same bound as the grader with no edit of its own.
 - [ ] Real-data check: on a game day, `make analyze` with a player who played that day shows the block and a reason that quotes his game.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 67f1a4d. Status set to done by the state-file sweep of agent-habits 02.

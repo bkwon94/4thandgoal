@@ -14,7 +14,7 @@ document version bumps to 8. The finder reads the table and never rebuilds it pe
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The week 6 fixture snapshot gives a named RB a rank that matches a hand count of lineup values at RB.
 - [ ] A player with no game in the window ranks after every player with a game.
@@ -26,3 +26,7 @@ document version bumps to 8. The finder reads the table and never rebuilds it pe
 - [ ] A changed stat line of an unrostered K changes neither key.
 - [ ] The document version is 8.
 - [ ] Every existing rubric test passes unchanged.
+
+## Comments
+
+- 2026-11-02: `main` holds the merge 84d9349. Status set to done by the state-file sweep of agent-habits 02.
