@@ -27,6 +27,6 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 - [x] It also fails when the attribute is `claude_call`, `analyzer_call`, `parse_call`, `_get_client`, `fetch_state`, or a `Provider` method name.
 - [x] Out of scope: the patches of `fetch_nflverse`, `live_snapshot`, `run_build`, and the other build steps.
 - [x] A test runs the rule on a temporary test file with `monkeypatch.setattr(cli, "claude_call", f)`, and finds one offense.
-- [ ] `docs/adr/0010-a-port-has-one-fake.md`: each port has one fake in `tests/fakes.py`. No test patches a port. A fake is a test double that only tests import. A mock mode is a runtime switch that serves fake data, and it stays banned.
-- [ ] `src/cornerstone/README.md`, if ticket 05 merged, lists `Writer` under Ports.
-- [ ] Add the new module and the test to the `pyright` include list. `make check` passes. The four golden tests pass with no change.
+- [x] `docs/adr/0010-a-port-has-one-fake.md`: each port has one fake in `tests/fakes.py`. No test patches a port. A fake is a test double that only tests import. A mock mode is a runtime switch that serves fake data, and it stays banned.
+- [x] `src/cornerstone/README.md`, if ticket 05 merged, lists `Writer` under Ports.
+- [x] Add the new module and the test to the `pyright` include list. `make check` passes. The four golden tests pass with no change.
