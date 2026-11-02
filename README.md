@@ -10,6 +10,11 @@ data comes from Sleeper. The public site is at https://cpcfantasy.com/
 - `cornerstone rewrite --chapter <key>` rewrites one chapter.
 - `cornerstone page-json` writes `page.json` for a saved week.
 
+## Setup
+
+Run `prek install` one time per clone. The hook then runs `make check-fast` before each commit.
+Each worktree reads its own branch's `.pre-commit-config.yaml`.
+
 ## Makefile
 
 The `Makefile` holds the common tasks. Run `make help` to list them. A weekly run uses three targets:
