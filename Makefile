@@ -27,7 +27,7 @@ test: ## Run the tests
 typecheck: ## Check the types
 	pnpm typecheck
 
-# The list of steps lives in the "check" script of package.json, so the hook, CI, and make run the same rules.
+# The list of steps is in the "check" script of package.json, so CI and make run the same steps.
 check: ## Run typecheck, test, build, and the export check
 	pnpm check
 

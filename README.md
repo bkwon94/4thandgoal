@@ -44,7 +44,7 @@ pnpm test
 pnpm typecheck
 ```
 
-`pnpm check` runs typecheck, test, build, and `check:export`. CI runs it on every push. `pnpm check:fast` runs typecheck and test. The commit hook runs it. The hook does not run `pnpm install`. If it fails in a worktree with no `node_modules`, run `pnpm install`.
+`pnpm check` runs typecheck, test, build, and `check:export`. CI runs it on every push. `pnpm check:fast` runs typecheck and test. The commit hook runs it. The hook does not run `pnpm install`. If the hook fails in a worktree with no `node_modules`, run `pnpm install`.
 
 ## Schema version
 
@@ -64,8 +64,8 @@ All values are build-time. Only `src/lib/config.ts` reads them.
 ## Deploy
 
 A push to `main` builds the site and deploys it. The workflow is `.github/workflows/deploy.yml`.
-It installs and runs `pnpm check`, which checks types, runs the tests, builds the export, and checks the export. A failed
-step stops the deploy.
+It installs the packages and runs `pnpm check`. That script checks the types, runs the tests, builds the export,
+and checks the export. A failed step stops the deploy.
 
 The Pages source is GitHub Actions. The `CNAME` file in `public/` keeps the custom domain.
 

@@ -33,7 +33,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # One command runs typecheck, test, build, and the export check. The deploy keeps its own check, so it never ships an unchecked build.
+      # One command runs typecheck, test, build, and the export check.
+      # The deploy keeps its own check, so it never ships an unchecked build.
       - name: Check and build the export
         run: pnpm check
 
