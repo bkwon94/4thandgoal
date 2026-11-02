@@ -29,7 +29,7 @@ from cornerstone.chart import (
 )
 from cornerstone.models import ChartRead, ChartRow, PlayerLine
 from cornerstone.paths import charts_dir
-from cornerstone.writer import WriterError, parse_call
+from cornerstone.writer import ClaudeWriter, WriterError, parse_call
 
 
 def _line(player_id, name, position):
@@ -374,7 +374,7 @@ def test_an_outage_reads_the_stand_in_as_its_own_week(tmp_path):
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=stand_in) == (5, stand_in.result)
 
 
-def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
+def test_claude_read_sends_the_strips_in_order_then_one_text_block():
     sent = {}
 
     class Messages:
@@ -389,8 +389,8 @@ def test_claude_read_sends_the_strips_in_order_then_one_text_block(monkeypatch):
                 "stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage,
             })()
 
-    monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
-    assert claude_read([b"one", b"two"], ChartRead, parse_call) == "parsed"
+    writer = ClaudeWriter(client=type("Client", (), {"messages": Messages()})())
+    assert claude_read([b"one", b"two"], ChartRead, writer.parse) == "parsed"
     content = sent["messages"][0]["content"]
     assert [block["type"] for block in content] == ["image", "image", "text"]
     assert content[0]["source"] == {"type": "base64", "media_type": "image/png", "data": "b25l"}

@@ -12,7 +12,8 @@
 
 ## Ports
 
-None. The `Provider` port is in `provider/`.
+- `Writer` in `claude_port.py`: the one Claude call. `ClaudeWriter` in `writer.py` implements it.
+- The `Provider` port is in `provider/`. `tests/fakes.py` holds the one fake of each port.
 
 ## Does not do
 

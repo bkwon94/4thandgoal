@@ -116,25 +116,29 @@ def test_the_prompt_names_the_yahoo_writers_before_the_wider_web_and_keeps_to_7_
 
 
 @pytest.mark.live
-def test_the_real_search_returns_cited_claims_for_one_player(monkeypatch):
+def test_the_real_search_returns_cited_claims_for_one_player():
     """One real Claude call with web search for one player. It prints the claims and the usage of the call."""
-    from cornerstone import writer
+    from functools import partial
+
+    import anthropic
+
     from cornerstone.models import Fact
     from cornerstone.waiver_research import search_call
+    from cornerstone.writer import ClaudeWriter
 
     responses = []
-    client = writer._get_client()
+    client = anthropic.Anthropic()
 
     class Recorder:
         def parse(self, **kwargs):
             responses.append(client.messages.parse(**kwargs))
             return responses[-1]
 
-    monkeypatch.setattr(writer, "_get_client", lambda: type("Client", (), {"messages": Recorder()})())
+    writer = ClaudeWriter(client=type("Client", (), {"messages": Recorder()})())
     player = _player("12345", "Tre Tucker")
     player.facts = [Fact(id="W.usage.12345", text="Tre Tucker played 88% of snaps and took 9 targets last week.",
                          numbers=["88", "9"], teams=[], players=["Tre Tucker"])]
-    board = research_board(_board(best_adds=[player]), search_call, PROMPTS)
+    board = research_board(_board(best_adds=[player]), partial(search_call, writer=writer), PROMPTS)
     claims = board.buckets["best_adds"][0].research
     usage = responses[0].usage
     print("claims:", [c.model_dump() for c in claims])

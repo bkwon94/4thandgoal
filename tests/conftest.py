@@ -10,6 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+from fakes import FakeWriter
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
@@ -78,6 +79,12 @@ def free_agent_raw_dir(tmp_path, fixture_raw_dir) -> Path:
     players = raw_dir / "players.json"
     players.write_text(json.dumps({**json.loads(players.read_text()), **FREE_AGENTS}))
     return raw_dir
+
+
+@pytest.fixture
+def fake_writer() -> FakeWriter:
+    """A writer with no answer. A test that must not call Claude passes it and asserts `calls == []`."""
+    return FakeWriter()
 
 
 @pytest.fixture

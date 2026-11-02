@@ -1,13 +1,14 @@
 """
 Tests for the trending bucket of the waiver board and the fetch of the trending file.
-They feed a fake Sleeper client at the fetch seam and hand-set counts on the week 6 raw at the engine seam.
+They feed a fake Sleeper transport at the fetch seam and hand-set counts on the week 6 raw at the engine seam.
 """
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from fakes import json_transport
+
 from cornerstone.config import cornerstone_config
-from cornerstone.provider import sleeper
 from cornerstone.provider.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
 
@@ -22,8 +23,8 @@ EMPTY_LEAGUE = {"roster_positions": [], "scoring_settings": {},
 
 
 def _fake_trending_get(calls: list[tuple[str, object]]):
-    """A fake of sleeper._get. It gives two trending rows and an empty body for every other call."""
-    def get(client, url, params=None):
+    """A fake Sleeper body. It gives two trending rows and an empty body for every other call."""
+    def get(url, params):
         calls.append((url, params))
         if url == TRENDING_URL:
             return [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
@@ -35,14 +36,14 @@ def _fake_trending_get(calls: list[tuple[str, object]]):
     return get
 
 
-def test_the_week_fetch_saves_the_trending_file(tmp_path, monkeypatch):
+def test_the_week_fetch_saves_the_trending_file(tmp_path):
     calls: list[tuple[str, object]] = []
-    monkeypatch.setattr(sleeper, "_get", _fake_trending_get(calls))
     fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz, CONFIG.last_regular_week,
-               CONFIG.last_season_week)
+               CONFIG.last_season_week, json_transport(_fake_trending_get(calls)))
     saved = json.loads((tmp_path / "raw" / "trending.json").read_text())
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
-    assert [dict(params) for url, params in calls if url == TRENDING_URL] == [{"lookback_hours": 24, "limit": 50}]
+    # A query value is text on the wire.
+    assert [dict(params) for url, params in calls if url == TRENDING_URL] == [{"lookback_hours": "24", "limit": "50"}]
     assert load_raw(tmp_path / "raw").file_json("trending") == saved
 
 

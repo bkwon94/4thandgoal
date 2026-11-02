@@ -8,12 +8,14 @@ import logging
 import subprocess
 from collections.abc import Callable
 from datetime import date, datetime
+from functools import partial
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
 from cornerstone.chart import match_chart, saved_chart_read
+from cornerstone.claude_port import Writer
 from cornerstone.config import LeagueConfig
 from cornerstone.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
 from cornerstone.manager_season import saved_awards
@@ -49,7 +51,7 @@ from cornerstone.paths import (
 )
 from cornerstone.power_rankings import power_rankings
 from cornerstone.provider.base import Provider
-from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.raw import RawState, RawWeek
 from cornerstone.provider.sleeper import (
     PROJECTIONS_AHEAD_FILE,
     SLEEPER,
@@ -105,7 +107,10 @@ def has_raw(repo: Path, season: int, week: int) -> bool:
     return (raw_dir(repo, season, week) / "state.json").exists()
 
 
-def resolve_week(season: int | None, week: int | None) -> tuple[int, int]:
+def resolve_week(
+        season: int | None, week: int | None, fetch_state: Callable[[], RawState] = fetch_state,
+) -> tuple[int, int]:
+    # The state fetch is a parameter, so the CLI passes the one it got.
     if season is not None and week is not None:
         return season, week
     state = fetch_state()
@@ -346,6 +351,8 @@ def run_build(
     raw_loader: RawLoader = load_raw,
     # The provider is a seam too. The config gives it the league id and the timezone of the fetch.
     provider: Provider = SLEEPER,
+    # The writer of the research call when `research` is None. A writer of None is the one ClaudeWriter of the process.
+    writer: Writer | None = None,
 ) -> Path:
     directory = week_dir(repo, season, week)
     raw_path = raw_dir(repo, season, week)
@@ -366,9 +373,10 @@ def run_build(
         repo, season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,
         nflverse=nflverse or fetch_nflverse(repo), config=config, raw=raw)
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
-    # No argument means the real search. A test passes a fake one.
+    # No argument means the real search through `writer`. A test passes a fake search or a fake writer.
     if bundle.waiver is not None:
-        bundle.waiver = research_board(bundle.waiver, research or search_call, config.prompts_dir)
+        search = research or partial(search_call, writer=writer)
+        bundle.waiver = research_board(bundle.waiver, search, config.prompts_dir)
     write_bundle(bundle, directory / "facts.json")
 
     blurbs: dict[str, Blurb] = {}

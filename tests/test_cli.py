@@ -21,67 +21,63 @@ def test_help_lists_commands():
         assert cmd in out.stdout
 
 
-def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypatch, capsys):
+def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypatch, capsys, fake_writer):
     import shutil
 
     from cornerstone import cli
 
-    def no_claude(*args, **kwargs):
-        raise AssertionError("the gate must stop the build before any Claude call")
-
-    monkeypatch.setattr(cli, "claude_call", no_claude)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"])
+    code = cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"], writer=fake_writer)
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
+    # The gate must stop the build before any Claude call.
+    assert fake_writer.calls == []
 
 
-def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch, capsys):
+def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch, capsys, fake_writer):
     import shutil
+
+    import httpx
 
     from cornerstone import cli, pipeline
-    from cornerstone.provider.sleeper import SLEEPER
+    from cornerstone.provider.sleeper import SleeperProvider
 
-    def no_fetch(*args, **kwargs):
+    def no_fetch(request):
         raise AssertionError("saved raw data must not be fetched again")
 
-    def no_claude(*args, **kwargs):
-        raise AssertionError("the gate must stop the build before any Claude call")
-
-    monkeypatch.setattr(SLEEPER, "fetch_week", no_fetch)
     # The gate stops this build first. The patch keeps any later build off the network.
     monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
-    monkeypatch.setattr(cli, "claude_call", no_claude)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--week", "7", "--season", "2026"])
+    code = cli.main(["build", "--week", "7", "--season", "2026"], writer=fake_writer,
+                    provider=SleeperProvider(transport=httpx.MockTransport(no_fetch)))
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
+    # The gate must stop the build before any Claude call.
+    assert fake_writer.calls == []
 
 
-def test_rewrite_without_facts_exits_plainly(tmp_path, monkeypatch, capsys):
+def test_rewrite_without_facts_exits_plainly(tmp_path, monkeypatch, capsys, fake_writer):
     from cornerstone import cli
 
-    def no_claude(*args, **kwargs):
-        raise AssertionError("no Claude call expected")
-
-    monkeypatch.setattr(cli, "claude_call", no_claude)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["rewrite", "--week", "6", "--season", "2026", "--chapter", "median"])
+    code = cli.main(["rewrite", "--week", "6", "--season", "2026", "--chapter", "median"], writer=fake_writer)
 
     out = capsys.readouterr().out
     assert code == 2
     assert out.startswith("Missing file ") and "facts.json" in out
     assert len(out.strip().splitlines()) == 1 and "Traceback" not in out
+    # The rewrite must not call Claude.
+    assert fake_writer.calls == []
 
 
 def test_sleeper_failure_exits_plainly(tmp_path, monkeypatch, capsys):
@@ -157,11 +153,10 @@ def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_p
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(cli, "fetch_state", _sleeper_state("2026"))
     _save_chart(tmp_path, ChartRead(week=6, date="2026-10-13",
                                     rows=[ChartRow(value=60.0, name="Some One", position="RB"), *_pad_rows(50.0)]))
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 0
+    assert cli.main(["chart", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2026")) == 0
     out = capsys.readouterr().out
     assert "60.0  Some One  RB" in out
     assert "header week: pass" in out
@@ -174,9 +169,8 @@ def test_chart_without_saved_raw_data_of_a_past_season_says_so(tmp_path, monkeyp
 
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(cli, "fetch_state", _sleeper_state("2027"))
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 2
+    assert cli.main(["chart", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2027")) == 2
     assert "No raw data" in capsys.readouterr().out
 
 
@@ -521,25 +515,27 @@ JACOBS_ARGS = ["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FI
 
 def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
         tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+    from fakes import FakeWriter
+
     from cornerstone import cli
     from cornerstone.analysis import AnalysisOut
+    from cornerstone.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
 
-    def fake_claude(system, user, output_model):
-        assert output_model is AnalysisOut
-        side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
-                "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
-        return AnalysisOut.model_validate({
-            "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
-                      {**side, "roster_id": 12}],
-            "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
-        })
-
-    monkeypatch.setattr(cli, "analyzer_call", fake_claude)
+    side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
+            "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
+    writer = FakeWriter([AnalysisOut.model_validate({
+        "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
+                  {**side, "roster_id": 12}],
+        "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
+    })])
     _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
-    code = cli.main(JACOBS_ARGS)
+    code = cli.main(JACOBS_ARGS, writer=writer)
 
     out = capsys.readouterr().out
     assert code == 0
+    # One analyzer call, with the analyzer's lifetime and effort.
+    assert [(c.output_model, c.cache_ttl, c.effort) for c in writer.calls] == [
+        (AnalysisOut, ANALYZER_CACHE_TTL, ANALYZER_EFFORT)]
     # The breakdown's letter is the rubric's. The final letter is Claude's, with its reason when it differs.
     assert "  Rubric letter: B\n" in out and "  Rubric letter: D\n" in out
     assert "  Final letter: C. Reason: Jacobs has not played.\n" in out
@@ -553,15 +549,16 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
 
 
 def test_analyze_with_claude_says_when_the_call_fell_back(
-        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
+        tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys, fake_writer):
     from cornerstone import cli
 
-    monkeypatch.setattr(cli, "analyzer_call", lambda system, user, output_model: None)
     _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
-    code = cli.main(JACOBS_ARGS)
+    # The fake has no answer, so each of the two attempts fails.
+    code = cli.main(JACOBS_ARGS, writer=fake_writer)
 
     out = capsys.readouterr().out
     assert code == 0
+    assert len(fake_writer.calls) == 2
     assert out.count("  Analysis: Analysis unavailable\n") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out

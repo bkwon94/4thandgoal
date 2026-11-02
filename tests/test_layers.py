@@ -46,6 +46,7 @@ LAYER_OF: dict[str, str] = {
     "files": "provider",
     "chart": "provider",
     "claude_errors": "provider",
+    "claude_port": "provider",
     # load
     "parse": "load",
     "slow_sources": "load",

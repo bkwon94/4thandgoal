@@ -1034,11 +1034,9 @@ def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, cap
     assert "nflverse refetch failed" in caplog.text
 
 
-def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fixture_raw_dir, monkeypatch, offline):
+def test_page_json_command_writes_a_saved_week_with_no_writer_call(
+        tmp_path, fixture_raw_dir, monkeypatch, offline, fake_writer):
     from cornerstone import cli
-
-    def no_claude(*args, **kwargs):
-        raise AssertionError("page-json must not call the writer")
 
     repo = tmp_path / "source"
     repo.mkdir()
@@ -1047,15 +1045,26 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(tmp_path, fix
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
     page_json = repo / "site" / "2026" / "week-06" / "page.json"
     page_json.unlink()
-    monkeypatch.setattr(cli, "claude_call", no_claude)
     monkeypatch.chdir(repo)
 
-    assert cli.main(["page-json", "--season", "2026", "--week", "6"]) == 0
+    assert cli.main(["page-json", "--season", "2026", "--week", "6"], writer=fake_writer) == 0
+    # Page-json must not call the writer.
+    assert fake_writer.calls == []
 
     data = json.loads(page_json.read_text(encoding="utf-8"))
     assert data["schema_version"] == 2
     assert data["week"] == 6
     assert len(data["matchups"]) == 6
+
+
+def test_a_build_with_no_search_sends_the_research_through_the_writer(
+        tmp_path, free_agent_raw_dir, offline, fake_writer):
+    # The free agents give the waiver board ranked players, so the research has players to search.
+    repo = _repo(tmp_path / "repo", free_agent_raw_dir)
+    # The gate tests stop before the research, so this build runs past it with the search left out.
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "research": None}, writer=fake_writer, config=CONFIG)
+    # The fake has no answer, so each search fails and the build goes on. Each call to the writer is a search.
+    assert fake_writer.calls and {call.output_model for call in fake_writer.calls} == {ResearchOut}
 
 
 def _spy_write_and_verify(seen, lucky_key=None):

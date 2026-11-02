@@ -4,6 +4,7 @@
 
 - The fetches of the league data from the provider, and the raw shape of each file at the HTTP call.
 - The Sleeper adapter, with one raw JSON file per endpoint and a disk cache for the large players file.
+- Each Sleeper fetch takes an optional `httpx` transport, so a test passes an `httpx.MockTransport`.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports
