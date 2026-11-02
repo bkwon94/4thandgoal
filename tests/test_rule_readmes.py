@@ -1,6 +1,6 @@
 """
-Checks that each package folder under src holds a README.md with the headings Knows, Ports, and Does not do,
-under 25 lines, and that no CLAUDE.md is in the repo other than the root one. See ADR 0009.
+Checks that each package folder under src holds a README.md with the headings Knows, Ports, and Does not do.
+Each README is under 25 lines, and the only CLAUDE.md is the one at the repo root. See ADR 0009.
 """
 import subprocess
 from pathlib import Path
@@ -10,7 +10,7 @@ from rule_report import Offense, report
 ROOT = Path(__file__).resolve().parent.parent
 ADR = "docs/adr/0009-the-rules-are-checks.md"
 HEADINGS = ["## Knows", "## Ports", "## Does not do"]
-# An agent reads the README to decide whether to open the folder, so the read must stay short.
+# An agent reads the README to decide whether to open the folder. A short README means an agent reads little.
 MAX_LINES = 24
 
 MISSING_RULE = "each folder under src that holds an __init__.py holds a README.md"
@@ -77,7 +77,7 @@ def _length_offenses(root: Path) -> list[Offense]:
                 what=f"The README has {count} lines.",
                 rule=LENGTH_RULE,
                 adr=ADR,
-                fix="cut the README to 24 lines, and move each detail to the docstring of the module that holds it.",
+                fix=f"cut the README to {MAX_LINES} lines, and move each detail to the docstring of its module.",
             ))
     return offenses
 
@@ -134,6 +134,22 @@ def test_the_rule_finds_a_package_folder_with_no_readme(tmp_path):
         adr=ADR,
         fix="add src/cornerstone/README.md with a title and the headings Knows, Ports, and Does not do.",
     )]
+
+
+def test_the_rule_finds_a_readme_of_25_lines(tmp_path):
+    package = tmp_path / "src" / "cornerstone"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text('"""A package."""\n')
+    (package / "README.md").write_text("# cornerstone\n" + "\n" * 24)
+    offenses = _length_offenses(tmp_path)
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("src/cornerstone/README.md", 25, "readme/length")]
+
+
+def test_the_rule_finds_a_claude_md_below_the_root():
+    offenses = _claude_md_offenses(["CLAUDE.md", "src/cornerstone/CLAUDE.md"])
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("src/cornerstone/CLAUDE.md", 1, "readme/no-claude-md")]
 
 
 def test_the_rule_finds_a_readme_with_no_ports_heading(tmp_path):
