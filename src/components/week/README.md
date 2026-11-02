@@ -1,4 +1,4 @@
-# components/week: the chapters of the weekly report
+# src/components/week: the chapters of the weekly report
 
 ## Knows
 
@@ -14,4 +14,4 @@ None.
 
 - It computes no score, no award, and no blurb. The pipeline writes them into the week page file.
 - It finds no prior week or next week. The app layer finds both at build time.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004). `lib/data/week-data.ts` reads the week page.
+- It reads no file, no env, and no config, and it calls no loader (ADR 0004). `src/lib/data/week-data.ts` reads the week page file.

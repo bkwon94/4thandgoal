@@ -1,4 +1,4 @@
-# hooks: the React hooks that the components share
+# src/hooks: the React hooks that the components share
 
 ## Knows
 
@@ -12,7 +12,7 @@ None.
 
 ## Does not do
 
-- It calls no API. The component calls `lib/api.ts`, and `useRequest` only guards the answer.
-- It builds no motion props. `lib/motion.ts` holds the timings and the helpers.
+- It calls no API. The component calls `src/lib/api.ts`, and `useRequest` only guards the answer.
+- It builds no motion props. `src/lib/motion.ts` holds the timings and the helpers.
 - It knows no league term.
 - It reads no file, no env, and no config.

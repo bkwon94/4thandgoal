@@ -1,4 +1,4 @@
-# components/parts: the parts that every page shares
+# src/components/parts: the parts that the pages share
 
 ## Knows
 
@@ -13,8 +13,8 @@ None.
 
 ## Does not do
 
-- It holds no primitive. The shadcn primitives live in `components/ui/`.
-- It holds no shell. The masthead, the menu, and the theme button live in `components/shell/`.
-- It holds no component of one page only. That component lives in the folder of its page, such as `components/week/`.
+- It holds no primitive. The shadcn primitives live in `src/components/ui/`.
+- It holds no shell. The masthead, the menu, and the theme button live in `src/components/shell/`.
+- Most parts serve two or more pages. `tag.tsx` and `error-line.tsx` serve one page today.
 - It builds no route. The page passes each href, and a part only shows it (ADR 0004).
 - It reads no file, no env, and no config, and it calls no loader (ADR 0004).
