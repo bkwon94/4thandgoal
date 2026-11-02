@@ -6,6 +6,7 @@ keeps it true.
 
 | Feature | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- |
+| `agent-habits` | 03 close the site tickets whose merge main proves | none | |
 | `analyzer-multi-team` | 10 the headshot strip gap | none | |
 | `manager-pages` | 01 the past week keeps every rostered player | none | |
 | `modular` | 12 the fixtures carry every as-of key | none | |
