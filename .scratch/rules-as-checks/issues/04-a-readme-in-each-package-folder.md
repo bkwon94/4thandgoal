@@ -23,4 +23,4 @@ or a tracked `CLAUDE.md` other than the root one.
 - [x] The `CLAUDE.md` rule reads `git ls-files`, so `node_modules` does not count. One 0007 says why: a nested `CLAUDE.md` loads by itself, and the agent must choose to read.
 - [x] A test runs the rule on a temporary folder with one source file and no README, and finds one offense.
 - [x] `docs/adr/0006-the-rules-are-checks.md` gains "A README in each package folder".
-- [ ] `pnpm check` passes. `pnpm check:export` still passes, because no README lands in `public/`.
+- [x] `pnpm check` passes. `pnpm check:export` still passes, because no README lands in `public/`.
