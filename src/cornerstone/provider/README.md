@@ -12,8 +12,7 @@
 
 ## Does not do
 
-- It holds no league rule. It fetches and saves the raw files, and nothing more.
+- It holds no league rule. It fetches the raw files, saves them, and reads them back.
 - It does not turn the raw data into the domain models. `cornerstone/parse.py` does.
-- It keeps no history of past weeks. `cornerstone/history.py` saves them.
+- It picks no history week. `cornerstone/history.py` picks the folder and the weeks, and `sleeper.py` writes the files.
 - It fetches no nflverse file and reads no trade value chart. `cornerstone/nflverse.py` and `cornerstone/chart.py` do.
-- The provider layer of ADR 0007 holds more than this folder. `tests/test_layers.py` lists each module of the layer.
