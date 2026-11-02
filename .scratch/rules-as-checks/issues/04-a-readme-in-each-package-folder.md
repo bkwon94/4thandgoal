@@ -19,8 +19,8 @@ or a tracked `CLAUDE.md` other than the root one.
 - [x] **Ports**: the outside systems the folder reaches. `lib/` lists the API client in `lib/api.ts`. `lib/data/` lists the reads of `public/`.
 - [x] **Does not do**: the lines that let an agent stop the search. For example, a component folder reads no file and builds no route (ADR 0004). `lib/schemas/` owns no shape, because the pipeline owns it (ADR 0005). `ui/` knows no league term.
 - [x] Each README is under 25 lines, in STE.
-- [ ] Rule ids: `readme/missing`, `readme/headings`, `readme/length`, `readme/no-claude-md`. ADR: `docs/adr/0006-the-rules-are-checks.md`.
+- [x] Rule ids: `readme/missing`, `readme/headings`, `readme/length`, `readme/no-claude-md`. ADR: `docs/adr/0006-the-rules-are-checks.md`.
 - [x] The `CLAUDE.md` rule reads `git ls-files`, so `node_modules` does not count. One 0007 says why: a nested `CLAUDE.md` loads by itself, and the agent must choose to read.
 - [x] A test runs the rule on a temporary folder with one source file and no README, and finds one offense.
-- [ ] `docs/adr/0006-the-rules-are-checks.md` gains "A README in each package folder".
+- [x] `docs/adr/0006-the-rules-are-checks.md` gains "A README in each package folder".
 - [ ] `pnpm check` passes. `pnpm check:export` still passes, because no README lands in `public/`.
