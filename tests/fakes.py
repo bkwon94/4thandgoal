@@ -5,11 +5,13 @@ The pipeline tests and the golden build share them, so both run the same offline
 import json
 import shutil
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import httpx
 from pydantic import BaseModel
 
 from cornerstone.claude_errors import WriterError
@@ -37,6 +39,16 @@ def no_network(url):
 
 def no_claims(system, user):
     return ResearchOut(claims=[])
+
+
+def json_transport(body: Callable[[str, httpx.QueryParams], object]) -> httpx.MockTransport:
+    """An httpx transport that answers each request with the JSON of `body(url, params)`. The URL has no query.
+
+    A body that raises an httpx error fails the request, as a network failure does. It is not a patch of a port.
+    """
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=body(str(request.url.copy_with(query=None)), request.url.params))
+    return httpx.MockTransport(handler)
 
 
 def fixture_nflverse(cache: Path):

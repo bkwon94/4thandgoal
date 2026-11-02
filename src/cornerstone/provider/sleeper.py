@@ -97,19 +97,19 @@ def _players(client: httpx.Client, players_cache: Path):
     return players
 
 
-def fetch_state() -> RawState:
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+def fetch_state(transport: httpx.BaseTransport | None = None) -> RawState:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         return RawState.model_validate(_get(client, f"{OFFICIAL_URL}/state/nfl"))
 
 
-def fetch_players(players_cache: Path) -> dict[str, dict]:
+def fetch_players(players_cache: Path, transport: httpx.BaseTransport | None = None) -> dict[str, dict]:
     """The players file, from the cache when it is less than a day old, else from Sleeper."""
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         return _players(client, players_cache)
 
 
-def fetch_news(player_id: str) -> list[dict]:
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+def fetch_news(player_id: str, transport: httpx.BaseTransport | None = None) -> list[dict]:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         return _get_or_empty(client, f"{UNOFFICIAL_URL}/players/nfl/{player_id}/news")
 
 
@@ -160,12 +160,14 @@ def _projections_ahead(client: httpx.Client, season: int, week: int, last: int) 
     ]
 
 
-def fetch_projections_ahead(season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
+def fetch_projections_ahead(
+        season: int, week: int, last_regular_week: int, transport: httpx.BaseTransport | None = None,
+) -> list[RawAheadWeek]:
     """The projections ahead of `week` through `last_regular_week`, in the entries that fetch_week saves.
 
     The trade grade reads no later week, so the live grade skips those calls.
     """
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         ahead = _projections_ahead(client, season, week, last_regular_week)
     return [RawAheadWeek.model_validate(entry) for entry in ahead]
 
@@ -204,14 +206,14 @@ def _league_raw(
 
 def fetch_week(
         league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-        last_regular_week: int, last_season_week: int) -> None:
+        last_regular_week: int, last_season_week: int, transport: httpx.BaseTransport | None = None) -> None:
     """Fetch the raw files of `week` into `raw_dir`. The saved fetch time is in the league timezone `tz`.
 
     The schedule runs to `last_regular_week`. The projections ahead run to `last_season_week`, because the waiver
     board reads the fantasy playoffs too.
     """
     league = f"{OFFICIAL_URL}/league/{league_id}"
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         # Week N-1 comes first, so the fetch time below is later than both calls.
         previous = _get(client, f"{league}/transactions/{week - 1}") if week > 1 else None
         transactions = _get(client, f"{league}/transactions/{week}")
@@ -232,13 +234,15 @@ def fetch_week(
     _write_json(raw_dir / FETCHED_FILE, {"transactions": fetched.isoformat()})
 
 
-def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
+def fetch_live_raw(
+        league_id: str, players_cache: Path, transport: httpx.BaseTransport | None = None,
+) -> tuple[RawWeek, datetime]:
     """The raw data of the league now, in memory, and the time the rosters came back. It writes no weekly file.
 
     The key set is the same as load_raw gives, so the parse and the snapshot read it as a saved week.
     """
     league = f"{OFFICIAL_URL}/league/{league_id}"
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         state = _get(client, f"{OFFICIAL_URL}/state/nfl")
         season, week = int(state["season"]), int(state["display_week"])
         rosters = _get(client, f"{league}/rosters")
@@ -252,10 +256,12 @@ def fetch_live_raw(league_id: str, players_cache: Path) -> tuple[RawWeek, dateti
     return RawWeek.model_validate(data), fetched
 
 
-def fetch_past_week(league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
+def fetch_past_week(
+        league_id: str, season: int, week: int, out_dir: Path, transport: httpx.BaseTransport | None = None,
+) -> RawPastWeek:
     """Save the four history files of `week` into `out_dir`, and give them back as the raw models."""
     league = f"{OFFICIAL_URL}/league/{league_id}"
-    with httpx.Client(timeout=TIMEOUT_SECONDS) as client:
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
         data = {
             "matchups": _get(client, f"{league}/matchups/{week}"),
             "transactions": _get(client, f"{league}/transactions/{week}"),
@@ -292,28 +298,33 @@ class SleeperProvider:
 
     The class gives one object that satisfies Provider, so a caller can swap the provider for another one.
     The module functions stay, because the tests and the CLI call them with the Sleeper arguments.
+    The transport goes to each httpx client. None is the real network, and a test passes an httpx.MockTransport.
     """
+
+    def __init__(self, transport: httpx.BaseTransport | None = None):
+        self.transport = transport
 
     def fetch_week(
             self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
             last_regular_week: int, last_season_week: int) -> RawWeek:
-        fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week, last_season_week)
+        fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week, last_season_week,
+                   self.transport)
         # The build reads the week from the saved files, so the model it gets is the one a rebuild loads.
         return load_raw(raw_dir)
 
     def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
-        return fetch_live_raw(league_id, players_cache)
+        return fetch_live_raw(league_id, players_cache, self.transport)
 
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
-        return fetch_past_week(league_id, season, week, out_dir)
+        return fetch_past_week(league_id, season, week, out_dir, self.transport)
 
     # The protocol needs this fetch. No pipeline caller reads it yet.
     def fetch_players(self, players_cache: Path) -> dict[str, dict]:
-        return fetch_players(players_cache)
+        return fetch_players(players_cache, self.transport)
 
     def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
-        return fetch_projections_ahead(season, week, last_regular_week)
+        return fetch_projections_ahead(season, week, last_regular_week, self.transport)
 
 
-# The one Sleeper provider. It holds no state, so every caller shares it.
+# The one Sleeper provider. Its transport is the real network, and it holds no other state, so every caller shares it.
 SLEEPER = SleeperProvider()

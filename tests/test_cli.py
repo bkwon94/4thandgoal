@@ -41,20 +41,22 @@ def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypat
 def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch, capsys, fake_writer):
     import shutil
 
-    from cornerstone import cli, pipeline
-    from cornerstone.provider.sleeper import SLEEPER
+    import httpx
 
-    def no_fetch(*args, **kwargs):
+    from cornerstone import cli, pipeline
+    from cornerstone.provider.sleeper import SleeperProvider
+
+    def no_fetch(request):
         raise AssertionError("saved raw data must not be fetched again")
 
-    monkeypatch.setattr(SLEEPER, "fetch_week", no_fetch)
     # The gate stops this build first. The patch keeps any later build off the network.
     monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
     (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
     shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--week", "7", "--season", "2026"], writer=fake_writer)
+    code = cli.main(["build", "--week", "7", "--season", "2026"], writer=fake_writer,
+                    provider=SleeperProvider(transport=httpx.MockTransport(no_fetch)))
 
     assert code == 2
     assert "not final" in capsys.readouterr().out

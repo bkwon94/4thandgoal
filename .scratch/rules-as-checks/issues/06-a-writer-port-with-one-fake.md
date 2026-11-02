@@ -17,12 +17,12 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 - [x] Choice: `fetch_state` stays a one-fetch callable, not a sixth `Provider` method, as ticket 09 of `modular` kept for live and history.
 - [x] `tests/fakes.py` gains `FakeWriter`, annotated as `Writer`, beside `FixtureProvider`. It takes a list of answers, keeps each call in `calls`, and gives the next answer. With no answer left, it raises `WriterError`, as a failed Claude call does. `tests/conftest.py` gains a `fake_writer` fixture.
 - [x] Choice: the fake class lives in `tests/fakes.py`, not in `conftest.py`, because the provider fake is there. One file holds every fake.
-- [ ] The Sleeper functions and `SleeperProvider` take `transport: httpx.BaseTransport | None = None` and pass it to `httpx.Client`.
+- [x] The Sleeper functions and `SleeperProvider` take `transport: httpx.BaseTransport | None = None` and pass it to `httpx.Client`.
 - [x] Move each patch. Claude, 9: `tests/test_cli.py:32`, `:58`, `:75`, `:537`, `:559`, `tests/test_pipeline.py:1050`, `tests/test_writer.py:273`, `tests/test_chart.py:392`, `tests/test_waiver_research.py:133`.
-- [ ] Sleeper, 11: `tests/test_sleeper.py:51`, `:85`, `:146`, `:179`, `:204`, `:206`, `:209`, `tests/test_waiver_trending.py:40`, `tests/test_cli.py:55`, `:160`, `:177`.
+- [x] Sleeper, 11: `tests/test_sleeper.py:51`, `:85`, `:146`, `:179`, `:204`, `:206`, `:209`, `tests/test_waiver_trending.py:40`, `tests/test_cli.py:55`, `:160`, `:177`.
 - [x] A test that says "must not call Claude" passes a `FakeWriter` and asserts `calls == []`.
 - [x] The three `_get_client` tests check the request shape of `ClaudeWriter`. They pass their stub client to `ClaudeWriter(client=...)`.
-- [ ] The Sleeper adapter tests pass `httpx.MockTransport(handler)`, as `tests/test_sleeper.py:63` does today. It is httpx's in-memory transport at the HTTP edge, not a patch.
+- [x] The Sleeper adapter tests pass `httpx.MockTransport(handler)`, as `tests/test_sleeper.py:63` does today. It is httpx's in-memory transport at the HTTP edge, not a patch.
 - [ ] Rule id `ports/monkeypatch`. The test reads each `monkeypatch.setattr` call in `tests/` with `ast`. It fails when the first argument is a string under `cornerstone.writer`, `cornerstone.claude_port`, `cornerstone.provider`, or `cornerstone.sleeper`. It fails when the first argument is a name imported from one of those modules.
 - [ ] It also fails when the attribute is `claude_call`, `analyzer_call`, `parse_call`, `_get_client`, `fetch_state`, or a `Provider` method name.
 - [ ] Out of scope: the patches of `fetch_nflverse`, `live_snapshot`, `run_build`, and the other build steps.
