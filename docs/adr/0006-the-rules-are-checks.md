@@ -13,7 +13,7 @@ no `node_modules` it fails, and the fix is `pnpm install`. The deploy workflow k
 
 ## The report of an offense
 
-An agent must fix an offense with no read of the ADR, so every rule test prints each offense in one
+An agent must fix an offense without the ADR, so every rule test prints each offense in one
 shape. The helper `report` in `src/rule-report.ts` prints it:
 
 ```text
@@ -29,7 +29,7 @@ src/components/week/standings.tsx:4  components/no-loader
 - **The fix** in one sentence.
 
 The rule id is `<topic>/<name>`. The topics are `components`, `published`, `suppression`, and
-`readme`. The report starts with the count, such as "2 offenses.", and a blank line comes between
+`readme`. The report starts with the count, such as "2 offenses.". A blank line comes between
 two offenses. A JSON parse gives no line, so the location of a `published/shape` offense is the file
 and the field path, such as `public/2026/week-07/page.json:games.0.byes`. The helper imports no app
 code, so the build never bundles it.

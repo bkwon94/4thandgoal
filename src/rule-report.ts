@@ -14,7 +14,7 @@ export type Offense = {
   fix: string;
 };
 
-/* An agent can fix the offense from these four lines with no read of the ADR. */
+/* An agent can fix the offense from these four lines without the ADR. */
 function format(offense: Offense): string {
   return [
     `${offense.path}:${offense.line}  ${offense.ruleId}`,
