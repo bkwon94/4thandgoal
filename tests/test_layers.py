@@ -1,8 +1,10 @@
 """
-Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0007.
+Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0007,
+and that a module outside the sheet package imports only cornerstone.sheet or cornerstone.sheet.base.
 It reads the import lines with ast and imports no pipeline code.
 """
 import ast
+from collections.abc import Callable
 from pathlib import Path
 
 from rule_report import Offense, report
@@ -105,8 +107,8 @@ UPWARD_RULE = "a module imports only from its own layer or a lower one"
 SHEET = f"{PACKAGE}.sheet"
 # The base module holds the names that the chapters share, so a caller outside the sheet may import it too.
 SHEET_ENTRIES = {SHEET, f"{SHEET}.base"}
-SHEET_RULE = "outside the sheet package, a module imports only `cornerstone.sheet` or `cornerstone.sheet.base`"
-SHEET_FIX = "Re-export the name from `cornerstone/sheet/__init__.py`, or import it from `cornerstone.sheet.base`."
+SHEET_RULE = "outside the sheet package, a module imports only cornerstone.sheet or cornerstone.sheet.base"
+SHEET_FIX = "re-export the name from cornerstone/sheet/__init__.py, or import it from cornerstone.sheet.base."
 
 
 def _module_name(path: Path, src: Path) -> str:
@@ -162,16 +164,21 @@ def _every_import(tree: ast.Module) -> list[ast.Import | ast.ImportFrom]:
     return sorted(found, key=lambda node: node.lineno)
 
 
-def _targets(name: str, path: Path, modules: dict[str, Path], every: bool = False) -> dict[str, int]:
+def _targets(
+    name: str,
+    path: Path,
+    modules: dict[str, Path],
+    read: Callable[[ast.Module], list[ast.Import | ast.ImportFrom]] = _top_level_imports,
+) -> dict[str, int]:
     """The modules of the two packages that one module imports, each with the line of its first import.
 
     By default it reads only the imports at load, because only those can make an import cycle.
-    With every, it reads every import, because an import inside a function still uses the module.
+    With read=_every_import, it reads every import, because an import inside a function still uses the module.
     """
     package = name if path.name == "__init__.py" else name.rpartition(".")[0]
     tree = ast.parse(path.read_text())
     targets: dict[str, int] = {}
-    for node in _every_import(tree) if every else _top_level_imports(tree):
+    for node in read(tree):
         if isinstance(node, ast.Import):
             bases = [alias.name for alias in node.names]
             for base in bases:
@@ -291,7 +298,7 @@ def _sheet_entry_offenses(src: Path) -> list[Offense]:
     for name, path in modules.items():
         if name == SHEET or name.startswith(f"{SHEET}."):
             continue
-        for target, line in sorted(_targets(name, path, modules, every=True).items()):
+        for target, line in sorted(_targets(name, path, modules, read=_every_import).items()):
             if target.startswith(f"{SHEET}.") and target not in SHEET_ENTRIES:
                 offenses.append(Offense(
                     path=_repo_path(path, src),
