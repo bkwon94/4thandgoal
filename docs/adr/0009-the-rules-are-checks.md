@@ -58,3 +58,26 @@ One 0013 allows no suppression at all. Here the allow list is the one departure 
 ruff owns its rules, and we do not fork them or turn one off to clear a marker. ruff 0.17.3 enables
 BLE001 and RUF009 by default. Five lines catch a broad error or call `partial` in a default, and each
 must stay. So the list starts with these five lines.
+
+## A README in each package folder
+
+A cold agent reads a folder README to decide whether to open the folder. A package folder is each
+folder under `src/` that holds an `__init__.py`. Each one holds a `README.md` with a one-line title
+and three headings, in this order:
+
+- `## Knows` says what the folder knows, in the terms of `GLOSSARY.md`. It defines no term again.
+- `## Ports` lists each protocol that the folder declares. A folder with no port writes "None."
+- `## Does not do` says what the folder never does, and which folder does it.
+
+The third heading has the most value, because it is the only one that lets an agent stop the search.
+Each README is under 25 lines, so the read stays short.
+
+No `CLAUDE.md` is in the repo other than the root one. One 0007 gives the reason. Claude Code loads
+a nested `CLAUDE.md` by itself, so its text goes into the context when the agent does not need it.
+The agent must choose to read the next level. A README also serves people and each tool, and keeps
+the truth in one file.
+
+`tests/test_rule_readmes.py` holds the rules. The rule ids are `readme/missing`, `readme/headings`,
+`readme/length`, and `readme/no-claude-md`. The `CLAUDE.md` rule reads `git ls-files`, so a staged
+file counts. The test checks that each README exists and has the right shape. It cannot check that
+the text is true, so review checks that.
