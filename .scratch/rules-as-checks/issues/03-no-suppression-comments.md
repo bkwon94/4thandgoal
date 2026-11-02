@@ -7,7 +7,7 @@ The five `noqa` lines of today stay, each with its reason, and sit in the allow 
 
 **Blocked by:** 04 (the report shape and its helper).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Rule id `suppression/comment`. Rule sentence: "no comment silences a rule". Fix: "fix the type or the code, or add the line to the allow list of this test with its reason".
 - [x] Choice: the rule and the fix are one sentence each, lowercase, with no end period, as in `test_layers.py`. The ADR asks for one sentence, and this ticket gave two. The site uses the same two texts.
@@ -29,3 +29,7 @@ The five `noqa` lines of today stay, each with its reason, and sit in the allow 
 - [x] A test runs the rule on a temporary folder with one `# type: ignore` line and finds one offense.
 - [x] `docs/adr/0009-the-rules-are-checks.md` gains "No suppression comment": the rule, the allow list, and why this departs from One.
 - [x] Add the test file to the `pyright` include list. `make check` passes. The four golden tests pass.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-03-no-suppression`, commits b36aa9e, 99662d6, 502745d, and 4d7c881, with `--no-ff`. 1484 passed, 9 deselected. No golden change. `make rules` runs 10 tests. The ticket premise was false: ruff 0.17.3 enables BLE001 and RUF009 by default, so each of the five `noqa` markers silences a real offense. Proof: `uv run ruff check src tests --isolated --line-length 120 --extend-select RUF100` passes. The five lines stay in the source and sit in the allow list with their reasons, per the PRD decision. Three boxes stay unticked and say so. A stale entry prints as `suppression/stale-allow`, the same id the site uses. Rule and fix are one sentence each. Two reviewers passed it after one fix pass. Read 10 files: .scratch/rules-as-checks/issues/03-no-suppression-comments.md, .scratch/rules-as-checks/PRD.md, tests/test_layers.py, tests/rule_report.py, docs/adr/0009-the-rules-are-checks.md, pyproject.toml, Makefile, ~/repos/zero/docs/adr/0013-the-rules-are-checks.md, CLAUDE.md, src/cornerstone_api/sources.py.
