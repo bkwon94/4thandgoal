@@ -5,6 +5,8 @@ It reads the import lines with ast and imports no pipeline code.
 import ast
 from pathlib import Path
 
+from rule_report import Offense, report
+
 SRC = Path(__file__).resolve().parent.parent / "src"
 PACKAGE = "cornerstone"
 API = "cornerstone_api"
@@ -98,17 +100,26 @@ LAYER_OF: dict[str, str] = {
 }
 
 
-def _module_name(path: Path) -> str:
+ADR = "docs/adr/0007-six-layers-import-downward-only.md"
+UPWARD_RULE = "a module imports only from its own layer or a lower one"
+
+
+def _module_name(path: Path, src: Path) -> str:
     """The dotted name of a source file, such as cornerstone.sheet.base. A package takes the name of its folder."""
-    parts = list(path.relative_to(SRC).with_suffix("").parts)
+    parts = list(path.relative_to(src).with_suffix("").parts)
     if parts[-1] == "__init__":
         parts.pop()
     return ".".join(parts)
 
 
-def _modules() -> dict[str, Path]:
+def _modules(src: Path) -> dict[str, Path]:
     """Every module of the pipeline package and the API package, by dotted name."""
-    return {_module_name(path): path for root in (PACKAGE, API) for path in sorted((SRC / root).rglob("*.py"))}
+    return {_module_name(path, src): path for root in (PACKAGE, API) for path in sorted((src / root).rglob("*.py"))}
+
+
+def _repo_path(path: Path, src: Path) -> str:
+    """The path of a file from the repo root, which holds src, as the report prints it."""
+    return str(path.relative_to(src.parent))
 
 
 def _is_type_checking(test: ast.expr) -> bool:
@@ -140,16 +151,16 @@ def _top_level_imports(tree: ast.Module) -> list[ast.Import | ast.ImportFrom]:
     return found
 
 
-def _targets(name: str, path: Path, modules: dict[str, Path]) -> set[str]:
-    """The modules of the two packages that one module imports at load."""
+def _targets(name: str, path: Path, modules: dict[str, Path]) -> dict[str, int]:
+    """The modules of the two packages that one module imports at load, each with the line of its first import."""
     package = name if path.name == "__init__.py" else name.rpartition(".")[0]
-    targets: set[str] = set()
+    targets: dict[str, int] = {}
     for node in _top_level_imports(ast.parse(path.read_text())):
         if isinstance(node, ast.Import):
             bases = [alias.name for alias in node.names]
             for base in bases:
                 if base in modules:
-                    targets.add(base)
+                    targets.setdefault(base, node.lineno)
             continue
         base = node.module or ""
         if node.level:
@@ -160,10 +171,10 @@ def _targets(name: str, path: Path, modules: dict[str, Path]) -> set[str]:
             # "from cornerstone import sheet" imports the module cornerstone.sheet, not only the package.
             child = f"{base}.{alias.name}"
             if child in modules:
-                targets.add(child)
+                targets.setdefault(child, node.lineno)
             elif base in modules:
-                targets.add(base)
-    targets.discard(name)
+                targets.setdefault(base, node.lineno)
+    targets.pop(name, None)
     return targets
 
 
@@ -171,39 +182,136 @@ def _short(name: str) -> str:
     return name.removeprefix(PACKAGE).removeprefix(".")
 
 
-def test_every_module_has_a_layer():
-    missing = [path for name, path in _modules().items()
-               if name.split(".")[0] == PACKAGE and _short(name) not in LAYER_OF]
-    assert not missing, (
-        f"{[str(path.relative_to(SRC)) for path in missing]} has no layer. "
-        f"Add it to LAYER_OF in tests/test_layers.py, in the lowest layer its imports allow. See ADR 0007.")
+def _layer_of_lines() -> dict[str, int]:
+    """The line of each key of LAYER_OF in this file, so a stale-entry offense names the line to remove."""
+    for node in ast.parse(Path(__file__).read_text()).body:
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.target.id == "LAYER_OF":
+            assert isinstance(node.value, ast.Dict)
+            return {key.value: key.lineno for key in node.value.keys
+                    if isinstance(key, ast.Constant) and isinstance(key.value, str)}
+    raise AssertionError("tests/test_layers.py has no LAYER_OF dict.")
 
 
-def test_the_map_names_only_modules_that_exist():
-    names = {_short(name) for name in _modules() if name.split(".")[0] == PACKAGE}
-    stale = sorted(set(LAYER_OF) - names)
-    assert not stale, f"LAYER_OF in tests/test_layers.py names modules that do not exist: {stale}. Remove them."
+def _no_layer_offenses(src: Path) -> list[Offense]:
+    # A missing key has no line of its own, so the offense names line 1 of the module.
+    return [Offense(
+        path=_repo_path(path, src),
+        line=1,
+        rule_id="layers/no-layer",
+        what=f"{name} has no layer in LAYER_OF.",
+        rule="each module of cornerstone has one layer in LAYER_OF",
+        adr=ADR,
+        fix=f'add "{_short(name)}" to LAYER_OF in tests/test_layers.py, in the lowest layer its imports allow.',
+    ) for name, path in _modules(src).items() if name.split(".")[0] == PACKAGE and _short(name) not in LAYER_OF]
 
 
-def test_no_module_imports_from_a_higher_layer():
-    modules = _modules()
-    breaches: list[str] = []
+def _stale_entry_offenses(src: Path, layer_of: dict[str, str] = LAYER_OF) -> list[Offense]:
+    names = {_short(name) for name in _modules(src) if name.split(".")[0] == PACKAGE}
+    lines = _layer_of_lines()
+    return [Offense(
+        # LAYER_OF is in this file for any src, so the path is from the root of this repo.
+        path=_repo_path(Path(__file__).resolve(), SRC),
+        # A key from a map other than LAYER_OF has no line in this file, so the offense names line 1.
+        line=lines.get(key, 1),
+        rule_id="layers/stale-entry",
+        what=f'LAYER_OF names "{key}", and no module {PACKAGE}.{key} exists.',
+        rule="LAYER_OF names only modules that exist",
+        adr=ADR,
+        fix=f'remove "{key}" from LAYER_OF, or give it the name the module has now.',
+    ) for key in sorted(set(layer_of) - names)]
+
+
+def _import_offenses(src: Path) -> list[Offense]:
+    """The upward imports, and the imports of the API package from the pipeline package."""
+    modules = _modules(src)
+    offenses: list[Offense] = []
     for name, path in modules.items():
         is_api = name.split(".")[0] == API
         if not is_api and _short(name) not in LAYER_OF:
             continue  # test_every_module_has_a_layer reports it.
         own = API_TOP_LAYER if is_api else LAYER_OF[_short(name)]
-        for target in sorted(_targets(name, path, modules)):
+        for target, line in sorted(_targets(name, path, modules).items()):
             if target.split(".")[0] == API:
                 if not is_api:
-                    breaches.append(f"{name} -> {target}: the pipeline must not import the API package")
+                    offenses.append(Offense(
+                        path=_repo_path(path, src),
+                        line=line,
+                        rule_id="layers/api-import",
+                        what=f"{name} imports {target}.",
+                        rule="the pipeline package does not import the API package",
+                        adr=ADR,
+                        fix=f"move the shared name into {PACKAGE}, and import it from there in both packages.",
+                    ))
                 continue
             theirs = LAYER_OF.get(_short(target))
             if theirs is None:
                 continue
             if LAYERS.index(theirs) > LAYERS.index(own):
-                who = "the API, which may import every layer below output" if is_api else f"layer {own}"
-                breaches.append(
-                    f"{name} -> {target}: an upward import. {name} is in {who}. {target} is in layer {theirs}.")
-    assert not breaches, "Each module imports only from its own layer or a lower one. See ADR 0007.\n" + "\n".join(
-        breaches)
+                if is_api:
+                    rule = f"the API package imports only from layer {API_TOP_LAYER} or a lower one"
+                    fix = f"move the shared name to a module in layer {API_TOP_LAYER} or a lower one."
+                else:
+                    rule = UPWARD_RULE
+                    fix = f"move the shared name to a module in a lower layer, or move {name} up in LAYER_OF."
+                offenses.append(Offense(
+                    path=_repo_path(path, src),
+                    line=line,
+                    rule_id="layers/upward-import",
+                    what=f"{name} imports {target}.",
+                    rule=rule,
+                    adr=ADR,
+                    fix=fix,
+                ))
+    return offenses
+
+
+def test_every_module_has_a_layer():
+    offenses = _no_layer_offenses(SRC)
+    assert not offenses, report(offenses)
+
+
+def test_the_map_names_only_modules_that_exist():
+    offenses = _stale_entry_offenses(SRC)
+    assert not offenses, report(offenses)
+
+
+def test_no_module_imports_from_a_higher_layer():
+    offenses = _import_offenses(SRC)
+    assert not offenses, report(offenses)
+
+
+def test_the_rule_finds_a_model_module_that_imports_a_write_module(tmp_path):
+    src = tmp_path / "src"
+    package = src / PACKAGE
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("")
+    (package / "writer.py").write_text("")
+    (package / "models.py").write_text('"""A model module."""\nimport json\n\nfrom cornerstone import writer\n')
+    assert _import_offenses(src) == [Offense(
+        path="src/cornerstone/models.py",
+        line=4,
+        rule_id="layers/upward-import",
+        what="cornerstone.models imports cornerstone.writer.",
+        rule=UPWARD_RULE,
+        adr=ADR,
+        fix="move the shared name to a module in a lower layer, or move cornerstone.models up in LAYER_OF.",
+    )]
+
+
+def test_the_rule_finds_a_module_with_no_layer(tmp_path):
+    package = tmp_path / "src" / PACKAGE
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("")
+    (package / "extra.py").write_text("")
+    offenses = _no_layer_offenses(tmp_path / "src")
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("src/cornerstone/extra.py", 1, "layers/no-layer")]
+
+
+def test_the_rule_finds_a_stale_entry(tmp_path):
+    package = tmp_path / "src" / PACKAGE
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("")
+    offenses = _stale_entry_offenses(tmp_path / "src", {"": "model", "models": "model"})
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("tests/test_layers.py", _layer_of_lines()["models"], "layers/stale-entry")]

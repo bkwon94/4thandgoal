@@ -17,3 +17,25 @@ One 0013 runs the hook on the staged files. This hook reads the whole tree, beca
 about 3 seconds and a file list saves nothing. One 0013 installs the packages inside the hook. This
 hook does not, because `uv run` syncs the environment itself. The hook does not run `ruff --fix`,
 because a hook that writes files makes a commit that differs from the staged change.
+
+## The report of an offense
+
+Each report gives enough to fix the offense without the ADR. Each rule test prints each offense in
+one shape, with `report` from `tests/rule_report.py`:
+
+```text
+src/cornerstone/waiver.py:12  layers/upward-import
+  cornerstone.waiver imports cornerstone.writer.
+  Rule: a module imports only from its own layer or a lower one (docs/adr/0007-six-layers-import-downward-only.md).
+  Fix: move the shared name to a module in a lower layer, or move cornerstone.waiver up in LAYER_OF.
+```
+
+- Line 1 holds the path from the repo root, a colon, the line, two spaces, and the rule id.
+- Line 2 says what is wrong at this place, with the names of this place.
+- Line 3 gives the rule in one sentence, and the path of its ADR.
+- Line 4 gives the fix.
+
+The rule id is `<topic>/<name>`. The topics are `layers`, `suppression`, `readme`, and `ports`. The
+report starts with the count, such as "2 offenses.", and puts a blank line between two offenses. A
+rule test asserts `not offenses, report(offenses)`, so pytest prints the report when the test fails.
+One 0013 also gives a column. This report does not, because a rule here names a whole line.
