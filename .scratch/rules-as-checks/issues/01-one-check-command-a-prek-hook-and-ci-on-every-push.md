@@ -22,6 +22,6 @@ push. ADR 0006 records the rule.
 - [ ] `docs/adr/0006-the-rules-are-checks.md` states: one command, the same rules in the hook and in CI, the hook runs a subset under 30 seconds, CI runs all. Later tickets add a section each.
 - [ ] `pnpm check` passes. `time pnpm check:fast` shows under 30 seconds.
 - [ ] Proof of the hook: in the worktree, stage a `.ts` file with a type error and run `git commit`. The hook refuses it. Remove the file.
-- [ ] Proof of the publish path: the pipeline's `cornerstone publish` commits this repo from a launchd job, so the hook runs there. In the worktree, run `env -i HOME=$HOME PATH=$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin git commit --allow-empty -m probe`. That is the PATH of the launchd plist. The hook passes. Then drop the probe commit.
+- [ ] Proof of the publish path: `cornerstone publish` commits this repo from Brian's shell, so the hook runs there too. The launchd job only builds and never commits. After the hook install, run one `make publish` by hand with the hook in place before the week 9 publish.
 - [ ] If the hook fails under that PATH, stop and return `STUCK:`. A failed hook stops the Tuesday publish.
 - [ ] Ask Brian before the first push of the branch. The Check run on that push is green.
