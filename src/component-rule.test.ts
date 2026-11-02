@@ -4,8 +4,9 @@
  * A failure names the file and the line.
  */
 import { readdirSync, readFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { basename, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
+import { type Offense, report } from "./rule-report";
 
 const COMPONENTS_DIR = join(process.cwd(), "src", "components");
 
@@ -22,25 +23,52 @@ function sourceFiles(dir = COMPONENTS_DIR): string[] {
 const SPECIFIER = /(?:\bfrom|\bimport\s*\(?|\bmock\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
 
 /* The modules a component must not reach. The match takes the alias and a relative path alike. */
-const BANNED: { why: string; test: (specifier: string) => boolean }[] = [
-  { why: "imports the node fs", test: (s) => /^(node:)?fs(\/promises)?$/.test(s) },
-  { why: "imports the config module", test: (s) => /(^|\/)lib\/config$/.test(s) },
-  { why: "imports a lib/data loader", test: (s) => /(^|\/)lib\/data(\/|$)/.test(s) },
+const BANNED: { ruleId: string; test: (specifier: string) => boolean; fix: string }[] = [
+  {
+    ruleId: "components/no-fs",
+    test: (s) => /^(node:)?fs(\/promises)?$/.test(s),
+    fix: "read the file in src/app/ and pass the value to the component as a prop.",
+  },
+  {
+    ruleId: "components/no-config",
+    test: (s) => /(^|\/)lib\/config$/.test(s),
+    fix: "read the config in src/app/ and pass the value to the component as a prop.",
+  },
+  {
+    ruleId: "components/no-loader",
+    test: (s) => /(^|\/)lib\/data(\/|$)/.test(s),
+    fix: "call the loader in src/app/ and pass the value to the component as a prop.",
+  },
 ];
 
-function breaches(file: string): string[] {
-  const name = relative(process.cwd(), file);
-  return readFileSync(file, "utf8")
-    .split("\n")
-    .flatMap((line, index) => {
-      const where = `${name}:${index + 1}`;
-      const found: string[] = [];
-      for (const [, specifier] of line.matchAll(SPECIFIER)) {
-        for (const rule of BANNED) if (rule.test(specifier)) found.push(`${where} ${rule.why}: ${line.trim()}`);
+const RULE = "a component takes data and returns markup";
+const ADR = "docs/adr/0004-a-component-takes-data-and-returns-markup.md";
+
+/* The rule takes the path and the source apart from the disk, so a test can run it on one string. */
+function offenses(path: string, source: string): Offense[] {
+  const name = basename(path);
+  return source.split("\n").flatMap((line, index) => {
+    const at = { path, line: index + 1, rule: RULE, adr: ADR };
+    const found: Offense[] = [];
+    for (const [, specifier] of line.matchAll(SPECIFIER)) {
+      for (const banned of BANNED) {
+        if (banned.test(specifier)) found.push({ ...at, ruleId: banned.ruleId, what: `${name} imports ${specifier}.`, fix: banned.fix });
       }
-      if (/\bprocess\.env\b/.test(line)) found.push(`${where} reads process.env: ${line.trim()}`);
-      return found;
-    });
+    }
+    if (/\bprocess\.env\b/.test(line)) {
+      found.push({
+        ...at,
+        ruleId: "components/no-env",
+        what: `${name} reads process.env.`,
+        fix: "read process.env in src/app/ and pass the value to the component as a prop.",
+      });
+    }
+    return found;
+  });
+}
+
+function fileOffenses(file: string): Offense[] {
+  return offenses(relative(process.cwd(), file), readFileSync(file, "utf8"));
 }
 
 describe("the component rule", () => {
@@ -50,7 +78,12 @@ describe("the component rule", () => {
   });
 
   it("finds no component that reads a file, reads the env, imports the config, or imports a loader", () => {
-    const found = sourceFiles().flatMap(breaches);
-    if (found.length > 0) throw new Error(`A component breaks ADR 0004. Pass the value as a prop from src/app/:\n${found.join("\n")}`);
+    const found = sourceFiles().flatMap(fileOffenses);
+    if (found.length > 0) throw new Error(report(found));
+  });
+
+  it("finds one offense in a component that imports a loader", () => {
+    const found = offenses("src/components/week/standings.tsx", 'import { weekData } from "@/lib/data/week-data";\n');
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "components/no-loader", line: 1 }]);
   });
 });

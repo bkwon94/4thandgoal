@@ -3,9 +3,10 @@
  * A shape change from the pipeline fails here, and the message names the file and the bad field.
  */
 import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
+import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "../schemas/managers";
 import { rankingsSchema } from "../schemas/rankings";
 import { waiverBoardSchema } from "../schemas/waiver";
@@ -23,11 +24,18 @@ function filesNamed(name: string, dir = PUBLIC_DIR): string[] {
 }
 
 /* The failure message holds the file and the path of each bad field, so a reader goes straight to the key. */
-function parseFile(schema: ZodType, file: string) {
+function shapeOffenses(schema: ZodType, file: string): Offense[] {
   const result = schema.safeParse(JSON.parse(readFileSync(file, "utf8")));
-  if (result.success) return;
-  const issues = result.error.issues.map((issue) => `  ${issue.path.join(".") || "(root)"}: ${issue.message}`);
-  throw new Error(`${file} does not match its schema:\n${issues.join("\n")}`);
+  if (result.success) return [];
+  return result.error.issues.map((issue) => ({
+    path: relative(process.cwd(), file),
+    line: issue.path.join(".") || "(root)",
+    ruleId: "published/shape",
+    what: issue.message,
+    rule: "the pipeline owns the published shape, and each file under public/ matches its Zod schema",
+    adr: "docs/adr/0005-the-published-shape-has-one-owner.md",
+    fix: "Change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file.",
+  }));
 }
 
 /* A count of zero would pass with no file read, so the three files that always exist must be found. */
@@ -41,6 +49,7 @@ describe.each([
   it("parses with its schema", () => {
     const files = filesNamed(name);
     expect(files.length).toBeGreaterThanOrEqual(least);
-    for (const file of files) expect(() => parseFile(schema, file)).not.toThrow();
+    const found = files.flatMap((file) => shapeOffenses(schema, file));
+    if (found.length > 0) throw new Error(report(found));
   });
 });
