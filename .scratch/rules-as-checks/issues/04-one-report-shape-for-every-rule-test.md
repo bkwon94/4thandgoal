@@ -1,0 +1,30 @@
+# 04: One report shape for every rule test
+
+Spec: `.scratch/rules-as-checks/PRD.md`, part 4 and "The report shape". One 0013, "The report of an offense".
+
+**What to build:** A small helper in `tests/rule_report.py` prints each offense in the house shape.
+`tests/test_layers.py` uses it for all three of its tests. Tickets 02, 03, 05, and 06 use it for their rules.
+
+**Blocked by:** 01 (ADR 0009 and `make rules`).
+
+**Status:** ready-for-agent
+
+- [ ] The exact shape, one offense:
+
+```text
+src/cornerstone/waiver.py:12  layers/upward-import
+  cornerstone.waiver imports cornerstone.writer.
+  Rule: a module imports only from its own layer or a lower one (docs/adr/0007-six-layers-import-downward-only.md).
+  Fix: move the shared name to a module in a lower layer, or move cornerstone.waiver up in LAYER_OF.
+```
+
+- [ ] Line 1: the path from the repo root, a colon, the line, two spaces, the rule id. Lines 2 to 4 start with two spaces.
+- [ ] `tests/rule_report.py` holds a frozen dataclass `Offense` with `path`, `line`, `rule_id`, `what`, `rule`, `adr`, `fix`, and a function `report(offenses) -> str`. It starts with the count, such as "2 offenses.", then each offense, with a blank line between.
+- [ ] A test asserts `not offenses, report(offenses)`. The helper imports no pipeline code.
+- [ ] Choice: the rule id is `<topic>/<name>`. The topics: `layers`, `suppression`, `readme`, `ports`.
+- [ ] `test_layers.py` ids: `layers/no-layer`, `layers/stale-entry`, `layers/upward-import`, `layers/api-import`. Each has a fix sentence.
+- [ ] `_targets` keeps the line of each import, so `layers/upward-import` names the line. The no-layer offense uses line 1 of the module. The stale-entry offense uses the line of its key in `LAYER_OF`.
+- [ ] A test of the helper compares `report` of one offense with the text above, byte for byte.
+- [ ] A test runs the layer rule on a temporary `src/` where a model module imports a write module, and reads one `layers/upward-import` offense with the right line.
+- [ ] `docs/adr/0009-the-rules-are-checks.md` gains "The report of an offense", with the example above.
+- [ ] Add `tests/rule_report.py` to the `pyright` include list. `make check` passes.
