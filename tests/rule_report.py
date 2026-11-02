@@ -20,7 +20,7 @@ class Offense:
     fix: str
 
 
-def _lines(offense: Offense) -> str:
+def _format(offense: Offense) -> str:
     return "\n".join([
         f"{offense.path}:{offense.line}  {offense.rule_id}",
         f"  {offense.what}",
@@ -32,4 +32,4 @@ def _lines(offense: Offense) -> str:
 def report(offenses: list[Offense]) -> str:
     """The count, then each offense, with a blank line between. A test asserts `not offenses, report(offenses)`."""
     count = f"{len(offenses)} offense." if len(offenses) == 1 else f"{len(offenses)} offenses."
-    return "\n\n".join([count] + [_lines(offense) for offense in offenses])
+    return "\n\n".join([count] + [_format(offense) for offense in offenses])

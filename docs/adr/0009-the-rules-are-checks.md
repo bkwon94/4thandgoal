@@ -20,8 +20,8 @@ because a hook that writes files makes a commit that differs from the staged cha
 
 ## The report of an offense
 
-An agent must fix an offense with no read of the ADR. So each rule test prints each offense in one
-shape, with `report` from `tests/rule_report.py`:
+Each report gives enough to fix the offense without the ADR. Each rule test prints each offense in
+one shape, with `report` from `tests/rule_report.py`:
 
 ```text
 src/cornerstone/waiver.py:12  layers/upward-import
