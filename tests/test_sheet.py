@@ -87,6 +87,15 @@ def test_every_chapter_fact_id_exists(bundle):
         assert all(fid in bundle.sheet.facts for fid in c.fact_ids), c.key
 
 
+def test_tied_matchup_result_says_tied(fixture_raw_dir):
+    week = parse_week(load_raw(fixture_raw_dir))
+    m = week.matchups[0]
+    tied = m.model_copy(update={"b": m.b.model_copy(update={"points": m.a.points})})
+    week = week.model_copy(update={"matchups": [tied, *week.matchups[1:]]})
+    tied_bundle = build_bundle(week, news=lambda pid: [], config=CONFIG)
+    assert "tied" in tied_bundle.sheet.facts["M1.result"].text
+
+
 def test_upset_fact_exists_for_matchup_4_only_when_the_lower_rank_won(bundle):
     # Before this week, behold the lamb was 11th and Bo Girds was 2nd, so M4 is an upset.
     text = bundle.sheet.facts["M4.upset"].text

@@ -63,7 +63,6 @@ LAYER_OF: dict[str, str] = {
     "sheet.next_week": "facts",
     "sheet.rankings": "facts",
     "sheet.standings": "facts",
-    "sheet.trades": "facts",
     "sheet.week": "facts",
     "odds": "facts",
     "adjusters": "facts",

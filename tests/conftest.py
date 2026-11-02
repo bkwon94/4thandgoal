@@ -13,12 +13,12 @@ import pytest
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
-from cornerstone.models import ChartValues, NflverseWeek, Trade
+from cornerstone.models import ChartValues, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.provider.raw import RawWeek
 from cornerstone.provider.sleeper import load_raw
-from cornerstone.sheet import Context, build_bundle, grade_input_facts, trade_facts
+from cornerstone.sheet import build_bundle
 from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 
@@ -99,7 +99,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
 
 
 def _window(raw, h):
-    # The window ends at noon on purpose. It keeps the Tuesday trade as T6, the only late trade in the fixture.
+    # The window ends at noon on purpose. It keeps the Tuesday trade as the sixth trade, the only late trade in the fixture.
     return trades_for_week(parse_trades(raw.transactions), h.weeks[5].trades,
                            default_cutoff(date(2026, 9, 9), 6, ET), datetime(2026, 10, 20, 12, 0, tzinfo=ET))
 
@@ -112,49 +112,6 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
                         snapshot=week_snapshot(raw, history_root, 6, config=CONFIG), config=CONFIG)
 
 
-def grade_inputs(week, history=None, trades=None, nfl=None, chart=None):
-    """The grade input facts by ID. The weekly sheet leaves them out, so these tests call the builders."""
-    context = Context(week, lambda pid: [], history, trades, nfl, chart, config=CONFIG)
-    return {f.id: f for f in grade_input_facts(context)}
-
-
-def recap_facts(week, history=None, trades=None):
-    """The sides, impact, swing, and late facts of each trade, kept for the trade analyzer, by ID.
-    The weekly sheet leaves them out, so these tests call the builder."""
-    return {f.id: f for f in trade_facts(Context(week, lambda pid: [], history, trades, config=CONFIG))}
-
-
-def _recap_facts(raw_dir, history_root):
-    """The sides, impact, swing, and late facts of the week 6 trades."""
-    raw = load_raw(raw_dir)
-    h = load_history(history_root, raw, week=6)
-    return recap_facts(parse_week(raw), history=h, trades=_window(raw, h))
-
-
-def _trade_inputs(raw_dir, history_root, nfl=None, chart=None):
-    """The grade input facts of the week 6 trades. Chart values, when given, add the trade value facts."""
-    raw = load_raw(raw_dir)
-    h = load_history(history_root, raw, week=6)
-    return grade_inputs(parse_week(raw), history=h, trades=_window(raw, h), nfl=nfl, chart=chart)
-
-
-def _decisive_trade(week):
-    """A one-way trade in which a loser gives the winner a starter who scored more than the margin.
-
-    It returns the trade, the winner, and the loser. The week 6 data has no decisive swing of its own.
-    """
-    for m in week.matchups:
-        winner, loser = (m.a, m.b) if m.a.points > m.b.points else (m.b, m.a)
-        big = max((line for line in winner.lines if line.started), key=lambda line: line.points)
-        if big.points > winner.points - loser.points:
-            trade = Trade(transaction_id="decisive", created=datetime(2026, 10, 14, tzinfo=ET),
-                          roster_ids=[loser.roster_id, winner.roster_id],
-                          adds={big.player_id: winner.roster_id}, drops={big.player_id: loser.roster_id},
-                          draft_picks=[])
-            return trade, winner.roster_id, loser.roster_id
-    raise AssertionError("no matchup has a starter who scored more than the margin")
-
-
 @pytest.fixture
 def tbundle(fixture_raw_dir, fixture_history_root):
     return _trade_bundle(fixture_raw_dir, fixture_history_root)
@@ -164,21 +121,6 @@ def tbundle(fixture_raw_dir, fixture_history_root):
 def chart_week6() -> ChartValues:
     path = Path(__file__).parent / "fixtures" / "charts" / "week-06.json"
     return ChartValues.model_validate_json(path.read_text(encoding="utf-8"))
-
-
-@pytest.fixture
-def rfacts(fixture_raw_dir, fixture_history_root):
-    return _recap_facts(fixture_raw_dir, fixture_history_root)
-
-
-@pytest.fixture
-def tinputs(fixture_raw_dir, fixture_history_root):
-    return _trade_inputs(fixture_raw_dir, fixture_history_root)
-
-
-@pytest.fixture
-def vinputs(fixture_raw_dir, fixture_history_root, chart_week6):
-    return _trade_inputs(fixture_raw_dir, fixture_history_root, chart=chart_week6)
 
 
 @pytest.fixture

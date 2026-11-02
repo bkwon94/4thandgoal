@@ -20,11 +20,10 @@ from cornerstone.sheet.base import (
 from cornerstone.sheet.next_week import storyline_facts
 from cornerstone.sheet.rankings import odds_facts, power_facts, rank_why_facts, rankings_chapter, swing_facts
 from cornerstone.sheet.standings import standings_facts
-from cornerstone.sheet.trades import grade_input_facts, trade_facts
 
 __all__ = [
     "NUMBER_TOKEN", "RANKINGS_CHAPTER", "Context", "build_bundle", "check_week_is_buildable", "fmt",
-    "grade_input_facts", "is_motw_recap", "odds_facts", "odds_inputs", "power_facts", "projected_totals",
+    "is_motw_recap", "odds_facts", "odds_inputs", "power_facts", "projected_totals",
     "rank_why_facts", "rankings_chapter", "read_bundle", "standings_facts", "storyline_facts", "swing_facts",
-    "trade_facts", "week_dates", "week_odds", "write_bundle",
+    "week_dates", "week_odds", "write_bundle",
 ]
