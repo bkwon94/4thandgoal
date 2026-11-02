@@ -12,11 +12,11 @@ import { type Offense, report } from "./rule-report";
 const ROOT = process.cwd();
 const SRC = join(ROOT, "src");
 
-/* The title, then the three headings in this order. The title text is free. */
+/* The title, then the three headings in this order. The title text has no rule. */
 const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
 const MAX_LINES = 24;
 
-const RULE = "each package folder holds a README of under 25 lines with the headings Knows, Ports, and Does not do";
+const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
 const CLAUDE_MD_RULE = "no CLAUDE.md sits below the repo root";
 const ADR = "docs/adr/0006-the-rules-are-checks.md";
 
@@ -70,7 +70,7 @@ function offenses(path: string, source: string | null): Offense[] {
       line: MAX_LINES + 1,
       ruleId: "readme/length",
       what: `${basename(path)} has ${lines.length} lines.`,
-      fix: "cut the README to 24 lines or fewer, and move the detail into the header comments of the files.",
+      fix: `cut the README to under ${MAX_LINES + 1} lines, and move the detail into the header comments of the files.`,
     });
   }
   return found;
@@ -111,7 +111,7 @@ describe("the readme rule", () => {
 
   it("finds no tracked CLAUDE.md below the root", () => {
     const paths = trackedFiles();
-    // An empty list would pass with no git read.
+    // An empty list would pass and does not run git.
     expect(paths).toContain("CLAUDE.md");
     const found = claudeMdOffenses(paths);
     if (found.length > 0) throw new Error(report(found));

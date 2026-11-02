@@ -64,16 +64,15 @@ one holds a `README.md` with a one-line title and three headings, in this order:
 - **Ports**: the outside systems that the folder reaches. A folder with no port writes "None.".
 - **Does not do**: what the folder never does, and which folder does it instead.
 
-The third heading is the most important line for an agent, because it is the only line that lets
-the agent stop the search. A README is under 25 lines. `src/app/` gets no README, because it is the
-app layer, and One says that an app needs none.
+The third heading is the heading that lets an agent stop the search. A README is under 25 lines.
+`src/app/` gets no README, because it is the app layer. One ADR 0007 says an app needs none.
 
 The test `src/readme-rule.test.ts` finds the folders and holds no list, so a new folder needs a
 README on its first day. Its rule ids are `readme/missing`, `readme/headings`, and `readme/length`.
 The test checks that each README exists and has the shape. It cannot check that the text is true,
 so a review checks that.
 
-No tracked `CLAUDE.md` sits below the repo root. Claude Code loads a nested `CLAUDE.md` by itself,
-so it puts the text of a folder into the context whether the agent needs it or not. The agent must
+No tracked `CLAUDE.md` sits below the repo root. Claude Code loads a nested `CLAUDE.md` by itself.
+So it puts the text of a folder into the context, whether the agent needs it or not. The agent must
 choose to read the next level. A `CLAUDE.md` also ties the layout to one tool. The test reads
 `git ls-files`, so a `CLAUDE.md` in `node_modules` does not count. The rule id is `readme/no-claude-md`.
