@@ -1,14 +1,19 @@
 """
-No-network stand-ins for the build inputs: Sleeper, news, nflverse, the expert search, and any URL fetch.
-The pipeline tests and the golden build share them, so both run the same offline build.
+No-network stand-ins for the build inputs: Sleeper, Claude, news, nflverse, the expert search, and any URL fetch.
+The pipeline tests and the golden build share them, so both run the same offline build. Each port has its one fake here.
 """
 import json
 import shutil
 import tempfile
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from pydantic import BaseModel
+
+from cornerstone.claude_errors import WriterError
+from cornerstone.claude_port import Writer
 from cornerstone.models import ResearchOut
 from cornerstone.nflverse import nflverse_week
 from cornerstone.provider.base import Provider
@@ -82,3 +87,38 @@ class FixtureProvider:
 
 # The annotation makes pyright prove that the fake has the five fetches of the protocol, with the same types.
 FIXTURE_PROVIDER: Provider = FixtureProvider()
+
+
+@dataclass(frozen=True)
+class WriterCall:
+    """The arguments of one call to `Writer.parse`."""
+    content: str | list[dict]
+    output_model: type[BaseModel]
+    system: str | None
+    cache_ttl: str | None
+    effort: str
+    tools: list[dict] | None
+
+
+class FakeWriter:
+    """A writer that gives its answers in order and keeps each call in `calls`. It never calls Claude.
+
+    With no answer left, it raises WriterError, as a failed Claude call does. So an empty FakeWriter fails each call.
+    """
+
+    def __init__(self, answers: list[BaseModel] | None = None):
+        self.answers = list(answers or [])
+        self.calls: list[WriterCall] = []
+
+    def parse(
+        self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
+        cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
+    ) -> BaseModel:
+        self.calls.append(WriterCall(content, output_model, system, cache_ttl, effort, tools))
+        if not self.answers:
+            raise WriterError(f"the fake writer has no answer left for {output_model.__name__}")
+        return self.answers.pop(0)
+
+
+# The annotation makes pyright prove that the fake has the method of the Writer protocol, with the same types.
+FAKE_WRITER: Writer = FakeWriter()

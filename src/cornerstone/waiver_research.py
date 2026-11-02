@@ -9,6 +9,7 @@ from pathlib import Path
 import anthropic
 from pydantic import ValidationError
 
+from cornerstone.claude_port import Writer
 from cornerstone.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
@@ -29,9 +30,12 @@ WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search", "max_use
 RESEARCH_EFFORT = "low"
 
 
-def search_call(system: str, user: str) -> ResearchOut:
-    """The real search: one Claude call with the web search tool, parsed into the claims on one player."""
-    return parse_call(user, ResearchOut, system, effort=RESEARCH_EFFORT, tools=[WEB_SEARCH_TOOL])
+def search_call(system: str, user: str, *, writer: Writer | None = None) -> ResearchOut:
+    """The real search: one Claude call with the web search tool, parsed into the claims on one player.
+
+    A writer of None is the one ClaudeWriter of the process. A test passes a ClaudeWriter with a stub client.
+    """
+    return parse_call(user, ResearchOut, system, effort=RESEARCH_EFFORT, tools=[WEB_SEARCH_TOOL], writer=writer)
 
 
 def research_players(board: WaiverBoard) -> list[WaiverPlayer]:

@@ -253,7 +253,10 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed", has_usage=True):
+def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True):
+    """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
+    from cornerstone.writer import ClaudeWriter
+
     sent = {}
 
     class Messages:
@@ -270,15 +273,14 @@ def _fake_client(monkeypatch, stop_reason="end_turn", parsed_output="parsed", ha
                 "usage": usage if has_usage else None,
             })()
 
-    monkeypatch.setattr("cornerstone.writer._get_client", lambda: type("Client", (), {"messages": Messages()})())
-    return sent
+    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})()), sent
 
 
-def test_claude_call_sends_the_system_and_the_user_text_through_parse_call(monkeypatch):
+def test_claude_call_sends_the_system_and_the_user_text_through_parse_call():
     from cornerstone.writer import claude_call
 
-    sent = _fake_client(monkeypatch)
-    assert claude_call("system text", "user text", WriterOut) == "parsed"
+    writer, sent = _stub_writer()
+    assert claude_call("system text", "user text", WriterOut, writer=writer) == "parsed"
     assert sent["system"] == [
         {"type": "text", "text": "system text", "cache_control": {"type": "ephemeral"}}
     ]
@@ -287,41 +289,41 @@ def test_claude_call_sends_the_system_and_the_user_text_through_parse_call(monke
     assert sent["output_config"] == {"effort": "high"}
 
 
-def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output(monkeypatch):
+def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
     from cornerstone.writer import RefusalError, WriterError, parse_call
 
-    _fake_client(monkeypatch, stop_reason="refusal", parsed_output=None)
+    writer, _ = _stub_writer(stop_reason="refusal", parsed_output=None)
     with pytest.raises(RefusalError):
-        parse_call("user text", WriterOut)
-    _fake_client(monkeypatch, parsed_output=None)
+        parse_call("user text", WriterOut, writer=writer)
+    writer, _ = _stub_writer(parsed_output=None)
     with pytest.raises(WriterError):
-        parse_call("user text", WriterOut)
+        parse_call("user text", WriterOut, writer=writer)
 
 
-def test_the_analyzer_call_alone_sets_the_one_hour_lifetime(monkeypatch):
+def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
     from cornerstone.analysis import AnalysisOut
     from cornerstone.writer import analyzer_call, claude_call
 
-    sent = _fake_client(monkeypatch)
-    analyzer_call("analyzer system", "user text", AnalysisOut)
+    writer, sent = _stub_writer()
+    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
     assert sent["system"] == [{
         "type": "text",
         "text": "analyzer system",
         "cache_control": {"type": "ephemeral", "ttl": "1h"},
     }]
     # The writer and the verifier share claude_call. They keep five minutes, no ttl.
-    claude_call("writer system", "user text", WriterOut)
+    claude_call("writer system", "user text", WriterOut, writer=writer)
     assert sent["system"][0]["cache_control"] == {"type": "ephemeral"}
 
 
-def test_the_analyzer_call_alone_runs_at_medium_effort(monkeypatch):
+def test_the_analyzer_call_alone_runs_at_medium_effort():
     from cornerstone.analysis import AnalysisOut
     from cornerstone.writer import analyzer_call, claude_call
 
-    sent = _fake_client(monkeypatch)
-    analyzer_call("analyzer system", "user text", AnalysisOut)
+    writer, sent = _stub_writer()
+    analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
     assert sent["output_config"] == {"effort": "medium"}
-    claude_call("writer system", "user text", WriterOut)
+    claude_call("writer system", "user text", WriterOut, writer=writer)
     assert sent["output_config"] == {"effort": "high"}
 
 
@@ -335,28 +337,28 @@ def test_analyze_uses_the_analyzer_call_by_default():
     assert inspect.signature(analyze).parameters["call"].default is analyzer_call
 
 
-def test_parse_call_logs_the_kind_and_the_three_usage_counts(monkeypatch, caplog):
+def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
     import logging
 
     from cornerstone.writer import parse_call
 
-    _fake_client(monkeypatch)
+    writer, _ = _stub_writer()
     with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
-        parse_call("user text", WriterOut, "system text")
+        parse_call("user text", WriterOut, "system text", writer=writer)
     assert (
         "WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0"
         " input_tokens=1"
     ) in caplog.messages
 
 
-def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(monkeypatch, caplog):
+def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):
     import logging
 
     from cornerstone.writer import parse_call
 
-    _fake_client(monkeypatch, has_usage=False)
+    writer, _ = _stub_writer(has_usage=False)
     with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
-        assert parse_call("user text", WriterOut, "system text") == "parsed"
+        assert parse_call("user text", WriterOut, "system text", writer=writer) == "parsed"
     assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)
 
 
@@ -537,15 +539,15 @@ def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
             "expected. Mention at most one shootout. Pick the one with the most league starters in it.") in system
 
 
-def test_the_research_call_alone_sends_the_web_search_tool(monkeypatch):
+def test_the_research_call_alone_sends_the_web_search_tool():
     from cornerstone.models import ResearchOut
     from cornerstone.waiver_research import search_call
     from cornerstone.writer import claude_call
 
-    sent = _fake_client(monkeypatch)
-    search_call("research system", "user text")
+    writer, sent = _stub_writer()
+    search_call("research system", "user text", writer=writer)
     assert [t["name"] for t in sent["tools"]] == ["web_search"]
     assert sent["output_format"] is ResearchOut
     sent.clear()
-    claude_call("writer system", "user text", WriterOut)
+    claude_call("writer system", "user text", WriterOut, writer=writer)
     assert "tools" not in sent

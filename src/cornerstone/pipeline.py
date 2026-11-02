@@ -49,7 +49,7 @@ from cornerstone.paths import (
 )
 from cornerstone.power_rankings import power_rankings
 from cornerstone.provider.base import Provider
-from cornerstone.provider.raw import RawWeek
+from cornerstone.provider.raw import RawState, RawWeek
 from cornerstone.provider.sleeper import (
     PROJECTIONS_AHEAD_FILE,
     SLEEPER,
@@ -105,7 +105,10 @@ def has_raw(repo: Path, season: int, week: int) -> bool:
     return (raw_dir(repo, season, week) / "state.json").exists()
 
 
-def resolve_week(season: int | None, week: int | None) -> tuple[int, int]:
+def resolve_week(
+        season: int | None, week: int | None, fetch_state: Callable[[], RawState] = fetch_state,
+) -> tuple[int, int]:
+    # The state fetch is a parameter, so the CLI passes the one it got.
     if season is not None and week is not None:
         return season, week
     state = fetch_state()
