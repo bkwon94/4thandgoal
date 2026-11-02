@@ -11,8 +11,8 @@ from rule_report import Offense, report
 ROOT = Path(__file__).resolve().parent.parent
 FOLDERS = ("src", "tests")
 ADR = "docs/adr/0009-the-rules-are-checks.md"
-RULE = "No comment silences a rule. A line that must stay goes in the allow list of this test, with its reason"
-FIX = "Fix the type or the code. If the line must stay, add it to the allow list with its reason."
+RULE = "no comment silences a rule"
+FIX = "fix the type or the code, or add the line to the allow list of this test with its reason"
 
 # Each pattern is two parts, so this file holds no match and the rule needs no file exclusion.
 MARKER = "no" + "qa"
@@ -20,8 +20,9 @@ PATTERNS = [MARKER, "type" + r":\s*ignore", "pyright" + r":\s*ignore"]
 SUPPRESSION = re.compile("|".join(PATTERNS), re.IGNORECASE)
 
 # The allow list is the only place a suppression may live. ruff owns BLE001 and RUF009, and we do not
-# turn a ruff rule off to clear a marker. The key is the path from the repo root and the line text with no
-# indent, not the line number, so an entry does not go stale when a line above it moves. The value is the reason.
+# turn a ruff rule off to clear a marker. ruff 0.17.3 enables both rules by default, so each marker silences a
+# real offense. The key is the path from the repo root and the line text with no indent, not the line number.
+# So an entry does not go stale when a line above it moves. The value is the reason.
 ALLOW: dict[tuple[str, str], str] = {
     ("src/cornerstone/render.py",
      f"except Exception as exc:  # {MARKER}: BLE001 - a build never stops on one avatar"):
@@ -37,7 +38,7 @@ ALLOW: dict[tuple[str, str], str] = {
         "the app keeps running after a failed refresh",
     ("src/cornerstone_api/sources.py",
      f"read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # {MARKER}: RUF009"):
-        "One shared partial is safe as the default, because it holds no state that a call changes.",
+        "one shared partial holds no state that a call changes",
 }
 
 
@@ -82,11 +83,11 @@ def _stale_entry_offenses(root: Path, allow: dict[tuple[str, str], str] = ALLOW)
         path=Path(__file__).resolve().relative_to(ROOT).as_posix(),
         # A key from a list other than ALLOW has no line in this file, so the offense names line 1.
         line=lines.get(key, 1),
-        rule_id="suppression/stale-entry",
+        rule_id="suppression/stale-allow",
         what=f"The allow list names a line of {key[0]} that no file holds: {key[1]}",
         rule=RULE,
         adr=ADR,
-        fix="remove the entry from ALLOW, or give it the line text the file has now.",
+        fix="remove the entry from the allow list",
     ) for key in allow if key not in found]
 
 
@@ -122,4 +123,4 @@ def test_the_rule_finds_a_stale_entry(tmp_path):
     allow = {("src/models.py", "value: int = 1  # type" + ": ignore"): "a reason"}
     offenses = _stale_entry_offenses(tmp_path, allow)
     assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
-        ("tests/test_rule_suppressions.py", 1, "suppression/stale-entry")]
+        ("tests/test_rule_suppressions.py", 1, "suppression/stale-allow")]
