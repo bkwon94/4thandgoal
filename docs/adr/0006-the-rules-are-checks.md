@@ -33,3 +33,23 @@ The rule id is `<topic>/<name>`. The topics are `components`, `published`, `supp
 two offenses. A JSON parse gives no line, so the location of a `published/shape` offense is the file
 and the field path, such as `public/2026/week-07/page.json:games.0.byes`. The helper imports no app
 code, so the build never bundles it.
+
+## No suppression comment
+
+No comment silences a rule. The test `src/suppression-rule.test.ts` reads every `.ts`, `.tsx`,
+`.js`, and `.mjs` file under `src/` and `scripts/`, and `next.config.ts`, `vitest.config.ts`, and
+`postcss.config.mjs`. It fails on `@ts-expect-error`, `@ts-ignore`, `@ts-nocheck`, and
+`eslint-disable`. `@ts-nocheck` silences a whole file, so it is the widest suppression. The site has
+no ESLint, so an `eslint-disable` line silences nothing, but the test still fails on it. The test
+builds each pattern from two parts, so its own file holds no match. It never skips a file, because
+One rejects a file exclusion. The rule id is `suppression/comment`.
+
+A line that must stay goes in the allow list of the test, with its reason. The allow list is a `Map`
+in the test, and it is the only place a suppression may live. The key is the path and the text of the
+line. The key holds the text, not the line number, so an entry does not go stale when a line above
+it moves. An entry that matches no line fails the test, so a stale entry cannot stay. The list starts
+empty.
+
+The allow list is the one departure from One. One allows no suppression, and it puts each exception
+in the definition of the rule. Here `tsc` owns its rules, and we do not fork it. So an exception
+lives in the allow list, with its reason, and in no other place.
