@@ -94,17 +94,18 @@ export const knownGamesSchema = z.object({
 });
 
 export const asOfSchema = z.object({
-  chart_week: z.number(),
+  // Null when the week has no trade value chart yet.
+  chart_week: z.number().nullable(),
   stats_through: z.number(),
   // A document can lack both fields, so each is optional.
   completed_through: z.number().optional(),
   known_games: knownGamesSchema.nullable().optional(),
   // True when the week has no trade value chart yet. A document can lack both fields, so each is optional.
   no_chart: z.boolean().optional(),
-  // The sentence that says so, written by the pipeline.
-  no_chart_note: z.string().optional(),
+  // The sentence that says so, written by the pipeline. The API sends null on a week that has a chart.
+  no_chart_note: z.string().nullable().optional(),
   // An ISO 8601 timestamp with an offset.
-  rosters_fetched: z.string(),
+  rosters_fetched: z.string().nullable(),
 });
 
 export const analyzeResponseSchema = z.object({

@@ -169,7 +169,7 @@ describe("AnalyzeResult", () => {
 
   it("shows the as-of line with the fetch time in the reader's locale", () => {
     render(<AnalyzeResult doc={fixture} />);
-    const fetched = new Date(fixture.as_of.rosters_fetched).toLocaleString(undefined, {
+    const fetched = new Date(fixture.as_of.rosters_fetched as string).toLocaleString(undefined, {
       month: "short",
       day: "numeric",
       hour: "numeric",
@@ -180,6 +180,12 @@ describe("AnalyzeResult", () => {
       `Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · Chart week 6 · rosters fetched ${fetched}`,
     );
     expect(line.textContent).not.toMatch(/live|partial|current week/i);
+  });
+
+  it("leaves out the chart week and the fetch time when the API sends null", () => {
+    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, chart_week: null, rosters_fetched: null } }} />);
+    const line = screen.getByText(/^Stats through week 5/);
+    expect(line.textContent).not.toMatch(/null|1970|Chart week|rosters fetched/);
   });
 
   it("shows the no-chart line when the document says the week has no chart", () => {

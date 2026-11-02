@@ -32,4 +32,10 @@ describe("API response schemas", () => {
     body.trades[0].fairness = { sides: [], state: "lopsided", gives_more: null };
     expect(findResponseSchema.safeParse(body).success).toBe(false);
   });
+
+  it("accepts the nulls the API sends in as_of", () => {
+    const body = fixture("analyze-response.json") as { as_of: Record<string, unknown> };
+    body.as_of = { ...body.as_of, chart_week: null, rosters_fetched: null, no_chart: false, no_chart_note: null };
+    expect(analyzeResponseSchema.safeParse(body).success).toBe(true);
+  });
 });

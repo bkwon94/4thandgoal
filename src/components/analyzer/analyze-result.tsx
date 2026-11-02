@@ -283,20 +283,31 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   const tradeWeek = as_of.known_games?.week ?? as_of.stats_through + 1;
   // Stats that failed to fetch leave the line stale, so the line says so.
   const staleSegments = stale.includes("stats") ? [`Week ${tradeWeek} stats not fetched`] : [];
-  const fetched = new Date(doc.as_of.rosters_fetched).toLocaleString(undefined, {
+  const chartSegments = as_of.chart_week !== null ? [`Chart week ${as_of.chart_week}`] : [];
+  return (
+    <p className="m-0 text-meta text-mute tabular-nums">
+      {[...knownGamesSegments(as_of), ...staleSegments, ...chartSegments].join(" · ")}
+      {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
+    </p>
+  );
+}
+
+/* The fetch time of the rosters, in the reader's locale. */
+function RostersFetched({ iso }: { iso: string }) {
+  const fetched = new Date(iso).toLocaleString(undefined, {
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
   return (
-    <p className="m-0 text-meta text-mute tabular-nums">
-      {[...knownGamesSegments(as_of), ...staleSegments, `Chart week ${as_of.chart_week}`].join(" · ")} · rosters fetched{" "}
+    <>
+      {" · rosters fetched "}
       {/* The build and the browser can format the time apart, so a static render must not warn about it. */}
-      <time dateTime={doc.as_of.rosters_fetched} suppressHydrationWarning>
+      <time dateTime={iso} suppressHydrationWarning>
         {fetched}
       </time>
-    </p>
+    </>
   );
 }
 
