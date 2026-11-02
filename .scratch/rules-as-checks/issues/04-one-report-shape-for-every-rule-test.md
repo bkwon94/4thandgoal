@@ -7,7 +7,7 @@ Spec: `.scratch/rules-as-checks/PRD.md`, part 4 and "The report shape". One 0013
 
 **Blocked by:** 01 (ADR 0009 and `make rules`).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The exact shape, one offense:
 
@@ -28,3 +28,7 @@ src/cornerstone/waiver.py:12  layers/upward-import
 - [x] A test runs the layer rule on a temporary `src/` where a model module imports a write module, and reads one `layers/upward-import` offense with the right line.
 - [x] `docs/adr/0009-the-rules-are-checks.md` gains "The report of an offense", with the example above.
 - [x] Add `tests/rule_report.py` to the `pyright` include list. `make check` passes.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-04-report-shape`, commits 2deac95, b09547e, a025d94, d352168, and 588a9f7, with `--no-ff`. 1479 passed, 9 deselected. No golden change. `make rules` runs 6 tests, all in `test_layers.py`. The helper test is `tests/test_offense_report.py`, so the `test_rule_` prefix keeps one meaning. Each of the three layer rules also runs on a temporary `src/` and finds one offense. `_stale_entry_offenses` takes a `layer_of` argument for that test. Two reviewers passed it after one fix pass. Read 13 files: .scratch/rules-as-checks/issues/04-one-report-shape-for-every-rule-test.md, .scratch/rules-as-checks/PRD.md, docs/adr/0009-the-rules-are-checks.md, tests/test_layers.py, docs/adr/0007-six-layers-import-downward-only.md, pyproject.toml, Makefile, ~/repos/zero/docs/adr/0013-the-rules-are-checks.md, tests/fakes.py, tests/conftest.py, tests/rule_report.py, and the two reviewers read CLAUDE.md and docs/agents/issue-tracker.md.
