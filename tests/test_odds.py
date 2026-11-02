@@ -3,6 +3,7 @@ Tests for the playoff odds engine.
 They feed a small fixture league at the engine seam and read the odds, the status, the seed, and the swing.
 """
 import time
+from pathlib import Path
 
 import pytest
 
@@ -80,7 +81,8 @@ def test_roster_id_breaks_a_tie_on_wins_and_points_for():
 
 
 def test_a_roster_that_wins_every_drawn_game_lands_at_the_1_seed():
-    scores = {**SCORES, 4: [200.0, 210.0]}
+    # The draws are normal around a level shrunk toward the league average, so the gap must be wide for every win.
+    scores = {**SCORES, 4: [1000.0, 1010.0]}
     result = _odds(scores=scores, records=EVEN)
     assert result.teams[4].seed == 1
     # The roster is open, so its playoff odds clamp to 99, and the bye odds cap there.
@@ -237,8 +239,8 @@ def test_the_odds_at_projection_weight_0_equal_the_odds_with_no_projections():
     assert _odds(projected=PROJECTED, projection_weight=0) == plain
     # The odds of the 4-team fixture with no projections, at this seed.
     assert {rid: (t.playoff, t.bye, t.seed) for rid, t in plain.teams.items()} == {
-        1: (75, 31, 2), 2: (72, 39, 1), 3: (53, 31, 1), 4: (1, 1, None)}
-    assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(99, 56, 98, 37), (64, 18, 1, 1)]
+        1: (76, 45, 1), 2: (57, 26, 2), 3: (55, 28, 1), 4: (13, 2, None)}
+    assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(95, 53, 82, 35), (73, 21, 34, 2)]
 
 
 def test_the_projections_move_the_odds():
@@ -281,3 +283,46 @@ def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_histo
     assert time.perf_counter() - start < 10
     total = sum(t.playoff for t in result.teams.values())
     assert abs(total - CONFIG.playoff_spots * 100) <= len(records)
+
+
+def test_a_wide_spread_of_past_scores_gives_no_better_odds_than_a_narrow_spread():
+    # Roster 2 averages 105.5 in both leagues. Only the spread of its two past scores differs.
+    wide = _odds(scores={**SCORES, 2: [75.5, 135.5]}, runs=2000).teams[2].playoff
+    narrow = _odds(scores={**SCORES, 2: [104.5, 106.5]}, runs=2000).teams[2].playoff
+    assert abs(wide - narrow) <= 5
+
+
+def test_the_shrink_pulls_a_roster_far_above_the_league_average_down():
+    # Roster 4 trails on wins but scores far above the league, so its odds rest on its level.
+    scores = {**SCORES, 4: [150.0, 160.0]}
+    shrunk = _odds(scores=scores, runs=2000).teams[4].playoff
+    raw = _odds(scores=scores, runs=2000, shrink_weeks=0).teams[4].playoff
+    assert shrunk < raw
+
+
+# The week 7 Level column of ticket 01 of odds-level: the playoff odds of the prototype on the saved data.
+WEEK_7_LEVEL = {
+    "Lil Fridge": 94, "Bo Girds": 94, "London Cooking": 94, "All You Need Is Love": 71,
+    "Maye d'force B with U": 61, "Brock 'N' Roll": 57, "Return of T Mac": 34, "Amon-Ra Dawg Your Team": 53,
+    "Unsolicited Dak Picks": 25, "behold the lamb": 16,
+}
+WEEK_7_RAW = Path(__file__).parent.parent / "data" / "2026" / "week-07" / "raw"
+
+
+@pytest.mark.skipif(not WEEK_7_RAW.is_dir(), reason="no saved week 7 data")
+def test_the_week_7_odds_match_the_prototype_within_3_points():
+    from cornerstone.history import load_history
+    from cornerstone.parse import parse_week
+    from cornerstone.provider.sleeper import load_raw
+    from cornerstone.sheet.base import odds_inputs, projected_totals, week_odds
+
+    raw = load_raw(WEEK_7_RAW)
+    week = parse_week(raw)
+    history = load_history(WEEK_7_RAW.parent.parent / "history", raw, week=7)
+    result = week_odds(week, history, odds_inputs(week, history, CONFIG), projected_totals(week, CONFIG), CONFIG)
+    assert result is not None
+    # The names on Sleeper use curly quotes, and the ticket table uses straight quotes.
+    names = {rid: t.name.replace("‘", "'").replace("’", "'") for rid, t in week.teams.items()}
+    odds = {names[rid]: t.playoff for rid, t in result.teams.items()}
+    for name, level in WEEK_7_LEVEL.items():
+        assert abs(odds[name] - level) <= 3, name

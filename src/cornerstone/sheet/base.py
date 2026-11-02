@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 FIRST_WEEK = 6
 # The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
-# per team are the fewest scores the engine draws from. A week before it gets no odds.
+# per team are the fewest scores the engine reads for a team level. A week before it gets no odds.
 ODDS_FROM_WEEK = 6
 MOVE_WORDS = {"waiver": "waiver add", "free_agent": "free agent add", "trade": "trade"}
 AWARD_TITLES = {
