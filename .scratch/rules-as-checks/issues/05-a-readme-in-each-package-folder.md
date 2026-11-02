@@ -22,4 +22,4 @@ or a `CLAUDE.md` anywhere below the repo root.
 - [x] The `CLAUDE.md` rule reads `git ls-files` and fails on any `CLAUDE.md` other than the root one. One 0007 says why: a nested `CLAUDE.md` loads by itself, and the agent must choose to read.
 - [x] A test runs the rule on a temporary folder with an `__init__.py` and no README, and finds one offense.
 - [x] `docs/adr/0009-the-rules-are-checks.md` gains "A README in each package folder".
-- [ ] Add the test file to the `pyright` include list. `make check` passes.
+- [x] Add the test file to the `pyright` include list. `make check` passes.
