@@ -27,11 +27,9 @@ test: ## Run the tests
 typecheck: ## Check the types
 	pnpm typecheck
 
+# The list of steps lives in the "check" script of package.json, so the hook, CI, and make run the same rules.
 check: ## Run typecheck, test, build, and the export check
-	pnpm typecheck
-	pnpm test
-	pnpm build
-	pnpm check:export
+	pnpm check
 
 # The API must run on port 8080 from the pipeline repo.
 serve: ## Build against the local API and serve out/ on port 3000
