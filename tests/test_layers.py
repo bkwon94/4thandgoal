@@ -205,19 +205,20 @@ def _no_layer_offenses(src: Path) -> list[Offense]:
     ) for name, path in _modules(src).items() if name.split(".")[0] == PACKAGE and _short(name) not in LAYER_OF]
 
 
-def _stale_entry_offenses(src: Path) -> list[Offense]:
+def _stale_entry_offenses(src: Path, layer_of: dict[str, str] = LAYER_OF) -> list[Offense]:
     names = {_short(name) for name in _modules(src) if name.split(".")[0] == PACKAGE}
     lines = _layer_of_lines()
     return [Offense(
         # LAYER_OF is in this file for any src, so the path is from the root of this repo.
         path=_repo_path(Path(__file__).resolve(), SRC),
-        line=lines[key],
+        # A key from a map other than LAYER_OF has no line in this file, so the offense names line 1.
+        line=lines.get(key, 1),
         rule_id="layers/stale-entry",
         what=f'LAYER_OF names "{key}", and no module {PACKAGE}.{key} exists.',
         rule="LAYER_OF names only modules that exist",
         adr=ADR,
         fix=f'remove "{key}" from LAYER_OF, or give it the name the module has now.',
-    ) for key in sorted(set(LAYER_OF) - names)]
+    ) for key in sorted(set(layer_of) - names)]
 
 
 def _import_offenses(src: Path) -> list[Offense]:
@@ -295,3 +296,22 @@ def test_the_rule_finds_a_model_module_that_imports_a_write_module(tmp_path):
         adr=ADR,
         fix="move the shared name to a module in a lower layer, or move cornerstone.models up in LAYER_OF.",
     )]
+
+
+def test_the_rule_finds_a_module_with_no_layer(tmp_path):
+    package = tmp_path / "src" / PACKAGE
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("")
+    (package / "extra.py").write_text("")
+    offenses = _no_layer_offenses(tmp_path / "src")
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("src/cornerstone/extra.py", 1, "layers/no-layer")]
+
+
+def test_the_rule_finds_a_stale_entry(tmp_path):
+    package = tmp_path / "src" / PACKAGE
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("")
+    offenses = _stale_entry_offenses(tmp_path / "src", {"": "model", "models": "model"})
+    assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
+        ("tests/test_layers.py", _layer_of_lines()["models"], "layers/stale-entry")]
