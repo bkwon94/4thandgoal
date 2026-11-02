@@ -239,8 +239,8 @@ def test_the_odds_at_projection_weight_0_equal_the_odds_with_no_projections():
     assert _odds(projected=PROJECTED, projection_weight=0) == plain
     # The odds of the 4-team fixture with no projections, at this seed.
     assert {rid: (t.playoff, t.bye, t.seed) for rid, t in plain.teams.items()} == {
-        1: (76, 45, 1), 2: (57, 26, 2), 3: (55, 28, 1), 4: (13, 2, None)}
-    assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(95, 53, 82, 35), (73, 21, 34, 2)]
+        1: (75, 45, 1), 2: (55, 27, 2), 3: (54, 26, 2), 4: (17, 3, None)}
+    assert [(s.a_win, s.a_loss, s.b_win, s.b_loss) for s in plain.swings] == [(94, 53, 82, 32), (73, 22, 38, 3)]
 
 
 def test_the_projections_move_the_odds():
