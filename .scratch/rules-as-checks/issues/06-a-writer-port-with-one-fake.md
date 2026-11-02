@@ -8,7 +8,7 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 
 **Blocked by:** 04 (the report shape and its helper).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `src/cornerstone/claude_port.py`, layer `provider` in `LAYER_OF`, beside `claude_errors`: `class Writer(Protocol)` with one method `parse`. It has the signature of today's `parse_call`, which every Claude call goes through.
 - [x] `writer.py`: `ClaudeWriter(client: anthropic.Anthropic | None = None)` implements `Writer`. `parse` holds the body of `parse_call`. It makes the client on its first call, never at import. `_get_client` and the module `_client` go.
@@ -31,3 +31,7 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 - [x] `docs/adr/0010-a-port-has-one-fake.md`: each port has one fake in `tests/fakes.py`. No test patches a port. A fake is a test double that only tests import. A mock mode is a runtime switch that serves fake data, and it stays banned.
 - [x] `src/cornerstone/README.md`, if ticket 05 merged, lists `Writer` under Ports.
 - [x] Add the new module and the test to the `pyright` include list. `make check` passes. The four golden tests pass with no change.
+
+## Comments
+
+- 2026-11-03: merged into `main` from branch `rules-as-checks-06-writer-port`, commits 6ca5041, 5da17d8, ceda1c9, d61c213, b3e1463, 74e1e48, and 5c43783, with `--no-ff`. 1504 passed, 9 deselected on the merged tree. No golden change. `make rules` runs 24 tests. The 20 named patches are gone; 29 out-of-scope build-step patches remain. The research call goes through the writer seam too, and a test proves it. The rule also catches a patch of `WRITER` or `SLEEPER` through any module. `cornerstone.sleeper` left the rule, because `cornerstone.provider` covers it. `FakeWriter` checks the answer type. No runtime path serves fake data. Notes for later: `test_sleeper_failure_exits_plainly` still patches `cli.resolve_week` and could pass `fetch_state=down`; `run_history` keeps `SLEEPER` with no provider parameter. Two reviewers passed it after one fix pass. Read 32 files: the ticket, PRD.md, One ADR 0004, writer.py, claude_errors.py, provider/base.py, provider/sleeper.py, cli.py, pipeline.py, live.py, waiver_research.py, tunables.py, tests/fakes.py, conftest.py, test_layers.py, test_rule_suppressions.py, rule_report.py, test_cli.py, test_pipeline.py, test_writer.py, test_chart.py, test_waiver_research.py, test_sleeper.py, test_waiver_trending.py, test_rule_tracker.py, ADRs 0007, 0008, 0009, src/cornerstone/README.md, provider/README.md, Makefile, pyproject.toml, modular ticket 09.

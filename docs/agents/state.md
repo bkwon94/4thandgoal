@@ -9,7 +9,6 @@ One row for each feature under `.scratch/` with an open ticket. The close commen
 | manager-pages | 12 drop-awards-from-managers-entry | | |
 | modular | 20 remove-the-chart-parameter-of-context | | |
 | next-week-byes | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
-| rules-as-checks | 06 a-writer-port-with-one-fake | | |
 | tone | 09 leftovers-after-the-second-rewrite | | |
 | trade-grade-v3 | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
 | waiver | 09 usage-floor-for-ranked-buckets | | |
