@@ -47,8 +47,8 @@ One rejects a file exclusion. The rule id is `suppression/comment`.
 A line that must stay goes in the allow list of the test, with its reason. The allow list is a `Map`
 in the test, and it is the only place a suppression may live. The key is the path and the text of the
 line. The key holds the text, not the line number, so an entry does not go stale when a line above
-it moves. An entry that matches no line fails the test, so a stale entry cannot stay. The list starts
-empty.
+it moves. An entry that matches no line fails the test with the rule id `suppression/stale-allow`,
+so a stale entry cannot stay. The list starts empty.
 
 The allow list is the one departure from One. One allows no suppression, and it puts each exception
 in the definition of the rule. Here `tsc` owns its rules, and we do not fork it. So an exception

@@ -12,7 +12,7 @@ const ROOT = process.cwd();
 const TREES = ["src", "scripts"].map((dir) => join(ROOT, dir));
 const ROOT_FILES = ["next.config.ts", "vitest.config.ts", "postcss.config.mjs"].map((file) => join(ROOT, file));
 
-/* Each pattern is built from two parts, so this file holds no match and the test never skips its own file. */
+/* The test builds each pattern from two parts, so this file holds no match and the test never skips its own file. */
 const TS = "@" + "ts-";
 const PATTERNS = [TS + "expect-error", TS + "ignore", TS + "nocheck", "eslint" + "-disable"];
 
@@ -23,13 +23,12 @@ const PATTERNS = [TS + "expect-error", TS + "ignore", TS + "nocheck", "eslint" +
  */
 const ALLOW = new Map<string, string>();
 
-const RULE = "no comment silences a rule. A line that must stay goes in the allow list of this test, with its reason";
+const RULE = "no comment silences a rule";
 const ADR = "docs/adr/0006-the-rules-are-checks.md";
 
-/* Every source file under a tree. A folder of installed or built code holds no site code. */
+/* Every source file under a tree, tests too. */
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    if (entry.name === "node_modules" || entry.name === ".next") return [];
     const path = join(dir, entry.name);
     if (entry.isDirectory()) return sourceFiles(path);
     return /\.(ts|tsx|js|mjs)$/.test(entry.name) ? [path] : [];
@@ -57,7 +56,7 @@ function suppressions(path: string, source: string): { key: string; offense: Off
         what: `${name} holds ${pattern}.`,
         rule: RULE,
         adr: ADR,
-        fix: "fix the type or the code. If the line must stay, add it to the allow list with its reason.",
+        fix: "fix the type or the code, or add the line to the allow list of this test with its reason.",
       },
     })),
   );
@@ -70,10 +69,20 @@ function offenses(path: string, source: string, allow = ALLOW): Offense[] {
     .map(({ offense }) => offense);
 }
 
-/* An entry that matches no line is stale, and a stale entry cannot stay. */
-function staleEntries(files: { path: string; source: string }[], allow = ALLOW): string[] {
+/* An entry that matches no line is stale, and a stale entry cannot stay. The path is the part of the key before the line text. */
+function staleEntries(files: { path: string; source: string }[], allow = ALLOW): Offense[] {
   const keys = new Set(files.flatMap(({ path, source }) => suppressions(path, source).map(({ key }) => key)));
-  return [...allow.keys()].filter((key) => !keys.has(key));
+  return [...allow.keys()]
+    .filter((key) => !keys.has(key))
+    .map((key) => ({
+      path: key.slice(0, key.indexOf(": ")),
+      line: "allow",
+      ruleId: "suppression/stale-allow",
+      what: "The allow list names a line that no file holds.",
+      rule: RULE,
+      adr: ADR,
+      fix: "remove the entry from the allow list.",
+    }));
 }
 
 function readSite(file: string): { path: string; source: string } {
@@ -97,7 +106,8 @@ describe("the suppression rule", () => {
   });
 
   it("finds no stale entry in the allow list", () => {
-    expect(staleEntries(siteFiles().map(readSite))).toEqual([]);
+    const found = staleEntries(siteFiles().map(readSite));
+    if (found.length > 0) throw new Error(report(found));
   });
 
   it(`finds one offense in a source string with a ${TS}ignore line`, () => {
@@ -112,7 +122,10 @@ describe("the suppression rule", () => {
       [allowKey("src/lib/gone.ts", `// ${TS}ignore`), "a test reason"],
     ]);
     expect(offenses("src/lib/week.ts", source, allow)).toEqual([]);
-    expect(staleEntries([{ path: "src/lib/week.ts", source }], allow)).toEqual([allowKey("src/lib/gone.ts", `// ${TS}ignore`)]);
+    const stale = staleEntries([{ path: "src/lib/week.ts", source }], allow);
+    expect(stale.map(({ path, line, ruleId }) => ({ path, line, ruleId }))).toEqual([
+      { path: "src/lib/gone.ts", line: "allow", ruleId: "suppression/stale-allow" },
+    ]);
   });
 
   it("finds one offense in a file on disk with a suppression comment", () => {
