@@ -28,8 +28,8 @@ src/components/week/standings.tsx:4  components/no-loader
 - **The rule** in one sentence, with the path of its ADR.
 - **The fix** in one sentence.
 
-The rule id is `<topic>/<name>`. The topics are `components`, `published`, `suppression`, and
-`readme`. The report starts with the count, such as "2 offenses.". A blank line comes between
+The rule id is `<topic>/<name>`. The topics are `components`, `published`, `suppression`,
+`readme`, and `tracker`. The report starts with the count, such as "2 offenses.". A blank line comes between
 two offenses. A JSON parse gives no line, so the location of a `published/shape` offense is the file
 and the field path, such as `public/2026/week-07/page.json:games.0.byes`. The helper imports no app
 code, so the build never bundles it.
@@ -76,3 +76,16 @@ No tracked `CLAUDE.md` sits below the repo root. Claude Code loads a nested `CLA
 So it puts the text of a folder into the context, whether the agent needs it or not. The agent must
 choose to read the next level. A `CLAUDE.md` also ties the layout to one tool. The test reads
 `git ls-files`, so a `CLAUDE.md` in `node_modules` does not count. The rule id is `readme/no-claude-md`.
+
+## The state file
+
+A cold agent reads `CLAUDE.md`, then `docs/agents/state.md`, then one ticket. A handoff file that one
+session writes for the next drifts from the tracker, so the state file replaces it. The file has one
+table with the columns Feature, Next ticket, Blocked by, and Hold. It lists open features only. A
+done feature leaves the file, and the tracker keeps its history.
+
+The test `src/tracker-rule.test.ts` reads each `.scratch/<feature>/issues/*.md` file and its Status
+line. A ticket is open when its status is not `done` and not `wontfix`. The status of a PRD does not
+count. The test fails on a feature with an open ticket and no row, and on a row with no open ticket.
+The test reads tracked tickets only, through `git ls-files .scratch`, so the hook and CI see the same
+set. The rule id is `tracker/state-file`.
