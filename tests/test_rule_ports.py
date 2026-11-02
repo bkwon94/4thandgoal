@@ -13,9 +13,11 @@ RULE = "no test patches a port, such as the Claude call or the provider"
 FIX = "pass a FakeWriter or a FixtureProvider from tests/fakes.py, or an httpx.MockTransport, in place of the patch."
 
 # The modules of the two ports. A patch of a name in one of them, or of a name imported from one, patches a port.
-PORT_MODULES = ("cornerstone.writer", "cornerstone.claude_port", "cornerstone.provider", "cornerstone.sleeper")
-# The Claude calls and the state fetch, under any module. The Provider methods join them from the protocol.
-CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state"}
+# cornerstone.provider covers cornerstone.provider.sleeper.
+PORT_MODULES = ("cornerstone.writer", "cornerstone.claude_port", "cornerstone.provider")
+# The Claude calls, the state fetch, and the two port instances, under any module, such as cli.WRITER.
+# The Provider methods join them from the protocol.
+CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state", "WRITER", "SLEEPER"}
 PROVIDER_BASE = ROOT / "src" / "cornerstone" / "provider" / "base.py"
 
 
@@ -123,14 +125,17 @@ def test_the_rule_finds_a_patch_of_the_claude_call(tmp_path):
     )]
 
 
-def test_the_rule_finds_a_name_from_a_port_module_and_a_string_target_but_not_a_build_step(tmp_path):
+def test_the_rule_finds_a_name_from_a_port_module_a_string_target_and_a_port_instance_but_not_a_build_step(tmp_path):
     tests = tmp_path / "tests"
     tests.mkdir()
     (tests / "test_fetch.py").write_text(
-        '"""A fetch test."""\nfrom cornerstone import pipeline\n\n\ndef test_fetch(monkeypatch):\n'
+        '"""A fetch test."""\nfrom cornerstone import cli, pipeline\n\n\ndef test_fetch(monkeypatch):\n'
         '    from cornerstone.provider import sleeper\n\n'
         '    monkeypatch.setattr(sleeper, "_get", f)\n'
         '    monkeypatch.setattr("cornerstone.writer.MODEL", "x")\n'
+        '    monkeypatch.setattr(cli, "WRITER", w)\n'
+        '    monkeypatch.setattr(cli, "SLEEPER", p)\n'
         '    monkeypatch.setattr(pipeline, "fetch_nflverse", f)\n')
     assert [(offense.line, offense.what) for offense in _patch_offenses(tmp_path)] == [
-        (8, "The test patches sleeper._get."), (9, "The test patches cornerstone.writer.MODEL.")]
+        (8, "The test patches sleeper._get."), (9, "The test patches cornerstone.writer.MODEL."),
+        (10, "The test patches cli.WRITER."), (11, "The test patches cli.SLEEPER.")]

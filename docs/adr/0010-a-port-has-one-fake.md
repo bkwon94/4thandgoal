@@ -18,7 +18,8 @@ environment variable makes a run use a fake.
 ## The seams
 
 - `cli.main` takes a `writer`, a `provider`, and a `fetch_state`. A writer of None is the one
-  `ClaudeWriter` of the process, `WRITER` in `writer.py`.
+  `ClaudeWriter` of the process, `WRITER` in `writer.py`. `run_build` takes the writer for its research
+  call when the caller passes no search.
 - `parse_call`, `claude_call`, and `analyzer_call` stay as thin functions over `WRITER`. Each takes an
   optional writer, so a caller can pass its own.
 - `ClaudeWriter` takes an optional client and makes its client on the first call, never at import. A
@@ -33,9 +34,10 @@ environment variable makes a run use a fake.
 
 `tests/test_rule_ports.py` holds the rule, with the id `ports/monkeypatch`. It reads each
 `monkeypatch.setattr` call in `tests/` with `ast`. It fails when the target is under
-`cornerstone.writer`, `cornerstone.claude_port`, `cornerstone.provider`, or `cornerstone.sleeper`. It
-fails when the target is a name imported from one of those modules. It also fails when the attribute is
-a Claude call, `_get_client`, `fetch_state`, or a `Provider` method. The test reads the method names
+`cornerstone.writer`, `cornerstone.claude_port`, or `cornerstone.provider`. The last one covers
+`cornerstone.provider.sleeper`. It fails when the target is a name imported from one of those modules. It
+also fails when the attribute is a Claude call, `_get_client`, `fetch_state`, a port instance such as
+`WRITER` or `SLEEPER`, or a `Provider` method. The test reads the method names
 from the protocol source, so a new fetch joins the rule by itself.
 
 The patches of the nflverse fetch, of the live snapshot, and of the build steps are out of the rule.

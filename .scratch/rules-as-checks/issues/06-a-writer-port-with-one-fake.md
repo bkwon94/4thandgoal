@@ -24,6 +24,7 @@ tests that `monkeypatch` the Claude call or Sleeper move to the fakes or to an i
 - [x] The three `_get_client` tests check the request shape of `ClaudeWriter`. They pass their stub client to `ClaudeWriter(client=...)`.
 - [x] The Sleeper adapter tests pass `httpx.MockTransport(handler)`, as `tests/test_sleeper.py:63` does today. It is httpx's in-memory transport at the HTTP edge, not a patch.
 - [x] Rule id `ports/monkeypatch`. The test reads each `monkeypatch.setattr` call in `tests/` with `ast`. It fails when the first argument is a string under `cornerstone.writer`, `cornerstone.claude_port`, `cornerstone.provider`, or `cornerstone.sleeper`. It fails when the first argument is a name imported from one of those modules.
+- [x] Choice: the rule and ADR 0010 do not name `cornerstone.sleeper`, because no such module exists. `cornerstone.provider` covers `cornerstone.provider.sleeper`.
 - [x] It also fails when the attribute is `claude_call`, `analyzer_call`, `parse_call`, `_get_client`, `fetch_state`, or a `Provider` method name.
 - [x] Out of scope: the patches of `fetch_nflverse`, `live_snapshot`, `run_build`, and the other build steps.
 - [x] A test runs the rule on a temporary test file with `monkeypatch.setattr(cli, "claude_call", f)`, and finds one offense.
