@@ -8,7 +8,7 @@ Tickets 02 and 04 use it for their rules. The pipeline's `tests/test_layers.py` 
 
 **Blocked by:** 01 (ADR 0006).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] The exact shape, one offense:
 
@@ -32,3 +32,7 @@ src/components/week/standings.tsx:4  components/no-loader
 - [x] A test runs the component rule on one source string that imports `@/lib/data/week-data`, and reads one `components/no-loader` offense with line 1.
 - [x] `docs/adr/0006-the-rules-are-checks.md` gains "The report of an offense", with the example above.
 - [x] `pnpm check` passes.
+
+## Comments
+
+- 2026-11-02: merged into `main` from branch `rules-as-checks-03-report-shape`, commits 0a11356, 5cc196b, 2a3c9f3, f1246c7, and 4716576, with `--no-ff`. 546 tests pass, `pnpm check` green. Both rule tests also run on one offending file in a temporary folder and find one offense. Every fix sentence starts lowercase; the ticket text had two forms. `Offense.line` is `number | string`, because a published offense names a field path. A JSON file that does not parse still throws the raw error; a later ticket may give it the shape. Two reviewers passed it after one fix pass. Read 14 files: .scratch/rules-as-checks/issues/03-one-report-shape-for-every-rule-test.md, .scratch/rules-as-checks/PRD.md, docs/adr/0006-the-rules-are-checks.md, src/component-rule.test.ts, src/lib/data/published-files.test.ts, docs/adr/0004-a-component-takes-data-and-returns-markup.md, docs/adr/0005-the-published-shape-has-one-owner.md, ~/repos/cornerstone-fantasy-sleeper-weekly-report/tests/test_layers.py, ~/repos/zero/docs/adr/0013-the-rules-are-checks.md, tsconfig.json, vitest.config.ts, package.json, public/2026/week-07/page.json, src/lib/schemas/week.ts.
