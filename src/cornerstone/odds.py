@@ -67,8 +67,12 @@ def playoff_odds(
     league_mean = sum(played) / len(played)
     averages = {rid: sum(scores[rid]) / len(scores[rid]) for rid in rosters}
     # The spread is pooled over the league, because a roster's few scores do not pin its own spread.
+    # Each roster's average uses one degree of freedom, so a roster with n scores adds n minus 1 to the divisor.
+    # A roster with one score adds no square and no degree of freedom.
     # If every roster has one score, or every roster is flat, the spread is 0 and every draw is the mean.
-    spread = math.sqrt(sum((s - averages[rid]) ** 2 for rid in rosters for s in scores[rid]) / len(played))
+    freedom = sum(len(scores[rid]) - 1 for rid in rosters)
+    squares = sum((s - averages[rid]) ** 2 for rid in rosters for s in scores[rid])
+    spread = math.sqrt(squares / freedom) if freedom else 0.0
     mean, se = {}, {}
     for rid in rosters:
         n = len(scores[rid])
