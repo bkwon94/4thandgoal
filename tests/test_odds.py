@@ -247,8 +247,9 @@ def test_the_projections_move_the_odds():
     assert _odds(projected=PROJECTED) != _odds()
 
 
-def test_at_projection_weight_1_a_roster_draws_its_projection():
-    # Roster 4 always scores 70 in the past, so at weight 1 every draw is its projection of 200.
+def test_at_projection_weight_1_a_roster_draws_its_level_plus_the_full_gap_to_its_projection():
+    # Roster 4 always scores 70 in the past. At weight 1 every draw is its shrunk level plus the full gap of 130,
+    # which is far above every other roster, so it wins every game.
     flat = _flat({1: 100.0, 2: 90.0, 3: 80.0, 4: 70.0})
     assert _odds(scores=flat, records=EVEN, remaining=FIXED_PAIRS).teams[4].playoff == 1
     result = _odds(scores=flat, records=EVEN, remaining=FIXED_PAIRS, projected={4: {3: 200.0, 4: 200.0}},
@@ -298,6 +299,14 @@ def test_the_shrink_pulls_a_roster_far_above_the_league_average_down():
     shrunk = _odds(scores=scores, runs=2000).teams[4].playoff
     raw = _odds(scores=scores, runs=2000, shrink_weeks=0).teams[4].playoff
     assert shrunk < raw
+
+
+def test_the_shrink_lifts_a_roster_far_below_the_league_average_up():
+    # Roster 1 leads on wins but scores far below the league, so with no shrink its level sinks it.
+    scores = {**SCORES, 1: [50.0, 60.0]}
+    shrunk = _odds(scores=scores, runs=2000).teams[1].playoff
+    raw = _odds(scores=scores, runs=2000, shrink_weeks=0).teams[1].playoff
+    assert shrunk > raw
 
 
 # The week 7 Level column of ticket 01 of odds-level: the playoff odds of the prototype on the saved data.

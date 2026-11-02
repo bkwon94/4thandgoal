@@ -127,6 +127,7 @@ SIM_RUNS = 5000
 LEVEL_SHRINK_WEEKS = 5
 # The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
 # Past scores know the team's level, and the projection knows that week's roster. Half each, Brian's call.
+# The gap reads from the raw average, so at 1 a draw is the shrunk level plus the full gap, not the projection itself.
 PROJECTION_WEIGHT = 0.5
 # The lowest playoff odds, in percent, that show the most likely seed.
 # Below it the seed rests on fewer than half the runs.

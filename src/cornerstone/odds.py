@@ -45,6 +45,8 @@ def playoff_odds(
     Then each remaining week's score is a normal around the level with the league spread.
     `projected` holds the projected best-lineup total of each roster, by roster ID and week. Each drawn
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
+    The gap reads from the raw average, not the shrunk level, because it measures the change in the roster,
+    and the shrink already sits in the level.
     `config` gives the count of playoff spots and the count of byes.
     """
     playoff_spots, bye_count = config.playoff_spots, config.bye_count
