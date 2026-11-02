@@ -84,7 +84,7 @@ the text is true, so review checks that.
 
 ## The state file
 
-A cold agent reads `CLAUDE.md`, then `docs/agents/state.md`, then the ticket. The state file has one
+An agent new to the repo reads `CLAUDE.md`, then `docs/agents/state.md`, then the ticket. The state file has one
 table with one row for each feature that has an open ticket. A ticket is open when its Status is not
 `done` and not `wontfix`. A done feature leaves the file, and the tracker holds its history. The
 state file replaces the handoff file, because a handoff is a copy of the tracker that drifts.

@@ -17,21 +17,25 @@ STATUS = re.compile(r"^\*\*Status:\*\*\s*(\S*)")
 MISSING_RULE = "each feature with an open ticket has a row in docs/agents/state.md"
 STALE_RULE = "each row of docs/agents/state.md names a feature with an open ticket"
 MISSING_FIX = "add a row to `docs/agents/state.md`."
-STALE_FIX = "remove the row: the feature is done."
+STALE_FIX = "remove the row, because the feature is done."
 
 
-def _tracked_files(root: Path) -> list[str]:
+def _tracked_scratch_files(root: Path) -> list[str]:
     """The paths under .scratch that git tracks, from the repo root.
 
-    Brian's checkout holds untracked notes under .scratch, and they are not the tracker. Only the tracked
+    A local checkout holds untracked notes under .scratch, and they are not the tracker. Only the tracked
     files count, so the hook and CI read the same set.
     """
     result = subprocess.run(["git", "ls-files", ".scratch"], cwd=root, check=True, capture_output=True, text=True)
     return result.stdout.splitlines()
 
 
+# A ticket with no Status line has no triage yet, so it counts as open and its feature keeps a row.
 def _is_open(ticket: Path) -> bool:
-    """A ticket is open when the first word of its Status is not done and not wontfix, such as "done 2026-10-24"."""
+    """A ticket is open when the first word of its Status is not done and not wontfix.
+
+    So "done 2026-10-24" is closed, and "built, waits on the review" is open.
+    """
     for line in ticket.read_text().splitlines():
         match = STATUS.match(line)
         if match:
@@ -94,12 +98,12 @@ def _stale_row_offenses(root: Path, tracked: list[str], state_path: Path) -> lis
 
 
 def test_each_open_feature_has_a_row():
-    offenses = _missing_row_offenses(ROOT, _tracked_files(ROOT), ROOT / STATE)
+    offenses = _missing_row_offenses(ROOT, _tracked_scratch_files(ROOT), ROOT / STATE)
     assert not offenses, report(offenses)
 
 
 def test_each_row_names_an_open_feature():
-    offenses = _stale_row_offenses(ROOT, _tracked_files(ROOT), ROOT / STATE)
+    offenses = _stale_row_offenses(ROOT, _tracked_scratch_files(ROOT), ROOT / STATE)
     assert not offenses, report(offenses)
 
 
