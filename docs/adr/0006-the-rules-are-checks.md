@@ -53,3 +53,26 @@ so a stale entry cannot stay. The list starts empty.
 The allow list is the one departure from One. One allows no suppression, and it puts each exception
 in the definition of the rule. Here `tsc` owns its rules, and we do not fork it. So an exception
 lives in the allow list, with its reason, and in no other place.
+
+## A README in each package folder
+
+An agent reads a folder README and decides whether to open the folder. A package folder is each
+folder directly under `src/components/` and under `src/lib/`, plus `src/lib/` and `src/hooks/`. Each
+one holds a `README.md` with a one-line title and three headings, in this order:
+
+- **Knows**: what the folder knows, in the terms of `GLOSSARY.md`. The README defines no term again.
+- **Ports**: the outside systems that the folder reaches. A folder with no port writes "None.".
+- **Does not do**: what the folder never does, and which folder does it instead.
+
+The third heading is the heading that lets an agent stop the search. A README is under 25 lines.
+`src/app/` gets no README, because it is the app layer. One ADR 0007 says an app needs none.
+
+The test `src/readme-rule.test.ts` finds the folders and holds no list, so a new folder needs a
+README on its first day. Its rule ids are `readme/missing`, `readme/headings`, and `readme/length`.
+The test checks that each README exists and has the shape. It cannot check that the text is true,
+so a review checks that.
+
+No tracked `CLAUDE.md` sits below the repo root. Claude Code loads a nested `CLAUDE.md` by itself.
+So it puts the text of a folder into the context, whether the agent needs it or not. The agent must
+choose to read the next level. A `CLAUDE.md` also ties the layout to one tool. The test reads
+`git ls-files`, so a `CLAUDE.md` in `node_modules` does not count. The rule id is `readme/no-claude-md`.
