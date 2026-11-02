@@ -18,6 +18,9 @@ A ticket closes with one comment under `## Comments`. Each line is one sentence.
 3. The notes for a later ticket, if any.
 4. The files read: "Read N files: path, path, path." Paths are relative to the repo root.
 
+The close comment of a ticket updates `docs/agents/state.md` in the same commit. A feature with no open ticket
+leaves the file. A feature with an open ticket keeps its row, with the next ticket and its blocker.
+
 The files-read line is the measure of the One vision test: an agent changes the repo without a read of most of
 it. Count every file the agent read to build the ticket: source, tests, tickets, ADRs. A file the agent only wrote
 does not count. A folder that three close comments in a row list is the next README or the next split. Note it
