@@ -4,10 +4,10 @@
 SEASON ?= 2026
 
 .DEFAULT_GOAL := help
-.PHONY: need-week need-main help install test golden lint typecheck check build publish page-json rankings analyze api deploy logs push
+.PHONY: need-week need-main help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze api deploy logs push
 
 help: ## List the targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
 
 install: ## Install the dependencies
 	uv sync
@@ -26,7 +26,16 @@ lint: ## Check the code style
 typecheck: ## Check the types of the listed modules in basic mode
 	uv run pyright
 
-check: lint test ## Run lint, then the tests
+# The CI job on every push runs this target. See docs/adr/0009-the-rules-are-checks.md.
+check: lint typecheck test ## Run lint, typecheck, and all the tests
+
+# Name a rule test tests/test_rule_<topic>.py. This target finds each one with no edit.
+rules: ## Run the rule tests
+	uv run pytest -q tests/test_layers.py $(wildcard tests/test_rule_*.py)
+
+# The prek hook runs this target on each commit, so it must stay under 30 seconds.
+# Install the hook one time per clone with "prek install".
+check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 
 # Usage: make build WEEK=7 [SEASON=2026]
 build: need-week ## Build the report of a week (WEEK required)

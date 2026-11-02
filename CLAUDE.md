@@ -22,6 +22,8 @@ Nothing publishes without `cornerstone publish`. No other command or script push
 
 - Run `uv run pytest` for the default suite. It skips tests marked `live`.
 - A test marked `live` calls a real external API. Run it on purpose with `uv run pytest -m live`.
+- Run `make check` before a merge. The prek hook runs `make check-fast` on each commit.
+- Name a rule test `tests/test_rule_<topic>.py`. `make rules` finds each one with no edit.
 
 ## House style
 
