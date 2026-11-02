@@ -24,6 +24,9 @@ it. Count every file the agent read to build the ticket: source, tests, tickets,
 does not count. A folder that three close comments in a row list is the next README or the next split. Note it
 under Further Notes in the PRD of the feature.
 
+The commit of the close comment also updates `docs/agents/state.md`. Set the next ticket of the feature in its
+row. If the feature has no open ticket, remove the row.
+
 ## When a skill says "publish to the issue tracker"
 
 Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).

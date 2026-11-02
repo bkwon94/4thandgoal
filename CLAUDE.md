@@ -14,6 +14,11 @@ league data from Sleeper. It writes the chapters of the report and writes the pa
 5. Write `page.json` and the images into `site/`.
 6. Publish the week folder to the public site repo.
 
+## Where the work sits
+
+`docs/agents/state.md` lists each open feature, its next ticket, and its hold. Read it, then the ticket in the
+tracker under `.scratch/`.
+
 ## Publish rule
 
 Nothing publishes without `cornerstone publish`. No other command or script pushes the site.
