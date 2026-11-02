@@ -1,6 +1,6 @@
 # Agent habits: the tracker measures the vision, and a cold agent starts from the tracker
 
-Status: needs-triage
+Status: ready-for-agent
 Date: 2026-11-02
 Repos: the pipeline `cornerstone-fantasy-sleeper-weekly-report` and the site `cpcfantasyfootball`. The same PRD sits in both.
 Source: One's `~/repos/zero/docs/VISION.md` and `~/repos/zero/docs/adr/0014-a-merge-request-merges-on-the-verdicts-of-its-acceptance-tests.md`.

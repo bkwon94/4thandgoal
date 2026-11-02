@@ -8,7 +8,7 @@ why it never runs on a push alone. `make deploy` stays for a deploy from the she
 
 **Blocked by:** `rules-as-checks` pipeline ticket 01, which adds the `check` job this one needs.
 
-**Status:** needs-triage
+**Status:** ready-for-agent
 
 - [ ] The ADR. Next free number after the `rules-as-checks` ADRs. Title: "A deploy of the API runs after the check
   and on an approval". It says: the check gates, Brian approves, the deploy runs from `main` only, and the shell
