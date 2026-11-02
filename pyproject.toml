@@ -47,7 +47,8 @@ include = ["src/cornerstone/config.py", "src/cornerstone/files.py", "src/corners
            "src/cornerstone/numbers.py", "src/cornerstone/paths.py", "src/cornerstone/player_ids.py", "src/cornerstone/provider",
            "src/cornerstone/rank_score.py", "src/cornerstone/render.py", "src/cornerstone/season_inputs.py",
            "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
-           "src/cornerstone_api/cache.py", "tests/fakes.py", "tests/test_layers.py", "tests/test_provider.py"]
+           "src/cornerstone_api/cache.py", "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
+           "tests/test_provider.py", "tests/test_rule_report.py"]
 
 [tool.uv.build-backend]
 # The pipeline and the API app are two packages under src, so the wheel holds both.
