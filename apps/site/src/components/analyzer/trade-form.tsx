@@ -56,7 +56,7 @@ const stackParts = ({ form, result }: FormParts) => (
 );
 
 /* A given player and the side he goes to. toSide is the id of the destination side, not its roster, so the destination
-   holds when that side changes its team. The post turns it into the roster id. See ADR 0003. */
+   holds when that side changes its team. The post turns it into the roster id. See ADR 0008. */
 export type PlayerPick = { playerId: string; toSide: number };
 
 /* One side of the trade: a stable id, the picked roster, and the players it gives. The id keys the side, so a remove

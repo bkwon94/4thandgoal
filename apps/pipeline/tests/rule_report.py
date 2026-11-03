@@ -1,6 +1,6 @@
 """
 Prints the offenses of a rule test in one shape: the place and the rule id, what is wrong, the rule, and the fix.
-Every rule test uses it, so an agent reads one shape. It imports no pipeline code. See ADR 0009.
+Every rule test uses it, so an agent reads one shape. It imports no pipeline code. See ADR 0014.
 """
 import os
 from dataclasses import dataclass

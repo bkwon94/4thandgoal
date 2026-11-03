@@ -1,6 +1,6 @@
 """
 Checks that each package folder under src holds a README.md with the headings Knows, Ports, and Does not do.
-Each README is under 25 lines, and the only CLAUDE.md is the one at the repo root. See ADR 0009.
+Each README is under 25 lines, and the only CLAUDE.md is the one at the repo root. See ADR 0014.
 """
 import subprocess
 from pathlib import Path
@@ -8,7 +8,7 @@ from pathlib import Path
 from rule_report import Offense, clean_git_env, report
 
 ROOT = Path(__file__).resolve().parent.parent
-ADR = "docs/adr/0009-the-rules-are-checks.md"
+ADR = "docs/adr/0014-the-rules-are-checks.md"
 HEADINGS = ["## Knows", "## Ports", "## Does not do"]
 # An agent reads the README to decide whether to open the folder. A short README means an agent reads little.
 MAX_LINES = 24

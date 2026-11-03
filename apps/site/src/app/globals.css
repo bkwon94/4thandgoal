@@ -56,11 +56,11 @@
     /* The raised surface on the black card: a tab that is off and a box of the waiver sheet. It is one step up from the card, so it reads as a layer. */
     --color-chip-dark: #262626;
 
-    /* The paint of the black card. It has its own token because the dark theme lifts the card while the masthead stays black. See ADR 0002. */
+    /* The paint of the black card. It has its own token because the dark theme lifts the card while the masthead stays black. See ADR 0007. */
     --color-card-blk: var(--color-blk);
 
     /* The fill of a picked player row in the trade analyzer: a light wash of brand red, so a pick reads as red without red text on red.
-       Ink text on it is 14.9 to 1, mute 4.9, and brand red 5.1. The dark theme re-points it. See ADR 0002. */
+       Ink text on it is 14.9 to 1, mute 4.9, and brand red 5.1. The dark theme re-points it. See ADR 0007. */
     --color-pick: color-mix(in srgb, var(--color-red) 10%, var(--color-wht));
 
     /* The red glow behind a hero cutout on a black card. */
@@ -287,10 +287,10 @@
     --sidebar-border: var(--color-rule);
     --sidebar-ring: var(--color-red);
 
-    /* The light theme is the report look and the default. The .dark block below holds the dark theme. See ADR 0002. */
+    /* The light theme is the report look and the default. The .dark block below holds the dark theme. See ADR 0007. */
     color-scheme: light;
 }
-/* The dark theme: the .dark class on <html> re-points the light tokens to dark partners, so no component changes a class. See ADR 0002.
+/* The dark theme: the .dark class on <html> re-points the light tokens to dark partners, so no component changes a class. See ADR 0007.
    The page goes brand black, and the black card lifts one step to #262626, so it keeps its edge. The masthead and the compact bar
    keep --color-blk, so they sit flush with the page. Red, the on-dark tokens, the glow, and the arrows do not re-point.
    Brand red is 3.1 to 1 on #141414 and 2.6 to 1 on #262626, so it never carries text on a dark surface.

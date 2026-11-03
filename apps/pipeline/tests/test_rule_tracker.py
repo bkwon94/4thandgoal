@@ -1,6 +1,6 @@
 """
 Checks that docs/agents/state.md has one row for each feature with an open ticket, and no other row.
-It reads the Status line of each tracked ticket under .scratch as text. See ADR 0009.
+It reads the Status line of each tracked ticket under .scratch as text. See ADR 0014.
 """
 import re
 import subprocess
@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 from rule_report import Offense, clean_git_env, report
 
 ROOT = Path(__file__).resolve().parent.parent
-ADR = "docs/adr/0009-the-rules-are-checks.md"
+ADR = "docs/adr/0014-the-rules-are-checks.md"
 STATE = "docs/agents/state.md"
 CLOSED = {"done", "wontfix"}
 STATUS = re.compile(r"^\*\*Status:\*\*\s*(\S*)")

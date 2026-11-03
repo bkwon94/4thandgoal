@@ -15,4 +15,4 @@ None.
 - It knows no league term. A component that shows a team, a player, or a week is a part in `src/components/parts/`, or it lives in its page folder.
 - It holds no state of the site.
 - It holds no `cn` helper. `src/lib/utils.ts` holds it.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004).
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012).

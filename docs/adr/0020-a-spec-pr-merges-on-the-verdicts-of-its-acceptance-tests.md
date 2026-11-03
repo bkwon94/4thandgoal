@@ -1,18 +1,18 @@
-# A spec PR merges on the verdicts of its acceptance tests
+# A spec PR merges on the test verdicts of its acceptance tests
 
 Agents write most of the diff, and one human reads it later and with less context than the
 agent had. A diff review by that human is slow, and it checks the code more than the behavior.
-We decided that a spec pull request merges on the verdicts of its acceptance tests, not on a
+We decided that a spec pull request merges on the test verdicts of its acceptance tests, not on a
 review of the diff.
 
 ## The steps
 
 1. An agent runs `code-review` on the spec branch and fixes the findings.
-2. An agent runs each acceptance test and records the evidence. The agent gives no verdict.
+2. An agent runs each acceptance test and records the evidence. The agent gives no test verdict.
 3. Brian gives PASS, FAIL, or BLOCKED for each `AT-<n>` in one comment on the pull request.
 4. A check blocks the merge until every test has PASS.
 
-The agent never gives a verdict, because the agent wrote the code and would grade its own work.
+The agent never gives a test verdict, because the agent wrote the code and would grade its own work.
 
 ## The evidence
 
@@ -32,5 +32,5 @@ and a rule.
 We rejected three alternatives:
 
 - **A human diff review of every pull request.** It is the slow step that this rule removes.
-- **An agent verdict.** The author would grade its own work.
+- **An agent test verdict.** The author would grade its own work.
 - **No gate on the pull request.** The spec would then have no proof that it works.

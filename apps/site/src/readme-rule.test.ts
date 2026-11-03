@@ -1,5 +1,5 @@
 /**
- * Holds each package folder to the rule of ADR 0006: a README of under 25 lines with the headings Knows, Ports, and Does not do.
+ * Holds each package folder to the rule of ADR 0016: a README of under 25 lines with the headings Knows, Ports, and Does not do.
  * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/.
  * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
  */
@@ -21,7 +21,7 @@ const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines
 const CLAUDE_MD_RULE = "no CLAUDE.md sits below the repo root, except one at the top of each app";
 /* Each app keeps a short CLAUDE.md with its own commands, so apps/<app>/CLAUDE.md is allowed. See .scratch/one/PRD.md. */
 const APP_CLAUDE_MD = /^apps\/[^/]+\/CLAUDE\.md$/;
-const ADR = "docs/adr/0006-the-rules-are-checks.md";
+const ADR = "docs/adr/0016-the-rules-are-checks.md";
 
 function subfolders(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true })

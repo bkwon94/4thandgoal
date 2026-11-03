@@ -1,7 +1,7 @@
 # 01: Byes on the next-week games and in the page JSON
 
 Spec: `.scratch/next-week-byes/PRD.md`, "Key starters and byes, in the pipeline", "The page JSON", "Thin data".
-Glossary: **Key starter**, **Bye line**. ADR 0006.
+Glossary: **Key starter**, **Bye line**. ADR 0009.
 
 **What to build:** The weekly build knows, for each team in each next-week game, every rostered player on
 bye next week, key starters first. The page JSON carries that list on each side of each game, so the

@@ -7,7 +7,7 @@ This is the second of three features that make the site responsive at every widt
 foundation, `.scratch/site-foundation/`, set the tiers, the page column, and the menu. This
 feature designs the weekly report for a tablet and a desktop, adds the chapter rail, and adds the
 week footer. The home, rankings, and analyzer pages per tier follow as the third feature. The
-terms come from `GLOSSARY.md`. The house rule is `docs/adr/0001-report-look-at-every-width.md`.
+terms come from `GLOSSARY.md`. The house rule is `docs/adr/0006-report-look-at-every-width.md`.
 
 ## Problem Statement
 

@@ -34,7 +34,7 @@ function shapeOffenses(schema: ZodType, file: string): Offense[] {
     ruleId: "published/shape",
     what: issue.message,
     rule: "the pipeline owns the published shape, and each file under public/ matches its Zod schema",
-    adr: "docs/adr/0005-the-published-shape-has-one-owner.md",
+    adr: "docs/adr/0013-the-published-shape-has-one-owner.md",
     fix: "change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file.",
   }));
 }

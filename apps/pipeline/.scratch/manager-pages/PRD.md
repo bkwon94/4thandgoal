@@ -4,7 +4,7 @@ Status: ready-for-agent
 Date: 2026-10-29
 Repos: the pipeline `cornerstone-fantasy-sleeper-weekly-report` and the site `cpcfantasyfootball`. The same PRD sits in both.
 Glossary: **Manager page**, **Managers index**, **Hero**, **Roster grade**, **Playoff odds**, **Bench points**, **Points line**, **Slot rank**, **Moves**, **Best adds**, **Top performers**, **Awards shelf** in the site `GLOSSARY.md`. **Position rank**, **Lineup value**, **Hole**, **The line**, **Depth** in the pipeline `GLOSSARY.md`.
-ADRs: none new. Pipeline ADR 0003 rules depth by position rank. ADR 0006 rules a start as a real start.
+ADRs: none new. Pipeline ADR 0003 rules depth by position rank. ADR 0009 rules a start as a real start.
 Follows: `.scratch/next-week-byes/PRD.md`.
 
 ## Problem Statement

@@ -16,5 +16,5 @@ None.
 - It holds no primitive. The shadcn primitives live in `src/components/ui/`.
 - It holds no shell. The masthead, the menu, and the theme button live in `src/components/shell/`.
 - Most parts serve two or more pages. `tag.tsx` and `error-line.tsx` serve one page today.
-- It builds no route. The page passes each href, and a part only shows it (ADR 0004).
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004).
+- It builds no route. The page passes each href, and a part only shows it (ADR 0012).
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012).

@@ -16,4 +16,4 @@ None.
 
 - It holds no grade rule. `cornerstone/rubric.py` grades a proposed trade, and `cornerstone/finder.py` finds the trades.
 - It holds no prompt and no Claude check. `cornerstone/analysis.py` and `cornerstone/finder_reasons.py` hold them.
-- It imports nothing from the output layer of ADR 0007, so it writes no page.
+- It imports nothing from the output layer of ADR 0010, so it writes no page.

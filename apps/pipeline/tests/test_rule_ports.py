@@ -1,6 +1,6 @@
 """
 Checks that no test patches a port: the Claude call or the provider. A test passes the fake from tests/fakes.py.
-It reads each monkeypatch.setattr call in tests/ with ast and imports no pipeline code. See ADR 0010.
+It reads each monkeypatch.setattr call in tests/ with ast and imports no pipeline code. See ADR 0015.
 """
 import ast
 from pathlib import Path
@@ -8,7 +8,7 @@ from pathlib import Path
 from rule_report import Offense, report
 
 ROOT = Path(__file__).resolve().parent.parent
-ADR = "docs/adr/0010-a-port-has-one-fake.md"
+ADR = "docs/adr/0015-a-port-has-one-fake.md"
 RULE = "no test patches a port, such as the Claude call or the provider"
 FIX = "pass a FakeWriter or a FixtureProvider from tests/fakes.py, or an httpx.MockTransport, in place of the patch."
 

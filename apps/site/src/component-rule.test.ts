@@ -1,5 +1,5 @@
 /**
- * Holds every file under src/components/ to the rule of ADR 0004: a component takes data and returns markup.
+ * Holds every file under src/components/ to the rule of ADR 0012: a component takes data and returns markup.
  * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env.
  * A failure names the file and the line.
  */
@@ -43,7 +43,7 @@ const BANNED: { ruleId: string; test: (specifier: string) => boolean; fix: strin
 ];
 
 const RULE = "a component takes data and returns markup";
-const ADR = "docs/adr/0004-a-component-takes-data-and-returns-markup.md";
+const ADR = "docs/adr/0012-a-component-takes-data-and-returns-markup.md";
 
 /* The rule takes the path and the source apart from the disk, so a test can run it on one string. */
 function offenses(path: string, source: string): Offense[] {

@@ -104,7 +104,7 @@ export async function fetchTeams(passphrase: string): Promise<Team[]> {
   return parseBody(teamsResponseSchema, await response.json(), "/teams").teams;
 }
 
-/* A given player and the roster id of the side he goes to. See ADR 0003. */
+/* A given player and the roster id of the side he goes to. See ADR 0008. */
 export type AnalyzeGive = { player_id: string; to: number };
 
 /* One side of the trade: a roster and the players it gives. */
