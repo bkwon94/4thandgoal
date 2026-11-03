@@ -32,7 +32,7 @@ Our two repos follow part of One. Five gaps remain.
 1. As Brian, I want one repo for the site and the pipeline, so that one spec covers a feature that touches both.
 2. As Brian, I want the pipeline history kept, so that `git log` and `git blame` still explain old pipeline code.
 3. As Brian, I want the old pipeline repo archived read-only, so that no agent commits to it by mistake.
-4. As Brian, I want the Tuesday weekly build to run from the merged repo, so that the week 9 report ships on time.
+4. As Brian, I want the weekly build to run from the merged repo, so that the next report ships on time.
 5. As Brian, I want `publish` to copy files inside one repo, so that no step depends on a second checkout at a fixed path.
 6. As Brian, I want `publish` to stage only the published data, so that it never commits half-done work from `main`.
 7. As Brian, I want the GitHub Pages deploy to run only when site files change, so that a pipeline change does not deploy the site.
@@ -73,7 +73,7 @@ Our two repos follow part of One. Five gaps remain.
 ## Implementation Decisions
 
 - **The order of the move.** First clear the open ticket branches in both repos. Then move the site into `apps/site/` in one commit. Then add the pipeline with `git subtree add` under `apps/pipeline/`. The site moves first so that `git log --follow` keeps one rename per file.
-- **The day of the move.** The move lands on a Wednesday or a Thursday. The weekly build runs on Tuesday, and a week must pass between the move and a build.
+- **The proof of the weekly build.** Ticket 03 runs the weekly build by hand from the merged repo, with no push. No ticket waits for a calendar day.
 - **The weekly job.** The LaunchAgent `com.briankwon.cornerstone-weekly` and `bin/cornerstone-build` hold the old pipeline path. Both change to the merged path. The agent is unloaded and loaded again after the change.
 - **`publish`.** It copies into the site's published-data folder in the same repo. It no longer takes a second checkout. It stages only that folder, then commits and pushes `main`. The site Makefile targets that need the local API change to point at the pipeline folder.
 - **Deploy paths.** The Pages workflow builds from `apps/site/` and runs on changes there. The Fly config and its Dockerfile build from `apps/pipeline/`. The daily refresh workflow moves into the root workflows.
