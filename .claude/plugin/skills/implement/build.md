@@ -62,7 +62,7 @@ Merge one ticket at a time, in the Spec worktree. The other subagents continue m
 
 1. Write down the head of the Spec branch: `git rev-parse HEAD`. This is the head before the merge.
 2. Run `git merge --no-edit <slug>-<NN>`.
-3. Run `make check BASE=main`.
+3. Run `make check BASE=main`. It runs the full check of each changed app, and takes about 7 minutes with the pipeline. Run it in the background.
 4. If the merge has a conflict, run `git merge --abort`. Send the ticket back to its subagent: it merges `<slug>` into `<slug>-<NN>` with `resolving-merge-conflicts`, runs the check again, and reports again.
 5. If the check fails, run `git reset --hard <head before the merge>`. Send the failure to the subagent of the ticket. A red check never stays on the Spec branch.
 6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`.

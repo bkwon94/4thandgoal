@@ -19,8 +19,9 @@ The instrument is the `agent-browser` CLI. Run `agent-browser skills get core` o
 3. For each width of 375, 768, and 1280 px, and each theme of light and dark:
    1. Set the viewport: `agent-browser set viewport <width> 900`.
    2. Open the page that the When line names, under `http://localhost:4173/`.
-   3. Set the theme. The site reads the key `cpc.theme` from local storage. Run `agent-browser eval "localStorage.setItem('cpc.theme','dark')"` for dark, or `removeItem('cpc.theme')` for light. Then reload the page.
-   4. Take the screenshot: `agent-browser screenshot --full .scratch/<slug>/evidence/AT-<n>/<width>-<theme>.png`.
+   3. Set the theme. The site reads the key `cpc.theme` from local storage. Run `agent-browser eval "localStorage.setItem('cpc.theme','dark')"` for dark, or `removeItem('cpc.theme')` for light.
+   4. Run `agent-browser reload`, then `agent-browser wait 1000`.
+   5. Take the screenshot: `agent-browser screenshot <absolute path of .scratch/<slug>/evidence/AT-<n>>/<width>-<theme>.png --full`. Put the path before `--full`. With `--full` first, the CLI ignores the path and saves the file under `~/.agent-browser/tmp/`.
 4. Look at each screenshot. Write one or two sentences of what it shows about the Then line.
 5. Stop the server and close the browser when the last site test is done.
 
