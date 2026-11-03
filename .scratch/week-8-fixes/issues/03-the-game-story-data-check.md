@@ -9,7 +9,7 @@ not, and what one fetch would add. Write the report under `## Report` in this ti
 
 **Blocked by:** none. Tickets 04 and 05 wait on this one.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] List the saved files of week 8 under `data/2026/week-08/` and `data/2026/history/week-08/`, with one line each on what it holds.
 - [x] Injuries: which file holds a player's injury status, and does the data say when it changed?
@@ -204,3 +204,7 @@ README verdict:
   `data/<season>/week-NN/raw/`. `data/cache/` holds only the players file and the nflverse downloads.
 - Unclear: `GLOSSARY.md` defines "Out" as a team that cannot make the playoffs. Sleeper `injury_status` also
   uses "Out". A recap with both needs a rule.
+
+## Comments
+
+- 2026-11-03: merged into `main` from branch `week-8-fixes-03-data`, commit 5829393, with `--no-ff`. A report, no code, so no reviewer; ticket 04 checks each fact as it builds. Findings: every fact a game story needs is on disk, and no new source is needed. The injury play comes from the play-by-play file with its quarter and clock, the kickoff slot from `games.csv`, and the lead after each slot from `matchups.json`. Only matchup 3 flipped on Monday night. Vision findings: no README describes the saved data layout under `data/`; `CLAUDE.md` pipeline step 2 says the raw data sits under `data/cache/`, and it sits under `data/<season>/week-NN/raw/`; `GLOSSARY.md` gives "Out" one meaning and Sleeper's injury status uses it too. Read 20 code and doc files, 30 data files by keys, and 1 live news call: CLAUDE.md, docs/agents/state.md, the ticket, the PRD, src/cornerstone/README.md, provider/README.md, sheet/README.md, provider/base.py, provider/sleeper.py, nflverse.py, paths.py, history.py, slow_sources.py, snapshot.py, sheet/assemble.py, sheet/awards.py, GLOSSARY.md, nflverse_usage.py, pipeline.py, .gitignore.
