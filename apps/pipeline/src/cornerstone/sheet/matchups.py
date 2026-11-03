@@ -1,5 +1,5 @@
 """
-Builds the family of facts for each matchup: the result, the lines, the story, and the context.
+Builds the family of facts for each matchup: the result, the lines, the story, the context, and the impact.
 The recap and Matchup of the Week chapters read them.
 """
 from datetime import datetime
@@ -24,7 +24,7 @@ STATUS_CLAUSES = {"in": "clinched a playoff spot", "out": "is now out of the pla
 
 
 def facts(context: Context, config: LeagueConfig) -> list[Fact]:
-    """The result, the lines, the story, and the context of each matchup.
+    """The result, the lines, the story, the context, and the impact of each matchup.
 
     The Matchup of the Week, Game Changer, and recap chapters read them. The awards chapter reads each result.
     """
@@ -33,7 +33,7 @@ def facts(context: Context, config: LeagueConfig) -> list[Fact]:
 
 def matchup_fact_family(c: Context) -> list[Fact]:
     out = []
-    firsts = _first_statuses(c)
+    new_statuses = _first_statuses(c)
     for f, m in zip(c.mfacts, c.week.matchups):
         out += _result_facts(c, f, m)
         out += _line_facts(c, f, m)
@@ -42,7 +42,7 @@ def matchup_fact_family(c: Context) -> list[Fact]:
         out += _hurt_facts(c, f, m)
         out += _lead_facts(c, f, m)
         out += _context_facts(c, f, m)
-        out.append(_impact_fact(c, f, m, firsts))
+        out.append(_impact_fact(c, f, m, new_statuses))
     return out
 
 
@@ -287,7 +287,7 @@ def _context_facts(c, f, m) -> list[Fact]:
     return out
 
 
-def _impact_fact(c, f, m, firsts: dict[int, OddsStatus]) -> Fact:
+def _impact_fact(c, f, m, new_statuses: dict[int, OddsStatus]) -> Fact:
     """What this week did to each team of one matchup. GLOSSARY.md, "Impact fact".
 
     Each team gets one sentence of the parts that apply this week.
@@ -295,13 +295,16 @@ def _impact_fact(c, f, m, firsts: dict[int, OddsStatus]) -> Fact:
     n = Nums()
     sentences = []
     for rid in (m.a.roster_id, m.b.roster_id):
-        before, after = c.before[rid], c.by_rank[rid].rank
-        clauses = [_place_clause(before, after, n), *_cut_clause(before, after, c.config.playoff_spots)]
+        place_before, place_after = c.before[rid], c.by_rank[rid].rank
+        clauses = [
+            _place_clause(place_before, place_after, n),
+            *_cut_clause(place_before, place_after, c.config.playoff_spots),
+        ]
         clauses += _odds_clause(c.odds_before, c.odds, rid, n)
         clauses.append(_median_clause(c, f, rid, n))
         clauses += _streak_clause(c, rid, n)
-        if rid in firsts:
-            clauses.append(STATUS_CLAUSES[firsts[rid]])
+        if rid in new_statuses:
+            clauses.append(STATUS_CLAUSES[new_statuses[rid]])
         sentences.append(f"{c.team(rid)} {_join(clauses)}.")
     teams = [c.team(m.a.roster_id), c.team(m.b.roster_id)]
     return fact(f"M{f.matchup_id}.impact", " ".join(sentences), n, teams, [])
@@ -319,6 +322,8 @@ def _first_statuses(c) -> dict[int, OddsStatus]:
     spots, left = config.playoff_spots, config.last_regular_week - week
     now, before = season_records(h, week), season_records(h, week - 1)
     out = {}
+    # The saved odds start at ODDS_FROM_WEEK and the odds of the week before can be missing.
+    # The plain check on the records works for every week.
     for rid in now:
         status = roster_status(rid, now, left, spots)
         # A roster with no record before this week has no earlier status.
