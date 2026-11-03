@@ -681,14 +681,14 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
 
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "public/2026/week-06/page.json" in files
-    assert "public/2026/rankings.json" in files
-    assert "public/2026/managers.json" in files
-    assert "public/2026/week-06/waiver.json" in files
-    assert "public/2026/week-06/index.html" not in files
+    assert "apps/site/public/2026/week-06/page.json" in files
+    assert "apps/site/public/2026/rankings.json" in files
+    assert "apps/site/public/2026/managers.json" in files
+    assert "apps/site/public/2026/week-06/waiver.json" in files
+    assert "apps/site/public/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
-    assert not any(f.startswith("public/static/") for f in files)
-    assert "public/index.html" not in files
+    assert not any(f.startswith("apps/site/public/static/") for f in files)
+    assert "apps/site/public/index.html" not in files
     assert not (site_repo / "2026").exists()
     assert not (site_repo / "index.html").exists()
     assert not (site_repo / "static").exists()
@@ -709,14 +709,14 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     run_publish(repo, 2026, 6, site_repo=site_repo, push=False)
 
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "public/2026/week-06/page.json" in files
-    assert not any(f.startswith("public/2026/week-07/") for f in files)
+    assert "apps/site/public/2026/week-06/page.json" in files
+    assert not any(f.startswith("apps/site/public/2026/week-07/") for f in files)
     # No history means no season file, so the publish warns and goes out without it.
     assert "the publish goes out without rankings.json" in caplog.text
-    assert "public/2026/rankings.json" not in files
-    assert not (site_repo / "public" / "2026" / "rankings.json").exists()
+    assert "apps/site/public/2026/rankings.json" not in files
+    assert not (site_repo / "apps" / "site" / "public" / "2026" / "rankings.json").exists()
     assert "the publish goes out without managers.json" in caplog.text
-    assert not (site_repo / "public" / "2026" / "managers.json").exists()
+    assert not (site_repo / "apps" / "site" / "public" / "2026" / "managers.json").exists()
 
 
 def test_publish_requires_built_page(tmp_path):
