@@ -38,4 +38,4 @@ Out of scope "<item>": AT-<n>
 None yet.
 ```
 
-Number the tests from `AT-1`, with no leading zero.
+Number the tests from `AT-1`, with no leading zero. A test of an Out of Scope item has the line `Stories: none`.

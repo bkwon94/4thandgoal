@@ -29,7 +29,7 @@ The one spec this map ends in, in one or two sentences.
 - <The work past the destination.> <The reason.>
 ```
 
-Write "None yet." under a heading with no item.
+Write "None." under a heading with no item.
 
 ## The kind of a decision ticket
 

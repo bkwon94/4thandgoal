@@ -12,7 +12,7 @@ A decision ticket records a choice. It writes no product code. If you want to bu
 
 ## Before you start
 
-1. Check that these skills are in the available skill list: `grilling`, `domain-modeling`, `mattpocock-skills:research`, `prototype`, `cpc:to-spec`, `cpc:to-acceptance`, `cpc:to-tickets`.
+1. Check that these global skills are in the available skill list: `grilling`, `domain-modeling`, `mattpocock-skills:research`, `prototype`. The `cpc` skills ship with this skill, so do not check them.
 2. If one is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Read `docs/agents/issue-tracker.md` and the Workflow section of `GLOSSARY.md`.
 
@@ -35,7 +35,7 @@ The outcome statement has two parts: what the feature does, and the goal that it
 1. Call the Skill tool for `grilling` and for `domain-modeling`. Settle the destination with Brian: the one spec this feature ends in.
 2. Grill again, breadth first. Ask which app the feature touches: `site`, `pipeline`, or both. Ask which seam moves. Ask which term conflicts with `GLOSSARY.md`.
 3. Choose a feature slug of two to four lowercase words with hyphens. Check that `.scratch/<slug>/` does not exist.
-4. Make the Spec branch `<slug>` from `main` in its own worktree: `git worktree add .claude/worktrees/<slug> -b <slug> main`. Write every file of the feature there.
+4. Make the Spec branch `<slug>` from `main` in its own worktree. Run this in the main checkout: `git worktree add .claude/worktrees/<slug> -b <slug> main`. Write every file of the feature there.
 5. If no fog is left, skip the map. Ask Brian to confirm. Then go to [`build-out.md`](build-out.md).
 6. Write `.scratch/<slug>/MAP.md` in the format of [`formats.md`](formats.md).
 7. Write one decision ticket for each fog item at `.scratch/<slug>/decisions/<NN>-<kind>-<slug>.md`. Number from `01`. See [`formats.md`](formats.md) for the kind and the format.
@@ -44,7 +44,7 @@ The outcome statement has two parts: what the feature does, and the goal that it
 
 ## Stage 2: clear one decision ticket
 
-1. Work in the worktree of the Spec branch `<slug>`. Read `.scratch/<slug>/MAP.md`. List the files in `decisions/` and read the first line of each.
+1. Work in the worktree of the Spec branch `<slug>`. Read `.scratch/<slug>/MAP.md`. Read the Kind, Blocked by, and Status lines of each decision ticket: `grep -H '^\*\*' .scratch/<slug>/decisions/*.md`.
 2. Choose the decision ticket that Brian names. Otherwise choose the lowest open number whose blockers are done. A `spec` ticket comes last.
 3. If no ticket is open except `spec` tickets, go to [`build-out.md`](build-out.md).
 4. Clear the ticket by its kind:

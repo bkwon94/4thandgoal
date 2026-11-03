@@ -21,8 +21,9 @@ Break one spec into tickets at `.scratch/<slug>/issues/<NN>-<slug>.md`, and add 
 3. After his approval, write one file for each ticket in the format below. Number from `01`, blockers first. Do not use the template of `to-tickets`.
 4. Give each acceptance test at least one ticket that makes it pass.
 5. Add one row to `docs/agents/state.md`, as below.
-6. Stage the new files with `git add`. The tracker rules read only the tracked files.
-7. Run `make check-fast` at the root. It must pass before the commit.
+6. Change the Tickets line of the PRD header to the ticket numbers, such as "Tickets: 01 to 04, in `issues/`."
+7. Stage the new files with `git add`. The tracker rules read only the tracked files.
+8. Run `make check-fast` at the root. It must pass before the commit.
 
 ## The ticket
 
@@ -45,7 +46,7 @@ Spec: `.scratch/<slug>/PRD.md`. Acceptance tests AT-<n> and AT-<n>.
 - [ ] <A box that a check or a real run proves.>
 ```
 
-Name no file path and no code in a ticket. They change fast.
+Name no source path and no code in a ticket, because they change fast. A published file, such as `page.json` or `managers.json`, is a name and may stay.
 
 ## The state row
 
