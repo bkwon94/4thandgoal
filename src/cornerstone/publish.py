@@ -55,7 +55,8 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
     # stay off the public site. The site repo is a Next.js app. It renders the pages and the home
     # page from these folders.
-    public_dir = site_repo / "public"
+    # Why: the site app lives in apps/site of the site repo, so its published data is there.
+    public_dir = site_repo / "apps" / "site" / "public"
     week_path = Path(str(season)) / week_label(week)
     shutil.copytree(
         repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
