@@ -4,38 +4,24 @@ How the engineering skills should consume this repo's domain documentation when 
 
 ## Before exploring, read these
 
-- **`GLOSSARY.md`** at the repo root, or
-- **`GLOSSARY-MAP.md`** at the repo root if it exists — it points at one `GLOSSARY.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`** — read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- **`GLOSSARY.md`** at the repo root. It holds the terms of the site and the pipeline, one section per app.
+- **`docs/adr/`** at the repo root. It holds one ADR series for both apps. Read the ADRs that touch the area you're about to work in.
+- **`docs/adr/README.md`** maps each old app number to its new number. An old ticket or commit may cite an old number.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
+The pipeline has no glossary and no ADR folder of its own.
 
 ## File structure
-
-Single-context repo (most repos):
 
 ```
 /
 ├── GLOSSARY.md
 ├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
-└── src/
-```
-
-Multi-context repo (presence of `GLOSSARY-MAP.md` at the root):
-
-```
-/
-├── GLOSSARY-MAP.md
-├── docs/adr/                          ← system-wide decisions
-└── src/
-    ├── ordering/
-    │   ├── GLOSSARY.md
-    │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
-        ├── GLOSSARY.md
-        └── docs/adr/
+│   ├── README.md
+│   ├── 0001-read-the-trade-value-chart-from-its-image.md
+│   └── 0002-grade-from-known-games-not-the-last-completed-week.md
+└── apps/
+    ├── pipeline/
+    └── site/
 ```
 
 ## Use the glossary's vocabulary
@@ -48,4 +34,4 @@ If the concept you need isn't in the glossary yet, that's a signal — either yo
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
-> _Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…_
+> _Contradicts ADR 0010 (six layers import downward only) — but worth reopening because…_
