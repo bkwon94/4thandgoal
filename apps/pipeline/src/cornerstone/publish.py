@@ -86,7 +86,7 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path | None = Non
     else:
         log.warning("%s missing: the publish goes out without managers.json", managers)
     # Why: the repo holds code and notes too. Staging the published folder only keeps a stray change
-    # elsewhere in the tree out of the commit. ADR 0008 allows the push to main on this one condition.
+    # elsewhere in the tree out of the commit. ADR 0019 allows the push to main on this one condition.
     published = str(public_dir.relative_to(site_repo))
     _git(site_repo, "add", "--", published)
     _commit_if_staged(site_repo, f"Week {week}", published)

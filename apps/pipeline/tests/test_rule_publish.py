@@ -1,6 +1,6 @@
 """
 Checks that a publish commit holds only files under apps/site/public/, the published data of the site.
-It builds a real git repo in a temp folder and runs the real publish. See ADR 0008.
+It builds a real git repo in a temp folder and runs the real publish. See ADR 0019.
 """
 import subprocess
 from pathlib import Path
@@ -9,7 +9,7 @@ from rule_report import Offense, clean_git_env, report
 
 from cornerstone.publish import run_publish
 
-ADR = "docs/adr/0008-main-is-the-record-branch.md"
+ADR = "docs/adr/0019-main-is-the-record-branch.md"
 PUBLISHED = "apps/site/public/"
 RULE = "a publish commit stages only files under apps/site/public/"
 FIX = "unstage the file, and commit it on a branch outside the publish."
