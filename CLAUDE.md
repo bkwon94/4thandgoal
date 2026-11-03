@@ -32,8 +32,8 @@ The weekly `publish` is the one exception. It may push to `main`, and it may sta
 
 The tracker is local markdown, because the notes name league managers and the repo is public (ADR 0021).
 
-- The root tracker is `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
-- The pipeline keeps its own tracker under `apps/pipeline/.scratch/`, with its rows in `apps/pipeline/docs/agents/state.md`.
+- The tracker is `.scratch/<feature>/` at the root, for both apps. See `docs/agents/issue-tracker.md`.
+- A feature that both old trackers held keeps a `site/` and a `pipeline/` subfolder, each with its own PRD and `issues/`.
 - A new feature has an optional `MAP.md`, `decisions/`, `PRD.md`, `ACCEPTANCE.md`, and `issues/`. Old features keep their shape.
 
 ## Where the work sits
