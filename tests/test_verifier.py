@@ -633,10 +633,17 @@ def _tagged(text, rid, *ids):
 
 
 def _good_rankings(sheet, ch):
-    """One sentence per team in rank order: the team's PR fact, tagged with its roster.
+    """One sentence per team in rank order: the first clause of the team's PR fact, tagged with its roster.
+    The clause holds one number, so the sentence stays under the limit of two.
     The sentence also cites the team's required facts, so the blurb leaves none uncited."""
     rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.") and not fid.endswith(".why")]
-    return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}", *_required_of(ch, rid)) for rid in rids]
+    return [_tagged(_first_clause(sheet.facts[f"PR.{rid}"].text, ","), rid, f"PR.{rid}", *_required_of(ch, rid))
+            for rid in rids]
+
+
+def _first_clause(text, mark):
+    """The text up to the first `mark`, as a sentence, so a test sentence holds fewer numbers than its fact."""
+    return text.split(mark, 1)[0] + "."
 
 
 def _required_of(ch, rid):
@@ -709,7 +716,8 @@ def test_a_tagged_reaction_counts_toward_the_three(fixture_raw_dir, fixture_hist
     # The first team's standing fact holds 721.96, and the fixture names one player 96, so the test uses the second.
     rid = sentences[1].roster_id
     standing = _standing_id(sheet, ch, rid)
-    sentences[2:2] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    sentences[2:2] = [_tagged(_first_clause(sheet.facts[standing].text, " and "), rid, standing),
+                      _tagged("Rough week.", rid)]
     assert code_check(_blurb("rankings", *sentences), ch, sheet, prompts_dir=PROMPTS) == []
 
 
@@ -1116,7 +1124,7 @@ def _story_recap():
         "recap_3",
         _s("Amon-Ra Dawg Your Team led by 12.24 after the early Sunday games, then Monday night flipped it.",
            "M3.turn", "M3.lead"),
-        _s("Drake Maye put up 23.8 on Monday, and Maye d'force B with U won 113.55 to 104.04.", "M3.turn", "M3.result"),
+        _s("Drake Maye put up 23.8 on Monday, and Maye d'force B with U won.", "M3.turn", "M3.result"),
         _s("The lead changed hands on Monday night.", "M3.lead"),
     )
 
@@ -1168,3 +1176,18 @@ def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
     assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '
             "are unsupported unless one fact says so.") in text
     assert "A sentence may use any listed fact, cited or not." in text
+
+
+def test_a_sentence_with_three_numbers_fails(hbundle):
+    sheet = hbundle.sheet
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("Brock ‘N’ Roll sits 6th at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
+    assert "[0] the sentence holds 3 numbers; the limit is two" in code_check(b, ch, sheet, prompts_dir=PROMPTS)
+
+
+def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
+    sheet = hbundle.sheet
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("Brock ‘N’ Roll sits at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
+    failures = code_check(b, ch, sheet, prompts_dir=PROMPTS)
+    assert not any("numbers; the limit is two" in m for m in failures), failures

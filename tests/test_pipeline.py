@@ -311,7 +311,8 @@ def test_rankings_command_writes_the_file_for_a_saved_week(tmp_path, fixture_raw
 
 class _RankingsWriter:
     """A fake Claude that writes one tagged sentence per PR fact, and counts the writer calls.
-    Each sentence also cites its team's required facts, so the code check passes."""
+    Each sentence is the first clause of the fact, so it holds one number, and it also cites its team's
+    required facts, so the code check passes."""
 
     def __init__(self):
         self.writer_calls = 0
@@ -325,7 +326,8 @@ class _RankingsWriter:
         listed = re.search(r"^Cite each of these facts in its team's sentences: (.*)\.$", user, re.MULTILINE)
         required = listed.group(1).split(", ") if listed else []
         return model(sentences=[
-            Sentence(text=text, fact_ids=[fid, *(r for r in required if r.split(".")[1] == rid)], roster_id=int(rid))
+            Sentence(text=text.split(",", 1)[0] + ".", fact_ids=[fid, *(r for r in required if r.split(".")[1] == rid)],
+                     roster_id=int(rid))
             for fid, rid, text in found
         ])
 

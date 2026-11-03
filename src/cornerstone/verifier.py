@@ -48,6 +48,10 @@ NUMBER_WORDS = [
     "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
     "nineteen", "twenty", "dozen",
 ]
+# The tone prompt allows two numbers in a sentence. A record such as 9-7 or a percent such as 87% is one token.
+SENTENCE_NUMBER_LIMIT = 2
+# A game clock such as 3:06 in a hurt fact is one number, but its two parts are two tokens.
+CLOCK = re.compile(r"\d+:\d{2}\b")
 # A reaction sentence cites no fact, so it must be too short to hide a claim.
 REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
@@ -215,6 +219,11 @@ def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -
     return failures
 
 
+def number_count(bare: str) -> int:
+    """The numbers in a sentence. A record such as 9-7, a percent such as 87%, and a clock such as 3:06 count once each."""
+    return len(CLOCK.findall(bare)) + len(NUMBER_TOKEN.findall(CLOCK.sub(" ", bare)))
+
+
 def article_failures(text: str) -> list[str]:
     """The article rule: "an", not "a", before a number read with a vowel sound, such as "an 8.13".
     Any other number takes "a", such as "a 9" or "a 110"."""
@@ -357,6 +366,9 @@ def code_check(
             suffix = "" if message.startswith("number word") or not ids else f" {ids}"
             failures.append(f"[{i}] {message}{suffix}")
 
+        numbers = number_count(bare)
+        if numbers > SENTENCE_NUMBER_LIMIT:
+            failures.append(f"[{i}] the sentence holds {numbers} numbers; the limit is two")
         failures += [f"[{i}] {m}" for m in article_failures(sentence.text)]
         failures += [f"[{i}] {m}" for m in odds_kind_failures(bare, sentence.text, valid_ids, sheet)]
 
