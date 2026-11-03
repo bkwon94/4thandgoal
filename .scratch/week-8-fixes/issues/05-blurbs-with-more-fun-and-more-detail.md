@@ -11,8 +11,10 @@ found where they fit.
 **Status:** ready-for-agent
 
 - [x] Read the tone rules in `.scratch/tone/PRD.md` and the writer prompt. Name what you change and what you keep.
+  - Changed: rule 30, the tone Humor bullet, the rule 29 game-time line, the verifier gate, and the two-number code check.
+  - Kept: rules 1 to 29, the opener, the banned words and phrases, the number rules, and the examples.
 - [x] The prompt asks for one concrete detail per blurb and allows a light joke where the facts earn it.
 - [x] The word bans and the number rules stay. A test shows that.
 - [x] `make build WEEK=8` from the saved data. Paste three blurbs, before and after, in the close comment.
-- [x] Brian reads the page before the publish. For Brian: no agent action.
+- [ ] Brian reads the page before the publish.
 - [x] `make check` passes.

@@ -584,12 +584,15 @@ def test_writer_asks_for_one_concrete_detail_and_allows_a_light_joke(fixture_raw
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
     assert ("30. Give every blurb one concrete detail from its facts: "
-            "the number, the player, or the turn that made the chapter.") in system
-    assert "- A light joke is fine where a fact earns it, for a winner too. Not every joke is a roast." in system
+            "the number, the player, or the lead change that made the chapter.") in system
+    assert "Pick the one a league member would repeat to a friend." in system
+    assert ("- A light joke is fine where a fact invites it, for a winner too. Not every joke is a roast. "
+            "The joke adds no claim beyond the fact.") in system
 
 
-def test_the_detail_rule_keeps_the_word_bans_and_the_number_rules(fixture_raw_dir):
-    # The looser voice of rule 30 must not cost a ban or a number rule, so each one is asserted word for word.
+def test_the_prompt_keeps_the_banned_words_four_number_rules_and_the_listed_out_line(fixture_raw_dir):
+    # Rule 30 loosens the voice. These asserts show that the banned words, the banned phrases, four number rules,
+    # and the "listed Out" line stay in the prompt word for word, and that rule 30 says they still hold.
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
     assert "Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked, WOPR." in system
@@ -602,12 +605,12 @@ def test_the_detail_rule_keeps_the_word_bans_and_the_number_rules(fixture_raw_di
     assert "- Never put more than two numbers in a sentence." in system
     assert '"Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.' in system
     rule_30 = system.split("30. Give every blurb", 1)[1]
-    assert "The word bans, the number rules, and rule 11 still hold." in rule_30
+    assert "The banned words, the number rules, and rule 11 still hold." in rule_30
 
 
 def test_the_recap_rule_keeps_the_term_game_time_off_the_page(story_bundle):
     sheet = story_bundle.sheet
     system, _ = build_writer_prompt(_chapter(sheet, "recap_3"), sheet, None, prompts_dir=PROMPTS)
-    rule_29 = system.split("29. In a recap chapter", 1)[1].split("\n30. ", 1)[0]
+    rule_29 = system.split("29. In a recap chapter", 1)[1]
     assert ('- The term "game time" never appears on the page. Write "after Thursday", '
             '"after the early Sunday games", or "into Monday".') in rule_29
