@@ -18,7 +18,7 @@ Break one spec into tickets at `.scratch/<slug>/issues/<NN>-<slug>.md`, and add 
 
 1. Call the Skill tool for `to-tickets`. Do its steps 1 to 4, with the changes below.
 2. In the breakdown that Brian approves, show the app of each ticket and the acceptance tests that it makes pass.
-3. After his approval, write one file for each ticket in the format below. Number from `01`, blockers first. Do not use the template of `to-tickets`.
+3. After Brian approves, write one file for each ticket in the format below. Number from `01`, blockers first. Do not use the template of `to-tickets`.
 4. Give each acceptance test at least one ticket that makes it pass.
 5. Add one row to `docs/agents/state.md`, as below.
 6. Change the Tickets line of the PRD header to the ticket numbers, such as "Tickets: 01 to 04, in `issues/`."

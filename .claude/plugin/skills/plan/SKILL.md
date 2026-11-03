@@ -26,7 +26,7 @@ A decision ticket records a choice. It writes no product code. If you want to bu
 
 ## The human side
 
-Grill and prototype tickets need Brian. Never answer a question for Brian. Wait for his answer, then record it.
+Grill and prototype tickets need Brian. Never answer a question for Brian. Wait for the answer from Brian, then record it.
 
 ## Stage 1: write the map
 

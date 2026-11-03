@@ -36,7 +36,7 @@ The ids are permanent, because the tickets and the Test verdict cite them. A tes
 
 ## A revision
 
-Only Brian changes an approved test. Show him each changed test. After his approval, change the file and add a dated line under `## Revisions`.
+Only Brian changes an approved test. Show Brian each changed test. After Brian approves, change the file and add a dated line under `## Revisions`.
 
 ## The end
 

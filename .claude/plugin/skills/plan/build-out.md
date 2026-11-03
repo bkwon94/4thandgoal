@@ -6,19 +6,19 @@
 
 1. Call the Skill tool for `cpc:to-spec`. Give it the feature slug.
 2. It reads the map, the decision tickets, and this conversation. It records the choice of each `spec` decision ticket in the spec.
-3. Show Brian the spec. Wait for his approval.
+3. Show Brian the spec. Wait for the approval of Brian.
 4. After the approval, set each `spec` decision ticket to `done` and move its line to DECISIONS SO FAR. Commit.
 
 ## Approval 2: the acceptance tests
 
 1. Call the Skill tool for `cpc:to-acceptance`. Give it the feature slug.
-2. Show Brian the list of tests. Wait for his approval.
+2. Show Brian the list of tests. Wait for the approval of Brian.
 3. After the approval, commit.
 
 ## Approval 3: the tickets
 
 1. Call the Skill tool for `cpc:to-tickets`. Give it the feature slug.
-2. Show Brian the breakdown. Wait for his approval.
+2. Show Brian the breakdown. Wait for the approval of Brian.
 3. After the approval, it writes the tickets and the `state.md` row. Run `make check-fast` at the root. Commit.
 
 ## The end

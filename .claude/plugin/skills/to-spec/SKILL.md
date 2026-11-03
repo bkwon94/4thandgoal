@@ -22,7 +22,7 @@ Write the spec of one feature as `.scratch/<slug>/PRD.md`. Do not interview Bria
 4. Record the choice of each open `spec` decision ticket under Implementation Decisions.
 5. Write the file to `.scratch/<slug>/PRD.md`, not to another tracker. Add no triage label.
 6. Start the file with the header below, then the sections of the `to-spec` template, as `##` headings in its order.
-7. Show Brian the spec. Do not change it after his approval, except to fix what he asks for.
+7. Show Brian the spec. Do not change it after Brian approves it, except to fix what Brian asks for.
 
 ## The header
 
