@@ -1,6 +1,6 @@
 """
 Publish a built week to the public site in apps/site of the same repo.
-It commits the pipeline data, copies the week folder and the season files, then commits and pushes.
+It commits the pipeline data, copies the week folder and the season files, then commits the published folder only and pushes.
 """
 import logging
 import shutil
@@ -85,8 +85,11 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path | None = Non
         shutil.copy2(managers, public_dir / str(season) / "managers.json")
     else:
         log.warning("%s missing: the publish goes out without managers.json", managers)
-    _git(site_repo, "add", "-A")
-    _commit_if_staged(site_repo, f"Week {week}", ".")
+    # Why: the repo holds code and notes too. Staging the published folder only keeps a stray change
+    # elsewhere in the tree out of the commit. ADR 0008 allows the push to main on this one condition.
+    published = str(public_dir.relative_to(site_repo))
+    _git(site_repo, "add", "--", published)
+    _commit_if_staged(site_repo, f"Week {week}", published)
     if push:
         _git(site_repo, "push")
     return site_page_url(season, week)
