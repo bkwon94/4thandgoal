@@ -78,7 +78,7 @@ def drop_lines(week: Week, nfl: NflverseWeek | None = None) -> list[DropLine]:
 
 
 def expected_awards(
-    week: Week, nfl: NflverseWeek | None = None, held: Mapping[str, int] | None = None,
+    week: Week, nfl: NflverseWeek | None, awards_held: Mapping[str, int],
 ) -> dict[str, GapLine]:
     """The unlucky and the lucky starter of week N by expected gap, keyed "unlucky" and "lucky".
 
@@ -86,9 +86,9 @@ def expected_awards(
     missing or read through the week before, because then the file holds no game of week N.
     The expected gap is his points in this league minus his expected points. The file's own points miss part
     of the league scoring, so they stay out.
-    Each award picks its own winner, so a starter with another award can win one here too.
-    `held` counts the awards each Sleeper ID already holds. These awards pick after them, so a starter who
-    holds AWARDS_PER_PLAYER is skipped here.
+    Each award picks its own winner, so a starter with another award can win one here too, unless he holds the cap.
+    `awards_held` counts the awards each Sleeper ID already holds. They pick after the other awards, so these awards
+    skip a starter who holds AWARDS_PER_PLAYER.
     """
     if nfl is None or nfl.expected is None or nfl.expected.through_week < week.week:
         return {}
@@ -98,7 +98,7 @@ def expected_awards(
             for line in side.lines:
                 games = nfl.expected.players.get(line.player_id, [])
                 game = next((g for g in games if g.week == week.week), None)
-                capped = (held or {}).get(line.player_id, 0) >= AWARDS_PER_PLAYER
+                capped = awards_held.get(line.player_id, 0) >= AWARDS_PER_PLAYER
                 if line.started and game is not None and not capped:
                     gaps.append(GapLine(line, side.roster_id, game.expected, sub(line.points, game.expected)))
     out = {}

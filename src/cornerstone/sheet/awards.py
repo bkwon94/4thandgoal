@@ -41,8 +41,8 @@ def award_facts(c: Context) -> list[Fact]:
 def expected_award_facts(c: Context) -> list[Fact]:
     """The unlucky and lucky awards from the expected gap. None when the expected points lack week N."""
     out = []
-    held = Counter(a.line.player_id for a in c.awards)
-    for key, g in expected_awards(c.week, c.nfl, held).items():
+    awards_held = Counter(a.line.player_id for a in c.awards)
+    for key, g in expected_awards(c.week, c.nfl, awards_held).items():
         n = Nums()
         team = c.team(g.roster_id)
         side = "under" if g.gap < 0 else "over"

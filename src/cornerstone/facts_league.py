@@ -470,16 +470,16 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
         ))
 
     # Each award picks its own winner, so one player can win two awards. A reader expects the top scorer to be
-    # the top scorer, and a skip to the next name would make the tile false.
+    # the top scorer, so the Top Scorer tile must stay true.
     # The cap is AWARDS_PER_PLAYER. The awards pick in list order, and a later award skips a player who holds the
-    # cap and takes the next name. Top Scorer picks second, so the cap never moves it.
-    held: Counter[str] = Counter()
+    # cap and takes the next name. Top Scorer picks second, so the cap never moves it, and its tile stays true.
+    awards_held: Counter[str] = Counter()
     out = []
     for key, ranked in rankings:
-        pick = next((x for x in ranked if held[x[0][0].player_id] < AWARDS_PER_PLAYER), None)
+        pick = next((x for x in ranked if awards_held[x[0][0].player_id] < AWARDS_PER_PLAYER), None)
         if pick:
             (line, rid, mid), reason = pick
-            held[line.player_id] += 1
+            awards_held[line.player_id] += 1
             out.append(Award(key=key, line=line, roster_id=rid, matchup_id=mid, reason=reason))
     return out
 
