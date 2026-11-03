@@ -77,7 +77,7 @@ grade. A document whose Claude call fell back is not stored, so the next request
 
 ## The deploy job
 
-- The job `deploy` in the root `.github/workflows/pipeline-check.yml` deploys after each push to `main` with a green check.
+- The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/pipeline` and passes the check.
 - To read the job, open the Actions tab, then the "Pipeline check" run of the push. The `deploy` log ends with the
   image and the machine state.
 - Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
