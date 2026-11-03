@@ -232,11 +232,12 @@ def test_every_number_in_an_expected_award_text_is_in_its_numbers(fixture_raw_di
 
 
 def test_a_starter_with_an_award_can_win_an_expected_award(fixture_raw_dir, nfl_week6):
-    # Bijan Robinson is the Underperformer and Germie Bernard the Overachiever. Each has the largest gap.
-    games = {**HAND_SET, "9509": [(6, 30.0)], "13274": [(6, 5.0)]}
+    # Bijan Robinson is the Underperformer and Tre Tucker the Game Changer and the Overachiever.
+    # Each gets the largest gap on his side.
+    games = {**HAND_SET, "9509": [(6, 30.0)], "10213": [(6, 2.0)]}
     facts = _expected_bundle(fixture_raw_dir, nfl_week6, games).sheet.facts
     assert "Bijan Robinson" in facts["AW.unlucky"].text
-    assert "Germie Bernard" in facts["AW.lucky"].text
+    assert "Tre Tucker" in facts["AW.lucky"].text
 
 
 def test_the_vocabulary_rule_lines_carry_the_floor():
