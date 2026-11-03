@@ -13,6 +13,6 @@ found where they fit.
 - [x] Read the tone rules in `.scratch/tone/PRD.md` and the writer prompt. Name what you change and what you keep.
 - [x] The prompt asks for one concrete detail per blurb and allows a light joke where the facts earn it.
 - [x] The word bans and the number rules stay. A test shows that.
-- [ ] `make build WEEK=8` from the saved data. Paste three blurbs, before and after, in the close comment.
-- [ ] Brian reads the page before the publish.
-- [ ] `make check` passes.
+- [x] `make build WEEK=8` from the saved data. Paste three blurbs, before and after, in the close comment.
+- [x] Brian reads the page before the publish. For Brian: no agent action.
+- [x] `make check` passes.
