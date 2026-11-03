@@ -836,8 +836,16 @@ One league and its site, over every season. A client has one provider per season
 _Avoid_: League config, tenant, customer, instance, site
 
 **Brand**:
-The look of one client: the token values, the fonts, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only.
+The look of one client: the color roles, the fonts, the radii, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only. It lives in `brand.toml`.
 _Avoid_: Theme, skin, style, palette
+
+**Base role**:
+One of the six colors that a brand must set in each set: the accent, the band, the page, the card, the text, and the muted text.
+_Avoid_: Primary color, brand color, palette
+
+**Derived role**:
+A color that the design package computes from the base roles with a formula, such as the accent text or the lifted card. A brand can override it.
+_Avoid_: Computed color, secondary color, shade
 
 **Package**:
 One domain of the league, in both languages: the rules, the ports, the fakes, the parts, and the screens. A client takes a package or omits it as a whole.

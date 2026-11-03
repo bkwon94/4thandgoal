@@ -24,10 +24,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - Every feature moves into a package. The order: the client folder and its build first, then one package per ticket with an empty CPC golden diff, then the second client last.
 - Eight packages, as bounded contexts: the kernel `league`, then `facts`, then `week`, `rankings`, `managers`, `waiver`, and `analyzer`, with `design` under each site side. The week takes chapters through a chapter port. `decisions/01-grill-the-package-map.md`.
 - `client.toml` holds the package list, the seasons, the timezone, the usage code, the package values, and the menu. The sizes come from the provider. Each package exports one JSON Schema, and an unknown key fails the check. `decisions/02-grill-the-client-toml-schema.md`.
+- A brand is `brand.toml`: six base color roles per set, two fonts, and two radii. The other colors derive, with an override. A brand with one set has no theme button. The color tokens take role names. `decisions/03-grill-the-brand-tokens.md`.
 
 ## NOT YET SPECIFIED
 
-- Which tokens does a brand give: which colors, fonts, and radii? `decisions/03-grill-the-brand-tokens.md`.
 - What does the second league need to build a week: its history, its prompts, its voice? `decisions/04-grill-the-second-league-week.md`.
 - Where is the second site hosted, and at what URL? `decisions/05-research-the-second-site-host.md`.
 - Can the provider port take the ESPN API and the Yahoo API later? `decisions/06-research-the-espn-and-yahoo-apis.md`.
@@ -37,6 +37,8 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 
 ## OUT OF SCOPE
 
+- A dark default for a two-set brand. ADR 0007 keeps light as the default, and no client asks for dark yet.
+- A type scale per brand. Each change needs a check at three widths, so a later spec opens it with that check.
 - A menu item that links outside the site. It needs a look in the shell, and a later spec can add a `link` kind to the closed set.
 - An override of a provider size in `client.toml`. Add it when a real league needs one.
 - The ESPN provider and the Yahoo provider. Each is a later spec that plugs into the provider port. Two seams in one spec breaks the One test.
