@@ -16,6 +16,16 @@ A client takes a package or omits it as a whole, with one line of `client.toml` 
 parts and the primitives that each package uses sit in one design-system package. The published
 file stays the seam between the two languages, and the pipeline owns its shape (ADR 0011).
 
+## The packages are bounded contexts
+
+Each package is a bounded context of domain-driven design, and owns its terms, its tunables, and its published file.
+`league` is the shared kernel, and every outside service enters through it. `facts` holds the fact, the writer, and
+the verifier. The five core packages sit above both. `.scratch/clients/decisions/01-grill-the-package-map.md` maps
+each module.
+
+A package name is a word the league uses. `design` is the one exception: it holds the primitives, the parts, and the
+shell, and no rule of the league. A client takes `league`, `facts`, and `design` always.
+
 ## Why
 
 The goal is that a client can take any feature or omit it. With one package per domain, that is one

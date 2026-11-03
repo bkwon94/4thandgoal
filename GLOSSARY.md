@@ -413,6 +413,10 @@ _Avoid_: anchor, base grade
 One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
 trend and usage, injury history, handcuff, schedule, or expected gap.
 
+**Lineup**:
+The best set of starters of one roster: which starting slot takes which player, who is out, and who covers a bye. It is a term of the league package, so every package reads the same lineup.
+_Avoid_: Starters (alone), depth, best ball
+
 **Lineup value**:
 The points per game a player counts for in a side's best lineup: his recent points per game, or his projection ahead when he is due back.
 _Avoid_: value (alone), worth
@@ -838,6 +842,18 @@ _Avoid_: Theme, skin, style, palette
 **Package**:
 One domain of the league, in both languages: the rules, the ports, the fakes, the parts, and the screens. A client takes a package or omits it as a whole.
 _Avoid_: Module, feature, plugin, library, lib
+
+**League package**:
+The one package that each client takes: the shape of any league, with its rosters, weeks, players, history, and provider. It names no client.
+_Avoid_: Core, common, shared, base, utils
+
+**Chapter port**:
+The port of the week package through which another package gives one chapter of the weekly report: its facts and its chapter. The week owns the page and the order of the chapters. A client that omits the package gets a week with no such chapter.
+_Avoid_: Plugin, hook, slot, extension point
+
+**Design package**:
+The one site package that each client takes: the primitives, the parts, the shell, and the code that applies a brand. It holds no rule of the league, so its name is not a league word.
+_Avoid_: Design system, UI kit, components, parts (alone; a part is one component of it)
 
 **App**:
 One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.

@@ -22,10 +22,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - One shared API serves each client, with the client in the path and a rate limit per client. The API fails at start on a bad `client.toml`.
 - Each client's data lives in `clients/<slug>/published/<season>/week-NN/`. The site build copies only the selected client's data. The publish exception of ADR 0019 changes to that folder.
 - Every feature moves into a package. The order: the client folder and its build first, then one package per ticket with an empty CPC golden diff, then the second client last.
+- Eight packages, as bounded contexts: the kernel `league`, then `facts`, then `week`, `rankings`, `managers`, `waiver`, and `analyzer`, with `design` under each site side. The week takes chapters through a chapter port. `decisions/01-grill-the-package-map.md`.
 
 ## NOT YET SPECIFIED
 
-- Which domains become packages, from the pipeline modules and the site parts? `decisions/01-grill-the-package-map.md`.
 - What sections and values does `client.toml` hold? `decisions/02-grill-the-client-toml-schema.md`.
 - Which tokens does a brand give: which colors, fonts, and radii? `decisions/03-grill-the-brand-tokens.md`.
 - What does the second league need to build a week: its history, its prompts, its voice? `decisions/04-grill-the-second-league-week.md`.
