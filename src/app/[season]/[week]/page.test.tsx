@@ -218,7 +218,7 @@ function slotLink(slot: HTMLElement) {
 
 describe("WeekPage week footer", () => {
   it("links week 6 on the left and leaves the right slot empty on week 7", async () => {
-    await renderWeek7();
+    await renderWeek7FromTemp();
     const [prior, next] = footerSlots();
     expect(slotLink(prior)?.getAttribute("href")).toBe("/2026/week-06/");
     expect(slotLink(prior)?.textContent).toContain("Week 6");
@@ -236,7 +236,9 @@ describe("WeekPage week footer", () => {
 });
 
 /* A temp public/ folder with weeks 5, 6, and 7, so week 6 has a week on each side. Weeks 6 and 7 are the real pages.
-   Week 5 is only what the footer reads, because the test never renders it. Returns the week page read from that folder. */
+   Week 5 is only what the footer reads, because the test never renders it. Week 7 is the last week in that folder,
+   so the footer test of the empty right slot reads it and not the real tree, which gains a week on each publish.
+   Returns the week page read from that folder. */
 async function publicWithWeeks() {
   const root = mkdtempSync(join(tmpdir(), "week-page-"));
   roots.push(root);
@@ -250,6 +252,12 @@ async function publicWithWeeks() {
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
   vi.resetModules();
   return (await import("./page")).default;
+}
+
+/* Renders the week 7 report from the temp folder, where week 7 is the last week. */
+async function renderWeek7FromTemp() {
+  const Page = await publicWithWeeks();
+  render(await Page({ params: Promise.resolve({ season: "2026", week: "week-07" }) }));
 }
 
 /* Renders the week 6 report from the temp folder. */
