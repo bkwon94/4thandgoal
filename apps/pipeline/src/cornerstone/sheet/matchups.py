@@ -9,6 +9,7 @@ from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import STREAK_ON_THE_LINE, _streak
 from cornerstone.models import (
     Fact,
+    OddsResult,
     OddsStatus,
     PlayerLine,
     sub,
@@ -296,6 +297,7 @@ def _impact_fact(c, f, m, firsts: dict[int, OddsStatus]) -> Fact:
     for rid in (m.a.roster_id, m.b.roster_id):
         before, after = c.before[rid], c.by_rank[rid].rank
         clauses = [_place_clause(before, after, n), *_cut_clause(before, after, c.config.playoff_spots)]
+        clauses += _odds_clause(c.odds_before, c.odds, rid, n)
         clauses.append(_median_clause(c, f, rid, n))
         clauses += _streak_clause(c, rid, n)
         if rid in firsts:
@@ -341,6 +343,26 @@ def _cut_clause(before: int, after: int, spots: int) -> list[str]:
     if before <= spots < after:
         return ["fell out of the playoff spots"]
     return []
+
+
+def _odds_clause(before: OddsResult | None, after: OddsResult | None, rid: int, n: Nums) -> list[str]:
+    """The playoff odds of last week's saved odds and of this week. GLOSSARY.md, "Playoff odds", "Impact fact".
+
+    The other games and the median game move the odds too, so the clause says "this week", not the game.
+    With no saved odds before this week, or no odds after it, no odds part shows.
+    """
+    if before is None or after is None or rid not in before.teams or rid not in after.teams:
+        return []
+    old, new = _odds_number(before.teams[rid].playoff, n), _odds_number(after.teams[rid].playoff, n)
+    return [f"saw its playoff odds go from {old} to {new} this week"]
+
+
+def _odds_number(playoff: int, n: Nums) -> str:
+    """The playoff odds as the `ODDS.` fact gives them: "about" before an engine number, none before 100 or 0.
+
+    A clinched team shows 100 and a team that is out shows 0. Those are sure, so they take no "about".
+    """
+    return f"{n(playoff)}%" if playoff in (0, 100) else f"about {n(playoff)}%"
 
 
 def _median_clause(c, f, rid: int, n: Nums) -> str:

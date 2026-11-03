@@ -301,6 +301,7 @@ class Context:
         chart: ChartValues | None = None,
         snapshot: Snapshot | None = None,
         today: date | None = None,
+        odds_before: OddsResult | None = None,
         *,
         config: LeagueConfig,
     ) -> None:
@@ -339,6 +340,8 @@ class Context:
         inputs = odds_inputs(week, history, config)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = week_odds(week, history, inputs, self.projected, config)
+        # The saved odds of the week before, for the odds part of the impact fact. None leaves that part out.
+        self.odds_before = odds_before
         # The shootout storyline reads the same projected lineups as the odds.
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
                               snapshot.position_rank if snapshot is not None else None, config=config)

@@ -10,11 +10,11 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and A
 
 **Status:** ready-for-agent
 
-- [ ] A test finds the odds part in `M<n>.impact` with both numbers as whole percents, the words "playoff odds", and the words "this week".
-- [ ] A test of a week with no saved odds the week before finds no odds part, and finds the other parts.
-- [ ] The odds after the week in the fact match the playoff odds that the same build saves for the team.
-- [ ] The build runs the odds engine once per week, as before.
-- [ ] The golden files hold the changed facts, and `make check` passes.
+- [x] A test finds the odds part in `M<n>.impact` with both numbers as whole percents, the words "playoff odds", and the words "this week".
+- [x] A test of a week with no saved odds the week before finds no odds part, and finds the other parts.
+- [x] The odds after the week in the fact match the playoff odds that the same build saves for the team.
+- [x] The build runs the odds engine once per week, as before.
+- [x] The golden files hold the changed facts, and `make check` passes.
 - [ ] Builds of `2026` weeks 6 and 8 record the evidence of AT-1, AT-2, AT-3, and AT-7 in `EVIDENCE.md`.
 
 ## Comments
