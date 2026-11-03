@@ -4,7 +4,6 @@ One row for each feature under `.scratch/` with an open ticket. The close commen
 
 | Feature | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- |
-| week-8-fixes | 05 blurbs-with-more-fun-and-more-detail | | page unpublished until 05 lands |
 | known-games | 08 the-site-renders-the-known-games-line | | |
 | manager-pages | 12 drop-awards-from-managers-entry | | |
 | modular | 20 remove-the-chart-parameter-of-context | | |
