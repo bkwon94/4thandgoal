@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "user": {
+      "login": "bkwon94"
+    },
+    "created_at": "2026-11-03T10:00:00Z",
+    "body": "Test verdicts\nAT-1: PASS\nAT-2: FAIL the bye wraps at 375 px\n"
+  },
+  {
+    "id": 2,
+    "user": {
+      "login": "bkwon94"
+    },
+    "created_at": "2026-11-03T11:00:00Z",
+    "body": "Feedback round 1\n\n- AT-2: fixed in abc1234, new evidence in `.scratch/bye-week/evidence/AT-2/`.\n\nTest verdicts\nAT-1: PASS\nAT-2: PASS\n\n<!-- cpc:agent -->\n"
+  },
+  {
+    "id": 3,
+    "user": {
+      "login": "someone-else"
+    },
+    "created_at": "2026-11-03T11:30:00Z",
+    "body": "Test verdicts\nAT-1: PASS\nAT-2: PASS\n"
+  },
+  {
+    "id": 4,
+    "user": {
+      "login": "bkwon94"
+    },
+    "created_at": "2026-11-03T12:00:00Z",
+    "body": "Test verdicts\nAT-1: PASS\nAT-2: PASS the wrap is gone\n"
+  },
+  {
+    "id": 5,
+    "user": {
+      "login": "bkwon94"
+    },
+    "created_at": "2026-11-03T13:00:00Z",
+    "body": "Thanks. I merge this tonight.\n"
+  }
+]

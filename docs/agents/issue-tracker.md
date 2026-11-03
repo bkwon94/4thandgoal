@@ -44,6 +44,8 @@ A feature after the One spec has this shape. Each part is a file or folder under
 3. `PRD.md`: the spec in prose.
 4. `ACCEPTANCE.md`: the acceptance tests, each named `AT-<n>`. Brian gives the verdict of each test (ADR 0020).
 5. `issues/<NN>-<slug>.md`: the tickets.
+6. `EVIDENCE.md`: the evidence of each acceptance test, with no Test verdict. `cpc:implement` writes it.
+7. `evidence/AT-<n>/`: the files of each test, such as the screenshots of a site test or the output of a pipeline command.
 
 A new feature uses one folder for both apps. It does not get `site/` and `pipeline/` subfolders.
 
@@ -53,7 +55,8 @@ A new feature uses one folder for both apps. It does not get `site/` and `pipeli
 ticket, Blocked by, and Hold. App is `site`, `pipeline`, or `both`.
 
 - An open ticket is a file under `issues/` whose Status is not `done` and not `wontfix`.
-- A PRD, a map, a decision ticket, and an acceptance file are not tickets.
+- A PRD, a map, a decision ticket, an acceptance file, and an evidence file are not tickets.
+- A ticket in `in-review` or `blocked` is open. `cpc:implement` sets `in-review` after the merge into the spec branch. Only Brian sets `done`.
 - A shared feature gets one row for each subfolder with an open ticket. The App of the row names the subfolder.
 - A feature with no subfolder gets one row.
 

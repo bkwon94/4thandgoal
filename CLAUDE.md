@@ -28,12 +28,14 @@ ADRs 0018 to 0021 set the flow. The spec `.scratch/one/` builds it, so its own t
 
 The weekly `publish` is the one exception. It may push to `main`, and it may stage only `apps/site/public/<season>/`.
 
-The repo plugin `cpc` takes an idea to tickets. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
+The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
 
 1. `cpc:plan <outcome statement>` writes the map and the decision tickets. `cpc:plan <feature>` clears one decision ticket per session.
 2. `cpc:to-spec <feature>` writes `PRD.md`.
 3. `cpc:to-acceptance <feature>` writes `ACCEPTANCE.md`.
 4. `cpc:to-tickets <feature>` writes the tickets and the `state.md` row.
+5. `cpc:implement <feature>` builds each ticket on its ticket branch, merges it into the spec branch, records the evidence in `EVIDENCE.md`, and opens one PR to `main`.
+6. Brian writes the Test verdicts comment. `cpc:review <PR number>` does one round of feedback per run. The check `verdict` passes when each test has PASS, and Brian merges.
 
 ## Tracker
 
