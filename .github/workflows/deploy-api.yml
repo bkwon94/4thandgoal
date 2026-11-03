@@ -1,0 +1,42 @@
+# Deploys the Cornerstone API to Fly.
+# It runs on a push to main that changes the pipeline or this workflow, and only after the check passes.
+# The deploy calls the check workflow as a job it needs. That is simpler than a workflow_run trigger,
+# which has no path filter and needs extra steps to find the pushed commit.
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/pipeline/**"
+      - ".github/workflows/deploy-api.yml"
+
+# Each job only reads the repo, so the token gets no write scope.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    uses: ./.github/workflows/check.yml
+
+  # A green check is the approval, so no environment gate holds the deploy.
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Two deploys of one app at once can conflict, so a second deploy waits for the first.
+    concurrency:
+      group: fly-deploy
+      cancel-in-progress: false
+    # fly.toml and the Dockerfile sit in apps/pipeline, and flyctl uses the current folder as the build context.
+    defaults:
+      run:
+        working-directory: apps/pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@v1
+      # --remote-only builds the image on a Fly builder, so the runner needs no Docker.
+      - name: Deploy the API
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
