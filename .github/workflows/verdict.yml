@@ -1,0 +1,90 @@
+# Sets the commit status "verdict" on the head of each PR to main, from the Test verdicts comment of Brian.
+# A required check on "verdict" then blocks the merge of a spec PR until every acceptance test has PASS (ADR 0020).
+#
+# The status API, and not a plain job result, carries the verdict. An issue_comment run belongs to the default
+# branch, so its job result shows on main and never on the PR. A commit status on the PR head SHA shows on
+# the PR from either event, and a new push gets a new run and a new status.
+name: Verdict
+
+on:
+  pull_request:
+    branches: [main]
+  issue_comment:
+    types: [created, edited]
+
+# The job reads the PR, its comments, and one file, and writes one commit status. It needs no other access.
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+# The last run for a PR wins, so a fast second comment does not lose to a slow first run.
+concurrency:
+  group: verdict-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  post-status:
+    name: Post the verdict status
+    # An issue_comment run also fires for a plain issue. Only a comment on a PR counts.
+    if: github.event_name == 'pull_request' || github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # The run reads the script of its own ref: the PR merge ref for pull_request, and main for issue_comment.
+      # The ACCEPTANCE.md of the PR is data. The run reads it through the API and runs no code of the PR.
+      - name: Check out the verdict script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/verdict.py
+          sparse-checkout-cone-mode: false
+
+      - name: Judge the latest Test verdicts comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # The branch name and the head SHA come from the API, so both events read the same values.
+          gh api "repos/$REPO/pulls/$PR" > pr.json
+          base=$(jq -r .base.ref pr.json)
+          slug=$(jq -r .head.ref pr.json)
+          sha=$(jq -r .head.sha pr.json)
+
+          post() {
+            gh api "repos/$REPO/statuses/$sha" -f state="$1" -f context=verdict \
+              -f description="$2" -f target_url="$RUN_URL" > /dev/null
+            echo "verdict: $1: $2"
+          }
+
+          if [ "$base" != "main" ]; then
+            echo "The PR targets $base, not main. Nothing to judge."
+            exit 0
+          fi
+
+          # A Spec branch <slug> has .scratch/<slug>/ACCEPTANCE.md. A PR with no such file is not a spec PR,
+          # such as a records PR, so it needs no Test verdict and passes.
+          path=".scratch/$slug/ACCEPTANCE.md"
+          if ! gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$path?ref=$sha" \
+               > ACCEPTANCE.md 2> error.txt; then
+            if grep -q "HTTP 404" error.txt; then
+              post success "No $path, so this PR needs no Test verdict."
+              exit 0
+            fi
+            cat error.txt
+            exit 1
+          fi
+
+          gh api --paginate "repos/$REPO/issues/$PR/comments?per_page=100" \
+            --jq '.[] | {id, user: {login: .user.login}, created_at, body}' | jq -s . > comments.json
+
+          if python3 scripts/verdict.py ACCEPTANCE.md --comments comments.json --owner "$OWNER" \
+               --name "$path" --summary summary.txt; then
+            post success "$(cat summary.txt)"
+          else
+            post failure "$(cat summary.txt)"
+          fi
