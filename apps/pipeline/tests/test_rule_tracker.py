@@ -1,6 +1,6 @@
 """
-Checks that docs/agents/state.md has one row for each feature with an open ticket, and no other row.
-It reads the Status line of each tracked ticket under .scratch as text. See ADR 0014.
+Checks that docs/agents/state.md at the repo root has one row for each feature with an open ticket, and no other row.
+It reads the Status line of each tracked ticket under the root .scratch as text. See ADR 0014.
 """
 import re
 import subprocess
@@ -8,7 +8,18 @@ from pathlib import Path, PurePosixPath
 
 from rule_report import Offense, clean_git_env, report
 
-ROOT = Path(__file__).resolve().parent.parent
+
+def _repo_root() -> Path:
+    """The repo root, from git. The tracker and the state file sit there, not in apps/pipeline."""
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        cwd=Path(__file__).resolve().parent, check=True, capture_output=True, text=True, env=clean_git_env(),
+    )
+    return Path(result.stdout.strip())
+
+
+ROOT = _repo_root()
+APPS = {"site", "pipeline"}
 ADR = "docs/adr/0014-the-rules-are-checks.md"
 STATE = "docs/agents/state.md"
 CLOSED = {"done", "wontfix"}
@@ -45,26 +56,51 @@ def _is_open(ticket: Path) -> bool:
     return True
 
 
-def _open_features(root: Path, tracked: list[str]) -> set[str]:
-    """Each feature with an open ticket. A ticket is .scratch/<feature>/issues/<name>.md. A PRD does not count."""
-    features: set[str] = set()
+def _ticket_key(path: str) -> tuple[str, str | None] | None:
+    """The feature and the app of a ticket path, or None for a path that is not a ticket.
+
+    A ticket is .scratch/<feature>/issues/<name>.md, with no app. A shared feature keeps a site and a pipeline
+    subfolder, so its ticket is .scratch/<feature>/<app>/issues/<name>.md. A PRD does not count.
+    """
+    parts = PurePosixPath(path).parts
+    if not parts or parts[0] != ".scratch" or not parts[-1].endswith(".md"):
+        return None
+    if len(parts) == 4 and parts[2] == "issues":
+        return parts[1], None
+    if len(parts) == 5 and parts[2] in APPS and parts[3] == "issues":
+        return parts[1], parts[2]
+    return None
+
+
+def _open_features(root: Path, tracked: list[str]) -> set[tuple[str, str | None]]:
+    """Each feature and app with an open ticket. The app is None for a feature with no subfolder."""
+    features: set[tuple[str, str | None]] = set()
     for path in tracked:
-        parts = PurePosixPath(path).parts
-        is_ticket = len(parts) == 4 and parts[0] == ".scratch" and parts[2] == "issues" and parts[3].endswith(".md")
-        if is_ticket and _is_open(root / path):
-            features.add(parts[1])
+        key = _ticket_key(path)
+        if key and _is_open(root / path):
+            features.add(key)
     return features
 
 
-def _rows(state_path: Path) -> dict[str, int]:
-    """The feature in the first cell of each table row, and its line. The header and the rule line do not count."""
-    rows: dict[str, int] = {}
+def _covers(row_feature: str, row_app: str, feature: str, app: str | None) -> bool:
+    """A row covers an open ticket when it names the feature, and its App names the subfolder or is both.
+
+    A ticket with no subfolder gives the rule no app, so any row of its feature covers it.
+    """
+    return row_feature == feature and (app is None or row_app in {app, "both"})
+
+
+def _rows(state_path: Path) -> list[tuple[str, str, int]]:
+    """The feature and the App of each table row, and its line. The header and the rule line do not count."""
+    rows: list[tuple[str, str, int]] = []
     for number, text in enumerate(state_path.read_text().splitlines(), start=1):
         if not text.startswith("|"):
             continue
-        feature = text.strip("|").split("|")[0].strip().strip("`")
+        cells = [cell.strip().strip("`") for cell in text.strip("|").split("|")]
+        feature = cells[0]
+        app = cells[1] if len(cells) > 1 else ""
         if feature not in {"Feature", ""} and not set(feature) <= {"-", ":"}:
-            rows[feature] = number
+            rows.append((feature, app, number))
     return rows
 
 
@@ -75,15 +111,18 @@ def _repo_path(path: Path, root: Path) -> str:
 def _missing_row_offenses(root: Path, tracked: list[str], state_path: Path) -> list[Offense]:
     # The row does not exist, so the offense names line 1 of the state file.
     rows = _rows(state_path)
+    open_features = sorted(_open_features(root, tracked), key=lambda key: (key[0], key[1] or ""))
     return [Offense(
         path=_repo_path(state_path, root),
         line=1,
         rule_id="tracker/state-file",
-        what=f"The feature {feature} has an open ticket and no row.",
+        what=f"The feature {feature} has an open ticket and no row." if app is None
+        else f"The feature {feature} has an open ticket in {app}/ and no row with the App {app}.",
         rule=MISSING_RULE,
         adr=ADR,
         fix=MISSING_FIX,
-    ) for feature in sorted(_open_features(root, tracked)) if feature not in rows]
+    ) for feature, app in open_features
+        if not any(_covers(row_feature, row_app, feature, app) for row_feature, row_app, _ in rows)]
 
 
 def _stale_row_offenses(root: Path, tracked: list[str], state_path: Path) -> list[Offense]:
@@ -92,11 +131,12 @@ def _stale_row_offenses(root: Path, tracked: list[str], state_path: Path) -> lis
         path=_repo_path(state_path, root),
         line=line,
         rule_id="tracker/state-file",
-        what=f"The row names {feature}, and {feature} has no open ticket.",
+        what=f"The row names {feature} with the App {row_app}, and {feature} has no open ticket there.",
         rule=STALE_RULE,
         adr=ADR,
         fix=STALE_FIX,
-    ) for feature, line in _rows(state_path).items() if feature not in features]
+    ) for feature, row_app, line in _rows(state_path)
+        if not any(_covers(feature, row_app, open_feature, app) for open_feature, app in features)]
 
 
 def test_each_open_feature_has_a_row():
@@ -138,3 +178,24 @@ def test_the_rule_finds_a_row_with_no_open_ticket(tmp_path):
     offenses = _stale_row_offenses(tmp_path, [".scratch/odds/issues/01-the-draw.md"], state_path)
     assert [(offense.path, offense.line, offense.rule_id) for offense in offenses] == [
         ("state.md", 3, "tracker/state-file")]
+
+
+def test_the_rule_counts_a_subfolder_ticket_for_its_app(tmp_path):
+    # A shared feature keeps a site and a pipeline subfolder. The row for the site does not cover an open pipeline ticket.
+    site = tmp_path / ".scratch" / "waiver" / "site" / "issues"
+    pipeline = tmp_path / ".scratch" / "waiver" / "pipeline" / "issues"
+    site.mkdir(parents=True)
+    pipeline.mkdir(parents=True)
+    (site / "01-the-route.md").write_text("# 01: The route\n\n**Status:** done\n")
+    (pipeline / "09-usage-floor.md").write_text("# 09: The usage floor\n\n**Status:** needs-triage\n")
+    tracked = [".scratch/waiver/site/issues/01-the-route.md", ".scratch/waiver/pipeline/issues/09-usage-floor.md"]
+    state_path = tmp_path / "state.md"
+    table = "| Feature | App | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- | --- |\n"
+    state_path.write_text(table + "| `waiver` | site | 01 | none | |\n")
+    offenses = _missing_row_offenses(tmp_path, tracked, state_path) + _stale_row_offenses(tmp_path, tracked, state_path)
+    assert [(offense.line, offense.what) for offense in offenses] == [
+        (1, "The feature waiver has an open ticket in pipeline/ and no row with the App pipeline."),
+        (3, "The row names waiver with the App site, and waiver has no open ticket there."),
+    ]
+    state_path.write_text(table + "| `waiver` | pipeline | 09 | none | |\n")
+    assert _missing_row_offenses(tmp_path, tracked, state_path) + _stale_row_offenses(tmp_path, tracked, state_path) == []
