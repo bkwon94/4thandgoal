@@ -8,6 +8,6 @@ Spec: `.scratch/zz-verdict-dry-run/PRD.md`. Acceptance tests AT-1 and AT-2.
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `grep -n 'verdict' apps/pipeline/README.md` prints one line.
