@@ -110,7 +110,7 @@ _Avoid_: Transactions, activity, log
 
 **Best adds**:
 The adds that scored the most points for the team after the add, in any number of games.
-_Avoid_: Waiver wins, pickups, steals
+_Avoid_: Waiver wins, steals. Top pickups is a different term: the waiver bucket of the pool.
 
 **Top performers**:
 The players that scored the most points for the team while they started for it, year to date.

@@ -1,12 +1,15 @@
 # A deploy of the API runs on every green main push
 
 The API on Fly deployed by hand from a shell. No check gated it, and no record said when it ran. Now the
-job `deploy` in `.github/workflows/check.yml` deploys the API after each push to `main` with a green check.
+job `deploy` in `.github/workflows/deploy-api.yml` deploys the API after each push to `main` that changes the
+pipeline and has a green check.
 
 ## The decision
 
 - The check gates the deploy. The job `deploy` needs the job `check`, so a red check stops it.
 - No human approves the deploy. The job has no environment gate. A green check is the approval.
+- The deploy runs only for a pipeline change. The workflow has a path filter on `apps/pipeline/**` and on its own
+  file. A push that changes only the site or the records does not deploy the same image again.
 - The deploy runs from `main` only. The job runs only on a push event to `refs/heads/main`. A push to a
   branch or a run by hand runs the check and no deploy.
 - Two deploys never overlap. The job holds the concurrency group `fly-deploy`, so a second deploy waits.
