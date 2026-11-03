@@ -48,6 +48,10 @@ NUMBER_WORDS = [
     "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
     "nineteen", "twenty", "dozen",
 ]
+# The tone prompt allows two numbers in a sentence. A record such as 9-7 or a percent such as 87% is one token.
+SENTENCE_NUMBER_LIMIT = 2
+# A game clock such as 3:06 in a hurt fact is one number, but its two parts are two tokens.
+CLOCK = re.compile(r"\d+:\d{2}\b")
 # A reaction sentence cites no fact, so it must be too short to hide a claim.
 REACTION_WORD_LIMIT = 8
 # The comma may have no space or a capital "Which"; the \b keeps "whichever" out.
@@ -215,6 +219,12 @@ def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -
     return failures
 
 
+# Digit tokens only, so a number word such as "twelve" is not counted. The number rule checks number words.
+def number_count(bare: str) -> int:
+    """The numbers in a sentence. A record such as 9-7, a percent such as 87%, and a clock such as 3:06 count once each."""
+    return len(CLOCK.findall(bare)) + len(NUMBER_TOKEN.findall(CLOCK.sub(" ", bare)))
+
+
 def article_failures(text: str) -> list[str]:
     """The article rule: "an", not "a", before a number read with a vowel sound, such as "an 8.13".
     Any other number takes "a", such as "a 9" or "a 110"."""
@@ -323,6 +333,10 @@ def code_check(
     in_scope_last_words = {last.split()[-1] for last in in_scope_last if last}
     # Lowercase, because whole_word ignores case.
     scope_team_words = {w.lower() for t in chapter.scope_teams for w in t.split()}
+    # A defense is named for its NFL team, so "Washington" in "the Washington defense" is not Parker Washington.
+    # The position tag "(DEF," in a chapter fact marks a defense.
+    defense_words = {w.lower() for p in chapter.scope_players for w in p.split()
+                     if any(f"{p} (DEF," in sheet.facts[fid].text for fid in chapter.fact_ids if fid in sheet.facts)}
     # The banned lists live in the vocabulary prompt, so the writer and the check read the same words.
     banned = _banned(prompts_dir, "## Banned words")
     banned_phrases = _banned(prompts_dir, "## Banned phrases")
@@ -357,6 +371,9 @@ def code_check(
             suffix = "" if message.startswith("number word") or not ids else f" {ids}"
             failures.append(f"[{i}] {message}{suffix}")
 
+        numbers = number_count(bare)
+        if numbers > SENTENCE_NUMBER_LIMIT:
+            failures.append(f"[{i}] the sentence holds {numbers} numbers; the limit is {SENTENCE_NUMBER_LIMIT}")
         failures += [f"[{i}] {m}" for m in article_failures(sentence.text)]
         failures += [f"[{i}] {m}" for m in odds_kind_failures(bare, sentence.text, valid_ids, sheet)]
 
@@ -372,8 +389,9 @@ def code_check(
             last = last_name(player)
             # A last name shared with an in-scope player is ambiguous, so it passes.
             # A word of a scope team name, such as "Love" for All You Need Is Love, is not a player match.
+            # A word of a scope defense name, such as "Washington" for Washington Commanders, is not one either.
             skip = (not last or last in in_scope_last or last in in_scope_last_words
-                    or last.lower() in scope_team_words)
+                    or last.lower() in scope_team_words or last.lower() in defense_words)
             if player in bare or (not skip and whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")
 

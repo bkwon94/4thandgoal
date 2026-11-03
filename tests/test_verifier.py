@@ -633,10 +633,17 @@ def _tagged(text, rid, *ids):
 
 
 def _good_rankings(sheet, ch):
-    """One sentence per team in rank order: the team's PR fact, tagged with its roster.
+    """One sentence per team in rank order: the first clause of the team's PR fact, tagged with its roster.
+    The clause holds one number, so the sentence stays under the limit of two.
     The sentence also cites the team's required facts, so the blurb leaves none uncited."""
     rids = [int(fid.split(".")[1]) for fid in ch.fact_ids if fid.startswith("PR.") and not fid.endswith(".why")]
-    return [_tagged(sheet.facts[f"PR.{rid}"].text, rid, f"PR.{rid}", *_required_of(ch, rid)) for rid in rids]
+    return [_tagged(_first_clause(sheet.facts[f"PR.{rid}"].text, ","), rid, f"PR.{rid}", *_required_of(ch, rid))
+            for rid in rids]
+
+
+def _first_clause(text, mark):
+    """The text up to the first `mark`, as a sentence, so a test sentence holds fewer numbers than its fact."""
+    return text.split(mark, 1)[0] + "."
 
 
 def _required_of(ch, rid):
@@ -709,7 +716,8 @@ def test_a_tagged_reaction_counts_toward_the_three(fixture_raw_dir, fixture_hist
     # The first team's standing fact holds 721.96, and the fixture names one player 96, so the test uses the second.
     rid = sentences[1].roster_id
     standing = _standing_id(sheet, ch, rid)
-    sentences[2:2] = [_tagged(sheet.facts[standing].text, rid, standing), _tagged("Rough week.", rid)]
+    sentences[2:2] = [_tagged(_first_clause(sheet.facts[standing].text, " and "), rid, standing),
+                      _tagged("Rough week.", rid)]
     assert code_check(_blurb("rankings", *sentences), ch, sheet, prompts_dir=PROMPTS) == []
 
 
@@ -1116,7 +1124,7 @@ def _story_recap():
         "recap_3",
         _s("Amon-Ra Dawg Your Team led by 12.24 after the early Sunday games, then Monday night flipped it.",
            "M3.turn", "M3.lead"),
-        _s("Drake Maye put up 23.8 on Monday, and Maye d'force B with U won 113.55 to 104.04.", "M3.turn", "M3.result"),
+        _s("Drake Maye put up 23.8 on Monday, and Maye d'force B with U won.", "M3.turn", "M3.result"),
         _s("The lead changed hands on Monday night.", "M3.lead"),
     )
 
@@ -1157,3 +1165,59 @@ def test_a_recap_that_holds_a_turn_fact_and_does_not_cite_it_fails(story_bundle)
     assert code_check(blurb, _ch(sheet, "recap_3"), sheet, prompts_dir=PROMPTS) == [
         "[0] the chapter holds the turn fact M3.turn; cite it and tell the turn"]
 
+
+
+def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    assert ("- Only one listed fact can state a rank, a superlative, or a comparison, cited or not. "
+            "Do not compute it by comparing facts.") in text
+    assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '
+            "are unsupported unless one fact says so.") in text
+    assert 'A rank that a fact gives may read as last or first, such as "last" for 12th of 12.' in text
+    assert "A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move." in text
+    assert "A sentence may use any listed fact, cited or not." in text
+
+
+def test_a_sentence_with_three_numbers_fails(hbundle):
+    sheet = hbundle.sheet
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("Brock ‘N’ Roll sits 6th at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
+    assert "[0] the sentence holds 3 numbers; the limit is 2" in code_check(b, ch, sheet, prompts_dir=PROMPTS)
+
+
+def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
+    sheet = hbundle.sheet
+    ch = _ch(sheet, "median")
+    b = _blurb("median", _s("Brock ‘N’ Roll sits at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
+    failures = code_check(b, ch, sheet, prompts_dir=PROMPTS)
+    assert not any("numbers; the limit is 2" in m for m in failures), failures
+
+
+def _defense_sheet():
+    """A recap with the Washington Commanders defense, and Parker Washington in another chapter."""
+    from cornerstone.models import Chapter, Fact, FactSheet
+
+    defense = Fact(id="M4.starter.11.WAS", text="Washington Commanders (DEF, WAS) started for Dak Attack and scored 14.25.",
+                   numbers=["14.25"], teams=["Dak Attack"], players=["Washington Commanders"])
+    receiver = Fact(id="M1.starter.3.8130", text="Parker Washington (WR, JAX) started for Lil Fridge and scored 9.1.",
+                    numbers=["9.1"], teams=["Lil Fridge"], players=["Parker Washington"])
+    recap = Chapter(key="recap_4", title="Recap", fact_ids=[defense.id], scope_teams=["Dak Attack"],
+                    scope_players=["Washington Commanders"], min_sentences=1, max_sentences=3)
+    other = Chapter(key="recap_1", title="Recap", fact_ids=[receiver.id], scope_teams=["Lil Fridge"],
+                    scope_players=["Parker Washington"], min_sentences=1, max_sentences=3)
+    return FactSheet(facts={defense.id: defense, receiver.id: receiver}, chapters=[recap, other]), recap
+
+
+def test_the_city_of_a_defense_in_scope_is_not_a_player_of_another_chapter():
+    sheet, ch = _defense_sheet()
+    b = _blurb("recap_4", _s("The Washington defense scored 14.25 for Dak Attack.", "M4.starter.11.WAS"))
+    assert code_check(b, ch, sheet, prompts_dir=PROMPTS) == []
+
+
+def test_the_full_name_of_a_player_of_another_chapter_still_fails_next_to_a_defense():
+    sheet, ch = _defense_sheet()
+    b = _blurb("recap_4", _s("Parker Washington watched the defense score 14.25.", "M4.starter.11.WAS"))
+    assert "[0] player Parker Washington is not on a team in this chapter" in code_check(
+        b, ch, sheet, prompts_dir=PROMPTS)

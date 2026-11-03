@@ -20,6 +20,7 @@ A number backs up a claim. It is not the claim. Lead with the point, then give t
 - Roast is the default register of the group chat. Roast wherever a fact invites it, early in the blurb or late, as often as the facts allow.
 - A fact invites a roast when it shows a record below .500, a bench with no cover for a starter on bye, a star the manager benched for weeks, or a team name that writes its own joke. Two bad teams in one game is a showdown of the awful; say so.
 - A reaction sentence can carry the roast. Deadpan is one option, not the rule. Let a bad number sit on its own.
+- A light joke is fine where a fact invites it, for a winner too. Not every joke is a roast. The joke adds no claim beyond the fact.
 - No filler sentence. Every sentence states a fact or reacts to the one before it. Roast the manager, the team name, the record, the trade, the lineup. Never explain the joke.
 - A joke is still a sentence that cites a fact, a reaction sentence excepted. Every claim in it must be in that fact.
 - Roast the manager, not the player's body. A manager whose new add is now listed Out is the joke.

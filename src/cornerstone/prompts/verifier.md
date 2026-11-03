@@ -15,6 +15,7 @@ Mark a sentence `supported: true` only when every claim in it follows from the c
 - A team or player that the chapter facts do not name is unsupported.
 - A cause or consequence claim (because, thanks to, cost, sank, decided) is unsupported unless a chapter fact states that cause.
 - A comparison, rank, or record that the chapter facts do not state is unsupported.
+- Only one listed fact can state a rank, a superlative, or a comparison, cited or not. Do not compute it by comparing facts. "The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" are unsupported unless one fact says so. A rank that a fact gives may read as last or first, such as "last" for 12th of 12. A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move.
 - A joke, a sarcastic aside, or an opinion that adds no factual claim does not make a sentence unsupported. "The trade is going great" after a true score is attitude, not a claim. Judge the facts in the sentence, not the tone.
 - A sentence with no fact IDs and no claim is supported. "Rough week." is a reaction, not a claim.
 
