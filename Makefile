@@ -12,7 +12,8 @@ pipeline-check-fast = make -C apps/pipeline check-fast
 
 # The root scripts have their own tests, such as the Test verdict rule of scripts/verdict.py. They use only the
 # Python standard library and take under a second, so both targets run them first, with or without BASE.
-scripts-check = python3 -m unittest discover -s scripts -p 'test_*.py'
+# The -B flag writes no __pycache__, so a run leaves the tree clean.
+scripts-check = python3 -B -m unittest discover -s scripts -p 'test_*.py'
 
 # With BASE set, only the apps with changed files since the merge base run. See scripts/changed-apps.sh.
 # Without BASE, both apps run. The site runs first.
