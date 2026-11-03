@@ -3,7 +3,7 @@
 Status: ready-for-agent
 Date: 2026-11-03
 Repos: the site `cpcfantasyfootball` is the home. The pipeline `cornerstone-fantasy-sleeper-weekly-report` moves in.
-Source: the grill session of 2026-11-03. ADRs 0007 to 0010. One's records on `~/repos/zero` branch `one`: `docs/VISION.md`, `.agents/delivery.md`, ADR-0014.
+Source: the grill session of 2026-11-03. ADRs 0018 to 0021. One's records on `~/repos/zero` branch `one`: `docs/VISION.md`, `.agents/delivery.md`, ADR-0014.
 Tickets: 01 to 10, in `issues/`.
 
 ## Problem Statement
@@ -20,12 +20,12 @@ Our two repos follow part of One. Five gaps remain.
 
 ## Solution
 
-1. **One repo** (ADR 0007). The site moves to `apps/site/`. The pipeline moves to `apps/pipeline/` with its full history. The pipeline repo is archived read-only. The trackers, the ADRs, and the glossaries merge at the root, and the ADRs get one series.
+1. **One repo** (ADR 0018). The site moves to `apps/site/`. The pipeline moves to `apps/pipeline/` with its full history. The pipeline repo is archived read-only. The trackers, the ADRs, and the glossaries merge at the root, and the ADRs get one series.
 2. **One check.** A root `make check` and `make check-fast` run the site, then the pipeline. A diff option runs only the apps with changed files. One prek hook runs the fast check. One CI file runs the full check on each push and each PR.
-3. **`main` is the record branch** (ADR 0008). Work lands through a spec branch and one squash PR. `publish` is the one exception. It may push to `main`, but a check fails it if it stages a file outside the site's published data.
-4. **Verdicts decide a merge** (ADR 0009). Brian gives PASS, FAIL, or BLOCKED for each acceptance test in one PR comment. A check blocks the merge until every test has PASS.
+3. **`main` is the record branch** (ADR 0019). Work lands through a spec branch and one squash PR. `publish` is the one exception. It may push to `main`, but a check fails it if it stages a file outside the site's published data.
+4. **Test verdicts decide a merge** (ADR 0020). Brian gives PASS, FAIL, or BLOCKED for each acceptance test in one PR comment. A check blocks the merge until every test has PASS.
 5. **The plugin `cpc`** holds six skills that know our repo: `plan`, `to-spec`, `to-acceptance`, `to-tickets`, `implement`, and `review`. They call the global skills `grilling`, `domain-modeling`, `research`, `prototype`, `tdd`, and `code-review`.
-6. **The tracker stays local markdown** (ADR 0010). A new feature gets a map, decision tickets, a spec, acceptance tests, and tickets.
+6. **The tracker stays local markdown** (ADR 0021). A new feature gets a map, decision tickets, a spec, acceptance tests, and tickets.
 
 ## User Stories
 
@@ -55,16 +55,16 @@ Our two repos follow part of One. Five gaps remain.
 24. As Brian, I want `cpc:plan` to clear one decision ticket per session, so that each session ends with one recorded decision.
 25. As Brian, I want `cpc:to-spec` to write the spec in our PRD format, so that every spec reads the same.
 26. As Brian, I want `cpc:to-acceptance` to write numbered acceptance tests, so that I approve what "done" means before the build.
-27. As Brian, I want site acceptance tests to name the widths and the theme, so that the evidence matches ADR 0001.
+27. As Brian, I want site acceptance tests to name the widths and the theme, so that the evidence matches ADR 0006.
 28. As Brian, I want pipeline acceptance tests to name a real week, so that the evidence is real output and not a fake.
 29. As Brian, I want `cpc:to-tickets` to write tickets with "Blocked by" lines and a `state.md` row, so that the next ticket is always clear.
 30. As Brian, I want `cpc:implement` to build each ticket in its own worktree on a ticket branch, so that tickets do not collide.
 31. As Brian, I want `cpc:implement` to merge each ticket into the spec branch only after the check passes, so that the spec branch stays green.
 32. As Brian, I want `cpc:implement` to run `code-review` on the spec branch and fix the findings, so that I do not read the diff.
-33. As Brian, I want `cpc:implement` to record evidence for each acceptance test with no verdict, so that the verdict stays mine.
+33. As Brian, I want `cpc:implement` to record evidence for each acceptance test with no test verdict, so that the test verdict stays mine.
 34. As Brian, I want `cpc:implement` to open one PR from the spec branch to `main`, so that one spec is one merge.
 35. As Brian, I want `cpc:review` to do one round of PR feedback per run, so that each run has a clear end.
-36. As Brian, I want a check that reads my verdict comment, so that a spec cannot merge with a FAIL or a missing test.
+36. As Brian, I want a check that reads my test verdict comment, so that a spec cannot merge with a FAIL or a missing test.
 37. As Brian, I want each `cpc` skill to stop if a global skill it calls is missing, so that it never guesses a step.
 38. As Brian, I want the plugin turned on in the repo settings, so that every session in the repo has the `cpc` skills.
 39. As Brian, I want open features to finish on the new branch model, so that no feature runs two flows at once.
@@ -78,21 +78,21 @@ Our two repos follow part of One. Five gaps remain.
 - **`publish`.** It copies into the site's published-data folder in the same repo. It no longer takes a second checkout. It stages only that folder, then commits and pushes `main`. The site Makefile targets that need the local API change to point at the pipeline folder.
 - **Deploy paths.** The Pages workflow builds from `apps/site/` and runs on changes there. The Fly config and its Dockerfile build from `apps/pipeline/`. The daily refresh workflow moves into the root workflows.
 - **The root check.** A root Makefile has `check` and `check-fast`. Each runs the site target, then the pipeline target, and fails on the first failure. A diff option takes a base branch and runs only the apps with changed files. A change at the root runs both apps.
-- **The rule tests.** The tracker rules in both apps change to read the root `state.md` and the root `.scratch/`. One more rule checks the `publish` exception. One more rule checks the verdict comment. They report in the existing rule-report shape of each app.
-- **The records.** The pipeline ADRs 0001 to 0010 and the site ADRs 0001 to 0010 merge into one series. The site ADRs 0007 to 0010 are the One records. A map file lists each old number and its new number. Each old number in a doc or a ticket gets its new number. The glossaries merge into one root `GLOSSARY.md`. A term with two meanings is a conflict, and the ticket stops and names it.
+- **The rule tests.** The tracker rules in both apps change to read the root `state.md` and the root `.scratch/`. One more rule checks the `publish` exception. One more rule checks the test verdict comment. They report in the existing rule-report shape of each app.
+- **The records.** The pipeline ADRs 0001 to 0010 and the site ADRs 0001 to 0010 merge into one series. The site ADRs 0007 to 0010 are the One records. Their new numbers are 0018 to 0021, and `docs/adr/README.md` holds the map. A map file lists each old number and its new number. Each old number in a doc or a ticket gets its new number. The glossaries merge into one root `GLOSSARY.md`. A term with two meanings is a conflict, and the ticket stops and names it.
 - **The tracker.** One root `.scratch/`. The nine shared features keep `site/` and `pipeline/` subfolders with no renumbering. Other old features move as they are. One `docs/agents/state.md` gets an `App` column. One `docs/agents/issue-tracker.md` describes the old shape and the new shape.
 - **The new feature shape.** A map with the sections DESTINATION, DECISIONS SO FAR, NOT YET SPECIFIED, and OUT OF SCOPE. Decision tickets of the kind grill, research, prototype, or spec. A spec. An acceptance file with tests `AT-<n>`. Tickets.
 - **The branch model.** `main` is the record branch. A spec branch is `<slug>`. A ticket branch is `<slug>-<NN>`, local, in a worktree. A ticket merges into the spec branch with `git merge --no-edit`. The spec PR merges as a squash.
-- **The verdict comment.** One PR comment with one line per test: the test id, then PASS, FAIL, or BLOCKED, then an optional note. A CI job reads the comment and the acceptance file. It fails if a test has no line or a line is not PASS.
+- **The test verdict comment.** One PR comment with one line per test: the test id, then PASS, FAIL, or BLOCKED, then an optional note. A CI job reads the comment and the acceptance file. It fails if a test has no line or a line is not PASS.
 - **The plugin.** `cpc` lives in `.claude/plugin/` with a manifest, and the repo marketplace file names it. The repo settings turn it on. Each skill ports the idea of its source, not the text. It drops the Atrium labels, the Temporal cluster path, `check:judge`, and the portal checks.
 - **This spec runs on today's flow.** The new flow does not exist until this spec is done. So each ticket here merges to `main` as today. The first feature after this spec uses the full flow.
 
 ## Testing Decisions
 
 - A good test checks behavior a user or an agent sees: a command exit code, a file on disk, a rule report. It does not check how a script is written.
-- **The one seam is the root `make check`.** Every new rule is a rule test that it runs: the tracker rule, the `publish` rule, and the verdict rule. Prior art: `src/tracker-rule.test.ts` in the site, `tests/test_rule_tracker.py` in the pipeline, and the rule-report shape in each app.
+- **The one seam is the root `make check`.** Every new rule is a rule test that it runs: the tracker rule, the `publish` rule, and the test verdict rule. Prior art: `src/tracker-rule.test.ts` in the site, `tests/test_rule_tracker.py` in the pipeline, and the rule-report shape in each app.
 - **The `publish` rule** gets a test with a real git repo in a temp folder. One commit stages only the published data and passes. One stages a file outside it and fails. Prior art: the site test that reads week 7 from a temp folder.
-- **The verdict rule** gets tests with real acceptance files and real comment text: all PASS passes. A FAIL, a BLOCKED, or a missing test fails.
+- **The test verdict rule** gets tests with real acceptance files and real comment text: all PASS passes. A FAIL, a BLOCKED, or a missing test fails.
 - **The move is proved by real runs**, not by unit tests:
   - `make check` passes at the root.
   - `pnpm build` and `pnpm check:export` pass in the site folder.
@@ -104,14 +104,14 @@ Our two repos follow part of One. Five gaps remain.
 ## Out of Scope
 
 - A check that compares the pipeline models with the site schemas. It is fog for the first map after this spec.
-- GitHub Issues as the tracker. ADR 0010 records why.
+- GitHub Issues as the tracker. ADR 0021 records why.
 - A path where a ticket builds with no session, like the Temporal cluster in One.
 - The map, the decision tickets, and the acceptance file for the open features. Their specs already exist.
 - A new repo name or a new domain.
 
 ## Further Notes
 
-- The verdict check is new, and it may have gaps in its first run. The first spec after this one is its real test.
+- The test verdict check is new, and it may have gaps in its first run. The first spec after this one is its real test.
 - The PIPE Makefile comment says `.scratch` is untracked by design, but git tracks it. The tracker ticket fixes the comment.
 - Neither prek hook is installed today. The check ticket installs the root hook.
 - Fog for the first map after this spec: a weekly GitHub Action could replace the LaunchAgent. Prior art is commit `7557923` on the pipeline branch `archive/weekly-action`.

@@ -1,6 +1,6 @@
 """
 Checks that no comment in src or tests silences a rule of ruff or pyright, unless the allow list holds its line.
-It reads each line as text and imports no pipeline code. See ADR 0009.
+It reads each line as text and imports no pipeline code. See ADR 0014.
 """
 import ast
 import re
@@ -10,7 +10,7 @@ from rule_report import Offense, report
 
 ROOT = Path(__file__).resolve().parent.parent
 FOLDERS = ("src", "tests")
-ADR = "docs/adr/0009-the-rules-are-checks.md"
+ADR = "docs/adr/0014-the-rules-are-checks.md"
 RULE = "no comment silences a rule"
 FIX = "fix the type or the code, or add the line to the allow list of this test with its reason"
 

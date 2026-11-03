@@ -15,5 +15,5 @@
 
 - It computes no roster grade, no playoff odds, and no slot rank. The pipeline writes them into the managers file and the rankings file.
 - It joins no files. `src/lib/data/manager-data.ts` joins the managers file with the rankings file.
-- It builds no route. The app layer passes the managers index href (ADR 0004).
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004).
+- It builds no route. The app layer passes the managers index href (ADR 0012).
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012).

@@ -26,7 +26,7 @@ one shape, with `report` from `tests/rule_report.py`:
 ```text
 src/cornerstone/waiver.py:12  layers/upward-import
   cornerstone.waiver imports cornerstone.writer.
-  Rule: a module imports only from its own layer or a lower one (docs/adr/0007-six-layers-import-downward-only.md).
+  Rule: a module imports only from its own layer or a lower one (docs/adr/0010-six-layers-import-downward-only.md).
   Fix: move the shared name to a module in a lower layer, or move cornerstone.waiver up in LAYER_OF.
 ```
 

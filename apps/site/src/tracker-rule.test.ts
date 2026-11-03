@@ -1,5 +1,5 @@
 /**
- * Holds docs/agents/state.md to the rule of ADR 0006: one row for each feature with an open ticket, and no other row.
+ * Holds docs/agents/state.md to the rule of ADR 0016: one row for each feature with an open ticket, and no other row.
  * An open ticket is a tracked .scratch/<feature>/issues/*.md file whose Status is not done and not wontfix.
  */
 import { execFileSync } from "node:child_process";
@@ -16,7 +16,7 @@ const TICKET_PATH = /^\.scratch\/([^/]+)\/issues\/([^/]+)\.md$/;
 const CLOSED = new Set(["done", "wontfix"]);
 
 const RULE = `each feature with an open ticket has one row in ${STATE_FILE}, and no other feature has a row`;
-const ADR = "docs/adr/0006-the-rules-are-checks.md";
+const ADR = "docs/adr/0016-the-rules-are-checks.md";
 const RULE_ID = "tracker/state-file";
 
 type Ticket = { path: string; source: string };

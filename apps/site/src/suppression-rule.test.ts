@@ -1,5 +1,5 @@
 /**
- * Holds the site code to the rule of ADR 0006: no comment silences a rule of the type checker or a linter.
+ * Holds the site code to the rule of ADR 0016: no comment silences a rule of the type checker or a linter.
  * It reads src/, scripts/, and the root config files. A line that must stay goes in the allow list, with its reason.
  */
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -24,7 +24,7 @@ const PATTERNS = [TS + "expect-error", TS + "ignore", TS + "nocheck", "eslint" +
 const ALLOW = new Map<string, string>();
 
 const RULE = "no comment silences a rule";
-const ADR = "docs/adr/0006-the-rules-are-checks.md";
+const ADR = "docs/adr/0016-the-rules-are-checks.md";
 
 /* Every source file under a tree, tests too. */
 function sourceFiles(dir: string): string[] {

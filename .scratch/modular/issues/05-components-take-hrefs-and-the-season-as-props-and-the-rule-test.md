@@ -1,6 +1,6 @@
 # 05: Components take hrefs and the season as props, and the rule test
 
-**What to build:** The six components that build their own hrefs take them as props from the app layer. The two components that send the season in an API body take it as a prop. A test reads every file under the components folder and fails when a file imports the node fs, the config module, or a data loader, or reads the process env. ADR 0004 records the rule. This closes manager-pages site ticket 12: the week parts build the manager link by hand today, and after this ticket a link change touches only the routes module.
+**What to build:** The six components that build their own hrefs take them as props from the app layer. The two components that send the season in an API body take it as a prop. A test reads every file under the components folder and fails when a file imports the node fs, the config module, or a data loader, or reads the process env. ADR 0012 records the rule. This closes manager-pages site ticket 12: the week parts build the manager link by hand today, and after this ticket a link change touches only the routes module.
 
 **Blocked by:** 04
 
@@ -13,4 +13,4 @@
 
 ## Comments
 
-- 2026-10-31: merged into `main` from branch `modular-05-props-and-rule`, commits cef7c15 and cb42fc5. 523 tests. The managers href stays a string, because a function prop cannot cross from a server page to a client component, and a string changes the fewest files. Components join a roster id onto the href they are given through `managerHrefFrom`; ADR 0004 now says so. Two reviewers passed it after one fix pass.
+- 2026-10-31: merged into `main` from branch `modular-05-props-and-rule`, commits cef7c15 and cb42fc5. 523 tests. The managers href stays a string, because a function prop cannot cross from a server page to a client component, and a string changes the fewest files. Components join a roster id onto the href they are given through `managerHrefFrom`; ADR 0012 now says so. Two reviewers passed it after one fix pass.

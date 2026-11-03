@@ -1,5 +1,5 @@
 """
-Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0007,
+Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0010,
 and that a module outside the sheet package imports only cornerstone.sheet or cornerstone.sheet.base.
 It reads the import lines with ast and imports no pipeline code.
 """
@@ -103,7 +103,7 @@ LAYER_OF: dict[str, str] = {
 }
 
 
-ADR = "docs/adr/0007-six-layers-import-downward-only.md"
+ADR = "docs/adr/0010-six-layers-import-downward-only.md"
 UPWARD_RULE = "a module imports only from its own layer or a lower one"
 SHEET = f"{PACKAGE}.sheet"
 # The base module holds the names that the chapters share, so a caller outside the sheet may import it too.

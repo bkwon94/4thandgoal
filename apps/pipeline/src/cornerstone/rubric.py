@@ -62,7 +62,7 @@ class GivenPlayer(BaseModel):
     """One player a side gives and the roster id of the side he goes to."""
 
     player_id: str
-    # Every given player names his destination, in a two-side trade too, so the API checks one shape (ADR 0003).
+    # Every given player names his destination, in a two-side trade too, so the API checks one shape (ADR 0008).
     to: int
 
 

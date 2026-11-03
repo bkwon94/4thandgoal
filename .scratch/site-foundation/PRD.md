@@ -6,7 +6,7 @@ Date: 2026-10-27
 This is the first of three features that make the site responsive at every width. It sets the
 tiers and the page column, and it adds the menu to the masthead. The weekly report per tier and
 the other pages per tier follow as their own features. The terms come from `GLOSSARY.md`. The
-house rule change is `docs/adr/0001-report-look-at-every-width.md`.
+house rule change is `docs/adr/0006-report-look-at-every-width.md`.
 
 ## Problem Statement
 

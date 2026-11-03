@@ -4,7 +4,7 @@ Status: ready-for-agent
 Date: 2026-10-28
 Repos: the pipeline `cornerstone-fantasy-sleeper-weekly-report` and the site `cpcfantasyfootball`. The same PRD sits in both.
 Glossary: **Key starter**, **Bye line**, **Bye cover**, **Position rank**, **Must Watch**, **Storyline**, **Reaction sentence** in the pipeline `GLOSSARY.md`.
-ADRs: pipeline ADR 0006, a key starter reads real starts, not the best lineup. ADR 0004 still rules the trade analyzer's view of a bye.
+ADRs: pipeline ADR 0009, a key starter reads real starts, not the best lineup. ADR 0004 still rules the trade analyzer's view of a bye.
 Extends: `.scratch/next-week-storylines/PRD.md`. Follows: `.scratch/tone/PRD.md`.
 
 ## Problem Statement

@@ -26,7 +26,7 @@ lint: ## Check the code style
 typecheck: ## Check the types of the listed modules in basic mode
 	uv run pyright
 
-# The CI job on every push runs this target. See docs/adr/0009-the-rules-are-checks.md.
+# The CI job on every push runs this target. See docs/adr/0014-the-rules-are-checks.md.
 check: lint typecheck test ## Run lint, typecheck, and all the tests
 
 # Name a rule test tests/test_rule_<topic>.py. This target finds each one with no edit.

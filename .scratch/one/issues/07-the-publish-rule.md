@@ -1,6 +1,6 @@
 # 07: The publish rule
 
-Spec: `.scratch/one/PRD.md`. Solution part 3, and ADR 0008.
+Spec: `.scratch/one/PRD.md`. Solution part 3, and ADR 0019.
 
 **What to build:** `publish` is the one writer that may push to `main`. A check fails a publish commit that stages a file outside the site's published data.
 

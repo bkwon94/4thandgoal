@@ -4,7 +4,7 @@ Spec: `.scratch/rules-as-checks/PRD.md`, part 1 and "Decisions". One 0013.
 
 **What to build:** `make check` runs lint, typecheck, and the tests. `make check-fast` runs lint, typecheck,
 and the rule tests. A prek hook runs `make check-fast` on each commit. A GitHub Action runs `make check` on
-every push. ADR 0009 records the rule.
+every push. ADR 0014 records the rule.
 
 **Blocked by:** None (can start immediately).
 
@@ -18,7 +18,7 @@ every push. ADR 0009 records the rule.
 - [ ] `README.md` gains one setup line: `prek install`, one time per clone. Each worktree then reads its own branch's config.
 - [ ] `.github/workflows/check.yml`: `on: push` with no branch filter, and `workflow_dispatch`. One job `check`, `timeout-minutes: 20`. Steps: `actions/checkout@v4`, `astral-sh/setup-uv@v6`, `uv sync --locked`, `make check`. The top comment says what it runs and why.
 - [ ] `refresh.yml` does not change.
-- [ ] `docs/adr/0009-the-rules-are-checks.md` states: one command, the same rules in the hook and in CI, the hook runs a subset under 30 seconds, CI runs all. Later tickets add a section each.
+- [ ] `docs/adr/0014-the-rules-are-checks.md` states: one command, the same rules in the hook and in CI, the hook runs a subset under 30 seconds, CI runs all. Later tickets add a section each.
 - [ ] `make check` passes locally. `time make check-fast` shows under 30 seconds.
 - [ ] Proof of the hook: in the worktree, stage a file with an unused import and run `git commit`. The hook refuses it. Remove the file.
 - [ ] Proof of the publish path: `cornerstone publish` commits this repo from Brian's shell, with a pathspec, so the hook runs there too. The launchd job only builds and never commits. After the hook install, run one `make publish` by hand with the hook in place before the week 9 publish. A stray untracked file with a lint error under `src/` or `tests/` stops that commit, so check `git status` first.

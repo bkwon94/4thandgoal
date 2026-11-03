@@ -13,4 +13,4 @@
 
 ## Comments
 
-- 2026-10-31: merged into `main` from branch `modular-04-app-reads`, commits 7016d1e and ff922af. 514 tests. Two reviewers passed it after one fix pass. Noted drift: the loaders call route builders, which ADR 0004 reserves for the app layer; ticket 05 or a later one decides.
+- 2026-10-31: merged into `main` from branch `modular-04-app-reads`, commits 7016d1e and ff922af. 514 tests. Two reviewers passed it after one fix pass. Noted drift: the loaders call route builders, which ADR 0012 reserves for the app layer; ticket 05 or a later one decides.

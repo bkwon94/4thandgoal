@@ -12,7 +12,7 @@ None.
 
 ## Does not do
 
-- It owns no shape. The pydantic models of the pipeline own each shape, and a schema here follows them (ADR 0005).
+- It owns no shape. The pydantic models of the pipeline own each shape, and a schema here follows them (ADR 0013).
 - It holds no generated schema. We write each one by hand, and the test over the real files is the contract.
 - It reads no file. `src/lib/data/` reads `public/` and parses each file with a schema here.
 - It holds no type. The types of a published file in `src/lib/*-types.ts` come from a schema here.

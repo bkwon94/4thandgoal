@@ -14,4 +14,4 @@ None.
 
 - It computes no score, no award, and no blurb. The pipeline writes them into the week page file.
 - It finds no prior week or next week. The app layer finds both at build time.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004). `src/lib/data/week-data.ts` reads the week page file.
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012). `src/lib/data/week-data.ts` reads the week page file.

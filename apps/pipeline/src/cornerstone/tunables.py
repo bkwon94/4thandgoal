@@ -205,7 +205,7 @@ IN_PROGRESS_MINUTES = 4 * 60 + 30
 # The order is the order of the reason when two weights tie: a streak comes before near the cut.
 STORYLINE_WEIGHTS = {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
 
-# The key starter: GLOSSARY.md, "Key starter", and ADR 0006. The rule reads real starts, so it shows the habit of
+# The key starter: GLOSSARY.md, "Key starter", and ADR 0009. The rule reads real starts, so it shows the habit of
 # the manager.
 # The count of latest completed weeks the rule reads.
 KEY_STARTER_WEEKS = 4

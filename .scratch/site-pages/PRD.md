@@ -9,7 +9,7 @@ report feature, `.scratch/site-report/`, designed the weekly report per tier, wi
 as a card on the grey body. This feature designs the home page, the power rankings page, and the
 trade analyzer page for a tablet and a desktop, and puts the page shell and the card look in one
 place for every page. The terms come from `GLOSSARY.md`. The house rules are
-`docs/adr/0001-report-look-at-every-width.md` and `docs/adr/0002-dark-theme-is-one-override-block.md`.
+`docs/adr/0006-report-look-at-every-width.md` and `docs/adr/0007-dark-theme-is-one-override-block.md`.
 
 ## Problem Statement
 

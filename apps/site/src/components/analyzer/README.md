@@ -20,4 +20,4 @@
 - It grades no trade. The site API grades it, and this folder shows the answer.
 - It shows no roster grade. The roster grade lives in `src/components/managers/`.
 - It defines no API shape. `src/lib/schemas/api.ts` holds the response schemas.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004).
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012).

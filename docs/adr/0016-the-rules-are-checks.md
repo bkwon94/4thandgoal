@@ -19,7 +19,7 @@ shape. The helper `report` in `src/rule-report.ts` prints it:
 ```text
 src/components/week/standings.tsx:4  components/no-loader
   standings.tsx imports @/lib/data/week-data.
-  Rule: a component takes data and returns markup (docs/adr/0004-a-component-takes-data-and-returns-markup.md).
+  Rule: a component takes data and returns markup (docs/adr/0012-a-component-takes-data-and-returns-markup.md).
   Fix: call the loader in src/app/ and pass the value to the component as a prop.
 ```
 

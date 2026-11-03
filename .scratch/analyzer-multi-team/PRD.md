@@ -7,7 +7,7 @@ This feature spans two repos. The pipeline repo `cornerstone-fantasy-sleeper-wee
 the API, the rubric, and the prompt. This repo owns the form and the result. The pipeline work
 lands first and ships a three-side fixture that the site tests read. The terms come from
 `GLOSSARY.md` in each repo. The house rules are this repo's
-`docs/adr/0003-a-given-player-names-its-destination.md` and the pipeline repo's
+`docs/adr/0008-a-given-player-names-its-destination.md` and the pipeline repo's
 `docs/adr/0005-out-for-the-season-counts-zero-chart-value.md`.
 
 ## Problem Statement

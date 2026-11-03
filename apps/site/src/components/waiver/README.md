@@ -16,4 +16,4 @@
 
 - It sets no price or bid, and it does no research. The pipeline writes the prices, the bids, and the research claims into `waiver.json`.
 - It calls no API.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004). `src/lib/data/waiver-data.ts` reads `waiver.json`.
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012). `src/lib/data/waiver-data.ts` reads `waiver.json`.

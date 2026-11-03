@@ -14,4 +14,4 @@ None.
 
 - It computes no rank, no movement, and no playoff odds. The pipeline writes them into the rankings file.
 - It holds the helpers that turn one row into markup. The pure rankings helpers live in `src/lib/format/rankings.ts`.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004). The app layer passes the data of the rankings file.
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012). The app layer passes the data of the rankings file.

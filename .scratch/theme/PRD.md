@@ -3,8 +3,8 @@
 Status: ready-for-agent
 Date: 2026-10-27
 
-Glossary: `GLOSSARY.md`. Decisions: `docs/adr/0001-report-look-at-every-width.md` and
-`docs/adr/0002-dark-theme-is-one-override-block.md`. Read both before you touch the look.
+Glossary: `GLOSSARY.md`. Decisions: `docs/adr/0006-report-look-at-every-width.md` and
+`docs/adr/0007-dark-theme-is-one-override-block.md`. Read both before you touch the look.
 
 ## Problem Statement
 
@@ -69,7 +69,7 @@ and flush with the page. Every text pair on the dark surfaces meets the contrast
 - A small inline script in the root layout runs before the first paint. It reads the stored choice and adds the class when the choice is dark. It guards the storage read. It is the one script that runs before React, and it stays under a few lines.
 - The switch has no transition. Colors flip at once in both themes, so no reduced-motion case is needed.
 - Images from the pipeline are untouched in both themes. No filter, no inversion, no matte change.
-- The comment on the color scheme line that says the page stays in the light scheme is replaced, because ADR 0002 reverses it.
+- The comment on the color scheme line that says the page stays in the light scheme is replaced, because ADR 0007 reverses it.
 
 ## Testing Decisions
 

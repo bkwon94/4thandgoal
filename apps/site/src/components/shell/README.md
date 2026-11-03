@@ -18,4 +18,4 @@
 - It sets no theme before the first paint. The root layout inlines the boot script from `src/lib/theme.ts`.
 - It holds no chapter. Each page folder holds its chapters.
 - It holds no primitive. The dialog and the popover come from `src/components/ui/`.
-- It reads no file, no env, and no config, and it calls no loader (ADR 0004).
+- It reads no file, no env, and no config, and it calls no loader (ADR 0012).

@@ -33,7 +33,7 @@ Both repos follow most of One already. Six gaps remain.
 ```text
 src/cornerstone/waiver.py:12  layers/upward-import
   cornerstone.waiver imports cornerstone.writer.
-  Rule: a module imports only from its own layer or a lower one (docs/adr/0007-six-layers-import-downward-only.md).
+  Rule: a module imports only from its own layer or a lower one (docs/adr/0010-six-layers-import-downward-only.md).
   Fix: move the shared name to a module in a lower layer, or move cornerstone.waiver up in LAYER_OF.
 ```
 
@@ -48,7 +48,7 @@ The lines are the location and rule id, what is wrong here, the rule with its AD
 - **A fake is not a mock mode.** A fake at a port is a test double that only tests import. A mock mode is a runtime switch that serves fake data. The mock mode stays banned.
 - **A gate starts at zero offenses** (One 0013). A rule ticket fixes every offense it finds.
 - **Each ticket names its proof** (One 0014): the command and the test.
-- **The ADRs.** Pipeline ADR 0009 and site ADR 0006, "the rules are checks", hold parts 1, 3, 4, and 5. Pipeline ADR 0007 gains the sheet entry. Pipeline ADR 0010 holds the fake rule.
+- **The ADRs.** Pipeline ADR 0014 and site ADR 0016, "the rules are checks", hold parts 1, 3, 4, and 5. Pipeline ADR 0010 gains the sheet entry. Pipeline ADR 0015 holds the fake rule.
 - **STE stays in prose and in review**, not in a check. One has not built that check either (One 0016). A half-built word check costs more than it saves.
 - **The paid model judge is out. Manifests and import bans between packages are out**, because each repo is one package.
 
