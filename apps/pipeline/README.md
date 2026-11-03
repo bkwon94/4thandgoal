@@ -2,6 +2,7 @@
 
 This repo builds the weekly report site for the Cornerstone fantasy football league. The
 data comes from Sleeper. The public site is at https://cpcfantasy.com/
+A spec PR merges only when the check `verdict` passes (ADR 0020). (dry run)
 
 ## Commands
 
