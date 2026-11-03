@@ -41,8 +41,8 @@ check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 build: need-week ## Build the report of a week (WEEK required)
 	uv run cornerstone build --season $(SEASON) --week $(WEEK)
 
-# This target pushes the site repo.
-publish: need-week ## Publish a week to the site repo and push it (WEEK required)
+# This target commits apps/site/public and pushes the repo.
+publish: need-week ## Publish a week to apps/site/public and push it (WEEK required)
 	uv run cornerstone publish --season $(SEASON) --week $(WEEK)
 
 page-json: need-week ## Write page.json for a saved week (WEEK required)

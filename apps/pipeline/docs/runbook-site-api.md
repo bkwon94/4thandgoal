@@ -77,15 +77,15 @@ grade. A document whose Claude call fell back is not stored, so the next request
 
 ## The deploy job
 
-- The job `deploy` in `.github/workflows/check.yml` deploys after each push to `main` with a green check.
-- To read the job, open the Actions tab, then the "Check" run of the push. The `deploy` log ends with the
+- The job `deploy` in the root `.github/workflows/pipeline-check.yml` deploys after each push to `main` with a green check.
+- To read the job, open the Actions tab, then the "Pipeline check" run of the push. The `deploy` log ends with the
   image and the machine state.
 - Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
   `FLY_API_TOKEN` is absent.
 
 ## First deploy
 
-Run each command from the repo root. Each step takes about one minute, except the deploy.
+Run each command from `apps/pipeline`. Each step takes about one minute, except the deploy.
 
 1. Check the login. Expect `bkwon94@gmail.com`. If it differs, run `fly auth login`.
 
@@ -256,7 +256,7 @@ The cron reads the passphrase from the repository secret `CORNERSTONE_PASSPHRASE
 1. Run this command. It asks for the value, so the value stays out of the shell history.
 
    ```sh
-   gh secret set CORNERSTONE_PASSPHRASE --repo bkwon94/cornerstone-fantasy-sleeper-weekly-report
+   gh secret set CORNERSTONE_PASSPHRASE --repo bkwon94/cpcfantasyfootball
    ```
 
 2. Merge the branch into `main`. GitHub runs a schedule only from the default branch.
@@ -266,7 +266,7 @@ The season is the workflow variable `CORNERSTONE_SEASON`, with `2026` as the def
 of a new season, change the default in the file, or set the repository variable:
 
 ```sh
-gh variable set CORNERSTONE_SEASON --body 2027 --repo bkwon94/cornerstone-fantasy-sleeper-weekly-report
+gh variable set CORNERSTONE_SEASON --body 2027 --repo bkwon94/cpcfantasyfootball
 ```
 
 In the off-season, the refresh route answers `422` and the daily job fails until the season variable changes.

@@ -3,7 +3,7 @@
 ## Purpose
 
 This tool builds a weekly report page for the Cornerstone fantasy football league. It reads
-league data from Sleeper. It writes the chapters of the report and writes the page data. The site repo renders the pages.
+league data from Sleeper. It writes the chapters of the report and writes the page data. The site in `apps/site` renders the pages.
 
 ## Pipeline
 
@@ -12,7 +12,7 @@ league data from Sleeper. It writes the chapters of the report and writes the pa
 3. Compute the stats for each chapter.
 4. Write the chapter text with the Anthropic API.
 5. Write `page.json` and the images into `site/`.
-6. Publish the week folder to the public site repo.
+6. Publish the week folder to `apps/site/public` of this repo.
 
 ## Where the work sits
 
