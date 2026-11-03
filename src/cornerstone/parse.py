@@ -168,6 +168,29 @@ def _roster_players(raw: RawWeek) -> dict[str, tuple[str, str | None]]:
     }
 
 
+def _injuries(raw: RawWeek) -> dict[str, str]:
+    # The players file gives a healthy player no injury status, so he gets no entry.
+    players = raw.players
+    return {
+        pid: status for r in raw.rosters for pid in r.players or []
+        if (status := (players.get(pid) or {}).get("injury_status"))
+    }
+
+
+def _pool(raw: RawWeek) -> dict[str, str]:
+    """The position of each pool player: a player with a projection and no roster.
+
+    `ranks.in_pool` adds the status and position filter, and this parse cannot import it because of the import
+    cycle through history.
+    """
+    # The cycle: ranks imports history, and history imports this module.
+    rostered = {pid for r in raw.rosters for pid in r.players or []}
+    projected = {pid for entry in raw.projections_ahead or [] for pid in entry.projections}
+    positions = {pid: (raw.players.get(pid) or {}).get("position") for pid in sorted(projected - rostered)}
+    # A player with no position can fill no slot, so he stays out of the pool.
+    return {pid: position for pid, position in positions.items() if position}
+
+
 def parse_moves(transactions: list[RawTransaction]) -> list[Move]:
     moves = []
     for transaction in transactions:
@@ -242,6 +265,8 @@ def parse_week(
         roster_positions=raw.league.roster_positions,
         rosters=_rosters(raw),
         roster_players=_roster_players(raw),
+        injuries=_injuries(raw),
+        pool=_pool(raw),
         scoring=raw.league.scoring_settings,
         # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
         stats={item.player_id: item.stats for item in raw.stats or []},

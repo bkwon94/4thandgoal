@@ -709,6 +709,66 @@ def test_the_projected_total_reads_the_current_roster_not_the_week_lineup(fixtur
     assert totals[side.roster_id] == {7: 30.0}
 
 
+def _one_roster_total(fixture_raw_dir, roster, points, injuries, pool, bye_weeks=None, teams=None):
+    """The week 7 total of the lowest roster ID, with `roster` as its players and `points` as its projections.
+
+    `teams` gives the NFL team of a roster player, by player id.
+    """
+    week = parse_week(load_raw(fixture_raw_dir))
+    rid = min(week.rosters)
+    totals = projected_totals(week.model_copy(update={
+        "rosters": {rid: roster}, "projections_ahead": {7: points}, "injuries": injuries, "pool": pool,
+        "roster_players": {pid: (pid, team) for pid, team in (teams or {}).items()},
+    }), config=CONFIG, bye_weeks=bye_weeks)
+    return totals[rid][7]
+
+
+def test_a_bench_qb_replaces_an_injured_qb_starter(fixture_raw_dir):
+    roster = {"lamar": "QB", "rb": "RB"}
+    injured = {"lamar": "Out"}
+    hole = _one_roster_total(fixture_raw_dir, roster, {"rb": 10.0}, injured, {})
+    covered = _one_roster_total(fixture_raw_dir, {**roster, "bench_qb": "QB"}, {"rb": 10.0, "bench_qb": 15.0},
+                                injured, {})
+    assert covered - hole == 15.0
+    # A waiver QB below the bench QB does not take the slot, because the slot takes the better of the two.
+    both = _one_roster_total(fixture_raw_dir, {**roster, "bench_qb": "QB"},
+                             {"rb": 10.0, "bench_qb": 15.0, "waiver_qb": 12.0}, injured, {"waiver_qb": "QB"})
+    assert both - hole == 15.0
+
+
+def test_a_waiver_qb_replaces_an_injured_qb_starter_with_no_bench_qb(fixture_raw_dir):
+    roster = {"lamar": "QB", "rb": "RB"}
+    points = {"rb": 10.0, "waiver_qb": 12.0}
+    hole = _one_roster_total(fixture_raw_dir, roster, points, {"lamar": "Out"}, {})
+    covered = _one_roster_total(fixture_raw_dir, roster, points, {"lamar": "Out"}, {"waiver_qb": "QB"})
+    assert covered - hole == 12.0
+
+
+def test_a_healthy_starter_at_zero_is_not_replaced(fixture_raw_dir):
+    roster = {"bye_qb": "QB", "rb": "RB"}
+    points = {"rb": 10.0, "waiver_qb": 12.0}
+    # A healthy zero is a bye or no game, so the waiver QB stays out and the total is the RB alone.
+    assert _one_roster_total(fixture_raw_dir, roster, points, {}, {"waiver_qb": "QB"}) == 10.0
+
+
+def test_an_injured_starter_at_zero_on_his_bye_week_gets_no_cover(fixture_raw_dir):
+    roster = {"lamar": "QB", "rb": "RB"}
+    points = {"rb": 10.0, "waiver_qb": 12.0}
+    args = (fixture_raw_dir, roster, points, {"lamar": "Out"}, {"waiver_qb": "QB"})
+    # His team's bye is week 7, so he is at zero healthy or not, and the slot keeps its zero.
+    assert _one_roster_total(*args, bye_weeks={"BAL": 7}, teams={"lamar": "BAL"}) == 10.0
+    # A bye in another week leaves the cover in week 7.
+    assert _one_roster_total(*args, bye_weeks={"BAL": 8}, teams={"lamar": "BAL"}) == 22.0
+
+
+def test_an_injured_flex_starter_takes_a_pool_player_at_any_flex_position(fixture_raw_dir):
+    # Two RBs fill the RB slots, so the injured third RB starts at a flex slot, and a waiver WR covers it.
+    roster = {"rb1": "RB", "rb2": "RB", "rb3": "RB"}
+    points = {"rb1": 10.0, "rb2": 10.0, "waiver_wr": 9.0}
+    total = _one_roster_total(fixture_raw_dir, roster, points, {"rb3": "Questionable"}, {"waiver_wr": "WR"})
+    assert total == 29.0
+
+
 def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, fixture_raw_dir, fixture_history_root):
     seen = {}
 
