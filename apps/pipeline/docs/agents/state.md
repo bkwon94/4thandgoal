@@ -10,6 +10,8 @@ One row for each feature under `.scratch/` with an open ticket. The close commen
 | modular | 20 remove-the-chart-parameter-of-context | | |
 | next-week-byes | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
 | tone | 09 leftovers-after-the-second-rewrite | | |
+| rankings | 01 the-formula | | |
+| site-api | 10 prompt-caching | | |
 | trade-grade-v3 | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
 | waiver | 09 usage-floor-for-ranked-buckets | | |
 
