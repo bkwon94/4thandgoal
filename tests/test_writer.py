@@ -621,5 +621,5 @@ def test_writer_rule_31_states_a_rank_or_a_comparison_only_from_one_fact(fixture
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
     assert ("31. State a rank, a superlative, or a comparison only when one listed fact states it. "
             '"The most", "nobody else was close", and "blew past everyone" need a fact that says so.') in system
-    assert 'A rank that a fact gives, such as 12th of 12, may read as last.' in system
-    assert "A direction word such as fell, climbed, or slid is fine when a fact gives the move." in system
+    assert 'A rank that a fact gives, such as 12th of 12, may read as last or first.' in system
+    assert "A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move." in system

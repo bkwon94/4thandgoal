@@ -1171,7 +1171,7 @@ def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
     from importlib import resources
 
     text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
-    assert ("- A rank, a superlative, or a comparison must be stated in one listed fact, cited or not. "
+    assert ("- Only one listed fact can state a rank, a superlative, or a comparison, cited or not. "
             "Do not compute it by comparing facts.") in text
     assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '
             "are unsupported unless one fact says so.") in text
@@ -1184,7 +1184,7 @@ def test_a_sentence_with_three_numbers_fails(hbundle):
     sheet = hbundle.sheet
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("Brock ‘N’ Roll sits 6th at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
-    assert "[0] the sentence holds 3 numbers; the limit is two" in code_check(b, ch, sheet, prompts_dir=PROMPTS)
+    assert "[0] the sentence holds 3 numbers; the limit is 2" in code_check(b, ch, sheet, prompts_dir=PROMPTS)
 
 
 def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
@@ -1192,7 +1192,7 @@ def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("Brock ‘N’ Roll sits at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
     failures = code_check(b, ch, sheet, prompts_dir=PROMPTS)
-    assert not any("numbers; the limit is two" in m for m in failures), failures
+    assert not any("numbers; the limit is 2" in m for m in failures), failures
 
 
 def _defense_sheet():

@@ -219,6 +219,7 @@ def reaction_failures(text: str, scope_names: list[str], scope_last: set[str]) -
     return failures
 
 
+# Digit tokens only, so a number word such as "twelve" is not counted. The number rule checks number words.
 def number_count(bare: str) -> int:
     """The numbers in a sentence. A record such as 9-7, a percent such as 87%, and a clock such as 3:06 count once each."""
     return len(CLOCK.findall(bare)) + len(NUMBER_TOKEN.findall(CLOCK.sub(" ", bare)))
@@ -372,7 +373,7 @@ def code_check(
 
         numbers = number_count(bare)
         if numbers > SENTENCE_NUMBER_LIMIT:
-            failures.append(f"[{i}] the sentence holds {numbers} numbers; the limit is two")
+            failures.append(f"[{i}] the sentence holds {numbers} numbers; the limit is {SENTENCE_NUMBER_LIMIT}")
         failures += [f"[{i}] {m}" for m in article_failures(sentence.text)]
         failures += [f"[{i}] {m}" for m in odds_kind_failures(bare, sentence.text, valid_ids, sheet)]
 
