@@ -1145,3 +1145,15 @@ def test_write_and_verify_keeps_a_recap_that_cites_the_game_story_facts(story_bu
     blurb, results = write_and_verify(_ch(sheet, "recap_3"), sheet, partial(claude_call, writer=writer),
                                       prompts_dir=PROMPTS)
     assert not blurb.fallback and results[0].passed and len(writer.calls) == 2
+
+
+def test_a_recap_that_holds_a_turn_fact_and_does_not_cite_it_fails(story_bundle):
+    sheet = story_bundle.sheet
+    blurb = _blurb(
+        "recap_3",
+        _s("Maye d'force B with U beat Amon-Ra Dawg Your Team 113.55 to 104.04.", "M3.result"),
+        _s("The lead changed hands on Monday night.", "M3.lead"),
+    )
+    assert code_check(blurb, _ch(sheet, "recap_3"), sheet, prompts_dir=PROMPTS) == [
+        "[0] the chapter holds the turn fact M3.turn; cite it and tell the turn"]
+

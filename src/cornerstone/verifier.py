@@ -414,6 +414,13 @@ def code_check(
         failures += roster_tag_failures(blurb, chapter, sheet)
         failures += opener_failures(blurb, chapter, sheet)
 
+    # The turn is the game story of a recap. Without this check, the Matchup of the Week recap skips it as headline.
+    if chapter.key.startswith("recap_"):
+        cited_ids = {fid for s in blurb.sentences for fid in s.fact_ids}
+        for fid in chapter.fact_ids:
+            if fid.endswith(".turn") and fid not in cited_ids:
+                failures.append(f"[0] the chapter holds the turn fact {fid}; cite it and tell the turn")
+
     # A required ID is a why of one roster, so it counts only in a sentence tagged with that roster.
     for fid in chapter.required:
         rid = int(fid.split(".")[1])
