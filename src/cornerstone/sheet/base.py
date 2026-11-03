@@ -7,7 +7,7 @@ import re
 from collections.abc import Callable
 from datetime import date, timedelta
 
-from cornerstone.adjusters import pick_lineup
+from cornerstone.adjusters import allowed_positions, fill_slots
 from cornerstone.config import LeagueConfig
 from cornerstone.facts_league import (
     awards,
@@ -228,6 +228,8 @@ def projected_totals(week: Week, config: LeagueConfig) -> dict[int, dict[int, fl
 
     The roster is the current roster in rosters.json. The lineup picks by that week's projections, so a player
     with no projection that week counts 0 and a healthy bench player takes his slot.
+    An injured starter at zero gives his slot to the best free agent at the slot's positions, so the shift measures
+    the real roster, not a hole.
     A roster with no projected player in a week has no total that week.
     A missing week gives the roster no shift. It does not count as a total of 0.
     The weeks stop at the last regular week of `config`, because the file runs to the end of the NFL season for the
@@ -238,13 +240,44 @@ def projected_totals(week: Week, config: LeagueConfig) -> dict[int, dict[int, fl
     for w, projections in sorted(week.projections_ahead.items()):
         if w > config.last_regular_week:
             continue
+        # The free agents with a projection above zero that week, best first, with the player id as the tie rule.
+        pool = sorted(
+            ((pid, projections[pid]) for pid in week.free_agents if projections.get(pid, 0.0) > 0),
+            key=lambda item: (-item[1], item[0]),
+        )
         for rid, positions in week.rosters.items():
             if not any(pid in projections for pid in positions):
                 continue
             points = {pid: projections.get(pid, 0.0) for pid in positions}
-            starters = pick_lineup(list(points), week.roster_positions, positions, points)
-            totals[rid][w] = sum(points[pid] for pid in starters)
+            slots = fill_slots(list(points), week.roster_positions, positions, points)
+            starters = [pid for _, pid in slots if pid is not None]
+            totals[rid][w] = sum(points[pid] for pid in starters) + _injury_cover(week, slots, points, pool)
     return totals
+
+
+def _injury_cover(
+    week: Week, slots: list[tuple[str, str | None]], points: dict[str, float], pool: list[tuple[str, float]],
+) -> float:
+    """The points the free agents add to one roster's best lineup in one week, in place of its injured starters.
+
+    An injured starter is a starter at zero with an injury status. His slot takes the best free agent at the slot's
+    positions that no other slot of the roster took. A flex slot takes any of its positions.
+    """
+    added = 0.0
+    taken: set[str] = set()
+    for slot, pid in slots:
+        # A healthy starter at zero has a bye or no game that week. Every roster takes its byes in turn, so the zero
+        # is part of the real roster, not a hole from an injury.
+        if pid is None or points[pid] or pid not in week.injuries:
+            continue
+        # The best lineup fills each slot with the best player left at its positions, so no bench player at the
+        # slot's positions projects above zero. Only a free agent can be the better of the bench and the waivers.
+        allowed = allowed_positions(slot)
+        cover = next(((fa, value) for fa, value in pool if fa not in taken and week.free_agents[fa] in allowed), None)
+        if cover is not None:
+            taken.add(cover[0])
+            added += cover[1]
+    return added
 
 
 class Context:
