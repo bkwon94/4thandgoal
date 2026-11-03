@@ -177,19 +177,18 @@ def _injuries(raw: RawWeek) -> dict[str, str]:
     }
 
 
-def _free_agents(raw: RawWeek) -> dict[str, str]:
-    """The position of each player in the projections file who is on no current roster.
+def _pool(raw: RawWeek) -> dict[str, str]:
+    """The position of each pool player: a player with a projection and no roster.
 
-    The waiver pool rule in `ranks.in_pool` reads the history, and the history imports this module, so the rule
-    stays out of here. A player with a projection row has a team and a game, so the best free agent by projection
-    is a waiver pool player in practice.
+    `ranks.in_pool` adds the status and position filter, and this parse cannot import it because of the import
+    cycle through history.
     """
+    # The cycle: ranks imports history, and history imports this module.
     rostered = {pid for r in raw.rosters for pid in r.players or []}
     projected = {pid for entry in raw.projections_ahead or [] for pid in entry.projections}
-    return {
-        pid: (raw.players.get(pid) or {}).get("position") or "?"
-        for pid in sorted(projected - rostered)
-    }
+    positions = {pid: (raw.players.get(pid) or {}).get("position") for pid in sorted(projected - rostered)}
+    # A player with no position can fill no slot, so he stays out of the pool.
+    return {pid: position for pid, position in positions.items() if position}
 
 
 def parse_moves(transactions: list[RawTransaction]) -> list[Move]:
@@ -267,7 +266,7 @@ def parse_week(
         rosters=_rosters(raw),
         roster_players=_roster_players(raw),
         injuries=_injuries(raw),
-        free_agents=_free_agents(raw),
+        pool=_pool(raw),
         scoring=raw.league.scoring_settings,
         # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
         stats={item.player_id: item.stats for item in raw.stats or []},

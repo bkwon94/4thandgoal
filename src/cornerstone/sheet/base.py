@@ -223,13 +223,15 @@ def odds_inputs(
     return scores, remaining
 
 
-def projected_totals(week: Week, config: LeagueConfig) -> dict[int, dict[int, float]]:
+def projected_totals(
+    week: Week, config: LeagueConfig, bye_weeks: dict[str, int] | None = None,
+) -> dict[int, dict[int, float]]:
     """The projected total of each roster's best lineup in each week ahead, by roster ID and week.
 
     The roster is the current roster in rosters.json. The lineup picks by that week's projections, so a player
     with no projection that week counts 0 and a healthy bench player takes his slot.
-    An injured starter at zero gives his slot to the best free agent at the slot's positions, so the shift measures
-    the real roster, not a hole.
+    An injured starter at zero gives his slot to the best pool player at the slot's positions, so the shift measures
+    the real roster, not a hole. `bye_weeks` is the bye week of each NFL team, and a bye week gives no cover.
     A roster with no projected player in a week has no total that week.
     A missing week gives the roster no shift. It does not count as a total of 0.
     The weeks stop at the last regular week of `config`, because the file runs to the end of the NFL season for the
@@ -240,40 +242,46 @@ def projected_totals(week: Week, config: LeagueConfig) -> dict[int, dict[int, fl
     for w, projections in sorted(week.projections_ahead.items()):
         if w > config.last_regular_week:
             continue
-        # The free agents with a projection above zero that week, best first, with the player id as the tie rule.
+        # The pool players with a projection above zero that week, best first, with the player id as the tie rule.
         pool = sorted(
-            ((pid, projections[pid]) for pid in week.free_agents if projections.get(pid, 0.0) > 0),
+            ((pid, projections[pid], position) for pid, position in week.pool.items() if projections.get(pid, 0.0) > 0),
             key=lambda item: (-item[1], item[0]),
         )
+        # The injury status is one snapshot for every week ahead. A player on his bye would be at zero healthy too, so
+        # his bye week is no hole from the injury. With no schedule, no bye is known, so every injury counts.
+        on_bye = {pid for pid, (_, team) in week.roster_players.items() if team and (bye_weeks or {}).get(team) == w}
+        injuries = {pid: status for pid, status in week.injuries.items() if pid not in on_bye}
         for rid, positions in week.rosters.items():
             if not any(pid in projections for pid in positions):
                 continue
             points = {pid: projections.get(pid, 0.0) for pid in positions}
             slots = fill_slots(list(points), week.roster_positions, positions, points)
             starters = [pid for _, pid in slots if pid is not None]
-            totals[rid][w] = sum(points[pid] for pid in starters) + _injury_cover(week, slots, points, pool)
+            totals[rid][w] = sum(points[pid] for pid in starters) + _injury_cover(injuries, slots, points, pool)
     return totals
 
 
 def _injury_cover(
-    week: Week, slots: list[tuple[str, str | None]], points: dict[str, float], pool: list[tuple[str, float]],
+    injuries: dict[str, str], slots: list[tuple[str, str | None]], points: dict[str, float],
+    pool: list[tuple[str, float, str]],
 ) -> float:
-    """The points the free agents add to one roster's best lineup in one week, in place of its injured starters.
+    """The points the pool adds to one roster's best lineup in one week, in place of its injured starters.
 
-    An injured starter is a starter at zero with an injury status. His slot takes the best free agent at the slot's
-    positions that no other slot of the roster took. A flex slot takes any of its positions.
+    An injured starter is a starter at zero with an entry in `injuries`. His slot takes the best pool player at the
+    slot's positions that no other slot of the roster took. A flex slot takes any of its positions.
+    `pool` holds the player id, the projection, and the position of each pool player, best first.
     """
     added = 0.0
     taken: set[str] = set()
     for slot, pid in slots:
         # A healthy starter at zero has a bye or no game that week. Every roster takes its byes in turn, so the zero
         # is part of the real roster, not a hole from an injury.
-        if pid is None or points[pid] or pid not in week.injuries:
+        if pid is None or points[pid] or pid not in injuries:
             continue
         # The best lineup fills each slot with the best player left at its positions, so no bench player at the
-        # slot's positions projects above zero. Only a free agent can be the better of the bench and the waivers.
+        # slot's positions projects above zero. Only a pool player can be the better of the bench and the waivers.
         allowed = allowed_positions(slot)
-        cover = next(((fa, value) for fa, value in pool if fa not in taken and week.free_agents[fa] in allowed), None)
+        cover = next(((fa, value) for fa, value, position in pool if fa not in taken and position in allowed), None)
         if cover is not None:
             taken.add(cover[0])
             added += cover[1]
@@ -327,7 +335,7 @@ class Context:
             power_rankings(history, week.week)[week.week] if history is not None and history.complete() else []
         )
         # The odds and the odds why read the same inputs, so the context builds them once.
-        self.projected = projected_totals(week, config)
+        self.projected = projected_totals(week, config, nfl.bye_weeks if nfl is not None else None)
         inputs = odds_inputs(week, history, config)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
         self.odds = week_odds(week, history, inputs, self.projected, config)

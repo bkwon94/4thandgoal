@@ -140,10 +140,10 @@ def test_the_injuries_hold_each_rostered_player_with_an_injury_status(fixture_ra
     assert all(raw.players[pid]["injury_status"] == status for pid, status in injuries.items())
 
 
-def test_the_free_agents_are_the_projected_players_on_no_roster(fixture_raw_dir):
+def test_the_pool_is_the_projected_players_on_no_roster_with_a_position(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
-    # The recorded projections file holds only rostered players, so the one free agent is the one added here.
+    # The recorded projections file holds only rostered players, so the pool is the players added here.
     assert raw.projections_ahead is not None
-    raw.projections_ahead[0].projections["fa1"] = 12.0
-    raw.players["fa1"] = {"position": "QB"}
-    assert parse_week(raw).free_agents == {"fa1": "QB"}
+    raw.projections_ahead[0].projections.update({"fa1": 12.0, "no_position": 8.0})
+    raw.players.update({"fa1": {"position": "QB"}, "no_position": {}})
+    assert parse_week(raw).pool == {"fa1": "QB"}

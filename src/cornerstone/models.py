@@ -183,7 +183,7 @@ class Week(BaseModel):
     # The pairs of weeks N+2 to 14, keyed by week, in the shape of next_matchups.
     schedule: dict[int, list[tuple[int, int]]] = {}
     # The half-PPR projection of each player in the projections file in weeks N+1 to 14, by week and player id.
-    # The file holds the free agents too, so the odds can cover an injured starter from them.
+    # The file holds the pool too, so the odds can cover an injured starter from it.
     projections_ahead: ProjectionsAhead = {}
     # The league's lineup slots, in Sleeper's order, such as QB, RB, RB, WR, and BN.
     roster_positions: list[str] = []
@@ -196,7 +196,7 @@ class Week(BaseModel):
     # A healthy player has no entry.
     injuries: dict[str, str] = {}
     # The position of each player in the projections file who is on no current roster, by player id.
-    free_agents: dict[str, str] = {}
+    pool: dict[str, str] = {}
 
 
 def week_lines(week: Week) -> list[PlayerLine]:
