@@ -3,7 +3,7 @@
     "chapter": "motw",
     "sentences": [
       {
-        "text": "The Blue Tent won by 1.43, an upset over a side that sat 3rd coming in.",
+        "text": "The Blue Tent edged the 3rd-place team by 1.43 in an upset.",
         "fact_ids": [
           "M3.result",
           "M3.upset"
@@ -11,41 +11,45 @@
         "roster_id": null
       },
       {
-        "text": "Brock Bowers won it with 24.7, the top score among all started tight ends.",
+        "text": "The lead changed 3 times, and the other side still led by 3.67 after Sunday night.",
         "fact_ids": [
-          "M3.driver.11604",
-          "RANK.11604"
+          "M3.lead",
+          "M3.turn"
         ],
         "roster_id": null
       },
       {
-        "text": "Jacoby Brissett, a recent add at quarterback, turned an 18.33 projection into 4.46.",
+        "text": "Monday flipped it, with recent add Jadarian Price scoring 4.7 while the Seattle Seahawks defense finished at -0.4.",
         "fact_ids": [
-          "M3.move.3257"
+          "M3.turn",
+          "M3.move.13286"
         ],
         "roster_id": null
       },
       {
-        "text": "Drake London blew it with 1.3, and London Cooking got very little cooking from its London.",
+        "text": "Jacoby Brissett, Elic Ayomanor and the Detroit Lions are also recent adds, and the quarterback of that group managed 4.46.",
         "fact_ids": [
-          "M3.driver.8112"
+          "M3.move.3257",
+          "M3.move.12499",
+          "M3.move.DET"
         ],
         "roster_id": null
       },
       {
-        "text": "Denzel Boston's 6.7 sat on the bench behind DK Metcalf's 0.9, and that swap alone flips the result.",
+        "text": "Christian Watson was hurt in this game and is now listed Questionable, along with Michael Wilson, Drake London and James Cook III.",
         "fact_ids": [
-          "M3.regret.13346"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "Christian Watson, Michael Wilson, Drake London and James Cook III are all now listed Questionable.",
-        "fact_ids": [
+          "M3.hurt.8167",
           "M3.inj.8167",
           "M3.inj.10232",
           "M3.inj.8112",
           "M3.inj.8138"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Nothing was cooking for London Cooking: Drake London blew it with 1.3 on a 13.73 projection.",
+        "fact_ids": [
+          "M3.driver.8112"
         ],
         "roster_id": null
       }
@@ -57,21 +61,23 @@
     "chapter": "game_changer",
     "sentences": [
       {
-        "text": "Joe Burrow dropped 42.48 on a 22.04 projection and walked off with the Game Changer for All You Need Is Love.",
+        "text": "Joe Burrow went 20.44 over his projection and finished 1st among started QBs this week.",
         "fact_ids": [
-          "AW.game_changer"
+          "AW.game_changer",
+          "RANK.6770"
         ],
         "roster_id": null
       },
       {
-        "text": "He threw for 462 yards and even ran one in himself in an overtime win over the Titans.",
+        "text": "All You Need Is Love beat Unsolicited Dak Picks by 24.28, and Burrow's 42.48 outscored the margin on his own.",
         "fact_ids": [
-          "AW.game_changer.news"
+          "M4.result",
+          "M4.swing.6770"
         ],
         "roster_id": null
       },
       {
-        "text": "Without Burrow, that is a loss, since he outscored the 24.28 margin over Unsolicited Dak Picks on his own.",
+        "text": "Without him, that is a loss.",
         "fact_ids": [
           "M4.swing.6770",
           "M4.result"
@@ -79,15 +85,10 @@
         "roster_id": null
       },
       {
-        "text": "No started quarterback in the league topped him this week.",
+        "text": "He threw for 462 yards in an overtime win over the Titans.",
         "fact_ids": [
-          "RANK.6770"
+          "AW.game_changer.news"
         ],
-        "roster_id": null
-      },
-      {
-        "text": "Absurd day at the office.",
-        "fact_ids": [],
         "roster_id": null
       }
     ],
@@ -98,32 +99,32 @@
     "chapter": "awards",
     "sentences": [
       {
-        "text": "Joe Burrow took Game Changer for All You Need Is Love with 42.48, a full 20.44 over his projection.",
+        "text": "Joe Burrow put up 42.48, the most of any starter this week, and took Game Changer in a 24.28-point win for All You Need Is Love.",
         "fact_ids": [
+          "AW.top_scorer",
           "AW.game_changer"
         ],
         "roster_id": null
       },
       {
-        "text": "Teehee hoarded the rest: Tee Higgins topped every starter with 32.5, and Tony Pollard scored 26.2 on the bench.",
-        "fact_ids": [
-          "AW.top_scorer",
-          "AW.mvb"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "Bo Girds got nothing at all from Lamar Jackson, who is now listed Out.",
+        "text": "Bo Girds got a flat 0 from Lamar Jackson, the week's Underperformer, while their new pickup, the Jaguars defense, put up 20.3.",
         "fact_ids": [
           "AW.underperformer",
-          "W.injured"
+          "W.adds"
         ],
         "roster_id": null
       },
       {
-        "text": "Their new pickup, the Jacksonville Jaguars defense, at least put up 20.3.",
+        "text": "Over at Teehee, Bhayshul Tuten took the Lucky award: 28.9 points from a stat line that usually scores about 12.48.",
         "fact_ids": [
-          "W.adds"
+          "AW.lucky"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Tony Pollard, the week's top bench scorer, sat on that same bench the whole time.",
+        "fact_ids": [
+          "AW.mvb"
         ],
         "roster_id": null
       }
@@ -135,7 +136,7 @@
     "chapter": "position_leaders",
     "sentences": [
       {
-        "text": "Joe Burrow led every started QB with 42.48 for All You Need Is Love, and Ja'Marr Chase chipped in 25.6 on the same roster.",
+        "text": "Joe Burrow led every started QB with 42.48 for All You Need Is Love, and Ja'Marr Chase finished 2nd among WRs on the same roster.",
         "fact_ids": [
           "LEAD.QB.1",
           "LEAD.WR.2"
@@ -143,23 +144,20 @@
         "roster_id": null
       },
       {
-        "text": "Teehee had the top running back and the top receiver, with Bhayshul Tuten at 28.9 and Tee Higgins at 32.5.",
+        "text": "Teehee topped the WR and RB boards at once, Tee Higgins with 32.5 and Bhayshul Tuten with 28.9.",
         "fact_ids": [
-          "LEAD.RB.1",
-          "LEAD.WR.1"
+          "LEAD.WR.1",
+          "LEAD.RB.1"
         ],
         "roster_id": null
       },
       {
-        "text": "Maye d'force B with U grabbed the next RB spots, with D'Andre Swift 2nd and Jahmyr Gibbs 3rd among started RBs.",
-        "fact_ids": [
-          "LEAD.RB.2",
-          "LEAD.RB.3"
-        ],
+        "text": "The team name called its shot.",
+        "fact_ids": [],
         "roster_id": null
       },
       {
-        "text": "Brock Bowers topped the tight ends for The Blue Tent, and he also had the biggest share of his team's targets and air yards among started TEs.",
+        "text": "Brock Bowers led all started tight ends in both points and share of his team's targets and air yards for The Blue Tent.",
         "fact_ids": [
           "LEAD.TE.1",
           "LEAD.TE.1.volume"
@@ -167,22 +165,23 @@
         "roster_id": null
       }
     ],
-    "attempt": 2,
+    "attempt": 1,
     "fallback": false
   },
   "recap_1": {
     "chapter": "recap_1",
     "sentences": [
       {
-        "text": "Maye d'force B with U flattened Lil Fridge 121.16 to 80.11 in an upset.",
+        "text": "Maye d'force B with U trailed after Thursday, then flattened Lil Fridge 121.16 to 80.11 in an upset.",
         "fact_ids": [
           "M1.result",
-          "M1.upset"
+          "M1.upset",
+          "M1.lead"
         ],
         "roster_id": null
       },
       {
-        "text": "The winners' recent adds barely showed up, with the new pickup Mason Taylor at 3.4 and the Bengals defense at 5.9.",
+        "text": "The winners got almost nothing from the recent adds, with Mason Taylor at 3.4 and the Bengals defense at 5.9.",
         "fact_ids": [
           "M1.move.12498",
           "M1.move.CIN"
@@ -190,41 +189,41 @@
         "roster_id": null
       },
       {
-        "text": "Jakobi Meyers is now listed Questionable, and the former league leaders walk away with a season low.",
+        "text": "Jakobi Meyers is now listed Questionable with a hamstring, and the losing side walks away with a season low.",
         "fact_ids": [
           "M1.inj.5947",
-          "H.3.high",
-          "M1.upset"
+          "H.3.high"
         ],
         "roster_id": null
       }
     ],
-    "attempt": 1,
+    "attempt": 2,
     "fallback": false
   },
   "recap_2": {
     "chapter": "recap_2",
     "sentences": [
       {
-        "text": "Return of T Mac handled behold the lamb 111.97 to 85.76.",
+        "text": "Return of T Mac never trailed and beat behold the lamb 111.97 to 85.76.",
         "fact_ids": [
-          "M2.result"
+          "M2.result",
+          "M2.lead"
         ],
         "roster_id": null
       },
       {
-        "text": "Chris Godwin Jr., their new pickup, put up a 0, and they still won by 26.21.",
+        "text": "Chris Godwin Jr., the new free agent pickup, scored 0 for the winners, and Omar Cooper Jr., acquired by trade on the other side, also scored 0.",
         "fact_ids": [
           "M2.move.4037",
-          "M2.result"
+          "M2.move.13276"
         ],
         "roster_id": null
       },
       {
-        "text": "The losing side's trade for Omar Cooper Jr. came back just as empty.",
+        "text": "Somehow the side that started a goose egg off the wire is the one riding a winning streak.",
         "fact_ids": [
-          "M2.move.13276",
-          "M2.result"
+          "M2.move.4037",
+          "H.8.streak"
         ],
         "roster_id": null
       }
@@ -236,28 +235,30 @@
     "chapter": "recap_3",
     "sentences": [
       {
-        "text": "London Cooking left Denzel Boston's 6.7 on the bench behind DK Metcalf's 0.9, and that one swap would have flipped the result.",
+        "text": "London Cooking held a 3.67 lead after Sunday night, then their Seahawks defense posted -0.4 on Monday and The Blue Tent took it in an upset.",
         "fact_ids": [
-          "M3.regret.13346"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "The Blue Tent hung on for the upset anyway, even with new pickup Jacoby Brissett managing 4.46 at quarterback.",
-        "fact_ids": [
+          "M3.turn",
+          "M3.lead",
           "M3.result",
-          "M3.upset",
-          "M3.move.3257"
+          "M3.upset"
         ],
         "roster_id": null
       },
       {
-        "text": "Drake London, Michael Wilson, James Cook III and Christian Watson are all now listed Questionable.",
+        "text": "Recent add Jacoby Brissett returned 4.46 on an 18.33 projection at quarterback, and this side still survived.",
         "fact_ids": [
+          "M3.move.3257",
+          "M3.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Christian Watson was hurt in this game and is now listed Questionable, same as Drake London and Michael Wilson on the other side.",
+        "fact_ids": [
+          "M3.hurt.8167",
+          "M3.inj.8167",
           "M3.inj.8112",
-          "M3.inj.10232",
-          "M3.inj.8138",
-          "M3.inj.8167"
+          "M3.inj.10232"
         ],
         "roster_id": null
       }
@@ -269,21 +270,41 @@
     "chapter": "recap_4",
     "sentences": [
       {
-        "text": "All You Need Is Love beat Unsolicited Dak Picks 116.83 to 92.55, a margin of 24.28.",
+        "text": "All You Need Is Love trailed after Thursday, grabbed the lead in the early Sunday games, and never gave it back.",
         "fact_ids": [
+          "M4.lead",
           "M4.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Joe Burrow outscored the margin on his own with 42.48, while Jeremiyah Love was hurt in the 1st quarter and is now listed Out (Ankle).",
+        "fact_ids": [
+          "M4.swing.6770",
+          "M4.hurt.13287",
+          "M4.inj.13287"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Unsolicited Dak Picks, now 6-10, got 1.6 from recent add Darren Waller, with fellow pickups Washington Commanders and Caleb Douglas along for the ride.",
+        "fact_ids": [
+          "M4.records",
+          "M4.move.2505",
+          "M4.move.WAS",
+          "M4.move.13296"
         ],
         "roster_id": null
       }
     ],
-    "attempt": 0,
-    "fallback": true
+    "attempt": 1,
+    "fallback": false
   },
   "recap_5": {
     "chapter": "recap_5",
     "sentences": [
       {
-        "text": "Teehee flattened NFC Least 134.1 to 85.08, and Tee Higgins topped the box score for the winners.",
+        "text": "Teehee buried NFC Least by 49.02, and the Tee in the name showed up, with Tee Higgins as top scorer.",
         "fact_ids": [
           "M5.result",
           "M5.top.12"
@@ -291,7 +312,7 @@
         "roster_id": null
       },
       {
-        "text": "The trade haul of recent adds went nowhere: Jordan Mason scored 2, CeeDee Lamb managed 9.3, and Saquon Barkley still came in under his projection.",
+        "text": "The trade haul flopped: recent add Jordan Mason scored 2 and CeeDee Lamb managed 9.3, with Saquon Barkley also short of projection.",
         "fact_ids": [
           "M5.move.8408",
           "M5.move.6786",
@@ -300,7 +321,7 @@
         "roster_id": null
       },
       {
-        "text": "Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable.",
+        "text": "Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore, and Amon-Ra St. Brown on the winning side are now listed Questionable.",
         "fact_ids": [
           "M5.inj.3214",
           "M5.inj.12490",
@@ -310,35 +331,33 @@
         "roster_id": null
       }
     ],
-    "attempt": 1,
+    "attempt": 2,
     "fallback": false
   },
   "recap_6": {
     "chapter": "recap_6",
     "sentences": [
       {
-        "text": "To Infinity and Bijan, 11th before the week, beat Bo Girds in an upset, with the new pickup Tampa Bay Buccaneers defense adding 13.25.",
+        "text": "To Infinity and Bijan beat Bo Girds 118.89 to 88.2 in an upset.",
         "fact_ids": [
           "M6.result",
-          "M6.upset",
-          "M6.move.TB"
+          "M6.upset"
         ],
         "roster_id": null
       },
       {
-        "text": "Lamar Jackson never got on the board and is now listed Out.",
+        "text": "Lamar Jackson was hurt on a play at Buffalo and is now listed Out with a thumb injury.",
         "fact_ids": [
-          "M6.starter.6.4881",
+          "M6.hurt.4881",
           "M6.inj.4881"
         ],
         "roster_id": null
       },
       {
-        "text": "The Jaguars defense, a recent add, led the losing side with 20.3, and fellow add Antonio Williams chipped in 7.9.",
+        "text": "Recent adds showed up on both sides, with the Jacksonville Jaguars defense putting up 20.3 and the Tampa Bay Buccaneers answering with 13.25.",
         "fact_ids": [
           "M6.move.JAX",
-          "M6.top.6",
-          "M6.move.13301"
+          "M6.move.TB"
         ],
         "roster_id": null
       }
@@ -358,7 +377,7 @@
         "roster_id": null
       },
       {
-        "text": "Both sides are 9-7 and jammed together around the last playoff spot.",
+        "text": "Both now sit at 9-7, tangled up right at the last playoff spot.",
         "fact_ids": [
           "S.4",
           "S.6"
@@ -366,15 +385,16 @@
         "roster_id": null
       },
       {
-        "text": "Lil Fridge, sitting 2nd in the standings, picked this week for a season low of 80.11.",
+        "text": "Lil Fridge, 2nd in the standings, posted a season-low 80.11 and never sniffed the line.",
         "fact_ids": [
           "S.2",
-          "H.3.high"
+          "H.3.high",
+          "MED.below.3"
         ],
         "roster_id": null
       },
       {
-        "text": "Ugly week near the top.",
+        "text": "Rough look for a contender.",
         "fact_ids": [],
         "roster_id": null
       }
@@ -386,46 +406,49 @@
     "chapter": "next_week",
     "sentences": [
       {
-        "text": "Return of T Mac brings a 5-game win streak into a Must Watch with All You Need Is Love, who have won 3 straight of their own.",
+        "text": "All You Need Is Love and Return of T Mac both put win streaks on the line, and a win puts the leaders at 90% playoff odds, a loss at 68%.",
         "fact_ids": [
           "NX.2v8",
-          "NX.2v8.streak"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "A win lifts the league leaders to 91% playoff odds, while a loss leaves them at 69%.",
-        "fact_ids": [
-          "SW.2v8",
-          "S.1"
-        ],
-        "roster_id": null
-      },
-      {
-        "text": "The challengers go from 60% playoff odds with a win to 32% with a loss.",
-        "fact_ids": [
+          "NX.2v8.streak",
           "SW.2v8"
         ],
         "roster_id": null
       },
       {
-        "text": "Bo Girds puts a losing streak on the line against Teehee in the other Must Watch, with both sides sitting near the cut.",
+        "text": "The challengers get 58% playoff odds with a win and 30% with a loss, and they get it done without Jaylen Warren, who is on bye.",
         "fact_ids": [
-          "NX.6v12",
-          "NX.6v12.streak",
-          "NX.6v12.cut"
+          "SW.2v8",
+          "NX.bye.8.8228"
         ],
         "roster_id": null
       },
       {
-        "text": "A win means 77% playoff odds for either side, while a loss drops the slumping side to 46%.",
+        "text": "Bo Girds puts a losing streak on the line against Teehee with both near the cut, sitting at 87% playoff odds on a win and 61% on a loss.",
+        "fact_ids": [
+          "NX.6v12",
+          "NX.6v12.streak",
+          "NX.6v12.cut",
+          "SW.6v12"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Their opponents land at 76% playoff odds with a win, 49% with a loss.",
         "fact_ids": [
           "SW.6v12"
         ],
         "roster_id": null
       },
       {
-        "text": "Below the cut, To Infinity and Bijan at 7-9 plays Unsolicited Dak Picks at 6-10 in a showdown of the also-rans.",
+        "text": "London Cooking and Maye d'force B with U both project top-four lineups, so call that one a shootout.",
+        "fact_ids": [
+          "NX.5v9",
+          "NX.5v9.shootout"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "To Infinity and Bijan at 7-9 and Unsolicited Dak Picks at 6-10 both sit below the cut, a showdown of the awful.",
         "fact_ids": [
           "NX.7v11",
           "S.9",
@@ -434,14 +457,14 @@
         "roster_id": null
       }
     ],
-    "attempt": 2,
+    "attempt": 1,
     "fallback": false
   },
   "rankings": {
     "chapter": "rankings",
     "sentences": [
       {
-        "text": "All You Need Is Love climbs 4 places to the top after a 24-point win.",
+        "text": "All You Need Is Love climbs 4 spots to the top after a 24-point win.",
         "fact_ids": [
           "PR.2",
           "PR.2.why"
@@ -449,21 +472,15 @@
         "roster_id": 2
       },
       {
-        "text": "They sit atop the standings at 11-5, 2 games above the cut.",
+        "text": "They've won 3 straight and sit 2 games above the cut.",
         "fact_ids": [
+          "H.2.streak",
           "S.1"
         ],
         "roster_id": 2
       },
       {
-        "text": "Turns out love is all you need, plus a win streak.",
-        "fact_ids": [
-          "H.2.streak"
-        ],
-        "roster_id": 2
-      },
-      {
-        "text": "Teehee jumps 5 places after a 49-point demolition of the last-place team.",
+        "text": "Teehee rockets up 5 places after a 49-point beating of the last-place team.",
         "fact_ids": [
           "PR.12",
           "PR.12.why"
@@ -471,21 +488,21 @@
         "roster_id": 12
       },
       {
-        "text": "They're putting up 128.76 a week lately, well above a 110.75 season average.",
-        "fact_ids": [
-          "H.12.trend"
-        ],
-        "roster_id": 12
-      },
-      {
-        "text": "Still sitting at 8-8 and 1 game below the cut.",
+        "text": "Funny thing is, they're still 8-8 and 1 game below the cut.",
         "fact_ids": [
           "S.8"
         ],
         "roster_id": 12
       },
       {
-        "text": "Maye d'force B with U climbs 3 places after beating the league leader by 41.",
+        "text": "Hard to laugh at 128.76 a week lately.",
+        "fact_ids": [
+          "H.12.trend"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "Maye d'force B with U climbs 3 spots after a 41-point win over the league leader.",
         "fact_ids": [
           "PR.9",
           "PR.9.why"
@@ -493,21 +510,15 @@
         "roster_id": 9
       },
       {
-        "text": "They also sit 1st in scoring.",
+        "text": "They lead the league in scoring, even with the recent weeks dipping below their season average.",
         "fact_ids": [
-          "PR.9"
+          "PR.9",
+          "H.9.trend"
         ],
         "roster_id": 9
       },
       {
-        "text": "At 9-7, they're level with the last playoff spot.",
-        "fact_ids": [
-          "S.5"
-        ],
-        "roster_id": 9
-      },
-      {
-        "text": "Return of T Mac won by 26 and still slid 2 places.",
+        "text": "Return of T Mac won by 26 and somehow slid 2 places.",
         "fact_ids": [
           "PR.8",
           "PR.8.why"
@@ -515,7 +526,7 @@
         "roster_id": 8
       },
       {
-        "text": "They've won 5 straight and still sit outside the playoff spots.",
+        "text": "They've won 5 straight and still sit 1 spot outside the playoffs.",
         "fact_ids": [
           "H.8.streak",
           "S.7"
@@ -523,7 +534,7 @@
         "roster_id": 8
       },
       {
-        "text": "Playoff odds sit at about 44%, with the 11th easiest schedule left.",
+        "text": "Their playoff odds sit at 42%, with the 11th easiest schedule left.",
         "fact_ids": [
           "ODDS.8",
           "ODDS.8.why"
@@ -531,7 +542,7 @@
         "roster_id": 8
       },
       {
-        "text": "The Blue Tent rises 3 places off a 1-point win.",
+        "text": "The Blue Tent rose 3 places on a 1-point win.",
         "fact_ids": [
           "PR.1",
           "PR.1.why"
@@ -539,19 +550,21 @@
         "roster_id": 1
       },
       {
-        "text": "Lately they're scoring 91.5 a week, down from a 108.9 season average.",
+        "text": "Their recent scoring has fallen to 91.5 a week.",
         "fact_ids": [
           "H.1.trend"
         ],
         "roster_id": 1
       },
       {
-        "text": "Winning ugly still counts.",
-        "fact_ids": [],
+        "text": "Somehow they hold the last playoff spot anyway.",
+        "fact_ids": [
+          "S.6"
+        ],
         "roster_id": 1
       },
       {
-        "text": "Lil Fridge tumbles 5 places after a 41-point loss.",
+        "text": "Lil Fridge tumbled 5 places after a 41-point loss.",
         "fact_ids": [
           "PR.3",
           "PR.3.why"
@@ -559,21 +572,22 @@
         "roster_id": 3
       },
       {
-        "text": "They still hold 2nd in the standings at 10-6.",
+        "text": "Their results over the last 3 weeks rank dead last at 12th.",
         "fact_ids": [
+          "PR.3"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "They've lost 2 straight but still hold a 10-6 record.",
+        "fact_ids": [
+          "H.3.streak",
           "S.2"
         ],
         "roster_id": 3
       },
       {
-        "text": "This fridge is running, straight into back-to-back losses.",
-        "fact_ids": [
-          "H.3.streak"
-        ],
-        "roster_id": 3
-      },
-      {
-        "text": "Bo Girds falls 4 places after a 31-point loss.",
+        "text": "Bo Girds dropped 4 places after a 31-point loss.",
         "fact_ids": [
           "PR.6",
           "PR.6.why"
@@ -581,7 +595,7 @@
         "roster_id": 6
       },
       {
-        "text": "That's 4 straight losses for a team still level with the last playoff spot.",
+        "text": "That's 4 straight losses for a team still 3rd in the standings.",
         "fact_ids": [
           "H.6.streak",
           "S.3"
@@ -589,14 +603,14 @@
         "roster_id": 6
       },
       {
-        "text": "They project 103 a week from here, well off their 115 pace.",
+        "text": "Their scoring has sagged well below their season average.",
         "fact_ids": [
-          "ODDS.6.why"
+          "H.6.trend"
         ],
         "roster_id": 6
       },
       {
-        "text": "London Cooking slips 4 places after a 1-point loss.",
+        "text": "London Cooking fell 4 places after a 1-point loss.",
         "fact_ids": [
           "PR.5",
           "PR.5.why"
@@ -604,21 +618,22 @@
         "roster_id": 5
       },
       {
-        "text": "They've lost 2 straight.",
+        "text": "They've lost 2 straight while still ranking 2nd in scoring.",
         "fact_ids": [
-          "H.5.streak"
+          "H.5.streak",
+          "PR.5"
         ],
         "roster_id": 5
       },
       {
-        "text": "The kitchen has gone cold lately.",
+        "text": "This kitchen has gone cold lately.",
         "fact_ids": [
           "H.5.trend"
         ],
         "roster_id": 5
       },
       {
-        "text": "To Infinity and Bijan jumps 3 places off a 31-point win.",
+        "text": "To Infinity and Bijan moved up after a 31-point win over the 2nd-place team.",
         "fact_ids": [
           "PR.7",
           "PR.7.why"
@@ -626,21 +641,14 @@
         "roster_id": 7
       },
       {
-        "text": "At 7-9, they're still 2 games below the cut.",
+        "text": "Infinity is a long way off, and so is the cut, at 2 games away.",
         "fact_ids": [
           "S.9"
         ],
         "roster_id": 7
       },
       {
-        "text": "Playoff odds of about 7% say infinity is a stretch.",
-        "fact_ids": [
-          "ODDS.7"
-        ],
-        "roster_id": 7
-      },
-      {
-        "text": "Unsolicited Dak Picks slides 1 place after a 24-point loss.",
+        "text": "Unsolicited Dak Picks slipped 1 place after a 24-point loss.",
         "fact_ids": [
           "PR.11",
           "PR.11.why"
@@ -648,14 +656,14 @@
         "roster_id": 11
       },
       {
-        "text": "At 6-10 and 3 games below the cut, nobody asked for this either.",
+        "text": "Nobody asked for a 6-10 record either.",
         "fact_ids": [
           "S.10"
         ],
         "roster_id": 11
       },
       {
-        "text": "behold the lamb holds 11th, going nowhere.",
+        "text": "behold the lamb held 11th, right where it started.",
         "fact_ids": [
           "PR.10",
           "PR.10.why"
@@ -663,15 +671,14 @@
         "roster_id": 10
       },
       {
-        "text": "They've lost 2 straight and sit 3 games below the cut.",
+        "text": "Behold, a 6-10 record, 3 games below the cut.",
         "fact_ids": [
-          "H.10.streak",
           "S.11"
         ],
         "roster_id": 10
       },
       {
-        "text": "NFC Least drops 2 places to the bottom after a 49-point loss.",
+        "text": "NFC Least slid 2 places after a 49-point loss.",
         "fact_ids": [
           "PR.4",
           "PR.4.why"
@@ -679,17 +686,15 @@
         "roster_id": 4
       },
       {
-        "text": "A 3-13 record leaves them 6 games below the cut.",
+        "text": "At 3-13, the name keeps checking out.",
         "fact_ids": [
           "S.12"
         ],
         "roster_id": 4
       },
       {
-        "text": "Playoff odds of about 1% keep the name honest.",
-        "fact_ids": [
-          "ODDS.4"
-        ],
+        "text": "Fitting.",
+        "fact_ids": [],
         "roster_id": 4
       }
     ],

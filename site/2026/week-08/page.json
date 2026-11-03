@@ -604,8 +604,7 @@
       },
       "roster_id": 2,
       "matchup_id": 4,
-      "reason": "Joe Burrow scored 42.48 on a 22.04 projection, 20.44 over, in a 24.28-point win.",
-      "skipped": []
+      "reason": "Joe Burrow scored 42.48 on a 22.04 projection, 20.44 over, in a 24.28-point win."
     },
     "team": "All You Need Is Love"
   },
@@ -613,10 +612,10 @@
     {
       "title": "Top Scorer",
       "missing": false,
-      "player": "Tee Higgins",
-      "player_id": "6801",
-      "points": 32.5,
-      "team": "Teehee",
+      "player": "Joe Burrow",
+      "player_id": "6770",
+      "points": 42.48,
+      "team": "All You Need Is Love",
       "projection": null
     },
     {
@@ -640,11 +639,11 @@
     {
       "title": "Overachiever",
       "missing": false,
-      "player": "Bhayshul Tuten",
-      "player_id": "12490",
-      "points": 28.9,
+      "player": "Tee Higgins",
+      "player_id": "6801",
+      "points": 32.5,
       "team": "Teehee",
-      "projection": 14.44
+      "projection": 13.67
     }
   ],
   "leaders": [
@@ -908,7 +907,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Maye d'force B with U flattened Lil Fridge 121.16 to 80.11 in an upset. The winners' recent adds barely showed up, with the new pickup Mason Taylor at 3.4 and the Bengals defense at 5.9. Jakobi Meyers is now listed Questionable, and the former league leaders walk away with a season low."
+      "recap": "Maye d'force B with U trailed after Thursday, then flattened Lil Fridge 121.16 to 80.11 in an upset. The winners got almost nothing from the recent adds, with Mason Taylor at 3.4 and the Bengals defense at 5.9. Jakobi Meyers is now listed Questionable with a hamstring, and the losing side walks away with a season low."
     },
     {
       "id": 2,
@@ -971,7 +970,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Return of T Mac handled behold the lamb 111.97 to 85.76. Chris Godwin Jr., their new pickup, put up a 0, and they still won by 26.21. The losing side's trade for Omar Cooper Jr. came back just as empty."
+      "recap": "Return of T Mac never trailed and beat behold the lamb 111.97 to 85.76. Chris Godwin Jr., the new free agent pickup, scored 0 for the winners, and Omar Cooper Jr., acquired by trade on the other side, also scored 0. Somehow the side that started a goose egg off the wire is the one riding a winning streak."
     },
     {
       "id": 3,
@@ -1034,7 +1033,7 @@
         }
       ],
       "is_pick": true,
-      "recap": "London Cooking left Denzel Boston's 6.7 on the bench behind DK Metcalf's 0.9, and that one swap would have flipped the result. The Blue Tent hung on for the upset anyway, even with new pickup Jacoby Brissett managing 4.46 at quarterback. Drake London, Michael Wilson, James Cook III and Christian Watson are all now listed Questionable."
+      "recap": "London Cooking held a 3.67 lead after Sunday night, then their Seahawks defense posted -0.4 on Monday and The Blue Tent took it in an upset. Recent add Jacoby Brissett returned 4.46 on an 18.33 projection at quarterback, and this side still survived. Christian Watson was hurt in this game and is now listed Questionable, same as Drake London and Michael Wilson on the other side."
     },
     {
       "id": 4,
@@ -1097,7 +1096,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "All You Need Is Love beat Unsolicited Dak Picks 116.83 to 92.55, a margin of 24.28."
+      "recap": "All You Need Is Love trailed after Thursday, grabbed the lead in the early Sunday games, and never gave it back. Joe Burrow outscored the margin on his own with 42.48, while Jeremiyah Love was hurt in the 1st quarter and is now listed Out (Ankle). Unsolicited Dak Picks, now 6-10, got 1.6 from recent add Darren Waller, with fellow pickups Washington Commanders and Caleb Douglas along for the ride."
     },
     {
       "id": 5,
@@ -1160,7 +1159,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "Teehee flattened NFC Least 134.1 to 85.08, and Tee Higgins topped the box score for the winners. The trade haul of recent adds went nowhere: Jordan Mason scored 2, CeeDee Lamb managed 9.3, and Saquon Barkley still came in under his projection. Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable."
+      "recap": "Teehee buried NFC Least by 49.02, and the Tee in the name showed up, with Tee Higgins as top scorer. The trade haul flopped: recent add Jordan Mason scored 2 and CeeDee Lamb managed 9.3, with Saquon Barkley also short of projection. Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore, and Amon-Ra St. Brown on the winning side are now listed Questionable."
     },
     {
       "id": 6,
@@ -1223,7 +1222,7 @@
         }
       ],
       "is_pick": false,
-      "recap": "To Infinity and Bijan, 11th before the week, beat Bo Girds in an upset, with the new pickup Tampa Bay Buccaneers defense adding 13.25. Lamar Jackson never got on the board and is now listed Out. The Jaguars defense, a recent add, led the losing side with 20.3, and fellow add Antonio Williams chipped in 7.9."
+      "recap": "To Infinity and Bijan beat Bo Girds 118.89 to 88.2 in an upset. Lamar Jackson was hurt on a play at Buffalo and is now listed Out with a thumb injury. Recent adds showed up on both sides, with the Jacksonville Jaguars defense putting up 20.3 and the Tampa Bay Buccaneers answering with 13.25."
     }
   ],
   "median": {
@@ -1942,19 +1941,19 @@
     }
   ],
   "blurbs": {
-    "motw": "The Blue Tent won by 1.43, an upset over a side that sat 3rd coming in. Brock Bowers won it with 24.7, the top score among all started tight ends. Jacoby Brissett, a recent add at quarterback, turned an 18.33 projection into 4.46. Drake London blew it with 1.3, and London Cooking got very little cooking from its London. Denzel Boston's 6.7 sat on the bench behind DK Metcalf's 0.9, and that swap alone flips the result. Christian Watson, Michael Wilson, Drake London and James Cook III are all now listed Questionable.",
-    "game_changer": "Joe Burrow dropped 42.48 on a 22.04 projection and walked off with the Game Changer for All You Need Is Love. He threw for 462 yards and even ran one in himself in an overtime win over the Titans. Without Burrow, that is a loss, since he outscored the 24.28 margin over Unsolicited Dak Picks on his own. No started quarterback in the league topped him this week. Absurd day at the office.",
-    "awards": "Joe Burrow took Game Changer for All You Need Is Love with 42.48, a full 20.44 over his projection. Teehee hoarded the rest: Tee Higgins topped every starter with 32.5, and Tony Pollard scored 26.2 on the bench. Bo Girds got nothing at all from Lamar Jackson, who is now listed Out. Their new pickup, the Jacksonville Jaguars defense, at least put up 20.3.",
-    "position_leaders": "Joe Burrow led every started QB with 42.48 for All You Need Is Love, and Ja'Marr Chase chipped in 25.6 on the same roster. Teehee had the top running back and the top receiver, with Bhayshul Tuten at 28.9 and Tee Higgins at 32.5. Maye d'force B with U grabbed the next RB spots, with D'Andre Swift 2nd and Jahmyr Gibbs 3rd among started RBs. Brock Bowers topped the tight ends for The Blue Tent, and he also had the biggest share of his team's targets and air yards among started TEs.",
-    "recap_1": "Maye d'force B with U flattened Lil Fridge 121.16 to 80.11 in an upset. The winners' recent adds barely showed up, with the new pickup Mason Taylor at 3.4 and the Bengals defense at 5.9. Jakobi Meyers is now listed Questionable, and the former league leaders walk away with a season low.",
-    "recap_2": "Return of T Mac handled behold the lamb 111.97 to 85.76. Chris Godwin Jr., their new pickup, put up a 0, and they still won by 26.21. The losing side's trade for Omar Cooper Jr. came back just as empty.",
-    "recap_3": "London Cooking left Denzel Boston's 6.7 on the bench behind DK Metcalf's 0.9, and that one swap would have flipped the result. The Blue Tent hung on for the upset anyway, even with new pickup Jacoby Brissett managing 4.46 at quarterback. Drake London, Michael Wilson, James Cook III and Christian Watson are all now listed Questionable.",
-    "recap_4": "All You Need Is Love beat Unsolicited Dak Picks 116.83 to 92.55, a margin of 24.28.",
-    "recap_5": "Teehee flattened NFC Least 134.1 to 85.08, and Tee Higgins topped the box score for the winners. The trade haul of recent adds went nowhere: Jordan Mason scored 2, CeeDee Lamb managed 9.3, and Saquon Barkley still came in under his projection. Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable.",
-    "recap_6": "To Infinity and Bijan, 11th before the week, beat Bo Girds in an upset, with the new pickup Tampa Bay Buccaneers defense adding 13.25. Lamar Jackson never got on the board and is now listed Out. The Jaguars defense, a recent add, led the losing side with 20.3, and fellow add Antonio Williams chipped in 7.9.",
-    "median": "The median sat at 99.6, and The Blue Tent cleared it by 0.72 while London Cooking missed it by exactly that much. Both sides are 9-7 and jammed together around the last playoff spot. Lil Fridge, sitting 2nd in the standings, picked this week for a season low of 80.11. Ugly week near the top.",
-    "next_week": "Return of T Mac brings a 5-game win streak into a Must Watch with All You Need Is Love, who have won 3 straight of their own. A win lifts the league leaders to 91% playoff odds, while a loss leaves them at 69%. The challengers go from 60% playoff odds with a win to 32% with a loss. Bo Girds puts a losing streak on the line against Teehee in the other Must Watch, with both sides sitting near the cut. A win means 77% playoff odds for either side, while a loss drops the slumping side to 46%. Below the cut, To Infinity and Bijan at 7-9 plays Unsolicited Dak Picks at 6-10 in a showdown of the also-rans.",
-    "rankings": "All You Need Is Love climbs 4 places to the top after a 24-point win. They sit atop the standings at 11-5, 2 games above the cut. Turns out love is all you need, plus a win streak. Teehee jumps 5 places after a 49-point demolition of the last-place team. They're putting up 128.76 a week lately, well above a 110.75 season average. Still sitting at 8-8 and 1 game below the cut. Maye d'force B with U climbs 3 places after beating the league leader by 41. They also sit 1st in scoring. At 9-7, they're level with the last playoff spot. Return of T Mac won by 26 and still slid 2 places. They've won 5 straight and still sit outside the playoff spots. Playoff odds sit at about 44%, with the 11th easiest schedule left. The Blue Tent rises 3 places off a 1-point win. Lately they're scoring 91.5 a week, down from a 108.9 season average. Winning ugly still counts. Lil Fridge tumbles 5 places after a 41-point loss. They still hold 2nd in the standings at 10-6. This fridge is running, straight into back-to-back losses. Bo Girds falls 4 places after a 31-point loss. That's 4 straight losses for a team still level with the last playoff spot. They project 103 a week from here, well off their 115 pace. London Cooking slips 4 places after a 1-point loss. They've lost 2 straight. The kitchen has gone cold lately. To Infinity and Bijan jumps 3 places off a 31-point win. At 7-9, they're still 2 games below the cut. Playoff odds of about 7% say infinity is a stretch. Unsolicited Dak Picks slides 1 place after a 24-point loss. At 6-10 and 3 games below the cut, nobody asked for this either. behold the lamb holds 11th, going nowhere. They've lost 2 straight and sit 3 games below the cut. NFC Least drops 2 places to the bottom after a 49-point loss. A 3-13 record leaves them 6 games below the cut. Playoff odds of about 1% keep the name honest."
+    "motw": "The Blue Tent edged the 3rd-place team by 1.43 in an upset. The lead changed 3 times, and the other side still led by 3.67 after Sunday night. Monday flipped it, with recent add Jadarian Price scoring 4.7 while the Seattle Seahawks defense finished at -0.4. Jacoby Brissett, Elic Ayomanor and the Detroit Lions are also recent adds, and the quarterback of that group managed 4.46. Christian Watson was hurt in this game and is now listed Questionable, along with Michael Wilson, Drake London and James Cook III. Nothing was cooking for London Cooking: Drake London blew it with 1.3 on a 13.73 projection.",
+    "game_changer": "Joe Burrow went 20.44 over his projection and finished 1st among started QBs this week. All You Need Is Love beat Unsolicited Dak Picks by 24.28, and Burrow's 42.48 outscored the margin on his own. Without him, that is a loss. He threw for 462 yards in an overtime win over the Titans.",
+    "awards": "Joe Burrow put up 42.48, the most of any starter this week, and took Game Changer in a 24.28-point win for All You Need Is Love. Bo Girds got a flat 0 from Lamar Jackson, the week's Underperformer, while their new pickup, the Jaguars defense, put up 20.3. Over at Teehee, Bhayshul Tuten took the Lucky award: 28.9 points from a stat line that usually scores about 12.48. Tony Pollard, the week's top bench scorer, sat on that same bench the whole time.",
+    "position_leaders": "Joe Burrow led every started QB with 42.48 for All You Need Is Love, and Ja'Marr Chase finished 2nd among WRs on the same roster. Teehee topped the WR and RB boards at once, Tee Higgins with 32.5 and Bhayshul Tuten with 28.9. The team name called its shot. Brock Bowers led all started tight ends in both points and share of his team's targets and air yards for The Blue Tent.",
+    "recap_1": "Maye d'force B with U trailed after Thursday, then flattened Lil Fridge 121.16 to 80.11 in an upset. The winners got almost nothing from the recent adds, with Mason Taylor at 3.4 and the Bengals defense at 5.9. Jakobi Meyers is now listed Questionable with a hamstring, and the losing side walks away with a season low.",
+    "recap_2": "Return of T Mac never trailed and beat behold the lamb 111.97 to 85.76. Chris Godwin Jr., the new free agent pickup, scored 0 for the winners, and Omar Cooper Jr., acquired by trade on the other side, also scored 0. Somehow the side that started a goose egg off the wire is the one riding a winning streak.",
+    "recap_3": "London Cooking held a 3.67 lead after Sunday night, then their Seahawks defense posted -0.4 on Monday and The Blue Tent took it in an upset. Recent add Jacoby Brissett returned 4.46 on an 18.33 projection at quarterback, and this side still survived. Christian Watson was hurt in this game and is now listed Questionable, same as Drake London and Michael Wilson on the other side.",
+    "recap_4": "All You Need Is Love trailed after Thursday, grabbed the lead in the early Sunday games, and never gave it back. Joe Burrow outscored the margin on his own with 42.48, while Jeremiyah Love was hurt in the 1st quarter and is now listed Out (Ankle). Unsolicited Dak Picks, now 6-10, got 1.6 from recent add Darren Waller, with fellow pickups Washington Commanders and Caleb Douglas along for the ride.",
+    "recap_5": "Teehee buried NFC Least by 49.02, and the Tee in the name showed up, with Tee Higgins as top scorer. The trade haul flopped: recent add Jordan Mason scored 2 and CeeDee Lamb managed 9.3, with Saquon Barkley also short of projection. Hunter Henry is now listed Out, while Bhayshul Tuten, DJ Moore, and Amon-Ra St. Brown on the winning side are now listed Questionable.",
+    "recap_6": "To Infinity and Bijan beat Bo Girds 118.89 to 88.2 in an upset. Lamar Jackson was hurt on a play at Buffalo and is now listed Out with a thumb injury. Recent adds showed up on both sides, with the Jacksonville Jaguars defense putting up 20.3 and the Tampa Bay Buccaneers answering with 13.25.",
+    "median": "The median sat at 99.6, and The Blue Tent cleared it by 0.72 while London Cooking missed it by exactly that much. Both now sit at 9-7, tangled up right at the last playoff spot. Lil Fridge, 2nd in the standings, posted a season-low 80.11 and never sniffed the line. Rough look for a contender.",
+    "next_week": "All You Need Is Love and Return of T Mac both put win streaks on the line, and a win puts the leaders at 90% playoff odds, a loss at 68%. The challengers get 58% playoff odds with a win and 30% with a loss, and they get it done without Jaylen Warren, who is on bye. Bo Girds puts a losing streak on the line against Teehee with both near the cut, sitting at 87% playoff odds on a win and 61% on a loss. Their opponents land at 76% playoff odds with a win, 49% with a loss. London Cooking and Maye d'force B with U both project top-four lineups, so call that one a shootout. To Infinity and Bijan at 7-9 and Unsolicited Dak Picks at 6-10 both sit below the cut, a showdown of the awful.",
+    "rankings": "All You Need Is Love climbs 4 spots to the top after a 24-point win. They've won 3 straight and sit 2 games above the cut. Teehee rockets up 5 places after a 49-point beating of the last-place team. Funny thing is, they're still 8-8 and 1 game below the cut. Hard to laugh at 128.76 a week lately. Maye d'force B with U climbs 3 spots after a 41-point win over the league leader. They lead the league in scoring, even with the recent weeks dipping below their season average. Return of T Mac won by 26 and somehow slid 2 places. They've won 5 straight and still sit 1 spot outside the playoffs. Their playoff odds sit at 42%, with the 11th easiest schedule left. The Blue Tent rose 3 places on a 1-point win. Their recent scoring has fallen to 91.5 a week. Somehow they hold the last playoff spot anyway. Lil Fridge tumbled 5 places after a 41-point loss. Their results over the last 3 weeks rank dead last at 12th. They've lost 2 straight but still hold a 10-6 record. Bo Girds dropped 4 places after a 31-point loss. That's 4 straight losses for a team still 3rd in the standings. Their scoring has sagged well below their season average. London Cooking fell 4 places after a 1-point loss. They've lost 2 straight while still ranking 2nd in scoring. This kitchen has gone cold lately. To Infinity and Bijan moved up after a 31-point win over the 2nd-place team. Infinity is a long way off, and so is the cut, at 2 games away. Unsolicited Dak Picks slipped 1 place after a 24-point loss. Nobody asked for a 6-10 record either. behold the lamb held 11th, right where it started. Behold, a 6-10 record, 3 games below the cut. NFC Least slid 2 places after a 49-point loss. At 3-13, the name keeps checking out. Fitting."
   },
   "avatars": {
     "1": "avatars/1.jpg",
@@ -1972,12 +1971,12 @@
   },
   "headshots": {
     "6770": "headshots/6770.png",
-    "6801": "headshots/6801.png",
     "5967": "headshots/5967.png",
     "4881": "headshots/4881.png",
-    "12490": "headshots/12490.png",
+    "6801": "headshots/6801.png",
     "1166": "headshots/1166.png",
     "4984": "headshots/4984.png",
+    "12490": "headshots/12490.png",
     "6790": "headshots/6790.png",
     "9221": "headshots/9221.png",
     "7564": "headshots/7564.png",

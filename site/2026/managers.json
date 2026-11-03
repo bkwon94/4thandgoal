@@ -1002,7 +1002,7 @@
         }
       },
       "awards": {
-        "top_scorer": 0,
+        "top_scorer": 1,
         "mvb": 0,
         "game_changer": 1,
         "underperformer": 0
@@ -7313,7 +7313,7 @@
         }
       },
       "awards": {
-        "top_scorer": 3,
+        "top_scorer": 2,
         "mvb": 1,
         "game_changer": 0,
         "underperformer": 0
