@@ -18,7 +18,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `modular` | site | 12 the fixtures carry every as-of key | none | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
-| `one` | both | 06 one tracker | none | 07 runs beside 06 |
+| `one` | both | 07 the publish rule | none | 07 runs beside 06 |
 | `next-week-byes` | site | 01 byes on the next-week games | the pipeline tracker | |
 | `next-week-byes` | pipeline | 06 two-chapters-fell-to-templates-in-the-week-7-rebuild | | |
 | `rankings` | site | 01 the reader and the route | none | |
@@ -45,4 +45,3 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 
 - Brian installs the prek hook after the week 8 page is live, with `prek install` in each main checkout.
 - Brian runs one `make publish` by hand under the hook before the week 9 publish.
-- No one has installed the prek hook yet. After the week 8 page is live, run `pnpm hook:install` in the main checkout.
