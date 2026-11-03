@@ -603,3 +603,11 @@ def test_the_detail_rule_keeps_the_word_bans_and_the_number_rules(fixture_raw_di
     assert '"Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.' in system
     rule_30 = system.split("30. Give every blurb", 1)[1]
     assert "The word bans, the number rules, and rule 11 still hold." in rule_30
+
+
+def test_the_recap_rule_keeps_the_term_game_time_off_the_page(story_bundle):
+    sheet = story_bundle.sheet
+    system, _ = build_writer_prompt(_chapter(sheet, "recap_3"), sheet, None, prompts_dir=PROMPTS)
+    rule_29 = system.split("29. In a recap chapter", 1)[1].split("\n30. ", 1)[0]
+    assert ('- The term "game time" never appears on the page. Write "after Thursday", '
+            '"after the early Sunday games", or "into Monday".') in rule_29

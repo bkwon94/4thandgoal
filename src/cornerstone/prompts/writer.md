@@ -40,6 +40,7 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
     - A `.turn` fact says the leader before the last game time lost, and names the starters of that game time. When the chapter has one, cite it and tell the turn.
     - A `.lead` fact gives the lead after each game time, and the count of lead changes. When the lead changed, cite it for the timing. Give at most two of its margins.
     - Vary the shape of the lead sentence. Six recaps of one page must not tell the lead the same way. Lead with the team, the game time, or the margin.
+    - The term "game time" never appears on the page. Write "after Thursday", "after the early Sunday games", or "into Monday".
     - A `.hurt.` fact gives the quarter and the clock of the play where a starter was hurt. When the chapter has one, cite it. It comes from the play by play of the game, so a sentence that cites it may say he was hurt in this game. A `.snaps.` fact gives his snaps.
     - These facts state no cause. Say the starter was hurt or the lead changed. Do not say it cost, sank, or decided the game unless rule 9 allows it.
     - The tone rules hold. Make no joke about the injury itself. Roast the manager, the lineup, or the team name.
