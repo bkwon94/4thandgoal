@@ -7,7 +7,7 @@ This runbook tells you how to deploy, check, and run the Cornerstone API at `api
 The API is one FastAPI app in one Docker image on Fly.io, app `cpcfantasy-api`, region `ewr`. One machine
 always runs, because `fly.toml` sets `min_machines_running = 1`. So no request waits for a cold start. A GitHub
 Actions cron calls `POST /refresh` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
-managers wake. The cron never deploys. You deploy by hand from this runbook.
+managers wake. The cron never deploys. The job `deploy` deploys. See "The deploy job".
 
 The cost of the machine: one `shared-cpu-1x` machine with 1 GB costs $6.70 per month at the Fly list price for
 `ewr`. The price is for a 30-day month, and Fly bills by the second. The 1 GB volume adds $0.15 per month. The
@@ -74,6 +74,12 @@ three reasons, and none when the list is empty. The result cache keeps the finde
 hash of both rosters and records, and the document version. A cached repeat runs no finder,
 makes no Claude call, and does not count. The asker is part of the key, so the pair in the other order is a new
 grade. A document whose Claude call fell back is not stored, so the next request tries the call again.
+
+## The deploy job
+
+- The job `deploy` in `.github/workflows/check.yml` deploys after each push to `main` with a green check.
+- To read the job, open the Actions tab, then the "Check" run of the push. The `deploy` log ends with the image and the machine state.
+- Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret `FLY_API_TOKEN` is absent.
 
 ## First deploy
 
