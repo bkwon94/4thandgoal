@@ -34,6 +34,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
 | `week-8-fixes` | pipeline | 07 the-readmes-name-the-module-an-agent-needs | | |
 | `win-win` | site | 06 the shared API call hook | none | |
+| `zz-verdict-dry-run` | pipeline | 01 the pipeline README names the verdict check | none | |
 
 ## Notes
 
