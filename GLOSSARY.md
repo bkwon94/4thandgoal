@@ -52,7 +52,7 @@ The surface behind the dark chapters. It is white in the light theme and black i
 _Avoid_: Background, canvas, body
 
 **Theme**:
-The light or dark set of surface and text colors. The reader picks one with the theme button, and the choice holds across visits.
+The light or dark set of surface and text colors, inside the brand of the client. The reader picks one with the theme button, and the choice holds across visits.
 _Avoid_: Mode, scheme, skin, color mode
 
 **Theme button**:
@@ -767,7 +767,7 @@ _Avoid_: potential, ceiling, buy low
 
 **Star**:
 A player with a chart value in the top of his position on the league's chart, such as the top 6 QB. `star_rank_by_position`
-in the league config sets the count per position. A position not in it has no stars.
+in the client sets the count per position. A position not in it has no stars.
 _Avoid_: stud, elite, top guy
 
 **Star return bet**:
@@ -811,21 +811,37 @@ _Avoid_: Score, rating, power score
 
 ### The platform
 
-**League config**:
-One object that names the league: its slug, its display name, its provider, the provider id per season, the owner's username, the timezone, the league-sized limits, and the prompts folder. Read once at start.
-_Avoid_: Settings, tunables, constants, env
-
 **Provider**:
 The service the league's data comes from. Sleeper is the one provider today. The provider's field names stop at its adapter; the rest of the pipeline sees only the models.
 _Avoid_: Source, platform, backend, API
 
 **Bundle**:
-The raw data, the history, and the facts of one week, loaded together before the writer runs. The code that builds a prose block reads the bundle and the league config, and nothing else.
+The raw data, the history, and the facts of one week, loaded together before the writer runs. The code that builds a prose block reads the bundle and the client, and nothing else.
 _Avoid_: Context, week data, state
 
 **Published file**:
 One JSON file the render step writes under `apps/pipeline/site/` and publish copies into `apps/site/public/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
+
+## Client language
+
+The terms of the structure that both apps share: the clients, the packages, and the apps.
+
+**Client**:
+One league and its site, over every season. A client has one provider per season, its own packages, its own brand, and its own URL. Its slug is the league slug.
+_Avoid_: League config, tenant, customer, instance, site
+
+**Brand**:
+The look of one client: the token values, the fonts, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only.
+_Avoid_: Theme, skin, style, palette
+
+**Package**:
+One domain of the league, in both languages: the rules, the ports, the fakes, the parts, and the screens. A client takes a package or omits it as a whole.
+_Avoid_: Module, feature, plugin, library, lib
+
+**App**:
+One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.
+_Avoid_: Shell (that is the frame of a page), service, project
 
 ## Workflow
 
