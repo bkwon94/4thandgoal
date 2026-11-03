@@ -5,7 +5,7 @@ Spec branch: `clients`.
 
 ## DESTINATION
 
-The repo takes the One structure: thin apps, one package per domain, and one folder per client. Brian's second Sleeper league builds its own site from the same code, with its own packages, brand, and menu, and the CPC week 8 rebuild has an empty golden diff.
+The repo takes the One structure: thin apps, one package per domain, and one folder per client. Brian's second Sleeper league builds its own site from the same code, with its own packages, brand, and menu, and the CPC week 8 rebuild has an empty golden diff, except the removed key `is_brian`.
 
 ## DECISIONS SO FAR
 
@@ -23,10 +23,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - Each client's data lives in `clients/<slug>/published/<season>/week-NN/`. The site build copies only the selected client's data. The publish exception of ADR 0019 changes to that folder.
 - Every feature moves into a package. The order: the client folder and its build first, then one package per ticket with an empty CPC golden diff, then the second client last.
 - Eight packages, as bounded contexts: the kernel `league`, then `facts`, then `week`, `rankings`, `managers`, `waiver`, and `analyzer`, with `design` under each site side. The week takes chapters through a chapter port. `decisions/01-grill-the-package-map.md`.
+- `client.toml` holds the package list, the seasons, the timezone, the usage code, the package values, and the menu. The sizes come from the provider. Each package exports one JSON Schema, and an unknown key fails the check. `decisions/02-grill-the-client-toml-schema.md`.
 
 ## NOT YET SPECIFIED
 
-- What sections and values does `client.toml` hold? `decisions/02-grill-the-client-toml-schema.md`.
 - Which tokens does a brand give: which colors, fonts, and radii? `decisions/03-grill-the-brand-tokens.md`.
 - What does the second league need to build a week: its history, its prompts, its voice? `decisions/04-grill-the-second-league-week.md`.
 - Where is the second site hosted, and at what URL? `decisions/05-research-the-second-site-host.md`.
@@ -37,6 +37,8 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 
 ## OUT OF SCOPE
 
+- A menu item that links outside the site. It needs a look in the shell, and a later spec can add a `link` kind to the closed set.
+- An override of a provider size in `client.toml`. Add it when a real league needs one.
 - The ESPN provider and the Yahoo provider. Each is a later spec that plugs into the provider port. Two seams in one spec breaks the One test.
 - A client that swaps one part for its own code. The client folder holds values and no code, so ten clients do not become ten shells.
 - A deploy of the API per client. The client choice is data, so a later spec can run the same image as a second Fly app with one env var.

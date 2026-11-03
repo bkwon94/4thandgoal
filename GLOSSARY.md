@@ -855,6 +855,14 @@ _Avoid_: Plugin, hook, slot, extension point
 The one site package that each client takes: the primitives, the parts, the shell, and the code that applies a brand. It holds no rule of the league, so its name is not a league word.
 _Avoid_: Design system, UI kit, components, parts (alone; a part is one component of it)
 
+**League settings**:
+The sizes of one season of a league that the provider gives: the team count, the playoff spots, the roster slots, and the weeks of the regular season. The lines and the star ranks derive from them.
+_Avoid_: League config, sizes (alone), league rules
+
+**Package value**:
+One value that a package names in its README, with its default. A client sets it in `client.toml` only when it differs from the default.
+_Avoid_: Flag, feature flag, setting, option
+
 **App**:
 One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.
 _Avoid_: Shell (that is the frame of a page), service, project

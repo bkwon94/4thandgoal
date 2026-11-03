@@ -21,6 +21,17 @@ for each client, with the client in the path.
 `client.toml` replaces the League config. A client chooses at two levels: the packages in its list,
 and the values that each package names in its README. A client does not choose a part.
 
+## How three readers agree
+
+Each package defines its package values as one pydantic model, and a step exports it as a JSON Schema file into
+the package. The pipeline and the API check `client.toml` with the model. The site build checks it with the JSON
+Schema. A stale exported file fails the check, and an unknown key in `client.toml` fails it too. The league sizes are
+not in `client.toml`: the provider gives them per season. `.scratch/clients/decisions/02-grill-the-client-toml-schema.md`
+holds the file for CPC.
+
+Rejected: a pydantic model and a Zod schema per package, which are two sources of truth. Also rejected: a checked
+`client.json` that Python writes for the site, which makes the site build run Python.
+
 ## Why we break from One
 
 One puts a client under its app, at `apps/<app>/clients/<owner>/`, and the import lines of
