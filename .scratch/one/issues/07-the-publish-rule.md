@@ -8,8 +8,8 @@ Spec: `.scratch/one/PRD.md`. Solution part 3, and ADR 0019.
 
 **Status:** ready-for-agent
 
-- [ ] `publish` stages only the published-data folder. A stray file elsewhere in the tree stays unstaged.
-- [ ] A rule test with a real git repo in a temp folder passes a commit of only published data.
-- [ ] The same test fails a commit that also stages a file outside it, and the report names the file and the fix.
-- [ ] The root `make check` runs the rule.
-- [ ] The state file hold "Nothing uncommitted may sit on `main` at publish time" is gone, because the rule makes it false.
+- [x] `publish` stages only the published-data folder. A stray file elsewhere in the tree stays unstaged.
+- [x] A rule test with a real git repo in a temp folder passes a commit of only published data.
+- [x] The same test fails a commit that also stages a file outside it, and the report names the file and the fix.
+- [x] The root `make check` runs the rule.
+- [x] The state file hold "Nothing uncommitted may sit on `main` at publish time" is gone, because the rule makes it false.
