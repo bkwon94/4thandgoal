@@ -1157,3 +1157,14 @@ def test_a_recap_that_holds_a_turn_fact_and_does_not_cite_it_fails(story_bundle)
     assert code_check(blurb, _ch(sheet, "recap_3"), sheet, prompts_dir=PROMPTS) == [
         "[0] the chapter holds the turn fact M3.turn; cite it and tell the turn"]
 
+
+
+def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
+    from importlib import resources
+
+    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    assert ("- A rank, a superlative, or a comparison must be stated in one cited fact. "
+            "Do not compute it by comparing facts.") in text
+    assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '
+            "are unsupported unless one fact says so.") in text
+    assert "A sentence may use any listed fact, cited or not." in text
