@@ -468,19 +468,13 @@ def awards(week: Week, mfacts: list[MatchupFacts]) -> list[Award]:
             ],
         ))
 
-    picked: set[str] = set()
+    # Each award picks its own winner, so one player can win two awards. A reader expects the top scorer to be
+    # the top scorer, and a skip to the next name would make the tile false.
     out = []
     for key, ranked in rankings:
-        skipped: list[str] = []
-        for (line, rid, mid), reason in ranked:
-            if line.player_id in picked:
-                skipped.append(line.name)
-                continue
-            picked.add(line.player_id)
-            out.append(
-                Award(key=key, line=line, roster_id=rid, matchup_id=mid, reason=reason, skipped=skipped)
-            )
-            break
+        if ranked:
+            (line, rid, mid), reason = ranked[0]
+            out.append(Award(key=key, line=line, roster_id=rid, matchup_id=mid, reason=reason))
     return out
 
 

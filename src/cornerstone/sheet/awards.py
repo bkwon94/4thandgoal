@@ -30,9 +30,7 @@ def award_facts(c: Context) -> list[Fact]:
         n = Nums()
         team = c.team(aw.roster_id)
         text = f"{AWARD_TITLES[aw.key]}: {c.who(aw.line)}, {team}. {n.text(aw.reason)}"
-        if aw.skipped:
-            text += f" Skipped: {', '.join(aw.skipped)}."
-        out.append(fact(f"AW.{aw.key}", text, n, [team], [aw.line.name, *aw.skipped]))
+        out.append(fact(f"AW.{aw.key}", text, n, [team], [aw.line.name]))
     gc = next((a for a in c.awards if a.key == "game_changer"), None)
     if gc:
         out += _news_facts(c, gc)
@@ -42,7 +40,7 @@ def award_facts(c: Context) -> list[Fact]:
 def expected_award_facts(c: Context) -> list[Fact]:
     """The unlucky and lucky awards from the expected gap. None when the expected points lack week N."""
     out = []
-    for key, g in expected_awards(c.week, c.nfl, frozenset(a.line.player_id for a in c.awards)).items():
+    for key, g in expected_awards(c.week, c.nfl).items():
         n = Nums()
         team = c.team(g.roster_id)
         side = "under" if g.gap < 0 else "over"
