@@ -4,6 +4,7 @@ One row for each feature under `.scratch/` with an open ticket. The close commen
 
 | Feature | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- |
+| week-8-fixes | 07 the-readmes-name-the-module-an-agent-needs | | |
 | known-games | 08 the-site-renders-the-known-games-line | | |
 | manager-pages | 12 drop-awards-from-managers-entry | | |
 | modular | 20 remove-the-chart-parameter-of-context | | |
