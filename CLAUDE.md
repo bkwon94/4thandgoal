@@ -1,10 +1,12 @@
-# cpcfantasyfootball site
+# cpcfantasyfootball
 
-This repo is the source of the Next.js site. The Python pipeline repo
-`cornerstone-fantasy-sleeper-weekly-report` publishes one `page.json` per week, with its images,
-into `apps/site/public/<season>/week-NN/`. The site app in `apps/site/` renders the pages.
+This repo holds two apps.
 
-## Commands
+- `apps/site/` is the Next.js site. It renders `apps/site/public/<season>/week-NN/page.json` and its images.
+- `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `apps/site/public/`.
+  Its own CLAUDE.md holds its pipeline steps and rules.
+
+## Site commands
 
 Run these in `apps/site/`.
 
@@ -13,6 +15,16 @@ Run these in `apps/site/`.
 - Build the static export: `pnpm build`
 - Test: `pnpm test`
 - Check the export: `pnpm check:export`. Run it after `pnpm build`.
+
+## Pipeline commands
+
+Run these in `apps/pipeline/`. Run `make help` for the full list.
+
+- Install: `uv sync`
+- Check: `make check`. The hook runs `make check-fast`.
+- Build a week: `make build WEEK=<W>`
+- Publish a week: `make publish WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
+- Local API on port 8080: `make api`
 
 ## Style
 
@@ -26,3 +38,4 @@ after this file, then reads one ticket in the tracker.
 ## Tracker
 
 The tracker is local markdown under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+The pipeline keeps its own tracker under `apps/pipeline/.scratch/`, with its rows in `apps/pipeline/docs/agents/state.md`.
