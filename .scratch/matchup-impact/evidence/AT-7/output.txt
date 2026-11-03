@@ -1,0 +1,11 @@
+$ make -C apps/pipeline build WEEK=6
+(full build log: evidence/build-06/output.txt)
+
+M1.impact: Brock ‘N’ Roll fell from 4th to 6th in the standings and missed the median to go 0-2 this week. Lil Fridge stayed 1st in the standings and beat the median to go 2-0 this week.
+M2.impact: Return of T Mac rose from 9th to 7th in the standings, beat the median to go 2-0 this week, and has now won 3 straight. Unsolicited Dak Picks fell from 7th to 10th in the standings, missed the median to go 0-2 this week, and has now lost 3 straight.
+M3.impact: Maye d'force B with U rose from 6th to 4th in the standings and beat the median to go 2-0 this week. Amon-Ra Dawg Your Team fell from 8th to 9th in the standings and missed the median to go 0-2 this week.
+M4.impact: Bo Girds fell from 2nd to 3rd in the standings and beat the median to go 1-1 this week. behold the lamb rose from 11th to 8th in the standings and beat the median to go 2-0 this week.
+M5.impact: London Cooking rose from 3rd to 2nd in the standings, beat the median to go 2-0 this week, and has now won 4 straight. To Infinity and Bijan fell from 10th to 11th in the standings and missed the median to go 0-2 this week.
+M6.impact: All You Need Is Love stayed 5th in the standings and missed the median to go 1-1 this week. Pukancun on 3 stayed 12th in the standings and missed the median to go 0-2 this week.
+
+odds key in facts.json: True

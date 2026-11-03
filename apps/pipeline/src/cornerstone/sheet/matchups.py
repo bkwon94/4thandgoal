@@ -1,22 +1,30 @@
 """
-Builds the family of facts for each matchup: the result, the lines, the story, and the context.
+Builds the family of facts for each matchup: the result, the lines, the story, the context, and the impact.
 The recap and Matchup of the Week chapters read them.
 """
 from datetime import datetime
 from decimal import Decimal
 
 from cornerstone.config import LeagueConfig
+from cornerstone.facts_league import STREAK_ON_THE_LINE, streak
 from cornerstone.models import (
     Fact,
+    OddsResult,
+    OddsStatus,
     PlayerLine,
     sub,
 )
 from cornerstone.numbers import r2
+from cornerstone.odds import roster_status
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
+from cornerstone.standings_table import season_records
+
+# The clause of the impact fact for a first clinch or a first out. The words follow the odds fact of the same status.
+STATUS_CLAUSES = {"in": "clinched a playoff spot", "out": "is now out of the playoff race"}
 
 
 def facts(context: Context, config: LeagueConfig) -> list[Fact]:
-    """The result, the lines, the story, and the context of each matchup.
+    """The result, the lines, the story, the context, and the impact of each matchup.
 
     The Matchup of the Week, Game Changer, and recap chapters read them. The awards chapter reads each result.
     """
@@ -25,6 +33,7 @@ def facts(context: Context, config: LeagueConfig) -> list[Fact]:
 
 def matchup_fact_family(c: Context) -> list[Fact]:
     out = []
+    new_statuses = _first_statuses(c)
     for f, m in zip(c.mfacts, c.week.matchups):
         out += _result_facts(c, f, m)
         out += _line_facts(c, f, m)
@@ -33,6 +42,7 @@ def matchup_fact_family(c: Context) -> list[Fact]:
         out += _hurt_facts(c, f, m)
         out += _lead_facts(c, f, m)
         out += _context_facts(c, f, m)
+        out.append(_impact_fact(c, f, m, new_statuses))
     return out
 
 
@@ -275,3 +285,115 @@ def _context_facts(c, f, m) -> list[Fact]:
     teams = [c.team(m.a.roster_id), c.team(m.b.roster_id)]
     out.append(fact(f"{mid}.records", " ".join(parts), n, teams, []))
     return out
+
+
+def _impact_fact(c, f, m, new_statuses: dict[int, OddsStatus]) -> Fact:
+    """What this week did to each team of one matchup. GLOSSARY.md, "Impact fact".
+
+    Each team gets one sentence of the parts that apply this week.
+    """
+    n = Nums()
+    sentences = []
+    for rid in (m.a.roster_id, m.b.roster_id):
+        place_before, place_after = c.before[rid], c.by_rank[rid].rank
+        clauses = [
+            _place_clause(place_before, place_after, n),
+            *_cut_clause(place_before, place_after, c.config.playoff_spots),
+        ]
+        clauses += _odds_clause(c.odds_before, c.odds, rid, n)
+        clauses.append(_median_clause(c, f, rid, n))
+        clauses += _streak_clause(c, rid, n)
+        if rid in new_statuses:
+            clauses.append(STATUS_CLAUSES[new_statuses[rid]])
+        sentences.append(f"{c.team(rid)} {_join(clauses)}.")
+    teams = [c.team(m.a.roster_id), c.team(m.b.roster_id)]
+    return fact(f"M{f.matchup_id}.impact", " ".join(sentences), n, teams, [])
+
+
+def _first_statuses(c) -> dict[int, OddsStatus]:
+    """Each roster that the plain check of the odds first gives `in` or `out` this week. GLOSSARY.md, "Clinched", "Out".
+
+    The check runs on the records after this week and after the week before, each with its weeks left. A roster
+    that had the status last week is not in the result, so a clinch or an out shows only in its first week.
+    """
+    h, week, config = c.history, c.week.week, c.config
+    if h is None or not h.complete() or week > config.last_regular_week:
+        return {}
+    spots, left = config.playoff_spots, config.last_regular_week - week
+    now, before = season_records(h, week), season_records(h, week - 1)
+    out = {}
+    # The saved odds start at ODDS_FROM_WEEK and the odds of the week before can be missing.
+    # The plain check on the records works for every week.
+    for rid in now:
+        status = roster_status(rid, now, left, spots)
+        # A roster with no record before this week has no earlier status.
+        earlier = roster_status(rid, before, left + 1, spots) if len(before) == len(now) else "open"
+        if status != "open" and status != earlier:
+            out[rid] = status
+    return out
+
+
+def _place_clause(before: int, after: int, n: Nums) -> str:
+    """The standings place before and after. GLOSSARY.md, "Standings place": "rose" or "fell", never "moved"."""
+    if before == after:
+        return f"stayed {n.ord(after)} in the standings"
+    verb = "rose" if after < before else "fell"
+    return f"{verb} from {n.ord(before)} to {n.ord(after)} in the standings"
+
+
+def _cut_clause(before: int, after: int, spots: int) -> list[str]:
+    """The cut, only when the team crossed into the playoff spots or fell out of them this week."""
+    if before > spots >= after:
+        return ["crossed into the playoff spots"]
+    if before <= spots < after:
+        return ["fell out of the playoff spots"]
+    return []
+
+
+def _odds_clause(before: OddsResult | None, after: OddsResult | None, rid: int, n: Nums) -> list[str]:
+    """The playoff odds of last week's saved odds and of this week. GLOSSARY.md, "Playoff odds", "Impact fact".
+
+    The other games and the median game move the odds too, so the clause says "this week", not the game.
+    With no saved odds before this week, or no odds after it, no odds part shows.
+    """
+    if before is None or after is None or rid not in before.teams or rid not in after.teams:
+        return []
+    old, new = before.teams[rid].playoff, after.teams[rid].playoff
+    # Brian chose one "about" per clause, because two read heavy: "from about 99% to 86%".
+    # It goes before the first engine number. A clinched 100 or an out 0 is sure, so it takes none.
+    first = next((i for i, p in enumerate((old, new)) if p not in (0, 100)), None)
+    words = [f"about {n(p)}%" if i == first else f"{n(p)}%" for i, p in enumerate((old, new))]
+    return [f"saw its playoff odds go from {words[0]} to {words[1]} this week"]
+
+
+def _median_clause(c, f, rid: int, n: Nums) -> str:
+    """The median result and the record of the week: the head-to-head game and the median game."""
+    wins = (f.winner == rid) + (rid in c.median.above)
+    losses = (f.loser == rid) + (rid in c.median.below)
+    # A score equal to the median is in neither list, so it is neither a win nor a loss.
+    word = "beat" if rid in c.median.above else "missed" if rid in c.median.below else "matched"
+    return f"{word} the median to go {n.record(wins, losses)} this week"
+
+
+def _streak_clause(c, rid: int, n: Nums) -> list[str]:
+    """A head-to-head streak of 3 or more that this game started, extended, or ended. The median game does not count.
+
+    The length uses the rule of "Streak on the line" in GLOSSARY.md. With no complete history, no streak shows.
+    """
+    h = c.history
+    if h is None or not h.complete():
+        return []
+    now, before = streak(h, rid, c.week.week), streak(h, rid, c.week.week - 1)
+    if abs(now) >= STREAK_ON_THE_LINE:
+        return [f"has now {'won' if now > 0 else 'lost'} {n(abs(now))} straight"]
+    # A streak ends when the sign of the run changes, or when a tie sets it to 0.
+    if abs(before) >= STREAK_ON_THE_LINE and (now == 0 or (now > 0) != (before > 0)):
+        return [f"ended a {n(abs(before))}-game {'winning' if before > 0 else 'losing'} streak"]
+    return []
+
+
+def _join(clauses: list[str]) -> str:
+    """The clauses as one list: "a", "a and b", or "a, b, and c"."""
+    if len(clauses) < 3:
+        return " and ".join(clauses)
+    return ", ".join(clauses[:-1]) + ", and " + clauses[-1]

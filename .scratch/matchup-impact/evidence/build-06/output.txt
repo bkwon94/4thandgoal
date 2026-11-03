@@ -1,0 +1,154 @@
+$ make -C apps/pipeline build WEEK=6
+uv run cornerstone build --season 2026 --week 6
+INFO cornerstone.pipeline: week 6 nflverse.json lacks bye_weeks, injury_plays, kickoffs, so the build fetches the extract again
+INFO httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/13274/news "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=8218 cache_read_input_tokens=14037 input_tokens=199
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3372 cache_read_input_tokens=46143 input_tokens=201
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=1500 cache_read_input_tokens=20693 input_tokens=192
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3101 cache_read_input_tokens=30203 input_tokens=196
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=2098 cache_read_input_tokens=28825 input_tokens=200
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3519 cache_read_input_tokens=28792 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=2541 cache_read_input_tokens=37451 input_tokens=198
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3059 cache_read_input_tokens=28518 input_tokens=196
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3736 cache_read_input_tokens=28618 input_tokens=221
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3766 cache_read_input_tokens=29010 input_tokens=231
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3561 cache_read_input_tokens=29338 input_tokens=230
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=6423 cache_read_input_tokens=49122 input_tokens=189
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3564 cache_read_input_tokens=28832 input_tokens=182
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=3012 cache_read_input_tokens=37999 input_tokens=193
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=6269 cache_read_input_tokens=47654 input_tokens=202
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: ResearchOut call: cache_creation_input_tokens=4431 cache_read_input_tokens=29456 input_tokens=186
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=7953 cache_read_input_tokens=0 input_tokens=5029
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=3301 cache_read_input_tokens=0 input_tokens=5259
+INFO cornerstone.pipeline: chapter motw: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=741
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=821
+INFO cornerstone.pipeline: chapter game_changer: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=1806
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=1953
+INFO cornerstone.pipeline: chapter awards: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=1450
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=1736
+INFO cornerstone.pipeline: chapter position_leaders: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=2897
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=2927
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=3108
+INFO cornerstone.pipeline: chapter recap_1: attempt 0, fallback True
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=3025
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=3184
+INFO cornerstone.pipeline: chapter recap_2: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=3629
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=3800
+INFO cornerstone.pipeline: chapter recap_3: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=4316
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=4366
+INFO cornerstone.pipeline: chapter recap_4: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=2779
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=2960
+INFO cornerstone.pipeline: chapter recap_5: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=3498
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=3632
+INFO cornerstone.pipeline: chapter recap_6: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=1819
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=1923
+INFO cornerstone.pipeline: chapter median: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=4168
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=4510
+INFO cornerstone.pipeline: chapter next_week: attempt 1, fallback False
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7953 input_tokens=4723
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO cornerstone.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3301 input_tokens=5815
+INFO cornerstone.pipeline: chapter rankings: attempt 1, fallback False
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/2d76952413aa4a3bf4884fede9041abc.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/uploads/140ff19784cae9f61f6a781e2875970a.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/13274.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/7523.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11566.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/9509.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/10213.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12545.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11564.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8151.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4034.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8138.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11632.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8131.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12517.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4217.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/pit.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/kc.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/images/team_logos/nfl/den.png "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12507.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12533.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/5892.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/5967.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/10236.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/13330.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11635.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12481.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/7569.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/7611.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4046.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/4881.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8154.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/11834.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/12490.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/5850.jpg "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://sleepercdn.com/content/nfl/players/8146.jpg "HTTP/1.1 200 OK"
+INFO cornerstone.pipeline: rankings.json covers weeks 1 to 8, past the built week 6
+INFO cornerstone.pipeline: no saved chart read for week 6: the roster grade has no trade value
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/matchup-impact/apps/pipeline/site/2026/week-06/page.json
+Site page after publish: https://cpcfantasy.com/2026/week-06/
+exit 0

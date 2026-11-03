@@ -5,6 +5,7 @@ One live test calls the real Claude API and runs only with -m live.
 import re
 
 import pytest
+from conftest import SAVED
 
 from cornerstone.config import cornerstone_config
 from cornerstone.models import Blurb, Sentence, WriterOut
@@ -623,3 +624,25 @@ def test_writer_rule_31_states_a_rank_or_a_comparison_only_from_one_fact(fixture
             '"The most", "nobody else was close", and "blew past everyone" need a fact that says so.') in system
     assert 'A rank that a fact gives, such as 12th of 12, may read as last or first.' in system
     assert "A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move." in system
+
+
+@pytest.mark.skipif(not (SAVED / "week-08" / "raw").is_dir(), reason="no saved week 8 data")
+def test_each_matchup_blurb_of_week_8_gets_the_impact_rule_and_its_impact_fact(week_8):
+    sheet = week_8.sheet
+    for n, key in enumerate(["recap_1", "recap_2", "recap_3", "recap_4", "recap_5", "recap_6"], start=1):
+        system, user = build_writer_prompt(_chapter(sheet, key), sheet, None, prompts_dir=PROMPTS)
+        assert f"- M{n}.impact: {sheet.facts[f'M{n}.impact'].text}" in user
+    # The Matchup of the Week of week 8 is matchup 3, The Blue Tent against London Cooking.
+    _, user = build_writer_prompt(_chapter(sheet, "motw"), sheet, None, prompts_dir=PROMPTS)
+    assert f"- M3.impact: {sheet.facts['M3.impact'].text}" in user
+    rule = system.split("\n32. ", 1)[1]
+    assert rule.startswith("In the Matchup of the Week chapter and each recap chapter, an `M<n>.impact` fact gives "
+                           "what this week did to both teams.")
+    assert "Cite it, and say what the week did to both teams. Choose the parts that matter most." in rule
+    # The impact fact, not rule 23, gives the odds of a matchup blurb, and the odds keep their kind and their week.
+    assert ('Take an odds number in these chapters from the impact fact. Keep "playoff odds" and "this week" in its '
+            "sentence. Rule 23 still governs the odds of the other chapters.") in rule
+    # Rule 10 asks for the `.upset` fact with a rank change, and most matchups have no upset.
+    assert "A standings place from the impact fact needs no `.upset` fact under rule 10." in rule
+    assert "Six recaps of one page must not tell the impact the same way." in rule
+    assert "In the Matchup of the Week chapter, name the upset in one sentence only." in rule

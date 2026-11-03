@@ -269,6 +269,18 @@ An open side with a gap under `SWING_FLAT` reads "X stays near 60% either way." 
 reads "X is in either way." or "X is out either way."
 _Avoid_: swing player (that is a player who outscored the margin), leverage
 
+**Impact fact**:
+The `M<n>.impact` fact. It gives what this week did to each team of one matchup: the standings place
+before and after, the cut, the playoff odds before and after, the median result, the streak, and a
+clinch or an out. It lists only the parts that apply this week. The odds change is for the whole
+week, not for the one game, so the text says "this week".
+_Avoid_: stakes (that is before the game), swing (that is the Must Watch line), movement (that is the power rank)
+
+**Standings place**:
+The place of a team in the standings, from 1 to 12. It is not the power rank. A fact writes "rose
+from 5th to 3rd in the standings", never "moved".
+_Avoid_: rank (alone), move, movement
+
 **Clinched**:
 A team that is sure of a playoff spot by a plain check on wins. No team outside the playoff spots can
 reach its wins, even with 2 wins in every week left. Use "in" in code and "In" on the page.

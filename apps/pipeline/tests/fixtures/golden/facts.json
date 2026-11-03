@@ -3690,6 +3690,26 @@
         ],
         "players": []
       },
+      "M1.impact": {
+        "id": "M1.impact",
+        "text": "Brock ‘N’ Roll fell from 4th to 6th in the standings and missed the median to go 0-2 this week. Lil Fridge stayed 1st in the standings and beat the median to go 2-0 this week.",
+        "numbers": [
+          "4",
+          "6",
+          "0",
+          "2",
+          "0-2",
+          "1",
+          "2",
+          "0",
+          "2-0"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll",
+          "Lil Fridge"
+        ],
+        "players": []
+      },
       "M2.result": {
         "id": "M2.result",
         "text": "Return of T Mac beat Unsolicited Dak Picks 120.29 to 81.47, a margin of 38.82.",
@@ -4130,6 +4150,29 @@
           "8",
           "4-8",
           "10"
+        ],
+        "teams": [
+          "Return of T Mac",
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "M2.impact": {
+        "id": "M2.impact",
+        "text": "Return of T Mac rose from 9th to 7th in the standings, beat the median to go 2-0 this week, and has now won 3 straight. Unsolicited Dak Picks fell from 7th to 10th in the standings, missed the median to go 0-2 this week, and has now lost 3 straight.",
+        "numbers": [
+          "9",
+          "7",
+          "2",
+          "0",
+          "2-0",
+          "3",
+          "7",
+          "10",
+          "0",
+          "2",
+          "0-2",
+          "3"
         ],
         "teams": [
           "Return of T Mac",
@@ -4771,6 +4814,27 @@
           "8",
           "4-8",
           "9"
+        ],
+        "teams": [
+          "Maye d'force B with U",
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": []
+      },
+      "M3.impact": {
+        "id": "M3.impact",
+        "text": "Maye d'force B with U rose from 6th to 4th in the standings and beat the median to go 2-0 this week. Amon-Ra Dawg Your Team fell from 8th to 9th in the standings and missed the median to go 0-2 this week.",
+        "numbers": [
+          "6",
+          "4",
+          "2",
+          "0",
+          "2-0",
+          "8",
+          "9",
+          "0",
+          "2",
+          "0-2"
         ],
         "teams": [
           "Maye d'force B with U",
@@ -5520,6 +5584,27 @@
         ],
         "players": []
       },
+      "M4.impact": {
+        "id": "M4.impact",
+        "text": "Bo Girds fell from 2nd to 3rd in the standings and beat the median to go 1-1 this week. behold the lamb rose from 11th to 8th in the standings and beat the median to go 2-0 this week.",
+        "numbers": [
+          "2",
+          "3",
+          "1",
+          "1",
+          "1-1",
+          "11",
+          "8",
+          "2",
+          "0",
+          "2-0"
+        ],
+        "teams": [
+          "Bo Girds",
+          "behold the lamb"
+        ],
+        "players": []
+      },
       "M5.result": {
         "id": "M5.result",
         "text": "London Cooking beat To Infinity and Bijan 112.48 to 46.08, a margin of 66.4.",
@@ -5988,6 +6073,28 @@
           "8",
           "4-8",
           "11"
+        ],
+        "teams": [
+          "London Cooking",
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "M5.impact": {
+        "id": "M5.impact",
+        "text": "London Cooking rose from 3rd to 2nd in the standings, beat the median to go 2-0 this week, and has now won 4 straight. To Infinity and Bijan fell from 10th to 11th in the standings and missed the median to go 0-2 this week.",
+        "numbers": [
+          "3",
+          "2",
+          "2",
+          "0",
+          "2-0",
+          "4",
+          "10",
+          "11",
+          "0",
+          "2",
+          "0-2"
         ],
         "teams": [
           "London Cooking",
@@ -6517,6 +6624,25 @@
           "11",
           "1-11",
           "12"
+        ],
+        "teams": [
+          "All You Need Is Love",
+          "Pukancun on 3"
+        ],
+        "players": []
+      },
+      "M6.impact": {
+        "id": "M6.impact",
+        "text": "All You Need Is Love stayed 5th in the standings and missed the median to go 1-1 this week. Pukancun on 3 stayed 12th in the standings and missed the median to go 0-2 this week.",
+        "numbers": [
+          "5",
+          "1",
+          "1",
+          "1-1",
+          "12",
+          "0",
+          "2",
+          "0-2"
         ],
         "teams": [
           "All You Need Is Love",
@@ -11698,6 +11824,7 @@
           "M4.move.10235",
           "M4.upset",
           "M4.records",
+          "M4.impact",
           "M4.dropswing",
           "PICK",
           "S.3",
@@ -12115,6 +12242,7 @@
           "M1.snaps.2216",
           "M1.snaps.8121",
           "M1.records",
+          "M1.impact",
           "S.6",
           "S.1",
           "H.3.streak",
@@ -12199,6 +12327,7 @@
           "M2.snaps.5859",
           "M2.upset",
           "M2.records",
+          "M2.impact",
           "S.7",
           "S.10",
           "H.8.streak",
@@ -12294,6 +12423,7 @@
           "M3.snaps.7526",
           "M3.snaps.10236",
           "M3.records",
+          "M3.impact",
           "S.4",
           "S.9",
           "H.9.streak",
@@ -12395,6 +12525,7 @@
           "M4.move.10235",
           "M4.upset",
           "M4.records",
+          "M4.impact",
           "M4.dropswing",
           "S.3",
           "S.8",
@@ -12491,6 +12622,7 @@
           "M5.snaps.11635",
           "M5.snaps.5927",
           "M5.records",
+          "M5.impact",
           "S.2",
           "S.11",
           "H.5.streak",
@@ -12579,6 +12711,7 @@
           "M6.move.KC",
           "M6.move.11581",
           "M6.records",
+          "M6.impact",
           "S.5",
           "S.12",
           "H.2.trend",

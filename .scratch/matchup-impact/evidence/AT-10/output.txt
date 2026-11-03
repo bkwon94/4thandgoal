@@ -1,0 +1,9 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+motw [5] The winners' playoff odds rose to about 75% this week, while the losers' playoff odds slid to about 83%.  <- ['M3.impact']
+recap_2 [0] Return of T Mac led from Thursday on and won by 26.21, then still watched their playoff odds slide to 42% this week.  <- ['M2.result', 'M2.lead', 'M2.impact']
+recap_2 [2] As for behold the lamb, it went quietly to the slaughter, falling to 11th with playoff odds down to 4% this week.  <- ['M2.impact']
+recap_3 [2] The Blue Tent took it in an upset and saw its playoff odds go from about 42% to 75% this week, while the other side fell a spot in the standings.  <- ['M3.result', 'M3.upset', 'M3.impact']
+recap_4 [1] Unsolicited Dak Picks got 1.6 from Darren Waller, the new pickup, and watched their playoff odds fall to 8% this week.  <- ['M4.move.2505', 'M4.impact']
+recap_6 [2] This week dropped their playoff odds from about 99% to 76%, while the winners snapped their losing streak.  <- ['M6.impact']
