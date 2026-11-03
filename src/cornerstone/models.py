@@ -239,7 +239,6 @@ class Award(BaseModel):
     roster_id: int
     matchup_id: int
     reason: str
-    skipped: list[str]
 
 
 class DropLine(BaseModel):

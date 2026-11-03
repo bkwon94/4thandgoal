@@ -44,16 +44,26 @@ def test_standings_order_and_cut(fixture_raw_dir):
     assert t[5].games_from_cut == 0 and t[0].games_from_cut >= 0
 
 
-def test_awards_one_player_one_tile(fixture_raw_dir):
+def test_each_award_picks_its_own_winner(fixture_raw_dir):
     wk, mf = _setup(fixture_raw_dir)
     a = {x.key: x for x in awards(wk, mf)}
     assert a["top_scorer"].line.name == "Trevor Lawrence"
     assert a["mvb"].line.name == "Jayden Daniels"
     assert a["underperformer"].line.name == "Bijan Robinson"
     assert a["game_changer"].line.name == "Tre Tucker"
-    assert "Tre Tucker" in a["overachiever"].skipped
-    assert a["overachiever"].line.name == "Germie Bernard"
-    assert len({x.line.player_id for x in a.values()}) == 5
+    # Tre Tucker has the largest gap over his projection, so he is the Overachiever too.
+    assert a["overachiever"].line.name == "Tre Tucker"
+
+
+def test_the_top_scorer_can_also_be_the_game_changer(fixture_raw_dir):
+    wk, mf = _setup(fixture_raw_dir)
+    lawrence = next(line for m in wk.matchups for s in (m.a, m.b) for line in s.lines
+                    if line.name == "Trevor Lawrence")
+    # The Game Changer comes from the swing players of a won matchup. Lawrence becomes the only swing player.
+    mf = [f.model_copy(update={"swing": [lawrence] if i == 0 else []}) for i, f in enumerate(mf)]
+    a = {x.key: x for x in awards(wk, mf)}
+    assert a["top_scorer"].line.name == "Trevor Lawrence"
+    assert a["game_changer"].line.name == "Trevor Lawrence"
 
 
 def test_motw_is_closest(fixture_raw_dir):

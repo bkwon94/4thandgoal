@@ -1241,8 +1241,7 @@
         },
         "roster_id": 10,
         "matchup_id": 4,
-        "reason": "Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over, in a 5.34-point win after a recent roster move.",
-        "skipped": []
+        "reason": "Germie Bernard scored 20.2 on a 8.13 projection, 12.07 over, in a 5.34-point win after a recent roster move."
       },
       {
         "key": "top_scorer",
@@ -1261,8 +1260,7 @@
         },
         "roster_id": 12,
         "matchup_id": 3,
-        "reason": "Trevor Lawrence scored 28.34, the most of any starter this week.",
-        "skipped": []
+        "reason": "Trevor Lawrence scored 28.34, the most of any starter this week."
       },
       {
         "key": "mvb",
@@ -1281,8 +1279,7 @@
         },
         "roster_id": 5,
         "matchup_id": 5,
-        "reason": "Jayden Daniels scored 21.0 on the bench, the most of any bench player this week.",
-        "skipped": []
+        "reason": "Jayden Daniels scored 21.0 on the bench, the most of any bench player this week."
       },
       {
         "key": "underperformer",
@@ -1301,8 +1298,7 @@
         },
         "roster_id": 7,
         "matchup_id": 5,
-        "reason": "Bijan Robinson scored 6.3 on a 23.08 projection, 16.78 under.",
-        "skipped": []
+        "reason": "Bijan Robinson scored 6.3 on a 23.08 projection, 16.78 under."
       },
       {
         "key": "overachiever",
@@ -1321,8 +1317,7 @@
         },
         "roster_id": 2,
         "matchup_id": 6,
-        "reason": "Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over.",
-        "skipped": []
+        "reason": "Tre Tucker scored 24.2 on a 7.58 projection, 16.62 over."
       }
     ],
     "pick": {
