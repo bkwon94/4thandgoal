@@ -3,11 +3,13 @@ Drop value and drop lines from the nflverse drop plays and the Sleeper stats, th
 the shootouts of next week, and the leader volume ranks.
 The fact text lives in sheet.py with the other facts.
 """
+from collections.abc import Mapping
 from decimal import Decimal
 from typing import NamedTuple
 
 from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Shootout, TeamWeek, Week, sub
 from cornerstone.numbers import round_half_up
+from cornerstone.tunables import AWARDS_PER_PLAYER
 
 # The fewest points a starter must score under or over his expected points to win the unlucky or lucky award.
 # A smaller gap in one game is noise, so a quiet week gives no award. The commissioner tunes it.
@@ -75,7 +77,9 @@ def drop_lines(week: Week, nfl: NflverseWeek | None = None) -> list[DropLine]:
     return [d for _, d in found]
 
 
-def expected_awards(week: Week, nfl: NflverseWeek | None = None) -> dict[str, GapLine]:
+def expected_awards(
+    week: Week, nfl: NflverseWeek | None = None, held: Mapping[str, int] | None = None,
+) -> dict[str, GapLine]:
     """The unlucky and the lucky starter of week N by expected gap, keyed "unlucky" and "lucky".
 
     A key is absent when no starter clears EXPECTED_AWARD_FLOOR. Both are absent when the expected points are
@@ -83,6 +87,8 @@ def expected_awards(week: Week, nfl: NflverseWeek | None = None) -> dict[str, Ga
     The expected gap is his points in this league minus his expected points. The file's own points miss part
     of the league scoring, so they stay out.
     Each award picks its own winner, so a starter with another award can win one here too.
+    `held` counts the awards each Sleeper ID already holds. These awards pick after them, so a starter who
+    holds AWARDS_PER_PLAYER is skipped here.
     """
     if nfl is None or nfl.expected is None or nfl.expected.through_week < week.week:
         return {}
@@ -92,7 +98,8 @@ def expected_awards(week: Week, nfl: NflverseWeek | None = None) -> dict[str, Ga
             for line in side.lines:
                 games = nfl.expected.players.get(line.player_id, [])
                 game = next((g for g in games if g.week == week.week), None)
-                if line.started and game is not None:
+                capped = (held or {}).get(line.player_id, 0) >= AWARDS_PER_PLAYER
+                if line.started and game is not None and not capped:
                     gaps.append(GapLine(line, side.roster_id, game.expected, sub(line.points, game.expected)))
     out = {}
     # A tie goes to the first name, so a rebuild names the same player.

@@ -62,8 +62,23 @@ def test_the_top_scorer_can_also_be_the_game_changer(fixture_raw_dir):
     # The Game Changer comes from the swing players of a won matchup. Lawrence becomes the only swing player.
     mf = [f.model_copy(update={"swing": [lawrence] if i == 0 else []}) for i, f in enumerate(mf)]
     a = {x.key: x for x in awards(wk, mf)}
+    # Two awards are within AWARDS_PER_PLAYER, so he wins both.
     assert a["top_scorer"].line.name == "Trevor Lawrence"
     assert a["game_changer"].line.name == "Trevor Lawrence"
+
+
+def test_a_player_who_leads_three_awards_wins_the_first_two(fixture_raw_dir):
+    wk, mf = _setup(fixture_raw_dir)
+    lawrence = next(line for m in wk.matchups for s in (m.a, m.b) for line in s.lines
+                    if line.name == "Trevor Lawrence")
+    # Lawrence becomes the only swing player, and a projection of 1 gives him the largest gap over.
+    lawrence.projection = 1.0
+    mf = [f.model_copy(update={"swing": [lawrence] if i == 0 else []}) for i, f in enumerate(mf)]
+    a = {x.key: x for x in awards(wk, mf)}
+    assert a["game_changer"].line.name == "Trevor Lawrence"
+    assert a["top_scorer"].line.name == "Trevor Lawrence"
+    # Lawrence holds two awards, so the Overachiever goes to the next gap over.
+    assert a["overachiever"].line.name == "Tre Tucker"
 
 
 def test_motw_is_closest(fixture_raw_dir):
