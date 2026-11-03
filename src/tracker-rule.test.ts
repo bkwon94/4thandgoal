@@ -20,12 +20,21 @@ const RULE_ID = "tracker/state-file";
 
 type Ticket = { path: string; source: string };
 
+/* Under the prek hook, git sets GIT_DIR, GIT_INDEX_FILE, and GIT_WORK_TREE, so git in another folder would read the real repo. */
+function cleanGitEnv(): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  delete env.GIT_DIR;
+  delete env.GIT_INDEX_FILE;
+  delete env.GIT_WORK_TREE;
+  return env;
+}
+
 /*
  * The rule reads tracked tickets only, through git ls-files, so the hook and CI see the same set.
  * An untracked draft ticket in one checkout does not change the verdict.
  */
 function trackedTickets(root: string): Ticket[] {
-  return execFileSync("git", ["ls-files", ".scratch"], { cwd: root, encoding: "utf8" })
+  return execFileSync("git", ["ls-files", ".scratch"], { cwd: root, encoding: "utf8", env: cleanGitEnv() })
     .split("\n")
     .filter((path) => TICKET_PATH.test(path))
     .map((path) => ({ path, source: readFileSync(join(root, path), "utf8") }));
@@ -137,10 +146,7 @@ describe("the tracker rule", () => {
       mkdirSync(join(dir, "docs/agents"), { recursive: true });
       writeFileSync(join(dir, STATE_FILE), "");
       // Under the prek hook, git sets these three keys. With them, git add here would write to the index of the real repo.
-      const env = { ...process.env };
-      delete env.GIT_DIR;
-      delete env.GIT_INDEX_FILE;
-      delete env.GIT_WORK_TREE;
+      const env = cleanGitEnv();
       execFileSync("git", ["init", "--quiet"], { cwd: dir, env });
       execFileSync("git", ["add", "."], { cwd: dir, env });
       const found = offenses(trackedTickets(dir), readFileSync(join(dir, STATE_FILE), "utf8"));
