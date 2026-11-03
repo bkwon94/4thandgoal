@@ -1,11 +1,12 @@
-# The prek hook config of the site. Install it one time per clone with "prek install".
-# The hook runs "pnpm check:fast" on the whole tree before each commit. CI runs the full "pnpm check".
+# The prek hook config of the repo. Install it one time per clone with "prek install".
+# The hook runs "pnpm check:fast" of the site in apps/site before each commit. CI runs the full "pnpm check".
 repos:
   - repo: local
     hooks:
       - id: check-fast
         name: pnpm check:fast
-        entry: pnpm check:fast
+        # pnpm runs the script from apps/site, the folder of the site package.json.
+        entry: pnpm --dir apps/site check:fast
         language: system
         pass_filenames: false
         always_run: true
