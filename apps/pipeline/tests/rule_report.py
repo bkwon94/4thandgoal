@@ -2,7 +2,20 @@
 Prints the offenses of a rule test in one shape: the place and the rule id, what is wrong, the rule, and the fix.
 Every rule test uses it, so an agent reads one shape. It imports no pipeline code. See ADR 0009.
 """
+import os
 from dataclasses import dataclass
+
+
+def clean_git_env() -> dict[str, str]:
+    """The environment with no GIT_DIR, GIT_INDEX_FILE, or GIT_WORK_TREE.
+
+    Under the prek hook, git sets these. With GIT_DIR set and no GIT_WORK_TREE, git takes the current folder
+    as the top of the tree, so a git call from apps/pipeline would read the paths of the repo root.
+    """
+    env = dict(os.environ)
+    for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE"):
+        env.pop(name, None)
+    return env
 
 
 @dataclass(frozen=True)

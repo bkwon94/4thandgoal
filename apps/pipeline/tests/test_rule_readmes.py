@@ -5,7 +5,7 @@ Each README is under 25 lines, and the only CLAUDE.md is the one at the repo roo
 import subprocess
 from pathlib import Path
 
-from rule_report import Offense, report
+from rule_report import Offense, clean_git_env, report
 
 ROOT = Path(__file__).resolve().parent.parent
 ADR = "docs/adr/0009-the-rules-are-checks.md"
@@ -84,7 +84,9 @@ def _length_offenses(root: Path) -> list[Offense]:
 
 def _tracked_files(root: Path) -> list[str]:
     """The paths that git tracks, from the repo root. A staged file counts, so the hook sees a new one."""
-    result = subprocess.run(["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True, env=clean_git_env()
+    )
     return result.stdout.splitlines()
 
 

@@ -6,7 +6,7 @@ import re
 import subprocess
 from pathlib import Path, PurePosixPath
 
-from rule_report import Offense, report
+from rule_report import Offense, clean_git_env, report
 
 ROOT = Path(__file__).resolve().parent.parent
 ADR = "docs/adr/0009-the-rules-are-checks.md"
@@ -26,7 +26,9 @@ def _tracked_scratch_files(root: Path) -> list[str]:
     A local checkout holds untracked notes under .scratch, and they are not the tracker. Only the tracked
     files count, so the hook and CI read the same set.
     """
-    result = subprocess.run(["git", "ls-files", ".scratch"], cwd=root, check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        ["git", "ls-files", ".scratch"], cwd=root, check=True, capture_output=True, text=True, env=clean_git_env()
+    )
     return result.stdout.splitlines()
 
 
