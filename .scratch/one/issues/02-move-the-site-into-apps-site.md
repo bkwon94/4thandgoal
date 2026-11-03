@@ -8,8 +8,8 @@ Spec: `.scratch/one/PRD.md`. Solution part 1, and Implementation Decisions "The 
 
 **Status:** ready-for-agent
 
-- [ ] The move is one commit of renames, so `git log --follow` shows one rename for each file.
-- [ ] `pnpm install`, `pnpm check`, `pnpm build`, and `pnpm check:export` pass inside `apps/site/`.
-- [ ] The Pages workflow builds from `apps/site/` and runs only on changes there and in the workflow itself.
+- [x] The move is one commit of renames, so `git log --follow` shows one rename for each file.
+- [x] `pnpm install`, `pnpm check`, `pnpm build`, and `pnpm check:export` pass inside `apps/site/`.
+- [x] The Pages workflow builds from `apps/site/` and runs only on changes there and in the workflow itself.
 - [ ] The Pages deploy from `main` works, and the live site serves the week 8 page.
 - [ ] The pipeline's `publish` still works against the new path for one run, so a publish between 02 and 03 does not break.
