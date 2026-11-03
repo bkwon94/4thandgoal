@@ -3,16 +3,14 @@ Tests for the impact fact `M<n>.impact`: what the week did to each team of one m
 They run on the recorded week 6 data and its history, and on the saved weeks 7 and 8.
 """
 import re
-import shutil
-from pathlib import Path
 
 import pytest
+from conftest import SAVED, saved_repo
 from fakes import no_news
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.parse import parse_week
-from cornerstone.paths import history_root, week_dir
 from cornerstone.pipeline import make_bundle
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import base, build_bundle
@@ -150,29 +148,6 @@ def test_a_week_with_no_saved_odds_before_it_has_no_odds_part_and_keeps_the_othe
         assert "in the standings" in text and "the median to go" in text
 
 
-SAVED = Path(__file__).parent.parent / "data" / "2026"
-
-
-def _saved_repo(tmp_path, week):
-    """A repo of links to the saved raw data of `week`, the saved history, and the saved facts of the week before."""
-    for path in (week_dir(tmp_path, 2026, week), history_root(tmp_path, 2026).parent):
-        path.mkdir(parents=True, exist_ok=True)
-    (week_dir(tmp_path, 2026, week) / "raw").symlink_to(SAVED / f"week-{week:02d}" / "raw")
-    history_root(tmp_path, 2026).symlink_to(SAVED / "history")
-    before = week_dir(tmp_path, 2026, week - 1)
-    before.mkdir(parents=True)
-    shutil.copy(SAVED / f"week-{week - 1:02d}" / "facts.json", before / "facts.json")
-    return tmp_path
-
-
-@pytest.fixture(scope="module")
-def week_8(tmp_path_factory):
-    """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
-    repo = _saved_repo(tmp_path_factory.mktemp("repo"), 8)
-    bundle, _ = make_bundle(repo, 2026, 8, news=no_news, config=CONFIG)
-    return bundle
-
-
 @pytest.mark.skipif(not (SAVED / "week-08" / "raw").is_dir(), reason="no saved week 8 data")
 def test_the_impact_fact_gives_the_playoff_odds_before_and_after_the_week(week_8):
     # The saved week 7 odds give Lil Fridge 99 and Maye d'force B with U 49.
@@ -209,7 +184,7 @@ def test_the_build_runs_the_odds_engine_once_per_week(tmp_path, monkeypatch):
         return engine(*args, **kwargs)
 
     monkeypatch.setattr(base, "playoff_odds", counted)
-    make_bundle(_saved_repo(tmp_path, 8), 2026, 8, news=no_news, config=CONFIG)
+    make_bundle(saved_repo(tmp_path, 8), 2026, 8, news=no_news, config=CONFIG)
     assert runs == [8]
 
 

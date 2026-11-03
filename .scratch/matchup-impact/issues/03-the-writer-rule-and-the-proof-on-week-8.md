@@ -10,11 +10,11 @@ Spec: `.scratch/matchup-impact/PRD.md`. Acceptance tests AT-9, AT-10, AT-11, AT-
 
 **Status:** ready-for-agent
 
-- [ ] The writer prompt has the rule. It names the impact fact as the source of an odds number in a matchup blurb, and keeps rule 23 for the other prose blocks.
-- [ ] The rule asks for a different shape in each recap, and for the upset in one sentence only.
-- [ ] The verifier has no new code check. A later ticket adds one only if AT-9 shows a miss.
+- [x] The writer prompt has the rule. It names the impact fact as the source of an odds number in a matchup blurb, and keeps rule 23 for the other prose blocks.
+- [x] The rule asks for a different shape in each recap, and for the upset in one sentence only.
+- [x] The verifier has no new code check. A later ticket adds one only if AT-9 shows a miss.
 - [ ] A build of `2026` week 8 records the 7 blurbs, each sentence with its fact IDs, as the evidence of AT-9 to AT-12 in `EVIDENCE.md`.
 - [ ] `git diff main -- apps/site` is empty, as the evidence of AT-13. Nothing is published.
-- [ ] `make check` passes.
+- [x] `make check` passes.
 
 ## Comments
