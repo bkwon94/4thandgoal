@@ -715,6 +715,18 @@ class DropPlay(BaseModel):
     yardline_100: float | None
 
 
+class InjuryPlay(BaseModel):
+    """The first play of the week where the play by play says a player was injured."""
+    game_id: str
+    # 5 is overtime, as the play by play writes it.
+    quarter: int
+    # The game clock as the play by play writes it, such as "10:04".
+    clock: str
+    # The away and home Sleeper team codes of the game.
+    away: str
+    home: str
+
+
 class NflverseWeek(BaseModel):
     # sources says which of the four files gave data, so a chapter can say what it lacks.
     sources: dict[str, bool]
@@ -735,3 +747,9 @@ class NflverseWeek(BaseModel):
     # The bye week of each NFL team by Sleeper team code. None in an extract with no such field, or when the schedule
     # file is missing or has no game of the season. A team with no clear bye in the file has no entry.
     bye_weeks: dict[str, int] | None = None
+    # The first injury play of the week by Sleeper ID, from the play by play. None in an extract with no such field, or
+    # when the play by play has no row for the week. A player with no injury play has no entry.
+    injury_plays: dict[str, InjuryPlay] | None = None
+    # The Eastern kickoff of each NFL game of week N by Sleeper team code. None in an extract with no such field, or when
+    # the schedule file is missing or gives no kickoff time that week.
+    kickoffs: dict[str, datetime] | None = None
