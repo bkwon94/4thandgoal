@@ -9,7 +9,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/brian.kwon/repos/cornerstone-fantasy-sleeper-weekly-report/bin/cornerstone-build</string>
+		<string>/Users/brian.kwon/repos/cpcfantasyfootball/apps/pipeline/bin/cornerstone-build</string>
 	</array>
 	<key>StartCalendarInterval</key>
 	<dict>
