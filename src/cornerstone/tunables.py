@@ -242,3 +242,7 @@ GRADE_DEPTH_SPARES = 1
 # put that roster at C, so the letters spread A to D across a league and the middle of the league is not a D.
 GRADE_BANDS = (("A", 70), ("B", 55), ("C", 40))
 GRADE_BELOW_BANDS = "D"
+
+# The most awards one player wins in a week. A reader expects the top scorer to be the top scorer, so the cap is
+# not one. Three tiles for one player reads as a bug, so the cap is two.
+AWARDS_PER_PLAYER = 2
