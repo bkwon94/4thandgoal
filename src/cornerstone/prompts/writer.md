@@ -36,3 +36,10 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
 26. In the Next Week chapter, an `NX.shootout.` fact gives an NFL game next week where both teams have a positive pass rate over expected. Mention at most one shootout. Pick the one with the most league starters in it.
 27. Every odds number in prose names its kind in the same sentence. Write "playoff odds" or "bye odds". A number with neither word fails.
 28. In the Game Changer chapter, every sentence is about the game changer or what his points did for his team. Name no other player. Name the opponent team once, for the result.
+29. In a recap chapter, tell how the game was won: the injury, the timing, and the turn. These facts give the story.
+    - A `.turn` fact says the leader before the last slot of games lost, and names the starters of that slot. When the chapter has one, tell the turn.
+    - A `.lead` fact gives the lead after each slot of games, and the count of lead changes. Use it for the timing. Give at most two of its margins.
+    - A `.hurt.` fact gives the quarter and the clock of the play where a starter was injured. It comes from the play by play of the game, so a sentence that cites it may say he was hurt in this game. A `.snaps.` fact gives his snaps.
+    - These facts state no cause. Say the starter was hurt or the lead changed. Do not say it cost, sank, or decided the game unless rule 9 allows it.
+    - The tone rules hold. Make no joke about the injury itself. Roast the manager, the lineup, or the team name.
+    - "Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.

@@ -560,3 +560,17 @@ def test_the_research_call_alone_sends_the_web_search_tool():
     sent.clear()
     claude_call("writer system", "user text", WriterOut, writer=writer)
     assert "tools" not in sent
+
+
+def test_the_recap_prompt_names_the_game_story_facts(story_bundle):
+    sheet = story_bundle.sheet
+    system, user = build_writer_prompt(_chapter(sheet, "recap_3"), sheet, None, prompts_dir=PROMPTS)
+    assert "29. In a recap chapter, tell how the game was won: the injury, the timing, and the turn." in system
+    for marker in ("A `.turn` fact", "A `.lead` fact", "A `.hurt.` fact", "A `.snaps.` fact"):
+        assert marker in system
+    assert "Make no joke about the injury itself." in system
+    assert '"Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.' in system
+    assert f"- M3.turn: {sheet.facts['M3.turn'].text}" in user
+    assert f"- M3.lead: {sheet.facts['M3.lead'].text}" in user
+    _, user = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None, prompts_dir=PROMPTS)
+    assert "- M5.hurt.11635: " in user and "- M5.snaps.11635: " in user

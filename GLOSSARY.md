@@ -48,6 +48,24 @@ The code check does not match the last name of an out-of-scope player when that 
 a scope team name. So a bare "London" passes when London Cooking is in scope.
 The full name "Drake London" still fails.
 
+**Slot**:
+The NFL games of one window of the week, by the Eastern kickoff: Thursday, the early Sunday games, the
+late Sunday games, Sunday night, and Monday. Every day but Sunday is one slot.
+_Avoid_: window, time slot
+
+**Lead by slot**:
+The margin of one matchup after each slot in which one of its starters played, and the count of lead
+changes. The `M<n>.lead` fact gives it.
+
+**Turn**:
+A matchup whose leader before its last slot lost the game. The `M<n>.turn` fact names the starters of
+that last slot and their points.
+_Avoid_: comeback, collapse
+
+**Injury play**:
+The first play of the week where the nflverse play by play says a starter was injured. The
+`M<n>.hurt.<pid>` fact gives its quarter and its clock.
+
 ### The season
 
 **Remaining schedule**:
@@ -120,6 +138,7 @@ _Avoid_: locked, safe
 **Out**:
 A team that cannot reach the wins of the last playoff spot with 2 wins every week left. Use "out" in
 code and "Out" on the page.
+For a player, the page writes "listed Out", the Sleeper injury status, or names the injury.
 _Avoid_: eliminated, dead
 
 ### The page
