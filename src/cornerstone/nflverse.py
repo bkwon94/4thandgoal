@@ -4,6 +4,7 @@ and the ffopportunity expected points.
 A failure of any source never stops a build, so each read returns None for missing data.
 """
 import logging
+import re
 import time
 from collections.abc import Callable, Collection
 from datetime import datetime
@@ -15,7 +16,7 @@ from pydantic import BaseModel
 
 from cornerstone import nflverse_expected, nflverse_players, nflverse_usage
 from cornerstone.files import write_bytes_atomic
-from cornerstone.models import DropPlay, NflverseWeek
+from cornerstone.models import DropPlay, InjuryPlay, NflverseWeek
 from cornerstone.nflverse_rows import NFLVERSE_TEAM, SLEEPER_TEAM, _number, _rows, _sleeper_team, _yardline
 from cornerstone.tunables import USAGE_SAVED_WEEKS
 
@@ -139,6 +140,48 @@ def read_injuries(path: Path, week: int) -> dict[str, dict[int, str]] | None:
         if row["report_status"]:
             injuries.setdefault(row["gsis_id"], {})[int(row["week"])] = row["report_status"]
     return injuries if has_week else None
+
+
+# The play by play names each hurt player in the text of the play, as "BAL-8-L.Jackson was injured during the play".
+# The name has no digit, so a match never runs across the team and jersey tag of another player.
+INJURED = re.compile(r"\b([A-Z]{2,3})-\d+-([A-Za-z.' -]+?) was injured during the play")
+# The ball carriers of a play, as the id column and the name column of each one.
+CARRIER_COLUMNS = (("passer_player_id", "passer_player_name"), ("rusher_player_id", "rusher_player_name"),
+                   ("receiver_player_id", "receiver_player_name"))
+
+
+def read_injury_plays(path: Path, week: int) -> dict[str, InjuryPlay] | None:
+    """The first injury play of the week by gsis_id, for the passers, rushers, and receivers. None when no row.
+
+    The text of the play gives the team and the short name of the hurt player, but no id. The id comes from a
+    play of the week where the same team had that name in a carrier column. A team with two carriers of one short
+    name gives no id for that name, so a wrong player never gets the play.
+    """
+    rows = [row for row in _rows(path) if row["week"] == str(week)]
+    if not rows:
+        return None
+    # A cut file, such as a test fixture, can lack a column, and a short row reads None for each missing cell. Both
+    # read as empty and give no play.
+    ids: dict[tuple[str, str], set[str]] = {}
+    for row in rows:
+        for id_column, name_column in CARRIER_COLUMNS:
+            pid, name = row.get(id_column) or "", row.get(name_column) or ""
+            if pid not in ("", "NA") and name not in ("", "NA"):
+                ids.setdefault((row.get("posteam") or "", name), set()).add(pid)
+    plays: dict[str, InjuryPlay] = {}
+    for row in rows:
+        for team, name in INJURED.findall(row.get("desc") or ""):
+            found = ids.get((team, name), set())
+            if len(found) != 1 or (gsis := next(iter(found))) in plays:
+                continue
+            # A failure of any source never stops a build, so a malformed row is skipped with one log line.
+            try:
+                plays[gsis] = InjuryPlay(quarter=int(row["qtr"]), clock=row["time"],
+                                         away=_sleeper_team(row["away_team"]), home=_sleeper_team(row["home_team"]))
+            except (KeyError, TypeError, ValueError) as error:
+                logger.warning("Injury play of %s in game %s skipped: the row is malformed (%s)", name,
+                               row.get("game_id"), error)
+    return plays
 
 
 def read_schedules(path: Path, season: int) -> dict[str, TeamSchedule] | None:
@@ -287,6 +330,10 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
     bye_weeks = None if team_schedules is None else {
         team: s.bye_week for team, s in team_schedules.items() if s.bye_week is not None
     }
+    # The recap facts read these two to tell how each game was won. A missing file gives None: the fact is absent, the
+    # recap says nothing about it, and the build goes on.
+    injury_plays = read_injury_plays(pbp, week) if pbp else None
+    kickoffs = (read_kickoffs(schedules, season, week) or None) if schedules else None
     ep_path = get(FFOPPORTUNITY_URL)
     expected = (nflverse_expected.read_expected(ep_path, schedules, season, week, scoring, sleeper_of_gsis)
                 if ep_path and schedules and scoring is not None else None)
@@ -304,4 +351,6 @@ def nflverse_week(season: int, week: int, player_ids: list[str], players: dict, 
         drops=None if drops is None else {pid: drops[g] for pid, g in gsis.items() if g in drops},
         injuries=None if injuries is None else {pid: injuries[g] for pid, g in gsis.items() if g in injuries},
         usage=usage, environment=environment, expected=expected, next_games=next_games,
-        bye_weeks=bye_weeks)
+        bye_weeks=bye_weeks, kickoffs=kickoffs,
+        injury_plays=None if injury_plays is None else {
+            pid: injury_plays[g] for pid, g in gsis.items() if g in injury_plays})

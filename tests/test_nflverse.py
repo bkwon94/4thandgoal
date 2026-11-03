@@ -24,6 +24,7 @@ from cornerstone.nflverse import (
     read_games,
     read_id_map,
     read_injuries,
+    read_injury_plays,
     read_kickoffs,
     read_schedules,
 )
@@ -139,6 +140,81 @@ def test_nflverse_week_from_fixtures(nfl_week6):
     assert all(nfl_week6.sources.values())
     assert len(nfl_week6.drops["12501"]) == 3
     assert nfl_week6.gsis["12501"] == "00-0040667"
+    # The fixture play by play has no injury play, and the fixture schedule has no kickoff time.
+    assert nfl_week6.injury_plays == {} and nfl_week6.kickoffs is None
+
+
+PLAY_FIELDS = ("week", "game_id", "qtr", "time", "posteam", "away_team", "home_team", "desc", "passer_player_id",
+               "passer_player_name", "rusher_player_id", "rusher_player_name", "receiver_player_id",
+               "receiver_player_name")
+
+
+def _plays(path, rows):
+    with gzip.open(path, "wt", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=PLAY_FIELDS, restval="")
+        writer.writeheader()
+        writer.writerows(rows)
+    return path
+
+
+def test_read_injury_plays_gives_the_first_injury_play_of_each_carrier(tmp_path):
+    game = {"week": "8", "game_id": "2026_08_BAL_LA", "away_team": "BAL", "home_team": "LA"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        {**game, "qtr": "1", "time": "10:04", "posteam": "BAL", "passer_player_id": "00-1",
+         "passer_player_name": "L.Jackson", "desc": "8-L.Jackson pass incomplete. BAL-8-L.Jackson was injured during "
+         "the play. LA-99-A.Donald was injured during the play."},
+        {**game, "qtr": "3", "time": "01:00", "posteam": "BAL", "rusher_player_id": "00-1",
+         "rusher_player_name": "L.Jackson", "desc": "8-L.Jackson left end. BAL-8-L.Jackson was injured during the play."},
+        # Two Rams carriers share the short name J.Smith, so neither gets the play.
+        {**game, "qtr": "2", "time": "05:00", "posteam": "LA", "rusher_player_id": "00-2",
+         "rusher_player_name": "J.Smith", "desc": "20-J.Smith up the middle. LA-20-J.Smith was injured during the play."},
+        {**game, "qtr": "2", "time": "04:00", "posteam": "LA", "receiver_player_id": "00-3",
+         "receiver_player_name": "J.Smith", "desc": "pass to 11-J.Smith."},
+        {**game, "week": "7", "qtr": "1", "time": "15:00", "posteam": "BAL", "desc": "BAL-1-Z.Flowers was injured during "
+         "the play."},
+    ])
+    plays = read_injury_plays(pbp, 8)
+    # The defender is never a carrier, so he has no id, and the second Jackson play is not the first.
+    assert list(plays) == ["00-1"]
+    play = plays["00-1"]
+    assert (play.quarter, play.clock, play.away, play.home) == (1, "10:04", "BAL", "LAR")
+
+
+def test_read_injury_plays_reads_a_name_with_a_space_or_a_hyphen(tmp_path):
+    game = {"week": "8", "game_id": "2026_08_DET_SEA", "away_team": "DET", "home_team": "SEA", "qtr": "4", "time": "02:00"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        {**game, "posteam": "DET", "receiver_player_id": "00-4", "receiver_player_name": "A.St. Brown",
+         "desc": "pass to 14-A.St. Brown. DET-14-A.St. Brown was injured during the play."},
+        {**game, "posteam": "SEA", "receiver_player_id": "00-5", "receiver_player_name": "J.Smith-Njigba",
+         "desc": "RECOVERED by DET-99-L.Overton at SEA 47. SEA-11-J.Smith-Njigba was injured during the play."},
+    ])
+    assert sorted(read_injury_plays(pbp, 8)) == ["00-4", "00-5"]
+
+
+def test_read_injury_plays_skips_a_malformed_row_with_one_log_line(tmp_path, caplog):
+    game = {"week": "8", "game_id": "2026_08_BAL_BUF", "away_team": "BAL", "home_team": "BUF", "posteam": "BAL"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        # The quarter is NA, so the row is malformed. The next play of the same carrier is the first good one.
+        {**game, "qtr": "NA", "time": "10:04", "passer_player_id": "00-1", "passer_player_name": "L.Jackson",
+         "desc": "BAL-8-L.Jackson was injured during the play."},
+        {**game, "qtr": "3", "time": "01:00", "rusher_player_id": "00-2", "rusher_player_name": "D.Henry",
+         "desc": "BAL-22-D.Henry was injured during the play. BAL-8-L.Jackson was injured during the play."},
+    ])
+    plays = read_injury_plays(pbp, 8)
+    assert sorted(plays) == ["00-1", "00-2"] and plays["00-1"].quarter == 3
+    skipped = [r for r in caplog.records if "malformed" in r.getMessage()]
+    assert len(skipped) == 1 and "L.Jackson" in skipped[0].getMessage()
+
+
+def test_nflverse_week_with_no_play_by_play_and_no_schedule_has_no_injury_plays_and_no_kickoffs(tmp_path):
+    # Every download fails and the cache is empty, so the build goes on with no game story inputs.
+    nfl = nflverse_week(2026, 8, [], {}, tmp_path, fetch=_boom)
+    assert nfl.injury_plays is None and nfl.kickoffs is None
+
+
+def test_read_injury_plays_without_the_week_is_none(tmp_path):
+    pbp = _plays(tmp_path / "pbp.csv.gz", [{"week": "7", "desc": "BAL-8-L.Jackson was injured during the play."}])
+    assert read_injury_plays(pbp, 8) is None
 
 
 @pytest.mark.live

@@ -2,6 +2,10 @@
 Tests for the verifier: the code check, the prompt, and the retry loop.
 Every test injects a fake call, so none of them reach the Claude API.
 """
+from functools import partial
+
+from fakes import FakeWriter
+
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
@@ -18,7 +22,7 @@ from cornerstone.verifier import (
     verify_blurb,
     write_and_verify,
 )
-from cornerstone.writer import RefusalError
+from cornerstone.writer import RefusalError, claude_call
 
 CONFIG = cornerstone_config()
 PROMPTS = CONFIG.prompts_dir
@@ -1105,3 +1109,51 @@ def test_an_odds_number_with_its_kind_passes(fixture_raw_dir, fixture_history_ro
     fid, fact = _open_odds_fact(sheet, ch)
     b = _blurb("rankings", _tagged(f"The playoff odds sit at {fact.numbers[0]}%.", 1, fid))
     assert not any("odds number" in m for m in code_check(b, ch, sheet, prompts_dir=PROMPTS))
+
+
+def _story_recap():
+    return _blurb(
+        "recap_3",
+        _s("Amon-Ra Dawg Your Team led by 12.24 after the early Sunday games, then Monday night flipped it.",
+           "M3.turn", "M3.lead"),
+        _s("Drake Maye put up 23.8 on Monday, and Maye d'force B with U won 113.55 to 104.04.", "M3.turn", "M3.result"),
+        _s("The lead changed hands on Monday night.", "M3.lead"),
+    )
+
+
+def test_the_code_check_accepts_a_recap_that_cites_the_game_story_facts(story_bundle):
+    sheet = story_bundle.sheet
+    assert code_check(_story_recap(), _ch(sheet, "recap_3"), sheet, prompts_dir=PROMPTS) == []
+
+
+def test_the_code_check_accepts_the_clock_of_a_hurt_fact(story_bundle):
+    sheet = story_bundle.sheet
+    blurb = _blurb(
+        "recap_5",
+        _s("Ladd McConkey was hurt with 3:06 left in the 1st quarter.", "M5.hurt.11635"),
+        _s("He played 8 of 68 snaps.", "M5.snaps.11635"),
+        _s("London Cooking cruised anyway.", "M5.result"),
+    )
+    assert code_check(blurb, _ch(sheet, "recap_5"), sheet, prompts_dir=PROMPTS) == []
+
+
+def test_write_and_verify_keeps_a_recap_that_cites_the_game_story_facts(story_bundle):
+    sheet = story_bundle.sheet
+    recap = _story_recap()
+    writer = FakeWriter([WriterOut(sentences=recap.sentences),
+                         VerifyOut(verdicts=[Verdict(index=i, supported=True, reason="ok") for i in range(3)])])
+    blurb, results = write_and_verify(_ch(sheet, "recap_3"), sheet, partial(claude_call, writer=writer),
+                                      prompts_dir=PROMPTS)
+    assert not blurb.fallback and results[0].passed and len(writer.calls) == 2
+
+
+def test_a_recap_that_holds_a_turn_fact_and_does_not_cite_it_fails(story_bundle):
+    sheet = story_bundle.sheet
+    blurb = _blurb(
+        "recap_3",
+        _s("Maye d'force B with U beat Amon-Ra Dawg Your Team 113.55 to 104.04.", "M3.result"),
+        _s("The lead changed hands on Monday night.", "M3.lead"),
+    )
+    assert code_check(blurb, _ch(sheet, "recap_3"), sheet, prompts_dir=PROMPTS) == [
+        "[0] the chapter holds the turn fact M3.turn; cite it and tell the turn"]
+

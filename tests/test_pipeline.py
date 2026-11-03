@@ -972,7 +972,7 @@ def test_a_saved_extract_without_usage_is_fetched_again_and_rewritten(tmp_path, 
     saved = json.loads(path.read_text())
     assert saved["usage"] and saved["expected"] and saved["next_games"] and saved["bye_weeks"]
     assert record.sources["nflverse_stats_player"] is True
-    assert ("week 6 nflverse.json lacks bye_weeks, environment, expected, next_games, usage, "
+    assert ("week 6 nflverse.json lacks bye_weeks, environment, expected, injury_plays, kickoffs, next_games, usage, "
             "so the build fetches the extract again") in caplog.text
 
 

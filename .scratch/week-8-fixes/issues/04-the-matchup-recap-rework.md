@@ -10,11 +10,11 @@ them, as every blurb does.
 
 **Status:** ready-for-agent
 
-- [ ] Add the facts ticket 03 recommends to the matchup fact group, with their sources. Name each fact id.
-- [ ] The recap prompt asks for the game story: the injury, the timing, the turn. It keeps the tone rules.
-- [ ] A test with a fixture matchup that flipped on Monday night shows the fact in the sheet.
-- [ ] A test shows the recap prompt names the new facts.
-- [ ] The verifier accepts a recap that cites the new facts.
-- [ ] `make build WEEK=8` from the saved data. Paste the six recaps in the close comment.
-- [ ] `make golden` ran, and the golden diff is named in the close comment.
-- [ ] `make check` passes.
+- [x] Add the facts ticket 03 recommends to the matchup fact group, with their sources. Name each fact id.
+- [x] The recap prompt asks for the game story: the injury, the timing, the turn. It keeps the tone rules.
+- [x] A test with a fixture matchup that flipped on Monday night shows the fact in the sheet.
+- [x] A test shows the recap prompt names the new facts.
+- [x] The verifier accepts a recap that cites the new facts.
+- [x] `make build WEEK=8` from the saved data. Paste the six recaps in the close comment.
+- [x] `make golden` ran, and the golden diff is named in the close comment.
+- [x] `make check` passes.

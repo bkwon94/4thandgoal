@@ -374,6 +374,7 @@ def test_the_motw_recap_gets_the_note_on_the_headline(fixture_raw_dir):
     sheet = _sheet(fixture_raw_dir)
     _, motw_recap = build_writer_prompt(_chapter(sheet, "recap_4"), sheet, None, prompts_dir=PROMPTS)
     assert MOTW_HEADLINE_NOTE in motw_recap
+    assert "The turn, the lead, and the injury are not the headline. A recap tells them." in motw_recap
 
 
 def test_another_recap_and_the_motw_get_no_note_on_the_headline(fixture_raw_dir):
@@ -560,3 +561,20 @@ def test_the_research_call_alone_sends_the_web_search_tool():
     sent.clear()
     claude_call("writer system", "user text", WriterOut, writer=writer)
     assert "tools" not in sent
+
+
+def test_the_recap_prompt_names_the_game_story_facts(story_bundle):
+    sheet = story_bundle.sheet
+    system, user = build_writer_prompt(_chapter(sheet, "recap_3"), sheet, None, prompts_dir=PROMPTS)
+    assert "29. In a recap chapter, tell how the game was won: the injury, the timing, and the turn." in system
+    for marker in ("A `.turn` fact", "A `.lead` fact", "A `.hurt.` fact", "A `.snaps.` fact"):
+        assert marker in system
+    assert "When the lead changed, cite it for the timing." in system
+    assert "Six recaps of one page must not tell the lead the same way." in system
+    assert "game time" in system and "slot" not in system.split("29. In a recap chapter", 1)[1]
+    assert "Make no joke about the injury itself." in system
+    assert '"Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.' in system
+    assert f"- M3.turn: {sheet.facts['M3.turn'].text}" in user
+    assert f"- M3.lead: {sheet.facts['M3.lead'].text}" in user
+    _, user = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None, prompts_dir=PROMPTS)
+    assert "- M5.hurt.11635: " in user and "- M5.snaps.11635: " in user

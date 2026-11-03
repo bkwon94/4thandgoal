@@ -21,9 +21,11 @@ PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
 # The recap of the Matchup of the Week holds the same facts as that chapter. Each chapter is one call,
 # so the writer cannot see the other blurb, and this note keeps it off the same sentences.
 # The game changer and awards chapters get it too when the Game Changer plays in that matchup.
+# The game story is not the headline, so the note keeps the recap on the turn, the lead, and the injury.
 MOTW_HEADLINE_NOTE = (
     "Note: the Matchup of the Week chapter and its recap already told this game's headline: the score, "
-    "the upset, and the player who won it. Lead with a different fact. Never repeat a sentence from those chapters."
+    "the upset, and the player who won it. Lead with a different fact. Never repeat a sentence from those chapters. "
+    "The turn, the lead, and the injury are not the headline. A recap tells them."
 )
 # The Next Week chapter gets this line when it lists a bye fact, so the writer treats the byes as part of the preview.
 BYES_NOTE = "Note: the byes next week are part of the preview."
