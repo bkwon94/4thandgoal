@@ -1,7 +1,6 @@
 """
-Publish a built week to the public site repo.
-It commits the source repo and copies the week folder and the season file.
-Then it commits and pushes the site repo.
+Publish a built week to the public site in apps/site of the same repo.
+It commits the pipeline data, copies the week folder and the season files, then commits and pushes.
 """
 import logging
 import shutil
@@ -10,7 +9,6 @@ from pathlib import Path
 
 from cornerstone.paths import season_dir, site_week_dir, week_label
 
-SITE_REPO = Path.home() / "repos" / "cpcfantasyfootball"
 SITE_URL = "https://cpcfantasy.com/"
 
 log = logging.getLogger(__name__)
@@ -41,10 +39,24 @@ def _commit_if_staged(cwd: Path, message: str, *paths: str) -> None:
     _git(cwd, "commit", "-m", message, "--", *paths)
 
 
-def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO, push: bool = True) -> str:
+def _repo_root(repo: Path) -> Path:
+    # Why: the pipeline and the site live in one repo, so the site is the root of the pipeline's own
+    # checkout. A fixed path to a second checkout breaks in a worktree and on any other machine.
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"], cwd=repo, check=False, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        raise PublishError(f"{repo} is not in a git checkout: {result.stderr.strip()}")
+    return Path(result.stdout.strip())
+
+
+def run_publish(repo: Path, season: int, week: int, site_repo: Path | None = None, push: bool = True) -> str:
+    """Publish one week. The site repo is the root of the pipeline's checkout, unless a test names another."""
     page = site_week_dir(repo / "site", season, week) / "page.json"
     if not page.exists():
         raise PublishError(f"{page} does not exist. Build the week first.")
+    if site_repo is None:
+        site_repo = _repo_root(repo)
     # Check the site repo before the first commit, so a bad path leaves no half-done publish.
     if not (site_repo / ".git").exists():
         raise PublishError(f"{site_repo} is not a git checkout.")
@@ -53,9 +65,9 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path = SITE_REPO,
     _commit_if_staged(repo, f"Week {week} report", "site", "data")
 
     # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
-    # stay off the public site. The site repo is a Next.js app. It renders the pages and the home
+    # stay off the public site. The site is a Next.js app. It renders the pages and the home
     # page from these folders.
-    # Why: the site app lives in apps/site of the site repo, so its published data is there.
+    # Why: the site app lives in apps/site of the repo, so its published data is there.
     public_dir = site_repo / "apps" / "site" / "public"
     week_path = Path(str(season)) / week_label(week)
     shutil.copytree(

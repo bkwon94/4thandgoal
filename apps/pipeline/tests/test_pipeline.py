@@ -746,6 +746,32 @@ def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, o
     assert not (_git(repo, "ls-tree", "-r", "--name-only", "HEAD").count("notes.txt"))
 
 
+def test_publish_finds_the_site_at_the_root_of_its_own_repo(tmp_path, fixture_raw_dir, offline):
+    # The pipeline sits in apps/pipeline of the one repo, so the publish needs no second checkout.
+    root = tmp_path / "one"
+    repo = root / "apps" / "pipeline"
+    _init(root)
+    repo.mkdir(parents=True)
+    shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, config=CONFIG)
+
+    run_publish(repo, 2026, 6, push=False)
+
+    files = _git(root, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
+    assert "apps/site/public/2026/week-06/page.json" in files
+    assert "apps/pipeline/site/2026/week-06/page.json" in files
+    subjects = _git(root, "log", "--format=%s").splitlines()
+    assert subjects == ["Week 6", "Week 6 report"]
+
+
+def test_publish_outside_a_git_checkout_fails(tmp_path):
+    page = tmp_path / "site" / "2026" / "week-06" / "page.json"
+    page.parent.mkdir(parents=True)
+    page.write_text("{}")
+    with pytest.raises(PublishError, match="git checkout"):
+        run_publish(tmp_path, 2026, 6, push=False)
+
+
 def _fetched(repo, when):
     (week_dir(repo, 2026, 6) / "raw" / "fetched.json").write_text(json.dumps({"transactions": when.isoformat()}))
 
