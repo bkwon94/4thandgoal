@@ -155,3 +155,41 @@ _Avoid_: Snapshot, data file, feed, export
 **Loader**:
 The one build-time reader of a published file. It checks the shape and hands typed data to the app layer. Only the app layer calls a loader.
 _Avoid_: Fetcher, reader, data module
+
+## Workflow
+
+**Map**:
+The optional page that sets the destination of a feature, what is decided, what is not yet specified, and what is out of scope.
+_Avoid_: Roadmap, overview, brief
+
+**Fog**:
+A part of a feature that is not yet specified. It stays on the map until a decision ticket clears it.
+_Avoid_: Unknowns, TBD, open questions
+
+**Decision ticket**:
+A note that records one choice of a feature and how it was reached, by a grill, a research, a prototype, or a spec.
+_Avoid_: ADR, decision log, design note
+
+**Spec**:
+The statement of one feature: what it does and how a reader proves it works.
+_Avoid_: PRD, requirements, design doc
+
+**Spec branch**:
+The branch that holds all the work of one spec. It merges into the record branch as one squashed pull request.
+_Avoid_: Feature branch, topic branch, epic branch
+
+**Ticket branch**:
+The short-lived local branch for one ticket of a spec. It merges into its spec branch.
+_Avoid_: Task branch, sub-branch, work branch
+
+**Record branch**:
+The branch that holds only work that passed its acceptance tests. No agent commits on it, except to publish a week.
+_Avoid_: Trunk, master, default branch, release branch
+
+**Acceptance test**:
+A statement of behavior that a reader checks on the finished work, with evidence, to decide if the spec is met.
+_Avoid_: Test case, QA step, check, criterion
+
+**Verdict**:
+The word PASS, FAIL, or BLOCKED that Brian gives to one acceptance test. Only a verdict counts toward a merge.
+_Avoid_: Result, approval, sign-off, status
