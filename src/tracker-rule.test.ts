@@ -9,7 +9,8 @@ import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { type Offense, report } from "./rule-report";
 
-const ROOT = process.cwd();
+/* The tracker and the state file sit at the repo root, so the rule asks git for the root and not the folder of the app. */
+const ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8", env: cleanGitEnv() }).trim();
 const STATE_FILE = "docs/agents/state.md";
 const TICKET_PATH = /^\.scratch\/([^/]+)\/issues\/([^/]+)\.md$/;
 const CLOSED = new Set(["done", "wontfix"]);

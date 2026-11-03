@@ -5,7 +5,8 @@ repos:
     hooks:
       - id: check-fast
         name: pnpm check:fast
-        entry: pnpm check:fast
+        # The site sits at the root or in apps/site, so the hook runs from the folder that holds it.
+        entry: sh -c 'if [ -d apps/site ]; then cd apps/site; fi && pnpm check:fast'
         language: system
         pass_filenames: false
         always_run: true

@@ -91,8 +91,9 @@ function claudeMdOffenses(paths: string[]): Offense[] {
     }));
 }
 
+/* The pathspec ":/" and --full-name give every tracked file of the repo with its path from the repo root, from any folder. */
 function trackedFiles(): string[] {
-  return execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
+  return execFileSync("git", ["ls-files", "--full-name", "--", ":/"], { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
 }
 
 describe("the readme rule", () => {
