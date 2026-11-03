@@ -180,7 +180,8 @@ def test_the_impact_fact_gives_the_playoff_odds_before_and_after_the_week(week_8
     fridge, maye = (s for s in text.split(". ") if s.startswith(("Lil Fridge", "Maye")))
     for sentence, rid, before in ((fridge, 3, 99), (maye, 9, 49)):
         after = week_8.odds.teams[rid].playoff
-        assert f"saw its playoff odds go from about {before}% to about {after}% this week" in sentence
+        # One "about" in the clause, before the first engine number.
+        assert f"saw its playoff odds go from about {before}% to {after}% this week" in sentence
     # The odds part sits after the place and before the median.
     assert fridge.index("in the standings") < fridge.index("playoff odds") < fridge.index("the median")
 

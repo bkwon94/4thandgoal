@@ -353,16 +353,12 @@ def _odds_clause(before: OddsResult | None, after: OddsResult | None, rid: int, 
     """
     if before is None or after is None or rid not in before.teams or rid not in after.teams:
         return []
-    old, new = _odds_number(before.teams[rid].playoff, n), _odds_number(after.teams[rid].playoff, n)
-    return [f"saw its playoff odds go from {old} to {new} this week"]
-
-
-def _odds_number(playoff: int, n: Nums) -> str:
-    """The playoff odds as the `ODDS.` fact gives them: "about" before an engine number, none before 100 or 0.
-
-    A clinched team shows 100 and a team that is out shows 0. Those are sure, so they take no "about".
-    """
-    return f"{n(playoff)}%" if playoff in (0, 100) else f"about {n(playoff)}%"
+    old, new = before.teams[rid].playoff, after.teams[rid].playoff
+    # Brian chose one "about" per clause, because two read heavy: "from about 99% to 86%".
+    # It goes before the first engine number. A clinched 100 or an out 0 is sure, so it takes none.
+    first = next((i for i, p in enumerate((old, new)) if p not in (0, 100)), None)
+    words = [f"about {n(p)}%" if i == first else f"{n(p)}%" for i, p in enumerate((old, new))]
+    return [f"saw its playoff odds go from {words[0]} to {words[1]} this week"]
 
 
 def _median_clause(c, f, rid: int, n: Nums) -> str:
