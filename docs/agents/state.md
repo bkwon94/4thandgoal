@@ -34,6 +34,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
 | `week-8-fixes` | pipeline | 07 the-readmes-name-the-module-an-agent-needs | | |
 | `win-win` | site | 06 the shared API call hook | none | |
+| `zz-dry-run` | both | 01 the managers file carries the bye week | none | |
 
 ## Notes
 
