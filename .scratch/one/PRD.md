@@ -114,3 +114,4 @@ Our two repos follow part of One. Five gaps remain.
 - The verdict check is new, and it may have gaps in its first run. The first spec after this one is its real test.
 - The PIPE Makefile comment says `.scratch` is untracked by design, but git tracks it. The tracker ticket fixes the comment.
 - Neither prek hook is installed today. The check ticket installs the root hook.
+- Fog for the first map after this spec: a weekly GitHub Action could replace the LaunchAgent. Prior art is commit `7557923` on the pipeline branch `archive/weekly-action`.
