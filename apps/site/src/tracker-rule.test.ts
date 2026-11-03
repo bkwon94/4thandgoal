@@ -1,6 +1,6 @@
 /**
  * Holds docs/agents/state.md to the rule of ADR 0016: one row for each feature with an open ticket, and no other row.
- * An open ticket is a tracked .scratch/<feature>/issues/*.md file whose Status is not done and not wontfix.
+ * An open ticket is a tracked .scratch/<feature>/issues/*.md or .scratch/<feature>/<app>/issues/*.md file whose Status is not done and not wontfix.
  */
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -12,7 +12,8 @@ import { type Offense, report } from "./rule-report";
 /* The tracker and the state file sit at the repo root, so the rule asks git for the root and not the folder of the app. */
 const ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8", env: cleanGitEnv() }).trim();
 const STATE_FILE = "docs/agents/state.md";
-const TICKET_PATH = /^\.scratch\/([^/]+)\/issues\/([^/]+)\.md$/;
+/* A shared feature keeps a site and a pipeline subfolder, so a ticket path may name the app between the feature and issues. */
+const TICKET_PATH = /^\.scratch\/([^/]+)\/(?:(site|pipeline)\/)?issues\/([^/]+)\.md$/;
 const CLOSED = new Set(["done", "wontfix"]);
 
 const RULE = `each feature with an open ticket has one row in ${STATE_FILE}, and no other feature has a row`;
@@ -20,6 +21,12 @@ const ADR = "docs/adr/0016-the-rules-are-checks.md";
 const RULE_ID = "tracker/state-file";
 
 type Ticket = { path: string; source: string };
+
+/* An open ticket of a feature. The app is the subfolder of a shared feature, or null for a feature with no subfolder. */
+type OpenTicket = { feature: string; app: string | null; name: string };
+
+/* A row of the state file: the feature, the App cell, and the line. */
+type Row = { feature: string; app: string; line: number };
 
 /* Under the prek hook, git sets GIT_DIR, GIT_INDEX_FILE, and GIT_WORK_TREE, so git in another folder would read the real repo. */
 function cleanGitEnv(): NodeJS.ProcessEnv {
@@ -47,46 +54,60 @@ function status(source: string): string {
   return match ? match[1].toLowerCase() : "none";
 }
 
-/* Each feature with an open ticket, and the lowest open ticket of it. The paths sort, so the lowest number comes first. */
-function openFeatures(tickets: Ticket[]): Map<string, string> {
-  const open = new Map<string, string>();
+/*
+ * The lowest open ticket of each feature and app. The paths sort, so the lowest number comes first.
+ * A shared feature can have an open ticket in each subfolder, so it can give two entries.
+ */
+function openTickets(tickets: Ticket[]): OpenTicket[] {
+  const open = new Map<string, OpenTicket>();
   for (const { path, source } of [...tickets].sort((a, b) => a.path.localeCompare(b.path))) {
-    const [, feature, name] = path.match(TICKET_PATH) ?? [];
-    if (feature && !CLOSED.has(status(source)) && !open.has(feature)) open.set(feature, name);
+    const [, feature, app, name] = path.match(TICKET_PATH) ?? [];
+    const key = `${feature}/${app ?? ""}`;
+    if (feature && !CLOSED.has(status(source)) && !open.has(key)) open.set(key, { feature, app: app ?? null, name });
   }
-  return open;
+  return [...open.values()];
 }
 
-/* Each table row below the header and the separator, with its line. The first cell is the feature, with its backticks removed. */
-function rows(source: string): { feature: string; line: number }[] {
+/*
+ * A row covers a ticket when it names the feature, and its App names the subfolder of the ticket or is both.
+ * A ticket with no subfolder gives the rule no app, so any row of its feature covers it.
+ */
+function covers(row: Row, ticket: OpenTicket): boolean {
+  return row.feature === ticket.feature && (ticket.app === null || row.app === ticket.app || row.app === "both");
+}
+
+/* Each table row below the header and the separator, with its line. The first cell is the feature and the second is the App, with backticks removed. */
+function rows(source: string): Row[] {
   return source
     .split("\n")
     .map((text, index) => ({ text: text.trim(), line: index + 1 }))
     .filter(({ text }) => text.startsWith("|"))
     .slice(2)
-    .map(({ text, line }) => ({ feature: text.split("|")[1].trim().replace(/`/g, ""), line }));
+    .map(({ text, line }) => {
+      const cells = text.split("|").map((cell) => cell.trim().replace(/`/g, ""));
+      return { feature: cells[1], app: cells[2] ?? "", line };
+    });
 }
 
 /* The rule takes the ticket list and the state file source apart from the disk, so a test can pass its own. */
 function offenses(tickets: Ticket[], stateSource: string): Offense[] {
-  const open = openFeatures(tickets);
+  const open = openTickets(tickets);
   const listed = rows(stateSource);
-  const names = new Set(listed.map(({ feature }) => feature));
   const at = { path: STATE_FILE, ruleId: RULE_ID, rule: RULE, adr: ADR };
-  const missing = [...open]
-    .filter(([feature]) => !names.has(feature))
-    .map(([feature, ticket]) => ({
+  const missing = open
+    .filter((ticket) => !listed.some((row) => covers(row, ticket)))
+    .map(({ feature, app, name }) => ({
       ...at,
       line: 1,
-      what: `${feature} has the open ticket ${ticket}, and the state file has no row for it.`,
-      fix: `add a row to ${STATE_FILE}.`,
+      what: `${feature} has the open ticket ${app ? `${app}/${name}` : name}, and the state file has no row for it.`,
+      fix: app ? `add a row to ${STATE_FILE} with the App ${app}.` : `add a row to ${STATE_FILE}.`,
     }));
   const stale = listed
-    .filter(({ feature }) => !open.has(feature))
-    .map(({ feature, line }) => ({
+    .filter((row) => !open.some((ticket) => covers(row, ticket)))
+    .map(({ feature, app, line }) => ({
       ...at,
       line,
-      what: `The row for ${feature} names a feature with no open ticket.`,
+      what: `The row for ${feature} with the App ${app} names a feature with no open ticket there.`,
       fix: "remove the row, because the feature is done.",
     }));
   return [...missing, ...stale];
@@ -96,13 +117,13 @@ function fakeTicket(path: string, statusLine: string): Ticket {
   return { path, source: `# A ticket\n\n${statusLine}\n` };
 }
 
-const TABLE = "| Feature | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- |\n";
+const TABLE = "| Feature | App | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- | --- |\n";
 
 describe("the tracker rule", () => {
   it("finds the tracked tickets", () => {
     // An empty list would pass with no ticket read.
     const paths = trackedTickets(ROOT).map(({ path }) => path);
-    expect(paths).toContain(".scratch/agent-habits/issues/02-a-state-file-lists-each-open-feature-and-its-next-step.md");
+    expect(paths).toContain(".scratch/agent-habits/site/issues/02-a-state-file-lists-each-open-feature-and-its-next-step.md");
   });
 
   it("finds one row in the state file for each feature with an open ticket, and no other row", () => {
@@ -130,7 +151,7 @@ describe("the tracker rule", () => {
 
   it("finds one offense at the line of a row with no open ticket", () => {
     const tickets = [fakeTicket(".scratch/a/issues/01-x.md", "**Status:** ready-for-agent"), fakeTicket(".scratch/b/issues/01-x.md", "**Status:** done")];
-    const state = `# State\n\n${TABLE}| \`a\` | 01 | none | |\n| \`b\` | 02 | none | |\n`;
+    const state = `# State\n\n${TABLE}| \`a\` | site | 01 | none | |\n| \`b\` | site | 02 | none | |\n`;
     const found = offenses(tickets, state);
     expect(found.map(({ line, ruleId, fix }) => ({ line, ruleId, fix }))).toEqual([
       { line: 6, ruleId: "tracker/state-file", fix: "remove the row, because the feature is done." },
@@ -154,6 +175,32 @@ describe("the tracker rule", () => {
       expect(found.map(({ path, line, ruleId }) => ({ path, line, ruleId }))).toEqual([
         { path: STATE_FILE, line: 1, ruleId: "tracker/state-file" },
       ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("counts a subfolder ticket for its feature and app, so a row of the other app does not cover it", () => {
+    // A shared feature keeps a site and a pipeline subfolder. The row for the site does not cover an open pipeline ticket.
+    const dir = mkdtempSync(join(tmpdir(), "tracker-rule-"));
+    try {
+      const tickets = {
+        ".scratch/waiver/site/issues/01-the-route.md": "**Status:** done",
+        ".scratch/waiver/pipeline/issues/09-usage-floor.md": "**Status:** needs-triage",
+      };
+      for (const [path, statusLine] of Object.entries(tickets)) {
+        mkdirSync(dirname(join(dir, path)), { recursive: true });
+        writeFileSync(join(dir, path), `# A ticket\n\n${statusLine}\n`);
+      }
+      const env = cleanGitEnv();
+      execFileSync("git", ["init", "--quiet"], { cwd: dir, env });
+      execFileSync("git", ["add", "."], { cwd: dir, env });
+      const found = offenses(trackedTickets(dir), `${TABLE}| \`waiver\` | site | 01 | none | |\n`);
+      expect(found.map(({ line, what }) => ({ line, what }))).toEqual([
+        { line: 1, what: "waiver has the open ticket pipeline/09-usage-floor, and the state file has no row for it." },
+        { line: 3, what: "The row for waiver with the App site names a feature with no open ticket there." },
+      ]);
+      expect(offenses(trackedTickets(dir), `${TABLE}| \`waiver\` | pipeline | 09 | none | |\n`)).toEqual([]);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

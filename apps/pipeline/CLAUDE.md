@@ -27,8 +27,8 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 
 ## Where the work sits
 
-`apps/pipeline/docs/agents/state.md` lists each open feature, its next ticket, and its hold. Read it, then the ticket in the
-tracker under `apps/pipeline/.scratch/`.
+`docs/agents/state.md` at the repo root lists each open feature of both apps, its next ticket, and its hold. Read it, then the
+ticket in the root tracker under `.scratch/`.
 
 ## Publish rule
 
@@ -50,12 +50,12 @@ Prose follows Simplified Technical English. The rules are in
 
 ### Issue tracker
 
-Local markdown under `apps/pipeline/.scratch/<feature>/`. See `apps/pipeline/docs/agents/issue-tracker.md`.
+Local markdown under `.scratch/<feature>/` at the repo root. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-The five default names, unchanged. See `apps/pipeline/docs/agents/triage-labels.md`.
+The five default names, unchanged. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root, shared with the site. See `apps/pipeline/docs/agents/domain.md`.
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root, shared with the site. See `docs/agents/domain.md`.
