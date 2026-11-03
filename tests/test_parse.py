@@ -130,3 +130,20 @@ def test_week_without_projections_ahead_parses(fixture_raw_dir):
 def test_roster_positions_are_the_league_slots(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
     assert parse_week(raw).roster_positions == raw.league.roster_positions
+
+
+def test_the_injuries_hold_each_rostered_player_with_an_injury_status(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    rostered = {pid for r in raw.rosters for pid in r.players or []}
+    injuries = parse_week(raw).injuries
+    assert injuries and set(injuries) <= rostered
+    assert all(raw.players[pid]["injury_status"] == status for pid, status in injuries.items())
+
+
+def test_the_free_agents_are_the_projected_players_on_no_roster(fixture_raw_dir):
+    raw = load_raw(fixture_raw_dir)
+    # The recorded projections file holds only rostered players, so the one free agent is the one added here.
+    assert raw.projections_ahead is not None
+    raw.projections_ahead[0].projections["fa1"] = 12.0
+    raw.players["fa1"] = {"position": "QB"}
+    assert parse_week(raw).free_agents == {"fa1": "QB"}
