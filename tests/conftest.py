@@ -14,7 +14,7 @@ from fakes import FakeWriter
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
-from cornerstone.models import ChartValues, NflverseWeek
+from cornerstone.models import ChartValues, InjuryPlay, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
 from cornerstone.provider.raw import RawWeek
@@ -153,3 +153,27 @@ def nfl_week6(fixture_nflverse_dir, fixture_raw_dir, tmp_path) -> NflverseWeek:
     starters = sorted({p for entry in raw.matchups for p in entry.starters or [] if p != "0"})
     return nflverse_week(2026, 6, starters, raw.players, cache, fetch=no_network,
                          scoring=raw.league.scoring_settings)
+
+
+# The week 6 fixture has no kickoff times, so the game story tests set their own. Every team plays the early Sunday
+# games but New England and San Francisco, which play on Monday night. Then matchup 3 flips on Monday: Amon-Ra Dawg
+# Your Team leads by 12.24 after Sunday, and Drake Maye (NE) and the 49ers defense win it for Maye d'force B with U.
+STORY_SUNDAY = datetime(2026, 10, 18, 13, 0, tzinfo=ET)
+STORY_MONDAY = datetime(2026, 10, 19, 20, 15, tzinfo=ET)
+# Ladd McConkey (M5) is listed Out with a concussion in the fixture, so he gets the injury play.
+STORY_PLAY = InjuryPlay(game_id="2026_06_LAC_KC", quarter=1, clock="03:06", away="LAC", home="KC")
+
+
+@pytest.fixture
+def story_nfl(fixture_raw_dir) -> NflverseWeek:
+    """An nflverse week with only the injury play and the kickoffs, the two inputs of the game story facts."""
+    week = parse_week(load_raw(fixture_raw_dir))
+    teams = {line.nfl_team for m in week.matchups for s in (m.a, m.b) for line in s.lines if line.nfl_team}
+    kickoffs = {t: STORY_MONDAY if t in ("NE", "SF") else STORY_SUNDAY for t in teams}
+    return NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, injury_plays={"11635": STORY_PLAY},
+                        kickoffs=kickoffs)
+
+
+@pytest.fixture
+def story_bundle(fixture_raw_dir, story_nfl):
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, config=CONFIG)

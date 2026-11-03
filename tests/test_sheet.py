@@ -1066,3 +1066,47 @@ def test_a_bench_player_who_cannot_play_next_week_is_no_bye_cover(out, fixture_r
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
                      nfl=nfl_week6, snapshot=snap, config=CONFIG)
     assert b.sheet.facts["NX.bye.5.8138.cover"].text == "With James Cook on bye, no bench player can fill his slot."
+
+
+def test_a_matchup_that_flipped_on_monday_night_gets_the_turn_fact(story_bundle):
+    # The story fixture puts NE and SF on Monday night, so matchup 3 flips: see story_nfl in conftest.py.
+    f = story_bundle.sheet.facts["M3.turn"]
+    assert f.text == (
+        "Amon-Ra Dawg Your Team led Maye d'force B with U by 12.24 after the early Sunday games, and Maye d'force B "
+        "with U took the lead on Monday and won. On Monday, Drake Maye scored 23.8 for Maye d'force B with U; "
+        "San Francisco 49ers scored 5.05 for Maye d'force B with U; New England Patriots scored 7.1 for Amon-Ra Dawg "
+        "Your Team."
+    )
+    assert f.players == ["Drake Maye", "San Francisco 49ers", "New England Patriots"]
+    recap = next(c for c in story_bundle.sheet.chapters if c.key == "recap_3")
+    assert "M3.turn" in recap.fact_ids and "M3.lead" in recap.fact_ids
+
+
+def test_the_lead_fact_gives_the_margin_after_each_slot_and_the_lead_changes(story_bundle):
+    facts = story_bundle.sheet.facts
+    assert facts["M3.lead"].text == (
+        "The lead by slot of games: after the early Sunday games, Amon-Ra Dawg Your Team led by 12.24; after Monday, "
+        "Maye d'force B with U led by 9.51. The lead changed 1 time."
+    )
+    assert facts["M5.lead"].text.endswith("The lead never changed.")
+    # Matchup 5 was London Cooking's all week, so its leader before Monday won, and it has no turn.
+    assert "M5.turn" not in facts
+
+
+def test_a_starter_with_no_kickoff_and_points_gives_no_lead_fact(story_bundle):
+    # The fixture players blob has no team for the IND defense (M4), so the slot sums cannot reach the final score.
+    assert "M4.lead" not in story_bundle.sheet.facts and "M4.turn" not in story_bundle.sheet.facts
+
+
+def test_the_hurt_fact_gives_the_quarter_and_the_clock_of_the_injury_play(story_bundle):
+    facts = story_bundle.sheet.facts
+    assert facts["M5.hurt.11635"].text == (
+        "Ladd McConkey was injured on a play in the 1st quarter of LAC at KC, with 3:06 left.")
+    assert facts["M5.snaps.11635"].text == "Ladd McConkey played 8 of 68 offensive snaps for LAC."
+    assert facts["M5.hurt.11635"].numbers == ["1", "3", "06"]
+
+
+def test_a_week_with_no_play_by_play_and_no_kickoffs_has_no_hurt_lead_or_turn_fact(bundle):
+    # With no nflverse week, these facts are absent and the build goes on. The snaps come from Sleeper, so they stay.
+    assert not [fid for fid in bundle.sheet.facts if ".hurt." in fid or fid.endswith((".lead", ".turn"))]
+    assert "M5.snaps.11635" in bundle.sheet.facts

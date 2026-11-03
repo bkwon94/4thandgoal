@@ -3634,6 +3634,48 @@
           "Romeo Doubs"
         ]
       },
+      "M1.snaps.2133": {
+        "id": "M1.snaps.2133",
+        "text": "Davante Adams played 43 of 58 offensive snaps for LAR.",
+        "numbers": [
+          "43",
+          "58"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Davante Adams"
+        ]
+      },
+      "M1.snaps.2216": {
+        "id": "M1.snaps.2216",
+        "text": "Mike Evans played 25 of 62 offensive snaps for SF.",
+        "numbers": [
+          "25",
+          "62"
+        ],
+        "teams": [
+          "Brock ‘N’ Roll"
+        ],
+        "players": [
+          "Mike Evans"
+        ]
+      },
+      "M1.snaps.8121": {
+        "id": "M1.snaps.8121",
+        "text": "Romeo Doubs played 2 of 68 offensive snaps for NE.",
+        "numbers": [
+          "2",
+          "68"
+        ],
+        "teams": [
+          "Lil Fridge"
+        ],
+        "players": [
+          "Romeo Doubs"
+        ]
+      },
       "M1.records": {
         "id": "M1.records",
         "text": "Brock ‘N’ Roll is now 6-6 (6th). Lil Fridge is now 10-2 (1st).",
@@ -4047,6 +4089,20 @@
         "id": "M2.inj.5859",
         "text": "A.J. Brown is now listed Questionable (Ankle) on Sleeper as of the Tuesday after this week's games. The status may have come from this game.",
         "numbers": [],
+        "teams": [
+          "Unsolicited Dak Picks"
+        ],
+        "players": [
+          "A.J. Brown"
+        ]
+      },
+      "M2.snaps.5859": {
+        "id": "M2.snaps.5859",
+        "text": "A.J. Brown played 52 of 68 offensive snaps for NE.",
+        "numbers": [
+          "52",
+          "68"
+        ],
         "teams": [
           "Unsolicited Dak Picks"
         ],
@@ -4673,6 +4729,34 @@
         "id": "M3.inj.10236",
         "text": "Dalton Kincaid is now listed Questionable (Ribs) on Sleeper as of the Tuesday after this week's games. The status may have come from this game.",
         "numbers": [],
+        "teams": [
+          "Amon-Ra Dawg Your Team"
+        ],
+        "players": [
+          "Dalton Kincaid"
+        ]
+      },
+      "M3.snaps.7526": {
+        "id": "M3.snaps.7526",
+        "text": "Jaylen Waddle played 39 of 60 offensive snaps for DEN.",
+        "numbers": [
+          "39",
+          "60"
+        ],
+        "teams": [
+          "Maye d'force B with U"
+        ],
+        "players": [
+          "Jaylen Waddle"
+        ]
+      },
+      "M3.snaps.10236": {
+        "id": "M3.snaps.10236",
+        "text": "Dalton Kincaid played 49 of 68 offensive snaps for BUF.",
+        "numbers": [
+          "49",
+          "68"
+        ],
         "teams": [
           "Amon-Ra Dawg Your Team"
         ],
@@ -5862,6 +5946,34 @@
         "id": "M5.inj.5927",
         "text": "Terry McLaurin is now listed Out (Knee) on Sleeper as of the Tuesday after this week's games. The status may have come from this game.",
         "numbers": [],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Terry McLaurin"
+        ]
+      },
+      "M5.snaps.11635": {
+        "id": "M5.snaps.11635",
+        "text": "Ladd McConkey played 8 of 68 offensive snaps for LAC.",
+        "numbers": [
+          "8",
+          "68"
+        ],
+        "teams": [
+          "To Infinity and Bijan"
+        ],
+        "players": [
+          "Ladd McConkey"
+        ]
+      },
+      "M5.snaps.5927": {
+        "id": "M5.snaps.5927",
+        "text": "Terry McLaurin played 7 of 67 offensive snaps for WAS.",
+        "numbers": [
+          "7",
+          "67"
+        ],
         "teams": [
           "To Infinity and Bijan"
         ],
@@ -12004,6 +12116,9 @@
           "M1.inj.2133",
           "M1.inj.2216",
           "M1.inj.8121",
+          "M1.snaps.2133",
+          "M1.snaps.2216",
+          "M1.snaps.8121",
           "M1.records",
           "S.6",
           "S.1",
@@ -12086,6 +12201,7 @@
           "M2.move.13279",
           "M2.move.8228",
           "M2.inj.5859",
+          "M2.snaps.5859",
           "M2.upset",
           "M2.records",
           "S.7",
@@ -12180,6 +12296,8 @@
           "M3.move.11435",
           "M3.inj.7526",
           "M3.inj.10236",
+          "M3.snaps.7526",
+          "M3.snaps.10236",
           "M3.records",
           "S.4",
           "S.9",
@@ -12375,6 +12493,8 @@
           "M5.move.5927",
           "M5.inj.11635",
           "M5.inj.5927",
+          "M5.snaps.11635",
+          "M5.snaps.5927",
           "M5.records",
           "S.2",
           "S.11",
