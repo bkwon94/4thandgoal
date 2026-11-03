@@ -1,0 +1,2 @@
+$ grep -n 'verdict' apps/pipeline/README.md
+5:A spec PR merges only when the check `verdict` passes (ADR 0020). (dry run)
