@@ -1,6 +1,7 @@
 """
 Shared pytest fixtures for the Cornerstone Weekly tests.
-They give tests the path to the recorded Sleeper data.
+They give tests the path to the recorded Sleeper data and the saved week data.
+The `week_8` fixture builds the bundle of week 8 from them.
 """
 import json
 import re
