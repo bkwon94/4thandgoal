@@ -578,3 +578,28 @@ def test_the_recap_prompt_names_the_game_story_facts(story_bundle):
     assert f"- M3.lead: {sheet.facts['M3.lead'].text}" in user
     _, user = build_writer_prompt(_chapter(sheet, "recap_5"), sheet, None, prompts_dir=PROMPTS)
     assert "- M5.hurt.11635: " in user and "- M5.snaps.11635: " in user
+
+
+def test_writer_asks_for_one_concrete_detail_and_allows_a_light_joke(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
+    assert ("30. Give every blurb one concrete detail from its facts: "
+            "the number, the player, or the turn that made the chapter.") in system
+    assert "- A light joke is fine where a fact earns it, for a winner too. Not every joke is a roast." in system
+
+
+def test_the_detail_rule_keeps_the_word_bans_and_the_number_rules(fixture_raw_dir):
+    # The looser voice of rule 30 must not cost a ban or a number rule, so each one is asserted word for word.
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
+    assert "Never write these words: best, star, carried, hero, MVP, clutch, exploded, cooked, WOPR." in system
+    assert ("Never write these phrases: the entire point, one of the problems, a lot to hang on, "
+            "a polite way to say, expected points.") in system
+    assert ("3. Use only numbers that appear in the facts you cite. Never invent a number. "
+            "Never compute a new one.") in system
+    assert "16. Write every number as digits, even a small count such as 2 or 3." in system
+    assert '17. Never state a count of players, adds, or teams, such as "2 recent adds".' in system
+    assert "- Never put more than two numbers in a sentence." in system
+    assert '"Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.' in system
+    rule_30 = system.split("30. Give every blurb", 1)[1]
+    assert "The word bans, the number rules, and rule 11 still hold." in rule_30
