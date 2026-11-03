@@ -10,7 +10,7 @@ keeps it true.
 | `analyzer-multi-team` | 10 the headshot strip gap | none | |
 | `manager-pages` | 01 the past week keeps every rostered player | none | |
 | `modular` | 12 the fixtures carry every as-of key | none | |
-| `one` | 05 one record set | none | 06 and 07 can start |
+| `one` | 06 one tracker | none | 07 runs beside 06 |
 | `next-week-byes` | 01 byes on the next-week games | the pipeline tracker | |
 | `rankings` | 01 the reader and the route | none | |
 | `site-foundation` | 01 the tiers and the page column | none | |
