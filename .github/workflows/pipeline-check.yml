@@ -1,10 +1,11 @@
-# The check of every push: it runs "make check", which runs lint, typecheck, and all the tests.
-# The hook runs only the fast subset, so this job runs the full set on each branch. See docs/adr/0009-the-rules-are-checks.md.
-# A green check of a push to main deploys the API to Fly. See docs/adr/0011-a-deploy-of-the-api-runs-on-every-green-main-push.md.
-name: Check
+# The check of the pipeline in apps/pipeline on every push and PR: it runs "make check", which runs lint, typecheck, and all the tests.
+# The hook runs only the fast subset, so this job runs the full set on each branch. See apps/pipeline/docs/adr/0009-the-rules-are-checks.md.
+# A green check of a push to main deploys the API to Fly. See apps/pipeline/docs/adr/0011-a-deploy-of-the-api-runs-on-every-green-main-push.md.
+name: Pipeline check
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 # Each job only reads the repo, so the token gets no write scope.
@@ -15,9 +16,18 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The pipeline lives in apps/pipeline, so each run step starts there.
+    defaults:
+      run:
+        working-directory: apps/pipeline
     steps:
       - uses: actions/checkout@v4
+      # uv reads the Python version from apps/pipeline/.python-version, and the cache keys on the pipeline lock file.
       - uses: astral-sh/setup-uv@v6
+        with:
+          working-directory: apps/pipeline
+          enable-cache: true
+          cache-dependency-glob: apps/pipeline/uv.lock
       - name: Install the dependencies
         run: uv sync --locked
       - name: Run the check
@@ -33,6 +43,10 @@ jobs:
     concurrency:
       group: fly-deploy
       cancel-in-progress: false
+    # fly.toml and the Dockerfile sit in apps/pipeline, and flyctl uses the current folder as the build context.
+    defaults:
+      run:
+        working-directory: apps/pipeline
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@v1

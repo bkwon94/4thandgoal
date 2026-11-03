@@ -1,5 +1,6 @@
 # The prek hook config of the repo. Install it one time per clone with "prek install".
-# The hook runs "pnpm check:fast" of the site in apps/site before each commit. CI runs the full "pnpm check".
+# The hook runs the fast check of each app before each commit: "pnpm check:fast" of the site, then "make check-fast" of the pipeline.
+# CI runs the full checks.
 repos:
   - repo: local
     hooks:
@@ -7,6 +8,13 @@ repos:
         name: pnpm check:fast
         # pnpm runs the script from apps/site, the folder of the site package.json.
         entry: pnpm --dir apps/site check:fast
+        language: system
+        pass_filenames: false
+        always_run: true
+      # The pipeline subset must stay under 30 seconds. "uv run" syncs the environment itself, so the hook installs nothing.
+      - id: pipeline-check-fast
+        name: make check-fast (pipeline)
+        entry: make -C apps/pipeline check-fast
         language: system
         pass_filenames: false
         always_run: true
