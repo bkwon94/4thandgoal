@@ -1,0 +1,17 @@
+# 04 — Team EPA and pass rate over expected
+
+Spec: `.scratch/nflverse/PRD.md`. Research: `.scratch/nflverse/research.md`, question 3.
+
+**What to build:** The team week carries EPA per play and pass rate over expected per game, from the play by
+play we already hold. Both sums read pass and run plays only, with two-point tries left out, where both
+columns are always present. No new download.
+
+**Blocked by:** 01 The target count drops two-point tries.
+
+**Status:** done 2026-10-24
+
+- [x] The team week has the EPA sum and the pass rate over expected sum, and the environment reader gives EPA per play and pass rate over expected per team per week.
+- [x] A two-point try, a kneel, a spike, and a special teams play add nothing to either sum.
+- [x] A two-point try also adds nothing to the team week's plays, passes, or rushes, since it is not a down. The usage reader already skips it, and the environment reader must agree.
+- [x] A test on the play by play fixture pins one team week by hand.
+- [x] The existing environment tests pass unchanged.
