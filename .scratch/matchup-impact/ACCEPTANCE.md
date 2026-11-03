@@ -13,7 +13,7 @@ App: pipeline
 Stories: 1, 4, 8, 11, 19, 24, 25
 Given: `2026` week 8. Lil Fridge lost to Maye d'force B with U 80.11 to 121.16. Its week 7 playoff odds were 99%.
 When: `make -C apps/pipeline build WEEK=8`
-Then: `M1.impact` says Lil Fridge fell from 1st to 2nd in the standings, its playoff odds went from 99% to its week 8 playoff odds this week, and it missed the median and went 0-2 this week.
+Then: `M1.impact` says Lil Fridge fell from 1st to 2nd in the standings, saw its playoff odds go from 99% to its week 8 playoff odds this week, and missed the median to go 0-2 this week.
 Evidence: the command output and the text of `M1.impact` in `data/2026/week-08/facts.json`, beside `odds.teams.3.playoff`.
 
 AT-2: The impact fact of a winner who held its place
@@ -21,7 +21,7 @@ App: pipeline
 Stories: 5, 8, 11, 19
 Given: `2026` week 8. Maye d'force B with U beat Lil Fridge. Its week 7 playoff odds were 49%.
 When: `make -C apps/pipeline build WEEK=8`
-Then: `M1.impact` says Maye d'force B with U stayed 5th in the standings, its playoff odds went from 49% to its week 8 playoff odds this week, and it beat the median and went 2-0 this week.
+Then: `M1.impact` says Maye d'force B with U stayed 5th in the standings, saw its playoff odds go from 49% to its week 8 playoff odds this week, and beat the median to go 2-0 this week.
 Evidence: the command output and the text of `M1.impact` in `data/2026/week-08/facts.json`, beside `odds.teams.9.playoff`.
 
 AT-3: The impact fact of a climb
@@ -148,4 +148,4 @@ Out of scope "Any change to the site": AT-13
 
 ## Revisions
 
-None yet.
+- 2026-11-03: Brian changed the Then lines of AT-1 and AT-2 to the words of the built fact: "saw its playoff odds go from" and "the median to go". The meaning of each test is the same.
