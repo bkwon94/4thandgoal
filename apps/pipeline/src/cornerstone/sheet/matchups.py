@@ -6,7 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from cornerstone.config import LeagueConfig
-from cornerstone.facts_league import STREAK_ON_THE_LINE, _streak
+from cornerstone.facts_league import STREAK_ON_THE_LINE, streak
 from cornerstone.models import (
     Fact,
     OddsResult,
@@ -15,7 +15,7 @@ from cornerstone.models import (
     sub,
 )
 from cornerstone.numbers import r2
-from cornerstone.odds import _status
+from cornerstone.odds import roster_status
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
 from cornerstone.standings_table import season_records
 
@@ -320,9 +320,9 @@ def _first_statuses(c) -> dict[int, OddsStatus]:
     now, before = season_records(h, week), season_records(h, week - 1)
     out = {}
     for rid in now:
-        status = _status(rid, now, left, spots)
+        status = roster_status(rid, now, left, spots)
         # A roster with no record before this week has no earlier status.
-        earlier = _status(rid, before, left + 1, spots) if len(before) == len(now) else "open"
+        earlier = roster_status(rid, before, left + 1, spots) if len(before) == len(now) else "open"
         if status != "open" and status != earlier:
             out[rid] = status
     return out
@@ -378,7 +378,7 @@ def _streak_clause(c, rid: int, n: Nums) -> list[str]:
     h = c.history
     if h is None or not h.complete():
         return []
-    now, before = _streak(h, rid, c.week.week), _streak(h, rid, c.week.week - 1)
+    now, before = streak(h, rid, c.week.week), streak(h, rid, c.week.week - 1)
     if abs(now) >= STREAK_ON_THE_LINE:
         return [f"has now {'won' if now > 0 else 'lost'} {n(abs(now))} straight"]
     # A streak ends when the sign of the run changes, or when a tie sets it to 0.

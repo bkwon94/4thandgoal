@@ -281,7 +281,7 @@ def _storylines(week: Week, a: Standing, b: Standing, history: History | None) -
     if history is not None and history.complete():
         for side in (a, b):
             # The streak reads head-to-head games only, so the median game never counts.
-            run = _streak(history, side.roster_id, week.week)
+            run = streak(history, side.roster_id, week.week)
             if abs(run) >= STREAK_ON_THE_LINE:
                 out.append(_story("streak", roster_id=side.roster_id, length=run))
         met = _first_meeting(history, a.roster_id, b.roster_id, week.week)
@@ -581,13 +581,13 @@ def _full_season_history(history: History, through: int) -> list[SeasonHistory]:
                 new_low=all(now < p for p in earlier),
                 average=r2(float(sum(points) / len(points))),
                 trend=r2(float(sum(recent) / len(recent))),
-                streak=_streak(history, rid, through),
+                streak=streak(history, rid, through),
             )
         )
     return out
 
 
-def _streak(history: History, roster_id: int, through: int) -> int:
+def streak(history: History, roster_id: int, through: int) -> int:
     """Wins (positive) or losses (negative) in a row, newest week back. Head-to-head only."""
     run = 0
     for number in range(through, 0, -1):
