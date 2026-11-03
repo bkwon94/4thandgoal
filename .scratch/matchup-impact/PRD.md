@@ -5,7 +5,7 @@ Date: 2026-11-03
 Apps: pipeline. The pipeline adds the impact fact and a writer rule. The site shows the blurb text as it is, so the site does not change.
 Spec branch: `matchup-impact`.
 Source: the grill session of 2026-11-03. No map and no decision tickets, because the grill left no fog.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 

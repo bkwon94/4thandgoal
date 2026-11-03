@@ -14,6 +14,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `agent-habits` | site | 03 close the site tickets whose merge main proves | none | |
 | `analyzer-multi-team` | site | 10 the headshot strip gap | none | |
 | `known-games` | pipeline | 08 the-site-renders-the-known-games-line | | |
+| `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `modular` | site | 12 the fixtures carry every as-of key | none | |
