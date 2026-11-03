@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Headless launchd wrapper that runs `cornerstone build` once and logs the result.
+# It notifies Brian when the build fails. It does not retry.
+
+set -euo pipefail
+
+# Notify on any non-zero exit, so a failure before the build, such as a bad
+# ~/.secrets or a missing repo, also reaches Brian.
+notify_on_failure() {
+  local status=$?
+  if [[ "$status" -ne 0 ]]; then
+    osascript -e 'display notification "Cornerstone build failed - check build.log" with title "Cornerstone Weekly"' || true
+  fi
+}
+trap notify_on_failure EXIT
+
+# launchd runs jobs with a minimal PATH that does not include user-installed
+# binaries, so uv (installed under ~/.local/bin or Homebrew) would not resolve.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+# ~/.secrets exports ANTHROPIC_API_KEY, which launchd does not provide.
+if [[ -f "$HOME/.secrets" ]]; then
+  # shellcheck source=/dev/null
+  source "$HOME/.secrets"
+fi
+
+LOG_DIR="$HOME/Library/Logs/cornerstone-weekly"
+LOG_FILE="$LOG_DIR/build.log"
+mkdir -p "$LOG_DIR"
+
+# Rotate the log once it crosses 5 MB so it doesn't grow unbounded across
+# months of runs; the previous file is kept as a single ${LOG_FILE}.old
+# generation (any older .old is overwritten).
+if [[ -f "$LOG_FILE" ]] && [[ "$(stat -f%z "$LOG_FILE")" -gt 5242880 ]]; then
+  mv -f "$LOG_FILE" "${LOG_FILE}.old"
+fi
+
+log() {
+  # Every line gets its own timestamp so failures can be correlated with
+  # launchd's own scheduling without cross-referencing a separate log.
+  echo "[$(date '+%Y-%m-%d %H:%M:%S %Z')] $*" >>"$LOG_FILE"
+}
+
+log "start"
+
+# The cd comes after the log setup, so a missing repo leaves a line in build.log.
+# The pipeline lives in apps/pipeline of the one repo, so uv finds its project and venv there.
+REPO_DIR="$HOME/repos/cpcfantasyfootball/apps/pipeline"
+cd "$REPO_DIR" || { log "cannot cd to $REPO_DIR"; exit 1; }
+
+# set +e so a failed build reaches the exit-code handling below instead of
+# aborting the script. The job does not retry: Brian decides what to do.
+set +e
+uv run cornerstone build >>"$LOG_FILE" 2>&1
+build_exit=$?
+set -e
+
+log "end (exit ${build_exit})"
+
+# The EXIT trap sends the failure notification.
+exit "$build_exit"

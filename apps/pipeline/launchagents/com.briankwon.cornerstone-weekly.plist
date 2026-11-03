@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Launchd job that runs the Cornerstone Weekly build every Tuesday at 8:00. -->
+<!-- It runs bin/cornerstone-build, which logs to ~/Library/Logs/cornerstone-weekly. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.briankwon.cornerstone-weekly</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>/Users/brian.kwon/repos/cpcfantasyfootball/apps/pipeline/bin/cornerstone-build</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Weekday</key>
+		<integer>2</integer>
+		<key>Hour</key>
+		<integer>8</integer>
+		<key>Minute</key>
+		<integer>0</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/Users/brian.kwon/Library/Logs/cornerstone-weekly/build.launchd.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/brian.kwon/Library/Logs/cornerstone-weekly/build.launchd.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/brian.kwon/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+	</dict>
+	<key>RunAtLoad</key>
+	<false/>
+</dict>
+</plist>

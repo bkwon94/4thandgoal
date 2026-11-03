@@ -13,7 +13,7 @@ install: ## Install the dependencies from the lockfile
 dev: ## Start the dev server
 	pnpm dev
 
-# Local test of the analyzer against the API on this machine. First run "make api" in the pipeline repo,
+# Local test of the analyzer against the API on this machine. First run "make -C ../pipeline api" from apps/site,
 # which serves port 8080 with the passphrase "localtest". Then run this, open the analyzer, and enter that passphrase.
 dev-local: ## Start the dev server against the local API on port 8080
 	NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm dev
@@ -31,7 +31,7 @@ typecheck: ## Check the types
 check: ## Run typecheck, test, build, and the export check
 	pnpm check
 
-# The API must run on port 8080 from the pipeline repo.
+# The API must run on port 8080 from apps/pipeline. Start it with "make -C ../pipeline api".
 serve: ## Build against the local API and serve out/ on port 3000
 	NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 	cd out && python3 -m http.server 3000

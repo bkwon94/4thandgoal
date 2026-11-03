@@ -1,0 +1,648 @@
+{
+  "motw": {
+    "chapter": "motw",
+    "sentences": [
+      {
+        "text": "Return of T Mac knocked off first-place Lil Fridge 101.61 to 89.77 in an upset.",
+        "fact_ids": [
+          "M1.result",
+          "M1.upset"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The league leaders left Caleb Williams and his 22.12 on the bench to start Bryce Young and his 7.42, a swap that would have flipped the result.",
+        "fact_ids": [
+          "M1.regret.11560"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Brutal lineup call.",
+        "fact_ids": [],
+        "roster_id": null
+      },
+      {
+        "text": "On the winning side, Bijan Robinson, a recent trade add, managed 14.7 on a 21.8 projection and still outscored the margin on his own.",
+        "fact_ids": [
+          "M1.result",
+          "M1.move.9509",
+          "M1.swing.9509"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Courtland Sutton, the new pickup for the leaders, added 6, and Christian McCaffrey, who is now listed Questionable, scored 19.",
+        "fact_ids": [
+          "M1.move.5045",
+          "M1.inj.4034",
+          "M1.starter.3.4034"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The winners have now taken 4 straight and sit at 7-7.",
+        "fact_ids": [
+          "H.8.streak",
+          "M1.records"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 2,
+    "fallback": false
+  },
+  "game_changer": {
+    "chapter": "game_changer",
+    "sentences": [
+      {
+        "text": "Caleb Douglas, the new pickup, scored 20 on a 6.25 projection for Unsolicited Dak Picks.",
+        "fact_ids": [
+          "AW.game_changer",
+          "M3.move.13296"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "That was enough to beat behold the lamb by 14.47 in an upset, from 10th place no less.",
+        "fact_ids": [
+          "M3.result",
+          "M3.upset",
+          "M3.swing.13296"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Without Douglas, that is a loss, since he outscored the margin on his own.",
+        "fact_ids": [
+          "M3.swing.13296"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "He ranked 7th among started WRs this week, straight off a free agent add.",
+        "fact_ids": [
+          "RANK.13296",
+          "M3.move.13296"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Great week to check the wire.",
+        "fact_ids": [],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "awards": {
+    "chapter": "awards",
+    "sentences": [
+      {
+        "text": "Tony Pollard took Top Scorer with 35, a recent add from a week 6 trade by Amon-Ra Dawg Your Team.",
+        "fact_ids": [
+          "AW.top_scorer",
+          "W.adds"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Unsolicited Dak Picks left Dak Prescott's 23.28 on the bench and still won, with new pickup Caleb Douglas taking Game Changer on 20 points.",
+        "fact_ids": [
+          "AW.mvb",
+          "AW.game_changer",
+          "M3.result",
+          "W.adds"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "London Cooking got 1.6 from Nico Collins on a 14.46 projection, good for Underperformer.",
+        "fact_ids": [
+          "AW.underperformer"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Served it raw.",
+        "fact_ids": [],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "position_leaders": {
+    "chapter": "position_leaders",
+    "sentences": [
+      {
+        "text": "Tony Pollard led every started back with 35 for Amon-Ra Dawg Your Team, on 86 percent of his team's carries.",
+        "fact_ids": [
+          "LEAD.RB.1",
+          "LEAD.RB.1.volume"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Jaxon Smith-Njigba topped the receivers for Lil Fridge, and he got there on the biggest share of his team's targets and air yards among started WRs.",
+        "fact_ids": [
+          "LEAD.WR.1",
+          "LEAD.WR.1.volume"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Joe Burrow led the quarterbacks at 28.88 and the Vikings led the defenses, both for All You Need Is Love, whose Colston Loveland chipped in from the tight end spot like the name demanded.",
+        "fact_ids": [
+          "LEAD.QB.1",
+          "LEAD.DEF.1",
+          "LEAD.TE.2"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_1": {
+    "chapter": "recap_1",
+    "sentences": [
+      {
+        "text": "Lil Fridge benched Caleb Williams to start Bryce Young, and that one lineup call alone would have flipped the result.",
+        "fact_ids": [
+          "M1.regret.11560"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The upset went through anyway, with recent add Bijan Robinson posting 14.7 for Return of T Mac and outscoring the margin on his own.",
+        "fact_ids": [
+          "M1.result",
+          "M1.upset",
+          "M1.move.9509",
+          "M1.swing.9509"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "On the losing side, free agent add Courtland Sutton managed 6, and Christian McCaffrey is now listed Questionable.",
+        "fact_ids": [
+          "M1.result",
+          "M1.move.5045",
+          "M1.inj.4034"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_2": {
+    "chapter": "recap_2",
+    "sentences": [
+      {
+        "text": "Brock ‘N’ Roll edged Maye d'force B with U 85.87 to 81.19 in an upset, a race to the bottom where both sides posted a season low.",
+        "fact_ids": [
+          "M2.result",
+          "M2.upset",
+          "H.1.high",
+          "H.9.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The new pickups Tyler Allgeier and Chris Godwin Jr. chipped in 6.4 and 4.7, while the freshly added Jets defense somehow went negative.",
+        "fact_ids": [
+          "M2.move.8132",
+          "M2.move.4037",
+          "M2.move.NYJ"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Jalen Coker and Jahmyr Gibbs blew it for the losing side, and Jaylen Waddle is now listed Questionable.",
+        "fact_ids": [
+          "M2.result",
+          "M2.driver.11646",
+          "M2.driver.9221",
+          "M2.inj.7526"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 2,
+    "fallback": false
+  },
+  "recap_3": {
+    "chapter": "recap_3",
+    "sentences": [
+      {
+        "text": "Unsolicited Dak Picks knocked off behold the lamb in an upset, so everyone beheld the lamb losing.",
+        "fact_ids": [
+          "M3.result",
+          "M3.upset"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "New pickup Caleb Douglas outscored the margin on his own with 20, and trade add Josh Jacobs chipped in 17.6.",
+        "fact_ids": [
+          "M3.move.13296",
+          "M3.swing.13296",
+          "M3.move.5850",
+          "M3.swing.5850"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The losing side's free agent adds, Kyler Murray and the Browns defense, both finished under projection at 13.9 and 6.35, and Saquon Barkley is now listed Questionable.",
+        "fact_ids": [
+          "M3.move.5849",
+          "M3.move.CLE",
+          "M3.inj.4866"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_4": {
+    "chapter": "recap_4",
+    "sentences": [
+      {
+        "text": "Amon-Ra Dawg Your Team walked in 9th and still hung a season-high 148.13 on London Cooking in an upset.",
+        "fact_ids": [
+          "M4.result",
+          "M4.upset",
+          "H.12.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Tony Pollard, a recent add by trade, dropped 35 on his own, while Nico Collins, the trade pickup on the losing side, answered with 1.6.",
+        "fact_ids": [
+          "M4.move.5967",
+          "M4.move.7569",
+          "M4.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Woody Marks, Drake London and Amon-Ra St. Brown are all now listed Questionable, so both sides have lineup homework this week.",
+        "fact_ids": [
+          "M4.inj.12474",
+          "M4.inj.8112",
+          "M4.inj.7547"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_5": {
+    "chapter": "recap_5",
+    "sentences": [
+      {
+        "text": "All You Need Is Love toppled Bo Girds 121.63 to 110.27 in an upset, and that winning total is a season high.",
+        "fact_ids": [
+          "M5.result",
+          "M5.upset",
+          "H.2.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The new pickup Devaughn Vele gave the losing side 13.9, while their Houston Texans defense chipped in a heroic-free 0.05.",
+        "fact_ids": [
+          "M5.move.11834",
+          "M5.starter.6.HOU",
+          "M5.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Aaron Jones Sr. is now listed Questionable, a backfield question for the winners to answer before next week.",
+        "fact_ids": [
+          "M5.inj.4199"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_6": {
+    "chapter": "recap_6",
+    "sentences": [
+      {
+        "text": "Pukancun on 3 beat To Infinity and Bijan 122.5 to 106.32, a margin of 16.18.",
+        "fact_ids": [
+          "M6.result"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 0,
+    "fallback": true
+  },
+  "median": {
+    "chapter": "median",
+    "sentences": [
+      {
+        "text": "Amon-Ra Dawg Your Team set a season high and lapped the 103.87 median by 44.27.",
+        "fact_ids": [
+          "MED.above.12",
+          "MED.value",
+          "H.12.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Return of T Mac missed by the exact sliver Unsolicited Dak Picks cleared it by.",
+        "fact_ids": [
+          "MED.closest"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Even Pukancun on 3, sitting at 3-11, cleared the bar with a season-high 122.5.",
+        "fact_ids": [
+          "MED.above.4",
+          "S.12",
+          "H.4.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Maye d'force B with U fell to a season-low 81.19, a full 22.68 under it.",
+        "fact_ids": [
+          "MED.below.9",
+          "H.9.high"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "next_week": {
+    "chapter": "next_week",
+    "sentences": [
+      {
+        "text": "Return of T Mac brings a win streak into a Must Watch near the cut against behold the lamb, with playoff odds that swing from 64% on a win to 37% on a loss.",
+        "fact_ids": [
+          "NX.8v10",
+          "NX.8v10.streak",
+          "NX.8v10.cut",
+          "SW.8v10"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The other Must Watch is a race to stop the slide, as Bo Girds and To Infinity and Bijan both bring losing streaks, and neither side's playoff odds budge either way.",
+        "fact_ids": [
+          "NX.6v7",
+          "NX.6v7.streak",
+          "SW.6v7"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Pukancun on 3 at 3-11 and Amon-Ra Dawg Your Team at 6-8, both below the cut, meet in a showdown of the awful.",
+        "fact_ids": [
+          "NX.4v12",
+          "S.12",
+          "S.8"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "rankings": {
+    "chapter": "rankings",
+    "sentences": [
+      {
+        "text": "Lil Fridge climbs to the top of the rankings at 10-4.",
+        "fact_ids": [
+          "PR.3",
+          "S.1"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "The climb came the same week it lost by 12.",
+        "fact_ids": [
+          "PR.3.why"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "Only this league promotes a team for losing.",
+        "fact_ids": [
+          "PR.3.why"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "Return of T Mac has won 4 straight, and the latest took down the top team by 12.",
+        "fact_ids": [
+          "PR.8",
+          "H.8.streak",
+          "PR.8.why"
+        ],
+        "roster_id": 8
+      },
+      {
+        "text": "Still 7-7 and sitting just outside the playoff spots, with playoff odds of about 54%.",
+        "fact_ids": [
+          "S.7",
+          "ODDS.8"
+        ],
+        "roster_id": 8
+      },
+      {
+        "text": "Bo Girds has lost 3 straight and somehow rose 2 places.",
+        "fact_ids": [
+          "PR.6",
+          "H.6.streak",
+          "PR.6.why"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "The latest was an 11-point loss to the 5th-place team.",
+        "fact_ids": [
+          "PR.6.why"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "Losing pays, apparently.",
+        "fact_ids": [],
+        "roster_id": 6
+      },
+      {
+        "text": "London Cooking dropped 3 spots after getting buried by 50.",
+        "fact_ids": [
+          "PR.5",
+          "PR.5.why"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "The kitchen has cooled to 107.08 a week over the last 3 weeks, well off the season average.",
+        "fact_ids": [
+          "H.5.trend"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "All You Need Is Love climbed 2 spots off an 11-point win.",
+        "fact_ids": [
+          "PR.2",
+          "PR.2.why"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Turns out all you need is the 2nd easiest remaining schedule.",
+        "fact_ids": [
+          "ODDS.2.why"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Maye d'force B with U slid 2 places after losing a 5-point game.",
+        "fact_ids": [
+          "PR.9",
+          "PR.9.why"
+        ],
+        "roster_id": 9
+      },
+      {
+        "text": "At 7-7 and level with the last playoff spot, the playoff odds are about 49%.",
+        "fact_ids": [
+          "S.5",
+          "ODDS.9"
+        ],
+        "roster_id": 9
+      },
+      {
+        "text": "Amon-Ra Dawg Your Team jumped 2 places after a 50-point demolition.",
+        "fact_ids": [
+          "PR.12",
+          "PR.12.why"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "At 6-8, they still hold playoff odds of about 58%.",
+        "fact_ids": [
+          "S.8",
+          "ODDS.12"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "The easiest remaining schedule in the league does the rest.",
+        "fact_ids": [
+          "ODDS.12.why"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "Brock ‘N’ Roll held 8th, clinging to the last playoff spot at 7-7.",
+        "fact_ids": [
+          "PR.1",
+          "PR.1.why",
+          "S.6"
+        ],
+        "roster_id": 1
+      },
+      {
+        "text": "Playoff odds of about 42% say that spot is rented, not owned.",
+        "fact_ids": [
+          "ODDS.1"
+        ],
+        "roster_id": 1
+      },
+      {
+        "text": "Unsolicited Dak Picks rose 3 places off a 14-point win.",
+        "fact_ids": [
+          "PR.11",
+          "PR.11.why"
+        ],
+        "roster_id": 11
+      },
+      {
+        "text": "Their results over the last 3 weeks still rank 10th.",
+        "fact_ids": [
+          "PR.11.why"
+        ],
+        "roster_id": 11
+      },
+      {
+        "text": "Pukancun on 3 climbed a spot with a 16-point win.",
+        "fact_ids": [
+          "PR.4",
+          "PR.4.why"
+        ],
+        "roster_id": 4
+      },
+      {
+        "text": "Hot lately, still dead last at 3-11.",
+        "fact_ids": [
+          "S.12",
+          "H.4.trend"
+        ],
+        "roster_id": 4
+      },
+      {
+        "text": "behold the lamb fell 5 places after a 14-point loss.",
+        "fact_ids": [
+          "PR.10",
+          "PR.10.why"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "The lamb has wandered well away from the playoff flock.",
+        "fact_ids": [
+          "ODDS.10",
+          "S.10"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "To Infinity and Bijan fell 2 places to last, losing by 16 to the worst team in the standings.",
+        "fact_ids": [
+          "PR.7",
+          "PR.7.why"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "They've lost 3 straight and averaged 73.07 a week over the last 3 weeks.",
+        "fact_ids": [
+          "H.7.streak",
+          "H.7.trend"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "Infinity looks a lot shorter from here.",
+        "fact_ids": [
+          "ODDS.7"
+        ],
+        "roster_id": 7
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  }
+}

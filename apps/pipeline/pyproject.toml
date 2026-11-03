@@ -1,0 +1,58 @@
+[project]
+name = "cornerstone"
+version = "0.1.0"
+description = "Builds the weekly Cornerstone fantasy football report from Sleeper data."
+readme = "README.md"
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=1.15.0",
+    "fastapi>=0.158.0",
+    "httpx>=0.28.1",
+    "pillow>=13.0.0",
+    "pydantic>=2.14.1",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+cornerstone = "cornerstone.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+# Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an
+# optional value, such as int | None, to Nums or to a helper that takes a plain value. base.py 1, drops.py 1,
+# leaders.py 1, next_week.py 11, trades.py 2.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/cornerstone/claude_port.py", "src/cornerstone/config.py", "src/cornerstone/files.py",
+           "src/cornerstone/history.py", "src/cornerstone/live.py", "src/cornerstone/models.py",
+           "src/cornerstone/numbers.py", "src/cornerstone/parse.py", "src/cornerstone/paths.py",
+           "src/cornerstone/player_ids.py", "src/cornerstone/provider", "src/cornerstone/rank_score.py",
+           "src/cornerstone/render.py", "src/cornerstone/season_inputs.py",
+           "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
+           "src/cornerstone_api/cache.py", "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
+           "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",
+           "tests/test_rule_readmes.py", "tests/test_rule_suppressions.py", "tests/test_rule_tracker.py"]
+
+[tool.uv.build-backend]
+# The pipeline and the API app are two packages under src, so the wheel holds both.
+module-name = ["cornerstone", "cornerstone_api"]

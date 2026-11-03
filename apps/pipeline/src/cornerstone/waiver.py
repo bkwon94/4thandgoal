@@ -1,0 +1,346 @@
+"""
+The waiver board engine: it ranks the waiver pool into buckets and builds the budget table of the league.
+Pure code: no network and no Claude, so the same raw data gives the same board.
+"""
+from collections.abc import Sequence
+from datetime import datetime
+from typing import NamedTuple
+
+from cornerstone import waiver_buckets
+from cornerstone.adjusters import OUT_STATUSES
+from cornerstone.config import LeagueConfig
+from cornerstone.models import (
+    BoardScores,
+    BudgetRow,
+    Fact,
+    NflverseWeek,
+    TeamWeek,
+    UsageWeek,
+    WaiverBoard,
+    WaiverClaim,
+    WaiverPlayer,
+)
+from cornerstone.numbers import round_half_up
+from cornerstone.parse import player_name
+from cornerstone.provider.raw import RawWeek
+from cornerstone.rank_score import rank_scores
+from cornerstone.ranks import in_pool
+from cornerstone.sheet.base import Nums, fact
+from cornerstone.slow_sources import SlowSources
+from cornerstone.tunables import (
+    BOARD_WEIGHTS,
+    BUCKET_POSITIONS,
+    BUCKET_SIZE,
+    PER_POSITION,
+    USAGE_WEEKS,
+)
+from cornerstone.waiver_drops import drop_candidates
+from cornerstone.waiver_price import budget_left, price_players
+from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
+
+# The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
+# another position, such as a linebacker, is never in the pool.
+BEST_ADDS = "best_adds"
+TRENDING = "trending"
+DROPS = "drops"
+# The bucket reasons of best adds and trending. The sneaky and stash reasons live in waiver_buckets.
+BOARD_SCORE = "board_score"
+TRENDING_REASON = "trending"
+
+
+def waiver_board(
+    raw: RawWeek, week: int, built: datetime, nfl: NflverseWeek | None = None,
+    claims: Sequence[WaiverClaim] = (), slow: SlowSources | None = None, returns: dict[str, int] | None = None,
+    *, config: LeagueConfig,
+) -> WaiverBoard:
+    """The board after week `week` from the raw files of the week. `built` is the build time the file shows.
+
+    `nfl` gives the usage and the environment. None, or an extract with no usage, gives every player a usage
+    score and an environment score of 0. `claims` is the bid history of the season, the input of the price
+    floor and the last like him. `slow` gives the depth charts and the injury report of the sneaky and stash
+    buckets. None leaves out every rule that needs them. `returns` is the hand-kept return week by player ID.
+    `config` gives the last season week, where the rest of season projection ends.
+    """
+    ahead = projections_ahead(raw)
+    rostered = _rostered(raw)
+    pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
+    ros = {pid: rest_of_season(ahead, pid, week, config) for pid in pool}
+    positions = {pid: entry["position"] for pid, entry in pool.items()}
+    projection = rank_scores(positions, ros)
+    usage_rows = (nfl.usage if nfl else None) or {}
+    usage = _usage_scores(positions, usage_rows, week)
+    teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
+    inputs = waiver_buckets.BucketInputs(raw.players, week, slow, returns or {},
+                                         lambda pid: rest_of_season(ahead, pid, week, config), config)
+    players = [
+        _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
+                     BoardScores(usage=usage.get(pid, 0.0), environment=_environment_score(entry, teams),
+                                 projection=projection[pid]),
+                     _bye(slow, entry["team"]), _return_week(entry, pid, inputs))
+        for pid, entry in pool.items()
+    ]
+    for p in players:
+        if p.position in BUCKET_POSITIONS:
+            p.facts = [*p.facts, *_player_facts(p, usage_rows.get(p.player_id, []), teams, week)]
+    players = _with_trending(players, _trending_counts(raw))
+    # A player who is out lands in stashes only, so every other bucket skips him.
+    healthy = [p for p in players if p.injury_status not in OUT_STATUSES]
+    best_adds = _capped(sorted((p.model_copy(update={"reason": BOARD_SCORE})
+                                for p in healthy if p.position in BUCKET_POSITIONS), key=_rank_key))
+    buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(healthy)}
+    candidates = waiver_buckets.sneaky_and_stashes(players, best_adds, inputs)
+    buckets |= {key: _capped(ranked) for key, ranked in candidates.items()}
+    # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
+    # gets one price, so the price runs once per player.
+    ranked = {p.player_id: p for bucket in buckets.values() for p in bucket}
+    prices = {p.player_id: p.price for p in price_players(list(ranked.values()), raw, list(claims), week)}
+    buckets = {key: [p.model_copy(update={"price": prices[p.player_id]}) for p in bucket]
+               for key, bucket in buckets.items()}
+    # Drop candidates come after the price step, so a drop candidate never carries a price. The bucket has no
+    # cap per position, as one roster can hold several fading players at one position.
+    # A player who is out cannot replace a drop candidate this week, so drops compare against the healthy pool.
+    buckets[DROPS] = drop_candidates(raw, week, usage_rows, healthy, config)[:BUCKET_SIZE]
+    return WaiverBoard(week=week, built=built, buckets=buckets, budgets=_budgets(raw))
+
+
+def _bye(slow: SlowSources | None, team: str) -> int | None:
+    """The bye week of the team from the schedules of the slow sources. None when the schedules lack it."""
+    schedule = (slow.schedules or {}).get(team) if slow is not None else None
+    return schedule.bye_week if schedule is not None else None
+
+
+def _return_week(entry: dict, player_id: str, inputs: waiver_buckets.BucketInputs) -> int | None:
+    """The return week of a player who is out. A healthy player has none, even when a later report lists him."""
+    return inputs.return_week_of(player_id) if entry.get("injury_status") in OUT_STATUSES else None
+
+
+def _budgets(raw: RawWeek) -> list[BudgetRow]:
+    """One row per roster in roster order: the league budget minus the budget used, and the waiver position."""
+    return [
+        BudgetRow(
+            roster_id=roster.roster_id,
+            budget_left=budget_left(raw, roster),
+            waiver_order=roster.settings.waiver_position,
+        )
+        for roster in sorted(raw.rosters, key=lambda r: r.roster_id)
+    ]
+
+
+def _rostered(raw: RawWeek) -> set[str]:
+    # A roster with no players has None in rosters.json.
+    return {pid for roster in raw.rosters for pid in roster.players or []}
+
+
+def _pool_player(player_id: str, entry: dict, week_projection: float, ros: float, scores: BoardScores,
+                 bye: int | None, return_week: int | None) -> WaiverPlayer:
+    return WaiverPlayer(
+        player_id=player_id,
+        name=player_name(player_id, entry),
+        position=entry["position"],
+        team=entry["team"],
+        week_projection=week_projection,
+        ros_projection=ros,
+        scores=scores,
+        board_score=round(sum(weight * getattr(scores, key) for key, weight in BOARD_WEIGHTS.items()), 4),
+        bye=bye,
+        injury_status=entry.get("injury_status"),
+        return_week=return_week,
+    )
+
+
+def _capped(ranked: list[WaiverPlayer]) -> list[WaiverPlayer]:
+    """The first BUCKET_SIZE players of `ranked`, with at most PER_POSITION of one position."""
+    bucket: list[WaiverPlayer] = []
+    taken: dict[str, int] = {}
+    for p in ranked:
+        if len(bucket) == BUCKET_SIZE:
+            break
+        if taken.get(p.position, 0) < PER_POSITION:
+            bucket.append(p)
+            taken[p.position] = taken.get(p.position, 0) + 1
+    return bucket
+
+
+def _rank_key(p: WaiverPlayer) -> tuple[float, float, str]:
+    """Best board score first, then the higher rest of season projection, then the player ID, so a tie has one order."""
+    return -p.board_score, -p.ros_projection, p.player_id
+
+
+def _trending_counts(raw: RawWeek) -> dict[str, int]:
+    """The trending count of each player in the trending file. A week with no file has no counts."""
+    return {row.player_id: row.count for row in raw.trending or []}
+
+
+def _with_trending(players: list[WaiverPlayer], counts: dict[str, int]) -> list[WaiverPlayer]:
+    """The players with the trending count of each. A player with no count keeps 0."""
+    out = []
+    for p in players:
+        count = counts.get(p.player_id)
+        out.append(p if count is None else
+                   p.model_copy(update={"trending_count": count, "facts": [*p.facts, _trending_fact(p, count)]}))
+    return out
+
+
+def _trending_fact(p: WaiverPlayer, count: int) -> Fact:
+    """The count fact of a trending player. The count is written plain, as a comma would split it into two numbers."""
+    n = Nums()
+    text = f"{p.name} was added in {n(count)} Sleeper leagues in the last day."
+    return fact(f"WV.trending.{p.player_id}", text, n, [], [p.name])
+
+
+def _trending_bucket(players: list[WaiverPlayer]) -> list[WaiverPlayer]:
+    """The pool players at a bucket position with a trending count, in the order of _trending_key."""
+    return _capped(sorted((p.model_copy(update={"reason": TRENDING_REASON})
+                           for p in players if p.trending_count and p.position in BUCKET_POSITIONS),
+                          key=_trending_key))
+
+
+def _trending_key(p: WaiverPlayer) -> tuple[int, str]:
+    """The most adds first, then the player ID, so a tie has one order."""
+    return -p.trending_count, p.player_id
+
+
+def _usage_window(rows: list[UsageWeek], week: int) -> tuple[UsageWeek, UsageWeek] | None:
+    """The usage of the first and the last week of the USAGE_WEEKS weeks up to `week`.
+
+    None when either week has no row or no snap share, such as a rookie's first week or a bye.
+    """
+    by_week = {u.week: u for u in rows if u.snap_share is not None}
+    before, last = by_week.get(week - USAGE_WEEKS + 1), by_week.get(week)
+    return (before, last) if before and last else None
+
+
+class PositionKinds(NamedTuple):
+    """The touch and the second environment rank that count for one position. The first environment rank is pace."""
+    # The UsageWeek count field. It is also the word of the usage fact.
+    touch: str
+    # The UsageWeek share field of the touch.
+    touch_share: str
+    # The TeamRanks field of the second environment rank, and the TeamRates field of the environment fact.
+    environment: str
+    rate: str
+
+
+# A WR or a TE earns targets and gains from passes. An RB earns carries and gains from runs that work.
+# A QB earns carries, as his targets are near none, and gains from passes.
+POSITION_KINDS = {
+    "QB": PositionKinds("carries", "carry_share", "neutral_pass", "neutral_pass_rate"),
+    "RB": PositionKinds("carries", "carry_share", "rush_success", "rush_success"),
+    "WR": PositionKinds("targets", "target_share", "neutral_pass", "neutral_pass_rate"),
+    "TE": PositionKinds("targets", "target_share", "neutral_pass", "neutral_pass_rate"),
+}
+
+
+def _opportunities(position: str, u: UsageWeek) -> tuple[int, int, str]:
+    """The count, the share, and the word of the touches that count for the position."""
+    kinds = POSITION_KINDS[position]
+    return getattr(u, kinds.touch), getattr(u, kinds.touch_share), kinds.touch
+
+
+def _usage_scores(positions: dict[str, str], usage: dict[str, list[UsageWeek]], week: int) -> dict[str, float]:
+    """The usage score of each player whose usage rose: his rise ranked inside the position, from 1 to 0.
+
+    The rise is the change in snap share plus the change in the share of his touches over the window. A
+    player with a flat or a falling usage, or with no window, is not in the result, so his score stays 0.
+    """
+    rises = {}
+    for pid, position in positions.items():
+        window = _usage_window(usage.get(pid, []), week)
+        if window is None or position not in BUCKET_POSITIONS:
+            continue
+        before, last = window
+        rise = (last.snap_share - before.snap_share
+                + _opportunities(position, last)[1] - _opportunities(position, before)[1])
+        if rise > 0:
+            rises[pid] = rise
+    return rank_scores({pid: positions[pid] for pid in rises}, rises)
+
+
+class TeamRates(NamedTuple):
+    """The season rates of one offense, from week 1 to the board's week. A rate is a fraction."""
+    plays_per_game: float
+    neutral_pass_rate: float
+    rush_success: float
+
+
+class TeamRanks(NamedTuple):
+    """The rates of one offense and its rank score in each, from 1 for the best offense to 0, plus its pace place."""
+    rates: TeamRates
+    pace: float
+    neutral_pass: float
+    rush_success: float
+    # 1 for the offense with the most plays per game. The environment fact names it.
+    pace_place: int
+
+
+def _team_rates(environment: dict[str, list[TeamWeek]], week: int) -> dict[str, TeamRates]:
+    """The season rates of each team with a game up to `week`. A bye week has no row, so it is not a game."""
+    rates = {}
+    for team, weeks in environment.items():
+        played = [w for w in weeks if w.week <= week]
+        if not played:
+            continue
+        neutral = sum(w.neutral_plays for w in played)
+        rushes = sum(w.rushes for w in played)
+        rates[team] = TeamRates(
+            plays_per_game=sum(w.plays for w in played) / len(played),
+            neutral_pass_rate=sum(w.neutral_passes for w in played) / neutral if neutral else 0.0,
+            rush_success=sum(w.rush_successes for w in played) / rushes if rushes else 0.0)
+    return rates
+
+
+def _team_ranks(rates: dict[str, TeamRates]) -> dict[str, TeamRanks]:
+    every = dict.fromkeys(rates, "NFL")
+    pace = rank_scores(every, {t: r.plays_per_game for t, r in rates.items()})
+    neutral = rank_scores(every, {t: r.neutral_pass_rate for t, r in rates.items()})
+    rush = rank_scores(every, {t: r.rush_success for t, r in rates.items()})
+    faster = sorted((r.plays_per_game for r in rates.values()), reverse=True)
+    return {t: TeamRanks(rates=r, pace=pace[t], neutral_pass=neutral[t], rush_success=rush[t],
+                         pace_place=faster.index(r.plays_per_game) + 1)
+            for t, r in rates.items()}
+
+
+def _environment_score(entry: dict, teams: dict[str, TeamRanks]) -> float:
+    """The mean of two team rank scores: pace and the second rank of POSITION_KINDS for the position.
+
+    A kicker, a defense, or a team with no environment gets 0.
+    """
+    ranks = teams.get(entry["team"])
+    if ranks is None or entry["position"] not in BUCKET_POSITIONS:
+        return 0.0
+    return round((ranks.pace + getattr(ranks, POSITION_KINDS[entry["position"]].environment)) / 2, 4)
+
+
+def _percent(fraction: float) -> int:
+    """The fraction as a whole percent, rounded half up as every number on the page."""
+    return int(round_half_up(100 * fraction))
+
+
+def _player_facts(p: WaiverPlayer, rows: list[UsageWeek], teams: dict[str, TeamRanks], week: int) -> list[Fact]:
+    """The usage fact and the environment fact of a QB, RB, WR, or TE. Each one drops when its input is missing."""
+    facts = []
+    window = _usage_window(rows, week)
+    if window is not None:
+        before, last = window
+        n = Nums()
+        count, _, word = _opportunities(p.position, last)
+        before_count = _opportunities(p.position, before)[0]
+        if last.snap_share == before.snap_share:
+            direction = "level with"
+        else:
+            direction = "up from" if last.snap_share > before.snap_share else "down from"
+        text = (f"{p.name} played {n(last.snap_share)}% of snaps and took {n(count)} {word} last week, "
+                f"{direction} {n(before.snap_share)}% and {n(before_count)}.")
+        facts.append(fact(f"W.usage.{p.player_id}", text, n, [], [p.name]))
+    ranks = teams.get(p.team)
+    if ranks is not None:
+        n = Nums()
+        kinds = POSITION_KINDS[p.position]
+        rate = n(_percent(getattr(ranks.rates, kinds.rate)))
+        text = f"{p.team} runs the {n.ord(ranks.pace_place)} fastest offense and "
+        if kinds.environment == "rush_success":
+            text += f"succeeds on {rate}% of runs."
+        else:
+            text += f"passes on {rate}% of neutral downs."
+        facts.append(fact(f"W.env.{p.player_id}", text, n, [], [p.name]))
+    return facts

@@ -1,0 +1,228 @@
+<style>
+  .ph { --blk:#141414; --red:#b8342a; --gry:#ececec; --wht:#fff; font-family:"Helvetica Neue",Arial,sans-serif; display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
+  .ph .phone { width:390px; flex:none; background:var(--wht); border:10px solid #222; border-radius:36px; overflow:hidden; color:#1a1a1a; font-size:14px; line-height:1.4; box-shadow:0 12px 40px rgba(0,0,0,.3); }
+  .ph .notes { flex:1; min-width:260px; }
+  .ph .mast { background:var(--blk); color:#fff; padding:18px 18px 14px; }
+  .ph .brand { display:flex; align-items:center; gap:10px; }
+  .ph .logo { width:30px; height:30px; border-radius:50%; background:#fff; position:relative; flex:none; }
+  .ph .logo:after { content:""; position:absolute; left:15px; top:14px; width:9px; height:9px; background:var(--red); }
+  .ph .logo:before { content:""; position:absolute; left:6px; top:14px; width:8px; height:9px; background:#bbb; }
+  .ph .bar { width:1px; height:28px; background:#666; }
+  .ph .brand .t { font-weight:700; letter-spacing:.14em; text-transform:uppercase; font-size:12px; line-height:1.15; }
+  .ph .brand .s { color:#aaa; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+  .ph .week { margin-top:16px; }
+  .ph .week .big { font-size:40px; font-weight:900; letter-spacing:-.02em; line-height:1; }
+  .ph .week .big span { color:var(--red); }
+  .ph .week .dates { color:#bbb; font-size:12px; margin-top:4px; }
+  .ph .chap { padding:20px 18px; border-bottom:6px solid var(--gry); }
+  .ph .chap.dark { background:var(--blk); color:#fff; }
+  .ph .lbl { color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:.16em; font-size:10px; margin-bottom:6px; }
+  .ph .dark .lbl { color:#f2a59e; }
+  .ph .tag { display:inline-block; background:var(--red); color:#fff; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:2px 7px; border-radius:2px; margin-left:6px; vertical-align:middle; }
+  .ph .score { display:flex; align-items:center; justify-content:space-between; margin:8px 0 10px; }
+  .ph .score .tm { font-weight:800; font-size:15px; line-height:1.15; width:40%; }
+  .ph .score .tm.r { text-align:right; }
+  .ph .score .pt { font-size:26px; font-weight:900; }
+  .ph .score .pt.l { color:var(--red); }
+  .ph .score .vs { color:#999; font-size:11px; }
+  .ph .blurb { font-size:13.5px; color:#333; }
+  .ph .dark .blurb { color:#ccc; }
+  .ph .hero-p { font-weight:900; font-size:22px; line-height:1.1; margin:4px 0 2px; }
+  .ph .hero-p small { font-weight:600; font-size:12px; color:#888; margin-left:6px; }
+  .ph .tiles { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  .ph .tile { background:var(--gry); border-radius:8px; padding:10px; }
+  .ph .tile .lbl { font-size:9px; margin-bottom:4px; }
+  .ph .tile .n { font-weight:800; font-size:14px; line-height:1.15; }
+  .ph .tile .pp { font-size:22px; font-weight:900; line-height:1.1; }
+  .ph .tile .sub { font-size:11px; color:#666; margin-top:2px; }
+  .ph .row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #e3e3e3; font-size:13px; }
+  .ph .dark .row { border-color:#333; }
+  .ph .row:last-child { border-bottom:none; }
+  .ph .row b { font-variant-numeric:tabular-nums; }
+  .ph .row .w { color:var(--red); font-weight:800; }
+  .ph .dark .row .w { color:#f2a59e; }
+  .ph .st { display:grid; grid-template-columns:22px 1fr 44px 56px; gap:6px; align-items:center; padding:5px 0; border-bottom:1px solid #333; font-size:12.5px; font-variant-numeric:tabular-nums; }
+  .ph .st.hd { color:#888; font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; }
+  .ph .st .me { background:var(--red); color:#fff; border-radius:3px; padding:0 4px; }
+  .ph .st.cut { border-bottom:2px dashed var(--red); }
+  .ph .nx { background:var(--gry); border-radius:8px; padding:10px; margin-top:8px; }
+  .ph .nx .m { font-weight:800; font-size:14px; }
+  .ph .nx .b { font-size:12px; color:#555; margin-top:2px; }
+  .ph .foot { background:var(--blk); color:#777; font-size:10px; padding:14px 18px; text-align:center; letter-spacing:.08em; text-transform:uppercase; }
+  .ph .notes .option { margin-bottom:10px; }
+  .ph .mu { border-bottom:1px solid #e3e3e3; }
+  .ph .mu:last-of-type { border-bottom:none; }
+  .ph .mu .hd { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:8px; padding:10px 0 6px; font-variant-numeric:tabular-nums; }
+  .ph .mu .hd .a { font-weight:600; font-size:13px; }
+  .ph .mu .hd .b { font-weight:600; font-size:13px; text-align:right; }
+  .ph .mu .hd .w { color:var(--red); font-weight:800; }
+  .ph .mu .hd .sc { font-weight:900; font-size:14px; white-space:nowrap; background:var(--gry); border-radius:4px; padding:2px 8px; }
+  .ph .mu .hd .chev { display:inline-block; width:8px; height:8px; border-right:2px solid #999; border-bottom:2px solid #999; transform:rotate(45deg); transition:transform .25s ease; margin-left:6px; vertical-align:2px; }
+  .ph .mu.open .hd .chev { transform:rotate(-135deg); vertical-align:-2px; }
+  .ph .mu .body { display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease; }
+  .ph .mu.open .body { grid-template-rows:1fr; }
+  .ph .mu .body > div { overflow:hidden; }
+  .ph .mu .inner { padding:0 0 12px; opacity:0; transform:translateY(-4px); transition:opacity .25s ease .08s, transform .25s ease .08s; }
+  .ph .mu.open .inner { opacity:1; transform:none; }
+  .ph .stars { display:flex; gap:8px; margin:0 0 8px; }
+  .ph .stars div { flex:1; background:var(--gry); border-radius:6px; padding:6px 8px; font-size:11px; }
+  .ph .stars b { display:block; font-size:12.5px; }
+  .ph .stars .k { color:#777; font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; }
+  .ph .hint { font-size:11px; color:#888; margin-top:8px; }
+  .ph .mu .cta { padding:0 0 12px; margin-top:-2px; }
+  .ph .mu .cta span { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; box-sizing:border-box; padding:9px 0; background:var(--gry); color:var(--red); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; border-radius:6px; cursor:pointer; transition:background .2s,color .2s; }
+  .ph .mu.open .cta span { background:var(--blk); color:#fff; }
+  .ph .mu .cta .chev { border-color:currentColor; margin:0; width:6px; height:6px; }
+  .ph .mu .cta .lblc:after { content:"Read recap"; }
+  .ph .mu.open .cta .lblc:after { content:"Hide recap"; }
+
+  .ph .med { margin-top:8px; }
+  .ph .med .r { display:grid; grid-template-columns:1fr 52px; align-items:center; gap:8px; padding:3px 0; font-size:12px; font-variant-numeric:tabular-nums; }
+  .ph .med .r .bar { height:14px; border-radius:3px; background:var(--red); }
+  .ph .med .r.miss .bar { background:#cfcfcf; }
+  .ph .med .r .nm { font-size:11px; color:#333; margin-bottom:1px; }
+  .ph .med .r b { text-align:right; }
+  .ph .med .line { display:flex; align-items:center; gap:8px; margin:6px 0; color:var(--blk); font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .ph .med .line:before, .ph .med .line:after { content:""; flex:1; border-top:2px dashed var(--blk); }
+  .ph .kpi { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px; }
+  .ph .kpi div { background:var(--gry); border-radius:8px; padding:8px; text-align:center; }
+  .ph .kpi .v { font-size:20px; font-weight:900; line-height:1.1; }
+  .ph .kpi .k { font-size:9px; color:#777; text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
+</style>
+
+<div class="ph">
+<div class="phone">
+
+  <div class="mast">
+    <div class="brand"><div class="logo"></div><div class="bar"></div><div><div class="t">Cornerstone</div><div class="s">League Weekly</div></div></div>
+    <div class="week"><div class="big">WEEK <span>6</span></div><div class="dates">Oct 15 – Oct 19, 2026 · Published Tue Oct 20</div></div>
+  </div>
+
+  <div class="chap">
+    <div class="lbl">Matchup of the Week <span class="tag">Closest Finish</span></div>
+    <div class="score"><div class="tm">behold the lamb</div><div><span class="pt">114.95</span> <span class="vs">–</span> <span class="pt l">109.61</span></div><div class="tm r">Bo Girds</div></div>
+    <p class="blurb">A five-point game decided by a quarterback nobody wanted in August. Tyler Shough threw for 26.96 for Bo Girds, but Kyren Williams gave back 8.2 on a 19-point projection. behold the lamb streamed the Browns defense off waivers on Wednesday and got 9.75 for it, which is the whole margin. Bo Girds falls to 8-4 and third place. The lamb is 6-6 and very much alive.</p>
+  </div>
+
+  <div class="chap dark">
+    <div class="lbl">Game Changer</div>
+    <div class="hero-p">Tre Tucker <small>WR · LV · All You Need Is Love</small></div>
+    <div class="hero-p" style="color:#f2a59e">24.2 <small style="color:#999">projected 7.58</small></div>
+    <p class="blurb">Started as a bye-week fill-in with a projection under eight points. Finished as the fourth-highest wide receiver in the league. All You Need Is Love beat Pukancun on 3 by 12.95. Without Tucker, that is a loss and a 6-6 record. With him, it is 7-5 and a playoff seat.</p>
+  </div>
+
+  <div class="chap">
+    <div class="lbl">Awards</div>
+    <div class="tiles">
+      <div class="tile"><div class="lbl">Top Scorer</div><div class="n">Trevor Lawrence</div><div class="pp">28.34</div><div class="sub">Amon-Ra Dawg Your Team</div></div>
+      <div class="tile"><div class="lbl">MVB · Best Benchwarmer</div><div class="n">Jayden Daniels</div><div class="pp">21.0</div><div class="sub">London Cooking, on the bench</div></div>
+      <div class="tile"><div class="lbl">Underperformer</div><div class="n">Bijan Robinson</div><div class="pp">6.3</div><div class="sub">projected 23.08 · To Infinity and Bijan</div></div>
+      <div class="tile"><div class="lbl">Overachiever</div><div class="n">Bhayshul Tuten</div><div class="pp">22.7</div><div class="sub">projected 12.16 · traded for this week</div></div>
+    </div>
+    <p class="blurb" style="margin-top:12px">To Infinity and Bijan scored 46.08 as a team. Bijan scored 6.3 of it. The team name is now a question. London Cooking left 21 points on the bench and still won by 66, so nobody is mad.</p>
+  </div>
+
+  <div class="chap">
+    <div class="lbl">All Matchups </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">Lil Fridge</span> 126.79</div><div class="b">88.31 Brock ‘N’ Roll</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · Lil Fridge</span><b>C. McCaffrey 26.2</b></div><div><span class="k">Top · Brock ‘N’ Roll</span><b>TB DEF 9.65</b></div></div>
+        <p class="blurb">The top seed kept rolling. Lil Fridge started seven players in double digits and got 26.2 from McCaffrey. Brock ‘N’ Roll's best starter was a defense picked up Wednesday. That sentence is the whole recap. Fridge moves to 10-2. Brock sits at 6-6 on the playoff line with the hardest schedule left.</p>
+      </div></div></div>
+    </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">Return of T Mac</span> 120.29</div><div class="b">81.47 Unsolicited Dak Picks</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · T Mac</span><b>M. Nabers 22.5</b></div><div><span class="k">Top · Dak Picks</span><b>K. Vidal 5.5</b></div></div>
+        <p class="blurb">Malik Nabers doubled his projection and Return of T Mac cleared 120 for the first time this year. Unsolicited Dak Picks started a waiver-wire running back for 5.5 and got what the name promised. Dak Picks drops to 4-8 and is now playing for pride and the median.</p>
+      </div></div></div>
+    </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">Maye d'force</span> 113.55</div><div class="b">104.04 Amon-Ra Dawg</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · Maye d'force</span><b>D. Maye 23.8</b></div><div><span class="k">Top · Amon-Ra Dawg</span><b>T. Lawrence 28.34</b></div></div>
+        <p class="blurb">Amon-Ra Dawg Your Team traded for Tuten, got 22.7 from him, had the week's top scorer in Lawrence, and still lost. Maye d'force got 20.9 from Isaiah Likely, a tight end projected for 11. Sometimes the other guy's tight end just has a day.</p>
+      </div></div></div>
+    </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">behold the lamb</span> 114.95</div><div class="b">109.61 Bo Girds</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · behold the lamb</span><b>—</b></div><div><span class="k">Top · Bo Girds</span><b>T. Shough 26.96</b></div></div>
+        <p class="blurb">Matchup of the Week. See the top of the page. Bo Girds left Kyren Williams in for 8.2 and will think about it until Thursday.</p>
+      </div></div></div>
+    </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">London Cooking</span> 112.48</div><div class="b">46.08 To Infinity and Bijan</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · London Cooking</span><b>—</b></div><div><span class="k">Top · Infinity and Bijan</span><b>P. Mahomes 11.48</b></div></div>
+        <p class="blurb">To Infinity and Bijan scored 46.08, the lowest total in the league this season. Bijan 6.3, Stevenson 3.6, McConkey 2.2, all three acquired by trade this month. London Cooking benched Jayden Daniels for 21 and won by 66 anyway. Blowout of the week, and it was not close.</p>
+      </div></div></div>
+    </div>
+
+    <div class="mu">
+      <div class="hd"><div class="a"><span class="w">All You Need Is Love</span> 97.02</div><div class="b">84.07 Pukancun on 3</div></div>
+      <div class="cta"><span onclick="this.closest('.mu').classList.toggle('open')"><span class="lblc"></span><span class="chev"></span></span></div>
+      <div class="body"><div><div class="inner">
+        <div class="stars"><div><span class="k">Top · All You Need Is Love</span><b>T. Tucker 24.2</b></div><div><span class="k">Top · Pukancun on 3</span><b>K. Cousins 19.52</b></div></div>
+        <p class="blurb">Pukancun on 3 picked up Kirk Cousins for zero dollars and got 19.52. Good process. Still 1-11. All You Need Is Love won on Tre Tucker alone, see Game Changer above.</p>
+      </div></div></div>
+    </div>
+
+    
+  </div>
+
+  <div class="chap">
+    <div class="lbl">The Median Game</div>
+    <div class="kpi"><div><div class="v">106.83</div><div class="k">Median</div></div><div><div class="v">+2.79</div><div class="k">Bo Girds, closest win</div></div><div><div class="v">−2.79</div><div class="k">Amon-Ra Dawg, closest miss</div></div></div>
+    <div class="med"><div class="r"><div><div class="nm">Lil Fridge</div><div class="bar" style="width:100%"></div></div><b>126.79</b></div><div class="r"><div><div class="nm">Return of T Mac</div><div class="bar" style="width:95%"></div></div><b>120.29</b></div><div class="r"><div><div class="nm">behold the lamb</div><div class="bar" style="width:91%"></div></div><b>114.95</b></div><div class="r"><div><div class="nm">Maye d'force B with U</div><div class="bar" style="width:90%"></div></div><b>113.55</b></div><div class="r"><div><div class="nm">London Cooking</div><div class="bar" style="width:89%"></div></div><b>112.48</b></div><div class="r"><div><div class="nm">Bo Girds</div><div class="bar" style="width:86%"></div></div><b>109.61</b></div><div class="line">Median 106.83</div><div class="r miss"><div><div class="nm">Amon-Ra Dawg Your Team</div><div class="bar" style="width:82%"></div></div><b>104.04</b></div><div class="r miss"><div><div class="nm">All You Need Is Love</div><div class="bar" style="width:77%"></div></div><b>97.02</b></div><div class="r miss"><div><div class="nm">Brock ‘N’ Roll</div><div class="bar" style="width:70%"></div></div><b>88.31</b></div><div class="r miss"><div><div class="nm">Pukancun on 3</div><div class="bar" style="width:66%"></div></div><b>84.07</b></div><div class="r miss"><div><div class="nm">Unsolicited Dak Picks</div><div class="bar" style="width:64%"></div></div><b>81.47</b></div><div class="r miss"><div><div class="nm">To Infinity and Bijan</div><div class="bar" style="width:36%"></div></div><b>46.08</b></div></div>
+    <p class="blurb" style="margin-top:10px">Every team plays the league median too, so a week is two games. Six teams cleared 106.83 and banked the extra win. Bo Girds lost the head-to-head to the lamb but slipped over the median by 2.79, so the week ends 1-1 instead of 0-2. Amon-Ra Dawg Your Team had the top scorer in the league and missed the median by the same 2.79. That is a 0-2 week with 28 points from your quarterback.</p>
+  </div>
+
+  <div class="chap dark">
+    <div class="lbl">Standings</div>
+    <div class="st hd"><span>#</span><span>Team</span><span>W-L</span><span>Pts</span></div>
+    <div class="st"><span>1</span><span>Lil Fridge</span><span>10-2</span><span>739.67</span></div>
+    <div class="st"><span>2</span><span>London Cooking</span><span>9-3</span><span>721.96</span></div>
+    <div class="st"><span>3</span><span><span class="me">Bo Girds</span></span><span>8-4</span><span>723.15</span></div>
+    <div class="st"><span>4</span><span>Maye d'force B with U</span><span>7-5</span><span>698.30</span></div>
+    <div class="st"><span>5</span><span>All You Need Is Love</span><span>7-5</span><span>611.71</span></div>
+    <div class="st cut"><span>6</span><span>Brock ‘N’ Roll</span><span>6-6</span><span>685.01</span></div>
+    <div class="st"><span>7</span><span>Return of T Mac</span><span>6-6</span><span>618.97</span></div>
+    <div class="st"><span>8</span><span>behold the lamb</span><span>6-6</span><span>588.01</span></div>
+    <div class="st"><span>9</span><span>Amon-Ra Dawg Your Team</span><span>4-8</span><span>603.75</span></div>
+    <div class="st"><span>10</span><span>Unsolicited Dak Picks</span><span>4-8</span><span>594.91</span></div>
+    <div class="st"><span>11</span><span>To Infinity and Bijan</span><span>4-8</span><span>543.88</span></div>
+    <div class="st" style="border:none"><span>12</span><span>Pukancun on 3</span><span>1-11</span><span>493.39</span></div>
+    <p class="blurb" style="margin-top:10px;font-size:12px">Dashed line is the playoff cut. Six teams make it. Records count the median game, so every week is two games.</p>
+  </div>
+
+  <div class="chap">
+    <div class="lbl">Next Week · Week 7</div>
+    <div class="nx"><div class="m">All You Need Is Love (7-5) vs Bo Girds (8-4) <span class="tag">Must Watch</span></div><div class="b">Fourth place against third. Loser drops to the bubble.</div></div>
+    <div class="nx"><div class="m">Lil Fridge (10-2) vs Return of T Mac (6-6)</div><div class="b">The top seed against a team that just put up 120.</div></div>
+    <div class="nx" style="background:none;padding:6px 10px"><div class="b">Also: Brock ‘N’ Roll vs Maye d'force B with U · behold the lamb vs Unsolicited Dak Picks · London Cooking vs Amon-Ra Dawg Your Team · Pukancun on 3 vs To Infinity and Bijan</div></div>
+  </div>
+
+  <div class="foot">Cornerstone League 2026 · Built from Sleeper data</div>
+</div>
+
+<div class="notes">
+  <h2>"Read recap" as a real button</h2>
+  <p class="subtitle">One flat element per matchup: full width, light gray field, red uppercase "Read recap" with a chevron. Only the button toggles, not the row, so there is no button inside a button. While open it turns black with white text and reads "Hide recap".</p>
+  <div class="options" data-multiselect>
+    <div class="option" data-choice="cta-good" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>This is the CTA</h3><p>Clean, obvious, one element.</p></div></div>
+    <div class="option" data-choice="page-done" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>Page shape is done</h3><p>Move to the written design.</p></div></div>
+  </div>
+</div>
+</div>

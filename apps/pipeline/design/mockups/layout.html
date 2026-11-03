@@ -1,0 +1,110 @@
+<style>
+  .cs { --blk:#141414; --red:#b8342a; --gry:#e6e6e6; --wht:#fff; font-family: "Helvetica Neue", Arial, sans-serif; }
+  .cs .page { background:var(--wht); border:1px solid #ccc; border-radius:6px; overflow:hidden; color:#222; font-size:11px; line-height:1.3; }
+  .cs .mast { background:var(--blk); color:var(--wht); padding:10px 12px; display:flex; align-items:center; gap:10px; }
+  .cs .logo { width:22px; height:22px; border-radius:50%; background:var(--wht); position:relative; flex:none; }
+  .cs .logo:after { content:""; position:absolute; left:11px; top:11px; width:7px; height:7px; background:var(--red); }
+  .cs .logo:before { content:""; position:absolute; left:4px; top:11px; width:6px; height:7px; background:#bbb; }
+  .cs .mast .t { font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:11px; }
+  .cs .mast .s { color:#bbb; font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
+  .cs .wk { margin-left:auto; background:var(--red); color:#fff; padding:3px 8px; font-weight:700; font-size:10px; border-radius:2px; }
+  .cs .hero { background:var(--gry); padding:14px 12px; border-left:5px solid var(--red); }
+  .cs .lbl { color:var(--red); font-weight:700; text-transform:uppercase; letter-spacing:.14em; font-size:8px; margin-bottom:4px; }
+  .cs .h { font-weight:800; font-size:15px; line-height:1.1; margin-bottom:4px; }
+  .cs .score { font-weight:800; font-size:13px; }
+  .cs .blurb { color:#555; font-size:9.5px; }
+  .cs .grid { display:grid; gap:8px; padding:10px 12px; }
+  .cs .box { border:1px solid #ddd; border-radius:4px; padding:8px; }
+  .cs .box h5 { margin:0 0 5px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--red); }
+  .cs .row { display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px dotted #ddd; font-size:9.5px; }
+  .cs .row:last-child { border-bottom:none; }
+  .cs .strip { background:var(--blk); color:#fff; padding:8px 12px; display:flex; gap:8px; }
+  .cs .strip .m { flex:1; background:#222; padding:5px; font-size:9px; border-radius:3px; text-align:center; }
+  .cs .strip .m.big { outline:2px solid var(--red); }
+  .cs .chap { padding:12px; border-bottom:4px solid var(--gry); }
+  .cs .chap.dark { background:var(--blk); color:#fff; }
+  .cs .chap.dark .blurb { color:#bbb; }
+  .cs .tile { border:1px solid #ddd; border-radius:4px; padding:8px; min-height:52px; }
+  .cs .tile.red { background:var(--red); color:#fff; }
+  .cs .tile.red .lbl { color:#fff; opacity:.85; }
+  .cs .tile.blk { background:var(--blk); color:#fff; }
+  .cs .tile.blk .lbl { color:#f2a59e; }
+  .cs .options .option { align-items:flex-start; }
+  .cs .options .content { flex:1; }
+</style>
+
+<div class="cs">
+<h2>Which page structure fits the weekly report?</h2>
+<p class="subtitle">Three ways to arrange the same content. Colors are a first pass at the Cornerstone palette: black, red, light gray, white. Click one to pick it.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a-front-page" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Front Page</h3>
+      <p>Newspaper feel. One hero story at the top. Awards and standings sit side by side below it. Next week runs as a strip at the bottom.</p>
+      <div class="page">
+        <div class="mast"><div class="logo"></div><div><div class="t">Cornerstone League</div><div class="s">Weekly Report · Oct 13 – Oct 19</div></div><div class="wk">WEEK 7</div></div>
+        <div class="hero">
+          <div class="lbl">Matchup of the Week · Closest Finish</div>
+          <div class="h">Grace Under Pressure 118.4 – 117.9 The Prodigal Sons</div>
+          <div class="blurb">Decided by a Monday night two-point conversion. Both teams now sit at 4-3, one game out of the last playoff spot.</div>
+        </div>
+        <div class="grid" style="grid-template-columns:1.4fr 1fr">
+          <div>
+            <div class="box" style="margin-bottom:8px"><h5>Game Changer</h5><div class="score">Jaylen Warren · 24.1</div><div class="blurb">Picked up Wednesday off waivers as a bye-week fill-in. Outscored every RB in the league.</div></div>
+            <div class="grid" style="grid-template-columns:1fr 1fr; padding:0">
+              <div class="box"><h5>Top Scorers</h5><div class="row"><span>J. Chase</span><b>31.2</b></div><div class="row"><span>B. Robinson</span><b>27.8</b></div><div class="row"><span>P. Nacua</span><b>26.0</b></div></div>
+              <div class="box"><h5>MVB · Benchwarmers</h5><div class="row"><span>R. White</span><b>22.4</b></div><div class="row"><span>J. Downs</span><b>19.1</b></div><div class="row"><span>T. Hockenson</span><b>16.5</b></div></div>
+              <div class="box"><h5>Underperformers</h5><div class="row"><span>C. Lamb</span><b>3.1</b></div><div class="row"><span>D. Henry</span><b>4.6</b></div></div>
+              <div class="box"><h5>All Matchups</h5><div class="row"><span>Team A – Team B</span><b>131–98</b></div><div class="row"><span>Team C – Team D</span><b>102–99</b></div></div>
+            </div>
+          </div>
+          <div class="box"><h5>Standings</h5>
+            <div class="row"><span>1. Rock of Ages</span><b>6-1</b></div><div class="row"><span>2. Grace Under Pressure</span><b>4-3</b></div><div class="row"><span>3. Prodigal Sons</span><b>4-3</b></div><div class="row"><span>4. Burning Bush</span><b>4-3</b></div><div class="row"><span>5. Team E</span><b>3-4</b></div><div class="row"><span>…</span><b></b></div><div class="row"><span>12. Team L</span><b>1-6</b></div>
+          </div>
+        </div>
+        <div class="strip"><div class="m big">Rock of Ages<br>vs Burning Bush<br><span style="color:#f2a59e">1st vs 4th</span></div><div class="m">Team C<br>vs Team D</div><div class="m">Team E<br>vs Team F</div><div class="m">+3 more</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b-scroll-story" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Scroll Story</h3>
+      <p>One column, read top to bottom like a story. Each section is a chapter with a big header. Chapters alternate light and dark. Reads well on a phone.</p>
+      <div class="page">
+        <div class="mast"><div class="logo"></div><div><div class="t">Cornerstone League</div><div class="s">Weekly Report · Oct 13 – Oct 19</div></div><div class="wk">WEEK 7</div></div>
+        <div class="chap"><div class="lbl">Chapter 1 · Matchup of the Week</div><div class="h">Grace Under Pressure 118.4 – 117.9 The Prodigal Sons</div><div class="blurb">Decided by a Monday night two-point conversion. Both teams now sit at 4-3, one game out of the last playoff spot.</div></div>
+        <div class="chap dark"><div class="lbl">Chapter 2 · Game Changer</div><div class="h">Jaylen Warren · 24.1</div><div class="blurb">Picked up Wednesday off waivers as a bye-week fill-in. Outscored every RB in the league.</div></div>
+        <div class="chap"><div class="lbl">Chapter 3 · Awards</div><div class="grid" style="grid-template-columns:1fr 1fr 1fr; padding:0"><div class="box"><h5>Top Scorers</h5><div class="row"><span>J. Chase</span><b>31.2</b></div></div><div class="box"><h5>MVB</h5><div class="row"><span>R. White</span><b>22.4</b></div></div><div class="box"><h5>Underperformers</h5><div class="row"><span>C. Lamb</span><b>3.1</b></div></div></div></div>
+        <div class="chap dark"><div class="lbl">Chapter 4 · Standings</div><div class="row" style="border-color:#444"><span>1. Rock of Ages</span><b>6-1</b></div><div class="row" style="border-color:#444"><span>2. Grace Under Pressure</span><b>4-3</b></div><div class="row" style="border-color:#444"><span>…</span></div></div>
+        <div class="chap"><div class="lbl">Chapter 5 · Next Week</div><div class="h">Rock of Ages vs Burning Bush</div><div class="blurb">1st place meets 4th. Loser likely drops out of the top four.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c-dashboard" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Dashboard Tiles</h3>
+      <p>A grid of tiles. Every section is visible at once with no scroll on a laptop. Matchup of the Week is the largest tile. Less story, more scan.</p>
+      <div class="page">
+        <div class="mast"><div class="logo"></div><div><div class="t">Cornerstone League</div><div class="s">Weekly Report · Oct 13 – Oct 19</div></div><div class="wk">WEEK 7</div></div>
+        <div class="grid" style="grid-template-columns:2fr 1fr 1fr">
+          <div class="tile red" style="grid-row:span 2"><div class="lbl">Matchup of the Week</div><div class="h">Grace Under Pressure 118.4 – 117.9 The Prodigal Sons</div><div class="blurb" style="color:#fbe3e0">Decided by a Monday night two-point conversion.</div></div>
+          <div class="tile"><div class="lbl">Top Scorer</div><div class="score">J. Chase 31.2</div></div>
+          <div class="tile"><div class="lbl">MVB</div><div class="score">R. White 22.4</div></div>
+          <div class="tile"><div class="lbl">Underperformer</div><div class="score">C. Lamb 3.1</div></div>
+          <div class="tile blk"><div class="lbl">Game Changer</div><div class="score">J. Warren 24.1</div></div>
+          <div class="tile" style="grid-column:span 2"><div class="lbl">Standings</div><div class="row"><span>1. Rock of Ages</span><b>6-1</b></div><div class="row"><span>2. Grace Under Pressure</span><b>4-3</b></div></div>
+          <div class="tile"><div class="lbl">Next Week</div><div class="score">Rock vs Bush</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,533 @@
+{
+  "build": {
+    "started": "2026-10-24T14:59:48.971318-04:00",
+    "sources": {
+      "history": true,
+      "nflverse_pbp": true,
+      "nflverse_ftn": true,
+      "nflverse_injuries": true,
+      "ffverse": true,
+      "nflverse_snaps": true,
+      "ffopportunity": true,
+      "nflverse_stats_player": true
+    },
+    "fetched": "2026-10-20T11:58:45.187196-04:00"
+  },
+  "chapters": {
+    "motw": [
+      {
+        "chapter": "motw",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M4.result gives the score and M4.upset confirms it was an upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Bernard is a margin driver on the winning side, so 'won it' fits; M4.move.13274 confirms a waiver add; 20.2 on 8.13 matches."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M4.dropswing says Bo Girds (the losing side) dropped 7 passes worth about 17.8, at least the margin, which permits saying the drops cost the game."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "D.12501 and D.12501.value give 3 drops worth about 14.2 for Golden, a Bo Girds starter."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "The Colts are a recent add for Bo Girds (M4.move.IND) and a margin driver on the losing side at -0.85, so 'blew it' fits."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "An opinion with no factual claim."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "game_changer": [
+      {
+        "chapter": "game_changer",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.game_changer and M4.move.13274 support the week 5 waiver add, 20.2 on an 8.13 projection, and the Game Changer award."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "P.13274.trend states he beat projection in 3 of the last 3 weeks."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "This is a reaction with no new factual claim, consistent with the waiver add fact."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "CeeDee Lamb scored 11.5 for behold the lamb and Germie Bernard was the team's top scorer; the wordplay is tone."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "Bernard is a swing player, M4.result names Bo Girds as the opponent, and M4.upset states behold the lamb was 11th before the week."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "awards": [
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": false,
+            "reason": "The 6.3 on a 23.08 projection and the Underperformer award are supported, but 'by a wide gap' implies a lead over other underperformers, and no fact gives that comparison."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "W.adds confirms Tuten was a trade add for Amon-Ra Dawg Your Team, and AW.lucky gives 22.7 against 12.49."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "AW.overachiever confirms Tre Tucker of All You Need Is Love scored 24.2 on a 7.58 projection."
+          }
+        ],
+        "passed": false
+      },
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.underperformer gives Bijan Robinson 6.3 on a 23.08 projection, for To Infinity and Bijan."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "W.adds shows Tuten was acquired in a week 6 trade, and AW.lucky gives 22.7 on 12.49 expected points."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "AW.unlucky gives CeeDee Lamb of behold the lamb 11.5 on 26.42 expected points."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "position_leaders": [
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "LEAD.RB.1 gives Walker 1st among started RBs at 26.9 for Bo Girds, and LEAD.QB.2 gives Shough 2nd among started QBs for Bo Girds."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "LEAD.QB.3 gives Maye 23.8 and LEAD.TE.1 gives Likely 1st of started TEs at 20.9, both for Maye d'force B with U; the namesake remark is tone."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "LEAD.WR.1 gives Tucker 1st among started WRs at 24.2, and LEAD.WR.1.volume ranks him 26th among started WRs, stated as passing volume."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_1": [
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Score and Purdy as Brock 'N' Roll's top scorer with 17.36 match M1.result and M1.top.1."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Goedert 9.1 and Tampa Bay 9.65 are recent adds for the losing side, and Denver's 13.35 as a recent add exceeds both."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "The cited injury facts list Adams and Evans as Out and Doubs as IR as of Tuesday."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_2": [
+      {
+        "chapter": "recap_2",
+        "code_failures": [
+          "[1] 'sank' needs a cited .driver or .swing or .dropswing fact"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "recap_2",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Score, upset, and season low for Unsolicited Dak Picks all match M2.result, M2.upset, and H.11.high; 'flattened' is tone."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Tate is a recent add by trade who scored 16, and Vidal is a waiver add who scored 5.5, per the cited move facts."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Johnson scored 0 at TE, Brown scored 3.2, and the Questionable status cites M2.inj.5859; 'wasn't much better' is a fair aside."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_3": [
+      {
+        "chapter": "recap_3",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The result and 9.51 margin match. Likely is a TE and a margin driver on the winning side, so 'won it' fits, and he is a swing player with 20.9."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Amon-Ra Dawg Your Team is 4-8. Tuten is a recent add via trade who scored 22.7, and Garrett Wilson came by trade and scored 6.4, under projection."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Kincaid came by trade and is listed Questionable per the inj fact. Waddle, on the winning Maye d'force side, is also listed Questionable per the inj fact."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_4": [
+      {
+        "chapter": "recap_4",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M4.dropswing states Bo Girds, the losing side, had 7 drops worth about 17.8, at least the 5.34 margin, so this is a drop swing and saying the drops cost the game is allowed."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M4.upset confirms behold the lamb was 11th before the week, and M4.move.IND confirms the Colts were a recent add who scored -0.85."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "A sarcastic aside with no factual claim."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_5": [
+      {
+        "chapter": "recap_5",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M5.result gives the 112.48 to 46.08 score and H.7.high confirms 46.08 is a season low for To Infinity and Bijan."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Bijan Robinson scored 6.3 per M5.starter.7.9509, and M5.move.7611 makes Stevenson a recent add by trade who scored 3.6."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M5.move.11635 and M5.move.5927 list both as trade recent adds, and the cited inj facts list both as Out on Sleeper."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_6": [
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M6.result gives the 12.95 margin. M6.driver.10213 makes Tucker a margin driver, so 'won it' fits. M6.swing.10213 confirms his 24.2 outscored the margin on his own."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M6.move.12481 shows Skattebo started after a week 6 trade and scored 0. M6.records puts Pukancun on 3 at 1-11."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "A sarcastic aside with no factual claim."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "median": [
+      {
+        "chapter": "median",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Median 106.83 and Lil Fridge's 19.97 margin are stated; 19.97 is the largest of the listed above-median gaps."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "46.08, 60.75 below the median, and the season low are all stated in MED.below.7 and H.7.high."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "MED.closest states Bo Girds cleared the median by 2.79 and Amon-Ra Dawg Your Team missed it by 2.79."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "next_week": [
+      {
+        "chapter": "next_week",
+        "code_failures": [
+          "[0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "next_week",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "NX.3v8 names this Must Watch matchup, and SW.3v8 gives Return of T Mac 80% with a win and 62% with a loss while Lil Fridge stays near 99% either way."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "NX.2v6 marks this as the other Must Watch, and SW.2v6 gives All You Need Is Love 34% with a win and 18% with a loss while Bo Girds stays near 99% either way."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "NX.4v7 shows the matchup, and S.11 and S.12 put To Infinity and Bijan 11th and Pukancun on 3 12th, both below the cut; 'showdown of the awful' is tone."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "rankings": [
+      {
+        "chapter": "rankings",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "PR.3 gives 1st place and S.1 gives the 10-2 record, 4 games above the cut."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "H.3.trend gives 113.91 per week, down from the average; ODDS.3 gives a bye in 80% of runs."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "PR.5 gives 2nd with no move; H.5.streak gives 4 straight wins."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "H.5.trend shows 122.9 lately, up from 120.33; the kitchen line is tone."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "PR.6 gives 3rd with no move; H.6.streak gives 2 straight losses."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "ODDS.6 gives a bye in 46% of runs; the coin flip line is a joke."
+          },
+          {
+            "index": 6,
+            "supported": true,
+            "reason": "PR.9 gives 4th, up 1 place; H.9.streak gives 2 straight wins."
+          },
+          {
+            "index": 7,
+            "supported": true,
+            "reason": "ODDS.9 gives playoffs in about 79% of runs."
+          },
+          {
+            "index": 8,
+            "supported": true,
+            "reason": "PR.8 and PR.8.why give up 2 places after a 39-point win."
+          },
+          {
+            "index": 9,
+            "supported": true,
+            "reason": "H.8.streak gives 3 straight wins; PR.8 gives 1st in results over the last 3 weeks."
+          },
+          {
+            "index": 10,
+            "supported": true,
+            "reason": "S.7 gives 6-6, 1 spot outside the playoff spots."
+          },
+          {
+            "index": 11,
+            "supported": true,
+            "reason": "PR.2 gives 6th; S.5 gives 7-5, in the playoff spots."
+          },
+          {
+            "index": 12,
+            "supported": true,
+            "reason": "ODDS.2 gives 20%; ODDS.2.why gives a projection of 98 a week."
+          },
+          {
+            "index": 13,
+            "supported": true,
+            "reason": "Joke with no new factual claim."
+          },
+          {
+            "index": 14,
+            "supported": true,
+            "reason": "PR.10 and PR.10.why give up 4 places after a 5-point win."
+          },
+          {
+            "index": 15,
+            "supported": true,
+            "reason": "S.8 gives 6-6, 2 spots outside the playoff spots."
+          },
+          {
+            "index": 16,
+            "supported": true,
+            "reason": "PR.1.why gives down 4 places after a 38-point loss to the 1st-place team."
+          },
+          {
+            "index": 17,
+            "supported": true,
+            "reason": "S.6 gives the last playoff spot; ODDS.1 gives playoffs in about 57% of runs."
+          },
+          {
+            "index": 18,
+            "supported": true,
+            "reason": "PR.12 gives 9th, down 1 place; S.9 gives 4-8."
+          },
+          {
+            "index": 19,
+            "supported": true,
+            "reason": "ODDS.12 gives 37%; ODDS.12.why gives the easiest remaining schedule."
+          },
+          {
+            "index": 20,
+            "supported": true,
+            "reason": "PR.11 gives 10th, down 1 place; H.11.streak gives 3 straight losses."
+          },
+          {
+            "index": 21,
+            "supported": true,
+            "reason": "Reaction with no claim."
+          },
+          {
+            "index": 22,
+            "supported": true,
+            "reason": "PR.7 gives 11th, down 1 place; H.7.trend gives 77.06 per week over the last 3 weeks."
+          },
+          {
+            "index": 23,
+            "supported": true,
+            "reason": "Joke resting on the downward trend in H.7.trend."
+          },
+          {
+            "index": 24,
+            "supported": true,
+            "reason": "ODDS.7 gives about 3%."
+          },
+          {
+            "index": 25,
+            "supported": true,
+            "reason": "PR.4 gives 12th with no move; S.12 gives 1-11."
+          },
+          {
+            "index": 26,
+            "supported": true,
+            "reason": "ODDS.4.why gives the hardest remaining schedule; 'reward' is sarcasm."
+          }
+        ],
+        "passed": true
+      }
+    ]
+  }
+}

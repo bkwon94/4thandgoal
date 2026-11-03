@@ -1,6 +1,7 @@
 /**
  * Holds each package folder to the rule of ADR 0006: a README of under 25 lines with the headings Knows, Ports, and Does not do.
- * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/. No tracked CLAUDE.md sits below the root.
+ * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/.
+ * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -17,7 +18,9 @@ const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
 const MAX_LINES = 24;
 
 const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
-const CLAUDE_MD_RULE = "no CLAUDE.md sits below the repo root";
+const CLAUDE_MD_RULE = "no CLAUDE.md sits below the repo root, except one at the top of each app";
+/* Each app keeps a short CLAUDE.md with its own commands, so apps/<app>/CLAUDE.md is allowed. See .scratch/one/PRD.md. */
+const APP_CLAUDE_MD = /^apps\/[^/]+\/CLAUDE\.md$/;
 const ADR = "docs/adr/0006-the-rules-are-checks.md";
 
 function subfolders(dir: string): string[] {
@@ -79,7 +82,7 @@ function offenses(path: string, source: string | null): Offense[] {
 /* The paths come from git ls-files, so a CLAUDE.md in node_modules or in an ignored folder does not count. */
 function claudeMdOffenses(paths: string[]): Offense[] {
   return paths
-    .filter((path) => basename(path) === "CLAUDE.md" && path !== "CLAUDE.md")
+    .filter((path) => basename(path) === "CLAUDE.md" && path !== "CLAUDE.md" && !APP_CLAUDE_MD.test(path))
     .map((path) => ({
       path,
       line: 1,
@@ -125,8 +128,13 @@ describe("the readme rule", () => {
   });
 
   it("finds one offense in a CLAUDE.md below the root", () => {
-    const found = claudeMdOffenses(["CLAUDE.md", "src/lib/CLAUDE.md", ".scratch/notes-on-CLAUDE.md"]);
-    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "src/lib/CLAUDE.md", ruleId: "readme/no-claude-md" }]);
+    const found = claudeMdOffenses([
+      "CLAUDE.md",
+      "apps/pipeline/CLAUDE.md",
+      "apps/site/src/lib/CLAUDE.md",
+      ".scratch/notes-on-CLAUDE.md",
+    ]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-claude-md" }]);
   });
 
   it("finds one offense in a folder on disk with one source file and no README", () => {
