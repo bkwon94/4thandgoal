@@ -4,6 +4,17 @@
 
 This tool builds a weekly report page for the Cornerstone fantasy football league. It reads
 league data from Sleeper. It writes the chapters of the report and writes the page data. The site in `apps/site` renders the pages.
+The root CLAUDE.md holds the style, the flow, and the tracker. `GLOSSARY.md` names the chapter of prose a "Prose block".
+
+## Commands
+
+Run these in `apps/pipeline/`. Run `make help` for the full list.
+
+- Install: `uv sync`
+- Check: `make check`. The hook runs `make check-fast`.
+- Build a week: `make build WEEK=<W>`
+- Publish a week: `make publish WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
+- Local API on port 8080: `make api`
 
 ## Pipeline
 
@@ -16,8 +27,8 @@ league data from Sleeper. It writes the chapters of the report and writes the pa
 
 ## Where the work sits
 
-`docs/agents/state.md` lists each open feature, its next ticket, and its hold. Read it, then the ticket in the
-tracker under `.scratch/`.
+`apps/pipeline/docs/agents/state.md` lists each open feature, its next ticket, and its hold. Read it, then the ticket in the
+tracker under `apps/pipeline/.scratch/`.
 
 ## Publish rule
 
@@ -39,12 +50,12 @@ Prose follows Simplified Technical English. The rules are in
 
 ### Issue tracker
 
-Local markdown under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+Local markdown under `apps/pipeline/.scratch/<feature>/`. See `apps/pipeline/docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-The five default names, unchanged. See `docs/agents/triage-labels.md`.
+The five default names, unchanged. See `apps/pipeline/docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Single-context: `GLOSSARY.md` and `docs/adr/` at the root. See `docs/agents/domain.md`.
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root, shared with the site. See `apps/pipeline/docs/agents/domain.md`.
