@@ -1,10 +1,13 @@
 # Builds the Next.js static export and deploys it to GitHub Pages.
-# It runs on each push to main and on a manual dispatch.
+# It runs on a push to main that changes the site or this workflow, and on a manual dispatch.
 name: Deploy
 
 on:
   push:
     branches: [main]
+    paths:
+      - "apps/site/**"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,18 +20,26 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # The site app lives in apps/site, so each run step starts there.
+    defaults:
+      run:
+        working-directory: apps/site
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
+      # The pnpm version comes from the packageManager field of the site package.json.
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
+        with:
+          package_json_file: apps/site/package.json
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
+          cache-dependency-path: apps/site/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -44,7 +55,7 @@ jobs:
       - name: Upload the export
         uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: apps/site/out
 
   deploy:
     needs: build

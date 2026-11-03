@@ -2,9 +2,11 @@
 
 This repo is the source of the Next.js site. The Python pipeline repo
 `cornerstone-fantasy-sleeper-weekly-report` publishes one `page.json` per week, with its images,
-into `public/<season>/week-NN/`. This app renders the pages.
+into `apps/site/public/<season>/week-NN/`. The site app in `apps/site/` renders the pages.
 
 ## Commands
+
+Run these in `apps/site/`.
 
 - Install: `pnpm install`
 - Dev server: `pnpm dev`
