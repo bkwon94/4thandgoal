@@ -22,9 +22,9 @@ the rest of the Fly account. The token is never in the tree.
 ## Why no approval gate
 
 The PRD of `agent-habits` first asked for an approval by Brian in a GitHub environment. On 2026-11-03 Brian
-chose a deploy on every green `main` push: "Deploy on green is fine". Two facts carry the choice:
+chose a deploy on every green `main` push: "Deploy on green is fine". Two facts support the choice:
 
-1. The check is the review. A change reaches `main` only through a merge, and `make check` runs on it.
+1. The check is the review. The check runs on each push to `main`, and `make check` runs on it.
 2. A deploy changes only the API. The site calls the API, but a deploy never publishes a page. The publish
    rule holds: only `cornerstone publish` pushes the site.
 

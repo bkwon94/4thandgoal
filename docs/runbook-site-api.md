@@ -78,8 +78,10 @@ grade. A document whose Claude call fell back is not stored, so the next request
 ## The deploy job
 
 - The job `deploy` in `.github/workflows/check.yml` deploys after each push to `main` with a green check.
-- To read the job, open the Actions tab, then the "Check" run of the push. The `deploy` log ends with the image and the machine state.
-- Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret `FLY_API_TOKEN` is absent.
+- To read the job, open the Actions tab, then the "Check" run of the push. The `deploy` log ends with the
+  image and the machine state.
+- Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
+  `FLY_API_TOKEN` is absent.
 
 ## First deploy
 

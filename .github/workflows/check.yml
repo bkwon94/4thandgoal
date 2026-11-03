@@ -7,7 +7,7 @@ on:
   push:
   workflow_dispatch:
 
-# The job only reads the repo, so the token gets no write scope.
+# Each job only reads the repo, so the token gets no write scope.
 permissions:
   contents: read
 
@@ -29,13 +29,13 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Two deploys of one app at once can fight over the machine, so a second deploy waits for the first.
+    # Two deploys of one app at once can conflict, so a second deploy waits for the first.
     concurrency:
       group: fly-deploy
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - uses: superfly/flyctl-actions/setup-flyctl@v1
       # --remote-only builds the image on a Fly builder, so the runner needs no Docker.
       - name: Deploy the API
         run: flyctl deploy --remote-only
