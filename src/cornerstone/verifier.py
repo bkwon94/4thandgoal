@@ -332,6 +332,10 @@ def code_check(
     in_scope_last_words = {last.split()[-1] for last in in_scope_last if last}
     # Lowercase, because whole_word ignores case.
     scope_team_words = {w.lower() for t in chapter.scope_teams for w in t.split()}
+    # A defense is named for its NFL team, so "Washington" in "the Washington defense" is not Parker Washington.
+    # The position tag "(DEF," in a chapter fact marks a defense.
+    defense_words = {w.lower() for p in chapter.scope_players for w in p.split()
+                     if any(f"{p} (DEF," in sheet.facts[fid].text for fid in chapter.fact_ids if fid in sheet.facts)}
     # The banned lists live in the vocabulary prompt, so the writer and the check read the same words.
     banned = _banned(prompts_dir, "## Banned words")
     banned_phrases = _banned(prompts_dir, "## Banned phrases")
@@ -384,8 +388,9 @@ def code_check(
             last = last_name(player)
             # A last name shared with an in-scope player is ambiguous, so it passes.
             # A word of a scope team name, such as "Love" for All You Need Is Love, is not a player match.
+            # A word of a scope defense name, such as "Washington" for Washington Commanders, is not one either.
             skip = (not last or last in in_scope_last or last in in_scope_last_words
-                    or last.lower() in scope_team_words)
+                    or last.lower() in scope_team_words or last.lower() in defense_words)
             if player in bare or (not skip and whole_word(last, bare)):
                 failures.append(f"[{i}] player {player} is not on a team in this chapter")
 

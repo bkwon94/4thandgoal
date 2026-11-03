@@ -1191,3 +1191,31 @@ def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
     b = _blurb("median", _s("Brock ‘N’ Roll sits at 6-6 with 59% playoff odds.", "S.6", "ODDS.1"))
     failures = code_check(b, ch, sheet, prompts_dir=PROMPTS)
     assert not any("numbers; the limit is two" in m for m in failures), failures
+
+
+def _defense_sheet():
+    """A recap with the Washington Commanders defense, and Parker Washington in another chapter."""
+    from cornerstone.models import Chapter, Fact, FactSheet
+
+    defense = Fact(id="M4.starter.11.WAS", text="Washington Commanders (DEF, WAS) started for Dak Attack and scored 14.25.",
+                   numbers=["14.25"], teams=["Dak Attack"], players=["Washington Commanders"])
+    receiver = Fact(id="M1.starter.3.8130", text="Parker Washington (WR, JAX) started for Lil Fridge and scored 9.1.",
+                    numbers=["9.1"], teams=["Lil Fridge"], players=["Parker Washington"])
+    recap = Chapter(key="recap_4", title="Recap", fact_ids=[defense.id], scope_teams=["Dak Attack"],
+                    scope_players=["Washington Commanders"], min_sentences=1, max_sentences=3)
+    other = Chapter(key="recap_1", title="Recap", fact_ids=[receiver.id], scope_teams=["Lil Fridge"],
+                    scope_players=["Parker Washington"], min_sentences=1, max_sentences=3)
+    return FactSheet(facts={defense.id: defense, receiver.id: receiver}, chapters=[recap, other]), recap
+
+
+def test_the_city_of_a_defense_in_scope_is_not_a_player_of_another_chapter():
+    sheet, ch = _defense_sheet()
+    b = _blurb("recap_4", _s("The Washington defense scored 14.25 for Dak Attack.", "M4.starter.11.WAS"))
+    assert code_check(b, ch, sheet, prompts_dir=PROMPTS) == []
+
+
+def test_the_full_name_of_a_player_of_another_chapter_still_fails_next_to_a_defense():
+    sheet, ch = _defense_sheet()
+    b = _blurb("recap_4", _s("Parker Washington watched the defense score 14.25.", "M4.starter.11.WAS"))
+    assert "[0] player Parker Washington is not on a team in this chapter" in code_check(
+        b, ch, sheet, prompts_dir=PROMPTS)
