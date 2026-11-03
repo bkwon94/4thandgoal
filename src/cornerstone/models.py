@@ -716,8 +716,7 @@ class DropPlay(BaseModel):
 
 
 class InjuryPlay(BaseModel):
-    """The first play of the week where the play by play says a player was injured."""
-    game_id: str
+    """The first play of the week where the play by play says a player was hurt."""
     # 5 is overtime, as the play by play writes it.
     quarter: int
     # The game clock as the play by play writes it, such as "10:04".

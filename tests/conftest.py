@@ -161,7 +161,7 @@ def nfl_week6(fixture_nflverse_dir, fixture_raw_dir, tmp_path) -> NflverseWeek:
 STORY_SUNDAY = datetime(2026, 10, 18, 13, 0, tzinfo=ET)
 STORY_MONDAY = datetime(2026, 10, 19, 20, 15, tzinfo=ET)
 # Ladd McConkey (M5) is listed Out with a concussion in the fixture, so he gets the injury play.
-STORY_PLAY = InjuryPlay(game_id="2026_06_LAC_KC", quarter=1, clock="03:06", away="LAC", home="KC")
+STORY_PLAY = InjuryPlay(quarter=1, clock="03:06", away="LAC", home="KC")
 
 
 @pytest.fixture

@@ -177,7 +177,7 @@ def test_read_injury_plays_gives_the_first_injury_play_of_each_carrier(tmp_path)
     # The defender is never a carrier, so he has no id, and the second Jackson play is not the first.
     assert list(plays) == ["00-1"]
     play = plays["00-1"]
-    assert (play.game_id, play.quarter, play.clock, play.away, play.home) == ("2026_08_BAL_LA", 1, "10:04", "BAL", "LAR")
+    assert (play.quarter, play.clock, play.away, play.home) == (1, "10:04", "BAL", "LAR")
 
 
 def test_read_injury_plays_reads_a_name_with_a_space_or_a_hyphen(tmp_path):
@@ -189,6 +189,27 @@ def test_read_injury_plays_reads_a_name_with_a_space_or_a_hyphen(tmp_path):
          "desc": "RECOVERED by DET-99-L.Overton at SEA 47. SEA-11-J.Smith-Njigba was injured during the play."},
     ])
     assert sorted(read_injury_plays(pbp, 8)) == ["00-4", "00-5"]
+
+
+def test_read_injury_plays_skips_a_malformed_row_with_one_log_line(tmp_path, caplog):
+    game = {"week": "8", "game_id": "2026_08_BAL_BUF", "away_team": "BAL", "home_team": "BUF", "posteam": "BAL"}
+    pbp = _plays(tmp_path / "pbp.csv.gz", [
+        # The quarter is NA, so the row is malformed. The next play of the same carrier is the first good one.
+        {**game, "qtr": "NA", "time": "10:04", "passer_player_id": "00-1", "passer_player_name": "L.Jackson",
+         "desc": "BAL-8-L.Jackson was injured during the play."},
+        {**game, "qtr": "3", "time": "01:00", "rusher_player_id": "00-2", "rusher_player_name": "D.Henry",
+         "desc": "BAL-22-D.Henry was injured during the play. BAL-8-L.Jackson was injured during the play."},
+    ])
+    plays = read_injury_plays(pbp, 8)
+    assert sorted(plays) == ["00-1", "00-2"] and plays["00-1"].quarter == 3
+    skipped = [r for r in caplog.records if "malformed" in r.getMessage()]
+    assert len(skipped) == 1 and "L.Jackson" in skipped[0].getMessage()
+
+
+def test_nflverse_week_with_no_play_by_play_and_no_schedule_has_no_injury_plays_and_no_kickoffs(tmp_path):
+    # Every download fails and the cache is empty, so the build goes on with no game story inputs.
+    nfl = nflverse_week(2026, 8, [], {}, tmp_path, fetch=_boom)
+    assert nfl.injury_plays is None and nfl.kickoffs is None
 
 
 def test_read_injury_plays_without_the_week_is_none(tmp_path):

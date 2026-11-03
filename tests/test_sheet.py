@@ -1082,10 +1082,10 @@ def test_a_matchup_that_flipped_on_monday_night_gets_the_turn_fact(story_bundle)
     assert "M3.turn" in recap.fact_ids and "M3.lead" in recap.fact_ids
 
 
-def test_the_lead_fact_gives_the_margin_after_each_slot_and_the_lead_changes(story_bundle):
+def test_the_lead_fact_gives_the_margin_after_each_game_time_and_the_lead_changes(story_bundle):
     facts = story_bundle.sheet.facts
     assert facts["M3.lead"].text == (
-        "The lead by slot of games: after the early Sunday games, Amon-Ra Dawg Your Team led by 12.24; after Monday, "
+        "The lead by game time: after the early Sunday games, Amon-Ra Dawg Your Team led by 12.24; after Monday, "
         "Maye d'force B with U led by 9.51. The lead changed 1 time."
     )
     assert facts["M5.lead"].text.endswith("The lead never changed.")
@@ -1094,14 +1094,14 @@ def test_the_lead_fact_gives_the_margin_after_each_slot_and_the_lead_changes(sto
 
 
 def test_a_starter_with_no_kickoff_and_points_gives_no_lead_fact(story_bundle):
-    # The fixture players blob has no team for the IND defense (M4), so the slot sums cannot reach the final score.
+    # The fixture players blob has no team for the IND defense (M4), so the game time sums cannot reach the final score.
     assert "M4.lead" not in story_bundle.sheet.facts and "M4.turn" not in story_bundle.sheet.facts
 
 
 def test_the_hurt_fact_gives_the_quarter_and_the_clock_of_the_injury_play(story_bundle):
     facts = story_bundle.sheet.facts
     assert facts["M5.hurt.11635"].text == (
-        "Ladd McConkey was injured on a play in the 1st quarter of LAC at KC, with 3:06 left.")
+        "Ladd McConkey was hurt on a play in the 1st quarter of LAC at KC, with 3:06 left.")
     assert facts["M5.snaps.11635"].text == "Ladd McConkey played 8 of 68 offensive snaps for LAC."
     assert facts["M5.hurt.11635"].numbers == ["1", "3", "06"]
 

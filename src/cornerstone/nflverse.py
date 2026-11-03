@@ -142,7 +142,7 @@ def read_injuries(path: Path, week: int) -> dict[str, dict[int, str]] | None:
     return injuries if has_week else None
 
 
-# The play by play names each injured player in the text of the play, as "BAL-8-L.Jackson was injured during the play".
+# The play by play names each hurt player in the text of the play, as "BAL-8-L.Jackson was injured during the play".
 # The name has no digit, so a match never runs across the team and jersey tag of another player.
 INJURED = re.compile(r"\b([A-Z]{2,3})-\d+-([A-Za-z.' -]+?) was injured during the play")
 # The ball carriers of a play, as the id column and the name column of each one.
@@ -153,28 +153,34 @@ CARRIER_COLUMNS = (("passer_player_id", "passer_player_name"), ("rusher_player_i
 def read_injury_plays(path: Path, week: int) -> dict[str, InjuryPlay] | None:
     """The first injury play of the week by gsis_id, for the passers, rushers, and receivers. None when no row.
 
-    The text of the play gives the team and the short name of the injured player, but no id. The id comes from a
+    The text of the play gives the team and the short name of the hurt player, but no id. The id comes from a
     play of the week where the same team had that name in a carrier column. A team with two carriers of one short
     name gives no id for that name, so a wrong player never gets the play.
     """
     rows = [row for row in _rows(path) if row["week"] == str(week)]
     if not rows:
         return None
-    # A cut file, such as a test fixture, can lack a column, so a missing column reads as empty and gives no play.
+    # A cut file, such as a test fixture, can lack a column, and a short row reads None for each missing cell. Both
+    # read as empty and give no play.
     ids: dict[tuple[str, str], set[str]] = {}
     for row in rows:
         for id_column, name_column in CARRIER_COLUMNS:
-            pid, name = row.get(id_column, ""), row.get(name_column, "")
+            pid, name = row.get(id_column) or "", row.get(name_column) or ""
             if pid not in ("", "NA") and name not in ("", "NA"):
-                ids.setdefault((row.get("posteam", ""), name), set()).add(pid)
+                ids.setdefault((row.get("posteam") or "", name), set()).add(pid)
     plays: dict[str, InjuryPlay] = {}
     for row in rows:
-        for team, name in INJURED.findall(row.get("desc", "")):
+        for team, name in INJURED.findall(row.get("desc") or ""):
             found = ids.get((team, name), set())
             if len(found) != 1 or (gsis := next(iter(found))) in plays:
                 continue
-            plays[gsis] = InjuryPlay(game_id=row["game_id"], quarter=int(row["qtr"]), clock=row["time"],
-                                     away=_sleeper_team(row["away_team"]), home=_sleeper_team(row["home_team"]))
+            # A failure of any source never stops a build, so a malformed row is skipped with one log line.
+            try:
+                plays[gsis] = InjuryPlay(quarter=int(row["qtr"]), clock=row["time"],
+                                         away=_sleeper_team(row["away_team"]), home=_sleeper_team(row["home_team"]))
+            except (KeyError, TypeError, ValueError) as error:
+                logger.warning("Injury play of %s in game %s skipped: the row is malformed (%s)", name,
+                               row.get("game_id"), error)
     return plays
 
 

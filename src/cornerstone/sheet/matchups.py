@@ -130,7 +130,7 @@ def _injury_facts(c, f, m) -> list[Fact]:
 
 
 def _hurt_facts(c, f, m) -> list[Fact]:
-    """The injury play and the snaps of each started line, so a recap can tell when a starter went down.
+    """The injury play and the snaps of each started line, so a recap can tell when a starter was hurt.
 
     The play comes from the nflverse play by play, through `NflverseWeek.injury_plays`. The snaps come from the
     Sleeper stats of the week. With no play by play, the play fact is absent, and the recap says nothing about it.
@@ -148,7 +148,7 @@ def _hurt_facts(c, f, m) -> list[Fact]:
                 when = "overtime" if play.quarter == 5 else f"the {n.ord(play.quarter)} quarter"
                 # The play by play writes "00:32" for a clock under a minute. The page reads "0:32".
                 clock = n.text(play.clock.removeprefix("0"))
-                text = f"{line.name} was injured on a play in {when} of {play.away} at {play.home}, with {clock} left."
+                text = f"{line.name} was hurt on a play in {when} of {play.away} at {play.home}, with {clock} left."
                 out.append(fact(f"M{f.matchup_id}.hurt.{line.player_id}", text, n, [team], [line.name]))
             # A starter with a Sleeper status but no injury play still gets his snaps, so the recap can say he left
             # early or played through it.
@@ -161,8 +161,9 @@ def _hurt_facts(c, f, m) -> list[Fact]:
     return out
 
 
-# The words of each slot after "after" and as the time of a play. The kickoffs are in Eastern time.
-SUNDAY_SLOTS = (
+# Each Sunday game time has three parts: the kickoff hour it ends before, the words that follow "after" in the lead
+# fact, and the words that say when a play happened. The hours are Eastern time, as the kickoffs are.
+SUNDAY_GAME_TIMES = (
     (16, "the early Sunday games", "in the early Sunday games"),
     (19, "the late Sunday games", "in the late Sunday games"),
     (24, "Sunday night", "on Sunday night"),
@@ -170,24 +171,24 @@ SUNDAY_SLOTS = (
 SUNDAY = 6
 
 
-def _slot(kickoff: datetime) -> tuple[str, str]:
-    """The slot of a kickoff, as the words after "after" and the words of the time. One slot per day but Sunday."""
+def _game_time(kickoff: datetime) -> tuple[str, str]:
+    """The game time of a kickoff, as the words after "after" and the words of when. Each day but Sunday is one."""
     if kickoff.weekday() != SUNDAY:
         day = kickoff.strftime("%A")
         return day, f"on {day}"
-    return next((after, during) for hour, after, during in SUNDAY_SLOTS if kickoff.hour < hour)
+    return next((after, during) for hour, after, during in SUNDAY_GAME_TIMES if kickoff.hour < hour)
 
 
-def _slot_lines(c, m) -> list[tuple[tuple[str, str], list[tuple[int, PlayerLine]]]] | None:
-    """The started lines of both sides by slot, in kickoff order, each with its roster ID.
+def _game_time_lines(c, m) -> list[tuple[tuple[str, str], list[tuple[int, PlayerLine]]]] | None:
+    """The started lines of both sides by game time, in kickoff order, each with its roster ID.
 
-    None when the week has no kickoffs, or when a starter with points has no kickoff. Then the slot sums would not
+    None when the week has no kickoffs, or when a starter with points has no kickoff. Then the sums would not
     reach the final score, so the lead facts are absent, and the recap says nothing about the lead.
     """
     kickoffs = c.nfl.kickoffs if c.nfl is not None else None
     if not kickoffs:
         return None
-    slots: dict[tuple[str, str], list[tuple[int, PlayerLine]]] = {}
+    times: dict[tuple[str, str], list[tuple[int, PlayerLine]]] = {}
     first: dict[tuple[str, str], datetime] = {}
     for side in (m.a, m.b):
         for line in side.lines:
@@ -199,30 +200,30 @@ def _slot_lines(c, m) -> list[tuple[tuple[str, str], list[tuple[int, PlayerLine]
                 if line.points:
                     return None
                 continue
-            slot = _slot(kickoff)
-            slots.setdefault(slot, []).append((side.roster_id, line))
-            first[slot] = min(first.get(slot, kickoff), kickoff)
-    return sorted(slots.items(), key=lambda item: first[item[0]])
+            time = _game_time(kickoff)
+            times.setdefault(time, []).append((side.roster_id, line))
+            first[time] = min(first.get(time, kickoff), kickoff)
+    return sorted(times.items(), key=lambda item: first[item[0]])
 
 
 def _lead_facts(c, f, m) -> list[Fact]:
-    """The lead after each slot of games, and the turn when the leader before the last slot lost.
+    """The lead after each game time, and the turn when the leader before the last game time lost.
 
-    The slot of a starter comes from the kickoff of his NFL team, from the nflverse schedule through
-    `NflverseWeek.kickoffs`. The points come from the Sleeper matchups. A slot with no starter of this matchup is not
+    The game time of a starter comes from the kickoff of his NFL team, from the nflverse schedule through
+    `NflverseWeek.kickoffs`. The points come from the Sleeper matchups. A game time with no starter of this matchup is not
     in the list, so a matchup with no Monday starter ends after Sunday night.
     """
-    slots = _slot_lines(c, m)
-    if slots is None or len(slots) < 2:
+    times = _game_time_lines(c, m)
+    if times is None or len(times) < 2:
         return []
     mid = f"M{f.matchup_id}"
     a, b = m.a.roster_id, m.b.roster_id
     margin = Decimal(0)
     margins = []
-    for slot, lines in slots:
+    for time, lines in times:
         # Decimal sums keep the last margin equal to the final margin.
         margin += sum((Decimal(str(line.points)) * (1 if rid == a else -1) for rid, line in lines), Decimal(0))
-        margins.append((slot, r2(float(margin))))
+        margins.append((time, r2(float(margin))))
     n = Nums()
     parts, leaders = [], []
     for (after, _), x in margins:
@@ -238,14 +239,14 @@ def _lead_facts(c, f, m) -> list[Fact]:
         tail = "The lead never changed."
     else:
         tail = f"The lead changed {n(changes)} time{'' if changes == 1 else 's'}."
-    text = "The lead by slot of games: " + "; ".join(parts) + ". " + tail
+    text = "The lead by game time: " + "; ".join(parts) + ". " + tail
     out = [fact(f"{mid}.lead", text, n, [c.team(a), c.team(b)], [])]
     (prev_after, _), prev = margins[-2]
     if f.winner is None or prev == 0 or (a if prev > 0 else b) == f.winner:
         return out
     n = Nums()
     leader, winner = c.team(f.loser), c.team(f.winner)
-    (_, during), last_lines = slots[-1]
+    (_, during), last_lines = times[-1]
     # The winner's starters come first, so the line reads as the turn.
     ordered = sorted(last_lines, key=lambda item: (item[0] != f.winner, -item[1].points))
     scored = "; ".join(f"{line.name} scored {n(line.points)} for {c.team(rid)}" for rid, line in ordered)
