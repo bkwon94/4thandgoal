@@ -1,0 +1,12 @@
+{
+  "name": "cpc-local",
+  "description": "The Claude Code marketplace of the cpcfantasyfootball repo.",
+  "owner": { "name": "Brian Kwon" },
+  "plugins": [
+    {
+      "name": "cpc",
+      "source": "./.claude/plugin",
+      "description": "The skills that know the flow, the tracker, and the check of the cpcfantasyfootball repo."
+    }
+  ]
+}

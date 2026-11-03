@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "cpc-local": {
+      "source": {
+        "source": "directory",
+        "path": "./"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "cpc@cpc-local": true
+  }
+}

@@ -40,7 +40,7 @@ A feature after the One spec has this shape. Each part is a file or folder under
 1. `MAP.md`: the map, with the headings DESTINATION, DECISIONS SO FAR, NOT YET SPECIFIED, and OUT OF SCOPE.
    The map is optional.
 2. `decisions/<NN>-<kind>-<slug>.md`: one decision ticket for each decision. The kind is `grill`, `research`,
-   `prototype`, or `spec`.
+   `prototype`, or `spec`. The notes of a research ticket sit beside it, at `decisions/<NN>-research-<slug>.notes.md`.
 3. `PRD.md`: the spec in prose.
 4. `ACCEPTANCE.md`: the acceptance tests, each named `AT-<n>`. Brian gives the verdict of each test (ADR 0020).
 5. `issues/<NN>-<slug>.md`: the tickets.
