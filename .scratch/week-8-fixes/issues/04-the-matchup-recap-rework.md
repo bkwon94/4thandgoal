@@ -15,6 +15,6 @@ them, as every blurb does.
 - [x] A test with a fixture matchup that flipped on Monday night shows the fact in the sheet.
 - [x] A test shows the recap prompt names the new facts.
 - [x] The verifier accepts a recap that cites the new facts.
-- [ ] `make build WEEK=8` from the saved data. Paste the six recaps in the close comment.
+- [x] `make build WEEK=8` from the saved data. Paste the six recaps in the close comment.
 - [x] `make golden` ran, and the golden diff is named in the close comment.
-- [ ] `make check` passes.
+- [x] `make check` passes.
