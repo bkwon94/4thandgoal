@@ -25,8 +25,8 @@ Brian decides before an agent builds one.
    folder that every ticket reads is the next README or the next split.
 2. **A state file lists each open feature and its next step** (ticket 02). `docs/agents/state.md`. A cold agent
    reads the tracker and not a handoff. A rule test keeps it true.
-3. **A deploy step for the Fly API behind the check and an approval** (ticket 03, pipeline only). CI deploys from
-   `main` after the check passes and Brian approves. An ADR records the decision.
+3. **A deploy step for the Fly API on every green main push** (ticket 03, pipeline only). CI deploys from
+   `main` after the check passes. An ADR records the decision.
 
 ## Decisions
 
@@ -34,7 +34,7 @@ Brian decides before an agent builds one.
 - **The list of files read is the agent's claim**, not evidence. One 0014 draws that line. The list still pays:
   an agent that must list what it read reads less.
 - **The state file is a list, not a log.** One line per open feature. The close comment of a ticket updates it.
-- **A deploy is a human decision.** The check gates it, and Brian approves it. No deploy runs on a push alone.
+- **A deploy runs on every green `main` push.** The check is the approval. Brian decided this on 2026-11-03.
 
 ## Out of Scope
 
