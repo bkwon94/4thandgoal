@@ -1,0 +1,11 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+  [0] The Blue Tent edged London Cooking 100.31 to 98.88 in an upset.  <- ['M3.result', 'M3.upset']
+  [1] The lead flipped 3 times, and the losing side still sat 3.67 up after Sunday night.  <- ['M3.lead', 'M3.turn']
+  [2] Monday flipped it back: the losers' Seattle defense posted -0.4, while Jadarian Price, a recent add, chipped in 4.7.  <- ['M3.turn', 'M3.move.13286']
+  [3] Jacoby Brissett, another recent add, scored 4.46 on an 18.33 projection, and they won anyway.  <- ['M3.move.3257', 'M3.result']
+  [4] Christian Watson was hurt in this game and is now listed Questionable, as are Michael Wilson, Drake London and James Cook III.  <- ['M3.hurt.8167', 'M3.inj.8167', 'M3.inj.10232', 'M3.inj.8112', 'M3.inj.8138']
+  [5] The winners' playoff odds rose to about 75% this week, while the losers' playoff odds slid to about 83%.  <- ['M3.impact']
+
+sentences with "upset": [0]

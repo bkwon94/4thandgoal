@@ -1,0 +1,11 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+M1.impact: Lil Fridge fell from 1st to 2nd in the standings, saw its playoff odds go from about 99% to 86% this week, and missed the median to go 0-2 this week. Maye d'force B with U stayed 5th in the standings, saw its playoff odds go from about 49% to 77% this week, and beat the median to go 2-0 this week.
+M2.impact: Return of T Mac stayed 7th in the standings, saw its playoff odds go from about 54% to 42% this week, beat the median to go 2-0 this week, and has now won 5 straight. behold the lamb fell from 10th to 11th in the standings, saw its playoff odds go from about 6% to 4% this week, and missed the median to go 0-2 this week.
+M3.impact: The Blue Tent stayed 6th in the standings, saw its playoff odds go from about 42% to 75% this week, and beat the median to go 2-0 this week. London Cooking fell from 3rd to 4th in the standings, saw its playoff odds go from about 99% to 83% this week, and missed the median to go 0-2 this week.
+M4.impact: All You Need Is Love rose from 4th to 1st in the standings, saw its playoff odds go from about 76% to 81% this week, beat the median to go 2-0 this week, and has now won 3 straight. Unsolicited Dak Picks fell from 9th to 10th in the standings, saw its playoff odds go from about 15% to 8% this week, and missed the median to go 0-2 this week.
+M5.impact: NFC Least stayed 12th in the standings, saw its playoff odds go from about 1% to 1% this week, and missed the median to go 0-2 this week. Teehee stayed 8th in the standings, saw its playoff odds go from about 58% to 61% this week, and beat the median to go 2-0 this week.
+M6.impact: Bo Girds fell from 2nd to 3rd in the standings, saw its playoff odds go from about 99% to 76% this week, missed the median to go 0-2 this week, and has now lost 4 straight. To Infinity and Bijan rose from 11th to 9th in the standings, saw its playoff odds go from about 1% to 7% this week, beat the median to go 2-0 this week, and ended a 3-game losing streak.
+
+status of each team: ['open']

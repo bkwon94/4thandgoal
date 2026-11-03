@@ -1,0 +1,40 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+motw: cites an impact fact = True
+  [0] The Blue Tent edged London Cooking 100.31 to 98.88 in an upset.  <- ['M3.result', 'M3.upset']
+  [1] The lead flipped 3 times, and the losing side still sat 3.67 up after Sunday night.  <- ['M3.lead', 'M3.turn']
+  [2] Monday flipped it back: the losers' Seattle defense posted -0.4, while Jadarian Price, a recent add, chipped in 4.7.  <- ['M3.turn', 'M3.move.13286']
+  [3] Jacoby Brissett, another recent add, scored 4.46 on an 18.33 projection, and they won anyway.  <- ['M3.move.3257', 'M3.result']
+  [4] Christian Watson was hurt in this game and is now listed Questionable, as are Michael Wilson, Drake London and James Cook III.  <- ['M3.hurt.8167', 'M3.inj.8167', 'M3.inj.10232', 'M3.inj.8112', 'M3.inj.8138']
+  [5] The winners' playoff odds rose to about 75% this week, while the losers' playoff odds slid to about 83%.  <- ['M3.impact']
+
+recap_1: cites an impact fact = True
+  [0] Maye d'force B with U flattened Lil Fridge 121.16 to 80.11 in an upset, trailing after Thursday and never looking back once the early Sunday games wrapped.  <- ['M1.result', 'M1.upset', 'M1.lead']
+  [1] The old leader lost the top spot and missed the median, Jakobi Meyers is now listed Questionable, and the winners stayed put while gaining real ground in the playoff odds this week.  <- ['M1.impact', 'M1.inj.5947']
+  [2] Not that the new pickups chipped in much, with Mason Taylor at 3.4 and the Bengals defense at 5.9.  <- ['M1.move.12498', 'M1.move.CIN']
+
+recap_2: cites an impact fact = True
+  [0] Return of T Mac led from Thursday on and won by 26.21, then still watched their playoff odds slide to 42% this week.  <- ['M2.result', 'M2.lead', 'M2.impact']
+  [1] Recent adds Chris Godwin Jr. and Omar Cooper Jr. both put up goose eggs for their new managers.  <- ['M2.move.4037', 'M2.move.13276']
+  [2] As for behold the lamb, it went quietly to the slaughter, falling to 11th with playoff odds down to 4% this week.  <- ['M2.impact']
+
+recap_3: cites an impact fact = True
+  [0] London Cooking still led going into Monday, then Jadarian Price, the new pickup, posted 4.7 while their Seattle Seahawks defense managed -0.4.  <- ['M3.turn', 'M3.lead', 'M3.move.13286']
+  [1] Christian Watson and James Cook III were both hurt in this game, and both are now listed Questionable along with Drake London and Michael Wilson.  <- ['M3.hurt.8167', 'M3.hurt.8138', 'M3.inj.8167', 'M3.inj.8138', 'M3.inj.8112', 'M3.inj.10232']
+  [2] The Blue Tent took it in an upset and saw its playoff odds go from about 42% to 75% this week, while the other side fell a spot in the standings.  <- ['M3.result', 'M3.upset', 'M3.impact']
+
+recap_4: cites an impact fact = True
+  [0] Down 21.8 after Thursday, All You Need Is Love got 42.48 from Joe Burrow, who outscored the margin on his own, and won going away.  <- ['M4.lead', 'M4.swing.6770', 'M4.result']
+  [1] Unsolicited Dak Picks got 1.6 from Darren Waller, the new pickup, and watched their playoff odds fall to 8% this week.  <- ['M4.move.2505', 'M4.impact']
+  [2] The winners now sit atop the standings, though Jeremiyah Love, hurt early in his game, is now listed Out.  <- ['M4.impact', 'M4.hurt.13287', 'M4.inj.13287']
+
+recap_5: cites an impact fact = True
+  [0] Teehee buried NFC Least 134.1 to 85.08 and led from the early Sunday games on.  <- ['M5.result', 'M5.lead']
+  [1] The trade haul flopped, with recent adds CeeDee Lamb at 9.3 and Jordan Mason at 2 while Saquon Barkley landed just under projection.  <- ['M5.move.6786', 'M5.move.8408', 'M5.move.4866']
+  [2] Hunter Henry is now listed Out and Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable, while the winners hold their spot and the losers stay dead last.  <- ['M5.inj.3214', 'M5.inj.12490', 'M5.inj.4983', 'M5.inj.7547', 'M5.impact', 'M5.records']
+
+recap_6: cites an impact fact = True
+  [0] To Infinity and Bijan took over after the early Sunday games and never gave it back, beating Bo Girds in an upset.  <- ['M6.lead', 'M6.result', 'M6.upset']
+  [1] Lamar Jackson was hurt in the 1st quarter and is now listed Out (Thumb); the top scorer on this side ended up being the recent add Jaguars defense at 20.3.  <- ['M6.hurt.4881', 'M6.inj.4881', 'M6.move.JAX', 'M6.top.6']
+  [2] This week dropped their playoff odds from about 99% to 76%, while the winners snapped their losing streak.  <- ['M6.impact']

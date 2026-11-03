@@ -1,0 +1,4 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+M6.impact: Bo Girds fell from 2nd to 3rd in the standings, saw its playoff odds go from about 99% to 76% this week, missed the median to go 0-2 this week, and has now lost 4 straight. To Infinity and Bijan rose from 11th to 9th in the standings, saw its playoff odds go from about 1% to 7% this week, beat the median to go 2-0 this week, and ended a 3-game losing streak.

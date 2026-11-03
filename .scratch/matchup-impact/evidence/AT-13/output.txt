@@ -1,0 +1,2 @@
+$ git diff main -- apps/site
+(exit 0, 0 lines)

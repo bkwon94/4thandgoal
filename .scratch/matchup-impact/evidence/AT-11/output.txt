@@ -1,0 +1,15 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+recap_1: first three words = 'The old leader'
+  The old leader lost the top spot and missed the median, Jakobi Meyers is now listed Questionable, and the winners stayed put while gaining real ground in the playoff odds this week.
+recap_2: first three words = 'Return of T'
+  Return of T Mac led from Thursday on and won by 26.21, then still watched their playoff odds slide to 42% this week.
+recap_3: first three words = 'The Blue Tent'
+  The Blue Tent took it in an upset and saw its playoff odds go from about 42% to 75% this week, while the other side fell a spot in the standings.
+recap_4: first three words = 'Unsolicited Dak Picks'
+  Unsolicited Dak Picks got 1.6 from Darren Waller, the new pickup, and watched their playoff odds fall to 8% this week.
+recap_5: first three words = 'Hunter Henry is'
+  Hunter Henry is now listed Out and Bhayshul Tuten, DJ Moore and Amon-Ra St. Brown are now listed Questionable, while the winners hold their spot and the losers stay dead last.
+recap_6: first three words = 'This week dropped'
+  This week dropped their playoff odds from about 99% to 76%, while the winners snapped their losing streak.
