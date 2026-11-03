@@ -614,3 +614,12 @@ def test_the_recap_rule_keeps_the_term_game_time_off_the_page(story_bundle):
     rule_29 = system.split("29. In a recap chapter", 1)[1]
     assert ('- The term "game time" never appears on the page. Write "after Thursday", '
             '"after the early Sunday games", or "into Monday".') in rule_29
+
+
+def test_writer_rule_31_states_a_rank_or_a_comparison_only_from_one_fact(fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
+    assert ("31. State a rank, a superlative, or a comparison only when one listed fact states it. "
+            '"The most", "nobody else was close", and "blew past everyone" need a fact that says so.') in system
+    assert 'A rank that a fact gives, such as 12th of 12, may read as last.' in system
+    assert "A direction word such as fell, climbed, or slid is fine when a fact gives the move." in system

@@ -1171,10 +1171,12 @@ def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
     from importlib import resources
 
     text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
-    assert ("- A rank, a superlative, or a comparison must be stated in one cited fact. "
+    assert ("- A rank, a superlative, or a comparison must be stated in one listed fact, cited or not. "
             "Do not compute it by comparing facts.") in text
     assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '
             "are unsupported unless one fact says so.") in text
+    assert 'A rank that a fact gives may read as last or first, such as "last" for 12th of 12.' in text
+    assert "A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move." in text
     assert "A sentence may use any listed fact, cited or not." in text
 
 
