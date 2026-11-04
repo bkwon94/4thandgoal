@@ -113,10 +113,16 @@ class TheRepoWorkspace(unittest.TestCase):
     def test_a_change_in_the_pipeline_of_the_repo_selects_the_api_too(self):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
 
-    def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_the_package(self):
+    def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_each_package_on_it(self):
+        # The facts package lists the league package, so a change in league checks facts too.
         files = ["packages/league/python/src/league/models.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["league"])
+        self.assertEqual(select_packages(REPO, files), ["facts", "league"])
+
+    def test_a_change_in_the_facts_package_of_the_repo_selects_the_apps_that_import_it_and_not_league(self):
+        files = ["packages/facts/python/src/facts/writer.py"]
+        self.assertEqual(select_apps(REPO, files), ["pipeline", "api"])
+        self.assertEqual(select_packages(REPO, files), ["facts"])
 
     def test_the_command_prints_the_apps_on_one_line(self):
         # HEAD against HEAD has no committed change, so only the files of the work tree count.

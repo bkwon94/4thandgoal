@@ -14,7 +14,7 @@ from cpc import cpc_client
 from fakes import fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import run_build
-from cornerstone.writer import WriterError
+from facts.writer import WriterError
 from league.paths import history_root, week_dir
 
 FIXTURES = Path(__file__).parent / "fixtures"

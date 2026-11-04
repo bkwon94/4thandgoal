@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 
-from cornerstone.writer import parse_call
+from facts.writer import parse_call
 from league.chart import chart_values, claude_reader
 from league.client import Client
 from league.history import PastLegFetcher

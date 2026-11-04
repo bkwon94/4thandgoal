@@ -12,8 +12,7 @@
       "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
       "wins": 9,
       "losses": 7,
-      "points_for": 871.19,
-      "is_brian": false
+      "points_for": 871.19
     },
     "2": {
       "roster_id": 2,
@@ -22,8 +21,7 @@
       "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
       "wins": 11,
       "losses": 5,
-      "points_for": 850.17,
-      "is_brian": false
+      "points_for": 850.17
     },
     "3": {
       "roster_id": 3,
@@ -32,8 +30,7 @@
       "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
       "wins": 10,
       "losses": 6,
-      "points_for": 909.55,
-      "is_brian": false
+      "points_for": 909.55
     },
     "4": {
       "roster_id": 4,
@@ -42,8 +39,7 @@
       "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
       "wins": 3,
       "losses": 13,
-      "points_for": 700.97,
-      "is_brian": false
+      "points_for": 700.97
     },
     "5": {
       "roster_id": 5,
@@ -52,8 +48,7 @@
       "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
       "wins": 9,
       "losses": 7,
-      "points_for": 918.99,
-      "is_brian": false
+      "points_for": 918.99
     },
     "6": {
       "roster_id": 6,
@@ -62,8 +57,7 @@
       "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
       "wins": 9,
       "losses": 7,
-      "points_for": 921.62,
-      "is_brian": true
+      "points_for": 921.62
     },
     "7": {
       "roster_id": 7,
@@ -72,8 +66,7 @@
       "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
       "wins": 7,
       "losses": 9,
-      "points_for": 769.09,
-      "is_brian": false
+      "points_for": 769.09
     },
     "8": {
       "roster_id": 8,
@@ -82,8 +75,7 @@
       "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
       "wins": 9,
       "losses": 7,
-      "points_for": 831.55,
-      "is_brian": false
+      "points_for": 831.55
     },
     "9": {
       "roster_id": 9,
@@ -92,8 +84,7 @@
       "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
       "wins": 9,
       "losses": 7,
-      "points_for": 901.65,
-      "is_brian": false
+      "points_for": 901.65
     },
     "10": {
       "roster_id": 10,
@@ -102,8 +93,7 @@
       "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
       "wins": 6,
       "losses": 10,
-      "points_for": 765.42,
-      "is_brian": false
+      "points_for": 765.42
     },
     "11": {
       "roster_id": 11,
@@ -112,8 +102,7 @@
       "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
       "wins": 6,
       "losses": 10,
-      "points_for": 793.58,
-      "is_brian": false
+      "points_for": 793.58
     },
     "12": {
       "roster_id": 12,
@@ -122,8 +111,7 @@
       "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
       "wins": 8,
       "losses": 8,
-      "points_for": 885.88,
-      "is_brian": false
+      "points_for": 885.88
     }
   },
   "pick": {
@@ -137,8 +125,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
           "wins": 9,
           "losses": 7,
-          "points_for": 871.19,
-          "is_brian": false
+          "points_for": 871.19
         },
         "score": 100.31,
         "top": {
@@ -165,8 +152,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
           "wins": 9,
           "losses": 7,
-          "points_for": 918.99,
-          "is_brian": false
+          "points_for": 918.99
         },
         "score": 98.88,
         "top": {
@@ -804,8 +790,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
             "wins": 3,
             "losses": 13,
-            "points_for": 700.97,
-            "is_brian": false
+            "points_for": 700.97
           },
           "players": [
             {
@@ -827,8 +812,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
             "wins": 6,
             "losses": 10,
-            "points_for": 765.42,
-            "is_brian": false
+            "points_for": 765.42
           },
           "players": [
             {
@@ -857,8 +841,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
             "wins": 9,
             "losses": 7,
-            "points_for": 901.65,
-            "is_brian": false
+            "points_for": 901.65
           },
           "score": 121.16,
           "top": {
@@ -885,8 +868,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
             "wins": 10,
             "losses": 6,
-            "points_for": 909.55,
-            "is_brian": false
+            "points_for": 909.55
           },
           "score": 80.11,
           "top": {
@@ -920,8 +902,7 @@
             "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
             "wins": 9,
             "losses": 7,
-            "points_for": 831.55,
-            "is_brian": false
+            "points_for": 831.55
           },
           "score": 111.97,
           "top": {
@@ -948,8 +929,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
             "wins": 6,
             "losses": 10,
-            "points_for": 765.42,
-            "is_brian": false
+            "points_for": 765.42
           },
           "score": 85.76,
           "top": {
@@ -983,8 +963,7 @@
             "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
             "wins": 9,
             "losses": 7,
-            "points_for": 871.19,
-            "is_brian": false
+            "points_for": 871.19
           },
           "score": 100.31,
           "top": {
@@ -1011,8 +990,7 @@
             "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
             "wins": 9,
             "losses": 7,
-            "points_for": 918.99,
-            "is_brian": false
+            "points_for": 918.99
           },
           "score": 98.88,
           "top": {
@@ -1046,8 +1024,7 @@
             "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
             "wins": 11,
             "losses": 5,
-            "points_for": 850.17,
-            "is_brian": false
+            "points_for": 850.17
           },
           "score": 116.83,
           "top": {
@@ -1074,8 +1051,7 @@
             "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
             "wins": 6,
             "losses": 10,
-            "points_for": 793.58,
-            "is_brian": false
+            "points_for": 793.58
           },
           "score": 92.55,
           "top": {
@@ -1109,8 +1085,7 @@
             "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
             "wins": 8,
             "losses": 8,
-            "points_for": 885.88,
-            "is_brian": false
+            "points_for": 885.88
           },
           "score": 134.1,
           "top": {
@@ -1137,8 +1112,7 @@
             "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
             "wins": 3,
             "losses": 13,
-            "points_for": 700.97,
-            "is_brian": false
+            "points_for": 700.97
           },
           "score": 85.08,
           "top": {
@@ -1172,8 +1146,7 @@
             "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
             "wins": 7,
             "losses": 9,
-            "points_for": 769.09,
-            "is_brian": false
+            "points_for": 769.09
           },
           "score": 118.89,
           "top": {
@@ -1200,8 +1173,7 @@
             "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
             "wins": 9,
             "losses": 7,
-            "points_for": 921.62,
-            "is_brian": true
+            "points_for": 921.62
           },
           "score": 88.2,
           "top": {
@@ -1235,8 +1207,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
         "wins": 9,
         "losses": 7,
-        "points_for": 871.19,
-        "is_brian": false
+        "points_for": 871.19
       },
       "gap": 0.72
     },
@@ -1248,8 +1219,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
         "wins": 9,
         "losses": 7,
-        "points_for": 918.99,
-        "is_brian": false
+        "points_for": 918.99
       },
       "gap": -0.72
     },
@@ -1262,8 +1232,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
           "wins": 8,
           "losses": 8,
-          "points_for": 885.88,
-          "is_brian": false
+          "points_for": 885.88
         },
         "score": 134.1,
         "above": true,
@@ -1277,8 +1246,7 @@
           "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
           "wins": 9,
           "losses": 7,
-          "points_for": 901.65,
-          "is_brian": false
+          "points_for": 901.65
         },
         "score": 121.16,
         "above": true,
@@ -1292,8 +1260,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
           "wins": 7,
           "losses": 9,
-          "points_for": 769.09,
-          "is_brian": false
+          "points_for": 769.09
         },
         "score": 118.89,
         "above": true,
@@ -1307,8 +1274,7 @@
           "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
           "wins": 11,
           "losses": 5,
-          "points_for": 850.17,
-          "is_brian": false
+          "points_for": 850.17
         },
         "score": 116.83,
         "above": true,
@@ -1322,8 +1288,7 @@
           "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
           "wins": 9,
           "losses": 7,
-          "points_for": 831.55,
-          "is_brian": false
+          "points_for": 831.55
         },
         "score": 111.97,
         "above": true,
@@ -1337,8 +1302,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
           "wins": 9,
           "losses": 7,
-          "points_for": 871.19,
-          "is_brian": false
+          "points_for": 871.19
         },
         "score": 100.31,
         "above": true,
@@ -1352,8 +1316,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
           "wins": 9,
           "losses": 7,
-          "points_for": 918.99,
-          "is_brian": false
+          "points_for": 918.99
         },
         "score": 98.88,
         "above": false,
@@ -1367,8 +1330,7 @@
           "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
           "wins": 6,
           "losses": 10,
-          "points_for": 793.58,
-          "is_brian": false
+          "points_for": 793.58
         },
         "score": 92.55,
         "above": false,
@@ -1382,8 +1344,7 @@
           "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
           "wins": 9,
           "losses": 7,
-          "points_for": 921.62,
-          "is_brian": true
+          "points_for": 921.62
         },
         "score": 88.2,
         "above": false,
@@ -1397,8 +1358,7 @@
           "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
           "wins": 6,
           "losses": 10,
-          "points_for": 765.42,
-          "is_brian": false
+          "points_for": 765.42
         },
         "score": 85.76,
         "above": false,
@@ -1412,8 +1372,7 @@
           "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
           "wins": 3,
           "losses": 13,
-          "points_for": 700.97,
-          "is_brian": false
+          "points_for": 700.97
         },
         "score": 85.08,
         "above": false,
@@ -1427,8 +1386,7 @@
           "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
           "wins": 10,
           "losses": 6,
-          "points_for": 909.55,
-          "is_brian": false
+          "points_for": 909.55
         },
         "score": 80.11,
         "above": false,
@@ -1457,8 +1415,7 @@
         "avatar_url": "https://sleepercdn.com/images/v3/avatars/avatar_default_aqua.webp",
         "wins": 11,
         "losses": 5,
-        "points_for": 850.17,
-        "is_brian": false
+        "points_for": 850.17
       }
     },
     {
@@ -1480,8 +1437,7 @@
         "avatar_url": "https://sleepercdn.com/avatars/thumbs/7572250c2fb084c434fed0e82229e183",
         "wins": 10,
         "losses": 6,
-        "points_for": 909.55,
-        "is_brian": false
+        "points_for": 909.55
       }
     },
     {
@@ -1503,8 +1459,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
         "wins": 9,
         "losses": 7,
-        "points_for": 921.62,
-        "is_brian": true
+        "points_for": 921.62
       }
     },
     {
@@ -1526,8 +1481,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/9cf7e752f2a2205ff68c332bca9fd3df.jpg",
         "wins": 9,
         "losses": 7,
-        "points_for": 918.99,
-        "is_brian": false
+        "points_for": 918.99
       }
     },
     {
@@ -1549,8 +1503,7 @@
         "avatar_url": "https://sleepercdn.com/avatars/thumbs/d22e52781a5d7a94bcbf2aa70e748382",
         "wins": 9,
         "losses": 7,
-        "points_for": 901.65,
-        "is_brian": false
+        "points_for": 901.65
       }
     },
     {
@@ -1572,8 +1525,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/090ef5a064db7159671f14ab9f134d5c.jpg",
         "wins": 9,
         "losses": 7,
-        "points_for": 871.19,
-        "is_brian": false
+        "points_for": 871.19
       }
     },
     {
@@ -1595,8 +1547,7 @@
         "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
         "wins": 9,
         "losses": 7,
-        "points_for": 831.55,
-        "is_brian": false
+        "points_for": 831.55
       }
     },
     {
@@ -1618,8 +1569,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/322e2b709307c6a6a060e5db7d2813db.jpg",
         "wins": 8,
         "losses": 8,
-        "points_for": 885.88,
-        "is_brian": false
+        "points_for": 885.88
       }
     },
     {
@@ -1641,8 +1591,7 @@
         "avatar_url": "https://sleepercdn.com/uploads/801f44c6516ea12096de19ed69975d95.jpg",
         "wins": 7,
         "losses": 9,
-        "points_for": 769.09,
-        "is_brian": false
+        "points_for": 769.09
       }
     },
     {
@@ -1664,8 +1613,7 @@
         "avatar_url": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
         "wins": 6,
         "losses": 10,
-        "points_for": 793.58,
-        "is_brian": false
+        "points_for": 793.58
       }
     },
     {
@@ -1687,8 +1635,7 @@
         "avatar_url": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
         "wins": 6,
         "losses": 10,
-        "points_for": 765.42,
-        "is_brian": false
+        "points_for": 765.42
       }
     },
     {
@@ -1710,8 +1657,7 @@
         "avatar_url": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
         "wins": 3,
         "losses": 13,
-        "points_for": 700.97,
-        "is_brian": false
+        "points_for": 700.97
       }
     }
   ],
@@ -1725,7 +1671,6 @@
         "wins": 10,
         "losses": 6,
         "points_for": 909.55,
-        "is_brian": false,
         "byes": []
       },
       "b": {
@@ -1736,7 +1681,6 @@
         "wins": 6,
         "losses": 10,
         "points_for": 765.42,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "13274",
@@ -1764,7 +1708,6 @@
         "wins": 9,
         "losses": 7,
         "points_for": 918.99,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "5846",
@@ -1782,7 +1725,6 @@
         "wins": 9,
         "losses": 7,
         "points_for": 901.65,
-        "is_brian": false,
         "byes": []
       },
       "must_watch": false,
@@ -1797,7 +1739,6 @@
         "wins": 11,
         "losses": 5,
         "points_for": 850.17,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "8126",
@@ -1815,7 +1756,6 @@
         "wins": 9,
         "losses": 7,
         "points_for": 831.55,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "8228",
@@ -1849,7 +1789,6 @@
         "wins": 9,
         "losses": 7,
         "points_for": 871.19,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "12499",
@@ -1867,7 +1806,6 @@
         "wins": 3,
         "losses": 13,
         "points_for": 700.97,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "9508",
@@ -1889,7 +1827,6 @@
         "wins": 7,
         "losses": 9,
         "points_for": 769.09,
-        "is_brian": false,
         "byes": []
       },
       "b": {
@@ -1900,7 +1837,6 @@
         "wins": 6,
         "losses": 10,
         "points_for": 793.58,
-        "is_brian": false,
         "byes": []
       },
       "must_watch": false,
@@ -1915,7 +1851,6 @@
         "wins": 9,
         "losses": 7,
         "points_for": 921.62,
-        "is_brian": true,
         "byes": []
       },
       "b": {
@@ -1926,7 +1861,6 @@
         "wins": 8,
         "losses": 8,
         "points_for": 885.88,
-        "is_brian": false,
         "byes": [
           {
             "player_id": "5967",

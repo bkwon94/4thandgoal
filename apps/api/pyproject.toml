@@ -10,6 +10,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "cornerstone",
+    "cpc-facts",
     "cpc-league",
     "fastapi>=0.158.0",
     "httpx>=0.28.1",
@@ -19,6 +20,7 @@ dependencies = [
 
 [tool.uv.sources]
 cornerstone = { workspace = true }
+cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
 
 [build-system]
@@ -39,9 +41,9 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The API imports the pipeline and the league package as its own code, so each sorts as first party, as they did in one app.
+# The API imports the pipeline, the league package, and the facts package as its own code, so each sorts as first party.
 [tool.ruff.lint.isort]
-known-first-party = ["cornerstone", "cornerstone_api", "league"]
+known-first-party = ["cornerstone", "cornerstone_api", "facts", "league"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]

@@ -8,8 +8,8 @@ from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import FLOOR_WEEKS, NEED_SHARE
+from facts.tokens import Nums, fact
 from league.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from league.parse import player_name, team_name
 from league.paths import history_week_dir

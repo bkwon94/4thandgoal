@@ -8,12 +8,13 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from cornerstone import RULE_PROMPTS
 from cornerstone.adjusters import STEP_WORDS, UPSIDE
-from cornerstone.names import NAME_SUFFIXES
 from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdict, grade, verdict
-from cornerstone.sheet.base import NUMBER_TOKEN
 from cornerstone.trade_facts import trade_fact_sheet
-from cornerstone.verifier import (
+from facts.names import NAME_SUFFIXES
+from facts.tokens import NUMBER_TOKEN
+from facts.verifier import (
     normalize_number,
     number_failures,
     remove_names,
@@ -21,7 +22,7 @@ from cornerstone.verifier import (
     team_mentions,
     whole_word,
 )
-from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
+from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -136,7 +137,7 @@ def build_analysis_prompt(
     facts: dict[str, Fact], feedback: str | None,
 ) -> tuple[str, str]:
     # The snapshot carries the client, so the prompts come from the folder that the client names.
-    system = "\n\n".join(load_prompt(snapshot.client.voice_dir, name) for name in PROMPT_FILES)
+    system = "\n\n".join(load_prompt(snapshot.client.voice_dir, name, RULE_PROMPTS) for name in PROMPT_FILES)
     lines = []
     for block in trade_side_lines(trade, snapshot, breakdowns):
         lines += [*block, ""]

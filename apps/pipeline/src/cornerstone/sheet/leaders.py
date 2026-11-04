@@ -4,7 +4,8 @@ The position leaders chapter and the history caps read them.
 """
 
 from cornerstone.facts_nflverse import volume_ranks
-from cornerstone.sheet.base import Context, Nums, fact, trend_text
+from cornerstone.sheet.base import Context, trend_text
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.history import (
     player_trend,

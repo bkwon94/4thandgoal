@@ -4,7 +4,8 @@ They come from the nflverse data, so a week with no nflverse data has none.
 """
 from decimal import Decimal
 
-from cornerstone.sheet.base import Context, Nums, fact, weeks_text
+from cornerstone.sheet.base import Context, weeks_text
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     DropLine,

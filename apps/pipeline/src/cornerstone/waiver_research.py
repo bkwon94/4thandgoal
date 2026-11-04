@@ -9,11 +9,12 @@ from pathlib import Path
 import anthropic
 from pydantic import ValidationError
 
-from cornerstone.sheet.base import Nums, fact
+from cornerstone import RULE_PROMPTS
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
-from cornerstone.verifier import URL
 from cornerstone.waiver import DROPS
-from cornerstone.writer import RefusalError, WriterError, load_prompt, parse_call
+from facts.tokens import Nums, fact
+from facts.verifier import URL
+from facts.writer import RefusalError, WriterError, load_prompt, parse_call
 from league.claude_port import Writer
 from league.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 
@@ -61,7 +62,7 @@ def build_research_prompt(p: WaiverPlayer, board: WaiverBoard, prompts_dir: Path
         "",
         f"Give at most {CLAIMS_PER_PLAYER} claims.",
     ]
-    return load_prompt(prompts_dir, "research.md"), "\n".join(lines)
+    return load_prompt(prompts_dir, "research.md", RULE_PROMPTS), "\n".join(lines)
 
 
 def _claims(out: ResearchOut) -> list[ResearchClaim]:

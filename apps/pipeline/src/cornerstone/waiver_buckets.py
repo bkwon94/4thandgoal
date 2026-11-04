@@ -6,8 +6,8 @@ from collections.abc import Callable
 from typing import NamedTuple
 
 from cornerstone.rank_score import rank_scores
-from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import Fact, WaiverPlayer
 from league.nflverse import gsis_id

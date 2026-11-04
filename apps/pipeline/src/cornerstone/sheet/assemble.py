@@ -7,8 +7,9 @@ from datetime import date
 from pathlib import Path
 
 from cornerstone.sheet import awards, drops, leaders, matchups, next_week, rankings, standings, week
-from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, sentence_range, week_dates
+from cornerstone.sheet.base import Context, sentence_range, week_dates
 from cornerstone.sheet.rankings import rankings_chapter
+from facts.chapters import BYE_FACT_PREFIX
 from league.client import Client
 from league.models import (
     Bundle,

@@ -11,14 +11,14 @@ from typing import TypeVar
 import anthropic
 from pydantic import BaseModel, ValidationError
 
-from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
+from facts.chapters import BYE_FACT_PREFIX, repeats_motw_headline
 from league.claude_errors import RefusalError, WriterError
 from league.claude_port import Writer
 from league.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
-# The default prompts: the rule prompts and the default voice.
+# The prompts of the facts package: the default voice and the rule prompts of the writer and the verifier.
 DEFAULT_PROMPTS = Path(__file__).parent / "prompts"
 # The voice files. The prompts folder of a client can replace only these two.
 VOICE_FILES = frozenset({"tone.md", "vocabulary.md"})
@@ -171,11 +171,15 @@ def call_with_retry(
     return None
 
 
-def load_prompt(voice_dir: Path, name: str) -> str:
+def load_prompt(voice_dir: Path, name: str, rules_dir: Path = DEFAULT_PROMPTS) -> str:
     """One prompt file. A voice file comes from the prompts folder `voice_dir` of the client when it holds the file,
-    else from the default voice. A rule prompt always comes from the default prompts, so a client never changes a rule.
+    else from the default voice. A rule prompt always comes from `rules_dir`, the prompts folder of the package that
+    owns it, so a client never changes a rule. The default is the folder of the writer and the verifier.
     """
-    folder = voice_dir if name in VOICE_FILES and (voice_dir / name).is_file() else DEFAULT_PROMPTS
+    if name in VOICE_FILES:
+        folder = voice_dir if (voice_dir / name).is_file() else DEFAULT_PROMPTS
+    else:
+        folder = rules_dir
     return (folder / name).read_text(encoding="utf-8").strip()
 
 

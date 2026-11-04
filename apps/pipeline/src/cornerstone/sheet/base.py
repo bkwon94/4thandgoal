@@ -1,9 +1,8 @@
 """
-The shared parts of the fact sheet: the number tokens, Nums, fact, Context and the odds it builds, the chapter
-tests, the week gate, and the text helpers that two chapters share. Modules outside the sheet import from here.
+The shared parts of the fact sheet: Context and the odds it builds, the sentence ranges, the week gate, and the
+text helpers that two chapters share. The fact tokens are in facts.tokens. Modules outside the sheet import from here.
 """
 import logging
-import re
 from collections.abc import Callable
 from datetime import date, timedelta
 
@@ -20,13 +19,12 @@ from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
 from cornerstone.odds import playoff_odds
 from cornerstone.power_rankings import power_rankings
+from facts.chapters import RANKINGS_CHAPTER
+from facts.tokens import Nums
 from league.client import Client
 from league.lineup import allowed_positions, fill_slots
 from league.models import (
-    Chapter,
     ChartValues,
-    Fact,
-    FactSheet,
     History,
     NflverseWeek,
     OddsResult,
@@ -35,7 +33,6 @@ from league.models import (
     Week,
     sub,
 )
-from league.numbers import ordinal, r2
 from league.snapshot import Snapshot
 from league.standings_table import season_records, standings
 from league.tunables import TREND_WEEKS
@@ -56,8 +53,6 @@ AWARD_TITLES = {
     "unlucky": "Unlucky",
     "lucky": "Lucky",
 }
-# The id prefix of every bye fact. GLOSSARY.md, "Bye line". The writer reads it to add the bye note.
-BYE_FACT_PREFIX = "NX.bye."
 # (min, max) sentences per chapter, from the spec.
 SENTENCE_RANGES = {
     "motw": (4, 6),
@@ -69,11 +64,6 @@ SENTENCE_RANGES = {
     # The third sentence leaves room for the swing of the Must Watch games. The byes next week need up to three more.
     "next_week": (2, 6),
 }
-RANKINGS_CHAPTER = "rankings"
-# The chapters about one or two teams, plus every recap_ chapter. Only these get the hard check on a
-# repeated team name: the chapters about every team, such as awards and median, name many teams, and "they" is
-# unclear there.
-TWO_TEAM_CHAPTERS = ("motw", "game_changer")
 
 
 def sentence_range(key: str, client: Client) -> tuple[int, int]:
@@ -82,53 +72,6 @@ def sentence_range(key: str, client: Client) -> tuple[int, int]:
         # One to three sentences for each team.
         return client.settings.team_count, 3 * client.settings.team_count
     return SENTENCE_RANGES[key]
-
-
-def two_team_chapter(key: str) -> bool:
-    return key in TWO_TEAM_CHAPTERS or key.startswith("recap_")
-
-
-def is_motw_recap(chapter: Chapter, sheet: FactSheet) -> bool:
-    """True for the recap of the Matchup of the Week pairing.
-
-    Both chapters hold the same matchup facts, so the writer repeats a sentence word for word.
-    The check reads the two scopes, so it works on a saved sheet with no rebuild.
-    """
-    motw = next((c for c in sheet.chapters if c.key == "motw"), None)
-    return (motw is not None and chapter.key.startswith("recap_")
-            and set(chapter.scope_teams) == set(motw.scope_teams))
-
-
-def is_game_changer_in_motw(sheet: FactSheet) -> bool:
-    """True when the Game Changer plays for a team of the Matchup of the Week.
-
-    The AW.game_changer fact names the team, so the check works on a saved sheet with no rebuild.
-    """
-    motw = next((c for c in sheet.chapters if c.key == "motw"), None)
-    changer = sheet.facts.get("AW.game_changer")
-    return motw is not None and changer is not None and bool(set(changer.teams) & set(motw.scope_teams))
-
-
-def repeats_motw_headline(chapter: Chapter, sheet: FactSheet) -> bool:
-    """True for the Matchup of the Week recap, and for game changer and awards when the Game Changer plays in it.
-
-    The game changer or awards chapter then names the same game, so the writer repeats lines such as
-    "without X, that is a loss".
-    Outside the Matchup of the Week, the note would name a chapter that never told this game.
-    """
-    if is_motw_recap(chapter, sheet):
-        return True
-    return chapter.key in ("game_changer", "awards") and is_game_changer_in_motw(sheet)
-
-
-# A record such as 33-30 is one token. A leading minus belongs to a negative number.
-NUMBER_TOKEN = re.compile(r"\d+-\d+|(?<!\d)-?\d+(?:\.\d+)?|\d+(?:\.\d+)?")
-PART_TOKEN = re.compile(r"\d+(?:\.\d+)?")
-
-
-def fmt(x: float) -> str:
-    """Shortest two-decimal form: 106.8 for 106.80, 21 for 21.0."""
-    return f"{r2(x):.2f}".rstrip("0").rstrip(".")
 
 
 def week_dates(season_start: date, week: int) -> str:
@@ -145,40 +88,6 @@ def check_week_is_buildable(week_target: int, last_scored: int, client: Client) 
     if last_scored < week_target:
         return f"Sleeper has scored through week {last_scored}. Week {week_target} is not final."
     return None
-
-
-class Nums:
-    """Formats values for fact text and records each one, so `numbers` is exact."""
-
-    def __init__(self) -> None:
-        self.seen: list[str] = []
-
-    def __call__(self, x: float) -> str:
-        s = str(x) if isinstance(x, int) else fmt(x)
-        self.seen.append(s)
-        return s
-
-    def ord(self, n: int) -> str:
-        self.seen.append(str(n))
-        return ordinal(n)
-
-    def record(self, wins: int, losses: int) -> str:
-        self.seen += [str(wins), str(losses), f"{wins}-{losses}"]
-        return f"{wins}-{losses}"
-
-    def text(self, raw: str) -> str:
-        """Record the numbers in text that code already wrote. Rewrite decimals to the page form."""
-        out = PART_TOKEN.sub(
-            lambda m: fmt(float(m.group())) if "." in m.group() else m.group(), raw
-        )
-        for token in NUMBER_TOKEN.findall(out):
-            # A record or a negative number also lists its plain parts.
-            self.seen += [token, *(p for p in PART_TOKEN.findall(token) if p != token)]
-        return out
-
-
-def fact(fid: str, text: str, n: Nums, teams: list[str], players: list[str]) -> Fact:
-    return Fact(id=fid, text=text, numbers=n.seen, teams=teams, players=players)
 
 
 def week_odds(

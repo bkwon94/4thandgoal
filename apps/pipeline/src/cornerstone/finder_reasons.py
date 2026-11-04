@@ -6,10 +6,11 @@ import logging
 
 from pydantic import BaseModel
 
+from cornerstone import RULE_PROMPTS
 from cornerstone.analysis import trade_prose_failures, trade_side_lines
 from cornerstone.finder import FinderTrade
 from cornerstone.trade_facts import trade_fact_sheet
-from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
+from facts.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
 from league.models import Fact
 from league.snapshot import Snapshot
 
@@ -62,7 +63,7 @@ def build_finder_prompt(
     found: list[FinderTrade], snapshot: Snapshot, facts: list[dict[str, Fact]], feedback: str | None,
 ) -> tuple[str, str]:
     # The snapshot carries the client, so the prompts come from the folder that the client names.
-    system = "\n\n".join(load_prompt(snapshot.client.voice_dir, name) for name in PROMPT_FILES)
+    system = "\n\n".join(load_prompt(snapshot.client.voice_dir, name, RULE_PROMPTS) for name in PROMPT_FILES)
     lines = []
     for number, (item, trade_sheet) in enumerate(zip(found, facts), start=1):
         lines += [f"Trade {number}", ""]

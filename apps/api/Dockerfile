@@ -19,15 +19,17 @@ ENV UV_PYTHON_DOWNLOADS=never \
 WORKDIR /app
 
 # The dependencies install first, so a change to the source alone reuses this layer.
-# The image holds the three members the API needs: the API, the pipeline, and the league package they import.
+# The image holds the four members the API needs: the API, the pipeline, and the league and facts packages they import.
 COPY pyproject.toml uv.lock ./
 COPY apps/pipeline/pyproject.toml apps/pipeline/README.md ./apps/pipeline/
 COPY packages/league/python/pyproject.toml ./packages/league/python/
+COPY packages/facts/python/pyproject.toml ./packages/facts/python/
 COPY apps/api/pyproject.toml ./apps/api/
 RUN uv sync --frozen --no-dev --package cpc-api --no-install-workspace
 
 COPY apps/pipeline/src/ ./apps/pipeline/src/
 COPY packages/league/python/src/ ./packages/league/python/src/
+COPY packages/facts/python/src/ ./packages/facts/python/src/
 COPY apps/api/src/ ./apps/api/src/
 RUN uv sync --frozen --no-dev --package cpc-api
 

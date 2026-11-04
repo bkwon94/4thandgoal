@@ -4,7 +4,8 @@ The standings facts place each team against the last playoff spot.
 """
 from decimal import Decimal
 
-from cornerstone.sheet.base import Context, Nums, fact
+from cornerstone.sheet.base import Context
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     Fact,

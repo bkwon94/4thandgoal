@@ -1,0 +1,52 @@
+# The Python side of the facts package: the fact tokens, the writer, the verifier, the names, and the default voice.
+# It lists only the league package, so "uv run --exact --package cpc-facts" fails an import of an app.
+[project]
+name = "cpc-facts"
+version = "0.1.0"
+description = "The fact tokens, the writer, the verifier, the names, and the default voice."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cpc-league",
+    "anthropic>=1.15.0",
+    "pydantic>=2.14.1",
+]
+
+[tool.uv.sources]
+cpc-league = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# The facts package imports the league package as its own code, so both sort as first party in one block.
+[tool.ruff.lint.isort]
+known-first-party = ["facts", "league"]
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+# Backlog: writer.py has 5 errors and verifier.py 3, all in bodies that the move kept as they are.
+# The writer errors are the plain dicts that the Claude call passes and the BaseModel return of a ClaudeCall.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/facts/chapters.py", "src/facts/names.py", "src/facts/tokens.py", "tests"]
+# The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
+extraPaths = ["../../../apps/pipeline/tests"]
+
+[tool.uv.build-backend]
+module-name = "facts"

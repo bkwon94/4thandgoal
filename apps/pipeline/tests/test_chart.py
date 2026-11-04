@@ -10,7 +10,7 @@ import httpx
 import pytest
 from PIL import Image
 
-from cornerstone.writer import ClaudeWriter, WriterError, parse_call
+from facts.writer import ClaudeWriter, WriterError, parse_call
 from league.chart import (
     CHART_PROMPT,
     PNG_SIGNATURE,

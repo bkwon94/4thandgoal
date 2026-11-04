@@ -14,7 +14,7 @@ FIX = "pass a FakeWriter or a FixtureProvider from tests/fakes.py, or an httpx.M
 
 # The modules of the two ports. A patch of a name in one of them, or of a name imported from one, patches a port.
 # league.provider covers league.provider.sleeper.
-PORT_MODULES = ("cornerstone.writer", "league.claude_port", "league.provider")
+PORT_MODULES = ("facts.writer", "league.claude_port", "league.provider")
 # The Claude calls, the state fetch, and the two port instances, under any module, such as cli.WRITER.
 # The Provider methods join them from the protocol.
 CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state", "WRITER", "SLEEPER"}
@@ -133,10 +133,10 @@ def test_the_rule_finds_a_name_from_a_port_module_a_string_target_and_a_port_ins
         '"""A fetch test."""\nfrom cornerstone import cli, pipeline\n\n\ndef test_fetch(monkeypatch):\n'
         '    from league.provider import sleeper\n\n'
         '    monkeypatch.setattr(sleeper, "_get", f)\n'
-        '    monkeypatch.setattr("cornerstone.writer.MODEL", "x")\n'
+        '    monkeypatch.setattr("facts.writer.MODEL", "x")\n'
         '    monkeypatch.setattr(cli, "WRITER", w)\n'
         '    monkeypatch.setattr(cli, "SLEEPER", p)\n'
         '    monkeypatch.setattr(pipeline, "fetch_nflverse", f)\n')
     assert [(offense.line, offense.what) for offense in _patch_offenses(tmp_path)] == [
-        (8, "The test patches sleeper._get."), (9, "The test patches cornerstone.writer.MODEL."),
+        (8, "The test patches sleeper._get."), (9, "The test patches facts.writer.MODEL."),
         (10, "The test patches cli.WRITER."), (11, "The test patches cli.SLEEPER.")]

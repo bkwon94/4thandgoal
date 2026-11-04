@@ -11,7 +11,7 @@ from cpc import cpc_client
 from fakes import HISTORY_FIXTURES, FixtureProvider, fixture_nflverse, no_claims, no_news
 
 from cornerstone.pipeline import run_build
-from cornerstone.writer import WriterError
+from facts.writer import WriterError
 from league.history import fetch_history
 from league.paths import history_root, week_dir
 from league.provider.base import Provider

@@ -19,7 +19,6 @@ from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.power_rankings import power_rankings
 from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
 from cornerstone.sheet import (
-    RANKINGS_CHAPTER,
     build_bundle,
     check_week_is_buildable,
     power_facts,
@@ -28,11 +27,12 @@ from cornerstone.sheet import (
     read_bundle,
     write_bundle,
 )
-from cornerstone.verifier import page_words, reserved_words, write_and_verify
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history
 from cornerstone.waiver_research import SearchCall, research_board, search_call
-from cornerstone.writer import ClaudeCall
+from facts.chapters import RANKINGS_CHAPTER
+from facts.verifier import page_words, reserved_words, write_and_verify
+from facts.writer import ClaudeCall
 from league.chart import match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import Client

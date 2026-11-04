@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from pydantic import BaseModel
 
-from cornerstone.names import last_name
 from cornerstone.tunables import (
     EXPECTED_ADJUSTER_ON,
     EXPECTED_GAP,
@@ -23,6 +22,7 @@ from cornerstone.tunables import (
     SELLER_GAP,
     WOPR_SWING,
 )
+from facts.names import last_name
 from league.history import (
     SHARE_DIRECTION_WEEKS,
     air_yards_share,

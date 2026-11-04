@@ -9,7 +9,7 @@ from conftest import SAVED
 from cpc import cpc_client
 
 from cornerstone.sheet import build_bundle
-from cornerstone.writer import (
+from facts.writer import (
     DEFAULT_PROMPTS,
     MOTW_HEADLINE_NOTE,
     build_writer_prompt,
@@ -136,7 +136,7 @@ def test_template_blurb_without_result_uses_first_fact(fixture_raw_dir):
 
 @pytest.mark.live
 def test_live_write_median(fixture_raw_dir):
-    from cornerstone.writer import claude_call
+    from facts.writer import claude_call
 
     sheet = _sheet(fixture_raw_dir)
     ch = _chapter(sheet, "median")
@@ -189,7 +189,7 @@ def test_writer_rule_21_tags_each_rankings_sentence_with_its_team(fixture_raw_di
 def test_verifier_prompt_supports_a_reaction_sentence():
     from importlib import resources
 
-    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("verifier.md").read_text(encoding="utf-8")
     assert "- A sentence with no fact IDs and no claim is supported." in text
 
 
@@ -275,7 +275,7 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
 
 def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True):
     """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
-    from cornerstone.writer import ClaudeWriter
+    from facts.writer import ClaudeWriter
 
     sent = {}
 
@@ -297,7 +297,7 @@ def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True)
 
 
 def test_claude_call_sends_the_system_and_the_user_text_through_parse_call():
-    from cornerstone.writer import claude_call
+    from facts.writer import claude_call
 
     writer, sent = _stub_writer()
     assert claude_call("system text", "user text", WriterOut, writer=writer) == "parsed"
@@ -310,7 +310,7 @@ def test_claude_call_sends_the_system_and_the_user_text_through_parse_call():
 
 
 def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
-    from cornerstone.writer import RefusalError, WriterError, parse_call
+    from facts.writer import RefusalError, WriterError, parse_call
 
     writer, _ = _stub_writer(stop_reason="refusal", parsed_output=None)
     with pytest.raises(RefusalError):
@@ -322,7 +322,7 @@ def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
 
 def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
     from cornerstone.analysis import AnalysisOut
-    from cornerstone.writer import analyzer_call, claude_call
+    from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
     analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
@@ -338,7 +338,7 @@ def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
 
 def test_the_analyzer_call_alone_runs_at_medium_effort():
     from cornerstone.analysis import AnalysisOut
-    from cornerstone.writer import analyzer_call, claude_call
+    from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
     analyzer_call("analyzer system", "user text", AnalysisOut, writer=writer)
@@ -352,7 +352,7 @@ def test_analyze_uses_the_analyzer_call_by_default():
     import inspect
 
     from cornerstone.analysis import analyze
-    from cornerstone.writer import analyzer_call
+    from facts.writer import analyzer_call
 
     assert inspect.signature(analyze).parameters["call"].default is analyzer_call
 
@@ -360,10 +360,10 @@ def test_analyze_uses_the_analyzer_call_by_default():
 def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
     import logging
 
-    from cornerstone.writer import parse_call
+    from facts.writer import parse_call
 
     writer, _ = _stub_writer()
-    with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
+    with caplog.at_level(logging.INFO, logger="facts.writer"):
         parse_call("user text", WriterOut, "system text", writer=writer)
     assert (
         "WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0"
@@ -374,10 +374,10 @@ def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
 def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):
     import logging
 
-    from cornerstone.writer import parse_call
+    from facts.writer import parse_call
 
     writer, _ = _stub_writer(has_usage=False)
-    with caplog.at_level(logging.INFO, logger="cornerstone.writer"):
+    with caplog.at_level(logging.INFO, logger="facts.writer"):
         assert parse_call("user text", WriterOut, "system text", writer=writer) == "parsed"
     assert not any("call: cache_creation_input_tokens" in m for m in caplog.messages)
 
@@ -428,7 +428,7 @@ def test_tone_asks_for_an_before_a_vowel_sound_number(fixture_raw_dir):
 
 
 def test_vocabulary_gives_a_plain_phrase_for_each_stat_term(fixture_raw_dir):
-    from cornerstone.verifier import GATED_WORDS
+    from facts.verifier import GATED_WORDS
 
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)
@@ -571,7 +571,7 @@ def test_the_fake_writer_raises_a_type_error_when_the_answer_is_not_the_asked_mo
 
 def test_the_research_call_alone_sends_the_web_search_tool():
     from cornerstone.waiver_research import search_call
-    from cornerstone.writer import claude_call
+    from facts.writer import claude_call
     from league.models import ResearchOut
 
     writer, sent = _stub_writer()
