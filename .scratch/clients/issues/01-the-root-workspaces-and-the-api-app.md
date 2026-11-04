@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] One root uv workspace holds the pipeline, the API, and the package globs, with one root `uv.lock`.
 - [x] One root pnpm workspace holds the site and the package globs, with one root `pnpm-lock.yaml`.
