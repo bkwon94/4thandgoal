@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `facts` package holds the modules of decision 01.
 - [x] The `writer` and `verifier` prompts move into `facts`. The other rule prompts wait in place for the ticket of their package.
