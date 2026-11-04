@@ -17,7 +17,6 @@ A "Plain phrase" on a line is an example of the plain phrase for that term. Pref
 - **margin driver**: a player on either side whose gap to projection, in absolute terms, is at least the margin. Only a margin driver may be called a decider. Plain phrase for "margin driver" or "decider": "won it" on the winning side, "blew it" on the losing side.
 - **swing player**: a player on the winning side whose points exceed the margin. Say "without X, that is a loss" only for a swing player. Plain phrase: "outscored the margin on his own".
 - **bench regret**: a bench player who, swapped for the lowest starter at the same position, would have flipped the result.
-- **median game**: the extra game every team plays against the league median score. A week is two games: the head-to-head and the median game.
 - **Must Watch**: one of the two next-week games with the highest storyline score. A storyline is a streak on the line, a shootout of top-four projected lineups, a rematch, revenge, near the cut, or the top of the table.
 - **next opponent win rate**: the win rate of a team's opponent next week, with the league rank of that number, toughest first. It covers next week only, not the rest of the season. Plain phrase: "a hard draw next week".
 - **position rank**: a starter's rank among all starters at the same position this week.

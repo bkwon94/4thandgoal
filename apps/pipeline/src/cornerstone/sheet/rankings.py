@@ -1,14 +1,12 @@
 """
-Builds the odds facts, the power facts, and the facts that explain each rank.
-The rankings chapter reads them, and the chapter itself comes from here.
+Builds the odds, the odds facts, the power facts, and the facts that explain each rank.
+The rankings chapter reads them. `RANKINGS` gives the chapter, its facts, and the odds to the week through the chapter port.
 """
+import logging
 from collections.abc import Callable
 
-from cornerstone.facts_league import (
-    head_to_head,
-)
+from cornerstone.odds import playoff_odds
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import Context, sentence_range
 from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 from facts.chapters import RANKINGS_CHAPTER
 from facts.tokens import Nums, fact
@@ -20,9 +18,18 @@ from league.models import (
     OddsResult,
     PowerRow,
     Standing,
+    Week,
 )
 from league.numbers import round_half_up
+from league.standings_table import head_to_head, season_records
 from league.tunables import TREND_WEEKS
+from week.sheet.base import Context, sentence_range
+
+logger = logging.getLogger(__name__)
+
+# The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
+# per team are the fewest scores the engine reads for a team level. A week before it gets no odds.
+ODDS_FROM_WEEK = 6
 
 # The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
 # reading it as scoring, which the .trend fact covers.
@@ -32,17 +39,69 @@ COMPONENT_WORDS = {
 }
 
 
-def facts(context: Context, client: Client) -> list[Fact]:
+def week_odds(
+    week: Week, history: History | None,
+    inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
+    projected: dict[int, dict[int, float]] | None,
+    client: Client,
+) -> OddsResult | None:
+    """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
+
+    The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
+    """
+    if inputs is None or history is None:
+        return None
+    scores, remaining = inputs
+    return playoff_odds(
+        scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
+        client=client, projected=projected,
+    )
+
+
+def odds_inputs(
+    week: Week, history: History | None, client: Client,
+) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
+    """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
+    if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
+        return None
+    # A roster with no score in a week, such as a bye, adds no score for that week.
+    scores = {
+        rid: [history.weeks[n].scores[rid] for n in range(1, week.week + 1) if rid in history.weeks[n].scores]
+        for rid in week.teams
+    }
+    # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
+    # playoff games, and the engine stops at the seeds, so they stay out.
+    remaining = {week.week + 1: week.next_matchups} if week.week < client.settings.last_regular_week else {}
+    remaining.update(week.schedule)
+    # A cached week can lack the schedule file. The engine would then end the season early and could
+    # call a team clinched or out by mistake, so the sheet gives no odds.
+    if set(remaining) != set(range(week.week + 1, client.settings.last_regular_week + 1)):
+        logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
+        return None
+    return scores, remaining
+
+
+def week_power(c: Context) -> list[PowerRow]:
+    """The power rankings of this week. A gap in the history would shift every rank, so an incomplete history gives
+    no power rankings."""
+    h = c.history
+    return power_rankings(h, c.week.week)[c.week.week] if h is not None and h.complete() else []
+
+
+def facts(context: Context) -> list[Fact]:
     """The power ranks, the odds, the swing of each Must Watch game, and the reasons for the ranks and the odds.
 
     The rankings chapter reads them. The median chapter reads the odds, and the next week chapter reads the swings.
     """
+    power = week_power(context)
+    inputs = odds_inputs(context.week, context.history, context.client)
+    scores, remaining = inputs if inputs is not None else ({}, {})
     return (
-        power_facts(context.power, context.team)
-        + rank_why_facts(context.history, context.power, context.before, context.team)
+        power_facts(power, context.team)
+        + rank_why_facts(context.history, power, context.before, context.team)
         + odds_facts(context.odds, context.team)
         + swing_facts(context.odds, [(nx.a, nx.b) for nx in context.next if nx.must_watch], context.team)
-        + odds_why_facts(context.odds, context.season_scores, context.projected, context.remaining, context.team)
+        + odds_why_facts(context.odds, scores, context.projected, remaining, context.team)
     )
 
 
@@ -296,3 +355,22 @@ def rankings_chapter(
         max_sentences=high,
         required=required_why_ids(facts, rows, table, odds),
     )
+
+
+class RankingsChapter:
+    """The rankings chapter of the week, through the chapter port of week.sheet.port. It gives the odds too."""
+
+    def odds(self, c: Context) -> OddsResult | None:
+        """The engine's odds after this week. The engine runs once per build here."""
+        return week_odds(c.week, c.history, odds_inputs(c.week, c.history, c.client), c.projected, c.client)
+
+    def facts(self, c: Context) -> list[Fact]:
+        return facts(c)
+
+    def chapter(self, c: Context, facts: dict[str, Fact]) -> Chapter | None:
+        """The rankings chapter, or None with no power rankings, such as a week with an incomplete history."""
+        power = week_power(c)
+        return rankings_chapter(facts, power, c.team, c.table, c.odds, client=c.client) if power else None
+
+
+RANKINGS = RankingsChapter()

@@ -5,17 +5,17 @@
 import type { Metadata } from "next";
 import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
 import { PageColumn } from "@cpc/design/parts/page-column";
-import { AllMatchups } from "@/components/week/all-matchups";
+import { AllMatchups } from "@cpc/week/chapters/all-matchups";
 import { ChapterRail, type RailChapter } from "@cpc/design/parts/chapter-rail";
-import { Awards } from "@/components/week/awards";
-import { GameChanger } from "@/components/week/game-changer";
-import { MatchupOfTheWeek } from "@/components/week/matchup-of-the-week";
-import { MedianGame } from "@/components/week/median-game";
-import { NextWeek } from "@/components/week/next-week";
-import { PositionLeaders } from "@/components/week/position-leaders";
-import { Standings } from "@/components/week/standings";
-import { Trades } from "@/components/week/trades";
-import { WeekFooter } from "@/components/week/week-footer";
+import { Awards } from "@cpc/week/chapters/awards";
+import { GameChanger } from "@cpc/week/chapters/game-changer";
+import { MatchupOfTheWeek } from "@cpc/week/chapters/matchup-of-the-week";
+import { MedianGame } from "@cpc/week/chapters/median-game";
+import { NextWeek } from "@cpc/week/chapters/next-week";
+import { PositionLeaders } from "@cpc/week/chapters/position-leaders";
+import { Standings } from "@cpc/week/chapters/standings";
+import { Trades } from "@cpc/week/chapters/trades";
+import { WeekFooter } from "@cpc/week/chapters/week-footer";
 import { basePath } from "@/lib/config";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
@@ -54,7 +54,8 @@ export default async function WeekPage({ params }: Props) {
     ...(page.leaders.length > 0 ? [{ id: "leaders", label: "Position Leaders" }] : []),
     { id: "trades", label: "Trades" },
     { id: "matchups", label: "All Matchups" },
-    { id: "median", label: "The Median Game" },
+    // A league with no median game has median null, so the page has no median chapter and the rail no link to it.
+    ...(page.median ? [{ id: "median", label: "The Median Game" }] : []),
     { id: "standings", label: "Standings" },
     { id: "next-week", label: "Next Week" },
   ];

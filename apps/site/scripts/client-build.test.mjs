@@ -8,7 +8,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildClient, ClientBuildError, REPO_ROOT, SCHEMA_FILE } from "./client-build.mjs";
+import { buildClient, ClientBuildError, clientRoot, REPO_ROOT, SCHEMA_FILE } from "./client-build.mjs";
 
 const SCRIPT = join(process.cwd(), "scripts", "client-build.mjs");
 const CPC_TOML = readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8");
@@ -135,17 +135,58 @@ describe("the client build", () => {
   });
 
   it("gives the home page the analyzer tool through the registry only when the list takes analyzer", () => {
+    // The Tools chapter shows the analyzer row first, then the managers row, whatever the order of the list.
     const taken = tempRepo();
     buildClient(taken);
     const withAnalyzer = readFileSync(join(taken.site, "src", "generated", "registry.ts"), "utf8");
     expect(withAnalyzer).toContain('import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";');
-    expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool];");
+    expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];");
 
     const omitted = tempRepo(CPC_TOML.replace(', "analyzer"]', "]").replace('  { package = "analyzer", label = "Trade Analyzer" },\n', ""));
     buildClient(omitted);
     const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
     expect(without).not.toContain("analyzer");
-    expect(without).toContain("export const homeTools: HomeTool[] = [];");
+    expect(without).toContain("export const homeTools: HomeTool[] = [managersHomeTool];");
+  });
+
+  it("lists the home chapter of each package of the client in the order of the home page", () => {
+    // The list puts week first, but the home page shows the rankings, then the weeks.
+    const repo = tempRepo();
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
+    expect(list.split("\n").slice(0, 4)).toEqual([
+      "export const homeSections: HomeSections = [",
+      "  rankingsHomeSection,",
+      "  weekHomeSection,",
+      "];",
+    ]);
+    expect(registry).toContain('import { homeSection as rankingsHomeSection } from "@/app/_routes/rankings/home";');
+  });
+
+  it("gives a test client with only week a week route, no rankings route, and no rankings line in the registry (AT-23)", () => {
+    const toml = ['packages = ["week"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "week-only");
+    published(repo.root, "week-only", "2026/week-06/page.json");
+    published(repo.root, "week-only", "2026/rankings.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx"]);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).not.toContain("rankings");
+    expect(registry).toContain('import { homeSection as weekHomeSection } from "@/app/_routes/week/home";');
+  });
+
+  it("gives a client with no home section an empty list with its type", () => {
+    const toml = ['packages = ["waiver"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "waiver-only");
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain("export const homeSections: HomeSections = [\n];");
+  });
+
+  it("reads the clients of the repo, or of the root that CLIENT_ROOT names", () => {
+    expect(clientRoot({})).toBe(REPO_ROOT);
+    expect(clientRoot({ CLIENT_ROOT: "/tmp/a-test-repo" })).toBe("/tmp/a-test-repo");
   });
 
   it("writes the finder value, the usage code, and the latest season into the client values", () => {

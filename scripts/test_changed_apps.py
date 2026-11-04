@@ -114,22 +114,29 @@ class TheRepoWorkspace(unittest.TestCase):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
 
     def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_each_package_on_it(self):
-        # The facts and the analyzer packages list the league package, so a change in league checks both too.
+        # The facts, the analyzer, and the week packages list the league package, so a change in league checks each.
         files = ["packages/league/python/src/league/models.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "league"])
+        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "league", "week"])
 
     def test_a_change_in_the_facts_package_of_the_repo_selects_the_apps_that_import_it_and_not_league(self):
-        # The analyzer package lists the facts package, so a change in facts checks the analyzer too.
+        # The analyzer and the week packages list the facts package, so a change in facts checks both too.
         files = ["packages/facts/python/src/facts/writer.py"]
         self.assertEqual(select_apps(REPO, files), ["pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts"])
+        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "week"])
 
     def test_a_change_in_the_analyzer_package_of_the_repo_selects_the_apps_that_import_it(self):
         # The analyzer has both languages, so a change on either side selects the site and the two Python apps.
         files = ["packages/analyzer/python/src/analyzer/rubric.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
         self.assertEqual(select_packages(REPO, files), ["analyzer"])
+
+    def test_a_change_in_either_side_of_the_week_package_selects_each_app_and_only_the_week(self):
+        # A path in a package selects both of its languages, so the site, the pipeline, and the API each run.
+        for path in ("packages/week/python/src/week/sheet/assemble.py", "packages/week/site/chapters/standings.tsx"):
+            with self.subTest(path=path):
+                self.assertEqual(select_apps(REPO, [path]), ["site", "pipeline", "api"])
+                self.assertEqual(select_packages(REPO, [path]), ["week"])
 
     def test_the_command_prints_the_apps_on_one_line(self):
         # HEAD against HEAD has no committed change, so only the files of the work tree count.

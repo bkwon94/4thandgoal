@@ -19,7 +19,7 @@ Run these in `apps/site/`.
 ## Rules
 
 - The hook does not run `pnpm install`. In a new worktree with no `node_modules`, run `pnpm install` first.
-- The pipeline owns the shape of each published file. Change the schema in `src/lib/schemas/` and the pipeline writer together (ADR 0013).
+- The pipeline owns the shape of each published file. Change the schema in `src/lib/schemas/`, or in `packages/<package>/site/schema/`, and the pipeline writer together (ADR 0013).
 - Never edit a file with a `GENERATED` first line. Change `client.toml` or `scripts/client-build.mjs`, and build again.
 - A component takes data and returns markup. It reads no file, no env, and no config (ADR 0012).
 - Each package folder holds a README with the headings Knows, Ports, and Does not do (ADR 0016).

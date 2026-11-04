@@ -3,7 +3,7 @@
  * The site reads one client per build, so a value that changes with the league comes from these files and not the env.
  */
 
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination, MenuLayout } from "@cpc/design/shell/menu";
 
@@ -40,3 +40,11 @@ export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
 
 /* The row of a package in the Tools chapter of the home page. The first row of the chapter has no top space. */
 export type HomeTool = ComponentType<{ first: boolean }>;
+
+/* One chapter that a package gives the home page: a chapter beside the Tools chapter, or a chapter under the two.
+   The page gives each chapter its stagger step. */
+export type HomeSection = { place: "beside" | "below"; chapter: (step: number) => ReactNode };
+
+/* The home chapter of each package of the client, in the order of the page. A package with no data to show gives null,
+   so the page shows no empty chapter. The registry of the client build lists only the packages of the client. */
+export type HomeSections = (() => HomeSection | null)[];

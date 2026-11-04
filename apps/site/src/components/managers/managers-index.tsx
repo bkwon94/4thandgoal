@@ -9,7 +9,7 @@ import { Label } from "@cpc/design/parts/label";
 import { record } from "@cpc/design/format/format";
 import type { Managers } from "@/lib/manager-types";
 import { managerHrefFrom } from "@/lib/routes";
-import type { AvatarMap } from "@/lib/week-types";
+import type { AvatarMap } from "@cpc/week/schema/week-types";
 
 /* The page passes the managers index href, so the index holds no base path and no route format. */
 export function ManagersIndex({ managers, avatars, managersHref }: { managers: Managers; avatars: AvatarMap; managersHref: string }) {

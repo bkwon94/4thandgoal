@@ -497,7 +497,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the odds engine")
 
-    monkeypatch.setattr("cornerstone.sheet.base.playoff_odds", no_engine)
+    monkeypatch.setattr("cornerstone.sheet.rankings.playoff_odds", no_engine)
     run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, client=cpc_client(at=repo))
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds
@@ -1115,7 +1115,7 @@ def test_a_build_with_no_search_sends_the_research_through_the_writer(
 
 def _spy_write_and_verify(seen, lucky_key=None):
     """A stand-in for write_and_verify: it records the page words each chapter gets, and one chapter says "lucky"."""
-    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir):
+    def spy(chapter, sheet, call, used_words=frozenset(), *, prompts_dir, terms=()):
         seen[chapter.key] = set(used_words)
         text = "That was lucky." if chapter.key == lucky_key else "Fact sentence."
         sentences = [Sentence(text=text, fact_ids=[chapter.fact_ids[0]])] if chapter.fact_ids else []

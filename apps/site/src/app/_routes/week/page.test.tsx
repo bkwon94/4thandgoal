@@ -301,3 +301,30 @@ describe("WeekPage week footer with a week on each side", () => {
     expect(links.map((link) => link.textContent)).toEqual(["Week 5Oct 8 – Oct 12, 2026", "Week 7Oct 22 – Oct 26, 2026"]);
   });
 });
+
+/* A league with no median game: the pipeline writes median as null and no median blurb (AT-11). */
+async function renderWeekWithNoMedian() {
+  const root = mkdtempSync(join(tmpdir(), "week-page-"));
+  roots.push(root);
+  const folder = join(root, "public", "2026", "week-06");
+  mkdirSync(folder, { recursive: true });
+  const { median: _median, ...blurbs } = JSON.parse(weekPageJson()).blurbs;
+  writeFileSync(join(folder, "page.json"), weekPageJson({ median: null, blurbs }));
+  vi.spyOn(process, "cwd").mockReturnValue(root);
+  vi.resetModules();
+  const Page = (await import("./page")).default;
+  render(await Page({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
+}
+
+describe("WeekPage with no median game", () => {
+  it("renders no Median Game chapter and no rail link to it", async () => {
+    await renderWeekWithNoMedian();
+    expect(document.getElementById("median")).toBeNull();
+    expect(screen.queryByText("The Median Game")).toBeNull();
+    const rail = within(screen.getByRole("navigation", { name: "Chapters" }));
+    expect(rail.queryByRole("link", { name: "The Median Game" })).toBeNull();
+    // The other chapters stay, so the rail still links the standings after all matchups.
+    const labels = rail.getAllByRole("link").map((link) => link.textContent);
+    expect(labels.slice(labels.indexOf("All Matchups"), labels.indexOf("All Matchups") + 2)).toEqual(["All Matchups", "Standings"]);
+  });
+});

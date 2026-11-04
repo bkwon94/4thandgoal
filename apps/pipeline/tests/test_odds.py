@@ -332,7 +332,7 @@ WEEK_7_RAW = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "
 
 @pytest.mark.skipif(not WEEK_7_RAW.is_dir(), reason="no saved week 7 data")
 def test_the_week_7_odds_match_the_prototype_within_3_points():
-    from cornerstone.sheet.base import odds_inputs, projected_totals, week_odds
+    from cornerstone.sheet import odds_inputs, projected_totals, week_odds
     from league.history import load_history
     from league.parse import parse_week
     from league.provider.sleeper import load_raw

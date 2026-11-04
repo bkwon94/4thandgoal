@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   basePath,
   images: { unoptimized: true },
   // Each package ships TSX source with no build step, so the site build compiles it.
-  transpilePackages: ["@cpc/analyzer", "@cpc/design", "@cpc/league"],
+  transpilePackages: ["@cpc/analyzer", "@cpc/design", "@cpc/league", "@cpc/week"],
 };
 
 export default nextConfig;
