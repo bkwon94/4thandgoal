@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-6, AT-7, AT-18, AT-20, AT-2
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A build with no `CLIENT` exits non-zero and names `CLIENT` (AT-18).
 - [x] The `prebuild` step checks `client.toml` against the exported JSON Schema with `ajv`. An unknown key and a menu item for an omitted package each fail with a plain message (AT-20, AT-21).
