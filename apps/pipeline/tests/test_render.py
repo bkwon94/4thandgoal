@@ -9,7 +9,6 @@ from cpc import cpc_client
 from pydantic import TypeAdapter
 
 from cornerstone.render import (
-    render_managers,
     render_rankings,
     render_week,
 )
@@ -19,6 +18,7 @@ from league.models import Blurb, OddsResult, Sentence, TeamOdds
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
+from managers.render import render_managers
 from week.page import _saved_avatars, _saved_headshots, build_context
 
 CLIENT = cpc_client()

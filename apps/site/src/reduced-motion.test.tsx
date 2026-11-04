@@ -10,12 +10,12 @@ import HomePage from "@/app/page";
 import WeekPage from "@/app/_routes/week/page";
 import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
 import type { Team } from "@cpc/analyzer/lib/api";
-import type { Manager } from "@/lib/manager-types";
+import type { Manager } from "@cpc/managers/schema/manager-types";
 import AnalyzeResult from "@cpc/analyzer/form/analyze-result";
-import { managers as managersFixture } from "@/fixtures/managers";
-import { ManagerHero } from "@/components/managers/manager-hero";
-import { Roster } from "@/components/managers/roster";
-import { SeasonSoFar } from "@/components/managers/season-so-far";
+import { managers as managersFixture } from "@cpc/managers/fixtures/managers";
+import { ManagerHero } from "@cpc/managers/page/manager-hero";
+import { Roster } from "@cpc/managers/page/roster";
+import { SeasonSoFar } from "@cpc/managers/page/season-so-far";
 import { rankings } from "@/fixtures/rankings";
 import { PowerRankings } from "@/components/rankings/power-rankings";
 import { TradeForm } from "@cpc/analyzer/form/trade-form";
@@ -197,7 +197,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63, bye: 20, seed: 3, status: "open" },
+    odds: { playoff: 63 },
     odds_change: 0,
   };
 }

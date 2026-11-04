@@ -8,7 +8,7 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
-import { managersFileSchema } from "../schemas/managers";
+import { managersFileSchema } from "@cpc/managers/schema/managers";
 import { rankingsSchema } from "../schemas/rankings";
 import { waiverBoardSchema } from "../schemas/waiver";
 import { weekPageSchema } from "@cpc/week/schema/week";

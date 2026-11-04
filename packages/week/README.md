@@ -3,7 +3,7 @@
 ## Knows
 
 - The sheet chapters except rankings, the league and matchup facts, and the page writer of `page.json` (`cpc-week`, imported as `week`).
-- The week chapters, the schema and the types of `page.json`, `who`, and the manager hrefs (`@cpc/week`). The loader of `page.json` stays in the site app, because it reads files.
+- The week chapters, the schema and the types of `page.json`, and `who` (`@cpc/week`). The loader of `page.json` stays in the site app, because it reads files.
 - The median text in `prompts/median.md`. The writer and the verifier get it only when the league scores a median game.
 - A league with no median game has no MED facts, no median part in the impact fact, and no Median Game chapter.
 - The tunables of the week in `tunables.py`: the shootout cut, the storyline weights, the key starter rule, and the award cap.

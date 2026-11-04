@@ -64,6 +64,8 @@ const PACKAGE_MARKS = {
   // The key prefix of the teams store of @cpc/analyzer. The analyzer page and the teams prefetch of the home page both
   // hold it, so the mark finds a home page that still imports a part of the analyzer.
   analyzer: { route: /(^|\/)analyze\/index\.html$/, text: "cpc.teams." },
+  // The title of the points line, a client component of @cpc/managers that only the manager page shows.
+  managers: { route: /(^|\/)managers\/index\.html$/, text: "Points per week" },
 };
 
 if (!process.env.CLIENT) fail("set CLIENT to the client of the build, the same value as pnpm build");

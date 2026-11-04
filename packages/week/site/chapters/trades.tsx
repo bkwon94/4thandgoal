@@ -14,7 +14,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { TeamName } from "@cpc/design/parts/team-name";
-import { managerHrefOrNull } from "../parts/hrefs";
+import { managerHrefOrNull } from "@cpc/league/hrefs";
 
 /* Each column spans three rows of the card grid: the team, the Gets label, and the chips.
    A long team name grows its row in both columns, so the chips start on one line. */

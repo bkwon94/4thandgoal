@@ -2,12 +2,12 @@
 Tests for the managers module, the entries of the managers file.
 They run on the fixture history, as the power rankings tests do.
 """
-from cornerstone.managers import managers
 from league.history import load_history
 from league.parse import parse_week, player_name
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
 from league.standings_table import season_records
+from managers.entries import managers
 
 
 def _inputs(raw_dir, root):
