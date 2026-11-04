@@ -12,10 +12,10 @@ from cpc import cpc_client
 
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
-from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
+from league.provider.sleeper import load_raw
+from league.slow_sources import load_slow_sources
+from league.snapshot import build_snapshot, load_returns, load_snapshot
 
 CLIENT = cpc_client()
 

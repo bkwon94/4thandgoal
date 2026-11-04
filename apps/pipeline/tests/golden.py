@@ -13,9 +13,9 @@ from zoneinfo import ZoneInfo
 from cpc import cpc_client
 from fakes import fixture_nflverse, no_claims, no_news
 
-from cornerstone.paths import history_root, week_dir
 from cornerstone.pipeline import run_build
 from cornerstone.writer import WriterError
+from league.paths import history_root, week_dir
 
 FIXTURES = Path(__file__).parent / "fixtures"
 GOLDEN_DIR = FIXTURES / "golden"

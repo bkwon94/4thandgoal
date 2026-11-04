@@ -1,5 +1,5 @@
 """
-Tests the selection of scripts/changed_apps.py: which apps a set of changed files checks.
+Tests the selection of scripts/changed_apps.py: which apps and which packages a set of changed files checks.
 Each case writes a real workspace of pyproject.toml and package.json files into a temp folder.
 """
 import json
@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from changed_apps import ROOT_FILES, select_apps
+from changed_apps import ROOT_FILES, select_apps, select_packages
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
@@ -79,6 +79,27 @@ class TheAppSelection(unittest.TestCase):
         self.assertEqual(self.select("GLOSSARY.md"), ["site", "pipeline", "api"])
 
 
+class ThePackageSelection(unittest.TestCase):
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        workspace(self.root)
+
+    def select(self, *files: str) -> list[str]:
+        return select_packages(self.root, list(files))
+
+    def test_a_change_in_one_language_of_a_package_selects_it_and_each_package_that_needs_it(self):
+        self.assertEqual(self.select("packages/league/site/headshot.tsx"), ["facts", "league"])
+
+    def test_a_change_in_a_package_that_no_package_needs_selects_it_alone(self):
+        self.assertEqual(self.select("packages/facts/README.md"), ["facts"])
+
+    def test_a_change_in_an_app_selects_no_package(self):
+        self.assertEqual(self.select("apps/pipeline/src/cornerstone/odds.py"), [])
+
+    def test_a_root_file_selects_every_package(self):
+        self.assertEqual(self.select("Makefile"), ["facts", "league"])
+
+
 class TheRepoWorkspace(unittest.TestCase):
     """The real workspace files of the repo, read by the same code."""
 
@@ -91,6 +112,11 @@ class TheRepoWorkspace(unittest.TestCase):
 
     def test_a_change_in_the_pipeline_of_the_repo_selects_the_api_too(self):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
+
+    def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_the_package(self):
+        files = ["packages/league/python/src/league/models.py"]
+        self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
+        self.assertEqual(select_packages(REPO, files), ["league"])
 
     def test_the_command_prints_the_apps_on_one_line(self):
         # HEAD against HEAD has no committed change, so only the files of the work tree count.

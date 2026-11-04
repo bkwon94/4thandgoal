@@ -4,9 +4,9 @@ It reads the cache and the history, so no test needs the network.
 """
 import shutil
 
-from cornerstone.nflverse import read_id_map
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.slow_sources import load_slow_sources
+from league.nflverse import read_id_map
+from league.provider.sleeper import load_raw
+from league.slow_sources import load_slow_sources
 
 
 def _cache(fixture_nflverse_dir, tmp_path):

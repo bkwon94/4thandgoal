@@ -7,9 +7,9 @@ import json
 import httpx
 import pytest
 
-from cornerstone.models import ExpectedGame
-from cornerstone.nflverse import nflverse_week
-from cornerstone.nflverse_expected import read_expected, window_gap
+from league.models import ExpectedGame
+from league.nflverse import nflverse_week
+from league.nflverse_expected import read_expected, window_gap
 
 # The gsis ids of the fixture players that the tests read, with their Sleeper ids.
 SLEEPER_OF_GSIS = {"00-0033077": "3294", "00-0033280": "4034", "00-0033873": "4046", "00-0035676": "5859"}

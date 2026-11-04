@@ -8,15 +8,22 @@ from collections import Counter, defaultdict
 from collections.abc import Callable
 from decimal import Decimal
 
-from cornerstone.client import Client
 from cornerstone.facts_matchup import median_facts
-from cornerstone.models import (
+from cornerstone.tunables import (
+    AWARDS_PER_PLAYER,
+    KEY_STARTER_SHORT_STARTS,
+    KEY_STARTER_STARTS,
+    KEY_STARTER_WEEKS,
+    SHOOTOUT_TOP,
+    STORYLINE_WEIGHTS,
+)
+from league.client import Client
+from league.models import (
     Award,
     ByePlayer,
     History,
     MatchupFacts,
     NextMatchup,
-    PastWeek,
     Pick,
     PlayerLine,
     PositionLeader,
@@ -27,17 +34,9 @@ from cornerstone.models import (
     Week,
     sub,
 )
-from cornerstone.numbers import one_decimal, ordinal, r2
-from cornerstone.standings_table import season_records
-from cornerstone.tunables import (
-    AWARDS_PER_PLAYER,
-    KEY_STARTER_SHORT_STARTS,
-    KEY_STARTER_STARTS,
-    KEY_STARTER_WEEKS,
-    SHOOTOUT_TOP,
-    STORYLINE_WEIGHTS,
-    TREND_WEEKS,
-)
+from league.numbers import one_decimal, ordinal, r2
+from league.standings_table import head_to_head, season_records
+from league.tunables import TREND_WEEKS
 
 logger = logging.getLogger(__name__)
 
@@ -600,17 +599,3 @@ def streak(history: History, roster_id: int, through: int) -> int:
             break
         run += result
     return run
-
-
-def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
-    """The opponent and the result of one head-to-head game: 1 a win, -1 a loss, 0 a tie.
-
-    None when the roster has no pair that week, such as a bye. The median game is not in it.
-    """
-    opponent = next(
-        (b if a == roster_id else a for a, b in week.pairs if roster_id in (a, b)), None
-    )
-    if opponent is None:
-        return None
-    mine, theirs = week.scores[roster_id], week.scores[opponent]
-    return opponent, (mine > theirs) - (mine < theirs)

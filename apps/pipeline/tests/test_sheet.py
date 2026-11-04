@@ -12,11 +12,7 @@ import pytest
 from cpc import cpc_client
 
 from cornerstone import sheet
-from cornerstone.history import load_history
-from cornerstone.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
 from cornerstone.odds import playoff_odds
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import (
     Context,
     build_bundle,
@@ -34,7 +30,11 @@ from cornerstone.sheet import (
     week_dates,
     write_bundle,
 )
-from cornerstone.snapshot import week_snapshot
+from league.history import load_history
+from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.snapshot import week_snapshot
 
 CLIENT = cpc_client()
 PROMPTS = CLIENT.voice_dir

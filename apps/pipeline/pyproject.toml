@@ -8,11 +8,15 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "cpc-league",
     "anthropic>=1.15.0",
     "httpx>=0.28.1",
     "pillow>=13.0.0",
     "pydantic>=2.14.1",
 ]
+
+[tool.uv.sources]
+cpc-league = { workspace = true }
 
 [project.scripts]
 cornerstone = "cornerstone.cli:main"
@@ -35,18 +39,18 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
+# The pipeline imports the league package as its own code, so both sort as first party in one block.
+[tool.ruff.lint.isort]
+known-first-party = ["cornerstone", "league"]
+
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 # Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an
 # optional value, such as int | None, to Nums or to a helper that takes a plain value. base.py 1, drops.py 1,
 # leaders.py 1, next_week.py 11, trades.py 2.
 [tool.pyright]
 typeCheckingMode = "basic"
-include = ["src/cornerstone/claude_port.py", "src/cornerstone/client.py", "src/cornerstone/files.py",
-           "src/cornerstone/league_settings.py",
-           "src/cornerstone/history.py", "src/cornerstone/live.py", "src/cornerstone/models.py",
-           "src/cornerstone/numbers.py", "src/cornerstone/parse.py", "src/cornerstone/paths.py",
-           "src/cornerstone/player_ids.py", "src/cornerstone/provider", "src/cornerstone/rank_score.py",
-           "src/cornerstone/render.py", "src/cornerstone/season_inputs.py",
+# The modules of the league package have their own list in packages/league/python/pyproject.toml.
+include = ["src/cornerstone/rank_score.py", "src/cornerstone/render.py",
            "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
            "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
            "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",

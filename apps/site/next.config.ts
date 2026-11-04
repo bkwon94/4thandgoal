@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   basePath,
   images: { unoptimized: true },
+  // Each package ships TSX source with no build step, so the site build compiles it (decision 07).
+  transpilePackages: ["@cpc/league"],
   // A static export fails on a dynamic route with no params, so a gated route file counts as a page only when its file exists.
   pageExtensions: [
     "tsx",

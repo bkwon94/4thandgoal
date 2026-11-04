@@ -4,7 +4,7 @@
 
 - The chapter, the label, the tag, and the blurb.
 - The page column and the chapter rail.
-- The team avatar, the player headshot, the team name, and the avatar with the name as one group.
+- The team name, and the avatar with the name as one group. The team avatar and the player headshot are in `@cpc/league`.
 - The one reveal of the site, the week line of the masthead, and the error line.
 
 ## Ports

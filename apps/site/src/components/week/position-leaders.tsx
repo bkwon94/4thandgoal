@@ -7,8 +7,7 @@ import { cn } from "@/lib/utils";
 import type { HeadshotMap, LeaderBoard, LeaderRow } from "@/lib/week-types";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
-import { Headshot } from "@/components/parts/headshot";
-import { headshotSrc } from "@/lib/headshot";
+import { Headshot, headshotSrc } from "@cpc/league/headshot";
 import { Label } from "@/components/parts/label";
 
 /* One line per row: rank, player, fantasy team, points. The player keeps its width first; the team takes what is left

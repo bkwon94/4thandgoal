@@ -4,7 +4,7 @@ Every number comes from code, and every derived number is exact to two decimals.
 """
 from decimal import Decimal
 
-from cornerstone.models import (
+from league.models import (
     Matchup,
     MatchupFacts,
     MedianFacts,
@@ -14,7 +14,7 @@ from cornerstone.models import (
     Week,
     sub,
 )
-from cornerstone.numbers import r2
+from league.numbers import r2
 
 
 def matchup_facts(m: Matchup, moves: list[Move], week: int) -> MatchupFacts:

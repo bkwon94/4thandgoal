@@ -1,6 +1,6 @@
 """
-Prints the apps that the check must run for the changed files since the merge base of a ref and HEAD, on one line.
-It selects by workspace member: a changed member, and each member that needs it, through both languages of a package.
+Prints the apps and the packages that the check must run for the changed files since the merge base of a ref and HEAD,
+on one line. It selects by workspace member: a changed member, and each member that needs it, in both languages.
 """
 import json
 import re
@@ -53,19 +53,19 @@ def _owner(path: str) -> str | None:
     return None
 
 
-def select_apps(root: Path, files: list[str]) -> list[str]:
-    """The apps to check for the changed files, in APP_ORDER.
+def _selected_owners(root: Path, files: list[str]) -> set[str]:
+    """The folders, such as apps/site or packages/league, of each member that the changed files select.
 
-    A path outside apps/ and packages/ selects every app, so a root file is never under-tested.
+    A path outside apps/ and packages/ selects every member, so a root file is never under-tested.
     A path in a package selects both of its languages, because the published file joins them (ADR 0011).
     """
     if not files:
-        return []
+        return set()
+    members = {**_python_members(root), **_site_members(root)}
+    owner_of = {name: str(_owner(f"{folder}/x")) for name, (folder, _) in members.items()}
     owners = {_owner(path) for path in files}
     if None in owners:
-        return list(APP_ORDER)
-    members = {**_python_members(root), **_site_members(root)}
-    owner_of = {name: _owner(f"{folder}/x") for name, (folder, _) in members.items()}
+        return set(owner_of.values())
     selected = {name for name, owner in owner_of.items() if owner in owners}
     # Add each member that needs a selected member, until no member is left to add.
     while True:
@@ -73,8 +73,22 @@ def select_apps(root: Path, files: list[str]) -> list[str]:
         if not more:
             break
         selected |= more
-    apps = {str(owner_of[name]).removeprefix("apps/") for name in selected if str(owner_of[name]).startswith("apps/")}
+    return {owner_of[name] for name in selected}
+
+
+def select_apps(root: Path, files: list[str]) -> list[str]:
+    """The apps to check for the changed files, in APP_ORDER. A root file selects every app."""
+    if files and None in {_owner(path) for path in files}:
+        return list(APP_ORDER)
+    apps = {owner.removeprefix("apps/") for owner in _selected_owners(root, files) if owner.startswith("apps/")}
     return [app for app in APP_ORDER if app in apps]
+
+
+def select_packages(root: Path, files: list[str]) -> list[str]:
+    """The packages to check for the changed files, by name in sorted order, such as league. Each package check runs
+    both languages of the package. A root file selects every package."""
+    owners = _selected_owners(root, files)
+    return sorted(owner.removeprefix("packages/") for owner in owners if owner.startswith("packages/"))
 
 
 def _changed_files(ref: str) -> list[str]:
@@ -89,9 +103,11 @@ def _changed_files(ref: str) -> list[str]:
 
 def main() -> None:
     root = Path(__file__).resolve().parent.parent
-    apps = select_apps(root, _changed_files(sys.argv[1]))
-    if apps:
-        print(" ".join(apps))
+    files = _changed_files(sys.argv[1])
+    # The apps come first, then the packages. The root Makefile tells them apart by the app names.
+    checks = select_apps(root, files) + select_packages(root, files)
+    if checks:
+        print(" ".join(checks))
 
 
 if __name__ == "__main__":

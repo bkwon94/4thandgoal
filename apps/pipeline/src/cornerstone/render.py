@@ -12,15 +12,15 @@ import httpx
 from pydantic import TypeAdapter
 
 from cornerstone.facts_league import LEADER_POSITIONS
-from cornerstone.files import write_bytes_atomic
 from cornerstone.managers import managers
-from cornerstone.models import Blurb, Bundle, History, MatchupFacts, OddsResult, Team
-from cornerstone.paths import site_week_dir
-from cornerstone.player_ids import headshot_url, is_def
 from cornerstone.power_rankings import power_rankings
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet.base import AWARD_TITLES
-from cornerstone.standings_table import season_records
+from league.files import write_bytes_atomic
+from league.models import Blurb, Bundle, History, MatchupFacts, OddsResult, Team
+from league.paths import site_week_dir
+from league.player_ids import headshot_url, is_def
+from league.season_inputs import SeasonInputs
+from league.standings_table import season_records
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"

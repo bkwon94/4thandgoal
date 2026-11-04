@@ -9,8 +9,7 @@ import { stagger } from "@/lib/motion";
 import type { Award, HeadshotMap } from "@/lib/week-types";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
-import { Headshot } from "@/components/parts/headshot";
-import { headshotSrc } from "@/lib/headshot";
+import { Headshot, headshotSrc } from "@cpc/league/headshot";
 import { Label } from "@/components/parts/label";
 
 /* The tile is the reveal box, so the grid still stretches every tile in a row to one height. */

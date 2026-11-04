@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.files import write_bytes_atomic
+from league.files import write_bytes_atomic
 
 
 def test_file_holds_the_body(tmp_path: Path):

@@ -4,8 +4,8 @@ Pure code over the saved history and the raw players file of the current week.
 """
 from pydantic import BaseModel
 
-from cornerstone.models import History
-from cornerstone.parse import player_name
+from league.models import History
+from league.parse import player_name
 
 BEST_ADDS = 3
 TOP_PERFORMERS = 5

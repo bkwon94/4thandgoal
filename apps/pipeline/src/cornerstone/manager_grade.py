@@ -7,19 +7,13 @@ from typing import Literal, NamedTuple
 
 from pydantic import BaseModel
 
-from cornerstone.adjusters import StartingSlot, fill_slots
-from cornerstone.client import Client
-from cornerstone.history import player_points
-from cornerstone.models import History, ProjectionsAhead
-from cornerstone.season_inputs import SeasonInputs
-from cornerstone.snapshot import Snapshot
-from cornerstone.tunables import (
-    GRADE_BANDS,
-    GRADE_BELOW_BANDS,
-    GRADE_DEPTH_SPARES,
-    GRADE_HOLE_COST,
-    GRADE_WEIGHTS,
-)
+from cornerstone.tunables import GRADE_BANDS, GRADE_BELOW_BANDS, GRADE_DEPTH_SPARES, GRADE_HOLE_COST, GRADE_WEIGHTS
+from league.client import Client
+from league.history import player_points
+from league.lineup import StartingSlot, fill_slots
+from league.models import History, ProjectionsAhead
+from league.season_inputs import SeasonInputs
+from league.snapshot import Snapshot
 
 # The positions the league starts that have a line, in the order of the slot ranks on the page.
 SLOT_POSITIONS = ("QB", "RB", "WR", "TE")

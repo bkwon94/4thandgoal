@@ -10,10 +10,10 @@ from pathlib import Path
 
 import httpx
 
-from cornerstone.models import UsageWeek
-from cornerstone.nflverse import STATS_PLAYER_URL, nflverse_week
-from cornerstone.nflverse_players import PlayerWeek, read_player_weeks, with_player_weeks
-from cornerstone.provider.sleeper import load_raw
+from league.models import UsageWeek
+from league.nflverse import STATS_PLAYER_URL, nflverse_week
+from league.nflverse_players import PlayerWeek, read_player_weeks, with_player_weeks
+from league.provider.sleeper import load_raw
 
 FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 STATS_PLAYER = FIXTURES / "stats_player_week_2026.csv.gz"

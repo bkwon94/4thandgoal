@@ -9,8 +9,7 @@ import { TeamName } from "@/components/parts/team-name";
 import { managerHrefOrNull } from "@/lib/routes";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "@/lib/manager-types";
 import { cn } from "@/lib/utils";
-import { Headshot } from "@/components/parts/headshot";
-import { sleeperHeadshot } from "@/lib/headshot";
+import { Headshot, sleeperHeadshot } from "@cpc/league/headshot";
 
 /* The quiet label of a group: small, uppercase, and mute, as the Gets label of the week page trade card. */
 const QUIET_LABEL = "text-label leading-tight font-bold tracking-wide text-mute uppercase";

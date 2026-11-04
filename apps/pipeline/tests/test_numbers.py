@@ -1,8 +1,8 @@
 """
-Unit tests for the number helpers in `cornerstone.numbers`.
+Unit tests for the number helpers in `league.numbers`.
 Each case pins the rounding or the wording that the golden pages rely on.
 """
-from cornerstone.numbers import count_noun, one_decimal, one_decimal_text, ordinal, plural, r2, round_half_up
+from league.numbers import count_noun, one_decimal, one_decimal_text, ordinal, plural, r2, round_half_up
 
 
 def test_r2_rounds_half_up_where_python_rounds_half_even():

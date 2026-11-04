@@ -14,11 +14,9 @@ from cornerstone.adjusters import (
     Lean,
     Side,
     build_side,
-    lineup_value,
     named,
     trade_handcuffs,
 )
-from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import (
     ACCEPT_AT_OR_ABOVE,
     CLAMP_STEPS,
@@ -28,6 +26,8 @@ from cornerstone.tunables import (
     START_LETTER_BANDS,
     WIN_WIN_AT_OR_ABOVE,
 )
+from league.ranks import lineup_value
+from league.snapshot import Snapshot
 
 # The breakdown per side holds no trade value, sum, or ratio.
 

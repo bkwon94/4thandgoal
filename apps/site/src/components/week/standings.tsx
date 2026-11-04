@@ -6,7 +6,7 @@ import { Fragment, type ReactNode } from "react";
 import { record } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, TableRow } from "@/lib/week-types";
-import { avatarSrc } from "@/lib/avatar";
+import { avatarSrc } from "@cpc/league/avatar";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";

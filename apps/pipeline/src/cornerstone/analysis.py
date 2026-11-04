@@ -9,11 +9,9 @@ from typing import Literal
 from pydantic import BaseModel
 
 from cornerstone.adjusters import STEP_WORDS, UPSIDE
-from cornerstone.models import Fact
 from cornerstone.names import NAME_SUFFIXES
 from cornerstone.rubric import LETTERS, Breakdown, Letter, ProposedTrade, Verdict, grade, verdict
 from cornerstone.sheet.base import NUMBER_TOKEN
-from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.verifier import (
     normalize_number,
@@ -24,6 +22,8 @@ from cornerstone.verifier import (
     whole_word,
 )
 from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
+from league.models import Fact
+from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
 

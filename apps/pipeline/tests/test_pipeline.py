@@ -19,20 +19,6 @@ import pytest
 from cpc import cli_root, cpc_client
 from fakes import fixture_nflverse, no_claims, no_network, no_news
 
-from cornerstone.history import HISTORY_FILES, load_saved_weeks
-from cornerstone.models import (
-    Blurb,
-    History,
-    NflverseWeek,
-    ResearchClaim,
-    ResearchOut,
-    Sentence,
-    Verdict,
-    VerifyOut,
-)
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_week
-from cornerstone.paths import history_dir, history_root, week_dir
 from cornerstone.pipeline import (
     BuildStopped,
     _nflverse_for_week,
@@ -47,12 +33,26 @@ from cornerstone.pipeline import (
     run_rewrite,
 )
 from cornerstone.power_rankings import power_rankings
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import read_bundle
 from cornerstone.writer import WriterError
+from league.history import HISTORY_FILES, load_saved_weeks
+from league.models import (
+    Blurb,
+    History,
+    NflverseWeek,
+    ResearchClaim,
+    ResearchOut,
+    Sentence,
+    Verdict,
+    VerifyOut,
+)
+from league.nflverse import nflverse_week
+from league.parse import parse_week
+from league.paths import history_dir, history_root, week_dir
+from league.provider.sleeper import load_raw
+from league.season_inputs import SeasonInputs
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.

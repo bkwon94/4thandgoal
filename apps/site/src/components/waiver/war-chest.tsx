@@ -6,12 +6,10 @@
 
 import { useEffect, useState } from "react";
 import { useMarkHydrated } from "@/hooks/use-mark-hydrated";
-import { avatarSrc } from "@/lib/avatar";
+import { Avatar, avatarSrc } from "@cpc/league/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
-import { Avatar } from "@/components/parts/avatar";
-import { Headshot } from "@/components/parts/headshot";
-import { sleeperHeadshot } from "@/lib/headshot";
+import { Headshot, sleeperHeadshot } from "@cpc/league/headshot";
 import { getTeamPick, setTeamPick } from "@/lib/team-pick";
 import { cn } from "@/lib/utils";
 import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, type WaiverPlayer } from "@/lib/waiver-types";

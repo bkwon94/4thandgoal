@@ -9,11 +9,11 @@ import anthropic
 import pytest
 from cpc import cpc_client
 
-from cornerstone.models import BoardScores, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.verifier import without_urls
 from cornerstone.waiver_research import build_research_prompt, research_board
 from cornerstone.writer import WriterError
+from league.models import BoardScores, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 PROMPTS = cpc_client().voice_dir
@@ -122,9 +122,9 @@ def test_the_real_search_returns_cited_claims_for_one_player():
 
     import anthropic
 
-    from cornerstone.models import Fact
     from cornerstone.waiver_research import search_call
     from cornerstone.writer import ClaudeWriter
+    from league.models import Fact
 
     responses = []
     client = anthropic.Anthropic()

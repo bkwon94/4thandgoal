@@ -7,10 +7,6 @@ from functools import partial
 from cpc import cpc_client
 from fakes import FakeWriter
 
-from cornerstone.history import load_history
-from cornerstone.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import build_bundle
 from cornerstone.verifier import (
     build_verifier_prompt,
@@ -23,6 +19,10 @@ from cornerstone.verifier import (
     write_and_verify,
 )
 from cornerstone.writer import RefusalError, claude_call
+from league.history import load_history
+from league.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
 
 CLIENT = cpc_client()
 PROMPTS = CLIENT.voice_dir
@@ -916,7 +916,7 @@ CLAIM_URL = "https://sports.yahoo.com/fantasy/article/week-7-waiver-wire-1414514
 
 
 def _claim_sheet():
-    from cornerstone.models import Chapter, Fact, FactSheet
+    from league.models import Chapter, Fact, FactSheet
 
     text = f"Tucker ran 31 routes and leads the Raiders wideouts. Source: Yahoo Fantasy, {CLAIM_URL}"
     claim = Fact(id="WV.research.7.1", text=text, numbers=["31"], teams=[], players=["Tre Tucker"])
@@ -1197,7 +1197,7 @@ def test_a_record_and_a_percent_pass_as_two_numbers(hbundle):
 
 def _defense_sheet():
     """A recap with the Washington Commanders defense, and Parker Washington in another chapter."""
-    from cornerstone.models import Chapter, Fact, FactSheet
+    from league.models import Chapter, Fact, FactSheet
 
     defense = Fact(id="M4.starter.11.WAS", text="Washington Commanders (DEF, WAS) started for Dak Attack and scored 14.25.",
                    numbers=["14.25"], teams=["Dak Attack"], players=["Washington Commanders"])

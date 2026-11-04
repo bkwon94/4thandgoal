@@ -4,9 +4,9 @@ They use the recorded week 6 data.
 """
 from datetime import date
 
-from cornerstone.parse import parse_week
-from cornerstone.provider.raw import RawTransaction
-from cornerstone.provider.sleeper import load_raw
+from league.parse import parse_week
+from league.provider.raw import RawTransaction
+from league.provider.sleeper import load_raw
 
 
 def test_parse_week_teams_and_matchups(fixture_raw_dir):
@@ -95,7 +95,7 @@ def test_next_matchups_keep_pairs_only(fixture_raw_dir):
 
 
 def test_trade_with_null_draft_picks_parses():
-    from cornerstone.parse import parse_trades
+    from league.parse import parse_trades
     trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405, "leg": 6,
              "roster_ids": [2, 6], "adds": {"11610": 6}, "drops": {"11610": 2}, "draft_picks": None}
     assert parse_trades([RawTransaction.model_validate(trade)])[0].draft_picks == []

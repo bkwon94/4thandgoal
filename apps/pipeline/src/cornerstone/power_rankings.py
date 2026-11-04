@@ -4,10 +4,10 @@ Pure code over the saved history. No trade value and no chart enter the formula.
 """
 from decimal import Decimal
 
-from cornerstone.facts_league import head_to_head
-from cornerstone.models import History, PastWeek, PowerRow
-from cornerstone.standings_table import season_records, standings_order, week_median
-from cornerstone.tunables import FORM_HEAD_TO_HEAD_WEIGHT, FORM_MEDIAN_WEIGHT, POWER_WEIGHTS, TREND_WEEKS
+from cornerstone.tunables import FORM_HEAD_TO_HEAD_WEIGHT, FORM_MEDIAN_WEIGHT, POWER_WEIGHTS
+from league.models import History, PastWeek, PowerRow
+from league.standings_table import head_to_head, season_records, standings_order, week_median
+from league.tunables import TREND_WEEKS
 
 # A quality win is a win against a team in this many top places of the standings.
 QUALITY_TOP = 4

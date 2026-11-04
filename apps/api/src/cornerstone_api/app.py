@@ -15,17 +15,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
-from cornerstone.client import Client, load_client, read_client_values
 from cornerstone.finder_reasons import write_reasons
-from cornerstone.paths import client_dir
-from cornerstone.provider.sleeper import SLEEPER
-from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE, TEAMS_CACHE_SECONDS
+from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.cache import ResultCache, TeamsCache
 from cornerstone_api.ratelimit import GradeLimiter, RateLimiter, client_address
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
+from league.client import Client, load_client, read_client_values
+from league.paths import client_dir
+from league.provider.sleeper import SLEEPER
+from league.tunables import TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
 

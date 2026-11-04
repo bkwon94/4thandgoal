@@ -5,10 +5,10 @@ A test that writes files passes its own folder, and the client data and the NFL 
 import shutil
 from pathlib import Path
 
-from cornerstone.client import Client, read_client_values
-from cornerstone.paths import client_dir, league_file, nfl_dir
-from cornerstone.provider.raw import RawLeague
-from cornerstone.provider.sleeper import league_settings
+from league.client import Client, read_client_values
+from league.paths import client_dir, league_file, nfl_dir
+from league.provider.raw import RawLeague
+from league.provider.sleeper import league_settings
 
 ROOT = Path(__file__).resolve().parents[3]
 FIXTURE_LEAGUE = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw" / "league.json"

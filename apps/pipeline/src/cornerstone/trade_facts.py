@@ -4,24 +4,15 @@ need, and the roster fit reads. Every player stat ends at the known games and ev
 Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
-from cornerstone.adjusters import (
-    FLEX_SLOTS,
-    STRENGTH_SLOTS,
-    Side,
-    StartingSlot,
-    allowed_positions,
-    due_back_week,
-    hole_sentence,
-    team_race,
-    trade_handcuffs,
-)
-from cornerstone.history import points_per_game, red_zone, season_rank, snap_share, target_share
-from cornerstone.models import Fact, UsageShare
-from cornerstone.numbers import plural
-from cornerstone.ranks import RANKED_POSITIONS
+from cornerstone.adjusters import Side, due_back_week, hole_sentence, team_race, trade_handcuffs
 from cornerstone.rubric import ProposedTrade, build_sides
 from cornerstone.sheet.base import Nums, fact
-from cornerstone.snapshot import Snapshot
+from league.history import points_per_game, red_zone, season_rank, snap_share, target_share
+from league.lineup import FLEX_SLOTS, STRENGTH_SLOTS, StartingSlot, allowed_positions
+from league.models import Fact, UsageShare
+from league.numbers import plural
+from league.ranks import RANKED_POSITIONS
+from league.snapshot import Snapshot
 
 _RACE_TEXT = {
     "contender": "a contender in a playoff spot",

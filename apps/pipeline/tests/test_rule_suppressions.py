@@ -30,10 +30,8 @@ ALLOW: dict[tuple[str, str], str] = {
     ("src/cornerstone/pipeline.py",
      f"except Exception as err:  # {MARKER}: BLE001 - the outer guard: the module catches only HTTP errors"):
         "the outer guard: the module catches only HTTP errors",
-    ("src/cornerstone/live.py",
-     f"except Exception as error:  # {MARKER}: BLE001 - the docstring says why: no error may stop the service"):
-        "the docstring says why: no error may stop the service",
 }
+# The allow list of the league package is in packages/league/python/tests/test_rule_league.py.
 
 
 def _suppressions(root: Path) -> list[tuple[str, int, str]]:

@@ -10,11 +10,11 @@ import pytest
 from cpc import cpc_client
 
 from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
-from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
+from league.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
+from league.nflverse import nflverse_week
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
 
 CLIENT = cpc_client()
 
@@ -139,7 +139,7 @@ def test_one_drop_is_one_pass(fixture_raw_dir):
 
 
 def test_missing_yardline_is_not_the_end_zone(fixture_raw_dir):
-    from cornerstone.models import DropPlay
+    from league.models import DropPlay
     wk = parse_week(load_raw(fixture_raw_dir))
     play = DropPlay(game_id="g", play_id="p", air_yards=23.0, yardline_100=None)
     # One reception and 23 air yards, with no touchdown.

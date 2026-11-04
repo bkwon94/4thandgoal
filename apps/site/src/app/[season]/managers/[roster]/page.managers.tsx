@@ -9,7 +9,7 @@ import { ManagerChapters, MANAGER_CHAPTERS } from "@/components/managers/manager
 import { ManagerHero } from "@/components/managers/manager-hero";
 import { PageColumn } from "@/components/parts/page-column";
 import { ChapterRail } from "@/components/parts/chapter-rail";
-import { avatarSrc } from "@/lib/avatar";
+import { avatarSrc } from "@cpc/league/avatar";
 import { loadManagers, seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managerHref } from "@/lib/routes";

@@ -8,10 +8,6 @@ import pytest
 from cpc import cpc_client
 from pydantic import TypeAdapter
 
-from cornerstone.history import load_history
-from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.render import (
     _saved_avatars,
     _saved_headshots,
@@ -20,8 +16,12 @@ from cornerstone.render import (
     render_rankings,
     render_week,
 )
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
+from league.history import load_history
+from league.models import Blurb, OddsResult, Sentence, TeamOdds
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.season_inputs import SeasonInputs
 
 CLIENT = cpc_client()
 
@@ -323,7 +323,7 @@ def test_two_side_card_has_two_sides_and_a_player_for_each_chip(tbundle, tmp_pat
 
 
 def test_three_side_card_has_three_sides_and_a_pick_row(tbundle, tmp_path):
-    from cornerstone.models import DraftPick, Trade
+    from league.models import DraftPick, Trade
     first = tbundle.data.trades[0]
     a, b = first.roster_ids
     c = next(rid for rid in tbundle.data.teams if rid not in (a, b))

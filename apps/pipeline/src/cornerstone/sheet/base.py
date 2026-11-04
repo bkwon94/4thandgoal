@@ -7,8 +7,6 @@ import re
 from collections.abc import Callable
 from datetime import date, timedelta
 
-from cornerstone.adjusters import allowed_positions, fill_slots
-from cornerstone.client import Client
 from cornerstone.facts_league import (
     awards,
     matchup_of_the_week,
@@ -20,7 +18,11 @@ from cornerstone.facts_league import (
 )
 from cornerstone.facts_matchup import matchup_facts, median_facts
 from cornerstone.facts_nflverse import drop_lines
-from cornerstone.models import (
+from cornerstone.odds import playoff_odds
+from cornerstone.power_rankings import power_rankings
+from league.client import Client
+from league.lineup import allowed_positions, fill_slots
+from league.models import (
     Chapter,
     ChartValues,
     Fact,
@@ -33,12 +35,10 @@ from cornerstone.models import (
     Week,
     sub,
 )
-from cornerstone.numbers import ordinal, r2
-from cornerstone.odds import playoff_odds
-from cornerstone.power_rankings import power_rankings
-from cornerstone.snapshot import Snapshot
-from cornerstone.standings_table import season_records, standings
-from cornerstone.tunables import TREND_WEEKS
+from league.numbers import ordinal, r2
+from league.snapshot import Snapshot
+from league.standings_table import season_records, standings
+from league.tunables import TREND_WEEKS
 
 logger = logging.getLogger(__name__)
 

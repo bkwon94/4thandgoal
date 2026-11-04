@@ -14,14 +14,14 @@ from zoneinfo import ZoneInfo
 import httpx
 from pydantic import BaseModel
 
-from cornerstone.claude_errors import WriterError
-from cornerstone.claude_port import Writer
-from cornerstone.league_settings import LeagueSettings
-from cornerstone.models import ResearchOut
-from cornerstone.nflverse import nflverse_week
-from cornerstone.provider.base import Provider
-from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
-from cornerstone.provider.sleeper import league_settings, load_raw
+from league.claude_errors import WriterError
+from league.claude_port import Writer
+from league.league_settings import LeagueSettings
+from league.models import ResearchOut
+from league.nflverse import nflverse_week
+from league.provider.base import Provider
+from league.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
+from league.provider.sleeper import league_settings, load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"

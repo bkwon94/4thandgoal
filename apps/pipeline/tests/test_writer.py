@@ -8,9 +8,6 @@ import pytest
 from conftest import SAVED
 from cpc import cpc_client
 
-from cornerstone.models import Blurb, Sentence, WriterOut
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import build_bundle
 from cornerstone.writer import (
     DEFAULT_PROMPTS,
@@ -20,6 +17,9 @@ from cornerstone.writer import (
     template_blurb,
     write_blurb,
 )
+from league.models import Blurb, Sentence, WriterOut
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
 
 CLIENT = cpc_client()
 PROMPTS = CLIENT.voice_dir
@@ -563,16 +563,16 @@ def test_system_prompt_picks_one_shootout_for_the_next_week(fixture_raw_dir):
 def test_the_fake_writer_raises_a_type_error_when_the_answer_is_not_the_asked_model():
     from fakes import FakeWriter
 
-    from cornerstone.models import ResearchOut
+    from league.models import ResearchOut
 
     with pytest.raises(TypeError, match="the next answer is a ResearchOut, and the call asks for WriterOut"):
         FakeWriter([ResearchOut(claims=[])]).parse("user text", WriterOut)
 
 
 def test_the_research_call_alone_sends_the_web_search_tool():
-    from cornerstone.models import ResearchOut
     from cornerstone.waiver_research import search_call
     from cornerstone.writer import claude_call
+    from league.models import ResearchOut
 
     writer, sent = _stub_writer()
     search_call("research system", "user text", writer=writer)

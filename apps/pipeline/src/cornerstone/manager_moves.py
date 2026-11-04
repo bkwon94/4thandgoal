@@ -4,8 +4,8 @@ Pure code over the saved history. The names and the positions come from the raw 
 """
 from pydantic import BaseModel, ConfigDict, Field
 
-from cornerstone.models import History, PastWeek, Trade
-from cornerstone.parse import player_name
+from league.models import History, PastWeek, Trade
+from league.parse import player_name
 
 
 class MovePlayer(BaseModel):

@@ -10,10 +10,10 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.history import load_history
-from cornerstone.parse import parse_trades, parse_week
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.trades import default_cutoff, is_late, trades_for_week
+from league.history import load_history
+from league.parse import parse_trades, parse_week
+from league.provider.sleeper import load_raw
+from league.trades import default_cutoff, is_late, trades_for_week
 
 CLIENT = cpc_client()
 

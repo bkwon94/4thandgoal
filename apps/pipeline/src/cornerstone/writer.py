@@ -11,10 +11,10 @@ from typing import TypeVar
 import anthropic
 from pydantic import BaseModel, ValidationError
 
-from cornerstone.claude_errors import RefusalError, WriterError
-from cornerstone.claude_port import Writer
-from cornerstone.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
+from league.claude_errors import RefusalError, WriterError
+from league.claude_port import Writer
+from league.models import Blurb, Chapter, FactSheet, Sentence, WriterOut
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")

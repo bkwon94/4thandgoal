@@ -1,6 +1,7 @@
 """
 Checks that each package folder under src holds a README.md with the headings Knows, Ports, and Does not do.
 Each README is under 25 lines, and the only CLAUDE.md is the one at the repo root. See ADR 0014.
+Each package under packages/ at the repo root holds a README.md with the same headings and length. See ADR 0023.
 """
 import subprocess
 from pathlib import Path
@@ -8,7 +9,10 @@ from pathlib import Path
 from rule_report import Offense, clean_git_env, report
 
 ROOT = Path(__file__).resolve().parent.parent
+# The repo root, which holds packages/.
+REPO = ROOT.parent.parent
 ADR = "docs/adr/0014-the-rules-are-checks.md"
+PACKAGE_ADR = "docs/adr/0023-a-package-holds-one-domain-in-both-languages.md"
 HEADINGS = ["## Knows", "## Ports", "## Does not do"]
 # An agent reads the README to decide whether to open the folder. A short README means an agent reads little.
 MAX_LINES = 24
@@ -82,6 +86,33 @@ def _length_offenses(root: Path) -> list[Offense]:
     return offenses
 
 
+def _package_readme_offenses(repo: Path) -> list[Offense]:
+    """The packages under packages/ with no README.md, and each package README that breaks the heading or length rule."""
+    offenses: list[Offense] = []
+    for folder in sorted(path for path in (repo / "packages").glob("*") if path.is_dir()):
+        readme = folder / "README.md"
+        where = _repo_path(folder, repo)
+        if not readme.is_file():
+            offenses.append(Offense(
+                path=where, line=1, rule_id="readme/missing", what=f"{where} holds no README.md.",
+                rule="each package holds a README.md", adr=PACKAGE_ADR,
+                fix=f"add {where}/README.md with a title and the headings Knows, Ports, and Does not do."))
+            continue
+        lines = readme.read_text().splitlines()
+        headings = [line for line in lines if line.startswith("#")]
+        if not (lines and lines[0].startswith("# ")) or headings[1:] != HEADINGS:
+            offenses.append(Offense(
+                path=_repo_path(readme, repo), line=1, rule_id="readme/headings",
+                what=f"The headings are: {', '.join(headings) or 'none'}.", rule=HEADINGS_RULE, adr=PACKAGE_ADR,
+                fix=HEADINGS_FIX))
+        if len(lines) > MAX_LINES:
+            offenses.append(Offense(
+                path=_repo_path(readme, repo), line=MAX_LINES + 1, rule_id="readme/length",
+                what=f"The README has {len(lines)} lines.", rule=LENGTH_RULE, adr=PACKAGE_ADR,
+                fix=f"cut the README to {MAX_LINES} lines, and move each detail to the docstring of its module."))
+    return offenses
+
+
 def _tracked_files(root: Path) -> list[str]:
     """The paths that git tracks, from the repo root. A staged file counts, so the hook sees a new one."""
     result = subprocess.run(
@@ -101,6 +132,25 @@ def _claude_md_offenses(tracked: list[str]) -> list[Offense]:
         adr=ADR,
         fix="move the text to the README.md of the folder, and remove the CLAUDE.md.",
     ) for path in tracked if Path(path).name == "CLAUDE.md" and path != "CLAUDE.md"]
+
+
+def test_each_package_of_the_repo_has_a_readme_with_the_three_headings():
+    offenses = _package_readme_offenses(REPO)
+    assert not offenses, report(offenses)
+
+
+def test_the_rule_finds_a_package_of_the_repo_with_no_readme(tmp_path):
+    (tmp_path / "packages" / "league" / "python").mkdir(parents=True)
+    assert [(offense.path, offense.rule_id) for offense in _package_readme_offenses(tmp_path)] == [
+        ("packages/league", "readme/missing")]
+
+
+def test_the_rule_finds_a_package_readme_with_no_ports_heading(tmp_path):
+    package = tmp_path / "packages" / "league"
+    package.mkdir(parents=True)
+    (package / "README.md").write_text("# league\n\n## Knows\n\nThe kernel.\n\n## Does not do\n\nNo app.\n")
+    assert [(offense.path, offense.rule_id) for offense in _package_readme_offenses(tmp_path)] == [
+        ("packages/league/README.md", "readme/headings")]
 
 
 def test_each_package_folder_has_a_readme():

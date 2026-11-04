@@ -6,8 +6,8 @@ import json
 
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import managers
-from cornerstone.models import History, PastWeek, Team
-from cornerstone.season_inputs import SeasonInputs
+from league.models import History, PastWeek, Team
+from league.season_inputs import SeasonInputs
 
 # One QB, two RB, two WR, and a FLEX start. The bench slots do not start.
 SLOTS = ["QB", "RB", "WR", "FLEX", "BN", "BN"]

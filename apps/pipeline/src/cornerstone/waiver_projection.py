@@ -2,10 +2,10 @@
 The projections of the waiver board: the week N+1 projection and the rest of season projection of one player.
 One place for the sum, so the pool and the drops bucket read a player the same way.
 """
-from cornerstone.client import Client
-from cornerstone.models import ProjectionsAhead
-from cornerstone.numbers import r2
-from cornerstone.provider.raw import RawWeek
+from league.client import Client
+from league.models import ProjectionsAhead
+from league.numbers import r2
+from league.provider.raw import RawWeek
 
 
 def projections_ahead(raw: RawWeek) -> ProjectionsAhead:

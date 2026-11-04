@@ -6,10 +6,10 @@ import json
 from datetime import UTC, datetime
 
 from cornerstone.managers import managers
-from cornerstone.models import Drop, History, Move, PastWeek, Team, Trade
-from cornerstone.parse import parse_drops
-from cornerstone.provider.raw import RawTransaction
-from cornerstone.season_inputs import SeasonInputs
+from league.models import Drop, History, Move, PastWeek, Team, Trade
+from league.parse import parse_drops
+from league.provider.raw import RawTransaction
+from league.season_inputs import SeasonInputs
 
 PLAYERS = {
     "100": {"full_name": "Wide Out", "position": "WR"},

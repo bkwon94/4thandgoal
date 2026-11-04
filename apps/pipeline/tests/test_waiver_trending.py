@@ -9,8 +9,8 @@ from zoneinfo import ZoneInfo
 from cpc import cpc_client
 from fakes import json_transport
 
-from cornerstone.provider.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
+from league.provider.sleeper import fetch_week, load_raw
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 # The client the builds and fetches of these tests read.

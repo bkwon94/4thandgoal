@@ -5,12 +5,12 @@ The awards and Game Changer chapters read them.
 import logging
 from collections import Counter
 
-from cornerstone.client import Client
 from cornerstone.facts_nflverse import expected_awards
-from cornerstone.models import (
+from cornerstone.sheet.base import AWARD_TITLES, Context, Nums, fact
+from league.client import Client
+from league.models import (
     Fact,
 )
-from cornerstone.sheet.base import AWARD_TITLES, Context, Nums, fact
 
 logger = logging.getLogger(__name__)
 

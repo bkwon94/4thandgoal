@@ -3,18 +3,18 @@ Builds the position leader facts, the position rank facts, and the history facts
 The position leaders chapter and the history caps read them.
 """
 
-from cornerstone.client import Client
 from cornerstone.facts_nflverse import volume_ranks
-from cornerstone.history import (
+from cornerstone.sheet.base import Context, Nums, fact, trend_text
+from league.client import Client
+from league.history import (
     player_trend,
 )
-from cornerstone.models import (
+from league.models import (
     Fact,
     PlayerLine,
 )
-from cornerstone.numbers import r2
-from cornerstone.sheet.base import Context, Nums, fact, trend_text
-from cornerstone.tunables import TREND_WEEKS
+from league.numbers import r2
+from league.tunables import TREND_WEEKS
 
 
 def facts(context: Context, client: Client) -> list[Fact]:

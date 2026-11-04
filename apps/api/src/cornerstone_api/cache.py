@@ -12,7 +12,7 @@ from typing import NamedTuple
 
 from cornerstone.adjusters import due_back_week
 from cornerstone.rubric import ProposedTrade
-from cornerstone.snapshot import Snapshot
+from league.snapshot import Snapshot
 
 # The stat fields the grade reads from a week N line. A change to any other field keeps the hit.
 STAT_FIELDS = ("pts_half_ppr", "gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_att")

@@ -30,16 +30,13 @@ START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "
 # A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
 
-# Roster fit and standing compare a side's best lineup before and after the trade.
-# The count of completed weeks whose points per game pick the best lineup. Fewer weeks use what exists.
-LINEUP_WEEKS = 4
+# Roster fit and standing compare a side's best lineup before and after the trade. LINEUP_WEEKS of
+# league/tunables.py picks the best lineup.
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
 
-# Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
-# The count of scored weeks in each window. The share helpers in history.py read it, so both windows change here.
-SHARE_WEEKS = 2
+# Trend and usage compares snap and target share over the SHARE_WEEKS windows of league/tunables.py.
 # The change in mean WOPR between the two windows that counts as up or down. WOPR is 1.5 times target share plus
 # 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.
 WOPR_SWING = 8
@@ -47,21 +44,13 @@ WOPR_SWING = 8
 # Injury: a player the side gets who is out now, or who was on the injury report in many weeks, is a step down.
 # The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
 INJURY_WEEKS = 3
-# A player who is out now is a near return when his return week is no later than the trade week plus this count.
-# The hole read uses the same window, GLOSSARY.md "Return window", so a starter due back inside it needs a bench
-# player to cover him. Three weeks is the trade week and the next two. A pickup or another trade can rarely fix a
-# slot sooner.
-RETURN_WINDOW_WEEKS = 2
+# The near return reads RETURN_WINDOW_WEEKS of league/tunables.py, because the lineup reads it too.
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.
 # A backup who takes 25% of his team's carries scores points of his own, so he counts as a running back.
 # A pure backup sits near 15%. A backup with a real role, such as Blake Corum at 28%, sits above 25%.
 # The gate compares the exact share, so 24.6% stays a handcuff.
 HANDCUFF_CARRY_SHARE = 25
-# The carry share reads his last 3 played games, so one big game cannot free him alone.
-HANDCUFF_CARRY_GAMES = 3
-# With fewer played games than this, the share is too thin to read, so the depth chart answer stands.
-HANDCUFF_MIN_GAMES = 2
 
 # Schedule: byes left and the playoff opponents of the players it gets against the players it gives.
 # It never moves a letter.
@@ -105,16 +94,9 @@ GRADES_PER_MINUTE = 5
 # It caps the Claude bill from one browser over a day, and the count lives on the volume so a deploy keeps it.
 GRADES_PER_DAY = 20
 
-# The teams route: the seconds it answers one season from memory before it builds the teams again.
-# Each build fetches Sleeper, so the trade form fills at once. A trade or a waiver claim shows within this window.
-TEAMS_CACHE_SECONDS = 300
-
 # The finder: the count of win-win trades it returns at most for one pair of rosters.
 # A short list is one a manager reads, and three trades with no shared player each stand as a real choice.
 FINDER_TOP = 3
-
-# The team trend is the mean of this many latest weeks. The form component of the power score reads the same window.
-TREND_WEEKS = 3
 
 # The form component counts two games a week, each with a weight in the record and the streak.
 # A head-to-head loss costs a game in the standings and a median loss does not, so the head-to-head game weighs more.
@@ -162,17 +144,9 @@ PER_POSITION = 3
 # ranked inside the position would put the top of each in best adds every week. Kickers also fill the trending
 # adds, as live data showed. They stay in the pool.
 BUCKET_POSITIONS = ("QB", "RB", "WR", "TE")
-# The positions of the waiver pool. Here and not in the engine, so the Sleeper client imports it with no cycle.
-POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
 # The count of latest weeks the usage trend reads. The trend is the change from the first of these weeks
 # to the last, so 2 compares last week with the week before.
 USAGE_WEEKS = 2
-# The count of falls in a row of a rostered player's snap share that make him a drop candidate. One or two
-# falls can be a game script or a blowout, and three is a role that shrinks.
-DROP_WEEKS = 3
-# The count of latest weeks of usage the nflverse extract saves. DROP_WEEKS falls in a row take one more week
-# than the falls, so the extract follows DROP_WEEKS. The usage trend reads only the last USAGE_WEEKS of them.
-USAGE_SAVED_WEEKS = DROP_WEEKS + 1
 # The share of his budget left that the model expects a rival to bid on a player with a board score of 1.
 # "need" is for a rival with fewer healthy starters at the position than the lineup needs, "covered" for any other.
 NEED_SHARE = {"need": 0.35, "covered": 0.12}
@@ -195,16 +169,6 @@ CLAIMS_PER_PLAYER = 2
 # The most web searches in one research call. The prompt has four steps: the Yahoo waiver column, the Yahoo
 # author pages, the wider web, and one spare for a step that gave nothing. Each search costs $0.01.
 RESEARCH_SEARCHES = 4
-
-# The refresh: the seconds after which the refresh fetches the injuries file and the player weeks file again.
-# Injury status and snap counts change on game days, so a day-old file would miss Sunday on a Monday morning grade.
-# Every other nflverse source keeps the day of CACHE_MAX_AGE_SECONDS.
-FAST_SOURCES_MAX_AGE_SECONDS = 6 * 60 * 60
-
-# The known games: a week N game is in progress when the clock is past its kickoff by less than this.
-# An NFL game takes about 3 hours 15 minutes. Overtime and weather delays add more, so the extra time keeps
-# a long game in progress until it ends. GLOSSARY.md, "In progress".
-IN_PROGRESS_MINUTES = 4 * 60 + 30
 
 # The next-week storylines: the weight of each kind. GLOSSARY.md, "Storyline". A game's storyline score is the sum,
 # and the two games with the highest score are Must Watch. Stakes and a streak count most, because a reader feels

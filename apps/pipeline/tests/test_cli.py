@@ -45,7 +45,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     import httpx
 
     from cornerstone import cli, pipeline
-    from cornerstone.provider.sleeper import SleeperProvider
+    from league.provider.sleeper import SleeperProvider
 
     def no_fetch(request):
         raise AssertionError("saved raw data must not be fetched again")
@@ -126,7 +126,7 @@ def _chart_repo(tmp_path, fixture_raw_dir, monkeypatch):
 
 
 def _pad_rows(value):
-    from cornerstone.models import ChartRow
+    from league.models import ChartRow
 
     # The name key drops digits, so each pad name spells its number in letters to stay unique.
     return [ChartRow(value=value, name="Pad " + "".join(chr(ord("a") + int(d)) for d in str(i)), position="TE")
@@ -134,7 +134,7 @@ def _pad_rows(value):
 
 
 def _save_chart(tmp_path, parsed):
-    from cornerstone.paths import charts_dir
+    from league.paths import charts_dir
 
     charts = charts_dir(tmp_path / "data" / "nfl")
     charts.mkdir(parents=True)
@@ -143,14 +143,14 @@ def _save_chart(tmp_path, parsed):
 
 
 def _sleeper_state(season):
-    from cornerstone.provider.raw import RawState
+    from league.provider.raw import RawState
 
     return lambda: RawState(season=season, display_week=6, season_start_date="2026-09-09")
 
 
 def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_path, monkeypatch, capsys):
     from cornerstone import cli
-    from cornerstone.models import ChartRead, ChartRow
+    from league.models import ChartRead, ChartRow
 
     cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
@@ -177,7 +177,7 @@ def test_chart_without_saved_raw_data_of_a_past_season_says_so(tmp_path, monkeyp
 
 def test_chart_prints_the_table_and_every_guard_when_a_guard_fails(tmp_path, fixture_raw_dir, monkeypatch, capsys):
     from cornerstone import cli
-    from cornerstone.models import ChartRead, ChartRow
+    from league.models import ChartRead, ChartRow
 
     _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
     _save_chart(
@@ -195,9 +195,9 @@ def test_chart_prints_the_table_and_every_guard_when_a_guard_fails(tmp_path, fix
 
 def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw_dir, monkeypatch, capsys):
     from cornerstone import cli
-    from cornerstone.models import ChartRead, ChartRow
-    from cornerstone.parse import parse_week
-    from cornerstone.provider.sleeper import load_raw
+    from league.models import ChartRead, ChartRow
+    from league.parse import parse_week
+    from league.provider.sleeper import load_raw
 
     _chart_repo(tmp_path, fixture_raw_dir, monkeypatch)
     line = parse_week(load_raw(fixture_raw_dir)).matchups[0].a.lines[0]
@@ -289,8 +289,8 @@ def test_analyze_names_the_one_source_the_cache_lacks(
 
 def test_the_source_names_are_the_names_of_the_refreshed_sources():
     from cornerstone import cli
-    from cornerstone.live import REFRESHED_SOURCES
-    from cornerstone.snapshot import SLOW_SOURCES
+    from league.live import REFRESHED_SOURCES
+    from league.snapshot import SLOW_SOURCES
 
     # The line names each slow source the snapshot can miss, by the key the snapshot gives it.
     assert set(cli._SOURCE_NAMES) == set(SLOW_SOURCES)
@@ -424,8 +424,9 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     import pytest
     from cpc import cpc_client
 
-    from cornerstone import cli, live
-    from cornerstone.provider.sleeper import load_raw
+    from cornerstone import cli
+    from league import live
+    from league.provider.sleeper import load_raw
 
     cli_root(tmp_path)
     shutil.copytree(fixture_history_root, tmp_path / "clients" / "cpc" / "data" / "2026" / "history")
@@ -476,7 +477,7 @@ def test_the_known_games_line_names_each_pending_count(
     from cpc import cpc_client
 
     from cornerstone import cli
-    from cornerstone.snapshot import KnownGames, load_snapshot
+    from league.snapshot import KnownGames, load_snapshot
 
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=cpc_client())
     known = KnownGames(week=6, games=14, pending=pending)

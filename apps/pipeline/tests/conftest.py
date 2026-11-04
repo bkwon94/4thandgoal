@@ -14,17 +14,17 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
-from cornerstone.history import load_history
-from cornerstone.models import ChartValues, InjuryPlay, NflverseWeek
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_trades, parse_week
-from cornerstone.paths import history_root, week_dir
 from cornerstone.pipeline import make_bundle
-from cornerstone.provider.raw import RawWeek
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import build_bundle
-from cornerstone.snapshot import week_snapshot
-from cornerstone.trades import default_cutoff, trades_for_week
+from league.history import load_history
+from league.models import ChartValues, InjuryPlay, NflverseWeek
+from league.nflverse import nflverse_week
+from league.parse import parse_trades, parse_week
+from league.paths import history_root, week_dir
+from league.provider.raw import RawWeek
+from league.provider.sleeper import load_raw
+from league.snapshot import week_snapshot
+from league.trades import default_cutoff, trades_for_week
 
 CLIENT = cpc_client()
 

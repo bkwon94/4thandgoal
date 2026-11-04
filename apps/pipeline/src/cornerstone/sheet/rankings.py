@@ -4,11 +4,14 @@ The rankings chapter reads them, and the chapter itself comes from here.
 """
 from collections.abc import Callable
 
-from cornerstone.client import Client
 from cornerstone.facts_league import (
     head_to_head,
 )
-from cornerstone.models import (
+from cornerstone.power_rankings import power_rankings
+from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
+from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
+from league.client import Client
+from league.models import (
     Chapter,
     Fact,
     History,
@@ -16,10 +19,8 @@ from cornerstone.models import (
     PowerRow,
     Standing,
 )
-from cornerstone.numbers import round_half_up
-from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
-from cornerstone.tunables import SWING_FLAT, TREND_WEEKS, WHY_MOVE_AT, WHY_ODDS_AT
+from league.numbers import round_half_up
+from league.tunables import TREND_WEEKS
 
 # The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
 # reading it as scoring, which the .trend fact covers.

@@ -9,11 +9,11 @@ from conftest import SAVED, saved_repo
 from cpc import cpc_client
 from fakes import no_news
 
-from cornerstone.history import load_history
-from cornerstone.parse import parse_week
 from cornerstone.pipeline import make_bundle
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import base, build_bundle
+from league.history import load_history
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
 
 CLIENT = cpc_client()
 

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.provider.raw import RawPastWeek, RawTrending, RawWeek
-from cornerstone.provider.sleeper import load_raw
+from league.provider.raw import RawPastWeek, RawTrending, RawWeek
+from league.provider.sleeper import load_raw
 
 
 def _same(dumped, data) -> bool:

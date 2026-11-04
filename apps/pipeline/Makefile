@@ -11,7 +11,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main schema settings help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -63,10 +63,6 @@ rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT 
 analyze: need-client ## Grade a trade without the Claude call (SIDES="ROSTER:PLAYER@TO,PLAYER@TO ..." and ASKER required)
 	@test -n "$(SIDES)$(A)$(B)" -a -n "$(ASKER)" || { echo "Set SIDES and ASKER. Example: make analyze SIDES=\"4:7569@12 12:10236@4\" ASKER=4"; exit 1; }
 	$(RUN) cornerstone analyze --client $(CLIENT) --season $(SEASON) $(foreach side,$(or $(SIDES),$(A) $(B)),--side $(side)) --asker $(ASKER) --no-claude
-
-# The site build checks client.toml with this file, so commit it with the model change that rewrote it.
-schema: ## Rewrite the exported JSON Schema of client.toml
-	$(RUN) python -c "from cornerstone.client import write_schema_file; print(write_schema_file())"
 
 settings: need-client ## Print the League settings and the derived sizes of a season (CLIENT required)
 	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)

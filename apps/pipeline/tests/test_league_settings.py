@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.league_settings import LeagueSettings
-from cornerstone.provider.raw import RawLeague
-from cornerstone.provider.sleeper import SLEEPER, league_settings
+from league.league_settings import LeagueSettings
+from league.provider.raw import RawLeague
+from league.provider.sleeper import SLEEPER, league_settings
 
 CPC_LEAGUE = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "league.json"
 

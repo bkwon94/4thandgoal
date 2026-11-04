@@ -6,8 +6,11 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from cornerstone.client import Client
-from cornerstone.models import (
+from cornerstone.sheet import awards, drops, leaders, matchups, next_week, rankings, standings, week
+from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, sentence_range, week_dates
+from cornerstone.sheet.rankings import rankings_chapter
+from league.client import Client
+from league.models import (
     Bundle,
     Chapter,
     Fact,
@@ -19,11 +22,8 @@ from cornerstone.models import (
     Week,
     WeekData,
 )
-from cornerstone.provider.sleeper import fetch_news
-from cornerstone.sheet import awards, drops, leaders, matchups, next_week, rankings, standings, week
-from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, sentence_range, week_dates
-from cornerstone.sheet.rankings import rankings_chapter
-from cornerstone.snapshot import Snapshot
+from league.provider.sleeper import fetch_news
+from league.snapshot import Snapshot
 
 # The fact groups of the sheet, in the order the sheet lists their facts. This list alone sets that order.
 # A group reads only the context and the client, so it needs no file and no clock. Every group takes the

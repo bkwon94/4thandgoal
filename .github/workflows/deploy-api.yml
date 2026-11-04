@@ -1,6 +1,6 @@
 # Deploys the Cornerstone API to Fly.
-# It runs on a push to main that changes the API, the pipeline it imports, the root uv files, or this workflow,
-# and only after the check passes.
+# It runs on a push to main that changes the API, the pipeline or the league package it imports, the root uv files,
+# or this workflow, and only after the check passes.
 # The deploy calls the check workflow as a job it needs. That is simpler than a workflow_run trigger,
 # which has no path filter and needs extra steps to find the pushed commit.
 name: Deploy API
@@ -11,6 +11,7 @@ on:
     paths:
       - "apps/api/**"
       - "apps/pipeline/**"
+      - "packages/league/python/**"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/deploy-api.yml"

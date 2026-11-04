@@ -8,8 +8,8 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.waiver import waiver_board
+from league.provider.sleeper import load_raw
 
 CLIENT = cpc_client()
 

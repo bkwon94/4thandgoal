@@ -35,19 +35,19 @@ from cornerstone.analysis import (
 )
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
-from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
-from cornerstone.player_ids import is_def
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.ranks import recent_points_per_game
 from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
-from cornerstone.snapshot import SnapshotPlayer
-from cornerstone.tunables import TEAMS_CACHE_SECONDS
 from cornerstone_api.analyzer import result_document
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
 from cornerstone_api.cache import cache_key, finder_cache_key
 from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
+from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from league.player_ids import is_def
+from league.provider.sleeper import load_raw
+from league.ranks import recent_points_per_game
+from league.snapshot import SnapshotPlayer
+from league.tunables import TEAMS_CACHE_SECONDS
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.
@@ -1099,7 +1099,7 @@ def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(setti
     def full_volume(src, dst):
         raise OSError(28, "No space left on device")
 
-    monkeypatch.setattr("cornerstone.files.os.replace", full_volume)
+    monkeypatch.setattr("league.files.os.replace", full_volume)
     clock = MovingClock(NOW)
     client = _graded_client(settings, sources, clock, _uncached())
     for _ in range(GRADES_PER_DAY):

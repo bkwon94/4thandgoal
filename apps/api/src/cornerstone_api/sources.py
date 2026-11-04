@@ -7,10 +7,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 
-from cornerstone.chart import chart_values, claude_reader
-from cornerstone.client import Client
-from cornerstone.history import PastLegFetcher
-from cornerstone.live import (
+from cornerstone.writer import parse_call
+from league.chart import chart_values, claude_reader
+from league.client import Client
+from league.history import PastLegFetcher
+from league.live import (
     ChartReader,
     RefreshResult,
     SleeperFetcher,
@@ -20,11 +21,10 @@ from cornerstone.live import (
     live_snapshot,
     refresh_sources,
 )
-from cornerstone.models import Week
-from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from cornerstone.provider.sleeper import SLEEPER
-from cornerstone.snapshot import Snapshot
-from cornerstone.writer import parse_call
+from league.models import Week
+from league.nflverse import CACHE_MAX_AGE_SECONDS, http_get
+from league.provider.sleeper import SLEEPER
+from league.snapshot import Snapshot
 
 
 @dataclass(frozen=True)

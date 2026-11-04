@@ -14,13 +14,30 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
-from cornerstone.chart import match_chart, saved_chart_read
-from cornerstone.claude_port import Writer
-from cornerstone.client import Client
-from cornerstone.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
-from cornerstone.models import (
+from cornerstone.power_rankings import power_rankings
+from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
+from cornerstone.sheet import (
+    RANKINGS_CHAPTER,
+    build_bundle,
+    check_week_is_buildable,
+    power_facts,
+    rank_why_facts,
+    rankings_chapter,
+    read_bundle,
+    write_bundle,
+)
+from cornerstone.verifier import page_words, reserved_words, write_and_verify
+from cornerstone.waiver import waiver_board
+from cornerstone.waiver_price import bid_history
+from cornerstone.waiver_research import SearchCall, research_board, search_call
+from cornerstone.writer import ClaudeCall
+from league.chart import match_chart, saved_chart_read
+from league.claude_port import Writer
+from league.client import Client
+from league.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
+from league.models import (
     Blurb,
     BuildRecord,
     Bundle,
@@ -37,9 +54,9 @@ from cornerstone.models import (
     Week,
     week_lines,
 )
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_trades, parse_week
-from cornerstone.paths import (
+from league.nflverse import nflverse_week
+from league.parse import parse_trades, parse_week
+from league.paths import (
     history_dir,
     history_root,
     nflverse_cache_dir,
@@ -49,10 +66,9 @@ from cornerstone.paths import (
     week_dir,
     week_from_label,
 )
-from cornerstone.power_rankings import power_rankings
-from cornerstone.provider.base import Provider
-from cornerstone.provider.raw import RawState, RawWeek
-from cornerstone.provider.sleeper import (
+from league.provider.base import Provider
+from league.provider.raw import RawState, RawWeek
+from league.provider.sleeper import (
     PROJECTIONS_AHEAD_FILE,
     SLEEPER,
     fetch_news,
@@ -61,27 +77,11 @@ from cornerstone.provider.sleeper import (
     read_fetch_time,
     read_prev_transactions,
 )
-from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
-from cornerstone.season_inputs import SeasonInputs
-from cornerstone.sheet import (
-    RANKINGS_CHAPTER,
-    build_bundle,
-    check_week_is_buildable,
-    power_facts,
-    rank_why_facts,
-    rankings_chapter,
-    read_bundle,
-    write_bundle,
-)
-from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import Snapshot, load_returns, week_snapshot
-from cornerstone.standings_table import season_records, standings_order
-from cornerstone.trades import default_cutoff, trades_for_week
-from cornerstone.verifier import page_words, reserved_words, write_and_verify
-from cornerstone.waiver import waiver_board
-from cornerstone.waiver_price import bid_history
-from cornerstone.waiver_research import SearchCall, research_board, search_call
-from cornerstone.writer import ClaudeCall
+from league.season_inputs import SeasonInputs
+from league.slow_sources import load_slow_sources
+from league.snapshot import Snapshot, load_returns, week_snapshot
+from league.standings_table import season_records, standings_order
+from league.trades import default_cutoff, trades_for_week
 
 log = logging.getLogger(__name__)
 

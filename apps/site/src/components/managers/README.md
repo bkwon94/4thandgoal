@@ -9,7 +9,7 @@
 
 ## Ports
 
-- Player headshots from the Sleeper CDN, through the URL from `src/lib/headshot.ts`.
+- Player headshots from the Sleeper CDN, through the URL from `@cpc/league/headshot`.
 
 ## Does not do
 

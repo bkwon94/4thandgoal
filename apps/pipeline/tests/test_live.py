@@ -14,9 +14,9 @@ import pytest
 from cpc import cpc_client
 from fakes import FixtureProvider
 
-from cornerstone.history import save_week_to_history
-from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
-from cornerstone.nflverse import (
+from league.history import save_week_to_history
+from league.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
+from league.nflverse import (
     DEPTH_CHARTS_URL,
     FFIDS_URL,
     FFOPPORTUNITY_URL,
@@ -25,10 +25,10 @@ from cornerstone.nflverse import (
     STATS_PLAYER_URL,
     cache_path,
 )
-from cornerstone.provider.raw import RawAheadWeek
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.snapshot import load_snapshot
-from cornerstone.tunables import TEAMS_CACHE_SECONDS
+from league.provider.raw import RawAheadWeek
+from league.provider.sleeper import load_raw
+from league.snapshot import load_snapshot
+from league.tunables import TEAMS_CACHE_SECONDS
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.

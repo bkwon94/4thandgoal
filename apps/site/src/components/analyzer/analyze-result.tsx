@@ -12,7 +12,7 @@ import { useMotionOff } from "@/hooks/use-motion-off";
 import { DURATION, rise } from "@/lib/motion";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
-import { Headshot } from "@/components/parts/headshot";
+import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@/components/parts/label";
 import { cn } from "@/lib/utils";
 

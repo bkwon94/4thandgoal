@@ -5,19 +5,19 @@ The recap and Matchup of the Week chapters read them.
 from datetime import datetime
 from decimal import Decimal
 
-from cornerstone.client import Client
 from cornerstone.facts_league import STREAK_ON_THE_LINE, streak
-from cornerstone.models import (
+from cornerstone.odds import roster_status
+from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
+from league.client import Client
+from league.models import (
     Fact,
     OddsResult,
     OddsStatus,
     PlayerLine,
     sub,
 )
-from cornerstone.numbers import r2
-from cornerstone.odds import roster_status
-from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
-from cornerstone.standings_table import season_records
+from league.numbers import r2
+from league.standings_table import season_records
 
 # The clause of the impact fact for a first clinch or a first out. The words follow the odds fact of the same status.
 STATUS_CLAUSES = {"in": "clinched a playoff spot", "out": "is now out of the playoff race"}

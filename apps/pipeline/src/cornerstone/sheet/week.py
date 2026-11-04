@@ -3,11 +3,11 @@ Builds the week facts: the week line, the recent adds, and the injured starters.
 The recap chapters read them for the context of each game.
 """
 
-from cornerstone.client import Client
-from cornerstone.models import (
+from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact, week_dates
+from league.client import Client
+from league.models import (
     Fact,
 )
-from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact, week_dates
 
 
 def facts(context: Context, client: Client) -> list[Fact]:

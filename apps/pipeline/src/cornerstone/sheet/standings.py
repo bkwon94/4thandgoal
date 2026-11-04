@@ -4,12 +4,12 @@ The standings facts place each team against the last playoff spot.
 """
 from decimal import Decimal
 
-from cornerstone.client import Client
-from cornerstone.models import (
+from cornerstone.sheet.base import Context, Nums, fact
+from league.client import Client
+from league.models import (
     Fact,
 )
-from cornerstone.numbers import r2
-from cornerstone.sheet.base import Context, Nums, fact
+from league.numbers import r2
 
 # The phrase for a team with the wins of the last playoff spot, keyed by its place against that spot.
 # A team below it fills in its spots below the last playoff spot as a digit, such as "2 spots".

@@ -8,10 +8,10 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.paths import returns_path
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.slow_sources import SlowSources, load_slow_sources
-from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
+from league.paths import returns_path
+from league.provider.sleeper import load_raw
+from league.slow_sources import SlowSources, load_slow_sources
+from league.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
 
 CLIENT = cpc_client()
 

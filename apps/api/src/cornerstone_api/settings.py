@@ -6,7 +6,7 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from cornerstone.paths import results_cache_dir
+from league.paths import results_cache_dir
 
 # The production league site and the two local dev servers of the site repo.
 DEFAULT_ORIGINS = ("https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000")

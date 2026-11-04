@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/parts/reveal";
-import { Avatar } from "@/components/parts/avatar";
+import { Avatar } from "@cpc/league/avatar";
 import { Chapter } from "@/components/parts/chapter";
 import { ordinal, record } from "@/lib/format/format";
 import { DURATION, REVEAL_STAGGER } from "@/lib/motion";

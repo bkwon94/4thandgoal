@@ -3,7 +3,7 @@ The expected strings are literal, so a change to the layout fails here first.
 """
 from pathlib import Path
 
-from cornerstone.paths import (
+from league.paths import (
     chart_image,
     chart_read,
     charts_dir,

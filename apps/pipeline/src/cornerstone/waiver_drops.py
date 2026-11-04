@@ -4,14 +4,15 @@ Pure code over the raw files and the usage, so the same inputs give the same buc
 """
 import itertools
 
-from cornerstone.client import Client
-from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
-from cornerstone.numbers import round_half_up
-from cornerstone.parse import player_name, team_name
-from cornerstone.provider.raw import RawWeek
 from cornerstone.sheet.base import Nums, fact
-from cornerstone.tunables import BUCKET_POSITIONS, DROP_WEEKS
+from cornerstone.tunables import BUCKET_POSITIONS
 from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
+from league.client import Client
+from league.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
+from league.numbers import round_half_up
+from league.parse import player_name, team_name
+from league.provider.raw import RawWeek
+from league.tunables import DROP_WEEKS
 
 
 def drop_candidates(

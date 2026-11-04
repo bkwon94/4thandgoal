@@ -7,14 +7,9 @@ import random
 from collections import Counter
 from typing import Literal
 
-from cornerstone.client import Client
-from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
-from cornerstone.tunables import (
-    LEVEL_SHRINK_WEEKS,
-    PROJECTION_WEIGHT,
-    SEED_SHOW_AT,
-    SIM_RUNS,
-)
+from cornerstone.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SEED_SHOW_AT, SIM_RUNS
+from league.client import Client
+from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 
 ByeStatus = Literal["bye_sure", "bye_gone", "open"]
 # A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.client import check_schema_file, read_client_values
+from league.client import check_schema_file, read_client_values
 
 CLIENTS = Path(__file__).parents[3] / "clients"
 

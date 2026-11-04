@@ -11,7 +11,10 @@ from pathlib import Path
 import anthropic
 from pydantic import ValidationError
 
-from cornerstone.models import (
+from cornerstone.names import last_name
+from cornerstone.sheet.base import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
+from cornerstone.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, write_blurb
+from league.models import (
     Blurb,
     Chapter,
     FactSheet,
@@ -19,9 +22,6 @@ from cornerstone.models import (
     VerifyOut,
     VerifyResult,
 )
-from cornerstone.names import last_name
-from cornerstone.sheet.base import NUMBER_TOKEN, RANKINGS_CHAPTER, two_team_chapter
-from cornerstone.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, write_blurb
 
 log = logging.getLogger(__name__)
 

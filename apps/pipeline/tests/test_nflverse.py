@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 
-from cornerstone.nflverse import (
+from league.nflverse import (
     DEPTH_CHARTS_URL,
     PBP_URL,
     SCHEDULES_URL,
@@ -28,7 +28,7 @@ from cornerstone.nflverse import (
     read_kickoffs,
     read_schedules,
 )
-from cornerstone.provider.sleeper import load_raw
+from league.provider.sleeper import load_raw
 
 
 def _boom(url):

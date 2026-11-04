@@ -2,7 +2,7 @@
  * The avatar and the team name as one group.
  * An href makes the name a link to the manager page.
  */
-import { Avatar } from "@/components/parts/avatar";
+import { Avatar } from "@cpc/league/avatar";
 import { TeamName } from "@/components/parts/team-name";
 import { cn } from "@/lib/utils";
 

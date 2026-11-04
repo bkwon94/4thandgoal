@@ -18,12 +18,12 @@ from cornerstone.facts_league import (
     upset_signal,
 )
 from cornerstone.facts_matchup import matchup_facts
-from cornerstone.history import load_history
-from cornerstone.models import History, PastWeek, Standing
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import projected_totals
-from cornerstone.standings_table import standings
+from league.history import load_history
+from league.models import History, PastWeek, Standing
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.standings_table import standings
 
 CLIENT = cpc_client()
 

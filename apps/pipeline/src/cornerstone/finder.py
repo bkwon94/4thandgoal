@@ -6,7 +6,7 @@ from itertools import combinations
 
 from pydantic import BaseModel
 
-from cornerstone.adjusters import OUT_STATUSES, is_handcuff, trade_handcuffs
+from cornerstone.adjusters import is_handcuff, trade_handcuffs
 from cornerstone.rubric import (
     LETTERS,
     Breakdown,
@@ -18,8 +18,9 @@ from cornerstone.rubric import (
     grade,
     unlisted_players,
 )
-from cornerstone.snapshot import Snapshot
 from cornerstone.tunables import FINDER_TOP
+from league.ranks import OUT_STATUSES
+from league.snapshot import Snapshot
 
 # The finder sits one level above the grade function and the fairness rule. It never grades a side itself,
 # so the finder and the analyzer never disagree on a trade.

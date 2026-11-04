@@ -3,10 +3,10 @@ Tests for the matchup facts and the median game.
 They run on the real week 6 fixture and check exact numbers.
 """
 from cornerstone.facts_matchup import matchup_facts, median_facts
-from cornerstone.models import Matchup, PlayerLine, Side, sub
-from cornerstone.numbers import r2
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
+from league.models import Matchup, PlayerLine, Side, sub
+from league.numbers import r2
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
 
 
 def _wk(d):

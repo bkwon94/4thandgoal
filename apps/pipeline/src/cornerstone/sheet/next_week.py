@@ -4,19 +4,19 @@ The next week chapter reads them.
 """
 from collections.abc import Callable
 
-from cornerstone.adjusters import bye_covers_for_roster
-from cornerstone.client import Client
 from cornerstone.facts_nflverse import shootouts
-from cornerstone.models import (
+from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
+from league.client import Client
+from league.lineup import bye_covers_for_roster
+from league.models import (
     ByePlayer,
     Fact,
     NextMatchup,
     Standing,
     Storyline,
 )
-from cornerstone.numbers import count_noun, one_decimal_text
-from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
-from cornerstone.snapshot import Snapshot
+from league.numbers import count_noun, one_decimal_text
+from league.snapshot import Snapshot
 
 
 def facts(context: Context, client: Client) -> list[Fact]:

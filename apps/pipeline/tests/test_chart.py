@@ -10,7 +10,8 @@ import httpx
 import pytest
 from PIL import Image
 
-from cornerstone.chart import (
+from cornerstone.writer import ClaudeWriter, WriterError, parse_call
+from league.chart import (
     CHART_PROMPT,
     MEDIA_URL,
     PNG_SIGNATURE,
@@ -27,9 +28,8 @@ from cornerstone.chart import (
     read_chart,
     saved_chart_read,
 )
-from cornerstone.models import ChartRead, ChartRow, PlayerLine
-from cornerstone.paths import charts_dir
-from cornerstone.writer import ClaudeWriter, WriterError, parse_call
+from league.models import ChartRead, ChartRow, PlayerLine
+from league.paths import charts_dir
 
 
 def _line(player_id, name, position):

@@ -7,9 +7,9 @@ from collections.abc import Mapping
 from decimal import Decimal
 from typing import NamedTuple
 
-from cornerstone.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Shootout, TeamWeek, Week, sub
-from cornerstone.numbers import round_half_up
 from cornerstone.tunables import AWARDS_PER_PLAYER
+from league.models import DropLine, DropPlay, NflverseWeek, PlayerLine, Shootout, TeamWeek, Week, sub
+from league.numbers import round_half_up
 
 # The fewest points a starter must score under or over his expected points to win the unlucky or lucky award.
 # A smaller gap in one game is noise, so a quiet week gives no award. The commissioner tunes it.

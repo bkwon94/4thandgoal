@@ -6,7 +6,7 @@ import pytest
 from cpc import cpc_client
 from fakes import json_transport
 
-from cornerstone.provider.sleeper import RAW_FILES, fetch_state, fetch_week, load_raw, read_fetch_time
+from league.provider.sleeper import RAW_FILES, fetch_state, fetch_week, load_raw, read_fetch_time
 
 # The client the fetches of these tests read.
 CLIENT = cpc_client()
@@ -43,7 +43,7 @@ def test_fetch_state_has_week():
 def test_truncated_players_cache_refetches(tmp_path):
     import json
 
-    from cornerstone.provider import sleeper
+    from league.provider import sleeper
 
     cache = tmp_path / "cache" / "players.json"
     cache.parent.mkdir()
@@ -58,7 +58,7 @@ def test_truncated_players_cache_refetches(tmp_path):
 def test_unofficial_non_json_body_gives_empty():
     import httpx
 
-    from cornerstone.provider import sleeper
+    from league.provider import sleeper
 
     transport = httpx.MockTransport(lambda request: httpx.Response(200, text="<html>"))
     with httpx.Client(transport=transport) as client:
@@ -167,7 +167,7 @@ def test_load_raw_without_projections_ahead(fixture_raw_dir, tmp_path):
 
 def test_fetch_projections_ahead_stops_at_the_last_regular_week():
     # The trade grade reads no week after the last regular week, so the live fetch skips those calls.
-    from cornerstone.provider import sleeper
+    from league.provider import sleeper
 
     calls: list[str] = []
     ahead = sleeper.fetch_projections_ahead(2026, 6, CLIENT.settings.last_regular_week,
@@ -196,7 +196,7 @@ def _live_get(stats):
 def test_a_failed_live_stats_fetch_gives_no_stats_and_a_good_empty_one_gives_an_empty_list(tmp_path):
     import httpx
 
-    from cornerstone.provider import sleeper
+    from league.provider import sleeper
 
     # The snapshot names the stats as stale only for a failed fetch, so the two cases must differ in the raw.
     failed, _ = sleeper.fetch_live_raw("1", tmp_path / "players.json", json_transport(

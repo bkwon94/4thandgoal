@@ -270,9 +270,9 @@ def test_no_projections_for_a_roster_or_a_week_gives_no_shift():
 
 
 def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_history_root):
-    from cornerstone.history import load_history
-    from cornerstone.provider.sleeper import load_raw
-    from cornerstone.standings_table import season_records
+    from league.history import load_history
+    from league.provider.sleeper import load_raw
+    from league.standings_table import season_records
 
     history = load_history(fixture_history_root, load_raw(fixture_raw_dir), week=6)
     records = season_records(history, 6)
@@ -332,10 +332,10 @@ WEEK_7_RAW = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "
 
 @pytest.mark.skipif(not WEEK_7_RAW.is_dir(), reason="no saved week 7 data")
 def test_the_week_7_odds_match_the_prototype_within_3_points():
-    from cornerstone.history import load_history
-    from cornerstone.parse import parse_week
-    from cornerstone.provider.sleeper import load_raw
     from cornerstone.sheet.base import odds_inputs, projected_totals, week_odds
+    from league.history import load_history
+    from league.parse import parse_week
+    from league.provider.sleeper import load_raw
 
     raw = load_raw(WEEK_7_RAW)
     week = parse_week(raw)

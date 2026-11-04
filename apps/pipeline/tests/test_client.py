@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from cornerstone.client import CLIENT_SCHEMA, ClientError, ClientValues, client_schema, read_client_values
+from league.client import CLIENT_SCHEMA, ClientError, ClientValues, client_schema, read_client_values
 
 ROOT = Path(__file__).parents[3]
 CPC = ROOT / "clients" / "cpc"
@@ -108,7 +108,7 @@ def test_the_exported_schema_names_each_package_value():
 
 def test_a_stale_schema_file_fails_with_the_file_and_the_command(tmp_path, monkeypatch):
     # AT-22: the site and the pipeline check against the same rules, so a stale export fails.
-    from cornerstone import client as client_module
+    from league import client as client_module
     stale = tmp_path / "client.schema.json"
     shutil.copy(CLIENT_SCHEMA, stale)
     data = json.loads(stale.read_text(encoding="utf-8"))

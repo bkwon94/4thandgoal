@@ -9,13 +9,13 @@ from pathlib import Path
 import anthropic
 from pydantic import ValidationError
 
-from cornerstone.claude_port import Writer
-from cornerstone.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
 from cornerstone.verifier import URL
 from cornerstone.waiver import DROPS
 from cornerstone.writer import RefusalError, WriterError, load_prompt, parse_call
+from league.claude_port import Writer
+from league.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 
 log = logging.getLogger(__name__)
 

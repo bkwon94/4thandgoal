@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from cornerstone.paths import season_dir, site_week_dir, week_label
+from league.paths import season_dir, site_week_dir, week_label
 
 SITE_URL = "https://cpcfantasy.com/"
 

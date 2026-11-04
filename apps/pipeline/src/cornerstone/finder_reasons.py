@@ -8,10 +8,10 @@ from pydantic import BaseModel
 
 from cornerstone.analysis import trade_prose_failures, trade_side_lines
 from cornerstone.finder import FinderTrade
-from cornerstone.models import Fact
-from cornerstone.snapshot import Snapshot
 from cornerstone.trade_facts import trade_fact_sheet
 from cornerstone.writer import ClaudeCall, analyzer_call, call_with_retry, load_prompt
+from league.models import Fact
+from league.snapshot import Snapshot
 
 log = logging.getLogger(__name__)
 
