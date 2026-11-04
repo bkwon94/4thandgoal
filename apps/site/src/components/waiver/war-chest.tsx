@@ -5,14 +5,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMarkHydrated } from "@/hooks/use-mark-hydrated";
-import { Avatar } from "@cpc/league/avatar";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { Headshot } from "@cpc/league/headshot";
+import { useMarkHydrated } from "@cpc/design/hooks/use-mark-hydrated";
 import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { Avatar } from "@cpc/league/avatar";
+import { Headshot } from "@cpc/league/headshot";
 import { getTeamPick, setTeamPick } from "@/lib/team-pick";
-import { cn } from "@/lib/utils";
+import { cn } from "@cpc/design/lib/utils";
 import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, type WaiverPlayer } from "@/lib/waiver-types";
 import type { AvatarMap, Team } from "@/lib/week-types";
 import { DriftField } from "./drift-field";

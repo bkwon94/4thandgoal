@@ -6,8 +6,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-/* The path is fixed when the module loads, because tests mock process.cwd to point at the temp folder after the import. */
-const WEEK_6 = join(process.cwd(), "public", "2026", "week-06", "page.json");
+/* The path is fixed when the module loads, because tests mock process.cwd to point at the temp folder after the import.
+   It reads the published data in the cpc client folder, so a test needs no client build first. */
+const WEEK_6 = join(process.cwd(), "..", "..", "clients", "cpc", "published", "2026", "week-06", "page.json");
 
 export function weekPageJson(overrides: Record<string, unknown> = {}): string {
   return JSON.stringify({ ...JSON.parse(readFileSync(WEEK_6, "utf8")), ...overrides });

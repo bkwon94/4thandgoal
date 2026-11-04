@@ -4,9 +4,9 @@
  */
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { record } from "@/lib/format/format";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { record } from "@cpc/design/format/format";
 import type { Managers } from "@/lib/manager-types";
 import { managerHrefFrom } from "@/lib/routes";
 import type { AvatarMap } from "@/lib/week-types";

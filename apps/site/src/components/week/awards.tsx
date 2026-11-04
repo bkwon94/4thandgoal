@@ -3,15 +3,15 @@
  * A phone has two tiles per row; the tablet tier and up have three, so six awards sit in two rows.
  * A tile with no projections this week shows a note in place of the player.
  */
-import { Reveal } from "@/components/parts/reveal";
-import { num } from "@/lib/format/format";
-import { stagger } from "@/lib/motion";
+import { Reveal } from "@cpc/design/parts/reveal";
+import { num } from "@cpc/design/format/format";
+import { stagger } from "@cpc/design/lib/motion";
 import type { Award, HeadshotMap } from "@/lib/week-types";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
 import { Headshot } from "@cpc/league/headshot";
 import { headshotSrc } from "@cpc/league/images";
-import { Label } from "@/components/parts/label";
+import { Label } from "@cpc/design/parts/label";
 
 /* The tile is the reveal box, so the grid still stretches every tile in a row to one height. */
 function Tile({ award, headshots, index }: { award: Award; headshots: HeadshotMap; index: number }) {

@@ -550,7 +550,7 @@ def main(
             if answer not in ("y", "Y"):
                 print("Not published.")
                 return 0
-            print(run_publish(repo, season, week, client.folder / "data"))
+            print(run_publish(repo, season, week, client.slug, client.folder / "data"))
     except (BuildStopped, PublishError, ValueError) as err:
         print(err)
         return 2

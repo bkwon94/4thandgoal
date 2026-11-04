@@ -2,12 +2,12 @@
  * The median game: three KPI cells, a bar chart of every score against the dashed median line, and the blurb.
  * The bar widths and the line position come from the JSON as percents of the top score.
  */
-import { gap, num } from "@/lib/format/format";
-import { cn } from "@/lib/utils";
+import { gap, num } from "@cpc/design/format/format";
+import { cn } from "@cpc/design/lib/utils";
 import type { Median } from "@/lib/week-types";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
 
 function Kpi({ value, label }: { value: string; label: string }) {
   return (

@@ -11,8 +11,9 @@ pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 api-check = make -C apps/api check
 api-check-fast = make -C apps/api check-fast
-# The check of a package runs each language it has: the Python side, then the site side (decision 07).
-package-check = $(if $(wildcard packages/$(1)/python),make -C packages/$(1)/python $(2); )$(if $(wildcard packages/$(1)/site),pnpm --dir packages/$(1)/site $(subst -,:,$(2)); )
+# The check of a package runs its Python side. The check of the site app typechecks and tests the site side of each
+# package, and a change in a package always selects the site, because the site depends on each package.
+package-check = $(if $(wildcard packages/$(1)/python),make -C packages/$(1)/python $(2); ,echo "The site check covers it."; )
 
 # The root scripts have their own tests, such as the Test verdict rule of scripts/verdict.py. They use only the
 # Python standard library and take under a second, so both targets run them first, with or without BASE.

@@ -3,8 +3,8 @@
  * The Best Adds and the Top Performers chapters share it and differ only in their words and their rows.
  */
 import type { ComponentProps } from "react";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
 import { PlayerRow, PlayerRows } from "./player-row";
 
 export type PlayerChapterItem = ComponentProps<typeof PlayerRow>;

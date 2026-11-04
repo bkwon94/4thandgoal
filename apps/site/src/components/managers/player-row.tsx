@@ -3,7 +3,7 @@
  * The headshot, the name over one quiet line, and at the right end the points over one quiet line.
  */
 import type { ReactNode } from "react";
-import { num } from "@/lib/format/format";
+import { num } from "@cpc/design/format/format";
 import type { ManagerPlayer } from "@/lib/manager-types";
 import { Headshot } from "@cpc/league/headshot";
 import { sleeperHeadshot } from "@cpc/league/images";

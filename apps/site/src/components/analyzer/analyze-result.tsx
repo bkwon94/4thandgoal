@@ -8,13 +8,13 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Player, TradeSide } from "@/lib/analyze-types";
 import { knownGamesSegments } from "@/lib/format/known-games-segments";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, rise } from "@/lib/motion";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, rise } from "@cpc/design/lib/motion";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
 import { Headshot } from "@cpc/league/headshot";
-import { Label } from "@/components/parts/label";
-import { cn } from "@/lib/utils";
+import { Label } from "@cpc/design/parts/label";
+import { cn } from "@cpc/design/lib/utils";
 
 /* A trade side with the asker flag. The swap card and the fairness line need no more, so the finder cards reuse them with a side that has no read. */
 export type SwapSide = TradeSide & { mine: boolean };

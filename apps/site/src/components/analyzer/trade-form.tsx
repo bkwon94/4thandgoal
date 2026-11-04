@@ -8,16 +8,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "@/components/analyzer/analyze-result";
-import { ErrorLine } from "@/components/parts/error-line";
+import { ErrorLine } from "@cpc/design/parts/error-line";
 import { TradeFinder } from "@/components/analyzer/trade-finder";
 import { TradeSide } from "@/components/analyzer/trade-side";
-import { Button } from "@/components/ui/button";
-import { useMotionOff } from "@/hooks/use-motion-off";
+import { Button } from "@cpc/design/ui/button";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "@/hooks/use-request";
 import type { AnalyzeResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postAnalyze, toErrorLine, type Team } from "@/lib/api";
-import { DURATION, enterExit, SWEEP_EASE } from "@/lib/motion";
-import { countEvent } from "@/lib/usage";
+import { DURATION, enterExit, SWEEP_EASE } from "@cpc/design/lib/motion";
+import { countEvent } from "@cpc/design/lib/usage";
 
 // A cold grade takes about 30 seconds and the server caches the result, so a long wait beats a retry.
 const TIMEOUT_MS = 60_000;

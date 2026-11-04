@@ -1,11 +1,8 @@
-# src/components/parts: the parts that the pages share
+# src/components/parts: the parts of the league that the pages share
 
 ## Knows
 
-- The chapter, the label, the tag, and the blurb.
-- The page column and the chapter rail.
-- The team name, and the avatar with the name as one group. The team avatar and the player headshot are in `@cpc/league`.
-- The one reveal of the site, the week line of the masthead, and the error line.
+- The avatar with the team name as one group. The team avatar and the player headshot are in `@cpc/league`.
 
 ## Ports
 
@@ -13,8 +10,7 @@ None.
 
 ## Does not do
 
-- It holds no primitive. The shadcn primitives live in `src/components/ui/`.
-- It holds no shell. The masthead, the menu, and the theme button live in `src/components/shell/`.
-- Most parts serve two or more pages. `tag.tsx` and `error-line.tsx` serve one page today.
+- It holds no part with no league term. The design package holds those in `packages/design/site/parts/`.
+- It holds no primitive and no shell. The design package holds them in `site/ui/` and `site/shell/`.
 - It builds no route. The page passes each href, and a part only shows it (ADR 0012).
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).

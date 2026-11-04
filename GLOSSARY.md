@@ -836,7 +836,7 @@ The raw data, the history, and the facts of one week, loaded together before the
 _Avoid_: Context, week data, state
 
 **Published file**:
-One JSON file the render step writes under `apps/pipeline/site/` and publish copies into `apps/site/public/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
+One JSON file the render step writes under `apps/pipeline/site/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
 
 ## Client language

@@ -2,7 +2,7 @@
  * The five chapters of a manager page under the hero, each with its heading and its id for the chapter rail.
  * The rail and the page read one list of ids and labels, so the rail labels match the chapter headings.
  */
-import type { RailChapter } from "@/components/parts/chapter-rail";
+import type { RailChapter } from "@cpc/design/parts/chapter-rail";
 import type { Manager, ManagerEntry } from "@/lib/manager-types";
 import { BestAdds } from "./best-adds";
 import { Moves } from "./moves";

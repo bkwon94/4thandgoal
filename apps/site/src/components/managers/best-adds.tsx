@@ -2,7 +2,7 @@
  * The Best Adds chapter of a manager page: up to three adds by points scored for the team since the add.
  * Each row shows the points and, under them, the projection over the same weeks.
  */
-import { count, oneDecimal } from "@/lib/format/format";
+import { count, oneDecimal } from "@cpc/design/format/format";
 import type { Manager } from "@/lib/manager-types";
 import { PlayerChapter } from "./player-chapter";
 import { playerMetaLine } from "./player-row";

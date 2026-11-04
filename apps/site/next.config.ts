@@ -4,25 +4,15 @@
  */
 import type { NextConfig } from "next";
 import { basePath } from "./src/lib/config";
-import { managersRouteOn } from "./src/lib/data/manager-data";
-import { waiverRouteOn } from "./src/lib/data/waiver-data";
 
+// The client build writes the route files of each package of the client, so the config gates no route.
 const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
   basePath,
   images: { unoptimized: true },
-  // Each package ships TSX source with no build step, so the site build compiles it (decision 07).
-  transpilePackages: ["@cpc/league"],
-  // A static export fails on a dynamic route with no params, so a gated route file counts as a page only when its file exists.
-  pageExtensions: [
-    "tsx",
-    "ts",
-    "jsx",
-    "js",
-    ...(waiverRouteOn() ? ["waiver.tsx"] : []),
-    ...(managersRouteOn() ? ["managers.tsx"] : []),
-  ],
+  // Each package ships TSX source with no build step, so the site build compiles it.
+  transpilePackages: ["@cpc/design", "@cpc/league"],
 };
 
 export default nextConfig;

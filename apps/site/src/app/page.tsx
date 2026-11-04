@@ -4,21 +4,21 @@
  */
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Masthead, WeekLine } from "@/components/shell/masthead";
-import { PageColumn } from "@/components/parts/page-column";
+import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
+import { PageColumn } from "@cpc/design/parts/page-column";
 import { Movement } from "@/components/rankings/power-rankings";
-import { Reveal } from "@/components/parts/reveal";
+import { Reveal } from "@cpc/design/parts/reveal";
 import { TeamsPrefetch } from "@/components/analyzer/teams-prefetch";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
 import { season } from "@/lib/config";
 import { currentManagersHref } from "@/lib/data/manager-data";
-import { stagger } from "@/lib/motion";
+import { stagger } from "@cpc/design/lib/motion";
 import { biggestMover } from "@/lib/format/rankings";
 import { loadRankings } from "@/lib/data/rankings-data";
 import { analyzeHref, homeHref, rankingsHref } from "@/lib/routes";
-import { cn } from "@/lib/utils";
+import { cn } from "@cpc/design/lib/utils";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { mastheadProps } from "@/app/masthead-props";
 

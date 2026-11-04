@@ -677,18 +677,18 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     (repo / "src" / "code.py").write_text("x = 1\n")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
 
-    url = run_publish(repo, 2026, 6, repo / "data", site_repo=site_repo, push=False)
+    url = run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
 
     assert url.endswith("2026/week-06/")
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "apps/site/public/2026/week-06/page.json" in files
-    assert "apps/site/public/2026/rankings.json" in files
-    assert "apps/site/public/2026/managers.json" in files
-    assert "apps/site/public/2026/week-06/waiver.json" in files
-    assert "apps/site/public/2026/week-06/index.html" not in files
+    assert "clients/cpc/published/2026/week-06/page.json" in files
+    assert "clients/cpc/published/2026/rankings.json" in files
+    assert "clients/cpc/published/2026/managers.json" in files
+    assert "clients/cpc/published/2026/week-06/waiver.json" in files
+    assert "clients/cpc/published/2026/week-06/index.html" not in files
     assert not any(f.startswith("src/") for f in files)
-    assert not any(f.startswith("apps/site/public/static/") for f in files)
-    assert "apps/site/public/index.html" not in files
+    assert not any(f.startswith("clients/cpc/published/static/") for f in files)
+    assert "clients/cpc/published/index.html" not in files
     assert not (site_repo / "2026").exists()
     assert not (site_repo / "index.html").exists()
     assert not (site_repo / "static").exists()
@@ -706,22 +706,22 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
         run_build(repo, 2026, week, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     assert (repo / "site" / "2026" / "week-07" / "page.json").exists()
 
-    run_publish(repo, 2026, 6, repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
 
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "apps/site/public/2026/week-06/page.json" in files
-    assert not any(f.startswith("apps/site/public/2026/week-07/") for f in files)
+    assert "clients/cpc/published/2026/week-06/page.json" in files
+    assert not any(f.startswith("clients/cpc/published/2026/week-07/") for f in files)
     # No history means no season file, so the publish warns and goes out without it.
     assert "the publish goes out without rankings.json" in caplog.text
-    assert "apps/site/public/2026/rankings.json" not in files
-    assert not (site_repo / "apps" / "site" / "public" / "2026" / "rankings.json").exists()
+    assert "clients/cpc/published/2026/rankings.json" not in files
+    assert not (site_repo / "clients" / "cpc" / "published" / "2026" / "rankings.json").exists()
     assert "the publish goes out without managers.json" in caplog.text
-    assert not (site_repo / "apps" / "site" / "public" / "2026" / "managers.json").exists()
+    assert not (site_repo / "clients" / "cpc" / "published" / "2026" / "managers.json").exists()
 
 
 def test_publish_requires_built_page(tmp_path):
     with pytest.raises(PublishError, match="page.json"):
-        run_publish(tmp_path, 2026, 6, tmp_path / "data", site_repo=tmp_path / "site", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", site_repo=tmp_path / "site", push=False)
 
 
 def test_publish_requires_git_checkout(tmp_path):
@@ -729,7 +729,7 @@ def test_publish_requires_git_checkout(tmp_path):
     page.parent.mkdir(parents=True)
     page.write_text("{}")
     with pytest.raises(PublishError, match="git"):
-        run_publish(tmp_path, 2026, 6, tmp_path / "data", site_repo=tmp_path / "missing", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", site_repo=tmp_path / "missing", push=False)
 
 
 def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, offline):
@@ -738,10 +738,10 @@ def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, o
     _init(site_repo)
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
-    run_publish(repo, 2026, 6, repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
     (repo / "notes.txt").write_text("untracked\n")
 
-    run_publish(repo, 2026, 6, repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
 
     assert not (_git(repo, "ls-tree", "-r", "--name-only", "HEAD").count("notes.txt"))
 
@@ -755,10 +755,10 @@ def test_publish_finds_the_site_at_the_root_of_its_own_repo(tmp_path, fixture_ra
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
 
-    run_publish(repo, 2026, 6, repo / "data", push=False)
+    run_publish(repo, 2026, 6, "cpc", repo / "data", push=False)
 
     files = _git(root, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
-    assert "apps/site/public/2026/week-06/page.json" in files
+    assert "clients/cpc/published/2026/week-06/page.json" in files
     assert "apps/pipeline/site/2026/week-06/page.json" in files
     subjects = _git(root, "log", "--format=%s").splitlines()
     assert subjects == ["Week 6", "Week 6 report"]
@@ -769,7 +769,7 @@ def test_publish_outside_a_git_checkout_fails(tmp_path):
     page.parent.mkdir(parents=True)
     page.write_text("{}")
     with pytest.raises(PublishError, match="git checkout"):
-        run_publish(tmp_path, 2026, 6, tmp_path / "data", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", push=False)
 
 
 def _fetched(repo, when):

@@ -8,18 +8,18 @@
 
 import { motion } from "framer-motion";
 import { useId, useState, type ReactNode } from "react";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { Reveal } from "@/components/parts/reveal";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { Reveal } from "@cpc/design/parts/reveal";
 import { Who } from "@/components/parts/who";
 import { avatarSrc } from "@cpc/league/images";
-import { record } from "@/lib/format/format";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT, stagger } from "@/lib/motion";
+import { record } from "@cpc/design/format/format";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";
 import { managerHrefOrNull } from "@/lib/routes";
-import { cn } from "@/lib/utils";
+import { cn } from "@cpc/design/lib/utils";
 import type { AvatarMap } from "@/lib/week-types";
 import { useSharedWeekChoice, useWeekChoice } from "./week-choice";
 

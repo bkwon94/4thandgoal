@@ -5,16 +5,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ErrorLine } from "@/components/parts/error-line";
+import { ErrorLine } from "@cpc/design/parts/error-line";
 import { PassphraseDialog } from "@/components/analyzer/passphrase-dialog";
-import { Reveal } from "@/components/parts/reveal";
+import { Reveal } from "@cpc/design/parts/reveal";
 import { TeamsSkeleton } from "@/components/analyzer/teams-skeleton";
 import { TradeForm } from "@/components/analyzer/trade-form";
-import { Button } from "@/components/ui/button";
-import { Chapter } from "@/components/parts/chapter";
+import { Button } from "@cpc/design/ui/button";
+import { Chapter } from "@cpc/design/parts/chapter";
 import { useRequest } from "@/hooks/use-request";
 import { ApiError, retryText, type Team } from "@/lib/api";
-import { DURATION } from "@/lib/motion";
+import { DURATION } from "@cpc/design/lib/motion";
 import { clearPassphrase, getPassphrase, setPassphrase } from "@/lib/passphrase";
 import { clearStoredTeams, fetchAndStoreTeams, readStoredTeams } from "@/lib/teams-store";
 

@@ -3,8 +3,8 @@
  * An href makes the name a link to the manager page.
  */
 import { Avatar } from "@cpc/league/avatar";
-import { TeamName } from "@/components/parts/team-name";
-import { cn } from "@/lib/utils";
+import { TeamName } from "@cpc/design/parts/team-name";
+import { cn } from "@cpc/design/lib/utils";
 
 /* The avatar and the team name as one group, as the .who rule of the stylesheet sets it.
    Fill makes the group take the free width of a row and lets a long name wrap inside it.

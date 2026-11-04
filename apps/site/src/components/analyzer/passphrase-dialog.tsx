@@ -5,13 +5,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ErrorLine } from "@/components/parts/error-line";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { cn } from "@/lib/utils";
+import { ErrorLine } from "@cpc/design/parts/error-line";
+import { Button } from "@cpc/design/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@cpc/design/ui/dialog";
+import { Input } from "@cpc/design/ui/input";
+import { Label } from "@cpc/design/ui/label";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { cn } from "@cpc/design/lib/utils";
 
 type PassphraseDialogProps = {
   open: boolean;

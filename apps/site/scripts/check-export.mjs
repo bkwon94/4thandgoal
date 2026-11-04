@@ -1,9 +1,10 @@
 /**
- * Checks that out/ holds a byte-identical copy of every file under public/, and that each week page holds its text.
- * Run it after pnpm build. It exits 1 and names the first mismatch.
+ * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, and
+ * that each package the client omits is absent. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ClientBuildError, readClient, REPO_ROOT } from "./client-build.mjs";
 
 function filesUnder(dir) {
   return readdirSync(dir, { withFileTypes: true })
@@ -54,4 +55,30 @@ for (const file of pages) {
     if (!text.includes(escapeHtml(row.team.name))) fail(`${html} does not contain the team name ${row.team.name}`);
   }
 }
-console.log(`check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name.`);
+// An omitted package must leave no route and no code in the export. Each mark is a route of the package and a text
+// that only its client code holds, so a shared page that imports a part of the package fails the check.
+const PACKAGE_MARKS = {
+  waiver: { route: /(^|\/)waiver\/index\.html$/, text: "War chest" },
+};
+
+if (!process.env.CLIENT) fail("set CLIENT to the client of the build, the same value as pnpm build");
+let values;
+try {
+  values = readClient(REPO_ROOT, process.env.CLIENT);
+} catch (error) {
+  if (!(error instanceof ClientBuildError)) throw error;
+  fail(error.message);
+}
+const exported = filesUnder("out");
+const omitted = Object.keys(PACKAGE_MARKS).filter((name) => !values.packages.includes(name));
+for (const name of omitted) {
+  const { route, text } = PACKAGE_MARKS[name];
+  const page = exported.find((file) => route.test(file.slice("out/".length)));
+  if (page) fail(`${page} is a route of ${name}, which the client ${process.env.CLIENT} omits`);
+  const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
+  if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
+}
+console.log(
+  `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
+    `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it.`,
+);

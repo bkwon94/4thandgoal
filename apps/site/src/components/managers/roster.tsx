@@ -2,11 +2,11 @@
  * The Roster chapter of a manager page: the four slot ranks of the roster grade, one line each, in the file's order.
  * Each line reads as "RB · 2nd of 12 · deep". A roster with no grade shows one quiet line.
  */
-import { Reveal } from "@/components/parts/reveal";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { ordinal } from "@/lib/format/format";
-import { stagger } from "@/lib/motion";
+import { Reveal } from "@cpc/design/parts/reveal";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { ordinal } from "@cpc/design/format/format";
+import { stagger } from "@cpc/design/lib/motion";
 import type { Manager, SlotRank } from "@/lib/manager-types";
 
 /* One line: the position as the quiet label, the rank as the one emphasis, and the depth word in the quiet color.

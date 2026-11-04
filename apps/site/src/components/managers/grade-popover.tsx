@@ -6,11 +6,11 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
-import { ordinal } from "@/lib/format/format";
+import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@cpc/design/ui/popover";
+import { ordinal } from "@cpc/design/format/format";
 import type { GradePart, ManagerGrade } from "@/lib/manager-types";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT } from "@/lib/motion";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT } from "@cpc/design/lib/motion";
 
 /* The name of each part of the grade, keyed by the key in the file. A new part is one more line here. */
 const PART_NAMES: Record<GradePart["key"], string> = {

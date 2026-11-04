@@ -5,6 +5,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Tailwind scans the app only. The site side of each package holds its own class names, so each one is a source too.
+   A glob over packages/ finds no file, so each package takes its own line. */
+@source "../../../../packages/design/site";
+@source "../../../../packages/league/site";
 /*---break---
  */
 @custom-variant dark (&:is(.dark *));
@@ -204,7 +208,7 @@
     /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
     --shadow-orb: 0 0 24px var(--color-accent-glow);
 
-    /* The press easing. A strong ease-out gives instant feedback on a tap. src/lib/motion.ts holds the same curve as numbers. */
+    /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 /*---break---
@@ -343,7 +347,7 @@
     /* Press feedback for every pressable element. Only transform animates, so it stays on the GPU. */
     --press: transform 140ms var(--ease-out);
 
-    /* The motion timings of the analyzer live in src/lib/motion.ts, because Framer Motion takes them as numbers. */
+    /* The motion timings of the analyzer live in packages/design/site/lib/motion.ts, because Framer Motion takes them as numbers. */
 
     /* If the script never hydrates, the reveal content shows after this delay.
        After hydration, the data-hydrated attribute turns the safety rule off and Framer Motion owns the reveal. */

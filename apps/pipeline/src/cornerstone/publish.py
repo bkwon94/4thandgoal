@@ -1,6 +1,6 @@
 """
-Publish a built week to the public site in apps/site of the same repo.
-It commits the built site and the client data, copies the week folder and the season files, then commits the published folder only and pushes.
+Publish a built week into the published data of its client, clients/<slug>/published/, in the same repo.
+It commits the built site and the client data, copies the week folder and the season files, then commits the season folder only and pushes.
 """
 import logging
 import shutil
@@ -51,9 +51,10 @@ def _repo_root(repo: Path) -> Path:
 
 
 def run_publish(
-        repo: Path, season: int, week: int, data: Path, site_repo: Path | None = None, push: bool = True) -> str:
-    """Publish one week. `data` is the data folder of the client. The site repo is the root of the pipeline's
-    checkout, unless a test names another."""
+        repo: Path, season: int, week: int, slug: str, data: Path, site_repo: Path | None = None,
+        push: bool = True) -> str:
+    """Publish one week of the client `slug`. `data` is the data folder of the client. The site repo is the root of
+    the pipeline's checkout, unless a test names another."""
     page = site_week_dir(repo / "site", season, week) / "page.json"
     if not page.exists():
         raise PublishError(f"{page} does not exist. Build the week first.")
@@ -69,8 +70,8 @@ def run_publish(
     # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
     # stay off the public site. The site is a Next.js app. It renders the pages and the home
     # page from these folders.
-    # Why: the site app lives in apps/site of the repo, so its published data is there.
-    public_dir = site_repo / "apps" / "site" / "public"
+    # Why: each client keeps its data in its own folder, and the site build copies only that client's published data.
+    public_dir = site_repo / "clients" / slug / "published"
     week_path = Path(str(season)) / week_label(week)
     shutil.copytree(
         repo / "site" / week_path, public_dir / week_path, dirs_exist_ok=True
@@ -87,9 +88,9 @@ def run_publish(
         shutil.copy2(managers, public_dir / str(season) / "managers.json")
     else:
         log.warning("%s missing: the publish goes out without managers.json", managers)
-    # Why: the repo holds code and notes too. Staging the published folder only keeps a stray change
+    # Why: the repo holds code and notes too. Staging the season folder of the client only keeps a stray change
     # elsewhere in the tree out of the commit. ADR 0019 allows the push to main on this one condition.
-    published = str(public_dir.relative_to(site_repo))
+    published = str((public_dir / str(season)).relative_to(site_repo))
     _git(site_repo, "add", "--", published)
     _commit_if_staged(site_repo, f"Week {week}", published)
     if push:

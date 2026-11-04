@@ -3,14 +3,14 @@
  * The week number comes from the page, so the label reads the week after the one on the page.
  * A phone stacks the cards; from the tablet tier up, two go per row, so a card has room for a bye subtitle.
  */
-import { record } from "@/lib/format/format";
-import { cn } from "@/lib/utils";
+import { record } from "@cpc/design/format/format";
+import { cn } from "@cpc/design/lib/utils";
 import type { AvatarMap, ByePlayer, NextGame, Team } from "@/lib/week-types";
 import { avatarSrc } from "@cpc/league/images";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { Tag } from "@/components/parts/tag";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { Tag } from "@cpc/design/parts/tag";
 import { Who } from "@/components/parts/who";
 
 /* The "vs" line and the bye subtitle share one indent, so both line up under the team names, past the avatar column. */
