@@ -133,7 +133,7 @@ App: site
 Stories: 38
 Given: `layout = "bar"` under `[menu]` in `clients/norcal/client.toml`, with no `items`.
 When: the reader opens `https://norcal.4thandgoal.app/2026/week-08/`.
-Then: the menu shows as a bar, with the items in the order of the package list.
+Then: the menu shows as a bar, with Home first and then the items in the order of the package list.
 Evidence: screenshots of the menu at 375, 768, and 1280 px, in the dark theme.
 
 AT-17: Each text pair of each brand passes WCAG AA
@@ -321,3 +321,4 @@ Out of scope "A client that swaps one part for its own code": AT-33
 ## Revisions
 
 - 2026-11-04: AT-7, AT-15, and AT-20 name `[values.analyzer]`, not `[packages.analyzer]`. The old shape is not valid TOML. Brian chose the name.
+- 2026-11-04: AT-16 puts Home first in a menu with no `items`. Brian chose Home as the first item of the default menu.
