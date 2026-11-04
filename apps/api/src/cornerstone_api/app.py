@@ -1,6 +1,7 @@
 """
 The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the routes of each client.
-The service needs CORNERSTONE_PASSPHRASE, and ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
+The service needs CORNERSTONE_PASSPHRASE_<SLUG> for each client, such as CORNERSTONE_PASSPHRASE_CPC, and
+ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
 CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
@@ -25,7 +26,7 @@ from analyzer.finder_reasons import write_reasons
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api.settings import Settings
+from cornerstone_api.settings import Settings, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
 from league.client import Client, SettingsFetch, load_client, read_client_values
 from league.paths import provider_cache_dir
@@ -61,14 +62,23 @@ class _RateLimited(Exception):
 
 
 def _guard(request: Request) -> None:
-    """Stop a request past the rate limit or without the league passphrase. Every route group except health runs it."""
+    """Stop a request past the rate limit or without the passphrase of its client. Every route except health runs it.
+
+    The client is the slug of the path. An old path with no client checks the passphrase of DEFAULT_SLUG.
+    """
     # The count comes before the passphrase check, so wrong guesses count against the limit too.
     retry_after = request.app.state.limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
+    slug = request.path_params.get("slug", request.app.state.default_slug)
+    expected = request.app.state.settings.passphrases.get(slug)
+    if expected is None:
+        # Each client the app serves has a passphrase, so only a slug the app does not serve has none.
+        # The route lookup answers 404 for it.
+        return
     given = request.headers.get(PASSPHRASE_HEADER, "")
     # A constant-time compare, so the response time does not leak how much of a guess was right.
-    if not hmac.compare_digest(given.encode(), request.app.state.settings.passphrase.encode()):
+    if not hmac.compare_digest(given.encode(), expected.encode()):
         raise _Unauthorized()
 
 
@@ -111,6 +121,10 @@ def create_app(
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
+    # A client with no passphrase would run open, so the app refuses it. Settings.from_env stops the real start first.
+    for client in clients:
+        if client.slug not in settings.passphrases:
+            raise ValueError(f"The client {client.slug} has no passphrase. Set {passphrase_env(client.slug)}.")
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
     given = sources or {}
@@ -178,6 +192,7 @@ def app_from_env() -> FastAPI:
 
     A missing or bad client.toml stops the start, so a bad value never reaches a reader.
     """
-    settings = Settings.from_env()
-    # The passphrase stays in the settings, because it is a secret and not the league.
-    return create_app(settings, load_clients(settings.repo), refresh_on_start=True)
+    clients = load_clients(repo_from_env())
+    # The passphrases stay in the settings, because each one is a secret, so client.toml never holds one.
+    settings = Settings.from_env(client.slug for client in clients)
+    return create_app(settings, clients, refresh_on_start=True)

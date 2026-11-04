@@ -1,5 +1,5 @@
 # The Fly.io config of the Cornerstone API: one small machine in the New York area that always runs.
-# Secrets (ANTHROPIC_API_KEY, CORNERSTONE_PASSPHRASE) never go here. Set them with `fly secrets set`.
+# Secrets (ANTHROPIC_API_KEY, and CORNERSTONE_PASSPHRASE_<SLUG> for each client) never go here. Set them with `fly secrets set`.
 
 app = "cpcfantasy-api"
 primary_region = "ewr"

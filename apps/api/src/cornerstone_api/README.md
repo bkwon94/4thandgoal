@@ -6,7 +6,7 @@
 - At start it reads each folder under `clients/`. A bad `client.toml` stops the start with the file and the key.
 - It mounts the analyzer routes of the `analyzer` package at `/clients/<slug>/`. The old paths with no client answer as `cpc`.
 - The refresh route that a daily cron pings.
-- The passphrase check, the rate limit of each address, the state of each client, and the settings from the environment.
+- The passphrase check of each client, from `CORNERSTONE_PASSPHRASE_<SLUG>`, the rate limit of each address, the state of each client, and the settings from the environment.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports

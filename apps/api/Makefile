@@ -37,8 +37,12 @@ check: lint typecheck test ## Run lint, typecheck, and all the tests
 check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 
 # The API reads clients/ and data/ under the repo root, so the repo it reads is the root.
-api: ## Run the API on port 8080 with a test passphrase
-	CORNERSTONE_PASSPHRASE=localtest CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+# Each client needs its own passphrase, so the target sets one for each folder under clients/, such as
+# CORNERSTONE_PASSPHRASE_CPC=localtest.
+PASSPHRASES = $(foreach slug,$(notdir $(wildcard $(ROOT)/clients/*)),CORNERSTONE_PASSPHRASE_$(shell echo $(slug) | tr a-z A-Z)=localtest)
+
+api: ## Run the API on port 8080 with the test passphrase localtest for each client
+	$(PASSPHRASES) CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
 
 image: ## Build the image of the API with the local Docker
 	docker build -f $(ROOT)/apps/api/Dockerfile -t cpcfantasy-api $(ROOT)

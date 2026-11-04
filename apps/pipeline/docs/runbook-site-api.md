@@ -59,7 +59,8 @@ The settings:
 
 - `fly.toml` holds the settings that are not secret: `CORNERSTONE_REPO`, `CORNERSTONE_RESULT_CACHE_DIR`, and
   `CORNERSTONE_ALLOWED_ORIGINS`.
-- Fly secrets hold `ANTHROPIC_API_KEY` and `CORNERSTONE_PASSPHRASE`. No secret is in the repo.
+- Fly secrets hold `ANTHROPIC_API_KEY` and one passphrase per client, `CORNERSTONE_PASSPHRASE_<SLUG>`, such as
+  `CORNERSTONE_PASSPHRASE_CPC`. No passphrase is shared. The API stops at start if a client has none. No secret is in the repo.
 - The Sleeper league id is the constant `LEAGUE_ID` in `src/cornerstone/pipeline.py`. It is public, so it is
   not a secret.
 
@@ -123,7 +124,7 @@ Run each command from `apps/api`. Each step takes about one minute, except the d
    `--stage` stores the secrets with no restart, and the next deploy gives them to the machine.
 
    ```sh
-    fly secrets set --app cpcfantasy-api --stage ANTHROPIC_API_KEY=<the key> CORNERSTONE_PASSPHRASE=<the passphrase>
+    fly secrets set --app cpcfantasy-api --stage ANTHROPIC_API_KEY=<the key> CORNERSTONE_PASSPHRASE_CPC=<the passphrase>
    ```
 
 5. Deploy. The first build takes about 3 minutes.
@@ -180,15 +181,16 @@ Run each command from `apps/api`. Each step takes about one minute, except the d
 
 ## Rotate the passphrase
 
-Change the passphrase in two places, or the cron fails with `401`.
+Each client has its own passphrase. The old paths with no client check the passphrase of `cpc`.
+Change the passphrase of `cpc` in two places, or the cron fails with `401`.
 
 1. Set the new Fly secret. Fly restarts the machine with the new value.
 
    ```sh
-    fly secrets set --app cpcfantasy-api CORNERSTONE_PASSPHRASE=<the new passphrase>
+    fly secrets set --app cpcfantasy-api CORNERSTONE_PASSPHRASE_CPC=<the new passphrase>
    ```
 
-2. Set the GitHub secret `CORNERSTONE_PASSPHRASE` to the same value. Use the steps in the last section.
+2. Set the GitHub secret `CORNERSTONE_PASSPHRASE_CPC` to the same value. Use the steps in the last section.
 3. Tell the managers the new passphrase. The site asks for it again after a `401`.
 
 ## Force a refresh
@@ -258,12 +260,12 @@ a changed prefix, or a prefix under the minimum size of the model.
 
 ## GitHub secret for the cron
 
-The cron reads the passphrase from the repository secret `CORNERSTONE_PASSPHRASE`.
+The cron reads the passphrase of `cpc` from the repository secret `CORNERSTONE_PASSPHRASE_CPC`.
 
 1. Run this command. It asks for the value, so the value stays out of the shell history.
 
    ```sh
-   gh secret set CORNERSTONE_PASSPHRASE --repo bkwon94/cpcfantasyfootball
+   gh secret set CORNERSTONE_PASSPHRASE_CPC --repo bkwon94/cpcfantasyfootball
    ```
 
 2. Merge the branch into `main`. GitHub runs a schedule only from the default branch.
