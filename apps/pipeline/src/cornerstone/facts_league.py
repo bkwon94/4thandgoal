@@ -8,7 +8,7 @@ from collections import Counter, defaultdict
 from collections.abc import Callable
 from decimal import Decimal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_matchup import median_facts
 from cornerstone.models import (
     Award,
@@ -34,6 +34,7 @@ from cornerstone.tunables import (
     KEY_STARTER_SHORT_STARTS,
     KEY_STARTER_STARTS,
     KEY_STARTER_WEEKS,
+    SHOOTOUT_TOP,
     STORYLINE_WEIGHTS,
     TREND_WEEKS,
 )
@@ -96,13 +97,13 @@ def ranks_before(
     return {rid: i + 1 for i, rid in enumerate(ordered)}
 
 
-def upset_signal(winner_rank_before: int, loser_rank_before: int, *, config: LeagueConfig) -> float:
+def upset_signal(winner_rank_before: int, loser_rank_before: int, *, client: Client) -> float:
     """An upset is a winner ranked below the loser before the week."""
-    return max(0, (winner_rank_before - loser_rank_before) / (config.team_count - 1))
+    return max(0, (winner_rank_before - loser_rank_before) / (client.settings.team_count - 1))
 
 
-def _table_signal(rank_a: int, rank_b: int, *, config: LeagueConfig) -> float:
-    return 1 - (rank_a + rank_b - 3) / (2 * (config.team_count - 1))
+def _table_signal(rank_a: int, rank_b: int, *, client: Client) -> float:
+    return 1 - (rank_a + rank_b - 3) / (2 * (client.settings.team_count - 1))
 
 
 def _stakes_signal(a: Standing, b: Standing) -> float:
@@ -115,7 +116,7 @@ def matchup_of_the_week(
     table: list[Standing],
     before: dict[int, int] | None = None,
     *,
-    config: LeagueConfig,
+    client: Client,
 ) -> Pick:
     """Pick the matchup with the highest weighted total of the four signals.
 
@@ -140,11 +141,11 @@ def matchup_of_the_week(
         signals.append({
             "closeness": 1 - f.margin / max_margin if max_margin else 1.0,
             "upset": (
-                upset_signal(before[f.winner], before[f.loser], config=config)
+                upset_signal(before[f.winner], before[f.loser], client=client)
                 if f.winner is not None
                 else 0.0
             ),
-            "table": _table_signal(a.rank, b.rank, config=config),
+            "table": _table_signal(a.rank, b.rank, client=client),
             "stakes": _stakes_signal(a, b),
         })
     best_raw = {k: max(raw[k] for raw in signals) for k in WEIGHTS}
@@ -237,7 +238,7 @@ def next_week(
     projected: dict[int, dict[int, float]] | None = None, bye_weeks: dict[str, int] | None = None,
     rank: Callable[[str], int | None] | None = None,
     *,
-    config: LeagueConfig,
+    client: Client,
 ) -> list[NextMatchup]:
     """The next-week games in schedule order, each with its storylines. The top two by storyline score are Must Watch.
 
@@ -250,7 +251,7 @@ def next_week(
     by_roster = {s.roster_id: s for s in table}
     ahead = {rid: by_week[week.week + 1] for rid, by_week in (projected or {}).items() if week.week + 1 in by_week}
     # A tie in the total goes to the lower roster id, so the top four is the same on every build.
-    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:config.shootout_top])
+    top = set(sorted(ahead, key=lambda rid: (-ahead[rid], rid))[:SHOOTOUT_TOP])
     games = []
     for a_id, b_id in week.next_matchups:
         a, b = by_roster[a_id], by_roster[b_id]

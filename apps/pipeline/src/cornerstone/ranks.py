@@ -20,7 +20,7 @@ POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 
 # Injury report statuses that keep a player out of games. A player with one of them and no row in the
 # returns file has no known return, so the standing adjuster counts him as back after the return-by week of the
-# league config. The lineup value counts him as due back at that week, so his projection ahead gives his value.
+# client. The lineup value counts him as due back at that week, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
 
@@ -56,7 +56,7 @@ def projection_ahead(snapshot: Snapshot, player_id: str) -> Decimal:
     A week with no projection row, such as a bye, is no game. With no row in those weeks, he counts for 0.
     """
     rows = snapshot.projections_ahead.get(player_id, {})
-    last = snapshot.config.last_regular_week
+    last = snapshot.client.settings.last_regular_week
     weeks = [rows[week] for week in range(due_back_week(snapshot, player_id), last + 1) if week in rows]
     if not weeks:
         return Decimal(0)
@@ -133,7 +133,7 @@ def _back_in_a_known_game(snapshot: Snapshot, player_id: str) -> bool:
 def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     """The week the player counts as back, or None when he is not due back.
 
-    The returns file gives the week. A player out with no row counts as back at the return-by week of the config, the
+    The returns file gives the week. A player out with no row counts as back at the return-by week of the client, the
     week the standing adjuster reads too. Sleeper projects 0 for the weeks he is out, so his projection ahead must
     start at that week.
     A week through the last completed week is no return ahead, so he is not due back.
@@ -148,7 +148,7 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     # The position rank reads players on no roster, and the snapshot holds no injury status for them.
     player = snapshot.players.get(player_id)
     if week is None and player is not None and player.injury_status in OUT_STATUSES:
-        week = snapshot.config.return_by_week
+        week = snapshot.client.settings.return_by_week
     return week if week is not None and week > snapshot.as_of.completed_through else None
 
 

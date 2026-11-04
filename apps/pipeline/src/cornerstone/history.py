@@ -1,5 +1,5 @@
 """
-Cache of past weeks of Sleeper data under data/{season}/history.
+Cache of past weeks of Sleeper data under clients/<slug>/data/{season}/history.
 It fetches only the weeks that are not on disk.
 It also builds the profile of a player from the weeks before a trade.
 """

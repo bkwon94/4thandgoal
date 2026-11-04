@@ -6,7 +6,7 @@ import logging
 from collections import defaultdict
 from decimal import Decimal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import History, PastWeek, Standing, Week
 from cornerstone.numbers import r2
 
@@ -17,7 +17,7 @@ def week_median(week: PastWeek) -> Decimal:
     """The exact median score of one week, the line of the median game."""
     ordered = sorted((Decimal(str(p)) for p in week.scores.values()), reverse=True)
     # The same median as median_facts: the mean of the 6th and 7th scores.
-    # A past week holds no config, so the two middle ranks come from the count of scores. A league has an even team
+    # A past week holds no client, so the two middle ranks come from the count of scores. A league has an even team
     # count, because every team plays a game each week.
     middle = len(ordered) // 2
     return (ordered[middle - 1] + ordered[middle]) / 2
@@ -59,8 +59,8 @@ def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
     return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
 
 
-def standings(week: Week, history: History | None = None, *, config: LeagueConfig) -> list[Standing]:
-    """The table after the week, in standings order. The cut reads the playoff spots of `config`, so it follows the
+def standings(week: Week, history: History | None = None, *, client: Client) -> list[Standing]:
+    """The table after the week, in standings order. The cut reads the playoff spots of `client`, so it follows the
     league."""
     if history is not None and history.complete():
         records = season_records(history, week.week)
@@ -71,7 +71,7 @@ def standings(week: Week, history: History | None = None, *, config: LeagueConfi
             t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
         }
     ordered = standings_order(records)
-    cut_wins = records[ordered[config.playoff_spots - 1]][0]
+    cut_wins = records[ordered[client.settings.playoff_spots - 1]][0]
     strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
     # Rank the highest strength first. A team with no next matchup has no rank.
     by_strength = sorted(
@@ -86,7 +86,7 @@ def standings(week: Week, history: History | None = None, *, config: LeagueConfi
             wins=records[rid][0],
             losses=records[rid][1],
             points_for=records[rid][2],
-            in_playoffs=i + 1 <= config.playoff_spots,
+            in_playoffs=i + 1 <= client.settings.playoff_spots,
             games_from_cut=records[rid][0] - cut_wins,
             schedule_strength=strength[rid],
             strength_rank=strength_rank.get(rid),

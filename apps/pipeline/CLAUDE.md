@@ -12,14 +12,14 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 
 - Install: `make install`. The root `uv.lock` holds the locked versions of the whole uv workspace.
 - Check: `make check`. The hook runs `make check-fast`.
-- Build a week: `make build WEEK=<W>`
-- Publish a week: `make publish WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
+- Build a week: `make build CLIENT=cpc WEEK=<W>`. Each league target needs the client slug.
+- Publish a week: `make publish CLIENT=cpc WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
 - Local API on port 8080: `make -C ../api api`. The API is its own app in `apps/api/`.
 
 ## Pipeline
 
 1. Fetch the raw league data from Sleeper.
-2. Cache the raw data under `data/cache/`.
+2. Save the raw data under `clients/<slug>/data/` and cache the shared NFL data under `data/nfl/cache/`, both at the repo root.
 3. Compute the stats for each chapter.
 4. Write the chapter text with the Anthropic API.
 5. Write `page.json` and the images into `site/`.

@@ -8,7 +8,7 @@ from typing import Literal, NamedTuple
 from pydantic import BaseModel
 
 from cornerstone.adjusters import StartingSlot, fill_slots
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.history import player_points
 from cornerstone.models import History, ProjectionsAhead
 from cornerstone.season_inputs import SeasonInputs
@@ -96,7 +96,7 @@ def _names(positions: list[str]) -> str:
     return ", ".join(positions[:-1]) + ", and " + positions[-1]
 
 
-def grade_read(slots: list[SlotRank], *, config: LeagueConfig) -> str:
+def grade_read(slots: list[SlotRank], *, client: Client) -> str:
     """The grade in words, from the slot ranks: the strong positions, the deep ones, the soft ones, and the thin ones.
 
     A position is strong in the top quarter of the league and soft in the bottom quarter. A thin position is a hole,
@@ -104,22 +104,22 @@ def grade_read(slots: list[SlotRank], *, config: LeagueConfig) -> str:
     to say, the roster is middle of the league at every position.
     """
     thin = [s.position for s in slots if s.depth == "thin"]
-    strong = [s.position for s in slots if s.rank <= config.grade_strong_rank and s.position not in thin]
+    strong = [s.position for s in slots if s.rank <= client.settings.grade_strong_rank and s.position not in thin]
     deep = [s.position for s in slots if s.depth in ("deep", "stacked")]
-    soft = [s.position for s in slots if s.rank >= config.grade_soft_rank and s.position not in thin]
+    soft = [s.position for s in slots if s.rank >= client.settings.grade_soft_rank and s.position not in thin]
     sentences = [f"{word} at {_names(names)}." for word, names in (
         ("Strong", strong), ("Deep", deep), ("Soft", soft), ("Thin", thin)) if names]
     return " ".join(sentences) or "Middle of the league at every position."
 
 
-def projected_values(projections_ahead: ProjectionsAhead, config: LeagueConfig) -> dict[str, float]:
+def projected_values(projections_ahead: ProjectionsAhead, client: Client) -> dict[str, float]:
     """The value of each player in the projections: the mean of his projections over the weeks ahead.
 
-    A week with no projection for him counts 0 in the mean. The weeks stop at the last regular week of `config`,
+    A week with no projection for him counts 0 in the mean. The weeks stop at the last regular week of `client`,
     because the file runs to the end of the NFL season and a playoff week says nothing of the roster in the regular
     season.
     """
-    weeks = [projections for week, projections in projections_ahead.items() if week <= config.last_regular_week]
+    weeks = [projections for week, projections in projections_ahead.items() if week <= client.settings.last_regular_week]
     players = {pid for projections in weeks for pid in projections}
     return {pid: sum(projections.get(pid, 0.0) for projections in weeks) / len(weeks) for pid in players}
 
@@ -175,7 +175,7 @@ def roster_grades(inputs: SeasonInputs) -> dict[int, ManagerGrade]:
             letter=grade_letter(grade_score(parts[rid])),
             slots=slots,
             parts=[PartRank(key=key, rank=part_ranks[key][rid]) for key in GRADE_WEIGHTS],
-            read=grade_read(slots, config=inputs.snapshot.config),
+            read=grade_read(slots, client=inputs.snapshot.client),
         )
     return grades
 
@@ -195,7 +195,7 @@ def _league_reads(inputs: SeasonInputs) -> list[tuple[int, "_RosterRead", _Leagu
     # The grade has no meaning without the rosters and the projections, so the caller checks for both first.
     if snapshot is None or projections_ahead is None:
         raise ValueError("the roster grade needs a snapshot and the projections ahead")
-    values = projected_values(projections_ahead, snapshot.config)
+    values = projected_values(projections_ahead, snapshot.client)
     ranks_by_player = position_ranks(values, {pid: player.position for pid, player in snapshot.players.items()})
     per_game = season_points_per_game(inputs.history)
     reads = {rid: _RosterRead(snapshot, roster, values, ranks_by_player) for rid, roster in snapshot.rosters.items()}
@@ -276,14 +276,14 @@ class _RosterRead:
 
     def above(self, position: str) -> int:
         """The depth at the position: the players, starters and bench, above the line. GLOSSARY.md, "Depth"."""
-        line = self.snapshot.config.lines[position]
+        line = self.snapshot.client.settings.lines[position]
         return sum(1 for pid in self.roster
                    if self.snapshot.players[pid].position == position and self.ranks.get(pid, line + 1) <= line)
 
     def spares(self, position: str) -> int:
         """The players at the position inside the league's starter count, past the starters the roster has there.
         The score's depth part reads the line instead, so a backup still counts there."""
-        bar = self.snapshot.config.grade_spare_rank[position]
+        bar = self.snapshot.client.settings.grade_spare_rank[position]
         inside = sum(1 for pid in self.roster
                      if self.snapshot.players[pid].position == position and self.ranks.get(pid, bar + 1) <= bar)
         return max(0, inside - len(self._at(position)))
@@ -317,5 +317,5 @@ class _RosterRead:
         """The starter against the line: 1 at rank 1, down to 1 / line at the line, and 0 below it or with no player."""
         if slot.player is None or slot.rank is None:
             return 0.0
-        line = self.snapshot.config.lines[self._position(slot)]
+        line = self.snapshot.client.settings.lines[self._position(slot)]
         return max(0.0, (line + 1 - slot.rank) / line)

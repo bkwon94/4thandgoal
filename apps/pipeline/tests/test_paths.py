@@ -7,10 +7,13 @@ from cornerstone.paths import (
     chart_image,
     chart_read,
     charts_dir,
+    client_dir,
     history_dir,
     history_raw_dir,
     history_root,
     history_week_dir,
+    league_file,
+    nfl_dir,
     nflverse_cache_dir,
     players_cache,
     raw_dir,
@@ -23,7 +26,9 @@ from cornerstone.paths import (
     week_label,
 )
 
-REPO = Path("/repo")
+ROOT = Path("/repo")
+CLIENT = Path("/repo/clients/cpc")
+NFL = Path("/repo/data/nfl")
 SITE = Path("/repo/site")
 
 
@@ -38,23 +43,23 @@ def test_week_from_label_reads_a_label_and_a_stem():
 
 
 def test_week_dir_is_under_the_season_data():
-    assert week_dir(REPO, 2026, 6) == Path("/repo/data/2026/week-06")
+    assert week_dir(CLIENT, 2026, 6) == Path("/repo/clients/cpc/data/2026/week-06")
 
 
 def test_raw_dir_is_inside_the_week_dir():
-    assert raw_dir(REPO, 2026, 6) == Path("/repo/data/2026/week-06/raw")
+    assert raw_dir(CLIENT, 2026, 6) == Path("/repo/clients/cpc/data/2026/week-06/raw")
 
 
 def test_history_root_is_under_the_season_data():
-    assert history_root(REPO, 2026) == Path("/repo/data/2026/history")
+    assert history_root(CLIENT, 2026) == Path("/repo/clients/cpc/data/2026/history")
 
 
 def test_history_dir_is_a_week_under_the_history_root():
-    assert history_dir(REPO, 2026, 6) == Path("/repo/data/2026/history/week-06")
+    assert history_dir(CLIENT, 2026, 6) == Path("/repo/clients/cpc/data/2026/history/week-06")
 
 
-def test_returns_path_is_beside_the_history():
-    assert returns_path(REPO, 2026) == Path("/repo/data/2026/returns.json")
+def test_returns_path_is_in_the_shared_nfl_data():
+    assert returns_path(NFL, 2026) == Path("/repo/data/nfl/2026/returns.json")
 
 
 def test_site_week_dir_is_a_week_under_the_season_dir():
@@ -66,27 +71,27 @@ def test_season_dir_is_under_the_site():
 
 
 def test_players_cache_is_one_file_in_the_cache():
-    assert players_cache(REPO) == Path("/repo/data/cache/players.json")
+    assert players_cache(NFL) == Path("/repo/data/nfl/cache/players.json")
 
 
 def test_nflverse_cache_dir_is_in_the_cache():
-    assert nflverse_cache_dir(REPO) == Path("/repo/data/cache/nflverse")
+    assert nflverse_cache_dir(NFL) == Path("/repo/data/nfl/cache/nflverse")
 
 
 def test_charts_dir_is_in_the_cache():
-    assert charts_dir(REPO) == Path("/repo/data/cache/charts")
+    assert charts_dir(NFL) == Path("/repo/data/nfl/cache/charts")
 
 
 def test_chart_image_is_a_png_named_for_the_week():
-    assert chart_image(REPO, 6) == Path("/repo/data/cache/charts/week-06.png")
+    assert chart_image(NFL, 6) == Path("/repo/data/nfl/cache/charts/week-06.png")
 
 
 def test_chart_read_is_a_json_named_for_the_week():
-    assert chart_read(REPO, 6) == Path("/repo/data/cache/charts/week-06.json")
+    assert chart_read(NFL, 6) == Path("/repo/data/nfl/cache/charts/week-06.json")
 
 
 def test_results_cache_dir_is_in_the_cache():
-    assert results_cache_dir(REPO) == Path("/repo/data/cache/results")
+    assert results_cache_dir(ROOT) == Path("/repo/data/cache/results")
 
 
 def test_history_week_dir_is_a_week_under_a_given_root():
@@ -94,4 +99,16 @@ def test_history_week_dir_is_a_week_under_a_given_root():
 
 
 def test_history_raw_dir_sits_beside_the_history_root():
-    assert history_raw_dir(Path("/repo/data/2026/history"), 7) == Path("/repo/data/2026/week-07/raw")
+    assert history_raw_dir(Path("/repo/clients/cpc/data/2026/history"), 7) == Path("/repo/clients/cpc/data/2026/week-07/raw")
+
+
+def test_client_dir_is_under_the_clients_folder():
+    assert client_dir(ROOT, "cpc") == CLIENT
+
+
+def test_nfl_dir_is_under_the_root_data():
+    assert nfl_dir(ROOT) == NFL
+
+
+def test_league_file_is_in_the_season_data_of_the_client():
+    assert league_file(CLIENT, 2026) == Path("/repo/clients/cpc/data/2026/league.json")

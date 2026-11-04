@@ -3,7 +3,7 @@ Builds the position leader facts, the position rank facts, and the history facts
 The position leaders chapter and the history caps read them.
 """
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_nflverse import volume_ranks
 from cornerstone.history import (
     player_trend,
@@ -17,14 +17,14 @@ from cornerstone.sheet.base import Context, Nums, fact, trend_text
 from cornerstone.tunables import TREND_WEEKS
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The position ranks, the position leaders, the schedule strength, and the team and player history.
 
     The position leaders chapter reads the leaders, and the next week chapter reads the schedule strength. The ranks
     and the history go to each chapter about the teams and players they name.
     """
     return (
-        rank_facts(context) + leader_facts(context) + strength_facts(context, config) + history_facts(context)
+        rank_facts(context) + leader_facts(context) + strength_facts(context, client) + history_facts(context)
         + player_trend_facts(context)
     )
 
@@ -72,7 +72,7 @@ def _volume_fact(c: Context, fid: str, position: str, line: PlayerLine, team: st
     return fact(fid, text, n, [team], [line.name])
 
 
-def strength_facts(c: Context, config: LeagueConfig) -> list[Fact]:
+def strength_facts(c: Context, client: Client) -> list[Fact]:
     out = []
     for s in c.table:
         if s.schedule_strength is None:
@@ -82,7 +82,7 @@ def strength_facts(c: Context, config: LeagueConfig) -> list[Fact]:
         # Version 1 knows only the next opponent, so the fact names next week, not the rest of the season.
         text = (
             f"{team}'s opponent next week has a win rate of {n(s.schedule_strength)}, "
-            f"ranked {n(s.strength_rank)} of {n(config.team_count)}, toughest first."
+            f"ranked {n(s.strength_rank)} of {n(client.settings.team_count)}, toughest first."
         )
         out.append(fact(f"SOS.{s.roster_id}", text, n, [team], []))
     return out

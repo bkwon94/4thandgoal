@@ -16,11 +16,12 @@ from pydantic import BaseModel
 
 from cornerstone.claude_errors import WriterError
 from cornerstone.claude_port import Writer
+from cornerstone.league_settings import LeagueSettings
 from cornerstone.models import ResearchOut
 from cornerstone.nflverse import nflverse_week
 from cornerstone.provider.base import Provider
 from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
-from cornerstone.provider.sleeper import load_raw
+from cornerstone.provider.sleeper import league_settings, load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
@@ -81,6 +82,9 @@ class FixtureProvider:
         shutil.copytree(self.raw_dir, raw_dir, dirs_exist_ok=True)
         return load_raw(raw_dir)
 
+    def fetch_settings(self, league_id: str, cache: Path) -> LeagueSettings:
+        return league_settings(load_raw(self.raw_dir).league)
+
     def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
         return load_raw(self.raw_dir), self.fetched
 
@@ -97,7 +101,7 @@ class FixtureProvider:
         return load_raw(self.raw_dir).projections_ahead or []
 
 
-# The annotation makes pyright prove that the fake has the five fetches of the protocol, with the same types.
+# The annotation makes pyright prove that the fake has the six fetches of the protocol, with the same types.
 FIXTURE_PROVIDER: Provider = FixtureProvider()
 
 

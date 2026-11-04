@@ -1,6 +1,6 @@
 """
 Publish a built week to the public site in apps/site of the same repo.
-It commits the pipeline data, copies the week folder and the season files, then commits the published folder only and pushes.
+It commits the built site and the client data, copies the week folder and the season files, then commits the published folder only and pushes.
 """
 import logging
 import shutil
@@ -50,8 +50,10 @@ def _repo_root(repo: Path) -> Path:
     return Path(result.stdout.strip())
 
 
-def run_publish(repo: Path, season: int, week: int, site_repo: Path | None = None, push: bool = True) -> str:
-    """Publish one week. The site repo is the root of the pipeline's checkout, unless a test names another."""
+def run_publish(
+        repo: Path, season: int, week: int, data: Path, site_repo: Path | None = None, push: bool = True) -> str:
+    """Publish one week. `data` is the data folder of the client. The site repo is the root of the pipeline's
+    checkout, unless a test names another."""
     page = site_week_dir(repo / "site", season, week) / "page.json"
     if not page.exists():
         raise PublishError(f"{page} does not exist. Build the week first.")
@@ -61,8 +63,8 @@ def run_publish(repo: Path, season: int, week: int, site_repo: Path | None = Non
     if not (site_repo / ".git").exists():
         raise PublishError(f"{site_repo} is not a git checkout.")
 
-    _git(repo, "add", "site", "data")
-    _commit_if_staged(repo, f"Week {week} report", "site", "data")
+    _git(repo, "add", "site", str(data))
+    _commit_if_staged(repo, f"Week {week} report", "site", str(data))
 
     # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
     # stay off the public site. The site is a Next.js app. It renders the pages and the home

@@ -7,8 +7,8 @@ from zoneinfo import ZoneInfo
 
 import anthropic
 import pytest
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
 from cornerstone.models import BoardScores, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
 from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.verifier import without_urls
@@ -16,7 +16,7 @@ from cornerstone.waiver_research import build_research_prompt, research_board
 from cornerstone.writer import WriterError
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
-PROMPTS = cornerstone_config().prompts_dir
+PROMPTS = cpc_client().voice_dir
 URL = "https://sports.yahoo.com/fantasy/article/week-7-waiver-wire-141451458.html"
 
 

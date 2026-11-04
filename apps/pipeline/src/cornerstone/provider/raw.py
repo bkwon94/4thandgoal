@@ -19,17 +19,24 @@ class RawState(_Raw):
     season_start_date: str
 
 
-class LeagueSettings(_Raw):
-    """The settings object of league.json: the scored week, the reserve slots, and the waiver budget."""
+class RawLeagueSettings(_Raw):
+    """The settings object of league.json: the scored week, the reserve slots, the waiver budget, and the sizes."""
     last_scored_leg: int
     reserve_slots: int
     waiver_budget: int
+    # The sizes of the League settings. A saved file of an old test or fixture can lack them, so each is optional, and
+    # the map into the League settings stops on a missing one.
+    num_teams: int | None = None
+    playoff_teams: int | None = None
+    playoff_week_start: int | None = None
+    # 1 when the league scores a median game each week, else 0.
+    league_average_match: int = 0
 
 
 class RawLeague(_Raw):
     """The league from league.json: the lineup slots, the settings, and the scoring."""
     roster_positions: list[str]
-    settings: LeagueSettings
+    settings: RawLeagueSettings
     scoring_settings: dict[str, float]
 
 

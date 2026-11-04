@@ -9,9 +9,9 @@ from math import comb
 
 import pytest
 from conftest import with_carries
+from cpc import cpc_client
 
 from cornerstone.adjusters import Adjuster, due_back_week
-from cornerstone.config import cornerstone_config
 from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.ranks import recent_points_per_game
@@ -19,7 +19,7 @@ from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade,
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
 
 
 # The fixture chart cannot serve the count tests. It lists 25 players, mostly stars, so every trade of listed
@@ -166,7 +166,7 @@ def test_an_out_player_with_a_return_week_on_file_is_a_candidate(slow_snap):
 def _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, returns):
     """The snapshot of a game day in week 6, where NA-tagged Jacobs has a week 6 game and the returns rows given."""
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6, returns=returns,
-                          config=CONFIG)
+                          client=CLIENT)
     assert snap.as_of.stats_through == 6 and snap.players[JACOBS].injury_status == "NA"
     week_6 = snap.stats.weeks[6]
     week_6 = week_6.model_copy(update={"stats": {**week_6.stats, JACOBS: {**week_6.stats[JACOBS], "gp": 1.0}},

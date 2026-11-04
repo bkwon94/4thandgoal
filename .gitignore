@@ -6,3 +6,6 @@ out
 .claude/worktrees/
 .claude/settings.local.json
 __pycache__/
+# The caches of the NFL data and of the API results. Each run fills them again.
+data/nfl/cache/
+data/cache/

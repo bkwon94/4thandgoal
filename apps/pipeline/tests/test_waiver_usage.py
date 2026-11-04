@@ -6,12 +6,13 @@ import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from cornerstone.config import cornerstone_config
+from cpc import cpc_client
+
 from cornerstone.models import NflverseWeek, TeamWeek, UsageWeek
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.waiver import waiver_board
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 
@@ -46,7 +47,7 @@ def _nfl(usage, environment=None):
 
 
 def _best_adds(raw, nfl):
-    return waiver_board(raw, 6, BUILT, nfl, config=CONFIG).buckets["best_adds"]
+    return waiver_board(raw, 6, BUILT, nfl, client=CLIENT).buckets["best_adds"]
 
 
 def test_a_rising_snap_share_outranks_a_higher_projection_with_flat_usage(fixture_raw_dir):

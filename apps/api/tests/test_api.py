@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 from conftest import strip_trend_numbers
+from cpc import cpc_client
 from fastapi.testclient import TestClient
 
 from cornerstone.adjusters import ROSTER_FIT, TREND
@@ -32,7 +33,6 @@ from cornerstone.analysis import (
     analyze,
     code_only,
 )
-from cornerstone.config import cornerstone_config
 from cornerstone.finder import find_win_wins
 from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from cornerstone.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
@@ -50,8 +50,8 @@ from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 
 ET = ZoneInfo("America/New_York")
-# The league config the builds and fetches of these tests read.
-CONFIG = cornerstone_config()
+# The client the builds and fetches of these tests read.
+CLIENT = cpc_client()
 FETCHED = datetime(2026, 10, 19, 9, 30, tzinfo=ET)
 # Monday night before the week 7 cutoff, so the trade week and the chart week are 6.
 NOW = datetime(2026, 10, 19, 12, 0, tzinfo=ET)
@@ -81,6 +81,11 @@ def repo(tmp_path, fixture_history_root, fixture_nflverse_dir):
     return tmp_path
 
 
+def _here(sources: Sources, settings: Settings) -> Sources:
+    """The sources with the client of the test folder, so a snapshot reads and writes only that folder."""
+    return dataclasses.replace(sources, client=cpc_client(at=settings.repo))
+
+
 @pytest.fixture
 def sources(fixture_raw_dir, chart_week6):
     return Sources(
@@ -88,7 +93,7 @@ def sources(fixture_raw_dir, chart_week6):
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
         read_chart=lambda repo, season_start, week, lines: chart_week6,
-        clock=lambda: NOW, config=CONFIG,
+        clock=lambda: NOW, client=CLIENT,
     )
 
 
@@ -153,7 +158,7 @@ TRADE = {"season": 2026, "sides": _sides(["7569"], ["10236", "8146"]), "asker": 
 
 
 def _client(settings, sources, analyzer=None):
-    return TestClient(create_app(settings, CONFIG, sources=sources, analyzer=analyzer))
+    return TestClient(create_app(settings, CLIENT, sources=_here(sources, settings), analyzer=analyzer))
 
 
 def test_health_needs_no_passphrase(settings, sources):
@@ -299,9 +304,9 @@ def test_a_season_that_is_not_in_progress_is_never_cached(settings, sources, fix
 def test_the_start_up_refresh_refreshes_the_current_season_once(settings, sources, fixture_raw_dir, monkeypatch):
     calls = []
     monkeypatch.setattr("cornerstone_api.sources.refresh_sources",
-                        lambda repo, season, now, week, **kwargs: calls.append((season, kwargs["max_age_seconds"])))
+                        lambda season, now, week, **kwargs: calls.append((season, kwargs["max_age_seconds"])))
     sleeper = CountingSleeper(fixture_raw_dir)
-    app = create_app(settings, CONFIG, sources=dataclasses.replace(sources, fetch_sleeper=sleeper),
+    app = create_app(settings, CLIENT, sources=_here(dataclasses.replace(sources, fetch_sleeper=sleeper), settings),
                      refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
     # The refresh keeps the normal max age, so it fetches only the files older than a day.
@@ -311,18 +316,18 @@ def test_the_start_up_refresh_refreshes_the_current_season_once(settings, source
 
 def test_the_start_up_refresh_is_off_unless_the_app_asks_for_it(settings, sources, monkeypatch):
     calls = []
-    monkeypatch.setattr(Sources, "refresh_current_season", lambda self, repo, **kwargs: calls.append(repo))
-    app = create_app(settings, CONFIG, sources=sources)
+    monkeypatch.setattr(Sources, "refresh_current_season", lambda self, **kwargs: calls.append(self.client.folder))
+    app = create_app(settings, CLIENT, sources=_here(sources, settings))
     assert app.state.refresh_thread is None
     assert calls == []
 
 
 def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings, sources, monkeypatch, caplog):
-    def raising(self, repo, **kwargs):
+    def raising(self, **kwargs):
         raise httpx.ConnectError("no network")
 
     monkeypatch.setattr(Sources, "refresh_current_season", raising)
-    app = create_app(settings, CONFIG, sources=sources, refresh_on_start=True)
+    app = create_app(settings, CLIENT, sources=_here(sources, settings), refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
     assert "start-up refresh of the slow sources failed (ConnectError)" in caplog.text
     client = TestClient(app)
@@ -457,7 +462,7 @@ def test_the_same_gives_with_other_destinations_is_another_cache_key(settings, s
         {"roster_id": 12, "gives": _gives([("10236", 4), ("8146", 4)])},
         {"roster_id": 7, "gives": _gives([("11628", 12)])},
     ]}
-    snapshot = sources.snapshot(settings.repo, 2026)
+    snapshot = _here(sources, settings).snapshot(2026)
     assert cache_key(ProposedTrade(**THREE), snapshot) != cache_key(ProposedTrade(**swapped), snapshot)
 
 
@@ -485,7 +490,7 @@ def _no_chart_sources(fixture_raw_dir):
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW, config=CONFIG)
+        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fixture_raw_dir):
@@ -508,8 +513,8 @@ def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fi
 def test_a_grade_with_no_chart_and_a_grade_with_the_chart_have_different_keys(settings, sources, fixture_raw_dir):
     # The first chart post of the week must give a fresh grade, not the stored grade with no chart.
     trade = ProposedTrade.model_validate(TRADE)
-    with_chart = sources.snapshot(settings.repo, trade.season)
-    no_chart = _no_chart_sources(fixture_raw_dir).snapshot(settings.repo, trade.season)
+    with_chart = _here(sources, settings).snapshot(trade.season)
+    no_chart = _here(_no_chart_sources(fixture_raw_dir), settings).snapshot(trade.season)
     assert cache_key(trade, no_chart) != cache_key(trade, with_chart)
     assert finder_cache_key(2026, 4, 12, no_chart) != finder_cache_key(2026, 4, 12, with_chart)
 
@@ -533,7 +538,7 @@ def test_a_claude_letter_one_step_off_stands(settings, sources):
 def _document(settings, sources, breakdowns=None, choice=None):
     """The result document of TRADE from a built analysis, with the breakdowns and the verdict choice changed."""
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     breakdowns = breakdowns(grade(trade, snapshot)) if breakdowns else grade(trade, snapshot)
     code = verdict(trade, breakdowns)
     stands = code if choice is None else code.model_copy(update={"choice": choice})
@@ -626,7 +631,7 @@ def test_the_fairness_block_reads_the_letters_that_stand_after_the_claude_call(s
 
 def test_the_fairness_text_passes_the_prose_checks_of_the_analysis(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     breakdowns = grade(trade, snapshot)
     names = [*(t.name for t in snapshot.teams.values()), *(p.name for p in snapshot.players.values())]
     breakdown_text = _breakdown_text(breakdowns)
@@ -645,7 +650,7 @@ def test_the_cache_key_changes_with_the_document_version(settings, sources, monk
     import cornerstone_api.cache as cache_module
 
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     # A shape change bumps the version, so a document stored in the old shape never serves again.
     key = cache_key(trade, snapshot)
     monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", cache_module.DOCUMENT_VERSION + 1)
@@ -667,7 +672,7 @@ def _outside_player(snapshot, roster_ids):
 
 def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     # A new returns file moves a return week inside the week, so the stored grade must miss.
     key = cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, {}))
@@ -679,7 +684,7 @@ def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
 def test_the_cache_key_changes_with_a_team_in_progress(settings, sources):
     # A grade cached while a game is on says "game in progress", so the final game must miss that grade.
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     on = snapshot.model_copy(update={"in_progress_teams": {"CHI", "ATL"}})
     off = snapshot.model_copy(update={"in_progress_teams": set()})
     assert cache_key(trade, on) != cache_key(trade, off)
@@ -688,7 +693,7 @@ def test_the_cache_key_changes_with_a_team_in_progress(settings, sources):
 
 def test_the_cache_key_changes_with_a_projection_ahead_of_a_rostered_player_due_back(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     # The lineup value of a player due back is his projection from the return week on, so a change there must miss.
     key = cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, {rostered: {8: 12.5}}))
@@ -704,7 +709,7 @@ def _with_status(snapshot, player, status):
 
 def test_the_cache_key_changes_when_a_rostered_player_moves_into_the_out_set(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = next(player for player in snapshot.rosters[4] if snapshot.players[player].injury_status is None)
     # A player out with no return week counts for his projection ahead from week 14, so the grade reads new rows.
     healthy = _with_week_rows(snapshot, {}, {rostered: {14: 12.5}})
@@ -721,7 +726,7 @@ def test_the_cache_key_changes_when_a_rostered_player_moves_into_the_out_set(set
 
 def test_the_cache_key_changes_with_a_season_mark_on_any_roster(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     outside = _outside_player(snapshot, [4, 12])
     # A season mark zeroes a chart value or opens an opportunity for a teammate, so each mark must miss.
@@ -733,7 +738,7 @@ def test_the_cache_key_changes_with_a_season_mark_on_any_roster(settings, source
 
 def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     # Sleeper moves projections daily. A player not due back keeps his recent points, so his rows never reach the grade.
     key = cache_key(trade, _with_week_rows(snapshot, {}, {rostered: {8: 12.5}}))
@@ -745,7 +750,7 @@ def test_the_cache_key_ignores_the_projection_rows_the_grade_never_reads(setting
 
 def test_the_cache_key_ignores_the_projection_rows_of_a_player_already_back(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     # A return week at the last completed week is past. The player stat bound can be the trade week itself.
     past = snapshot.as_of.completed_through
@@ -758,7 +763,7 @@ def test_the_cache_key_ignores_the_projection_rows_of_a_player_already_back(sett
 
 def test_the_cache_key_tells_no_projections_file_from_no_rostered_rows(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     # With no projections file every player keeps his recent points, so the grade differs from an empty file.
     assert cache_key(trade, _with_week_rows(snapshot, {rostered: 8}, None)) != cache_key(
@@ -767,7 +772,7 @@ def test_the_cache_key_tells_no_projections_file_from_no_rostered_rows(settings,
 
 def test_the_cache_key_ignores_a_player_on_neither_roster(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     outside = _outside_player(snapshot, [4, 12])
     # The rows of a player on neither roster never reach the grade, so a change to them keeps the hit.
     key = cache_key(trade, _with_week_rows(snapshot, {outside: 8}, {outside: {7: 12.5}}))
@@ -800,7 +805,7 @@ def _with_points(snapshot, player, points, position=None):
 
 def test_a_changed_stat_line_of_an_unrostered_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     back = _unrostered_with_a_game(snapshot, "RB")
     # The position rank pool holds every back with a stat line, so his points can move the rank of a traded back.
     assert cache_key(trade, _with_points(snapshot, back, 30.0)) != cache_key(trade, _with_points(snapshot, back, 3.0))
@@ -810,7 +815,7 @@ def test_a_changed_stat_line_of_an_unrostered_rb_changes_the_grade_key_and_the_f
 
 def test_a_changed_stat_line_of_an_unrostered_k_changes_neither_key(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     # The fixture has no K line, so the test adds one for a kicker on no roster.
     kicker = "unrostered-kicker"
     # K has no position rank, so no grade reads his line.
@@ -822,7 +827,7 @@ def test_a_changed_stat_line_of_an_unrostered_k_changes_neither_key(settings, so
 
 def test_a_new_free_agent_at_rb_changes_the_grade_key_and_the_finder_key(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     bigsby = SnapshotPlayer(player_id="9225", name="Tank Bigsby", position="RB", nfl_team="PHI")
     added = snapshot.model_copy(update={"free_agents": {**snapshot.free_agents, "RB": [bigsby]}})
     # His stat line is in the rank pool either way, so only the free agents tell the two keys apart. The hole fact
@@ -842,7 +847,7 @@ def _strings(value):
 
 
 def test_a_trade_with_an_unlisted_player_leans_even_with_no_letter(settings, sources):
-    snapshot = sources.snapshot(settings.repo, 2026)
+    snapshot = _here(sources, settings).snapshot(2026)
     unlisted = next(pid for pid in snapshot.rosters[12] if pid not in snapshot.chart.values and not is_def(pid))
     trade = {**TRADE, "sides": _sides(["7569"], [unlisted])}
     doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=trade, headers=HEADERS).json()
@@ -873,7 +878,7 @@ def _at(fixture_raw_dir, chart, fetched):
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, config=CONFIG)
+        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_repeat_is_a_cache_hit_with_one_claude_call(settings, fixture_raw_dir, chart_week6):
@@ -914,7 +919,7 @@ def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
     return Sources(
         fetch_sleeper=lambda league_id, players_cache: (raw, FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, config=CONFIG)
+        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
@@ -1074,7 +1079,7 @@ def test_grades_at_once_on_many_threads_never_pass_the_day_limit(tmp_path):
 
     # Each read of the clock is 61 seconds on, so only the day limit can stop a grade.
     ticks = itertools.count()
-    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, tmp_path / GRADE_COUNTS_FILE, CONFIG.tz,
+    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, tmp_path / GRADE_COUNTS_FILE, CLIENT.tz,
                            clock=lambda: NOW + timedelta(seconds=61 * next(ticks)))
     with ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(lambda _: limiter.hit("203.0.113.1"), range(GRADES_PER_DAY + 5)))
@@ -1320,7 +1325,7 @@ def find_sources(settings, sources, chart_week6, fixture_raw_dir):
         return raw, FETCHED
 
     sources = dataclasses.replace(sources, fetch_sleeper=before_kickoff)
-    snapshot = sources.snapshot(settings.repo, 2026)
+    snapshot = _here(sources, settings).snapshot(2026)
     rows = {pid: float(max(1, round(recent_points_per_game(snapshot, pid))))
             for roster_id in (2, 3) for pid in snapshot.rosters[roster_id]
             if snapshot.players[pid].position in CHART_POSITIONS and pid not in chart_week6.values}
@@ -1351,7 +1356,7 @@ class FakeFinderClaude:
 
 def _find_client(settings, sources, fake, clock=None):
     """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
-    client = TestClient(create_app(settings, CONFIG, sources=sources, analyzer=StubAnalyzer(),
+    client = TestClient(create_app(settings, CLIENT, sources=_here(sources, settings), analyzer=StubAnalyzer(),
                                    finder_reasons=functools.partial(write_reasons, call=fake)))
     if clock is not None:
         client.app.state.grade_limiter.clock = clock
@@ -1475,7 +1480,7 @@ def _with_as_of(snapshot, **update):
 
 
 def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sources):
-    snapshot = sources.snapshot(settings.repo, 2026)
+    snapshot = _here(sources, settings).snapshot(2026)
     key = finder_cache_key(2026, 2, 3, snapshot)
     # The rosters fetch time moves on every request, so it is not in the key.
     assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, rosters_fetched=FETCHED.replace(minute=55))) == key
@@ -1489,7 +1494,7 @@ def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sou
 def test_the_find_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
     import cornerstone_api.cache as cache_module
 
-    snapshot = sources.snapshot(settings.repo, 2026)
+    snapshot = _here(sources, settings).snapshot(2026)
     key = finder_cache_key(2026, 2, 3, snapshot)
     monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", cache_module.DOCUMENT_VERSION + 1)
     assert finder_cache_key(2026, 2, 3, snapshot) != key
@@ -1538,7 +1543,7 @@ def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_
 @pytest.fixture
 def found(settings, find_sources):
     """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3."""
-    snapshot = find_sources.snapshot(settings.repo, 2026)
+    snapshot = _here(find_sources, settings).snapshot(2026)
     return snapshot, find_win_wins(2, 3, snapshot)
 
 
@@ -1674,7 +1679,7 @@ def _both_keys(trade, snapshot):
 
 def test_the_cache_key_changes_with_a_week_n_line_of_a_rostered_player(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     assert snapshot.as_of.stats_through > snapshot.as_of.completed_through
     rostered = snapshot.rosters[4][0]
     points = snapshot.stats.weeks[snapshot.as_of.stats_through].stats.get(rostered, {}).get("pts_half_ppr", 0.0)
@@ -1689,7 +1694,7 @@ def test_the_cache_key_changes_with_a_week_n_line_of_a_rostered_player(settings,
 
 def test_the_cache_key_reads_a_first_known_game_after_a_return_through_the_due_back_rule(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     week_n = snapshot.as_of.stats_through
     assert week_n > snapshot.as_of.completed_through
     rostered = next(player for player in snapshot.rosters[4]
@@ -1708,7 +1713,7 @@ def test_the_cache_key_reads_a_first_known_game_after_a_return_through_the_due_b
 
 def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     outside = _outside_player(snapshot, [4, 12])
     changed = _with_week_n_line(snapshot, outside, pts_half_ppr=31.5, gp=1.0, rec_tgt=9.0)
     assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
@@ -1716,7 +1721,7 @@ def test_the_cache_key_ignores_a_week_n_line_of_a_player_on_neither_roster(setti
 
 def test_a_third_roster_line_that_moves_a_traded_players_rank_changes_the_key(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     collins = "7569"
     week_n = snapshot.stats.weeks[snapshot.as_of.stats_through].stats
     # A healthy receiver who played in week N, so he is not due back and his recent points read the week N line.
@@ -1737,7 +1742,7 @@ def test_a_third_roster_line_that_moves_a_traded_players_rank_changes_the_key(se
 
 def test_the_cache_key_ignores_a_week_n_field_the_grade_never_reads(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     changed = _with_week_n_line(snapshot, rostered, pass_yd=412.0)
     assert _both_keys(trade, changed) == _both_keys(trade, snapshot)
@@ -1745,7 +1750,7 @@ def test_the_cache_key_ignores_a_week_n_field_the_grade_never_reads(settings, so
 
 def test_the_cache_key_tells_empty_week_n_lines_from_any_line(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     rostered = snapshot.rosters[4][0]
     outside = _outside_player(snapshot, [4, 12])
     empty = _with_week_n_stats(snapshot, {})
@@ -1759,7 +1764,7 @@ def test_the_cache_key_tells_empty_week_n_lines_from_any_line(settings, sources)
 
 def test_the_cache_key_of_a_week_with_no_known_games_adds_no_week_n_line(settings, sources):
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     # With no week N in the player stats the bound is the completed week, and the key adds nothing.
     completed = snapshot.as_of.completed_through
     weeks = {week: past for week, past in snapshot.stats.weeks.items() if week <= completed}
@@ -1772,7 +1777,7 @@ def test_the_cache_key_of_a_week_with_no_known_games_adds_no_week_n_line(setting
 def test_the_cache_key_changes_with_the_known_games_block(settings, sources):
     # The document shows the block, so a stored grade must not show an old pending count.
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     known = snapshot.as_of.known_games
     assert known is not None
     fewer = known.model_copy(update={"pending": {**known.pending, "snaps": 3}})
@@ -1785,7 +1790,7 @@ def test_the_cache_key_changes_with_the_known_games_block(settings, sources):
 def test_the_cache_key_changes_when_the_stats_are_stale(settings, sources):
     # A failed week N fetch on a Sunday must not serve the document from before the games.
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     assert "stats" not in snapshot.stale
     stale = snapshot.model_copy(update={"stale": [*snapshot.stale, "stats"]})
     assert cache_key(trade, stale) != cache_key(trade, snapshot)
@@ -1795,7 +1800,7 @@ def test_the_cache_key_changes_when_the_stats_are_stale(settings, sources):
 def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(settings, sources):
     # The trend step reads the week N row when the player file brings it in.
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = sources.snapshot(settings.repo, trade.season)
+    snapshot = _here(sources, settings).snapshot(trade.season)
     week = snapshot.as_of.stats_through
     assert week > snapshot.as_of.completed_through
     rostered = snapshot.rosters[4][0]

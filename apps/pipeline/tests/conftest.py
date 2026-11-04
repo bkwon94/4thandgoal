@@ -11,9 +11,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
-from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import ChartValues, InjuryPlay, NflverseWeek
 from cornerstone.nflverse import nflverse_week
@@ -26,7 +26,7 @@ from cornerstone.sheet import build_bundle
 from cornerstone.snapshot import week_snapshot
 from cornerstone.trades import default_cutoff, trades_for_week
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 ET = ZoneInfo("America/New_York")
 
@@ -105,7 +105,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     return build_bundle(parse_week(raw), news=lambda pid: [],
                         history=load_history(fixture_history_root, raw, week=6),
-                        snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG), config=CONFIG)
+                        snapshot=week_snapshot(raw, fixture_history_root, 6, client=CLIENT), client=CLIENT)
 
 
 def _window(raw, h):
@@ -119,7 +119,7 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)
     return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=_window(raw, h), nfl=nfl,
-                        snapshot=week_snapshot(raw, history_root, 6, config=CONFIG), config=CONFIG)
+                        snapshot=week_snapshot(raw, history_root, 6, client=CLIENT), client=CLIENT)
 
 
 @pytest.fixture
@@ -179,14 +179,15 @@ def story_nfl(fixture_raw_dir) -> NflverseWeek:
 
 @pytest.fixture
 def story_bundle(fixture_raw_dir, story_nfl):
-    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, config=CONFIG)
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, client=CLIENT)
 
 
-SAVED = Path(__file__).parent.parent / "data" / "2026"
+SAVED = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026"
 
 
 def saved_repo(tmp_path, week):
-    """A repo of links to the saved raw data of `week`, the saved history, and the saved facts of the week before."""
+    """A folder of links to the saved raw data of `week`, the saved history, and the saved facts of the week before.
+    cpc_client(at=folder) reads it."""
     for path in (week_dir(tmp_path, 2026, week), history_root(tmp_path, 2026).parent):
         path.mkdir(parents=True, exist_ok=True)
     (week_dir(tmp_path, 2026, week) / "raw").symlink_to(SAVED / f"week-{week:02d}" / "raw")
@@ -201,5 +202,5 @@ def saved_repo(tmp_path, week):
 def week_8(tmp_path_factory):
     """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
     repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
-    bundle, _ = make_bundle(repo, 2026, 8, news=no_news, config=CONFIG)
+    bundle, _ = make_bundle(2026, 8, news=no_news, client=cpc_client(at=repo))
     return bundle

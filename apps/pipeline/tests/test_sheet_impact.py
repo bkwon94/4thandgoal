@@ -6,23 +6,23 @@ import re
 
 import pytest
 from conftest import SAVED, saved_repo
+from cpc import cpc_client
 from fakes import no_news
 
-from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.parse import parse_week
 from cornerstone.pipeline import make_bundle
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import base, build_bundle
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
-def _impact(raw_dir, history_root, config=CONFIG, history=None):
+def _impact(raw_dir, history_root, client=CLIENT, history=None):
     """The impact fact text of each matchup of week 6, keyed by matchup id."""
     raw = load_raw(raw_dir)
     h = history if history is not None else load_history(history_root, raw, week=6)
-    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, config=config)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, client=client)
     return {int(fid[1:].split(".")[0]): f.text for fid, f in b.sheet.facts.items() if fid.endswith(".impact")}
 
 
@@ -82,7 +82,7 @@ def test_a_game_that_ends_a_streak_of_3_names_it(fixture_raw_dir, fixture_histor
 def test_a_team_that_crossed_the_cut_names_it(fixture_raw_dir, fixture_history_root):
     # With 4 playoff spots, Maye d'force B with U rose from 6th to 4th and crossed into the playoff spots, and
     # Brock 'N' Roll fell from 4th to 6th and fell out of them.
-    impact = _impact(fixture_raw_dir, fixture_history_root, config=CONFIG.model_copy(update={"playoff_spots": 4}))
+    impact = _impact(fixture_raw_dir, fixture_history_root, client=cpc_client(playoff_spots=4))
     assert "Maye d'force B with U rose from 6th to 4th in the standings, crossed into the playoff spots" in impact[3]
     assert "Brock ‘N’ Roll fell from 4th to 6th in the standings, fell out of the playoff spots" in impact[1]
 
@@ -97,7 +97,7 @@ def test_a_first_clinch_and_a_first_out_are_named(fixture_raw_dir, fixture_histo
     # With week 7 as the last regular week, one week is left after week 6. The plain check gives Lil Fridge and
     # London Cooking a clinch and Pukancun on 3 an out. With two weeks left after week 5, no team had either.
     impact = _impact(fixture_raw_dir, fixture_history_root,
-                     config=CONFIG.model_copy(update={"last_regular_week": 7}))
+                     client=cpc_client(last_regular_week=7))
     assert "Lil Fridge" in impact[1] and "clinched a playoff spot" in impact[1]
     assert "London Cooking" in impact[5] and "clinched a playoff spot" in impact[5]
     pukancun = impact[6].split(". ")[1]
@@ -108,7 +108,7 @@ def test_a_clinch_or_an_out_from_an_earlier_week_is_left_out(fixture_raw_dir, fi
     # With week 6 as the last regular week, Lil Fridge, London Cooking, and Bo Girds clinched after week 5, and
     # Pukancun on 3 was out after week 5. Maye d'force B with U clinches and Amon-Ra Dawg Your Team is out in week 6.
     impact = _impact(fixture_raw_dir, fixture_history_root,
-                     config=CONFIG.model_copy(update={"last_regular_week": 6}))
+                     client=cpc_client(last_regular_week=6))
     for mid in (1, 4, 5):
         assert "clinched" not in impact[mid]
     assert "out of the playoff race" not in impact[6]
@@ -184,7 +184,7 @@ def test_the_build_runs_the_odds_engine_once_per_week(tmp_path, monkeypatch):
         return engine(*args, **kwargs)
 
     monkeypatch.setattr(base, "playoff_odds", counted)
-    make_bundle(saved_repo(tmp_path, 8), 2026, 8, news=no_news, config=CONFIG)
+    make_bundle(2026, 8, news=no_news, client=cpc_client(at=saved_repo(tmp_path, 8)))
     assert runs == [8]
 
 
@@ -195,7 +195,7 @@ def test_a_sure_100_or_0_takes_no_about_and_an_engine_number_does(fixture_raw_di
     teams[1] = teams[1].model_copy(update={"playoff": 0, "status": "out"})
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                     odds_before=hbundle.odds.model_copy(update={"teams": teams}), config=CONFIG)
+                     odds_before=hbundle.odds.model_copy(update={"teams": teams}), client=CLIENT)
     brock, fridge = b.sheet.facts["M1.impact"].text.split(". ")[:2]
     assert f"saw its playoff odds go from 100% to about {b.odds.teams[3].playoff}% this week" in fridge
     assert f"saw its playoff odds go from 0% to about {b.odds.teams[1].playoff}% this week" in brock

@@ -4,7 +4,7 @@ Pure code over the raw files and the usage, so the same inputs give the same buc
 """
 import itertools
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import BoardScores, DropInfo, UsageWeek, WaiverPlayer
 from cornerstone.numbers import round_half_up
 from cornerstone.parse import player_name, team_name
@@ -15,7 +15,7 @@ from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_
 
 
 def drop_candidates(
-    raw: RawWeek, week: int, usage: dict[str, list[UsageWeek]], pool: list[WaiverPlayer], config: LeagueConfig,
+    raw: RawWeek, week: int, usage: dict[str, list[UsageWeek]], pool: list[WaiverPlayer], client: Client,
 ) -> list[WaiverPlayer]:
     """The drop candidates after week `week`: rostered players with DROP_WEEKS falls of the snap share in a row.
 
@@ -25,7 +25,7 @@ def drop_candidates(
     ahead = projections_ahead(raw)
     best = _best_by_position(pool)
     users = {u.user_id: u for u in raw.users}
-    remaining = config.last_season_week - week
+    remaining = client.settings.last_season_week - week
     candidates = []
     for roster in sorted(raw.rosters, key=lambda r: r.roster_id):
         # A roster with no players has None in rosters.json.
@@ -34,7 +34,7 @@ def drop_candidates(
             top = best.get(entry.get("position"))
             if top is None or remaining <= 0 or not _falls(usage.get(pid, []), week):
                 continue
-            ros = rest_of_season(ahead, pid, week, config)
+            ros = rest_of_season(ahead, pid, week, client)
             if ros >= top.ros_projection:
                 continue
             info = DropInfo(roster_id=roster.roster_id, holder=team_name(users[roster.owner_id]),

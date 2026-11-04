@@ -11,11 +11,12 @@ from pathlib import Path
 
 from pydantic import BaseModel, PrivateAttr
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.history import load_saved_weeks, snap_share, target_share
 from cornerstone.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare
 from cornerstone.nflverse import TeamSchedule
 from cornerstone.parse import parse_past_week, parse_week, player_name
+from cornerstone.paths import returns_path
 from cornerstone.points_allowed import PositionAllowed
 from cornerstone.provider.raw import RawStatLine, RawWeek
 from cornerstone.provider.sleeper import load_raw, read_fetch_time
@@ -77,7 +78,7 @@ class Snapshot(BaseModel):
 
     # The league the snapshot belongs to. Its sizes, such as the line and the return-by week, go with the data,
     # so every reader of the snapshot reads the numbers of the same league.
-    config: LeagueConfig
+    client: Client
     season: int
     # The trade week N. Every player stat ends at the known games, and the standings end at week N-1.
     week: int
@@ -317,34 +318,35 @@ def _projections_by_player(raw: RawWeek, week: int) -> dict[str, dict[int, float
 
 def load_snapshot(
         raw_dir: Path, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None, *,
-        config: LeagueConfig) -> Snapshot:
+        client: Client) -> Snapshot:
     """The snapshot of the saved week in raw_dir. It reads only files, so it never calls the network.
 
     Without `slow`, the slow sources stay None and all of them are named as missing.
     """
-    # The returns file sits beside the history, so the history root locates it.
-    returns_file = history_root.parent / "returns.json"
-    return build_snapshot(load_raw(raw_dir), history_root, chart, slow, read_fetch_time(raw_dir),
+    raw = load_raw(raw_dir)
+    # The Returns file is shared NFL data, so the client gives its folder.
+    returns_file = returns_path(client.nfl_dir, int(raw.state.season))
+    return build_snapshot(raw, history_root, chart, slow, read_fetch_time(raw_dir),
                           returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
-                          config=config)
+                          client=client)
 
 
-def week_snapshot(raw: RawWeek, history_root: Path, week: int, *, config: LeagueConfig) -> Snapshot:
+def week_snapshot(raw: RawWeek, history_root: Path, week: int, *, client: Client) -> Snapshot:
     """The snapshot the weekly build of week N reads: the league after week N, as the analyzer sees it in week N + 1.
 
     The bye facts read the position rank and the lineup value, and neither needs a chart or a slow source.
     """
-    # The returns file sits beside the history, so the history root locates it.
-    returns_file = history_root.parent / "returns.json"
+    # The Returns file is shared NFL data, so the client gives its folder.
+    returns_file = returns_path(client.nfl_dir, int(raw.state.season))
     return build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
-                          out_for_season=load_out_for_season(returns_file), config=config)
+                          out_for_season=load_out_for_season(returns_file), client=client)
 
 
 def build_snapshot(
         raw: RawWeek, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
         trade_week: int | None = None, returns: dict[str, int] | None = None,
-        now: datetime | None = None, out_for_season: set[str] | None = None, *, config: LeagueConfig) -> Snapshot:
+        now: datetime | None = None, out_for_season: set[str] | None = None, *, client: Client) -> Snapshot:
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
@@ -353,7 +355,7 @@ def build_snapshot(
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
     `out_for_season` is the set of players the same file marks `season`.
     `now` is the clock of the request. With the kickoffs of the slow sources, it tells the known games in progress.
-    `config` is the league of the raw data. The snapshot carries it, so its readers take the league sizes from it.
+    `client` is the league of the raw data. The snapshot carries it, so its readers take the league sizes from it.
     """
     # A failed live stats fetch gives None. The parses then read no lines.
     stats_lines = raw.stats
@@ -404,7 +406,7 @@ def build_snapshot(
     slow_missing = list(SLOW_SOURCES) if slow is None else list(slow.missing)
     missing = ([] if chart is not None else ["chart"]) + slow_missing + ([] if returns is not None else ["returns"])
     return Snapshot(
-        config=config,
+        client=client,
         season=week.season,
         week=trade_week,
         rosters=rosters,
@@ -414,7 +416,7 @@ def build_snapshot(
         # Before week 1 the rosters give the records.
         standings=standings(week.model_copy(update={"week": completed_through}),
                             history.model_copy(update={"week": completed_through}) if completed_through else None,
-                            config=config),
+                            client=client),
         roster_positions=raw.league.roster_positions,
         players=players,
         chart=chart,

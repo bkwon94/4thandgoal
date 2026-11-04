@@ -39,7 +39,7 @@ def team_name(user: RawUser) -> str:
     return (user.metadata.team_name if user.metadata else None) or user.display_name
 
 
-def _teams(raw: RawWeek, owner_username: str | None) -> dict[int, Team]:
+def _teams(raw: RawWeek) -> dict[int, Team]:
     users = {u.user_id: u for u in raw.users}
     teams = {}
     for roster in raw.rosters:
@@ -55,7 +55,6 @@ def _teams(raw: RawWeek, owner_username: str | None) -> dict[int, Team]:
             wins=settings.wins,
             losses=settings.losses,
             points_for=points_for,
-            is_owner=user.display_name == owner_username,
         )
     return teams
 
@@ -233,26 +232,24 @@ def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
 
 
 def parse_week(
-    raw: RawWeek, owner_username: str | None = None, week: int | None = None, team_count: int | None = None,
+    raw: RawWeek, week: int | None = None, team_count: int | None = None,
 ) -> Week:
-    """The week of the raw data. The team of `owner_username` gets the owner flag.
+    """The week of the raw data.
 
-    The weekly build and the live fetch pass the owner from the league config. The snapshot of a saved week, the
-    chart match, and the chart command pass no owner, because no output of theirs shows the flag.
-    The weekly build and the live fetch pass `team_count` from the league config. The config sets the ranks and the
-    sizes that depend on the team count, so a league file with another roster count stops the parse.
+    The weekly build and the live fetch pass `team_count` from the League settings. The settings set the ranks and
+    the sizes that depend on the team count, so a league file with another roster count stops the parse.
     """
     if team_count is not None and len(raw.rosters) != team_count:
         raise ValueError(
-            f"The league file has {len(raw.rosters)} rosters, but the league config says {team_count} teams. "
-            "Change team_count in the league config to match the league."
+            f"The league file has {len(raw.rosters)} rosters, but the League settings say {team_count} teams. "
+            "Delete the league.json of the season in the client data, so the next run fetches the settings again."
         )
     state = raw.state
     return Week(
         season=int(state.season),
         # state.week is the current NFL week, not the scored week, so use display_week by default.
         week=week if week is not None else state.display_week,
-        teams=_teams(raw, owner_username),
+        teams=_teams(raw),
         matchups=_matchups(raw),
         next_matchups=_next_matchups(raw),
         schedule=_schedule(raw),

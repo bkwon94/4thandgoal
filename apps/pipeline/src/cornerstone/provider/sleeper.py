@@ -12,7 +12,8 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cornerstone.files import write_bytes_atomic
-from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawState, RawTransaction, RawWeek
+from cornerstone.league_settings import BENCH_SLOTS, LeagueSettings, bracket_byes, star_ranks
+from cornerstone.provider.raw import RawAheadWeek, RawLeague, RawPastWeek, RawState, RawTransaction, RawWeek
 from cornerstone.tunables import POOL_POSITIONS
 
 logger = logging.getLogger(__name__)
@@ -293,6 +294,36 @@ def _read_if_exists(raw: dict[str, object], key: str, path: Path) -> None:
         raw[key] = json.loads(path.read_text(encoding="utf-8"))
 
 
+def league_settings(league: RawLeague) -> LeagueSettings:
+    """The League settings of a Sleeper league file. GLOSSARY.md, "League settings"."""
+    settings = league.settings
+    if settings.num_teams is None or settings.playoff_teams is None or settings.playoff_week_start is None:
+        raise ValueError("The league file has no num_teams, playoff_teams, or playoff_week_start, so it gives no sizes.")
+    slots = tuple(slot for slot in league.roster_positions if slot not in BENCH_SLOTS)
+    return LeagueSettings(
+        team_count=settings.num_teams,
+        playoff_spots=settings.playoff_teams,
+        bye_count=bracket_byes(settings.playoff_teams),
+        star_rank_by_position=star_ranks(settings.num_teams, slots),
+        roster_slots=slots,
+        # The playoff bracket starts the week after the regular season ends.
+        last_regular_week=settings.playoff_week_start - 1,
+        reception_points=league.scoring_settings.get("rec", 0.0),
+        median_game=settings.league_average_match == 1,
+    )
+
+
+def fetch_settings(
+        league_id: str, cache: Path, transport: httpx.BaseTransport | None = None) -> LeagueSettings:
+    """The League settings of the league `league_id`. The league file of the season at `cache` keeps them, so a
+    saved file means no fetch. The sizes of a season do not change, so the file never goes stale."""
+    if not cache.exists():
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
+            _write_json(cache, _get(client, f"{OFFICIAL_URL}/league/{league_id}"))
+    return league_settings(RawLeague.model_validate_json(cache.read_text(encoding="utf-8")))
+
+
 class SleeperProvider:
     """The Sleeper implementation of the Provider protocol. Each method calls the module function of the same fetch.
 
@@ -311,6 +342,9 @@ class SleeperProvider:
                    self.transport)
         # The build reads the week from the saved files, so the model it gets is the one a rebuild loads.
         return load_raw(raw_dir)
+
+    def fetch_settings(self, league_id: str, cache: Path) -> LeagueSettings:
+        return fetch_settings(league_id, cache, self.transport)
 
     def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
         return fetch_live_raw(league_id, players_cache, self.transport)

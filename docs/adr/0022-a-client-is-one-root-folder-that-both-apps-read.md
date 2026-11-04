@@ -11,8 +11,12 @@ clients/cpc/
   copy.toml     the site name, the masthead text, the tagline
   prompts/      the voice of the writer for this league
   assets/       the logo, the favicon, the fonts
+  data/         the history and the raw weeks of the league, by season, with the league file of each season
   published/    the published files, by season and week
 ```
+
+The shared NFL data sits at the root `data/nfl/`, outside each client: the caches, which git ignores, and the
+Returns file at `data/nfl/<season>/returns.json`. A return week is the same in each league, so no client owns it.
 
 Each client builds its own site at its own URL. A build with no client name fails, so no default
 client exists. The site build copies only the published files of its client. The API is one deploy

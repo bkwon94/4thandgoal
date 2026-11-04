@@ -1,9 +1,16 @@
 """
 The tunable table: every algorithm number of the trade analyzer rubric, the power rankings, the playoff odds,
-the waiver board, and the next-week storylines. The numbers that change with the size of the league are in config.py.
+the waiver board, and the next-week storylines. The numbers that change with the size of the league derive from league_settings.py.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
+
+# Standing: a seller has more than this many wins fewer than the team in the last playoff spot. The analyzer reads it.
+# The league scores a median game each week, so each week gives two results, and two games are one week of results.
+SELLER_GAP = 2
+# Both best projected lineups for next week rank this high or higher for a shootout. The week reads it.
+# GLOSSARY.md, "Projected shootout": the top four of the league.
+SHOOTOUT_TOP = 4
 
 # The numbers are Decimal, so a ratio at a lower bound, such as 22 over 20, lands in its band exactly.
 

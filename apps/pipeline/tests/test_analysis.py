@@ -8,16 +8,16 @@ import shutil
 
 import pytest
 from conftest import with_free_agents
+from cpc import cpc_client
 
 from cornerstone import analysis
 from cornerstone.analysis import AnalysisOut, analyze
-from cornerstone.config import cornerstone_config
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.rubric import ProposedTrade, TradeSide, grade
 from cornerstone.slow_sources import load_slow_sources
 from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 # The week 6 Josh Jacobs trade: roster 11 gives Bhayshul Tuten and Garrett Wilson to roster 12
 # for Jacobs and Devaughn Vele. Roster 12 asked. Chart values: Tuten 3.0, Wilson 27.5, Jacobs 11.5, Vele 55.0.
@@ -31,7 +31,7 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -47,7 +47,7 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse
     raw = with_free_agents(load_raw(fixture_raw_dir), {BATEMAN: {
         "full_name": "Rashod Bateman", "position": "WR", "team": "BAL", "status": "Active", "active": True}})
     snap = build_snapshot(raw, fixture_history_root, chart_week6, slow,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"), config=CONFIG)
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT)
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]

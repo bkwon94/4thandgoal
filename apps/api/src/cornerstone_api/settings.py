@@ -19,7 +19,7 @@ class Settings:
     # The one shared league passphrase. Every route except health needs it.
     # Kept out of the repr, so a log or a traceback never shows it.
     passphrase: str = field(repr=False)
-    # The repo root that holds data/, where the live snapshot reads and writes its caches.
+    # The repo root that holds clients/ and data/, where the live snapshot reads and writes its caches.
     repo: Path
     # The directory of the result cache. It sits on the data volume, so a cached result survives a restart.
     result_cache_dir: Path

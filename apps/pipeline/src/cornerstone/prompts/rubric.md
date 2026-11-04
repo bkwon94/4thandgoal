@@ -2,7 +2,7 @@
 
 The rubric grades each side of a proposed trade with a letter from A to F. Code sets the start
 letter. The numbers live in the tunable table, `src/cornerstone/tunables.py`. The numbers that change
-with the size of the league, in lower case here, live in the league config, `src/cornerstone/config.py`.
+with the size of the league, in lower case here, derive from the League settings, `src/cornerstone/league_settings.py`.
 This file names them and never repeats their values, so each number changes in one place.
 
 ## Letters
@@ -65,7 +65,7 @@ order breaks the tie: RB over WR, WR over TE, TE over QB, QB over K, K over DEF.
 A player's position rank is his place at his position among every player with a stat line in the
 known games, rostered or not. The order is the points per game he counts for in a best lineup.
 RB24 is the 24th running back in the league. The line is the last position rank a starter can hold:
-`line_rb_wr` at RB and WR, and `line_qb_te` at QB and TE. A flex slot reads the line of its
+`lines` at each of QB, RB, WR, and TE. A flex slot reads the line of its
 player's own position. K and DEF have no line.
 
 A hole is a starting slot that holds a player below the line, or holds no player. A K or DEF slot
@@ -107,7 +107,7 @@ Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a positi
 ## Standing
 
 A contender holds one of the `playoff_spots` playoff spots by record. The standings rank by wins,
-then by points for. A seller has more than `seller_gap` wins fewer than the team in the last
+then by points for. A seller has more than `SELLER_GAP` wins fewer than the team in the last
 playoff spot. Every other team is in the middle and gets no step.
 
 - A contender gets one step up when its best lineup gains now. It also gets one step up when it
@@ -117,7 +117,7 @@ playoff spot. Every other team is in the middle and gets no step.
 - A seller gets one step up when it gets the highest-value player in the trade.
 - A seller gets one step down when it gives that player for a lineup gain now.
 
-A return week comes from the returns file, `data/<season>/returns.json`, which the commissioner
+A return week comes from the Returns file, `data/nfl/<season>/returns.json`, which the commissioner
 keeps. It holds the week each injured or suspended player returns. A player with a status of Out, IR,
 or one of the suspension and PUP statuses, and with no row in the file, counts as not back by
 week `return_by_week`.

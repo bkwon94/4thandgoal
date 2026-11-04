@@ -18,6 +18,10 @@ from cornerstone.sheet.base import BYE_FACT_PREFIX, repeats_motw_headline
 
 MODEL = "claude-opus-5-5"
 PROMPT_FILES = ("vocabulary.md", "tone.md", "writer.md")
+# The default prompts: the rule prompts and the default voice.
+DEFAULT_PROMPTS = Path(__file__).parent / "prompts"
+# The voice files. The prompts folder of a client can replace only these two.
+VOICE_FILES = frozenset({"tone.md", "vocabulary.md"})
 # The recap of the Matchup of the Week holds the same facts as that chapter. Each chapter is one call,
 # so the writer cannot see the other blurb, and this note keeps it off the same sentences.
 # The game changer and awards chapters get it too when the Game Changer plays in that matchup.
@@ -167,9 +171,12 @@ def call_with_retry(
     return None
 
 
-def load_prompt(prompts_dir: Path, name: str) -> str:
-    """One prompt file from the prompts folder of the league config, so a league can bring its own prompts."""
-    return (prompts_dir / name).read_text(encoding="utf-8").strip()
+def load_prompt(voice_dir: Path, name: str) -> str:
+    """One prompt file. A voice file comes from the prompts folder `voice_dir` of the client when it holds the file,
+    else from the default voice. A rule prompt always comes from the default prompts, so a client never changes a rule.
+    """
+    folder = voice_dir if name in VOICE_FILES and (voice_dir / name).is_file() else DEFAULT_PROMPTS
+    return (folder / name).read_text(encoding="utf-8").strip()
 
 
 def build_writer_prompt(

@@ -45,6 +45,7 @@ from cornerstone.tunables import (
     INJURY_WEEKS,
     RETURN_WINDOW_WEEKS,
     SCHEDULE_RANK_GAP,
+    SELLER_GAP,
     SHARE_WEEKS,
     WOPR_SWING,
 )
@@ -224,7 +225,7 @@ class StartingSlot(NamedTuple):
             return True
         if self.bye_now or (self.absence is not None and not self.absence.covered):
             return True
-        line = snapshot.config.lines.get(snapshot.players[self.player].position)
+        line = snapshot.client.settings.lines.get(snapshot.players[self.player].position)
         return line is not None and (self.rank is None or self.rank > line)
 
 
@@ -256,7 +257,7 @@ def _last_window_week(snapshot: Snapshot) -> int:
 
 def _above_the_line(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player holds a position rank at or above the line of his position. K and DEF have no line."""
-    line = snapshot.config.lines.get(snapshot.players[player_id].position)
+    line = snapshot.client.settings.lines.get(snapshot.players[player_id].position)
     rank = snapshot.position_rank(player_id)
     return line is not None and rank is not None and rank <= line
 
@@ -381,7 +382,7 @@ class Side(BaseModel):
         def count(slots: list[StartingSlot]) -> int:
             return sum(1 for slot in slots
                        if slot.name in STRENGTH_SLOTS and slot.rank is not None
-                       and slot.rank <= snapshot.config.strength_rank)
+                       and slot.rank <= snapshot.client.settings.strength_rank)
         return count(self.slots_before), count(self.slots_after)
 
 
@@ -632,7 +633,7 @@ def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "selle
     if standing.in_playoffs:
         return "contender"
     # games_from_cut is the team's wins minus the wins of the team in the last playoff spot.
-    if -standing.games_from_cut > snapshot.config.seller_gap:
+    if -standing.games_from_cut > SELLER_GAP:
         return "seller"
     return "middle"
 
@@ -650,7 +651,7 @@ def _return_bet(snapshot: Snapshot, player_id: str) -> bool:
     # A player out for the season is never a return bet, even with a stale returns row. ADR 0005.
     return (player_id not in snapshot.out_for_season
             and back_inside(snapshot.returns.get(player_id), snapshot.as_of.completed_through,
-                            snapshot.config.return_by_week)
+                            snapshot.client.settings.return_by_week)
             and not _back_in_a_known_game(snapshot, player_id))
 
 
@@ -660,7 +661,7 @@ def _late_return(snapshot: Snapshot, player_id: str) -> str | None:
         return "is out for the season"
     week = snapshot.returns.get(player_id)
     if week is not None:
-        return "is not due back before the playoffs" if week > snapshot.config.return_by_week else None
+        return "is not due back before the playoffs" if week > snapshot.client.settings.return_by_week else None
     if snapshot.players[player_id].injury_status in OUT_STATUSES:
         return "has no return week on file"
     return None
@@ -968,14 +969,14 @@ def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
 def _star(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player's chart value is in the top of his position on the league's chart. GLOSSARY.md, "Star".
 
-    The rank is over every player at his position on the chart, not the roster. The star ranks of the config set the
+    The rank is over every player at his position on the chart, not the roster. The star ranks of the client set the
     count per position, and a position not in it has no stars. A tie shares the better rank, so a tie at the edge makes
     every tied player a star. With no chart, or with the player not on it, he is no star.
     """
     if snapshot.chart is None or player_id not in snapshot.chart.values:
         return False
     position = snapshot.players[player_id].position
-    star_ranks = snapshot.config.star_rank_by_position
+    star_ranks = snapshot.client.settings.star_rank_by_position
     if position not in star_ranks:
         return False
     value = snapshot.chart.values[player_id]

@@ -90,9 +90,9 @@ def _file_for_week(listing: list[dict], start: date, end: date) -> str | None:
     return max(dated)[1] if dated else None
 
 
-def fetch_chart(season_start: date, week: int, repo: Path, fetch: Callable[[str], bytes] = http_get) -> Path | None:
+def fetch_chart(season_start: date, week: int, nfl: Path, fetch: Callable[[str], bytes] = http_get) -> Path | None:
     """The cached PNG of the week. It never raises: an outage gives the PNG of a recent earlier week or None."""
-    path = chart_image(repo, week)
+    path = chart_image(nfl, week)
     # A PNG that is in the cache wins, so a hand-placed file stays and the build never re-fetches.
     if path.exists():
         return path
@@ -102,7 +102,7 @@ def fetch_chart(season_start: date, week: int, repo: Path, fetch: Callable[[str]
         url = _file_for_week(json.loads(fetch(MEDIA_URL)), start, end)
     except (httpx.HTTPError, ValueError, KeyError, TypeError) as error:
         logger.warning("The chart list failed (%s)", error)
-        return _fallback(repo, week)
+        return _fallback(nfl, week)
     if url is None:
         logger.warning("The site lists no chart for week %d, so the week gets no trade values", week)
         return None
@@ -110,20 +110,20 @@ def fetch_chart(season_start: date, week: int, repo: Path, fetch: Callable[[str]
         body = fetch(url)
     except httpx.HTTPError as error:
         logger.warning("The chart download of %s failed (%s)", url, error)
-        return _fallback(repo, week)
+        return _fallback(nfl, week)
     # A body that is not a PNG never goes into the cache, so the next run fetches again.
     if not body.startswith(PNG_SIGNATURE):
         logger.warning("The chart download of %s is not a PNG", url)
-        return _fallback(repo, week)
-    charts_dir(repo).mkdir(parents=True, exist_ok=True)
+        return _fallback(nfl, week)
+    charts_dir(nfl).mkdir(parents=True, exist_ok=True)
     write_bytes_atomic(path, body)
     return path
 
 
-def _fallback(repo: Path, week: int) -> Path | None:
+def _fallback(nfl: Path, week: int) -> Path | None:
     """The cached PNG of the newest of the STAND_IN_WEEKS weeks before the week, never a later week."""
     for earlier in range(week - 1, week - 1 - STAND_IN_WEEKS, -1):
-        stand_in = chart_image(repo, earlier)
+        stand_in = chart_image(nfl, earlier)
         if stand_in.exists():
             logger.warning("The chart fetch failed, so the chart of week %d stands in for week %d", earlier, week)
             return stand_in
@@ -225,22 +225,22 @@ def _saved_read(path: Path) -> ChartRead | None:
         return None
 
 
-def _current_saved_read(repo: Path, week: int) -> ChartRead | None:
+def _current_saved_read(nfl: Path, week: int) -> ChartRead | None:
     """The saved read of the week, unless a hand-placed PNG is newer than it. A newer PNG wins and is read again."""
-    json_path, png = chart_read(repo, week), chart_image(repo, week)
+    json_path, png = chart_read(nfl, week), chart_image(nfl, week)
     if png.exists() and json_path.exists() and png.stat().st_mtime > json_path.stat().st_mtime:
         return None
     return _saved_read(json_path)
 
 
-def saved_chart_read(repo: Path, week: int) -> ChartRead | None:
+def saved_chart_read(nfl: Path, week: int) -> ChartRead | None:
     """The saved read of the week under the cache rules, or None. It never fetches or reads an image."""
-    return _current_saved_read(repo, week)
+    return _current_saved_read(nfl, week)
 
 
-def _prior_row_count(repo: Path, week: int) -> int | None:
+def _prior_row_count(nfl: Path, week: int) -> int | None:
     """The row count of the saved read of the week before, or None when no good read is saved."""
-    prior = _saved_read(chart_read(repo, week - 1))
+    prior = _saved_read(chart_read(nfl, week - 1))
     return len(prior.rows) if prior else None
 
 
@@ -261,41 +261,41 @@ def _read_png(png: Path, read: ChartReader) -> ChartRead | None:
     return None
 
 
-def check_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+def check_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
                 read: ChartReader) -> ChartCheck | None:
     """The chart week, its parsed read, and the guard results, or None when no read exists. It never raises.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
     chart_week = week
-    parsed = _current_saved_read(repo, week)
+    parsed = _current_saved_read(nfl, week)
     fresh = False
     if parsed is None:
-        png = fetch_chart(season_start, week, repo, fetch)
+        png = fetch_chart(season_start, week, nfl, fetch)
         if png is None:
             return None
         chart_week = week_from_label(png.stem)
-        parsed = _current_saved_read(repo, chart_week)
+        parsed = _current_saved_read(nfl, chart_week)
         if parsed is None:
             parsed = _read_png(png, read)
             if parsed is None:
                 return None
             fresh = True
     # A saved read passed the guards before the save. A second check catches a guard added since then.
-    guards = guard_results(parsed, chart_week, _prior_row_count(repo, chart_week))
+    guards = guard_results(parsed, chart_week, _prior_row_count(nfl, chart_week))
     # On a failed guard the PNG stays for a hand check. No JSON is written, so the next run reads the image again.
     if fresh and all(guards.values()):
-        _write_json(chart_read(repo, chart_week), parsed)
+        _write_json(chart_read(nfl, chart_week), parsed)
     return ChartCheck(chart_week, parsed, guards)
 
 
-def load_chart(repo: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
+def load_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
                read: ChartReader) -> tuple[int, ChartRead] | None:
     """The chart week and its parsed read, or None. It never raises, so a build goes on without trade values.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
-    check = check_chart(repo, season_start, week, fetch, read=read)
+    check = check_chart(nfl, season_start, week, fetch, read=read)
     if check is None:
         return None
     failed = [name for name, ok in check.guards.items() if not ok]
@@ -309,8 +309,8 @@ def _write_json(path: Path, parsed: ChartRead) -> None:
     write_bytes_atomic(path, parsed.model_dump_json(indent=2).encode("utf-8"))
 
 
-def chart_values(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine],
+def chart_values(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine],
                  fetch: Callable[[str], bytes] = http_get, *, read: ChartReader) -> ChartValues | None:
     """The trade values of the players the chart lists, or None when the week has no good chart."""
-    loaded = load_chart(repo, season_start, week, fetch, read=read)
+    loaded = load_chart(nfl, season_start, week, fetch, read=read)
     return match_chart(loaded[1], lines) if loaded else None

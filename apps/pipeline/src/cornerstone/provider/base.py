@@ -1,19 +1,20 @@
 """
-The Provider protocol: the five fetches that every league data service gives.
-Each fetch returns the raw models, so the rest of the pipeline never reads a provider field name.
+The Provider protocol: the six fetches that every league data service gives.
+Each fetch returns the raw models or the League settings, so the rest of the pipeline never reads a provider field name.
 """
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 from zoneinfo import ZoneInfo
 
+from cornerstone.league_settings import LeagueSettings
 from cornerstone.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
 
 
-# runtime_checkable lets a test check a fake with isinstance. It checks only that the five names exist.
-# Each fetch takes the league id and not the league config, because the provider is the lowest layer and imports no
-# model module. The caller reads the id from the config. The last regular week and the last season week come the same
-# way, as plain numbers from the config.
+# runtime_checkable lets a test check a fake with isinstance. It checks only that the six names exist.
+# Each fetch takes the league id and not the client, because the provider sits under the client. Its one model import
+# is the League settings, which the adapter maps into. The caller reads the id from the client. The last regular week
+# and the last season week come the same way, as plain numbers from the League settings.
 @runtime_checkable
 class Provider(Protocol):
     def fetch_week(
@@ -23,6 +24,10 @@ class Provider(Protocol):
 
         The schedule runs to `last_regular_week`, and the projections ahead run to `last_season_week`.
         """
+        ...
+
+    def fetch_settings(self, league_id: str, cache: Path) -> LeagueSettings:
+        """The League settings of the season of `league_id`. The league file at `cache` keeps them between runs."""
         ...
 
     def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:

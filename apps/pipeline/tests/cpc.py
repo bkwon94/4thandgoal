@@ -1,0 +1,39 @@
+"""
+The CPC client of the tests: the values of clients/cpc/client.toml and the League settings of the week 6 fixtures.
+A test that writes files passes its own folder, and the client data and the NFL data then both sit in that folder.
+"""
+import shutil
+from pathlib import Path
+
+from cornerstone.client import Client, read_client_values
+from cornerstone.paths import client_dir, league_file, nfl_dir
+from cornerstone.provider.raw import RawLeague
+from cornerstone.provider.sleeper import league_settings
+
+ROOT = Path(__file__).resolve().parents[3]
+FIXTURE_LEAGUE = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw" / "league.json"
+
+
+def cpc_client(at: Path | None = None, root: Path = ROOT, **settings) -> Client:
+    """The CPC client. Each keyword changes one League setting, such as playoff_spots=4.
+
+    With no `at`, the client folder and the NFL data sit in the repo layout under `root`. With `at`, the client data
+    sits at `at`/data/<season> and the NFL data at `at`/data, so a test folder keeps one short layout: the Returns
+    file beside the history, and the caches at `at`/data/cache.
+    """
+    base = league_settings(RawLeague.model_validate_json(FIXTURE_LEAGUE.read_text(encoding="utf-8")))
+    folder, nfl = (client_dir(root, "cpc"), nfl_dir(root)) if at is None else (at, at / "data")
+    return Client(slug="cpc", folder=folder, nfl_dir=nfl, values=read_client_values(client_dir(ROOT, "cpc")),
+                  settings=base.model_copy(update=settings))
+
+
+def cli_root(root: Path) -> Path:
+    """A repo root for a run of the CLI: the stub pyproject.toml, the CPC client.toml, and the saved league file of
+    2026, so the League settings load with no fetch. The client data sits in `root`/clients/cpc/data."""
+    (root / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    folder = client_dir(root, "cpc")
+    league_file(folder, 2026).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(client_dir(ROOT, "cpc") / "client.toml", folder / "client.toml")
+    shutil.copy(FIXTURE_LEAGUE, league_file(folder, 2026))
+    (nfl_dir(root) / "2026").mkdir(parents=True, exist_ok=True)
+    return root

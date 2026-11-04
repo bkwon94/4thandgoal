@@ -36,9 +36,9 @@ check: lint typecheck test ## Run lint, typecheck, and all the tests
 # The prek hook runs this target on each commit, so it must stay under 30 seconds.
 check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 
-# The API reads the league data of the pipeline, so the repo it reads is apps/pipeline.
+# The API reads clients/ and data/ under the repo root, so the repo it reads is the root.
 api: ## Run the API on port 8080 with a test passphrase
-	CORNERSTONE_PASSPHRASE=localtest CORNERSTONE_REPO=$(ROOT)/apps/pipeline $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+	CORNERSTONE_PASSPHRASE=localtest CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
 
 image: ## Build the image of the API with the local Docker
 	docker build -f $(ROOT)/apps/api/Dockerfile -t cpcfantasy-api $(ROOT)

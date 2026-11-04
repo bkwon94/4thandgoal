@@ -5,7 +5,7 @@ The awards and Game Changer chapters read them.
 import logging
 from collections import Counter
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_nflverse import expected_awards
 from cornerstone.models import (
     Fact,
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 NEWS_MAX_CHARS = 300
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The awards, the expected awards, and the latest news on the Game Changer.
 
     The awards and Game Changer chapters read them.

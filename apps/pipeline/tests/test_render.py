@@ -5,9 +5,9 @@ They build the JSON from the recorded fixture and check the values that the site
 import json
 
 import pytest
+from cpc import cpc_client
 from pydantic import TypeAdapter
 
-from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
 from cornerstone.parse import parse_week
@@ -23,11 +23,11 @@ from cornerstone.render import (
 from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
 def _bundle(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG)
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], client=CLIENT)
 
 
 def _blurbs(bundle):

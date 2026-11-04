@@ -1,0 +1,25 @@
+# The values of the CPC client: the package list, the seasons, the package values, and the menu.
+# league, facts, and design are in every client, so the list omits them.
+packages = ["week", "rankings", "managers", "analyzer"]
+timezone = "America/New_York"
+usage_code = "cpcfantasy"
+
+# One table per season. The provider gives the sizes of each season.
+[seasons.2026]
+provider = "sleeper"
+league_id = "1386167364424318976"
+
+# Only the values that differ from the defaults in the package README.
+[values.analyzer]
+finder = false
+
+# Each item names the home page or one package of the list. The order is the order of the menu.
+[menu]
+layout = "hamburger"
+items = [
+  { page = "home", label = "Home" },
+  { package = "week" },
+  { package = "rankings", label = "Power Rankings" },
+  { package = "managers", label = "Managers" },
+  { package = "analyzer", label = "Trade Analyzer" },
+]

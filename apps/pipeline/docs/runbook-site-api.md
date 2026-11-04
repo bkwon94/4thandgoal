@@ -30,19 +30,26 @@ The data layout:
 
 | Path in the machine | What it holds |
 | --- | --- |
-| `/app` | The repo root, `CORNERSTONE_REPO`. It holds `src/` and the link `data`. |
-| `/app/data` | A link to `/data`, so every path helper lands on the volume with no change to the code. |
+| `/app` | The repo root, `CORNERSTONE_REPO`. It holds `src/`, `clients/cpc/`, and the link `data`. |
+| `/app/data` | A link to `/data`, so the NFL data and the result cache land on the volume. |
+| `/app/clients/cpc/data` | A link to `/data/clients/cpc/data`, so the CPC data lands on the volume. |
 | `/data` | The volume `cornerstone_data`, 1 GB. It survives a restart and a deploy. |
-| `/data/2026/history/`, `/data/2026/week-NN/raw/` | The tracked data. The live path also writes week N-1 here. |
-| `/data/2026/returns.json` | The hand-kept returns file. |
-| `/data/cache/` | The players, the nflverse files, the charts, and the result cache in `results/`. |
-| `/app/seed/data` | The tracked `data/` from the image. It is the seed of the volume. |
+| `/data/clients/cpc/data/2026/` | The tracked CPC data: `league.json`, `history/`, and `week-NN/raw/`. The live path also writes week N-1 here. |
+| `/data/nfl/2026/returns.json` | The hand-kept Returns file. |
+| `/data/nfl/cache/` | The players, the nflverse files, and the charts. |
+| `/data/cache/results/` | The result cache and the grade counts. |
+| `/app/seed/data` | The tracked `clients/cpc/data/` and `data/nfl/` from the image. It is the seed of the volume. |
 
-At start, `apps/api/deploy/entrypoint.sh` does two things:
+At start, `apps/api/deploy/entrypoint.sh` does three things:
 
-1. On the first boot, it copies `/app/seed/data` onto the volume. Then it writes the marker `/data/.seeded`.
-   A new Fly volume holds `lost+found`, so the script checks the marker and not an empty volume.
-2. On every boot, it copies each `returns.json` from the image onto the volume. The service never writes that
+1. On the first boot, it copies `/app/seed/data` onto the volume. Then it writes the markers `/data/.seeded` and
+   `/data/.layout-clients`. A new Fly volume holds `lost+found`, so the script checks the marker and not an empty
+   volume.
+2. On a volume with no `/data/.layout-clients`, it moves the old layout one time. Each `/data/<season>/` moves to
+   `/data/clients/cpc/data/<season>/`, and its `returns.json` moves to `/data/nfl/<season>/`. The players, the
+   nflverse files, and the charts move from `/data/cache/` to `/data/nfl/cache/`. The log line is
+   `entrypoint: the volume moves to the client layout`.
+3. On every boot, it copies each `returns.json` from the image onto the volume. The service never writes that
    file, so a commit and a deploy are the only way it changes.
 
 Other tracked files arrive only on the first boot. The live path fetches a missing history week from Sleeper,
@@ -245,7 +252,7 @@ a changed prefix, or a prefix under the minimum size of the model.
 
 ## Update the returns file
 
-1. Edit `data/<season>/returns.json`.
+1. Edit `data/nfl/<season>/returns.json` at the repo root.
 2. Commit the change.
 3. Run `make -C apps/api deploy` at the repo root. The entrypoint copies the returns file onto the volume at start.
 

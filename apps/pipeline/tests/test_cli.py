@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from cpc import cli_root
 
 
 def _no_nflverse(season, week, player_ids, players):
@@ -26,11 +27,11 @@ def test_build_stops_when_week_is_not_final(tmp_path, fixture_raw_dir, monkeypat
 
     from cornerstone import cli
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
-    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
+    cli_root(tmp_path)
+    shutil.copytree(fixture_raw_dir, tmp_path / "clients" / "cpc" / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"], writer=fake_writer)
+    code = cli.main(["build", "--client", "cpc", "--season", "2026", "--week", "7", "--no-fetch"], writer=fake_writer)
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
@@ -51,11 +52,11 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
 
     # The gate stops this build first. The patch keeps any later build off the network.
     monkeypatch.setattr(pipeline, "fetch_nflverse", lambda repo: _no_nflverse)
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
-    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-07" / "raw")
+    cli_root(tmp_path)
+    shutil.copytree(fixture_raw_dir, tmp_path / "clients" / "cpc" / "data" / "2026" / "week-07" / "raw")
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["build", "--week", "7", "--season", "2026"], writer=fake_writer,
+    code = cli.main(["build", "--client", "cpc", "--week", "7", "--season", "2026"], writer=fake_writer,
                     provider=SleeperProvider(transport=httpx.MockTransport(no_fetch)))
 
     assert code == 2
@@ -67,10 +68,10 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
 def test_rewrite_without_facts_exits_plainly(tmp_path, monkeypatch, capsys, fake_writer):
     from cornerstone import cli
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
 
-    code = cli.main(["rewrite", "--week", "6", "--season", "2026", "--chapter", "median"], writer=fake_writer)
+    code = cli.main(["rewrite", "--client", "cpc", "--week", "6", "--season", "2026", "--chapter", "median"], writer=fake_writer)
 
     out = capsys.readouterr().out
     assert code == 2
@@ -89,10 +90,10 @@ def test_sleeper_failure_exits_plainly(tmp_path, monkeypatch, capsys):
         raise httpx.ConnectError("no route")
 
     monkeypatch.setattr(cli, "resolve_week", down)
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
 
-    assert cli.main(["build"]) == 2
+    assert cli.main(["build", "--client", "cpc"]) == 2
     assert "Sleeper request failed: no route" in capsys.readouterr().out
 
 
@@ -104,14 +105,14 @@ def test_missing_file_message_has_no_none_and_hint_fits_command(tmp_path, monkey
 
     monkeypatch.setattr(cli, "run_build", no_name)
     monkeypatch.setattr(cli, "run_rewrite", no_name)
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
 
-    assert cli.main(["build", "--season", "2026", "--week", "7", "--no-fetch"]) == 2
+    assert cli.main(["build", "--client", "cpc", "--season", "2026", "--week", "7", "--no-fetch"]) == 2
     out = capsys.readouterr().out
     assert out == "Missing file. Run the build with --refetch.\n"
 
-    assert cli.main(["rewrite", "--season", "2026", "--week", "7", "--chapter", "median"]) == 2
+    assert cli.main(["rewrite", "--client", "cpc", "--season", "2026", "--week", "7", "--chapter", "median"]) == 2
     out = capsys.readouterr().out
     assert out == "Missing file. Build the week first.\n"
 
@@ -119,8 +120,8 @@ def test_missing_file_message_has_no_none_and_hint_fits_command(tmp_path, monkey
 def _chart_repo(tmp_path, fixture_raw_dir, monkeypatch):
     import shutil
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
-    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-06" / "raw")
+    cli_root(tmp_path)
+    shutil.copytree(fixture_raw_dir, tmp_path / "clients" / "cpc" / "data" / "2026" / "week-06" / "raw")
     monkeypatch.chdir(tmp_path)
 
 
@@ -135,7 +136,7 @@ def _pad_rows(value):
 def _save_chart(tmp_path, parsed):
     from cornerstone.paths import charts_dir
 
-    charts = charts_dir(tmp_path)
+    charts = charts_dir(tmp_path / "data" / "nfl")
     charts.mkdir(parents=True)
     # A saved parse means the command makes no fetch and no Claude call.
     (charts / "week-06.json").write_text(parsed.model_dump_json())
@@ -151,12 +152,12 @@ def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_p
     from cornerstone import cli
     from cornerstone.models import ChartRead, ChartRow
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
     _save_chart(tmp_path, ChartRead(week=6, date="2026-10-13",
                                     rows=[ChartRow(value=60.0, name="Some One", position="RB"), *_pad_rows(50.0)]))
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2026")) == 0
+    assert cli.main(["chart", "--client", "cpc", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2026")) == 0
     out = capsys.readouterr().out
     assert "60.0  Some One  RB" in out
     assert "header week: pass" in out
@@ -167,10 +168,10 @@ def test_chart_without_saved_raw_data_prints_the_chart_and_skips_the_match(tmp_p
 def test_chart_without_saved_raw_data_of_a_past_season_says_so(tmp_path, monkeypatch, capsys):
     from cornerstone import cli
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
+    cli_root(tmp_path)
     monkeypatch.chdir(tmp_path)
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2027")) == 2
+    assert cli.main(["chart", "--client", "cpc", "--season", "2026", "--week", "6"], fetch_state=_sleeper_state("2027")) == 2
     assert "No raw data" in capsys.readouterr().out
 
 
@@ -183,7 +184,7 @@ def test_chart_prints_the_table_and_every_guard_when_a_guard_fails(tmp_path, fix
         tmp_path, ChartRead(week=6, date="2026-10-13", rows=[ChartRow(value=60.0, name="Some One", position="RB")])
     )
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 1
+    assert cli.main(["chart", "--client", "cpc", "--season", "2026", "--week", "6"]) == 1
     out = capsys.readouterr().out
     assert "60.0  Some One  RB" in out
     assert "header week: pass" in out
@@ -207,7 +208,7 @@ def test_chart_prints_the_table_the_guards_and_the_matches(tmp_path, fixture_raw
     ])
     _save_chart(tmp_path, parsed)
 
-    assert cli.main(["chart", "--season", "2026", "--week", "6"]) == 0
+    assert cli.main(["chart", "--client", "cpc", "--season", "2026", "--week", "6"]) == 0
 
     out = capsys.readouterr().out
     assert f"60.0  {line.name}  {line.position}" in out
@@ -219,9 +220,9 @@ def _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch):
     """A repo in tmp_path with the week 6 raw data and history, as the analyze command reads them."""
     import shutil
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
-    shutil.copytree(fixture_raw_dir, tmp_path / "data" / "2026" / "week-06" / "raw")
-    shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    cli_root(tmp_path)
+    shutil.copytree(fixture_raw_dir, tmp_path / "clients" / "cpc" / "data" / "2026" / "week-06" / "raw")
+    shutil.copytree(fixture_history_root, tmp_path / "clients" / "cpc" / "data" / "2026" / "history")
     monkeypatch.chdir(tmp_path)
 
 
@@ -233,7 +234,7 @@ def test_analyze_prints_the_breakdown_per_side_with_no_trade_value(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
 
     out = capsys.readouterr().out
@@ -260,8 +261,8 @@ def test_analyze_names_the_sources_it_has_from_the_cache(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "nfl" / "cache" / "nflverse")
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
 
     assert code == 0
@@ -276,10 +277,10 @@ def test_analyze_names_the_one_source_the_cache_lacks(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    cache = tmp_path / "data" / "cache" / "nflverse"
+    cache = tmp_path / "data" / "nfl" / "cache" / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     (cache / "ep_weekly_2026.csv").unlink()
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569", "--side", "12:10236,8146", "--asker", "4", "--no-claude"])
 
     assert code == 0
@@ -301,7 +302,7 @@ def _set_back_the_jacobs_trade(tmp_path):
     """Rewrite the saved rosters to before the Josh Jacobs trade. The saved rosters show the league after it."""
     import json
 
-    path = tmp_path / "data" / "2026" / "week-06" / "raw" / "rosters.json"
+    path = tmp_path / "clients" / "cpc" / "data" / "2026" / "week-06" / "raw" / "rosters.json"
     rosters = json.loads(path.read_text())
     moves = {11: (["5850", "11834"], ["12490", "8146"]), 12: (["12490", "8146"], ["5850", "11834"])}
     for roster in rosters:
@@ -318,11 +319,11 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "nfl" / "cache" / "nflverse")
     # The returns file has Jacobs back in week 7.
-    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "nfl" / "2026" / "returns.json")
     _set_back_the_jacobs_trade(tmp_path)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12", "--no-claude"])
 
     out = capsys.readouterr().out
@@ -350,7 +351,7 @@ def test_analyze_names_a_player_not_on_the_giving_roster(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:4034", "--side", "12:10236", "--asker", "4", "--no-claude"])
 
     assert code == 2
@@ -361,7 +362,7 @@ def test_analyze_needs_two_to_four_sides(tmp_path, fixture_raw_dir, fixture_hist
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--side", "4:7569", "--asker", "4", "--no-claude"])
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--side", "4:7569", "--asker", "4", "--no-claude"])
 
     assert code == 2
     assert "Give --side two to four times, once for each roster." in capsys.readouterr().out
@@ -372,7 +373,7 @@ def test_analyze_grades_a_three_side_trade_with_a_destination_per_player(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569@12", "--side", "12:10236@4,8146@7", "--side", "7:11628@4",
                      "--asker", "4", "--no-claude"])
 
@@ -389,7 +390,7 @@ def test_analyze_needs_a_destination_per_player_in_a_three_side_trade(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569", "--side", "12:10236@4,8146@7", "--side", "7:11628@4",
                      "--asker", "4", "--no-claude"])
 
@@ -403,7 +404,7 @@ def test_analyze_prints_one_plain_line_for_a_trade_that_breaks_a_model_rule(
     from cornerstone import cli
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    code = cli.main(["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--side", "4:7569", "--side", "4:10236", "--asker", "4", "--no-claude"])
 
     out = capsys.readouterr().out
@@ -421,28 +422,28 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     from datetime import datetime
 
     import pytest
+    from cpc import cpc_client
 
     from cornerstone import cli, live
-    from cornerstone.config import cornerstone_config
     from cornerstone.provider.sleeper import load_raw
 
-    (tmp_path / "pyproject.toml").write_text("[project]\nname = 'stub'\n")
-    shutil.copytree(fixture_history_root, tmp_path / "data" / "2026" / "history")
+    cli_root(tmp_path)
+    shutil.copytree(fixture_history_root, tmp_path / "clients" / "cpc" / "data" / "2026" / "history")
     if unsaved_week is not None:
-        shutil.rmtree(tmp_path / "data" / "2026" / "history" / f"week-{unsaved_week:02d}")
-    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
-    for cached in (tmp_path / "data" / "cache" / "nflverse").iterdir():
+        shutil.rmtree(tmp_path / "clients" / "cpc" / "data" / "2026" / "history" / f"week-{unsaved_week:02d}")
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "nfl" / "cache" / "nflverse")
+    for cached in (tmp_path / "data" / "nfl" / "cache" / "nflverse").iterdir():
         cached.touch()
     monkeypatch.chdir(tmp_path)
-    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cornerstone_config().tz)
+    fetched = datetime(2026, 10, 19, 9, 30, tzinfo=cpc_client().tz)
     real = live.live_snapshot
-    monkeypatch.setattr(cli, "live_snapshot", lambda repo, season, **kw: real(
-        repo, season, config=kw["config"], now=datetime(2026, 10, 19, 12, 0, tzinfo=kw["config"].tz),
+    monkeypatch.setattr(cli, "live_snapshot", lambda season, **kw: real(
+        season, client=kw["client"], now=datetime(2026, 10, 19, 12, 0, tzinfo=kw["client"].tz),
         fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
         fetch_history_week=fetch_history_week,
-        read_chart=lambda repo, start, week, lines: chart_week6))
-    return cli.main(["analyze", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
+        read_chart=lambda nfl, start, week, lines: chart_week6))
+    return cli.main(["analyze", "--client", "cpc", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
                      "--asker", "4", "--no-claude"])
 
 
@@ -472,11 +473,12 @@ def test_analyze_without_week_grades_the_live_snapshot_and_prints_the_as_of_line
 ])
 def test_the_known_games_line_names_each_pending_count(
         fixture_raw_dir, fixture_history_root, chart_week6, capsys, pending, line):
+    from cpc import cpc_client
+
     from cornerstone import cli
-    from cornerstone.config import cornerstone_config
     from cornerstone.snapshot import KnownGames, load_snapshot
 
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=cornerstone_config())
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=cpc_client())
     known = KnownGames(week=6, games=14, pending=pending)
     cli._print_as_of(snap.model_copy(update={"as_of": snap.as_of.model_copy(update={"known_games": known})}))
     assert line in capsys.readouterr().out
@@ -504,12 +506,12 @@ def _jacobs_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflver
     import shutil
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
-    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "nfl" / "cache" / "nflverse")
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "nfl" / "2026" / "returns.json")
     _set_back_the_jacobs_trade(tmp_path)
 
 
-JACOBS_ARGS = ["analyze", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+JACOBS_ARGS = ["analyze", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12"]
 
 
@@ -571,8 +573,8 @@ def _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse
     import shutil
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
-    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "cache" / "nflverse")
-    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "2026" / "returns.json")
+    shutil.copytree(fixture_nflverse_dir, tmp_path / "data" / "nfl" / "cache" / "nflverse")
+    shutil.copy(fixture_history_root.parent / "returns.json", tmp_path / "data" / "nfl" / "2026" / "returns.json")
 
 
 # The fixture chart lists 25 players, mostly stars, so no pair of the week 6 snapshot has a win-win on it.
@@ -595,7 +597,7 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
     from cornerstone import cli
 
     _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
-    code = cli.main(["find", "--season", "2026", "--week", "6", "--chart", _chart_with_rows(tmp_path),
+    code = cli.main(["find", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", _chart_with_rows(tmp_path),
                      "--asker", "2", "--partner", "3"])
 
     out = capsys.readouterr().out
@@ -617,10 +619,64 @@ def test_find_prints_one_line_when_no_swap_is_good_for_both(
     from cornerstone import cli
 
     _find_repo(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch)
-    code = cli.main(["find", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
+    code = cli.main(["find", "--client", "cpc", "--season", "2026", "--week", "6", "--chart", CHART_FIXTURE,
                      "--asker", "1", "--partner", "3"])
 
     out = capsys.readouterr().out
     assert code == 0
     assert out.endswith("\nNo swap between these rosters is good for both.\n")
     assert "Fairness:" not in out
+
+
+def test_a_build_with_no_client_slug_exits_and_names_the_slug(tmp_path, monkeypatch, capsys, fake_writer):
+    # AT-19: no build ships the wrong league.
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    code = cli.main(["build", "--season", "2026", "--week", "8", "--no-fetch"], writer=fake_writer)
+    out = capsys.readouterr().out
+    assert code == 2
+    assert "--client" in out and "client slug" in out
+    assert fake_writer.calls == []
+
+
+def test_a_build_with_an_unknown_client_names_its_folder(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["page-json", "--client", "nope", "--season", "2026", "--week", "8"]) == 2
+    assert "nope" in capsys.readouterr().out
+
+
+def test_the_check_client_command_passes_the_cpc_client(capsys):
+    from cornerstone import cli
+
+    folder = Path(__file__).resolve().parents[3] / "clients" / "cpc"
+    assert cli.main(["check-client", str(folder)]) == 0
+    assert "passes the check" in capsys.readouterr().out
+
+
+def test_the_check_client_command_names_an_unknown_key_and_the_file(tmp_path, capsys):
+    # AT-20, the pipeline side: a copy of the CPC file with a typo under [values.analyzer].
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    path = tmp_path / "clients" / "cpc" / "client.toml"
+    path.write_text(path.read_text(encoding="utf-8").replace("finder = false", "finder = false\nfinderr = true"))
+    assert cli.main(["check-client", str(path.parent)]) == 2
+    out = capsys.readouterr().out
+    assert "finderr" in out and str(path) in out
+
+
+def test_the_settings_command_prints_the_derived_sizes(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["settings", "--client", "cpc", "--season", "2026"]) == 0
+    out = capsys.readouterr().out
+    assert "team_count: 12" in out
+    assert "lines: {'QB': 24, 'RB': 36, 'WR': 36, 'TE': 24}" in out
+    assert "star_rank_by_position: {'QB': 6, 'RB': 12, 'WR': 12, 'TE': 6}" in out

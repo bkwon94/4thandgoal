@@ -19,4 +19,4 @@
 
 - It never imports `cornerstone_api`. That package serves the trade analyzer over HTTP.
 - It builds no HTML. The site repo builds the HTML from each published file.
-- No module reads a global league config. The CLI or the API entry builds it once and passes it down.
+- No module reads a global client. The CLI or the API entry builds the Client once with `load_client` and passes it down.

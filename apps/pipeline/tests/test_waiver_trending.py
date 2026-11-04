@@ -6,15 +6,15 @@ import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from cpc import cpc_client
 from fakes import json_transport
 
-from cornerstone.config import cornerstone_config
 from cornerstone.provider.sleeper import fetch_week, load_raw
 from cornerstone.waiver import waiver_board
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
-# The league config the builds and fetches of these tests read.
-CONFIG = cornerstone_config()
+# The client the builds and fetches of these tests read.
+CLIENT = cpc_client()
 
 TRENDING_URL = "https://api.sleeper.app/v1/players/nfl/trending/add"
 # The league fields that the raw model needs, with no rosters, slots, or scoring.
@@ -38,8 +38,8 @@ def _fake_trending_get(calls: list[tuple[str, object]]):
 
 def test_the_week_fetch_saves_the_trending_file(tmp_path):
     calls: list[tuple[str, object]] = []
-    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CONFIG.tz, CONFIG.last_regular_week,
-               CONFIG.last_season_week, json_transport(_fake_trending_get(calls)))
+    fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CLIENT.tz, CLIENT.settings.last_regular_week,
+               CLIENT.settings.last_season_week, json_transport(_fake_trending_get(calls)))
     saved = json.loads((tmp_path / "raw" / "trending.json").read_text())
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
     # A query value is text on the wire.
@@ -60,7 +60,7 @@ def _raw(fixture_raw_dir, players: dict[str, dict], counts: dict[str, int]) -> d
 
 
 def _trending(raw) -> list[str]:
-    return [p.player_id for p in waiver_board(raw, 6, BUILT, config=CONFIG).buckets["trending"]]
+    return [p.player_id for p in waiver_board(raw, 6, BUILT, client=CLIENT).buckets["trending"]]
 
 
 def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixture_raw_dir):
@@ -80,7 +80,7 @@ def test_the_trending_bucket_follows_the_counts_and_skips_rostered_players(fixtu
 def test_a_player_in_best_adds_and_trending_shows_in_both(fixture_raw_dir):
     raw = _raw(fixture_raw_dir, {"80001": _player("WR", "Hot Hand")}, {"80001": 41200})
     raw.projections_ahead = [{"week": w, "projections": {"80001": 12.0}} for w in range(7, 18)]
-    buckets = waiver_board(raw, 6, BUILT, config=CONFIG).buckets
+    buckets = waiver_board(raw, 6, BUILT, client=CLIENT).buckets
     assert [p.player_id for p in buckets["best_adds"]] == ["80001"]
     assert [p.player_id for p in buckets["trending"]] == ["80001"]
 
@@ -94,7 +94,7 @@ def test_a_week_with_no_trending_file_gives_an_empty_bucket(fixture_raw_dir):
 def test_every_trending_count_is_a_fact_with_the_digits_in_its_numbers(fixture_raw_dir):
     players = {"80001": _player("WR", "Hot Hand"), "80002": _player("TE", "Big Tight")}
     raw = _raw(fixture_raw_dir, players, {"80001": 41200, "80002": 7})
-    trending = waiver_board(raw, 6, BUILT, config=CONFIG).buckets["trending"]
+    trending = waiver_board(raw, 6, BUILT, client=CLIENT).buckets["trending"]
     assert [(p.trending_count, [f.model_dump() for f in p.facts]) for p in trending] == [
         (41200, [{"id": "WV.trending.80001", "text": "Hot Hand was added in 41200 Sleeper leagues in the last day.",
                   "numbers": ["41200"], "teams": [], "players": ["Hot Hand"]}]),

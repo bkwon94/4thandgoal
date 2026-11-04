@@ -5,7 +5,7 @@ The next week chapter reads them.
 from collections.abc import Callable
 
 from cornerstone.adjusters import bye_covers_for_roster
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_nflverse import shootouts
 from cornerstone.models import (
     ByePlayer,
@@ -19,7 +19,7 @@ from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
 from cornerstone.snapshot import Snapshot
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The pick, the next matchups, the storylines, the byes, and the shootouts.
 
     The Matchup of the Week chapter reads the pick. The next week chapter reads the rest.

@@ -6,7 +6,7 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import (
     Bundle,
     Chapter,
@@ -26,9 +26,9 @@ from cornerstone.sheet.rankings import rankings_chapter
 from cornerstone.snapshot import Snapshot
 
 # The fact groups of the sheet, in the order the sheet lists their facts. This list alone sets that order.
-# A group reads only the context and the league config, so it needs no file and no clock. Every group takes the
-# config, so the assembly calls each group the same way. A group reads a league number from it when it needs one.
-FACT_GROUPS: tuple[Callable[[Context, LeagueConfig], list[Fact]], ...] = (
+# A group reads only the context and the client, so it needs no file and no clock. Every group takes the
+# client, so the assembly calls each group the same way. A group reads a league number from it when it needs one.
+FACT_GROUPS: tuple[Callable[[Context, Client], list[Fact]], ...] = (
     week.facts, standings.facts, matchups.facts, awards.facts, next_week.facts, leaders.facts, drops.facts,
     rankings.facts,
 )
@@ -85,8 +85,8 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
             fact_ids=_dedupe([i for i in ids if i in facts]),
             scope_teams=[c.team(r) for r in rosters],
             scope_players=_dedupe(players_of(rosters) if players is None else players),
-            min_sentences=sentence_range(rng, c.config)[0],
-            max_sentences=sentence_range(rng, c.config)[1],
+            min_sentences=sentence_range(rng, c.client)[0],
+            max_sentences=sentence_range(rng, c.client)[1],
         )
 
     def drop_ids(keep) -> list[str]:
@@ -169,7 +169,7 @@ def chapters(c: Context, facts: dict[str, Fact]) -> list[Chapter]:
         all_rosters, "next_week", players=players_of(all_rosters) + bye_players,
     ))
     if c.power:
-        out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds, config=c.config))
+        out.append(rankings_chapter(facts, c.power, c.team, c.table, c.odds, client=c.client))
     return out
 
 
@@ -183,11 +183,11 @@ def build_bundle(
     today: date | None = None,
     odds_before: OddsResult | None = None,
     *,
-    config: LeagueConfig,
+    client: Client,
 ) -> Bundle:
     c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, odds_before=odds_before,
-                config=config)
-    facts = {f.id: f for group in FACT_GROUPS for f in group(c, config)}
+                client=client)
+    facts = {f.id: f for group in FACT_GROUPS for f in group(c, client)}
     data = WeekData(
         season=week.season,
         week=week.week,

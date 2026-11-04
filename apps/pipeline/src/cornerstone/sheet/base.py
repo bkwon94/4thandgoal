@@ -8,7 +8,7 @@ from collections.abc import Callable
 from datetime import date, timedelta
 
 from cornerstone.adjusters import allowed_positions, fill_slots
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_league import (
     awards,
     matchup_of_the_week,
@@ -76,11 +76,11 @@ RANKINGS_CHAPTER = "rankings"
 TWO_TEAM_CHAPTERS = ("motw", "game_changer")
 
 
-def sentence_range(key: str, config: LeagueConfig) -> tuple[int, int]:
-    """The (min, max) sentences of the chapter `key`. The rankings range follows the team count of `config`."""
+def sentence_range(key: str, client: Client) -> tuple[int, int]:
+    """The (min, max) sentences of the chapter `key`. The rankings range follows the team count of `client`."""
     if key == RANKINGS_CHAPTER:
         # One to three sentences for each team.
-        return config.team_count, 3 * config.team_count
+        return client.settings.team_count, 3 * client.settings.team_count
     return SENTENCE_RANGES[key]
 
 
@@ -137,9 +137,9 @@ def week_dates(season_start: date, week: int) -> str:
     return f"{thursday.strftime('%b %-d')} – {monday.strftime('%b %-d, %Y')}"
 
 
-def check_week_is_buildable(week_target: int, last_scored: int, config: LeagueConfig) -> str | None:
+def check_week_is_buildable(week_target: int, last_scored: int, client: Client) -> str | None:
     # Playoff comes first: a playoff week is never buildable, scored or not.
-    last = config.last_regular_week
+    last = client.settings.last_regular_week
     if week_target > last:
         return f"Week {week_target} is a playoff week. Version 1 covers weeks {FIRST_WEEK} to {last}."
     if last_scored < week_target:
@@ -185,7 +185,7 @@ def week_odds(
     week: Week, history: History | None,
     inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
     projected: dict[int, dict[int, float]] | None,
-    config: LeagueConfig,
+    client: Client,
 ) -> OddsResult | None:
     """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
 
@@ -196,12 +196,12 @@ def week_odds(
     scores, remaining = inputs
     return playoff_odds(
         scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
-        config=config, projected=projected,
+        client=client, projected=projected,
     )
 
 
 def odds_inputs(
-    week: Week, history: History | None, config: LeagueConfig,
+    week: Week, history: History | None, client: Client,
 ) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
     """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
     if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
@@ -213,18 +213,18 @@ def odds_inputs(
     }
     # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
     # playoff games, and the engine stops at the seeds, so they stay out.
-    remaining = {week.week + 1: week.next_matchups} if week.week < config.last_regular_week else {}
+    remaining = {week.week + 1: week.next_matchups} if week.week < client.settings.last_regular_week else {}
     remaining.update(week.schedule)
     # A cached week can lack the schedule file. The engine would then end the season early and could
     # call a team clinched or out by mistake, so the sheet gives no odds.
-    if set(remaining) != set(range(week.week + 1, config.last_regular_week + 1)):
+    if set(remaining) != set(range(week.week + 1, client.settings.last_regular_week + 1)):
         logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
         return None
     return scores, remaining
 
 
 def projected_totals(
-    week: Week, config: LeagueConfig, bye_weeks: dict[str, int] | None = None,
+    week: Week, client: Client, bye_weeks: dict[str, int] | None = None,
 ) -> dict[int, dict[int, float]]:
     """The projected total of each roster's best lineup in each week ahead, by roster ID and week.
 
@@ -234,13 +234,13 @@ def projected_totals(
     the real roster, not a hole. `bye_weeks` is the bye week of each NFL team, and a bye week gives no cover.
     A roster with no projected player in a week has no total that week.
     A missing week gives the roster no shift. It does not count as a total of 0.
-    The weeks stop at the last regular week of `config`, because the file runs to the end of the NFL season for the
+    The weeks stop at the last regular week of `client`, because the file runs to the end of the NFL season for the
     waiver board.
     A playoff week in the totals would move the projected pace of the odds why.
     """
     totals: dict[int, dict[int, float]] = {rid: {} for rid in week.rosters}
     for w, projections in sorted(week.projections_ahead.items()):
-        if w > config.last_regular_week:
+        if w > client.settings.last_regular_week:
             continue
         # The pool players with a projection above zero that week, best first, with the player id as the tie rule.
         pool = sorted(
@@ -303,11 +303,11 @@ class Context:
         today: date | None = None,
         odds_before: OddsResult | None = None,
         *,
-        config: LeagueConfig,
+        client: Client,
     ) -> None:
         self.week = week
         # The chapter list and the rankings chapter take only the context, so they read the team count from it.
-        self.config = config
+        self.client = client
         # The publish date is a parameter so a build is reproducible. None reads the clock.
         self.today = today or date.today()
         self.history = history
@@ -318,11 +318,11 @@ class Context:
         if history is not None and week.week - 1 in history.weeks:
             self.moves += history.weeks[week.week - 1].moves
         self.mfacts = [matchup_facts(m, self.moves, week.week) for m in week.matchups]
-        self.table = standings(week, history, config=config)
+        self.table = standings(week, history, client=client)
         self.by_rank = {s.roster_id: s for s in self.table}
         self.before = ranks_before(week, self.table, history)
         self.median = median_facts(week)
-        self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before, config=config)
+        self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before, client=client)
         self.drops = drop_lines(week, nfl)
         self.nfl = nfl
         self.chart = chart
@@ -336,15 +336,15 @@ class Context:
             power_rankings(history, week.week)[week.week] if history is not None and history.complete() else []
         )
         # The odds and the odds why read the same inputs, so the context builds them once.
-        self.projected = projected_totals(week, config, nfl.bye_weeks if nfl is not None else None)
-        inputs = odds_inputs(week, history, config)
+        self.projected = projected_totals(week, client, nfl.bye_weeks if nfl is not None else None)
+        inputs = odds_inputs(week, history, client)
         self.season_scores, self.remaining = inputs if inputs is not None else ({}, {})
-        self.odds = week_odds(week, history, inputs, self.projected, config)
+        self.odds = week_odds(week, history, inputs, self.projected, client)
         # The saved odds of the week before, for the odds part of the impact fact. None leaves that part out.
         self.odds_before = odds_before
         # The shootout storyline reads the same projected lineups as the odds.
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
-                              snapshot.position_rank if snapshot is not None else None, config=config)
+                              snapshot.position_rank if snapshot is not None else None, client=client)
         self.ranks = position_ranks(week)
         self.leaders = position_leaders(week)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}

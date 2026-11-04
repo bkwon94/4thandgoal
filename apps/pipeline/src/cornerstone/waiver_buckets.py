@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import NamedTuple
 
 from cornerstone.adjusters import OUT_STATUSES, back_inside
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import Fact, WaiverPlayer
 from cornerstone.nflverse import gsis_id
 from cornerstone.parse import player_name
@@ -39,7 +39,7 @@ class BucketInputs(NamedTuple):
     # The rest of season projection of any player, a rostered one too.
     ros_of: Callable[[str], float]
     # The league sizes. A stash must be back by the last season week.
-    config: LeagueConfig
+    client: Client
 
     def gsis_of(self, player_id: str) -> str | None:
         """The gsis_id of the player. The id map fills the IDs that the Sleeper players file lacks."""
@@ -107,7 +107,7 @@ def _stashes(players: list[WaiverPlayer], inputs: BucketInputs,
         if p.position not in BUCKET_POSITIONS or p.ros_projection <= 0:
             continue
         player_above = above_by_player.get(p.player_id)
-        if (p.injury_status in OUT_STATUSES and back_inside(p.return_week, inputs.week, inputs.config.last_season_week)
+        if (p.injury_status in OUT_STATUSES and back_inside(p.return_week, inputs.week, inputs.client.settings.last_season_week)
                 and p.scores.projection >= TOP_HALF):
             stashes.append(_entry(p, RETURN, player_above))
         elif (p.position == "RB" and player_above is not None and player_above.starter

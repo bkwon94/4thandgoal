@@ -29,10 +29,16 @@ COPY apps/pipeline/src/ ./apps/pipeline/src/
 COPY apps/api/src/ ./apps/api/src/
 RUN uv sync --frozen --no-dev --package cpc-api
 
-# The tracked data is the seed. /app/data is a link to the volume.
-# Every path helper joins data/ to the repo root /app, so it lands on the volume with no change to the code.
-COPY apps/pipeline/data/ ./seed/data/
-RUN ln -s /data /app/data
+# The values of the CPC client come from the image: client.toml, copy.toml, and the voice in prompts/.
+COPY clients/cpc/client.toml clients/cpc/copy.toml ./clients/cpc/
+COPY clients/cpc/prompts/ ./clients/cpc/prompts/
+
+# The tracked data is the seed: the CPC data under clients/cpc/data and the shared NFL data under nfl/.
+# /app/data is a link to the volume, so the NFL data and the result cache land on it. /app/clients/cpc/data is a link
+# to the CPC data on the volume. The path helpers join each path to the repo root /app, so the code needs no change.
+COPY clients/cpc/data/ ./seed/data/clients/cpc/data/
+COPY data/nfl/ ./seed/data/nfl/
+RUN ln -s /data /app/data && ln -s /data/clients/cpc/data /app/clients/cpc/data
 
 COPY apps/api/deploy/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

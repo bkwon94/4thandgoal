@@ -14,7 +14,7 @@ def refresh(request: Request, season: int) -> dict[str, list[str]]:
     """Refresh what the live snapshot reads. Return what the run fetched again and what is still stale."""
     # The cron can start late, so the route fetches every file again, even one 23 hours old.
     with season_in_progress(season):
-        result = request.app.state.sources.refresh(request.app.state.settings.repo, season, max_age_seconds=0)
+        result = request.app.state.sources.refresh(season, max_age_seconds=0)
     stale = list(result.stale)
     # The snapshot lists a missing chart as missing, not stale. The cron log must show it, so the route adds it here.
     # A chart read that raised is in the stale list already, so the route does not add it twice.

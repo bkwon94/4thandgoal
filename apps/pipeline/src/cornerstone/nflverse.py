@@ -224,7 +224,7 @@ def read_kickoffs(path: Path, season: int, week: int) -> dict[str, datetime]:
     The file gives the date and the Eastern time of each kickoff. A row with no time gives no kickoff.
     """
     # The feed gives every kickoff in Eastern time for every league, so this zone is a fact of the feed and not the
-    # league timezone of the config.
+    # league timezone of the client.
     eastern = ZoneInfo("America/New_York")
     kickoffs: dict[str, datetime] = {}
     for row in _rows(path):

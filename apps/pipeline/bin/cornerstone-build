@@ -51,7 +51,8 @@ cd "$REPO_DIR" || { log "cannot cd to $REPO_DIR"; exit 1; }
 # set +e so a failed build reaches the exit-code handling below instead of
 # aborting the script. The job does not retry: Brian decides what to do.
 set +e
-uv run cornerstone build >>"$LOG_FILE" 2>&1
+# The job builds the CPC client. Each league command names its client slug.
+uv run cornerstone build --client cpc >>"$LOG_FILE" 2>&1
 build_exit=$?
 set -e
 

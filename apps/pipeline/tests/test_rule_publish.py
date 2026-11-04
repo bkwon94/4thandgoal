@@ -50,8 +50,8 @@ def _built_repo(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
     page = pipeline / "site" / "2026" / "week-08" / "page.json"
     page.parent.mkdir(parents=True)
     page.write_text("{}")
-    (pipeline / "data").mkdir()
-    (pipeline / "data" / "history.json").write_text("{}")
+    (root / "clients" / "cpc" / "data").mkdir(parents=True)
+    (root / "clients" / "cpc" / "data" / "history.json").write_text("{}")
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "test@example.com")
     _git(root, "config", "user.name", "Test")
@@ -60,7 +60,7 @@ def _built_repo(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
 
 def test_a_publish_of_only_published_data_passes(tmp_path, monkeypatch):
     root, pipeline = _built_repo(tmp_path, monkeypatch)
-    run_publish(pipeline, 2026, 8, push=False)
+    run_publish(pipeline, 2026, 8, root / "clients" / "cpc" / "data", push=False)
     offenses = _outside_offenses(root, "HEAD")
     assert not offenses, report(offenses)
     assert _commit_paths(root, "HEAD") == ["apps/site/public/2026/week-08/page.json"]
@@ -69,7 +69,7 @@ def test_a_publish_of_only_published_data_passes(tmp_path, monkeypatch):
 def test_a_stray_file_stays_out_of_the_publish(tmp_path, monkeypatch):
     root, pipeline = _built_repo(tmp_path, monkeypatch)
     (root / "stray.txt").write_text("half-done work\n")
-    run_publish(pipeline, 2026, 8, push=False)
+    run_publish(pipeline, 2026, 8, root / "clients" / "cpc" / "data", push=False)
     assert _git(root, "status", "--short", "--", "stray.txt").strip() == "?? stray.txt"
     assert _outside_offenses(root, "HEAD") == []
 
@@ -84,8 +84,8 @@ def test_the_rule_names_a_file_outside_the_published_data(tmp_path, monkeypatch)
     _git(root, "commit", "-m", "Week 8")
     offenses = _outside_offenses(root, "HEAD")
     assert [(offense.path, offense.rule_id) for offense in offenses] == [
-        ("apps/pipeline/data/history.json", "publish/scope"),
         ("apps/pipeline/site/2026/week-08/page.json", "publish/scope"),
+        ("clients/cpc/data/history.json", "publish/scope"),
         ("stray.txt", "publish/scope"),
     ]
     assert "stray.txt" in report(offenses)

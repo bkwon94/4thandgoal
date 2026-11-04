@@ -41,7 +41,7 @@ ReasonWriter = Callable[[list[FinderTrade], Snapshot], FinderReasons]
 def _snapshot(request: Request, season: int) -> Snapshot:
     """The live snapshot for `season`. A season that Sleeper is not in is a bad input, so it is 422."""
     with season_in_progress(season):
-        return request.app.state.sources.snapshot(request.app.state.settings.repo, season)
+        return request.app.state.sources.snapshot(season)
 
 
 def _player(snapshot: Snapshot, player_id: str) -> dict:
@@ -67,7 +67,7 @@ def _teams(request: Request, season: int) -> dict:
     # The form needs the rosters and not the chart or the slow sources, so the route skips their refresh and the
     # history save. The daily cron and the start-up refresh keep the slow sources fresh.
     with season_in_progress(season):
-        snapshot = request.app.state.sources.rosters_snapshot(request.app.state.settings.repo, season)
+        snapshot = request.app.state.sources.rosters_snapshot(season)
     return {"teams": [
         {
             "roster_id": roster_id,

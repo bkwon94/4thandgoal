@@ -28,7 +28,8 @@ LAYER_OF: dict[str, str] = {
     "": "model",
     # model
     "models": "model",
-    "config": "model",
+    "client": "model",
+    "league_settings": "model",
     "paths": "model",
     "numbers": "model",
     "names": "model",

@@ -6,17 +6,17 @@ import time
 from pathlib import Path
 
 import pytest
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
 from cornerstone.odds import playoff_odds
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 SEASON = 2026
 # The fixture league: 4 rosters, 2 weeks played, 2 weeks left, 2 playoff spots, 1 bye, 200 runs.
 SPOTS, BYES, RUNS = 2, 1, 200
-# The fixture league is smaller than Cornerstone, so its config has its own playoff spots and byes.
-SMALL = cornerstone_config().model_copy(update={"playoff_spots": SPOTS, "bye_count": BYES})
+# The fixture league is smaller than Cornerstone, so its client has its own playoff spots and byes.
+SMALL = cpc_client(playoff_spots=SPOTS, bye_count=BYES)
 SCORES = {1: [120.0, 95.0], 2: [101.0, 110.0], 3: [88.0, 130.0], 4: [99.0, 85.0]}
 RECORDS = {1: (3, 1, 215.0), 2: (2, 2, 211.0), 3: (2, 2, 218.0), 4: (1, 3, 184.0)}
 REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
@@ -25,7 +25,7 @@ REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
 def _odds(scores=SCORES, records=RECORDS, remaining=REMAINING, week=2, runs=RUNS, **kwargs):
     return playoff_odds(
         scores, records, remaining, season=SEASON, week=week,
-        config=SMALL, runs=runs, **kwargs,
+        client=SMALL, runs=runs, **kwargs,
     )
 
 
@@ -92,7 +92,7 @@ def test_a_roster_that_wins_every_drawn_game_lands_at_the_1_seed():
 def test_the_bye_goes_to_the_top_seeds():
     records = {1: (4, 0, 300.0), 2: (3, 1, 250.0), 3: (2, 2, 250.0), 4: (1, 3, 260.0)}
     result = playoff_odds(
-        SCORES, records, {}, season=SEASON, week=4, config=SMALL.model_copy(update={"bye_count": 2}), runs=RUNS,
+        SCORES, records, {}, season=SEASON, week=4, client=cpc_client(playoff_spots=SPOTS, bye_count=2), runs=RUNS,
     )
     assert [result.teams[rid].bye for rid in (1, 2, 3, 4)] == [100, 100, 0, 0]
 
@@ -280,10 +280,10 @@ def test_the_full_league_runs_in_under_10_seconds(fixture_raw_dir, fixture_histo
     # Weeks 7 to 14 replay the pairs of weeks 1 to 6, then weeks 1 and 2, so the case has 8 full weeks.
     remaining = {7 + i: history.weeks[i % 6 + 1].pairs for i in range(8)}
     start = time.perf_counter()
-    result = playoff_odds(scores, records, remaining, season=SEASON, week=6, config=CONFIG)
+    result = playoff_odds(scores, records, remaining, season=SEASON, week=6, client=CLIENT)
     assert time.perf_counter() - start < 10
     total = sum(t.playoff for t in result.teams.values())
-    assert abs(total - CONFIG.playoff_spots * 100) <= len(records)
+    assert abs(total - CLIENT.settings.playoff_spots * 100) <= len(records)
 
 
 def test_a_wide_spread_of_past_scores_gives_no_better_odds_than_a_narrow_spread():
@@ -297,10 +297,10 @@ def test_two_rosters_with_one_score_each_give_a_spread_of_0():
     # A roster with one score adds no degree of freedom, so the divisor is 0 and the spread is 0.
     # Every draw is then the shrunk mean, so roster 1 wins every game and makes it in every run.
     # Both rosters are open, so the odds clamp to 99 and 1.
-    config = SMALL.model_copy(update={"playoff_spots": 1, "bye_count": 1})
+    client = cpc_client(playoff_spots=1, bye_count=1)
     records = {1: (1, 1, 100.0), 2: (1, 1, 90.0)}
     result = playoff_odds({1: [100.0], 2: [90.0]}, records, {2: [(1, 2)], 3: [(1, 2)]},
-                          season=SEASON, week=1, config=config, runs=RUNS)
+                          season=SEASON, week=1, client=client, runs=RUNS)
     assert (result.teams[1].status, result.teams[2].status) == ("open", "open")
     assert (result.teams[1].playoff, result.teams[2].playoff) == (99, 1)
 
@@ -327,7 +327,7 @@ WEEK_7_LEVEL = {
     "Maye d'force B with U": 61, "Brock 'N' Roll": 57, "Return of T Mac": 34, "Amon-Ra Dawg Your Team": 53,
     "Unsolicited Dak Picks": 25, "behold the lamb": 16,
 }
-WEEK_7_RAW = Path(__file__).parent.parent / "data" / "2026" / "week-07" / "raw"
+WEEK_7_RAW = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "week-07" / "raw"
 
 
 @pytest.mark.skipif(not WEEK_7_RAW.is_dir(), reason="no saved week 7 data")
@@ -340,7 +340,7 @@ def test_the_week_7_odds_match_the_prototype_within_3_points():
     raw = load_raw(WEEK_7_RAW)
     week = parse_week(raw)
     history = load_history(WEEK_7_RAW.parent.parent / "history", raw, week=7)
-    result = week_odds(week, history, odds_inputs(week, history, CONFIG), projected_totals(week, CONFIG), CONFIG)
+    result = week_odds(week, history, odds_inputs(week, history, CLIENT), projected_totals(week, CLIENT), CLIENT)
     assert result is not None
     # The names on Sleeper use curly quotes, and the ticket table uses straight quotes.
     names = {rid: t.name.replace("‘", "'").replace("’", "'") for rid, t in week.teams.items()}

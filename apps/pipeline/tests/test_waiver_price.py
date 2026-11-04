@@ -5,7 +5,8 @@ They price players in a small hand-built league, and they read the bid history f
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from cornerstone.config import cornerstone_config
+from cpc import cpc_client
+
 from cornerstone.models import BoardScores, WaiverClaim, WaiverPlayer
 from cornerstone.provider.raw import RawWeek
 from cornerstone.provider.sleeper import load_raw
@@ -13,7 +14,7 @@ from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_price import bid_history, price_players
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 
@@ -161,7 +162,7 @@ def test_the_board_prices_best_adds_with_the_outbid_count_per_budget_level(fixtu
     raw.players["80001"] = {"position": "RB", "team": "KC", "status": "Active", "full_name": "Free Back"}
     raw.projections_ahead = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
     # A $40 RB win in week 5 sets the floor at $41. The top expected bid is at most 35% of $90, $31.50.
-    best = waiver_board(raw, 6, BUILT, claims=[_claim("RB", 40)], config=CONFIG).buckets["best_adds"]
+    best = waiver_board(raw, 6, BUILT, claims=[_claim("RB", 40)], client=CLIENT).buckets["best_adds"]
     price = next(p.price for p in best if p.player_id == "80001")
     assert price.bid == 41
     assert sorted(price.outbid) == [9, 19, 25, 51, 58, 61, 65, 67, 69, 72, 82, 90]
@@ -176,7 +177,7 @@ def test_a_player_in_best_adds_and_trending_carries_one_price(fixture_raw_dir):
     raw.players["80001"] = {"position": "WR", "team": "KC", "status": "Active", "full_name": "Hot Wideout"}
     raw.projections_ahead = [{"week": w, "projections": {"80001": 10.0}} for w in range(7, 18)]
     raw.trending = [{"player_id": "80001", "count": 5000}]
-    buckets = waiver_board(raw, 6, BUILT, config=CONFIG).buckets
+    buckets = waiver_board(raw, 6, BUILT, client=CLIENT).buckets
     best = next(p for p in buckets["best_adds"] if p.player_id == "80001")
     trending = next(p for p in buckets["trending"] if p.player_id == "80001")
     assert best.price is not None

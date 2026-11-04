@@ -6,36 +6,55 @@ import re
 
 import pytest
 from conftest import SAVED
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
 from cornerstone.models import Blurb, Sentence, WriterOut
 from cornerstone.parse import parse_week
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import build_bundle
-from cornerstone.writer import MOTW_HEADLINE_NOTE, build_writer_prompt, template_blurb, write_blurb
+from cornerstone.writer import (
+    DEFAULT_PROMPTS,
+    MOTW_HEADLINE_NOTE,
+    build_writer_prompt,
+    load_prompt,
+    template_blurb,
+    write_blurb,
+)
 
-CONFIG = cornerstone_config()
-PROMPTS = CONFIG.prompts_dir
+CLIENT = cpc_client()
+PROMPTS = CLIENT.voice_dir
 
 
 def _sheet(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG).sheet
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], client=CLIENT).sheet
 
 
 def _chapter(sheet, key):
     return next(c for c in sheet.chapters if c.key == key)
 
 
-def test_writer_reads_a_prompt_from_the_config_folder(tmp_path, fixture_raw_dir):
-    # A league with its own prompts sets prompts_dir, so the writer must read that folder and not the packaged one.
+def test_the_writer_reads_the_voice_of_the_client_and_the_default_rules(tmp_path, fixture_raw_dir):
+    # A client prompts/ folder replaces only the voice. The rule prompt writer.md always comes from the default.
     for name in ("vocabulary.md", "tone.md", "writer.md"):
         (tmp_path / name).write_text(f"League {name} from the temp folder.\n", encoding="utf-8")
-    config = CONFIG.model_copy(update={"prompts_dir": tmp_path})
     sheet = _sheet(fixture_raw_dir)
-    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=config.prompts_dir)
-    for name in ("vocabulary.md", "tone.md", "writer.md"):
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=tmp_path)
+    for name in ("vocabulary.md", "tone.md"):
         assert f"League {name} from the temp folder." in system
-    assert "fact ID" not in system
+    assert "League writer.md from the temp folder." not in system
+    assert "fact ID" in system
+
+
+def test_a_client_with_no_prompts_folder_gets_the_default_voice(tmp_path, fixture_raw_dir):
+    sheet = _sheet(fixture_raw_dir)
+    system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=tmp_path / "prompts")
+    assert load_prompt(DEFAULT_PROMPTS, "tone.md") in system
+    assert load_prompt(DEFAULT_PROMPTS, "vocabulary.md") in system
+
+
+def test_the_cpc_voice_comes_from_the_cpc_client_folder():
+    assert CLIENT.voice_dir == CLIENT.folder / "prompts"
+    assert (CLIENT.voice_dir / "tone.md").is_file() and (CLIENT.voice_dir / "vocabulary.md").is_file()
 
 
 def test_prompt_contains_scope_facts_only(fixture_raw_dir):

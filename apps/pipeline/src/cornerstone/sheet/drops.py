@@ -4,7 +4,7 @@ They come from the nflverse data, so a week with no nflverse data has none.
 """
 from decimal import Decimal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import (
     DropLine,
     Fact,
@@ -12,7 +12,7 @@ from cornerstone.models import (
 from cornerstone.sheet.base import Context, Nums, fact, weeks_text
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The drops and the NFL injury report of each started player, from the nflverse data.
 
     The Matchup of the Week, Game Changer, awards, and recap chapters read them.

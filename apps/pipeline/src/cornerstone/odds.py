@@ -7,7 +7,7 @@ import random
 from collections import Counter
 from typing import Literal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import OddsResult, OddsStatus, Swing, TeamOdds
 from cornerstone.tunables import (
     LEVEL_SHRINK_WEEKS,
@@ -28,7 +28,7 @@ def playoff_odds(
     *,
     season: int,
     week: int,
-    config: LeagueConfig,
+    client: Client,
     runs: int = SIM_RUNS,
     projected: dict[int, dict[int, float]] | None = None,
     projection_weight: float = PROJECTION_WEIGHT,
@@ -47,9 +47,9 @@ def playoff_odds(
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
     The gap reads from the raw average, not the shrunk level, because it measures the change in the roster,
     and the shrink already sits in the level.
-    `config` gives the count of playoff spots and the count of byes.
+    `client` gives the count of playoff spots and the count of byes.
     """
-    playoff_spots, bye_count = config.playoff_spots, config.bye_count
+    playoff_spots, bye_count = client.settings.playoff_spots, client.settings.bye_count
     if len(records) % 2:
         raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
     weeks_left = len(remaining)

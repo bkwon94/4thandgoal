@@ -4,7 +4,7 @@ The rankings chapter reads them, and the chapter itself comes from here.
 """
 from collections.abc import Callable
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_league import (
     head_to_head,
 )
@@ -29,7 +29,7 @@ COMPONENT_WORDS = {
 }
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The power ranks, the odds, the swing of each Must Watch game, and the reasons for the ranks and the odds.
 
     The rankings chapter reads them. The median chapter reads the odds, and the next week chapter reads the swings.
@@ -267,7 +267,7 @@ def required_why_ids(
 
 def rankings_chapter(
     facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], table: list[Standing],
-    odds: OddsResult | None, *, config: LeagueConfig,
+    odds: OddsResult | None, *, client: Client,
 ) -> Chapter:
     """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
 
@@ -281,7 +281,7 @@ def rankings_chapter(
                     f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
                     f"ODDS.{row.roster_id}.why")
     ]
-    low, high = sentence_range(RANKINGS_CHAPTER, config)
+    low, high = sentence_range(RANKINGS_CHAPTER, client)
     return Chapter(
         key=RANKINGS_CHAPTER,
         title="Power rankings",

@@ -4,18 +4,17 @@ They use the recorded week 6 data.
 """
 from datetime import date
 
-from cornerstone.config import cornerstone_config
 from cornerstone.parse import parse_week
 from cornerstone.provider.raw import RawTransaction
 from cornerstone.provider.sleeper import load_raw
 
 
 def test_parse_week_teams_and_matchups(fixture_raw_dir):
-    wk = parse_week(load_raw(fixture_raw_dir), cornerstone_config().owner_username)
+    wk = parse_week(load_raw(fixture_raw_dir))
     assert wk.week == 6 and wk.last_scored_week == 6
     assert len(wk.teams) == 12 and len(wk.matchups) == 6
     bo = next(t for t in wk.teams.values() if t.name == "Bo Girds")
-    assert bo.is_owner and (bo.wins, bo.losses) == (8, 4)
+    assert (bo.wins, bo.losses) == (8, 4)
     assert bo.avatar_url.endswith(".jpg")
     lamb = next(t for t in wk.teams.values() if t.name == "behold the lamb")
     assert lamb.avatar_url.startswith("https://sleepercdn.com/avatars/thumbs/")

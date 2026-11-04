@@ -1,5 +1,5 @@
-"""Builds every directory and label of the repo layout from the repo root or the site root.
-The functions take no config yet. The layout does not name the league, so a later feature adds that segment here only.
+"""Builds every directory and label of the repo layout: the client folders, the shared NFL data, and the site.
+A client folder clients/<slug> holds the data of its league. The NFL data at data/nfl is the same for each client.
 """
 from pathlib import Path
 
@@ -15,39 +15,54 @@ def week_from_label(text: str) -> int:
     return int(text.removeprefix(_WEEK_PREFIX))
 
 
-def _season_root(repo: Path, season: int) -> Path:
-    return repo / "data" / str(season)
+def client_dir(root: Path, slug: str) -> Path:
+    """The folder of the client `slug` under the repo root."""
+    return root / "clients" / slug
 
 
-def week_dir(repo: Path, season: int, week: int) -> Path:
-    return _season_root(repo, season) / week_label(week)
+def nfl_dir(root: Path) -> Path:
+    """The shared NFL data folder under the repo root. No client owns it."""
+    return root / "data" / "nfl"
 
 
-def raw_dir(repo: Path, season: int, week: int) -> Path:
-    return week_dir(repo, season, week) / "raw"
+def _season_root(client: Path, season: int) -> Path:
+    return client / "data" / str(season)
 
 
-def history_root(repo: Path, season: int) -> Path:
-    return _season_root(repo, season) / "history"
+def league_file(client: Path, season: int) -> Path:
+    """The provider league file of the season. The League settings of the season come from it."""
+    return _season_root(client, season) / "league.json"
+
+
+def week_dir(client: Path, season: int, week: int) -> Path:
+    return _season_root(client, season) / week_label(week)
+
+
+def raw_dir(client: Path, season: int, week: int) -> Path:
+    return week_dir(client, season, week) / "raw"
+
+
+def history_root(client: Path, season: int) -> Path:
+    return _season_root(client, season) / "history"
 
 
 def history_week_dir(root: Path, week: int) -> Path:
-    """A week under a given history root, for the readers that hold the root and not the repo."""
+    """A week under a given history root, for the readers that hold the root and not the client folder."""
     return root / week_label(week)
 
 
-def history_dir(repo: Path, season: int, week: int) -> Path:
-    return history_week_dir(history_root(repo, season), week)
+def history_dir(client: Path, season: int, week: int) -> Path:
+    return history_week_dir(history_root(client, season), week)
 
 
 def history_raw_dir(root: Path, week: int) -> Path:
-    """The raw directory of a week, which sits beside the history root: data/{season}/week-NN/raw."""
+    """The raw directory of a week, which sits beside the history root: <client>/data/{season}/week-NN/raw."""
     return root.parent / week_label(week) / "raw"
 
 
-def returns_path(repo: Path, season: int) -> Path:
-    """The hand-kept returns file of the season: the return week by player id, beside the history."""
-    return _season_root(repo, season) / "returns.json"
+def returns_path(nfl: Path, season: int) -> Path:
+    """The hand-kept Returns file of the season: the return week by player id. GLOSSARY.md, "Returns file"."""
+    return nfl / str(season) / "returns.json"
 
 
 def season_dir(site: Path, season: int) -> Path:
@@ -58,30 +73,31 @@ def site_week_dir(site: Path, season: int, week: int) -> Path:
     return season_dir(site, season) / week_label(week)
 
 
-def _cache_dir(repo: Path) -> Path:
-    return repo / "data" / "cache"
+def _cache_dir(nfl: Path) -> Path:
+    return nfl / "cache"
 
 
-def players_cache(repo: Path) -> Path:
-    return _cache_dir(repo) / "players.json"
+def players_cache(nfl: Path) -> Path:
+    return _cache_dir(nfl) / "players.json"
 
 
-def nflverse_cache_dir(repo: Path) -> Path:
+def nflverse_cache_dir(nfl: Path) -> Path:
     """The one nflverse cache directory. The fetch fills it and the analyze command reads it."""
-    return _cache_dir(repo) / "nflverse"
+    return _cache_dir(nfl) / "nflverse"
 
 
-def charts_dir(repo: Path) -> Path:
-    return _cache_dir(repo) / "charts"
+def charts_dir(nfl: Path) -> Path:
+    return _cache_dir(nfl) / "charts"
 
 
-def chart_image(repo: Path, week: int) -> Path:
-    return charts_dir(repo) / f"{week_label(week)}.png"
+def chart_image(nfl: Path, week: int) -> Path:
+    return charts_dir(nfl) / f"{week_label(week)}.png"
 
 
-def chart_read(repo: Path, week: int) -> Path:
-    return charts_dir(repo) / f"{week_label(week)}.json"
+def chart_read(nfl: Path, week: int) -> Path:
+    return charts_dir(nfl) / f"{week_label(week)}.json"
 
 
-def results_cache_dir(repo: Path) -> Path:
-    return _cache_dir(repo) / "results"
+def results_cache_dir(root: Path) -> Path:
+    """The cache of the API results under the repo root. It is not NFL data, so it sits outside data/nfl."""
+    return root / "data" / "cache" / "results"

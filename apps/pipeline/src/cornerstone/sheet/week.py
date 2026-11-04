@@ -3,14 +3,14 @@ Builds the week facts: the week line, the recent adds, and the injured starters.
 The recap chapters read them for the context of each game.
 """
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import (
     Fact,
 )
 from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact, week_dates
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The week line, the publish date, the recent adds, and the injured starters.
 
     The awards chapter reads the recent adds and the injured starters.

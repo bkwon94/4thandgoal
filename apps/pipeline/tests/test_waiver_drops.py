@@ -5,14 +5,15 @@ They feed the week 6 raw with hand-set usage and projections at the engine seam 
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from cornerstone.config import cornerstone_config
+from cpc import cpc_client
+
 from cornerstone.models import BoardScores, NflverseWeek, UsageWeek, WaiverPlayer
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.tunables import DROP_WEEKS, USAGE_SAVED_WEEKS
 from cornerstone.waiver import _rostered, waiver_board
 from cornerstone.waiver_drops import drop_candidates
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 BUILT = datetime(2026, 10, 20, 21, 0, tzinfo=ZoneInfo("America/New_York"))
 # Rostered players of the week 6 fixture. Lil Fridge is roster 3, and all three are on it.
@@ -47,7 +48,7 @@ def _nfl(usage):
 
 
 def _drops(raw, usage):
-    return waiver_board(raw, 6, BUILT, _nfl(usage), config=CONFIG).buckets["drops"]
+    return waiver_board(raw, 6, BUILT, _nfl(usage), client=CLIENT).buckets["drops"]
 
 
 def test_a_rostered_player_with_three_falls_and_a_better_pool_player_lands_in_drops_with_his_roster(fixture_raw_dir):
@@ -140,7 +141,7 @@ def test_five_rb_drop_candidates_all_show_when_they_rank_in_the_top_8(fixture_ra
 
 def test_a_drop_candidate_keeps_its_roster_through_the_saved_board(fixture_raw_dir):
     raw = _raw(fixture_raw_dir, {"80001": _player("RB")}, {"80001": 9.0, DOBBINS: 6.9})
-    board = waiver_board(raw, 6, BUILT, _nfl({DOBBINS: _shares(70, 61, 52, 40)}), config=CONFIG)
+    board = waiver_board(raw, 6, BUILT, _nfl({DOBBINS: _shares(70, 61, 52, 40)}), client=CLIENT)
     saved = type(board).model_validate_json(board.model_dump_json())
     assert saved == board
     assert saved.buckets["drops"][0].drop.holder == "Lil Fridge"
@@ -156,6 +157,6 @@ def test_the_pool_player_who_beats_a_drop_candidate_is_the_best_at_his_position(
     raw = _raw(fixture_raw_dir, {}, {DOBBINS: 5.0})
     pool = [_pool_player("80001", "WR", 300.0, "Top Wideout"), _pool_player("80002", "RB", 77.0, "Second Back"),
             _pool_player("80003", "RB", 88.0, "Top Back")]
-    drops = drop_candidates(raw, 6, {DOBBINS: _shares(70, 61, 52, 40)}, pool, config=CONFIG)
+    drops = drop_candidates(raw, 6, {DOBBINS: _shares(70, 61, 52, 40)}, pool, client=CLIENT)
     # 88 minus 55 over 11 weeks is 3 a week.
     assert [(d.player_id, d.drop.beaten_by_name, d.drop.margin) for d in drops] == [(DOBBINS, "Top Back", 3.0)]

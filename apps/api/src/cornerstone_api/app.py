@@ -15,8 +15,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from cornerstone.analysis import analyze
-from cornerstone.config import LeagueConfig, cornerstone_config
+from cornerstone.client import Client, load_client, read_client_values
 from cornerstone.finder_reasons import write_reasons
+from cornerstone.paths import client_dir
+from cornerstone.provider.sleeper import SLEEPER
 from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE, TEAMS_CACHE_SECONDS
 from cornerstone_api import analyzer as analyzer_routes
 from cornerstone_api import refresh as refresh_routes
@@ -26,6 +28,9 @@ from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 
 logger = logging.getLogger(__name__)
+
+# The one client the API serves, until it serves each client by its path.
+CLIENT_SLUG = "cpc"
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
 # The file of the daily grade counts, in the result cache dir.
@@ -64,13 +69,13 @@ def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
     The log names only the error type, as the chart read does, so it never holds a key.
     """
     try:
-        sources.refresh_current_season(settings.repo)
+        sources.refresh_current_season()
     except Exception as error:  # noqa: BLE001 - the app keeps running after a failed refresh
         logger.warning("The start-up refresh of the slow sources failed (%s)", type(error).__name__)
 
 
 def create_app(
-        settings: Settings, config: LeagueConfig, sources: Sources | None = None,
+        settings: Settings, client: Client, sources: Sources | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
     """The app for these settings. Tests give fixture-backed sources, an analyzer, and a finder reason writer.
@@ -80,13 +85,13 @@ def create_app(
     """
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
-    app.state.sources = sources or Sources(config, clock=lambda: datetime.now(config.tz))
+    app.state.sources = sources or Sources(client, clock=lambda: datetime.now(client.tz))
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.teams_cache = TeamsCache(TEAMS_CACHE_SECONDS)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
     # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
     app.state.grade_limiter = GradeLimiter(
-        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE, config.tz)
+        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE, client.tz)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
@@ -128,6 +133,13 @@ def create_app(
 
 
 def app_from_env() -> FastAPI:
-    """The app with the settings from the environment and the league config. The uvicorn factory flag calls it."""
-    # The one config of the process. The passphrase stays in the settings, because it is a secret and not the league.
-    return create_app(Settings.from_env(), cornerstone_config(), refresh_on_start=True)
+    """The app with the settings from the environment and the client. The uvicorn factory flag calls it.
+
+    A missing or bad client.toml stops the start, so a bad value never reaches a reader.
+    """
+    settings = Settings.from_env()
+    # The one client of the process, with the League settings of its latest season. The passphrase stays in the
+    # settings, because it is a secret and not the league.
+    season = read_client_values(client_dir(settings.repo, CLIENT_SLUG)).latest_season
+    client = load_client(settings.repo, CLIENT_SLUG, season, SLEEPER.fetch_settings)
+    return create_app(settings, client, refresh_on_start=True)

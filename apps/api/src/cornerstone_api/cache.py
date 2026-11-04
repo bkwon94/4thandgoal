@@ -92,7 +92,7 @@ def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:
             "on_file": sorted(player for player in snapshot.rosters[roster_id]
                               if player in due_back and player in snapshot.returns),
             "projections_ahead": {player: _rows_read(projections_ahead.get(player, {}), due_back[player],
-                                                     snapshot.config.last_regular_week)
+                                                     snapshot.client.settings.last_regular_week)
                                   for player in snapshot.rosters[roster_id] if player in due_back},
             "week_n_lines": {player: week_n_lines[player] for player in sorted(snapshot.rosters[roster_id])
                              if player in week_n_lines},

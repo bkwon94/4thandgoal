@@ -2,13 +2,16 @@
 # Run "make help" to list the targets.
 
 SEASON ?= 2026
+# The client slug: the name of its folder under clients/. Each league command needs it, so it has no default.
+CLIENT ?=
 
 # Each command runs in the env of this member only. --exact removes each package it does not list, such as the API,
 # so an import of an unlisted package fails here as it fails in the deploy (decision 07).
 RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
-.PHONY: need-week need-main help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze push
+
+.PHONY: need-week need-client need-main schema settings help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -41,29 +44,39 @@ rules: ## Run the rule tests
 # Install the hook one time per clone with "prek install".
 check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 
-# Usage: make build WEEK=7 [SEASON=2026]
-build: need-week ## Build the report of a week (WEEK required)
-	$(RUN) cornerstone build --season $(SEASON) --week $(WEEK)
+# Usage: make build CLIENT=cpc WEEK=7 [SEASON=2026]
+build: need-client need-week ## Build the report of a week (CLIENT and WEEK required)
+	$(RUN) cornerstone build --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # This target commits apps/site/public and pushes the repo.
-publish: need-week ## Publish a week to apps/site/public and push it (WEEK required)
-	$(RUN) cornerstone publish --season $(SEASON) --week $(WEEK)
+publish: need-client need-week ## Publish a week to apps/site/public and push it (CLIENT and WEEK required)
+	$(RUN) cornerstone publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
-page-json: need-week ## Write page.json for a saved week (WEEK required)
-	$(RUN) cornerstone page-json --season $(SEASON) --week $(WEEK)
+page-json: need-client need-week ## Write page.json for a saved week (CLIENT and WEEK required)
+	$(RUN) cornerstone page-json --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
-rankings: need-week ## Write rankings.json for a saved week (WEEK required)
-	$(RUN) cornerstone rankings --season $(SEASON) --week $(WEEK)
+rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT and WEEK required)
+	$(RUN) cornerstone rankings --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
-# Example: make analyze SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4
+# Example: make analyze CLIENT=cpc SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4
 # SIDES holds two to four sides, each ROSTER:PLAYER@TO,PLAYER@TO. A two-side trade may still use A=4:7569 B=12:10236.
-analyze: ## Grade a trade without the Claude call (SIDES="ROSTER:PLAYER@TO,PLAYER@TO ..." and ASKER required)
+analyze: need-client ## Grade a trade without the Claude call (SIDES="ROSTER:PLAYER@TO,PLAYER@TO ..." and ASKER required)
 	@test -n "$(SIDES)$(A)$(B)" -a -n "$(ASKER)" || { echo "Set SIDES and ASKER. Example: make analyze SIDES=\"4:7569@12 12:10236@4\" ASKER=4"; exit 1; }
-	$(RUN) cornerstone analyze --season $(SEASON) $(foreach side,$(or $(SIDES),$(A) $(B)),--side $(side)) --asker $(ASKER) --no-claude
+	$(RUN) cornerstone analyze --client $(CLIENT) --season $(SEASON) $(foreach side,$(or $(SIDES),$(A) $(B)),--side $(side)) --asker $(ASKER) --no-claude
+
+# The site build checks client.toml with this file, so commit it with the model change that rewrote it.
+schema: ## Rewrite the exported JSON Schema of client.toml
+	$(RUN) python -c "from cornerstone.client import write_schema_file; print(write_schema_file())"
+
+settings: need-client ## Print the League settings and the derived sizes of a season (CLIENT required)
+	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)
 
 # The refresh cron runs from main.
 push: need-main ## Push main to origin (main branch, clean tree only)
 	git push origin main
+
+need-client:
+	@test -n "$(CLIENT)" || { echo "Set CLIENT, the client slug. Example: make $(MAKECMDGOALS) CLIENT=cpc WEEK=8"; exit 1; }
 
 need-week:
 	@test -n "$(WEEK)" || { echo "Set WEEK. Example: make $(MAKECMDGOALS) WEEK=7"; exit 1; }

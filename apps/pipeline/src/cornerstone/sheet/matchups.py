@@ -5,7 +5,7 @@ The recap and Matchup of the Week chapters read them.
 from datetime import datetime
 from decimal import Decimal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.facts_league import STREAK_ON_THE_LINE, streak
 from cornerstone.models import (
     Fact,
@@ -23,7 +23,7 @@ from cornerstone.standings_table import season_records
 STATUS_CLAUSES = {"in": "clinched a playoff spot", "out": "is now out of the playoff race"}
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The result, the lines, the story, the context, and the impact of each matchup.
 
     The Matchup of the Week, Game Changer, and recap chapters read them. The awards chapter reads each result.
@@ -298,7 +298,7 @@ def _impact_fact(c, f, m, new_statuses: dict[int, OddsStatus]) -> Fact:
         place_before, place_after = c.before[rid], c.by_rank[rid].rank
         clauses = [
             _place_clause(place_before, place_after, n),
-            *_cut_clause(place_before, place_after, c.config.playoff_spots),
+            *_cut_clause(place_before, place_after, c.client.settings.playoff_spots),
         ]
         clauses += _odds_clause(c.odds_before, c.odds, rid, n)
         clauses.append(_median_clause(c, f, rid, n))
@@ -316,10 +316,10 @@ def _first_statuses(c) -> dict[int, OddsStatus]:
     The check runs on the records after this week and after the week before, each with its weeks left. A roster
     that had the status last week is not in the result, so a clinch or an out shows only in its first week.
     """
-    h, week, config = c.history, c.week.week, c.config
-    if h is None or not h.complete() or week > config.last_regular_week:
+    h, week, client = c.history, c.week.week, c.client
+    if h is None or not h.complete() or week > client.settings.last_regular_week:
         return {}
-    spots, left = config.playoff_spots, config.last_regular_week - week
+    spots, left = client.settings.playoff_spots, client.settings.last_regular_week - week
     now, before = season_records(h, week), season_records(h, week - 1)
     out = {}
     # The saved odds start at ODDS_FROM_WEEK and the odds of the week before can be missing.

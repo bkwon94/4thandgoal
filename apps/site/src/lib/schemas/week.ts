@@ -20,7 +20,6 @@ export const teamSchema = z.object({
   wins: z.number(),
   losses: z.number(),
   points_for: z.number(),
-  is_brian: z.boolean(),
   /* Only a next-week side has this list. Key starters come first. Older page JSON has none, which reads as empty. */
   byes: z.array(byePlayerSchema).optional(),
 });

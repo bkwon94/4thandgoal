@@ -4,7 +4,7 @@ The standings facts place each team against the last playoff spot.
 """
 from decimal import Decimal
 
-from cornerstone.config import LeagueConfig
+from cornerstone.client import Client
 from cornerstone.models import (
     Fact,
 )
@@ -20,7 +20,7 @@ CUT_PHRASES = {
 }
 
 
-def facts(context: Context, config: LeagueConfig) -> list[Fact]:
+def facts(context: Context, client: Client) -> list[Fact]:
     """The place of each team in the standings, and each score against the league median.
 
     The Matchup of the Week, recap, median, next week, and rankings chapters read the standings. The median chapter

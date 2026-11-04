@@ -205,7 +205,7 @@ def _strength_fact(snapshot: Snapshot, side: Side) -> Fact | None:
     n = Nums()
     team = snapshot.teams[side.roster_id].name
     slots = n.text(", ".join(STRENGTH_SLOTS[:-1]) + f", and {STRENGTH_SLOTS[-1]}")
-    text = (f"For {team}, the starters at {slots} with a position rank of {n(snapshot.config.strength_rank)} or better "
+    text = (f"For {team}, the starters at {slots} with a position rank of {n(snapshot.client.settings.strength_rank)} or better "
             f"go from {n(before)} to {n(after)}.")
     return fact(f"{side.roster_id}.strength", text, n, [team], [])
 

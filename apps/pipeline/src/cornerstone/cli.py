@@ -17,7 +17,7 @@ from cornerstone.adjusters import STEP_WORDS
 from cornerstone.analysis import Analysis, analyze
 from cornerstone.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from cornerstone.claude_port import Writer
-from cornerstone.config import LeagueConfig, cornerstone_config
+from cornerstone.client import CLIENT_FILE, Client, ClientError, check_schema_file, load_client, read_client_values
 from cornerstone.finder import NO_WIN_WIN, find_win_wins
 from cornerstone.live import live_snapshot
 from cornerstone.models import ChartValues, PlayerLine, week_lines
@@ -57,41 +57,44 @@ from cornerstone.writer import analyzer_call, claude_call, parse_call
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cornerstone", description="Build the weekly Cornerstone report.")
     sub = parser.add_subparsers(dest="command", required=True)
+    # Each command that reads a league names its client. The check in main gives the plain line when it is absent.
+    named = argparse.ArgumentParser(add_help=False)
+    named.add_argument("--client", help="the client slug, the name of its folder under clients/")
 
-    build = sub.add_parser("build", help="build the report for a week")
+    build = sub.add_parser("build", parents=[named], help="build the report for a week")
     build.add_argument("--week", type=int)
     build.add_argument("--season", type=int)
     build.add_argument("--no-fetch", action="store_true", help="read the saved raw data")
     build.add_argument("--refetch", action="store_true", help="fetch even when raw data is saved")
 
-    publish = sub.add_parser("publish", help="publish the built report")
+    publish = sub.add_parser("publish", parents=[named], help="publish the built report")
     publish.add_argument("--week", type=int)
     publish.add_argument("--season", type=int)
 
-    rewrite = sub.add_parser("rewrite", help="rewrite one chapter of the report")
+    rewrite = sub.add_parser("rewrite", parents=[named], help="rewrite one chapter of the report")
     rewrite.add_argument("--week", type=int)
     rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
 
-    page_json = sub.add_parser("page-json", help="write page.json for a saved week")
+    page_json = sub.add_parser("page-json", parents=[named], help="write page.json for a saved week")
     page_json.add_argument("--week", type=int)
     page_json.add_argument("--season", type=int)
 
-    rankings = sub.add_parser("rankings", help="write the rankings blurb and rankings.json for a saved week")
+    rankings = sub.add_parser("rankings", parents=[named], help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
     rankings.add_argument("--season", type=int)
 
-    history = sub.add_parser("history", help="fetch and cache past weeks")
+    history = sub.add_parser("history", parents=[named], help="fetch and cache past weeks")
     history.add_argument("--season", type=int)
     history.add_argument("--through", type=int, required=True)
     history.add_argument("--force", action="store_true", help="fetch even when a week is saved")
 
-    chart = sub.add_parser("chart", help="fetch, read, and match the trade value chart of a week")
+    chart = sub.add_parser("chart", parents=[named], help="fetch, read, and match the trade value chart of a week")
     chart.add_argument("--week", type=int)
     chart.add_argument("--season", type=int)
 
     analyze = sub.add_parser(
-        "analyze", help="grade a proposed trade from the league now, or from the saved data of a week",
+        "analyze", parents=[named], help="grade a proposed trade from the league now, or from the saved data of a week",
         description="Grade a proposed trade from a snapshot. Without --week, the command fetches the league "
                     "from Sleeper now. With --week, it reads the saved data of that week. "
                     "Give --side two to four times, once for each roster, as ROSTER:PLAYER@TO,PLAYER@TO, where TO "
@@ -111,7 +114,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # The finder loads its snapshot the way analyze does, so it takes the same --week and --chart.
     find = sub.add_parser(
-        "find", help="list the top trades between two rosters that are good for both",
+        "find", parents=[named], help="list the top trades between two rosters that are good for both",
         description="Grade every one-for-one and two-for-one swap between two rosters and print the top three "
                     "that are good for both. Without --week, the command fetches the league from Sleeper now. "
                     "With --week, it reads the saved data of that week. It makes no Claude call. "
@@ -122,6 +125,12 @@ def build_parser() -> argparse.ArgumentParser:
     find.add_argument("--partner", type=int, required=True, help="the roster id of the partner team")
     find.add_argument("--chart", type=Path,
                       help="a trade values JSON file; the default is the chart of the trade window week")
+
+    settings = sub.add_parser("settings", parents=[named], help="print the League settings and the sizes of a season")
+    settings.add_argument("--season", type=int)
+
+    check = sub.add_parser("check-client", help="check the client.toml of a client folder and the exported schema")
+    check.add_argument("folder", type=Path, help="the client folder, such as ../../clients/cpc")
 
     return parser
 
@@ -158,10 +167,10 @@ def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> li
     return built
 
 
-def _saved_chart_values(repo: Path, week: int, raw: RawWeek) -> ChartValues | None:
+def _saved_chart_values(nfl: Path, week: int, raw: RawWeek) -> ChartValues | None:
     """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
     # The chart module owns the rules for a saved read, so a bad or stale one gives None here too.
-    chart = saved_chart_read(repo, week)
+    chart = saved_chart_read(nfl, week)
     if chart is None:
         return None
     return match_chart(chart, week_lines(parse_week(raw)))
@@ -206,26 +215,26 @@ def _sources_line(snapshot: Snapshot) -> str:
     return f"Sources missing: {', '.join(missing)}."
 
 
-def _saved_snapshot(repo: Path, args: argparse.Namespace, config: LeagueConfig) -> Snapshot | None:
+def _saved_snapshot(args: argparse.Namespace, client: Client) -> Snapshot | None:
     """The snapshot of the saved week, or None after a plain line when the week has no raw data."""
-    if not has_raw(repo, args.season, args.week):
+    if not has_raw(client.folder, args.season, args.week):
         print(f"No raw data is saved for week {args.week} of {args.season}. Build the week first.")
         return None
-    raw_path = raw_dir(repo, args.season, args.week)
+    raw_path = raw_dir(client.folder, args.season, args.week)
     raw = load_raw(raw_path)
     if args.chart is not None:
         chart = _given_chart(args.chart)
     else:
-        chart = _saved_chart_values(repo, args.week, raw)
-    history = history_root(repo, args.season)
+        chart = _saved_chart_values(client.nfl_dir, args.week, raw)
+    history = history_root(client.folder, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
-    slow = load_slow_sources(nflverse_cache_dir(repo), args.season, args.week, history,
+    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), args.season, args.week, history,
                              raw.league.scoring_settings)
-    return load_snapshot(raw_path, history, chart, slow, config=config)
+    return load_snapshot(raw_path, history, chart, slow, client=client)
 
 
 def _live_snapshot(
-        repo: Path, args: argparse.Namespace, config: LeagueConfig, writer: Writer | None, provider: Provider,
+        args: argparse.Namespace, client: Client, writer: Writer | None, provider: Provider,
 ) -> Snapshot | None:
     """The snapshot of the league now. A given --chart file stands in for the chart read."""
     read_chart = partial(chart_values, read=claude_reader(partial(parse_call, writer=writer)))
@@ -233,10 +242,10 @@ def _live_snapshot(
         given = _given_chart(args.chart)
 
         # A given file is the chart of the trade, so the reader needs neither the week nor the lines.
-        def read_chart(repo: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
+        def read_chart(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
             return given
     try:
-        return live_snapshot(repo, args.season, config=config, now=datetime.now(config.tz), read_chart=read_chart,
+        return live_snapshot(args.season, client=client, now=datetime.now(client.tz), read_chart=read_chart,
                              fetch_sleeper=provider.fetch_live, fetch_history_week=provider.fetch_past_leg,
                              fetch_projections=provider.fetch_projections)
     except ValueError as err:
@@ -278,7 +287,7 @@ def _print_as_of(snapshot: Snapshot) -> None:
 
 
 def run_analyze(
-        repo: Path, args: argparse.Namespace, config: LeagueConfig, writer: Writer | None, provider: Provider,
+        args: argparse.Namespace, client: Client, writer: Writer | None, provider: Provider,
 ) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
@@ -291,8 +300,8 @@ def run_analyze(
     if sides is None:
         print("Give each player a destination, as PLAYER@ROSTER, in a trade of three or more sides.")
         return 2
-    snapshot = (_live_snapshot(repo, args, config, writer, provider) if args.week is None
-                else _saved_snapshot(repo, args, config))
+    snapshot = (_live_snapshot(args, client, writer, provider) if args.week is None
+                else _saved_snapshot(args, client))
     if snapshot is None:
         return 2
     try:
@@ -351,15 +360,15 @@ def run_analyze(
 
 
 def run_find(
-        repo: Path, args: argparse.Namespace, config: LeagueConfig, writer: Writer | None, provider: Provider,
+        args: argparse.Namespace, client: Client, writer: Writer | None, provider: Provider,
 ) -> int:
     """Print the top win-win trades between the asker and the partner, each with its sides and its fairness."""
     # A plain line for the same roster twice, before the snapshot loads, so no load runs for nothing.
     if args.asker == args.partner:
         print("Give two different rosters for --asker and --partner.")
         return 2
-    snapshot = (_live_snapshot(repo, args, config, writer, provider) if args.week is None
-                else _saved_snapshot(repo, args, config))
+    snapshot = (_live_snapshot(args, client, writer, provider) if args.week is None
+                else _saved_snapshot(args, client))
     if snapshot is None:
         return 2
     for roster_id in (args.asker, args.partner):
@@ -383,10 +392,10 @@ def run_find(
 
 
 def run_chart(
-        repo: Path, season: int, week: int, writer: Writer | None, fetch_state: Callable[[], RawState],
+        client: Client, season: int, week: int, writer: Writer | None, fetch_state: Callable[[], RawState],
 ) -> int:
     """Print the parsed chart, every guard, and the match against the saved raw data of the week."""
-    raw = load_raw(raw_dir(repo, season, week)) if has_raw(repo, season, week) else None
+    raw = load_raw(raw_dir(client.folder, season, week)) if has_raw(client.folder, season, week) else None
     if raw is not None:
         league = parse_week(raw)
         season_start = league.season_start
@@ -397,7 +406,7 @@ def run_chart(
             print(f"No raw data is saved for week {week} of {season}. Build the week first.")
             return 2
         season_start = date.fromisoformat(state.season_start_date)
-    check = check_chart(repo, season_start, week, read=claude_reader(partial(parse_call, writer=writer)))
+    check = check_chart(client.nfl_dir, season_start, week, read=claude_reader(partial(parse_call, writer=writer)))
     if check is None:
         print(f"Week {week} has no chart. The log says why.")
         return 1
@@ -423,6 +432,39 @@ def run_chart(
     return 0
 
 
+# The plain line when a command names no client, so no build reads the wrong league.
+NO_CLIENT = "Name the client slug with --client. Example: --client cpc. Each client is a folder under clients/."
+
+
+def find_root(start: Path) -> Path | None:
+    """The repo root: the first folder from `start` upward that holds clients/. None when no folder does."""
+    return next((folder for folder in (start, *start.parents) if (folder / "clients").is_dir()), None)
+
+
+def run_check_client(folder: Path) -> int:
+    """Check the client folder `folder` and the exported schema. Print OK, or each broken rule and exit 2."""
+    try:
+        read_client_values(folder)
+        check_schema_file()
+    except ClientError as err:
+        print(err)
+        return 2
+    print(f"{folder / CLIENT_FILE} passes the check.")
+    return 0
+
+
+def run_settings(client: Client, season: int) -> int:
+    """Print the League settings of the season and each size that derives from them."""
+    settings = client.settings
+    print(f"League settings of {client.slug} for {season}:")
+    for name in ("team_count", "playoff_spots", "bye_count", "last_regular_week", "last_season_week",
+                 "return_by_week", "lines", "strength_rank", "star_rank_by_position", "grade_spare_rank",
+                 "grade_strong_rank", "grade_soft_rank", "reception_points", "points_key", "median_game",
+                 "roster_slots"):
+        print(f"  {name}: {getattr(settings, name)}")
+    return 0
+
+
 def main(
         argv: list[str] | None = None, *, writer: Writer | None = None, provider: Provider = SLEEPER,
         fetch_state: Callable[[], RawState] = fetch_state,
@@ -433,47 +475,63 @@ def main(
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = build_parser().parse_args(argv)
+    if args.command == "check-client":
+        return run_check_client(args.folder)
     repo = Path.cwd()
     if not (repo / "pyproject.toml").exists():
-        print("Run cornerstone from the repo root. No pyproject.toml in the current directory.")
+        print("Run cornerstone from the pipeline folder. No pyproject.toml in the current directory.")
         return 2
-    # The one config of the run. Every command that needs a league value gets it from here.
-    config = cornerstone_config()
+    if args.client is None:
+        print(NO_CLIENT)
+        return 2
+    root = find_root(repo)
+    if root is None:
+        print(f"No clients folder in {repo} or above it. Run cornerstone inside the repo.")
+        return 2
     # The Claude calls of the CLI. The chart read and the analyzer call get the writer in their commands.
     # The build gets the writer too, for its research call.
     call = partial(claude_call, writer=writer)
+
+    def load(season: int) -> Client:
+        # The one client of the run. Every command that needs a league value gets it from here.
+        return load_client(root, args.client, season, provider.fetch_settings)
+
     try:
-        if args.command == "history":
-            # History has no --week, so it skips resolve_week.
+        if args.command in ("history", "settings"):
+            # History and settings have no --week, so they skip resolve_week.
             season = args.season if args.season is not None else int(fetch_state().season)
-            weeks = run_history(repo, season, args.through, force=args.force, config=config)
+            client = load(season)
+            if args.command == "settings":
+                return run_settings(client, season)
+            weeks = run_history(season, args.through, force=args.force, client=client)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
         if args.command == "analyze":
             # Analyze skips resolve_week. Without --week it reads Sleeper itself, and with --week it reads disk.
-            return run_analyze(repo, args, config, writer, provider)
+            return run_analyze(args, load(args.season), writer, provider)
         if args.command == "find":
             # Find skips resolve_week for the same reason as analyze.
-            return run_find(repo, args, config, writer, provider)
+            return run_find(args, load(args.season), writer, provider)
         # resolve_week can call Sleeper, so a network failure gets the same plain exit.
         season, week = resolve_week(args.season, args.week, fetch_state)
+        client = load(season)
         if args.command == "build":
             # A named week with saved raw data rebuilds from disk, so a rebuild sees the same data.
             fetch = not args.no_fetch and (
-                args.refetch or args.week is None or not has_raw(repo, season, week)
+                args.refetch or args.week is None or not has_raw(client.folder, season, week)
             )
-            page = run_build(repo, season, week, call, fetch=fetch, config=config, provider=provider, writer=writer)
+            page = run_build(repo, season, week, call, fetch=fetch, client=client, provider=provider, writer=writer)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
         elif args.command == "chart":
-            return run_chart(repo, season, week, writer, fetch_state)
+            return run_chart(client, season, week, writer, fetch_state)
         elif args.command == "page-json":
-            print(run_page_json(repo, season, week))
+            print(run_page_json(repo, season, week, client=client))
         elif args.command == "rankings":
-            print(run_rankings(repo, season, week, call, config=config))
+            print(run_rankings(repo, season, week, call, client=client))
         elif args.command == "rewrite":
-            page = run_rewrite(repo, season, week, args.chapter, call, config=config)
+            page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)
             print(f"Site page after publish: {site_page_url(season, week)}")
             preview(page)
@@ -482,7 +540,7 @@ def main(
             if answer not in ("y", "Y"):
                 print("Not published.")
                 return 0
-            print(run_publish(repo, season, week))
+            print(run_publish(repo, season, week, client.folder / "data"))
     except (BuildStopped, PublishError, ValueError) as err:
         print(err)
         return 2
