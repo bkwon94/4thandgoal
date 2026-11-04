@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-16.
 
 **Blocked by:** 03, 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `design` package holds the modules of decision 01 and the usage count.
 - [x] The shell has the three menu layouts `hamburger`, `bar`, and `tabs`. With no `items`, the menu takes the package list in its order.
