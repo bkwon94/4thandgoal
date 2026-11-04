@@ -36,6 +36,12 @@ choice per feature, in one line, and one spec of a feature touches one folder.
 `uv` and `pnpm` must each find their code under `packages/`, and the check must run each language
 for each package. We pay that cost one time.
 
+Each language has one workspace and one lock file at the root: a uv workspace over `apps/*` and
+`packages/*/python`, and a pnpm workspace over `apps/site` and `packages/*/site`. A diff checks each
+package it touches, in both languages, plus each package that depends on it. Each Python member runs
+with `uv run --exact`, so an undeclared import fails. `.scratch/clients/decisions/07-prototype-one-workspace-two-languages.md`
+records the proof.
+
 ## Rejected
 
 - **A package per app**, such as `apps/pipeline/packages/waiver/` and `apps/site/packages/waiver/`.

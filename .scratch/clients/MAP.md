@@ -28,10 +28,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - The second league is NorCal Apex 6: full PPR, no median game, no DEF, a dark brand. The League settings carry the median game and the positions, the chart is a value, the returns file is shared, and a client can override only the voice. `decisions/04-grill-the-second-league-week.md`.
 - The host is Cloudflare Workers with static assets, one Worker per client, named by the client slug. NorCal serves at its free `workers.dev` URL, and CPC stays on GitHub Pages. `decisions/05-research-the-second-site-host.md`.
 - The provider port can take ESPN and Yahoo later. The Sleeper player ID is the canonical ID, the cache path moves into the adapter, and the `league` README lists each Sleeper shape as an adapter duty. `decisions/06-research-the-espn-and-yahoo-apis.md`.
+- One root uv workspace and one root pnpm workspace, each with one lock file. The API moves to `apps/api/`. A diff checks each touched package in both languages plus its dependents, with `uv run --exact`. A root file runs the full check. `decisions/07-prototype-one-workspace-two-languages.md`.
 
 ## NOT YET SPECIFIED
 
-- How do `uv` and `pnpm` find the code of a package, and how does the check run per package? `decisions/07-prototype-one-workspace-two-languages.md`.
 - How does the Next.js build select one client from `client.toml`? `decisions/08-prototype-the-client-build.md`.
 - The spec. `decisions/09-spec-clients.md`.
 
