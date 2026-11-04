@@ -281,7 +281,7 @@ Brian does each step. The ticket that needs a step names it as a blocker. When `
 3. Add the Custom Domain of each Worker: `cpc.4thandgoal.app` and `norcal.4thandgoal.app`.
 4. Add the Redirect Rule on `cpcfantasy.com`.
 5. Run `fly certs add api.4thandgoal.app`, and add its DNS record.
-6. Before the PR merges, run `fly secrets set CORNERSTONE_PASSPHRASE_CPC=<the current passphrase>`. Ticket 15 adds `CORNERSTONE_PASSPHRASE_NORCAL`.
+6. Before the PR merges, run `fly secrets set CORNERSTONE_PASSPHRASE_CPC=<the current passphrase>` for the API. Then run `gh secret set CORNERSTONE_PASSPHRASE_CPC --repo bkwon94/cpcfantasyfootball` for the daily refresh cron. Ticket 15 adds `CORNERSTONE_PASSPHRASE_NORCAL` in both places.
 
 ## Testing Decisions
 
