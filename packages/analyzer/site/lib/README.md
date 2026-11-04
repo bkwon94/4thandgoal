@@ -11,7 +11,7 @@
 ## Ports
 
 - The site API, at `<url>/clients/<slug>/teams`, `/analyze`, and `/find`.
-- Local storage and session storage, through `passphrase.ts`, `team-pick.ts`, and `teams-store.ts`.
+- Local storage and session storage, through `passphrase.ts` and `teams-store.ts`.
 
 ## Does not do
 

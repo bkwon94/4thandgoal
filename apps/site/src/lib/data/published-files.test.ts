@@ -10,7 +10,7 @@ import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
 import { rankingsSchema } from "../schemas/rankings";
-import { waiverBoardSchema } from "../schemas/waiver";
+import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
 
 const PUBLIC_DIR = join(process.cwd(), "public");

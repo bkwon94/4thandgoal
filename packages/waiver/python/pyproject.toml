@@ -1,0 +1,51 @@
+# The Python side of the waiver package: the waiver board, its price, its research step, and the waiver file.
+# It lists only the league and the facts packages, so "uv run --exact --package cpc-waiver" fails an import of an app.
+[project]
+name = "cpc-waiver"
+version = "0.1.0"
+description = "The waiver board, its price, its research step and prompt, and the waiver file."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cpc-facts",
+    "cpc-league",
+    "anthropic>=1.15.0",
+    "pydantic>=2.14.1",
+]
+
+[tool.uv.sources]
+cpc-facts = { workspace = true }
+cpc-league = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# The waiver package imports the league and the facts packages as its own code, so each sorts as first party in one block.
+[tool.ruff.lint.isort]
+known-first-party = ["facts", "league", "waiver"]
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/waiver/__init__.py", "src/waiver/projection.py", "src/waiver/rank_score.py", "src/waiver/render.py",
+           "src/waiver/tunables.py"]
+
+[tool.uv.build-backend]
+module-name = "waiver"

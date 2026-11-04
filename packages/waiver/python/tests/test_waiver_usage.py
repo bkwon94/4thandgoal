@@ -8,9 +8,9 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.waiver import waiver_board
 from league.models import NflverseWeek, TeamWeek, UsageWeek
 from league.provider.sleeper import load_raw
+from waiver.board import waiver_board
 
 CLIENT = cpc_client()
 

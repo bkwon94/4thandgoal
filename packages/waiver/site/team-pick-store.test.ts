@@ -3,7 +3,7 @@
  * A value that is not a whole roster id reads as no pick.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getTeamPick, setTeamPick } from "./team-pick";
+import { getTeamPick, setTeamPick } from "./team-pick-store";
 
 beforeEach(() => {
   localStorage.clear();

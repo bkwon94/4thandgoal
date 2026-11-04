@@ -4,17 +4,26 @@
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ComponentType, useEffect, useState } from "react";
 import { useMarkHydrated } from "@cpc/design/hooks/use-mark-hydrated";
 import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { Avatar } from "@cpc/league/avatar";
 import { Headshot } from "@cpc/league/headshot";
-import { getTeamPick, setTeamPick } from "@cpc/analyzer/lib/team-pick";
+import { getTeamPick, setTeamPick } from "./team-pick-store";
 import { cn } from "@cpc/design/lib/utils";
-import { BEST_ADDS, BUCKETS, type BucketKey, type BudgetRow, type WaiverBoard, type WaiverPlayer } from "@/lib/waiver-types";
-import type { AvatarMap, Team } from "@cpc/week/schema/week-types";
+import {
+  type AvatarMap,
+  BEST_ADDS,
+  BUCKETS,
+  type BucketKey,
+  type BudgetRow,
+  type TeamNames,
+  type TeamPickerProps,
+  type WaiverBoard,
+  type WaiverPlayer,
+} from "./types";
 import { DriftField } from "./drift-field";
 import { SLOTS } from "./field-layout";
 import { holderLine, priceText, teamName, waiverMetaLine } from "./format";
@@ -42,7 +51,7 @@ function BudgetRing({
   viewerId,
 }: {
   budgets: BudgetRow[];
-  teams: Record<string, Team>;
+  teams: TeamNames;
   avatars: AvatarMap;
   viewerId: number | null;
 }) {
@@ -135,7 +144,18 @@ function RestList({
   );
 }
 
-export function WarChest({ board, teams, avatars }: { board: WaiverBoard; teams: Record<string, Team>; avatars: AvatarMap }) {
+/* The War chest page. TeamPicker is the port of the team list: the route passes the picker of the app. */
+export function WarChest({
+  board,
+  teams,
+  avatars,
+  TeamPicker,
+}: {
+  board: WaiverBoard;
+  teams: TeamNames;
+  avatars: AvatarMap;
+  TeamPicker: ComponentType<TeamPickerProps>;
+}) {
   // Only the buckets in the file get a tab, so an older file shows no empty tabs.
   const tabs = BUCKETS.filter(({ key }) => board.buckets[key]);
   const [bucket, setBucket] = useState<BucketKey>(BEST_ADDS);
@@ -166,7 +186,7 @@ export function WarChest({ board, teams, avatars }: { board: WaiverBoard; teams:
         {pick === undefined ? (
           <div aria-hidden className="h-pick-chip" />
         ) : (
-          <TeamPick viewer={viewer} budgets={board.budgets} teams={teams} avatars={avatars} onPick={choose} />
+          <TeamPick viewer={viewer} budgets={board.budgets} teams={teams} avatars={avatars} onPick={choose} TeamPicker={TeamPicker} />
         )}
       </div>
       <Label dark>War chest</Label>

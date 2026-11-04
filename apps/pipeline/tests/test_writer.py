@@ -570,9 +570,9 @@ def test_the_fake_writer_raises_a_type_error_when_the_answer_is_not_the_asked_mo
 
 
 def test_the_research_call_alone_sends_the_web_search_tool():
-    from cornerstone.waiver_research import search_call
     from facts.writer import claude_call
     from league.models import ResearchOut
+    from waiver.research import search_call
 
     writer, sent = _stub_writer()
     search_call("research system", "user text", writer=writer)

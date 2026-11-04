@@ -1,5 +1,6 @@
 """
-Writes the files of a week: the page.json through the page writer of the week package, and the waiver file.
+Writes the files of a week: the page.json through the page writer of the week package, and the waiver file
+through the waiver package.
 It also writes the season file of rankings. The managers package writes its own file. The site renders the pages.
 """
 import json
@@ -11,26 +12,15 @@ from cornerstone.power_rankings import power_rankings
 from league.files import write_bytes_atomic
 from league.models import Blurb, Bundle, History, OddsResult, Team
 from league.standings_table import season_records
-from week.page import download_bytes, week_site_dir, write_week_page
+from waiver.render import render_waiver
+from week.page import download_bytes, write_week_page
 
 # The season file has its own version, so a change to one file never breaks the reader of the other.
 RANKINGS_SCHEMA_VERSION = 1
-# The waiver file has its own version too, so the site reads a week with or without it.
-WAIVER_SCHEMA_VERSION = 1
 # The keys of the odds object on a rankings row, in the order of the site type.
 RANKINGS_ODDS_KEYS = ("playoff", "bye", "seed", "status")
 
 log = logging.getLogger(__name__)
-
-
-def render_waiver(bundle: Bundle, site_dir: Path) -> Path | None:
-    """Write waiver.json beside page.json from the board in the bundle. None when the bundle has no board."""
-    if bundle.waiver is None:
-        return None
-    body = {"schema_version": WAIVER_SCHEMA_VERSION, **bundle.waiver.model_dump(mode="json")}
-    out = week_site_dir(site_dir, bundle) / "waiver.json"
-    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
-    return out
 
 
 def _saved_rankings(path: Path) -> tuple[dict[tuple[int, int], list[dict]], dict[tuple[int, int], dict]]:

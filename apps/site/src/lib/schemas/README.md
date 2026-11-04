@@ -2,7 +2,7 @@
 
 ## Knows
 
-- One Zod schema per published file: the rankings file and `waiver.json`. The week package holds the schema of the week page file, and the managers package holds the schema of the managers file.
+- One Zod schema per published file: the rankings file. The week package holds the schema of the week page file, `@cpc/managers` holds the schema of the managers file, and `@cpc/waiver` holds the schema of `waiver.json`.
 - The keys that an older build may leave out, so the site reads every file the pipeline wrote.
 
 ## Ports

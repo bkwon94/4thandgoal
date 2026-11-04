@@ -1,14 +1,15 @@
 /**
- * Tests for the War chest waiver page. They render the fixture with the week 6 teams and read what a reader sees.
+ * Tests for the War chest waiver page with the team picker that the route passes. They render the fixture with the week 6 teams and read what a reader sees.
  * jsdom applies no CSS and runs no animation, so the size and the drift tests read an inline style and a data attribute.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { week6 } from "@cpc/week/fixtures/week-page";
-import type { WaiverBoard, WaiverPlayer } from "@/lib/waiver-types";
+import { TeamPicker } from "@cpc/analyzer/form/team-picker";
+import type { WaiverBoard, WaiverPlayer } from "@cpc/waiver/types";
 import { waiver } from "@/fixtures/waiver";
-import { WarChest } from "./war-chest";
+import { WarChest } from "@cpc/waiver/war-chest";
 
 beforeEach(() => {
   localStorage.clear();
@@ -20,7 +21,7 @@ afterEach(() => {
 });
 
 function renderBoard(board: WaiverBoard = waiver) {
-  render(<WarChest board={board} teams={week6.teams} avatars={{ "4": "/2026/week-06/avatars/4.jpg" }} />);
+  render(<WarChest board={board} teams={week6.teams} avatars={{ "4": "/2026/week-06/avatars/4.jpg" }} TeamPicker={TeamPicker} />);
 }
 
 function rowsOf(name: string) {
@@ -281,7 +282,7 @@ describe("the team pick", () => {
   });
 
   it("holds an empty slot of the chip height until it reads storage", () => {
-    const markup = renderToString(<WarChest board={waiver} teams={week6.teams} avatars={{}} />);
+    const markup = renderToString(<WarChest board={waiver} teams={week6.teams} avatars={{}} TeamPicker={TeamPicker} />);
     expect(markup).toContain("h-pick-chip");
     expect(markup).not.toContain('name="Your team"');
   });

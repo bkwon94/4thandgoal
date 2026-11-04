@@ -12,7 +12,7 @@ import { sleeperHeadshot } from "@cpc/league/images";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DRIFT_EASE, DURATION, INSTANT, rise, stagger } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
-import type { BucketKey, WaiverPlayer } from "@/lib/waiver-types";
+import type { BucketKey, WaiverPlayer } from "./types";
 import { FIELD, fieldScale, LABEL, scaleSlot, SLOTS, TAG, type Slot } from "./field-layout";
 import { priceText } from "./format";
 
