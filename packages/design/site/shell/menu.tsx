@@ -16,8 +16,9 @@ import { DROP, DURATION, EASE_OUT, INSTANT, stagger } from "../lib/motion";
 /* One place the menu links to. The href carries the base path, because every link is a plain anchor. */
 export type Destination = { label: string; href: string };
 
-/* The home link and the logo src of the brand, each with the base path. The logo src sits with the link, because it takes the base path the same way. */
-export type Brand = { home: string; logo: string };
+/* The home link and the logo src of the brand, each with the base path. The logo src sits with the link, because it takes the base path the same way.
+   A brand with no logo gives null, and the masthead shows its title as text. A brand with one set has no theme to switch, so it shows no theme button. */
+export type Brand = { home: string; logo: string | null; themeButton: boolean };
 
 /* The destinations of the menu: the pages first, then the past weeks, newest first, under their own heading. */
 export type Destinations = { pages: Destination[]; pastWeeks: Destination[] };
@@ -245,10 +246,20 @@ function CompactBar({ title, brand, off, children, ref }: CompactBarProps) {
     >
       {/* The same box as the masthead, so the content of the bar lines up with the page column. */}
       <div className="mx-auto flex h-full max-w-page items-center justify-between gap-sp-3 px-gutter">
-        {/* The bar shows the logo with no title, so the logo names the home link. */}
+        {/* The bar shows the logo with no title, so the logo names the home link. A brand with no logo shows the title as text. */}
         {/* The link takes the full height of the bar, so it is a 44px tap target around the 30px logo. */}
-        <a href={brand.home} className="flex h-touch flex-none items-center">
-          <img src={brand.logo} alt={title} width={30} height={30} className="size-logo rounded-full" />
+        {/* A title can be long, so the text link may shrink and cut the title, while the logo keeps its size. */}
+        <a
+          href={brand.home}
+          className={`flex h-touch items-center text-inherit no-underline ${brand.logo !== null ? "flex-none" : "min-w-0"}`}
+        >
+          {brand.logo !== null ? (
+            <img src={brand.logo} alt={title} width={30} height={30} className="size-logo rounded-full" />
+          ) : (
+            <span translate="no" className="truncate text-meta leading-tight font-bold tracking-wide uppercase">
+              {title}
+            </span>
+          )}
         </a>
         {children}
       </div>
@@ -338,7 +349,9 @@ export function Menu({ destinations, pageHref, title, brand }: MenuIslandProps) 
             so the two buttons stay together at the right end and the brand link stays at the left.
             From the desktop tier the menu button hides, and the theme button stays at the right end of the brand line, in the second cell of the grid.
             The negative margin there lines the icon up with the page edge, as the menu button does below the desktop tier. */}
-        <ThemeButton className="ml-auto desktop:col-start-2 desktop:row-start-1 desktop:-mr-sp-3 [@media(scripting:none)]:hidden" />
+        {brand.themeButton && (
+          <ThemeButton className="ml-auto desktop:col-start-2 desktop:row-start-1 desktop:-mr-sp-3 [@media(scripting:none)]:hidden" />
+        )}
         <MenuButton
           ref={buttonRef}
           open={open}
@@ -354,11 +367,11 @@ export function Menu({ destinations, pageHref, title, brand }: MenuIslandProps) 
                 pageHref={pageHref}
                 label="Top bar menu"
                 className=""
-                withThemeButton
+                withThemeButton={brand.themeButton}
                 layout="hamburger"
               />
               {/* The bar never renders with scripts off, so the theme button here needs no scripting rule. */}
-              <ThemeButton className="ml-auto desktop:hidden" />
+              {brand.themeButton && <ThemeButton className="ml-auto desktop:hidden" />}
               {/* A second trigger of the same dialog. Base UI marks the trigger that opened the sheet, so focus returns to it on close. */}
               <MenuButton open={open} off={off} listId={listId} className="desktop:hidden" />
             </CompactBar>

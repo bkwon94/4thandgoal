@@ -87,7 +87,7 @@ class MenuItem(_Strict):
 
 
 class Menu(_Strict):
-    """The menu layout and its items. With no items, the menu takes the package list in its order."""
+    """The menu layout and its items. With no items, the menu takes the home page, then the package list in its order."""
     layout: Literal["hamburger", "bar", "tabs"] = "hamburger"
     items: list[MenuItem] | None = None
 

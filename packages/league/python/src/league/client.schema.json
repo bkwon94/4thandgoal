@@ -42,7 +42,7 @@
     },
     "Menu": {
       "additionalProperties": false,
-      "description": "The menu layout and its items. With no items, the menu takes the package list in its order.",
+      "description": "The menu layout and its items. With no items, the menu takes the home page, then the package list in its order.",
       "properties": {
         "layout": {
           "default": "hamburger",

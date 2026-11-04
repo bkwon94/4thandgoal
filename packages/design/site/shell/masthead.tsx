@@ -56,9 +56,13 @@ export function Masthead({
           {/* The link is at least 44px tall, so it is a comfortable tap target on a phone. */}
           {/* In the grid of the desktop tier the link keeps the width of its content, so the empty space of the cell is no link. */}
           <a href={brand.home} className="flex min-h-touch items-center gap-sp-3 text-inherit no-underline desktop:justify-self-start">
-            {/* The title next to the logo names the link, so the logo is decorative. */}
-            <img src={brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
-            <div className="h-divider w-px bg-mute" />
+            {/* The title next to the logo names the link, so the logo is decorative. A brand with no logo shows the title alone. */}
+            {brand.logo !== null && (
+              <>
+                <img src={brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
+                <div className="h-divider w-px bg-mute" />
+              </>
+            )}
             <div>
               {/* The brand name stays as it is under a page translator. Where the title must wrap, the balance splits it into even lines. */}
               <div translate="no" className="text-meta leading-tight font-bold tracking-wide text-balance uppercase">
@@ -71,7 +75,7 @@ export function Masthead({
             <Menu destinations={destinations} pageHref={pageHref} title={title} brand={brand} />
           ) : (
             // The negative margin lines the icon up with the page edge, as the menu button does in the hamburger layout.
-            <ThemeButton className="ml-auto -mr-sp-3 [@media(scripting:none)]:hidden" />
+            brand.themeButton && <ThemeButton className="ml-auto -mr-sp-3 [@media(scripting:none)]:hidden" />
           )}
         </div>
         {menu.layout !== "hamburger" && <LinkRow destinations={destinations} pageHref={pageHref} layout={menu.layout} />}
