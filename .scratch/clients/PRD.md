@@ -5,7 +5,7 @@ Date: 2026-11-04
 Apps: both. The pipeline and the API read `client.toml` and move their domain code into packages. The site build selects one client, generates its routes, and applies its brand. The API moves to its own app.
 Spec branch: `clients`.
 Source: the map `.scratch/clients/MAP.md` and decision tickets 01 to 09. ADRs 0019, 0022, and 0023.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 15, in `issues/`.
 
 ## Problem Statement
 
