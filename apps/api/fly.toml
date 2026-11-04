@@ -4,6 +4,7 @@
 app = "cpcfantasy-api"
 primary_region = "ewr"
 
+# The build context is the repo root. "make deploy" passes the Dockerfile and its ignore file as flags.
 [build]
   dockerfile = "Dockerfile"
 

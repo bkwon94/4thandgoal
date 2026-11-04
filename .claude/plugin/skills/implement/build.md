@@ -6,8 +6,8 @@ Stages 1 and 2 of `cpc:implement`. The main checkout is the repo root on `main`.
 
 A new worktree has no `node_modules` and no `.venv`, and the hook installs nothing. Run these two commands in each new worktree:
 
-1. `pnpm install --frozen-lockfile` in `apps/site`.
-2. `uv sync` in `apps/pipeline`.
+1. `pnpm install --frozen-lockfile` at the root of the worktree.
+2. `uv sync --all-packages` at the root of the worktree.
 
 ## Stage 1: the build
 

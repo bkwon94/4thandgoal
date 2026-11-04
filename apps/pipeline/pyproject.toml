@@ -9,11 +9,9 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "anthropic>=1.15.0",
-    "fastapi>=0.158.0",
     "httpx>=0.28.1",
     "pillow>=13.0.0",
     "pydantic>=2.14.1",
-    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]
@@ -49,10 +47,9 @@ include = ["src/cornerstone/claude_port.py", "src/cornerstone/config.py", "src/c
            "src/cornerstone/player_ids.py", "src/cornerstone/provider", "src/cornerstone/rank_score.py",
            "src/cornerstone/render.py", "src/cornerstone/season_inputs.py",
            "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
-           "src/cornerstone_api/cache.py", "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
+           "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
            "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",
            "tests/test_rule_readmes.py", "tests/test_rule_suppressions.py", "tests/test_rule_tracker.py"]
 
 [tool.uv.build-backend]
-# The pipeline and the API app are two packages under src, so the wheel holds both.
-module-name = ["cornerstone", "cornerstone_api"]
+module-name = "cornerstone"

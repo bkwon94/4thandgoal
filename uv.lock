@@ -6,6 +6,12 @@ resolution-markers = [
     "python_full_version < '3.12' or sys_platform != 'emscripten'",
 ]
 
+[manifest]
+members = [
+    "cornerstone",
+    "cpc-api",
+]
+
 [[package]]
 name = "annotated-doc"
 version = "0.0.5"
@@ -86,12 +92,44 @@ wheels = [
 [[package]]
 name = "cornerstone"
 version = "0.1.0"
-source = { editable = "." }
+source = { editable = "apps/pipeline" }
 dependencies = [
     { name = "anthropic" },
-    { name = "fastapi" },
     { name = "httpx" },
     { name = "pillow" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = ">=1.15.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "pillow", specifier = ">=13.0.0" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-api"
+version = "0.1.0"
+source = { editable = "apps/api" }
+dependencies = [
+    { name = "cornerstone" },
+    { name = "fastapi" },
+    { name = "httpx" },
     { name = "pydantic" },
     { name = "uvicorn" },
 ]
@@ -105,10 +143,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=1.15.0" },
+    { name = "cornerstone", editable = "apps/pipeline" },
     { name = "fastapi", specifier = ">=0.158.0" },
     { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pillow", specifier = ">=13.0.0" },
     { name = "pydantic", specifier = ">=2.14.1" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
