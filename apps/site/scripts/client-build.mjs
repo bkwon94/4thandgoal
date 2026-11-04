@@ -146,6 +146,11 @@ const ROUTES = {
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
 };
 
+/* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
+   The registry imports it only for a package of the list, so the home page of a client that omits the package holds
+   none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
+const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
+
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
   const season = latestSeasonDir(published);
@@ -165,19 +170,21 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
-/* The packages that give the home page a section, in the order of the page: the tool rows, the chapter beside the
-   tools, then the weekly reports. Each one has src/app/_routes/<package>/home.tsx. The order is fixed here and not
-   by the package list, so the order of client.toml never moves a section. */
-const HOME_SECTIONS = ["analyzer", "managers", "rankings", "week"];
+/* The packages that give the home page a chapter, in the order of the page: the chapter beside the tools, then the
+   weekly reports. Each one has src/app/_routes/<package>/home.tsx. The order is fixed here and not by the package
+   list, so the order of client.toml never moves a chapter. */
+const HOME_SECTIONS = ["rankings", "week"];
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
+  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
   const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { HomeSections, MenuLinks } from "@/lib/client-values";`,
+    `import type { HomeSections, HomeTool, MenuLinks } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
+    ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     "",
     "/* The menu link of each package of the client. */",
@@ -185,7 +192,10 @@ function registryText(slug, values) {
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
     "",
-    "/* The home section of each package of the client, in the order of the home page. */",
+    "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",
+    `export const homeTools: HomeTool[] = [${tools.map((name) => `${name}HomeTool`).join(", ")}];`,
+    "",
+    "/* The home chapter of each package of the client, in the order of the home page. */",
     "export const homeSections: HomeSections = [",
     ...home.map((name) => `  ${name}HomeSection,`),
     "];",

@@ -55,6 +55,18 @@ if [ ! -f "$LAYOUT_MARKER" ]; then
     touch "$LAYOUT_MARKER"
 fi
 
+# A client that is new to the image has no data folder on a seeded volume, so its seed folder goes on one time.
+# A folder on the volume stays as it is, because the service writes the history and the raw weeks into it.
+for seed_client in "$SEED"/clients/*/data; do
+    [ -d "$seed_client" ] || continue
+    target="$DATA/${seed_client#"$SEED"/}"
+    if [ ! -d "$target" ]; then
+        echo "entrypoint: the data of a new client goes onto the volume: $target"
+        mkdir -p "$(dirname "$target")"
+        cp -a "$seed_client" "$target"
+    fi
+done
+
 # The service never writes a returns file. The only change comes from a commit and a deploy, so the image copy wins.
 for seed_returns in "$SEED"/nfl/*/returns.json; do
     [ -f "$seed_returns" ] || continue

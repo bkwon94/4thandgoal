@@ -134,16 +134,29 @@ describe("the client build", () => {
     expect(registry).toContain("  week: weekMenuLink,");
   });
 
-  it("lists the home section of each package of the client in the order of the home page", () => {
-    // The list puts week first, but the home page shows the tools, then the rankings, then the weeks.
+  it("gives the home page the analyzer tool through the registry only when the list takes analyzer", () => {
+    // The Tools chapter shows the analyzer row first, then the managers row, whatever the order of the list.
+    const taken = tempRepo();
+    buildClient(taken);
+    const withAnalyzer = readFileSync(join(taken.site, "src", "generated", "registry.ts"), "utf8");
+    expect(withAnalyzer).toContain('import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";');
+    expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];");
+
+    const omitted = tempRepo(CPC_TOML.replace(', "analyzer"]', "]").replace('  { package = "analyzer", label = "Trade Analyzer" },\n', ""));
+    buildClient(omitted);
+    const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
+    expect(without).not.toContain("analyzer");
+    expect(without).toContain("export const homeTools: HomeTool[] = [managersHomeTool];");
+  });
+
+  it("lists the home chapter of each package of the client in the order of the home page", () => {
+    // The list puts week first, but the home page shows the rankings, then the weeks.
     const repo = tempRepo();
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
-    expect(list.split("\n").slice(0, 6)).toEqual([
+    expect(list.split("\n").slice(0, 4)).toEqual([
       "export const homeSections: HomeSections = [",
-      "  analyzerHomeSection,",
-      "  managersHomeSection,",
       "  rankingsHomeSection,",
       "  weekHomeSection,",
       "];",

@@ -11,9 +11,9 @@ import pytest
 from conftest import with_carries
 from cpc import cpc_client
 
-from cornerstone.adjusters import Adjuster, due_back_week
-from cornerstone.finder import FinderTrade, candidates, find_win_wins, rank
-from cornerstone.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
+from analyzer.adjusters import Adjuster, due_back_week
+from analyzer.finder import FinderTrade, candidates, find_win_wins, rank
+from analyzer.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from league.provider.sleeper import load_raw
 from league.ranks import recent_points_per_game
 from league.slow_sources import load_slow_sources

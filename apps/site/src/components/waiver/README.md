@@ -4,12 +4,12 @@
 
 - The War chest page: the budget ring, the bucket tabs, the drift field, the open player, and the rest of the bucket.
 - The drift field: the top six of the open bucket, each in a fixed slot of the layout table.
-- The team pick, with the team and its budget. It uses the team picker of `src/components/analyzer/`.
+- The team pick, with the team and its budget. It uses the team picker of `@cpc/analyzer`.
 - The text formats of the page: the price, the trending line, the stance, and the drop line.
 
 ## Ports
 
-- The team pick in local storage, through `src/lib/team-pick.ts`.
+- The team pick in local storage, through `packages/analyzer/site/lib/team-pick.ts`.
 - Player headshots from the Sleeper CDN, through the URL from `@cpc/league/images`.
 
 ## Does not do

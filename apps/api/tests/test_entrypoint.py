@@ -81,3 +81,18 @@ def test_a_second_boot_moves_nothing_again(tmp_path):
     assert "moves to the client layout" not in out
     assert (data / "clients" / "cpc" / "data" / "2026" / "history" / "week-08" / "matchups.json").is_file()
     assert not (data / "2026").exists()
+
+
+def test_a_client_new_to_the_seed_gets_its_data_on_a_seeded_volume(tmp_path):
+    seed, data = _seed(tmp_path), tmp_path / "data"
+    _boot(seed, data)
+    _write(data / "clients" / "cpc" / "data" / "2026" / "history" / "week-08" / "matchups.json", "[]")
+    # A later image holds a second client. The volume has the marker, so the first-boot copy does not run again.
+    _write(seed / "clients" / "norcal" / "data" / "2026" / "league.json", '{"league_id": "2"}')
+    (seed / "clients" / "empty" / "data").mkdir(parents=True)
+    _boot(seed, data)
+    assert json.loads((data / "clients" / "norcal" / "data" / "2026" / "league.json").read_text()) == {"league_id": "2"}
+    # A client with no tracked data still gets its folder, so the link of the image to it never dangles.
+    assert (data / "clients" / "empty" / "data").is_dir()
+    # The data folder of a client on the volume stays as the service wrote it.
+    assert (data / "clients" / "cpc" / "data" / "2026" / "history" / "week-08" / "matchups.json").is_file()

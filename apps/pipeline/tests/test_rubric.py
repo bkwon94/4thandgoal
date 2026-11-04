@@ -12,10 +12,10 @@ import pytest
 from conftest import strip_trend_numbers, with_carries, with_free_agents
 from cpc import cpc_client
 
-from cornerstone import RULE_PROMPTS, rubric
-from cornerstone.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters
-from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
-from cornerstone.rubric import (
+from analyzer import RULE_PROMPTS, rubric
+from analyzer.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters
+from analyzer.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
+from analyzer.rubric import (
     Adjuster,
     Breakdown,
     ProposedTrade,
@@ -26,7 +26,7 @@ from cornerstone.rubric import (
     grade,
     verdict,
 )
-from cornerstone.trade_facts import trade_fact_sheet
+from analyzer.trade_facts import trade_fact_sheet
 from facts.writer import load_prompt
 from league import tunables
 from league.history import carry_share, points_per_game, red_zone, snap_share, target_share

@@ -1,6 +1,6 @@
 /**
  * The home page at /: the tools, the top of the power rankings, and every published week, newest first, read from each week's page.json.
- * It is a server component, so the list is part of the static export. Each section comes from the registry, so an omitted package ships no code.
+ * It is a server component, so the list is part of the static export. Each tool and chapter comes from the registry, so an omitted package ships no code.
  */
 import type { Metadata } from "next";
 import { Fragment } from "react";
@@ -11,33 +11,24 @@ import { Label } from "@cpc/design/parts/label";
 import { season } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { cn } from "@cpc/design/lib/utils";
-import type { HomeSection } from "@/lib/client-values";
-import { homeSections } from "@/generated/registry";
+import { homeSections, homeTools } from "@/generated/registry";
 import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Cornerstone Fantasy Football League",
 };
 
-type ToolRow = Extract<HomeSection, { place: "tools" }>;
-type HomeChapter = Extract<HomeSection, { chapter: unknown }>;
-
 export default function HomePage() {
-  // Each package reads its data at build time. A package with no data gives null, so the page shows no empty section.
+  // Each package reads its data at build time. A package with no data gives null, so the page shows no empty chapter.
   const sections = homeSections.map((section) => section()).filter((section) => section !== null);
-  const tools = sections.filter((section): section is ToolRow => section.place === "tools");
-  const beside = sections.filter((section): section is HomeChapter => section.place === "beside");
-  const below = sections.filter((section): section is HomeChapter => section.place === "below");
+  const beside = sections.filter((section) => section.place === "beside");
+  const below = sections.filter((section) => section.place === "below");
   // The top row holds the Tools chapter, when a package gives a tool, and each chapter beside it. Each chapter of the row
   // takes the next stagger step, and the chapters below start one step after the row.
-  const toolsChapter = tools.length > 0 ? 1 : 0;
+  const toolsChapter = homeTools.length > 0 ? 1 : 0;
   const topCount = toolsChapter + beside.length;
   return (
     <>
-      {/* The heads come first, so the masthead keeps its place in the tree for each client. */}
-      {sections.map((section, index) => (
-        <Fragment key={index}>{section.head}</Fragment>
-      ))}
       <Masthead {...mastheadProps()} pageHref={homeHref()}>
         <WeekLine label="SEASON" number={season} />
       </Masthead>
@@ -50,11 +41,12 @@ export default function HomePage() {
         {topCount > 0 && (
           <div className={cn("tablet:grid tablet:gap-card-gap", topCount > 1 ? "tablet:grid-cols-2" : "tablet:grid-cols-1")}>
             {/* The masthead and the label show at once. Each row reveals as it enters the view. */}
-            {tools.length > 0 && (
+            {homeTools.length > 0 && (
               <Chapter>
                 <Label heading>Tools</Label>
-                {tools.map((section, index) => (
-                  <Fragment key={index}>{section.row(index === 0)}</Fragment>
+                {/* The registry gives the tool of each package of the client, so an omitted package leaves no code here. */}
+                {homeTools.map((Tool, index) => (
+                  <Tool key={index} first={index === 0} />
                 ))}
               </Chapter>
             )}

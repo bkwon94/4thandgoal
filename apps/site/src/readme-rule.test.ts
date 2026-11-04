@@ -1,6 +1,6 @@
 /**
  * Holds each package folder to the rule of ADR 0016: a README of under 25 lines with the headings Knows, Ports, and Does not do.
- * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/.
+ * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/ when it exists.
  * Each package under packages/ is a package folder too (ADR 0023), with each folder directly under its site side.
  * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
  */
@@ -38,7 +38,9 @@ function packageFolders(): string[] {
   const lib = join(SRC, "lib");
   const packages = subfolders(PACKAGES);
   const siteFolders = packages.flatMap((dir) => subfolders(join(dir, "site")));
-  return [...subfolders(components), lib, ...subfolders(lib), join(SRC, "hooks"), ...packages, ...siteFolders];
+  // The app holds no hook of its own, so src/hooks/ is a package folder only when it exists.
+  const hooks = existsSync(join(SRC, "hooks")) ? [join(SRC, "hooks")] : [];
+  return [...subfolders(components), lib, ...subfolders(lib), ...hooks, ...packages, ...siteFolders];
 }
 
 /* The source is null when the folder holds no README. */
@@ -113,7 +115,6 @@ describe("the readme rule", () => {
         "../../packages/week/site/chapters",
         "src/lib",
         "src/lib/schemas",
-        "src/hooks",
         "../../packages/design",
         "../../packages/design/site/shell",
       ]),);

@@ -272,6 +272,14 @@ When: the agent searches `clients/` for files that end in `.py`, `.ts`, `.tsx`, 
 Then: the search finds no file.
 Evidence: the search command and its empty output.
 
+AT-34: Each client has its own passphrase
+App: pipeline
+Stories: 43
+Given: the API with two clients, `cpc` and a second client, each with its own passphrase.
+When: the agent calls `/clients/<slug>/analyze` with the passphrase of the other client, and starts the API with one passphrase missing.
+Then: the call with the wrong passphrase gets 401, the call with the right one passes, and the start with a missing passphrase exits non-zero and names the env value.
+Evidence: the test output, and the command, output, and exit code of the start.
+
 ## Trace
 
 Story 1: AT-9
@@ -316,9 +324,11 @@ Story 39: AT-10
 Story 40: AT-5
 Story 41: AT-17
 Story 42: AT-9
+Story 43: AT-34
 Out of scope "A client that swaps one part for its own code": AT-33
 
 ## Revisions
 
 - 2026-11-04: AT-7, AT-15, and AT-20 name `[values.analyzer]`, not `[packages.analyzer]`. The old shape is not valid TOML. Brian chose the name.
 - 2026-11-04: AT-16 puts Home first in a menu with no `items`. Brian chose Home as the first item of the default menu.
+- 2026-11-04: AT-34 is new. Brian chose one passphrase per client. Story 43 and manual step 6 of the PRD come with it.

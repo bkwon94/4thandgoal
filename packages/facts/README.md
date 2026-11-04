@@ -19,5 +19,5 @@
 
 - It imports no app and no core package, only `league`. `tests/test_layers.py` of the pipeline checks it.
 - It builds no chapter and no fact sheet. The week and the core packages build them with the fact tokens.
-- It holds no rule prompt of another package. `analysis.md`, `finder.md`, `rubric.md`, and `research.md` stay with their owners.
+- It holds no rule prompt of another package. `analysis.md`, `finder.md`, and `rubric.md` sit in `analyzer`, and `research.md` stays with the waiver board.
 - It writes no published file.
