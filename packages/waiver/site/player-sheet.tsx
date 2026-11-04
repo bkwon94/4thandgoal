@@ -11,8 +11,7 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
-import type { WaiverPlayer } from "@/lib/waiver-types";
-import type { Team } from "@/lib/week-types";
+import type { TeamNames, WaiverPlayer } from "./types";
 import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine } from "./format";
 
 /* One box of the bid row: a small caps name, a big number, and the line that explains it. The hot box is the bid to win. */
@@ -33,7 +32,7 @@ export function PlayerSheet({
   viewerBudget,
 }: {
   player: WaiverPlayer | null;
-  teams: Record<string, Team>;
+  teams: TeamNames;
   expertsMissing: boolean;
   // The budget left of the picked team, or null with no pick.
   viewerBudget: number | null;

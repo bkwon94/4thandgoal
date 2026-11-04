@@ -1,0 +1,30 @@
+{
+  "name": "@cpc/waiver",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The site side of the waiver package: the schema and the types of waiver.json, and the War chest page with its parts and its team pick. It ships TSX source with no build step.",
+  "exports": {
+    "./schema": "./schema.ts",
+    "./types": "./types.ts",
+    "./war-chest": "./war-chest.tsx"
+  },
+  "dependencies": {
+    "@cpc/design": "workspace:*",
+    "@cpc/league": "workspace:*",
+    "framer-motion": "^14.5.0",
+    "zod": "^4.6.7"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vitest": "^5.0.5"
+  }
+}

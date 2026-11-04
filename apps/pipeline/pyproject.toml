@@ -19,6 +19,7 @@ dependencies = [
 [tool.uv.sources]
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
+cpc-waiver = { workspace = true }
 
 [project.scripts]
 cornerstone = "cornerstone.cli:main"
@@ -27,12 +28,20 @@ cornerstone = "cornerstone.cli:main"
 requires = ["uv_build>=0.8.18,<0.9.0"]
 build-backend = "uv_build"
 
+# The core packages that the build calls sit in their own group, not in the dependencies. A group never passes to a
+# member that lists the pipeline, so the API, which lists the pipeline for the analyzer, gets no core package it does
+# not list, and "uv run --exact --package cpc-api" fails an import of one (AT-31).
 [dependency-groups]
+packages = ["cpc-waiver"]
 dev = [
     "pyright>=1.1.414",
     "pytest>=9.1.1",
     "ruff==0.17.3",
 ]
+
+# Each pipeline command takes the core packages, because the build calls them.
+[tool.uv]
+default-groups = ["dev", "packages"]
 
 [tool.pytest.ini_options]
 markers = ["live: calls a real external API"]
@@ -41,9 +50,10 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The pipeline imports the league and the facts packages as its own code, so each sorts as first party in one block.
+# The pipeline imports the league, the facts, and the waiver packages as its own code, so each sorts as first party
+# in one block.
 [tool.ruff.lint.isort]
-known-first-party = ["cornerstone", "facts", "league"]
+known-first-party = ["cornerstone", "facts", "league", "waiver"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 # Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an
@@ -51,9 +61,8 @@ known-first-party = ["cornerstone", "facts", "league"]
 # leaders.py 1, next_week.py 11, trades.py 2.
 [tool.pyright]
 typeCheckingMode = "basic"
-# The modules of the league package have their own list in packages/league/python/pyproject.toml.
-include = ["src/cornerstone/rank_score.py", "src/cornerstone/render.py",
-           "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
+# The modules of each package have their own list in the pyproject.toml of the package, such as packages/league/python.
+include = ["src/cornerstone/render.py", "src/cornerstone/sheet/assemble.py",
            "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
            "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",
            "tests/test_rule_readmes.py", "tests/test_rule_suppressions.py", "tests/test_rule_tracker.py"]

@@ -20,7 +20,8 @@ import { rankings } from "@/fixtures/rankings";
 import { PowerRankings } from "@/components/rankings/power-rankings";
 import { TradeForm } from "@/components/analyzer/trade-form";
 import { waiver } from "@/fixtures/waiver";
-import { WarChest } from "@/components/waiver/war-chest";
+import { WarChest } from "@cpc/waiver/war-chest";
+import { TeamPicker } from "@/components/analyzer/team-picker";
 import { week6 } from "@/fixtures/week-page";
 
 vi.stubGlobal(
@@ -153,7 +154,7 @@ describe("Reduced motion on the power rankings", () => {
 
 describe("Reduced motion on the waiver page", () => {
   it("turns the drift off and shows the top six at once", () => {
-    render(<WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} />);
+    render(<WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />);
     const field = screen.getByRole("group", { name: "Top six" });
     expect(field.getAttribute("data-drift")).toBe("off");
     expect(within(field).getAllByRole("button")).toHaveLength(6);

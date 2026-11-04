@@ -1,6 +1,7 @@
 """
 Writes the page.json of a week from a bundle and its blurbs, and saves the images it names.
-It also writes the waiver file of the week and the season files of rankings and managers. The site renders the pages.
+It also writes the season files of rankings and managers, and the waiver package writes the waiver file. The site
+renders the pages.
 """
 import json
 import logging
@@ -20,6 +21,7 @@ from league.paths import site_week_dir
 from league.player_ids import headshot_url, is_def
 from league.season_inputs import SeasonInputs
 from league.standings_table import season_records
+from waiver.render import render_waiver
 
 DEFAULT_AVATAR = "images/avatar-default.svg"
 DEFAULT_HEADSHOT = "images/headshot-default.svg"
@@ -35,8 +37,6 @@ PAGE_SCHEMA_VERSION = 2
 RANKINGS_SCHEMA_VERSION = 1
 # The managers file has its own version too. A new key in an entry does not need a bump.
 MANAGERS_SCHEMA_VERSION = 1
-# The waiver file has its own version too, so the site reads a week with or without it.
-WAIVER_SCHEMA_VERSION = 1
 # The keys of the odds object on a rankings row, in the order of the site type.
 RANKINGS_ODDS_KEYS = ("playoff", "bye", "seed", "status")
 
@@ -285,16 +285,6 @@ def render_page_json(bundle: Bundle, blurbs: dict[str, Blurb], site_dir: Path) -
     week_dir = _week_dir(site_dir, bundle)
     context = build_context(bundle, blurbs, _saved_avatars(bundle, week_dir), _saved_headshots(bundle, week_dir))
     return _write_page_json(context, week_dir)
-
-
-def render_waiver(bundle: Bundle, site_dir: Path) -> Path | None:
-    """Write waiver.json beside page.json from the board in the bundle. None when the bundle has no board."""
-    if bundle.waiver is None:
-        return None
-    body = {"schema_version": WAIVER_SCHEMA_VERSION, **bundle.waiver.model_dump(mode="json")}
-    out = _week_dir(site_dir, bundle) / "waiver.json"
-    write_bytes_atomic(out, json.dumps(body, ensure_ascii=False, indent=2).encode("utf-8"))
-    return out
 
 
 def _saved_rankings(path: Path) -> tuple[dict[tuple[int, int], list[dict]], dict[tuple[int, int], dict]]:

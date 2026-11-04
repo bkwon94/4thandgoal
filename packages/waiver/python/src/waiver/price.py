@@ -8,13 +8,13 @@ from collections import Counter
 from pathlib import Path
 from typing import NamedTuple
 
-from cornerstone.tunables import FLOOR_WEEKS, NEED_SHARE
 from facts.tokens import Nums, fact
 from league.models import LastLike, WaiverClaim, WaiverPlayer, WaiverPrice
 from league.parse import player_name, team_name
 from league.paths import history_week_dir
 from league.provider.raw import RawRoster, RawTransaction, RawWeek
 from league.ranks import OUT_STATUSES
+from waiver.tunables import FLOOR_WEEKS, NEED_SHARE
 
 # Sleeper marks a claim that won as complete and a claim that lost as failed.
 CLAIM_RESULTS = {"complete": True, "failed": False}

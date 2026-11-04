@@ -5,8 +5,6 @@ The code is pure: it reads the scored pool, the depth charts, the injury report,
 from collections.abc import Callable
 from typing import NamedTuple
 
-from cornerstone.rank_score import rank_scores
-from cornerstone.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
 from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import Fact, WaiverPlayer
@@ -14,6 +12,8 @@ from league.nflverse import gsis_id
 from league.parse import player_name
 from league.ranks import OUT_STATUSES, back_inside
 from league.slow_sources import SlowSources
+from waiver.rank_score import rank_scores
+from waiver.tunables import BUCKET_POSITIONS, SNEAKY_USAGE_FLOOR, TOP_HALF
 
 SNEAKY = "sneaky"
 STASHES = "stashes"

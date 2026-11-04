@@ -9,14 +9,14 @@ from pathlib import Path
 import anthropic
 from pydantic import ValidationError
 
-from cornerstone import RULE_PROMPTS
-from cornerstone.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
-from cornerstone.waiver import DROPS
 from facts.tokens import Nums, fact
 from facts.verifier import URL
 from facts.writer import RefusalError, WriterError, load_prompt, parse_call
 from league.claude_port import Writer
 from league.models import Fact, ResearchClaim, ResearchOut, WaiverBoard, WaiverPlayer
+from waiver import RULE_PROMPTS
+from waiver.board import DROPS
+from waiver.tunables import CLAIMS_PER_PLAYER, RESEARCH_PLAYERS, RESEARCH_SEARCHES
 
 log = logging.getLogger(__name__)
 

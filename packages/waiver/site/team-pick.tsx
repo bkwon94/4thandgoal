@@ -1,22 +1,20 @@
 /**
- * The team pick of the waiver page: the analyzer's team list with no pick, and a chip with the team and its budget after a pick.
+ * The team pick of the waiver page: the team list of the picker port with no pick, and a chip with the team and its budget after a pick.
  * The War chest owns the pick, so the ring, the sheet, and the drops read the same roster id.
  */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TeamPicker } from "@/components/analyzer/team-picker";
+import type { ComponentType } from "react";
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
-import type { Team as PickerTeam } from "@/lib/api";
-import type { BudgetRow } from "@/lib/waiver-types";
-import type { AvatarMap, Team } from "@/lib/week-types";
+import type { AvatarMap, BudgetRow, PickerTeam, TeamNames, TeamPickerProps } from "./types";
 import { teamName } from "./format";
 
 const LABEL = "Your team";
 
-/* The picker wants the analyzer's team shape. The waiver page has no rosters to show, so each team has no players. */
-function pickerTeams(budgets: BudgetRow[], teams: Record<string, Team>, avatars: AvatarMap): PickerTeam[] {
+/* The picker wants the team shape of the port. The waiver page has no rosters to show, so each team has no players. */
+function pickerTeams(budgets: BudgetRow[], teams: TeamNames, avatars: AvatarMap): PickerTeam[] {
   return [...budgets]
     .sort((a, b) => a.roster_id - b.roster_id)
     .map((row) => ({
@@ -57,12 +55,14 @@ export function TeamPick({
   teams,
   avatars,
   onPick,
+  TeamPicker,
 }: {
   viewer: BudgetRow | null;
   budgets: BudgetRow[];
-  teams: Record<string, Team>;
+  teams: TeamNames;
   avatars: AvatarMap;
   onPick: (rosterId: number) => void;
+  TeamPicker: ComponentType<TeamPickerProps>;
 }) {
   const [changing, setChanging] = useState(false);
   const list = useRef<HTMLDivElement>(null);

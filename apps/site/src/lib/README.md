@@ -11,7 +11,7 @@
 
 - The site API, through the client in `src/lib/api.ts`.
 - The env, through `src/lib/config.ts`. No other module reads `process.env`.
-- Local storage and session storage, through `src/lib/passphrase.ts`, `src/lib/team-pick.ts`, and `src/lib/teams-store.ts`.
+- Local storage and session storage, through `src/lib/passphrase.ts` and `src/lib/teams-store.ts`. The waiver team pick sits in `@cpc/waiver`.
 
 ## Does not do
 

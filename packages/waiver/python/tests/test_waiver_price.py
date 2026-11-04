@@ -7,12 +7,12 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.waiver import waiver_board
-from cornerstone.waiver_price import bid_history, price_players
 from facts.tokens import NUMBER_TOKEN
 from league.models import BoardScores, WaiverClaim, WaiverPlayer
 from league.provider.raw import RawWeek
 from league.provider.sleeper import load_raw
+from waiver.board import waiver_board
+from waiver.price import bid_history, price_players
 
 CLIENT = cpc_client()
 

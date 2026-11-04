@@ -7,11 +7,11 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.waiver import _rostered, waiver_board
-from cornerstone.waiver_drops import drop_candidates
 from league.models import BoardScores, NflverseWeek, UsageWeek, WaiverPlayer
 from league.provider.sleeper import load_raw
 from league.tunables import DROP_WEEKS, USAGE_SAVED_WEEKS
+from waiver.board import _rostered, waiver_board
+from waiver.drops import drop_candidates
 
 CLIENT = cpc_client()
 

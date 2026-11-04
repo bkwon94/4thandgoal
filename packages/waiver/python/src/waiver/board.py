@@ -6,12 +6,6 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import NamedTuple
 
-from cornerstone import waiver_buckets
-from cornerstone.rank_score import rank_scores
-from cornerstone.tunables import BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS
-from cornerstone.waiver_drops import drop_candidates
-from cornerstone.waiver_price import budget_left, price_players
-from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
 from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
@@ -30,13 +24,19 @@ from league.parse import player_name
 from league.provider.raw import RawWeek
 from league.ranks import OUT_STATUSES, in_pool
 from league.slow_sources import SlowSources
+from waiver.buckets import BucketInputs, sneaky_and_stashes
+from waiver.drops import drop_candidates
+from waiver.price import budget_left, price_players
+from waiver.projection import next_week, projections_ahead, rest_of_season
+from waiver.rank_score import rank_scores
+from waiver.tunables import BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS
 
 # The positions of the pool are the positions of the League settings. A player at another position, such as a
 # linebacker, or a kicker in a league with no K slot, is never in the pool.
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
 DROPS = "drops"
-# The bucket reasons of best adds and trending. The sneaky and stash reasons live in waiver_buckets.
+# The bucket reasons of best adds and trending. The sneaky and stash reasons live in buckets.py.
 BOARD_SCORE = "board_score"
 TRENDING_REASON = "trending"
 
@@ -64,7 +64,7 @@ def waiver_board(
     usage_rows = (nfl.usage if nfl else None) or {}
     usage = _usage_scores(positions, usage_rows, week)
     teams = _team_ranks(_team_rates((nfl.environment if nfl else None) or {}, week))
-    inputs = waiver_buckets.BucketInputs(raw.players, week, slow, returns or {},
+    inputs = BucketInputs(raw.players, week, slow, returns or {},
                                          lambda pid: rest_of_season(ahead, pid, week, client), client)
     players = [
         _pool_player(pid, entry, next_week(ahead, pid, week), ros[pid],
@@ -82,7 +82,7 @@ def waiver_board(
     best_adds = _capped(sorted((p.model_copy(update={"reason": BOARD_SCORE})
                                 for p in healthy if p.position in BUCKET_POSITIONS), key=_rank_key))
     buckets = {BEST_ADDS: best_adds, TRENDING: _trending_bucket(healthy)}
-    candidates = waiver_buckets.sneaky_and_stashes(players, best_adds, inputs)
+    candidates = sneaky_and_stashes(players, best_adds, inputs)
     buckets |= {key: _capped(ranked) for key, ranked in candidates.items()}
     # Every bucket but drops carries a price. The drops bucket stays out of this step. A player in two buckets
     # gets one price, so the price runs once per player.
@@ -103,7 +103,7 @@ def _bye(slow: SlowSources | None, team: str) -> int | None:
     return schedule.bye_week if schedule is not None else None
 
 
-def _return_week(entry: dict, player_id: str, inputs: waiver_buckets.BucketInputs) -> int | None:
+def _return_week(entry: dict, player_id: str, inputs: BucketInputs) -> int | None:
     """The return week of a player who is out. A healthy player has none, even when a later report lists him."""
     return inputs.return_week_of(player_id) if entry.get("injury_status") in OUT_STATUSES else None
 

@@ -14,7 +14,6 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
-from cornerstone.pipeline import make_bundle
 from cornerstone.sheet import build_bundle
 from league.history import load_history
 from league.models import ChartValues, InjuryPlay, NflverseWeek
@@ -201,6 +200,10 @@ def saved_repo(tmp_path, week):
 @pytest.fixture(scope="module")
 def week_8(tmp_path_factory):
     """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
+    # The import sits here, not at the top: the API tests load this file, and the API env holds no waiver package, which
+    # the build imports. Only the pipeline tests take this fixture.
+    from cornerstone.pipeline import make_bundle
+
     repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
     bundle, _ = make_bundle(2026, 8, news=no_news, client=cpc_client(at=repo))
     return bundle

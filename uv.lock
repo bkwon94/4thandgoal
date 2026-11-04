@@ -12,6 +12,7 @@ members = [
     "cpc-api",
     "cpc-facts",
     "cpc-league",
+    "cpc-waiver",
 ]
 
 [[package]]
@@ -110,6 +111,9 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+packages = [
+    { name = "cpc-waiver" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -127,6 +131,7 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = "==0.17.3" },
 ]
+packages = [{ name = "cpc-waiver", editable = "packages/waiver/python" }]
 
 [[package]]
 name = "cpc-api"
@@ -221,6 +226,39 @@ requires-dist = [
     { name = "anthropic", specifier = ">=1.15.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pillow", specifier = ">=13.0.0" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-waiver"
+version = "0.1.0"
+source = { editable = "packages/waiver/python" }
+dependencies = [
+    { name = "anthropic" },
+    { name = "cpc-facts" },
+    { name = "cpc-league" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", specifier = ">=1.15.0" },
+    { name = "cpc-facts", editable = "packages/facts/python" },
+    { name = "cpc-league", editable = "packages/league/python" },
     { name = "pydantic", specifier = ">=2.14.1" },
 ]
 

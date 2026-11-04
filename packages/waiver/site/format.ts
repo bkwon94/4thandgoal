@@ -3,11 +3,10 @@
  * The field, the sheet, and the list share them, so a player reads the same in all three.
  */
 import { num, thousands } from "@cpc/design/format/format";
-import type { ClaimStance, DropInfo, WaiverPlayer } from "@/lib/waiver-types";
-import type { Team } from "@/lib/week-types";
+import type { ClaimStance, DropInfo, TeamNames, WaiverPlayer } from "./types";
 
 /* The team name of a roster, or the roster number when the week page has no such team. */
-export function teamName(teams: Record<string, Team>, rosterId: number): string {
+export function teamName(teams: TeamNames, rosterId: number): string {
   return teams[String(rosterId)]?.name ?? `Roster ${rosterId}`;
 }
 

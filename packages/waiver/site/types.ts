@@ -1,10 +1,10 @@
 /**
  * The types of the waiver.json file that the Python build writes beside page.json in a week folder.
- * Each type is inferred from its schema in schemas/waiver.ts. The bucket keys sit here because they are not a file shape.
+ * Each type is inferred from its schema in schema.ts. The bucket keys sit here because they are not a file shape.
  * A key that an older build may leave out is optional, so the site reads every file the pipeline wrote.
  */
 import type { z } from "zod";
-import type * as schema from "./schemas/waiver";
+import type * as schema from "./schema";
 
 export type BoardScores = z.infer<typeof schema.boardScoresSchema>;
 export type WaiverFact = z.infer<typeof schema.waiverFactSchema>;
@@ -32,3 +32,22 @@ export const BUCKETS = [
 
 /* The key of one of the five buckets. */
 export type BucketKey = (typeof BUCKETS)[number]["key"];
+
+/* The team of each roster id that the page shows: its name and its manager. The route passes the teams of the week page,
+   and this type says only the two keys the waiver page reads, so the package needs no type of another package. */
+export type TeamNames = Readonly<Record<string, { name: string; owner: string }>>;
+
+/* The avatar path of each roster id, as the route passes it. */
+export type AvatarMap = Readonly<Record<string, string>>;
+
+/* One row of the team picker. The waiver page has no rosters to show, so each team has no players. */
+export type PickerTeam = { roster_id: number; team: string; manager: string; avatar: string; players: never[] };
+
+/* The props of the team picker port. The route passes the picker, so the package imports no other core package. */
+export type TeamPickerProps = {
+  label: string;
+  teams: PickerTeam[];
+  value: number | null;
+  disabledId: number | null;
+  onChange: (rosterId: number) => void;
+};

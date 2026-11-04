@@ -7,13 +7,13 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.waiver import waiver_board
-from cornerstone.waiver_buckets import return_week
 from facts.tokens import NUMBER_TOKEN
 from league.models import NflverseWeek, UsageWeek
 from league.nflverse import TeamSchedule
 from league.provider.sleeper import load_raw
 from league.slow_sources import SlowSources
+from waiver.board import waiver_board
+from waiver.buckets import return_week
 
 CLIENT = cpc_client()
 

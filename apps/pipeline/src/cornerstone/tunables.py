@@ -1,6 +1,6 @@
 """
 The tunable table: every algorithm number of the trade analyzer rubric, the power rankings, the playoff odds,
-the waiver board, and the next-week storylines. The numbers that change with the size of the league derive from league_settings.py.
+and the next-week storylines. The waiver board keeps its numbers in the waiver package. The numbers that change with the size of the league derive from league_settings.py.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -131,44 +131,6 @@ SWING_FLAT = 5
 WHY_MOVE_AT = 2
 # The odds, in percent, that make a record and its odds disagree: under .500 at or above it, or over .500 under it.
 WHY_ODDS_AT = 25
-
-# The waiver board ranks the waiver pool into buckets.
-# The weights of the three board scores. Usage leads and projection is a tiebreak, because the projection
-# lags the usage.
-BOARD_WEIGHTS = {"usage": 0.5, "environment": 0.3, "projection": 0.2}
-# The count of players in a bucket. Eight fit the field and the list of the page on a phone.
-BUCKET_SIZE = 8
-# The most players of one position in a bucket, so one position does not fill it.
-PER_POSITION = 3
-# The positions of every ranked bucket. K and DEF have no usage or environment score, so a projection score
-# ranked inside the position would put the top of each in best adds every week. Kickers also fill the trending
-# adds, as live data showed. They stay in the pool.
-BUCKET_POSITIONS = ("QB", "RB", "WR", "TE")
-# The count of latest weeks the usage trend reads. The trend is the change from the first of these weeks
-# to the last, so 2 compares last week with the week before.
-USAGE_WEEKS = 2
-# The share of his budget left that the model expects a rival to bid on a player with a board score of 1.
-# "need" is for a rival with fewer healthy starters at the position than the lineup needs, "covered" for any other.
-NEED_SHARE = {"need": 0.35, "covered": 0.12}
-# The count of weeks, N-2 to N, whose most recent winning claim at a position sets the price floor. One old
-# big win, such as $41 for an RB in week 3, must not set the price of every RB all season.
-FLOOR_WEEKS = 3
-# The least usage score of a sneaky add: the top quarter of the risers at his position.
-SNEAKY_USAGE_FLOOR = 0.75
-# The least projection score in the top half of a position. A score under it is in the bottom half.
-TOP_HALF = 0.5
-
-# The research step asks the web for research claims on the ranked players.
-# The most players the research step reads per build. Each one is one Claude call with web search, at about
-# $0.14 per player with tokens, so 32 players cost about $4.50 a week. 32 covers four full buckets of 8 when
-# none repeats. Prices from https://platform.claude.com/docs/en/about-claude/pricing, read 2026-10-23.
-RESEARCH_PLAYERS = 32
-# The most research claims kept per player. The sheet has room for two lines under the facts, and a third
-# claim is most often a repeat of the first two.
-CLAIMS_PER_PLAYER = 2
-# The most web searches in one research call. The prompt has four steps: the Yahoo waiver column, the Yahoo
-# author pages, the wider web, and one spare for a step that gave nothing. Each search costs $0.01.
-RESEARCH_SEARCHES = 4
 
 # The next-week storylines: the weight of each kind. GLOSSARY.md, "Storyline". A game's storyline score is the sum,
 # and the two games with the highest score are Must Watch. Stakes and a streak count most, because a reader feels

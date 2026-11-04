@@ -27,9 +27,6 @@ from cornerstone.sheet import (
     read_bundle,
     write_bundle,
 )
-from cornerstone.waiver import waiver_board
-from cornerstone.waiver_price import bid_history
-from cornerstone.waiver_research import SearchCall, research_board, search_call
 from facts.chapters import RANKINGS_CHAPTER
 from facts.verifier import page_words, reserved_words, write_and_verify
 from facts.writer import ClaudeCall
@@ -82,6 +79,9 @@ from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, load_returns, week_snapshot
 from league.standings_table import season_records, standings_order
 from league.trades import default_cutoff, trades_for_week
+from waiver.board import waiver_board
+from waiver.price import bid_history
+from waiver.research import SearchCall, research_board, search_call
 
 log = logging.getLogger(__name__)
 
