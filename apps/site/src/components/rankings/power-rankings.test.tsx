@@ -328,7 +328,7 @@ describe("The chapter", () => {
   it("is not a black card", () => {
     const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
     // The page has one chapter, so a black card would make the light theme read as dark.
-    expect(container.querySelector("section")?.classList.contains("bg-card-blk")).toBe(false);
+    expect(container.querySelector("section")?.classList.contains("bg-card-band")).toBe(false);
   });
 });
 

@@ -14,9 +14,9 @@ const SIDES = SIDE_TITLES.slice(0, 2);
 /* One row in the shape of a team picker: the avatar circle and the team name line. */
 function SkeletonRow() {
   return (
-    <div className="flex h-touch items-center gap-sp-3 rounded-card bg-gry px-sp-3">
-      <div className="size-avatar flex-none rounded-full bg-wht" />
-      <div className="h-sp-3 w-1/2 rounded-sm bg-wht" />
+    <div className="flex h-touch items-center gap-sp-3 rounded-card bg-card px-sp-3">
+      <div className="size-avatar flex-none rounded-full bg-page" />
+      <div className="h-sp-3 w-1/2 rounded-sm bg-page" />
     </div>
   );
 }
@@ -34,15 +34,15 @@ export function TeamsSkeleton() {
     >
       {/* A blank line in the heading type, so the heading takes its real height. */}
       <p aria-hidden="true" className="m-0 text-stat leading-stat font-black tablet:col-span-2">
-        <span className="inline-block w-1/2 rounded-sm bg-gry">&nbsp;</span>
+        <span className="inline-block w-1/2 rounded-sm bg-card">&nbsp;</span>
       </p>
       {SIDES.map((label) => (
         <div key={label} aria-hidden="true" className="flex flex-col gap-sp-3">
-          <p className="m-0 p-0 text-label font-bold tracking-wide text-red-ink uppercase">{label}</p>
+          <p className="m-0 p-0 text-label font-bold tracking-wide text-accent-ink uppercase">{label}</p>
           <SkeletonRow />
         </div>
       ))}
-      <div aria-hidden="true" className="h-touch rounded-card bg-gry tablet:col-span-2" />
+      <div aria-hidden="true" className="h-touch rounded-card bg-card tablet:col-span-2" />
     </div>
   );
 }

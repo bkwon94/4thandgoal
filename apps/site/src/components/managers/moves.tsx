@@ -31,7 +31,7 @@ function addDetail(add: MoveAdd) {
 function PlayerRow({ player, detail }: { player: ManagerPlayer; detail: string }) {
   return (
     <li className="flex items-center gap-sp-2">
-      <Headshot src={sleeperHeadshot(player.player_id)} size="avatar" lazy className="flex-none rounded-full bg-gry object-cover object-top" />
+      <Headshot src={sleeperHeadshot(player.player_id)} size="avatar" lazy className="flex-none rounded-full bg-card object-cover object-top" />
       <span className="flex min-w-0 flex-col">
         <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
         <span className="text-meta text-mute">{moveMetaLine(player.position, detail)}</span>
@@ -62,7 +62,7 @@ function TradeRow({ trade, managers, managersHref }: { trade: MoveTrade; manager
   const label = `Trade With ${others.map((entry) => entry.team.name).join(" And ")}`;
   return (
     <li>
-      <div role="group" aria-label={label} className="rounded-card bg-gry p-sp-3">
+      <div role="group" aria-label={label} className="rounded-card bg-card p-sp-3">
         <div className={cn(QUIET_LABEL, "mb-sp-3")}>
           Trade With{" "}
           {others.map((entry, i) => (

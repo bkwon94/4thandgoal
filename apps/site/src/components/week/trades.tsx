@@ -34,7 +34,7 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
         {side.players.map((player) => (
           <li
             key={player.name}
-            className="flex flex-col items-center overflow-hidden rounded-card bg-wht px-sp-2 pt-sp-2 pb-sp-3 text-center"
+            className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center"
           >
             {/* The cutout fills the chip top edge to edge, so the chip reads as a card for that player.
                 The red rule matches the page accent. The gradient is plain sRGB, as the stylesheet draws it.
@@ -42,7 +42,7 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
             <Headshot
               src={player.headshot}
               lazy
-              className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot w-[calc(100%+var(--spacing-sp-2)*2)] max-w-none flex-none border-b-2 border-red bg-[linear-gradient(var(--color-gry),var(--color-wht))] object-contain object-bottom"
+              className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot w-[calc(100%+var(--spacing-sp-2)*2)] max-w-none flex-none border-b-2 border-accent bg-[linear-gradient(var(--color-card),var(--color-page))] object-contain object-bottom"
             />
             <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
           </li>
@@ -61,7 +61,7 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
 function For() {
   return (
     <div className="relative row-span-3 flex flex-col items-center before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-divider">
-      <span className="relative mt-sp-5 rounded-sm bg-red p-sp-1 text-label font-extrabold tracking-caps text-on-dark uppercase">
+      <span className="relative mt-sp-5 rounded-sm bg-accent p-sp-1 text-label font-extrabold tracking-caps text-on-dark uppercase">
         For
       </span>
     </div>
@@ -83,7 +83,7 @@ function TradeCard({
   const pair = trade.sides.length === 2;
   return (
     // The label is the first step of the stagger, so the first card is the second.
-    <Reveal className={cn("rounded-card bg-gry p-sp-3", index > 0 && "mt-sp-2 tablet:mt-0")} delay={stagger(index + 1)}>
+    <Reveal className={cn("rounded-card bg-card p-sp-3", index > 0 && "mt-sp-2 tablet:mt-0")} delay={stagger(index + 1)}>
       <div
         className={cn(
           "grid gap-x-sp-2 gap-y-sp-4",

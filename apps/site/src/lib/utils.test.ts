@@ -6,7 +6,7 @@ import { cn } from "./utils";
 
 describe("cn", () => {
   it("keeps a size token next to a color", () => {
-    expect(cn("text-label", "text-red")).toBe("text-label text-red");
+    expect(cn("text-label", "text-accent")).toBe("text-label text-accent");
   });
 
   it("keeps only the last of two size tokens", () => {

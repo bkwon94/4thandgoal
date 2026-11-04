@@ -55,7 +55,7 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
       {/* The button keeps the look of the plain letter: the size, the weight, and the color come from the number around it. */}
       <PopoverTrigger
         aria-label={`Grade ${grade.letter}, how the grade reads`}
-        className="press m-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red"
+        className="press m-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {grade.letter}
       </PopoverTrigger>

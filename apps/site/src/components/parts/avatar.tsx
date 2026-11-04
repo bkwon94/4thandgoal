@@ -15,7 +15,7 @@ export function Avatar({
   src,
   size = "avatar",
   // The shared avatar class list is the default, so a caller with no override renders the same markup as every plain avatar.
-  className = "flex-none rounded-full bg-gry object-cover",
+  className = "flex-none rounded-full bg-card object-cover",
 }: {
   src: string;
   size?: keyof typeof SIZES | number;

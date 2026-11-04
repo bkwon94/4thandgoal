@@ -11,7 +11,7 @@ import { Label } from "@/components/parts/label";
 
 function Kpi({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-card bg-gry px-sp-2 py-sp-3 text-center">
+    <div className="rounded-card bg-card px-sp-2 py-sp-3 text-center">
       <div className="text-stat leading-stat font-black tabular-nums">{value}</div>
       <div className="mt-sp-1 text-label leading-tight tracking-caps text-mute uppercase">{label}</div>
     </div>
@@ -47,7 +47,7 @@ export function MedianGame({ median, blurb }: { median: Median | null; blurb?: s
             <div>
               <div className="mb-sp-0 text-meta leading-tight text-ink-2">{bar.team.name}</div>
               <div
-                className={cn("h-median-bar tablet:h-median-bar-wide rounded-sm", bar.above ? "bg-red" : "bg-bar-off")}
+                className={cn("h-median-bar tablet:h-median-bar-wide rounded-sm", bar.above ? "bg-accent" : "bg-bar-off")}
                 style={{ width: `${bar.pct}%` }}
               />
             </div>

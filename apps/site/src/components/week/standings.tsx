@@ -86,7 +86,7 @@ export function Standings({
               ]}
             />
             {i + 1 === PLAYOFF_SPOTS && (
-              <div role="row" className={cn(GRID, "border-b-2 border-dashed border-red p-0")}>
+              <div role="row" className={cn(GRID, "border-b-2 border-dashed border-accent p-0")}>
                 <span role="cell" className="sr-only">
                   Playoff cut
                 </span>

@@ -325,7 +325,7 @@ describe("the ring and the sheet with a pick", () => {
     const marked = rowsOf("Budgets").filter((row) => row.querySelector("[data-viewer]"));
     expect(marked).toHaveLength(1);
     expect(within(marked[0]).getByText("Lil Fridge")).toBeTruthy();
-    expect(marked[0].querySelector("[data-viewer]")?.className).toContain("bg-red");
+    expect(marked[0].querySelector("[data-viewer]")?.className).toContain("bg-accent");
   });
 
   it("names the bid as the line when the viewer's budget is above the bid", () => {

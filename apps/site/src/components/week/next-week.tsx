@@ -51,7 +51,7 @@ function Side({ team, avatars }: { team: Team; avatars: AvatarMap }) {
 
 function Game({ game, avatars, first }: { game: NextGame; avatars: AvatarMap; first: boolean }) {
   return (
-    <div className={cn("rounded-card bg-gry p-sp-3", !first && "mt-sp-2 tablet:mt-0")}>
+    <div className={cn("rounded-card bg-card p-sp-3", !first && "mt-sp-2 tablet:mt-0")}>
       {/* The Must Watch tag sits at the top of the card as an eyebrow, so a reader sees it before the teams. */}
       {game.must_watch && <Tag className="ml-0 mb-sp-2">Must Watch</Tag>}
       <div className="text-body leading-body font-extrabold">

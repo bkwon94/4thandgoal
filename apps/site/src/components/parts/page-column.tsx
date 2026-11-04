@@ -13,7 +13,7 @@ export function PageColumn({ rail, children }: { rail?: ReactNode; children: Rea
   return (
     <div className="tablet:grid tablet:grid-cols-[minmax(0,1fr)_var(--container-page)_minmax(0,1fr)]">
       {rail}
-      <main className="mx-auto w-full max-w-page bg-wht tablet:col-start-2 tablet:flex tablet:flex-col tablet:gap-card-gap tablet:bg-transparent">
+      <main className="mx-auto w-full max-w-page bg-page tablet:col-start-2 tablet:flex tablet:flex-col tablet:gap-card-gap tablet:bg-transparent">
         {children}
       </main>
     </div>

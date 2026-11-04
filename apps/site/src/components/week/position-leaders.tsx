@@ -62,7 +62,7 @@ function Row({ row, headshots, wide }: { row: LeaderRow; headshots: HeadshotMap;
 /* A lone last card on a wide screen spans the row, so the row has no empty half. */
 function Board({ board, headshots, spans }: { board: LeaderBoard; headshots: HeadshotMap; spans: boolean }) {
   return (
-    <div className={cn("rounded-card bg-gry p-sp-3", spans && "tablet:col-span-full")}>
+    <div className={cn("rounded-card bg-card p-sp-3", spans && "tablet:col-span-full")}>
       <Label className="mb-sp-1">{board.position}</Label>
       {board.rows.length > 0 ? (
         <ol className="m-0 list-none p-0 text-row leading-tight">

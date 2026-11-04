@@ -23,7 +23,7 @@ export function ManagersIndex({ managers, avatars, managersHref }: { managers: M
             {/* A plain anchor, as the menu links are: each manager page is a static page with no shared state. */}
             <a
               href={managerHrefFrom(managersHref, manager.roster_id)}
-              className="press flex min-h-touch items-center gap-sp-3 rounded-card bg-gry p-sp-3 text-inherit no-underline"
+              className="press flex min-h-touch items-center gap-sp-3 rounded-card bg-card p-sp-3 text-inherit no-underline"
             >
               <Avatar src={avatarSrc(avatars, manager.roster_id)} />
               {/* The name is the one emphasis of the card. The owner sits under it in the quiet color. */}

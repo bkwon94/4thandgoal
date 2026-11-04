@@ -42,12 +42,12 @@ type Move = { word: "To" | "From"; team: string };
 /* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one. */
 function PlayerChip({ player, move }: { player: Player; move?: Move }) {
   return (
-    <li className="flex flex-col items-center overflow-hidden rounded-card bg-wht px-sp-2 pt-sp-2 pb-sp-3 text-center">
+    <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative. */}
       <Headshot
         src={player.headshot}
         lazy
-        className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot self-stretch border-b-2 border-red bg-linear-to-b from-gry to-wht object-contain object-bottom"
+        className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot self-stretch border-b-2 border-accent bg-linear-to-b from-card to-page object-contain object-bottom"
       />
       <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
       <span className="py-sp-1 text-meta text-mute">
@@ -125,7 +125,7 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   // An arrow fits two sides only, so three or more sides read as one row per side, in the order given.
   if (sides.length > 2) {
     return (
-      <div className="flex flex-col gap-sp-4 rounded-card bg-gry p-sp-3">
+      <div className="flex flex-col gap-sp-4 rounded-card bg-card p-sp-3">
         {sides.map((side) => (
           <SwapRow key={side.roster_id} side={side} sides={sides} />
         ))}
@@ -134,12 +134,12 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   }
   const [left, right] = sides;
   return (
-    <div className="rounded-card bg-gry p-sp-3">
+    <div className="rounded-card bg-card p-sp-3">
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-sp-2 gap-y-sp-4">
         <SwapColumn side={left} />
         {/* The divider runs the full card height. The tag sits on it, level with the team names. */}
         <div className="relative row-span-3 flex flex-col items-center before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-divider before:content-['']">
-          <span className="relative mt-sp-5 rounded-sm bg-red p-sp-1 text-label font-extrabold tracking-caps text-on-dark uppercase">
+          <span className="relative mt-sp-5 rounded-sm bg-accent p-sp-1 text-label font-extrabold tracking-caps text-on-dark uppercase">
             For
           </span>
         </div>
@@ -151,7 +151,7 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
 
 /* The mark of a factor lean. The symbol is decorative, so a screen reader hears the word. */
 const MARKS = {
-  for: { symbol: "▲", color: "text-red-ink" },
+  for: { symbol: "▲", color: "text-accent-ink" },
   against: { symbol: "▼", color: "text-ink" },
   even: { symbol: "–", color: "text-mute" },
 } as const;
@@ -167,7 +167,7 @@ function Mark({ lean }: { lean: Factor["lean"] }) {
 }
 
 const ANSWER_WORD = {
-  yes: { word: "Yes", color: "text-red-ink" },
+  yes: { word: "Yes", color: "text-accent-ink" },
   no: { word: "No", color: "text-ink" },
   not_as_is: { word: "Not as is", color: "text-mute" },
 } as const;
@@ -177,7 +177,7 @@ function DecisionBlock({ decision, team }: { decision: Decision; team?: string }
   const off = useMotionOff();
   const answer = ANSWER_WORD[decision.answer];
   return (
-    <div className="border-l-(length:--chap-rule) border-red py-sp-1 pl-sp-4">
+    <div className="border-l-(length:--chap-rule) border-accent py-sp-1 pl-sp-4">
       {/* Each chapter of the result opens with a level-two heading, and the decision chapter opens with this label. */}
       <Label heading>Decision for {team ?? "Your Side"}</Label>
       <motion.p
@@ -194,7 +194,7 @@ function DecisionBlock({ decision, team }: { decision: Decision; team?: string }
 /* The page words of the fairness states. The glossary says "Good for both" on the page, never "win-win".
    Each state has a short meaning, because one word alone does not tell the reader what it means. */
 const FAIRNESS_WORD = {
-  win_win: { word: "Good for both", color: "text-red-ink", meaning: "Every side gets more than it gives." },
+  win_win: { word: "Good for both", color: "text-accent-ink", meaning: "Every side gets more than it gives." },
   fair: {
     word: "Fair",
     color: "text-mute",

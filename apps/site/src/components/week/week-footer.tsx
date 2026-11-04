@@ -18,7 +18,7 @@ function WeekLink({ week, rel }: { week: WeekSummary; rel: "prev" | "next" }) {
         rel === "next" && "text-right",
       )}
     >
-      <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Week {week.number}</b>
+      <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Week {week.number}</b>
       <span className="block text-meta text-mute tabular-nums">{week.dates}</span>
     </a>
   );

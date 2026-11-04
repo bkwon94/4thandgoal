@@ -66,7 +66,7 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
         <div className="pb-sp-1">
           <div
             className={cn(
-              "group flex min-h-touch items-center rounded-card bg-gry has-checked:bg-card-blk has-checked:text-on-dark has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-red",
+              "group flex min-h-touch items-center rounded-card bg-card has-checked:bg-card-band has-checked:text-on-dark has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent",
               disabled && "opacity-40",
             )}
           >
@@ -87,7 +87,7 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
                 onChange={() => pick(team.roster_id)}
                 className="sr-only"
               />
-              <Avatar src={team.avatar ?? AVATAR_FALLBACK} className="flex-none rounded-full bg-wht object-cover" />
+              <Avatar src={team.avatar ?? AVATAR_FALLBACK} className="flex-none rounded-full bg-page object-cover" />
               <span className="flex min-w-0 flex-col">
                 <b className="text-row leading-tight font-extrabold">{team.team}</b>
                 <span className="text-meta text-mute group-has-checked:text-on-dark-muted">{team.manager}</span>
@@ -112,7 +112,7 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
 
   return (
     <fieldset ref={fieldset} className="m-0 min-w-0 border-0 p-0">
-      <legend className="mb-sp-2 p-0 text-label font-bold tracking-wide text-red-ink uppercase">{label}</legend>
+      <legend className="mb-sp-2 p-0 text-label font-bold tracking-wide text-accent-ink uppercase">{label}</legend>
       <div className="flex flex-col">
         {/* With motion off, the rows switch at once, with no exit to wait for. initial={false}: the full list shows at once on load. */}
         {off ? rows : <AnimatePresence initial={false}>{rows}</AnimatePresence>}

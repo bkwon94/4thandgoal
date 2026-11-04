@@ -13,7 +13,7 @@ export function WeekLine({ label, number }: { label: string; number?: number }) 
         <>
           {/* One string, so React writes one text node and the browser kerns the label as one run. */}
           {`${label} `}
-          <span className="text-red">{number}</span>
+          <span className="text-accent">{number}</span>
         </>
       )}
     </div>

@@ -54,7 +54,7 @@ export function GameChanger({
             </small>
           </div>
           <Reveal
-            className="m-0 text-hero leading-hero font-black tracking-grade text-red-lt tabular-nums"
+            className="m-0 text-hero leading-hero font-black tracking-grade text-accent-text tabular-nums"
             trigger="mount"
             delay={HERO_DELAY.points}
             duration={DURATION.hero}

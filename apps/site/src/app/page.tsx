@@ -70,7 +70,7 @@ export default function HomePage() {
             {/* The row reveals first, so a new week never pushes it down or delays it. */}
             <Reveal delay={stagger(0)}>
               <HomeRow href={analyzeHref()} first>
-                <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Trade Analyzer</b>
+                <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Trade Analyzer</b>
                 <span className="block text-meta text-mute">Grade a trade offer before you send it.</span>
                 <span className="block text-meta text-mute">League passphrase needed.</span>
               </HomeRow>
@@ -78,7 +78,7 @@ export default function HomePage() {
             {managersHref && (
               <Reveal delay={stagger(0)}>
                 <HomeRow href={managersHref}>
-                  <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Managers</b>
+                  <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Managers</b>
                   <span className="block text-meta text-mute">One page per team: grade, odds, moves, and performers.</span>
                 </HomeRow>
               </Reveal>
@@ -90,7 +90,7 @@ export default function HomePage() {
               <Label heading>Power Rankings</Label>
               <Reveal delay={stagger(1)}>
                 <HomeRow href={rankingsHref()} first>
-                  <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Top Three</b>
+                  <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Top Three</b>
                   <ol className="m-0 mb-sp-1 list-none p-0">
                     {rankings.rows.slice(0, 3).map((row) => (
                       <li key={row.roster_id} className="text-meta text-ink-2 tabular-nums">
@@ -117,7 +117,7 @@ export default function HomePage() {
             // Each row reveals once after the rows above it, with a short, capped stagger, so a row in a long season list never shows late.
             <Reveal key={week.href} delay={stagger(index + firstWeekStep)}>
               <HomeRow href={week.href} first={index === 0}>
-                <b className="mb-sp-1 block text-lead leading-tight group-hover:text-red-ink">Week {week.number}</b>
+                <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Week {week.number}</b>
                 <span className="block text-meta text-mute tabular-nums">{week.dates}</span>
               </HomeRow>
             </Reveal>

@@ -44,16 +44,16 @@ type SideChoice = { id: number; team: Team | undefined };
 
 /* The trigger of both pickers: a grey row as tall as a touch target, with a hover fill and a red focus ring. */
 const TRIGGER =
-  "press w-full min-w-0 justify-start gap-sp-3 rounded-card border-0 bg-gry px-sp-3 py-sp-1 text-left text-row text-ink data-[size=default]:h-auto min-h-touch hover:bg-rule focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red focus-visible:ring-0 disabled:opacity-40 [&>[data-slot=select-value]]:min-w-0 [&>[data-slot=select-value]]:flex-1";
+  "press w-full min-w-0 justify-start gap-sp-3 rounded-card border-0 bg-card px-sp-3 py-sp-1 text-left text-row text-ink data-[size=default]:h-auto min-h-touch hover:bg-rule focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-0 disabled:opacity-40 [&>[data-slot=select-value]]:min-w-0 [&>[data-slot=select-value]]:flex-1";
 
 /* An item of a picker popup: a touch-tall row that fills on hover and on keyboard focus. */
-const ITEM = "min-h-touch gap-sp-3 rounded-sm px-sp-2 pr-sp-6 text-row text-ink data-highlighted:bg-gry focus:bg-gry";
+const ITEM = "min-h-touch gap-sp-3 rounded-sm px-sp-2 pr-sp-6 text-row text-ink data-highlighted:bg-card focus:bg-card";
 
 /* The label above a picker: small red caps, as the form used for its legends. The text stays in title case for a screen reader. */
-const LABEL = "m-0 text-label font-bold tracking-wide text-red-ink uppercase";
+const LABEL = "m-0 text-label font-bold tracking-wide text-accent-ink uppercase";
 
 /* A round image in a picker. The faint ring gives the image an edge on the grey row in both themes. The size prop of each part sets the size. */
-const ROUND_IMG = "flex-none rounded-full bg-wht object-cover ring-1 ring-ink/10";
+const ROUND_IMG = "flex-none rounded-full bg-page object-cover ring-1 ring-ink/10";
 
 function TeamAvatar({ team }: { team: Team }) {
   return <Avatar src={team.avatar ?? AVATAR_FALLBACK} className={ROUND_IMG} />;
@@ -109,7 +109,7 @@ function DestinationPicker({
         {/* The trigger is short to fit the meta line. The negative margin and the padding give it a taller hit area. */}
         <SelectTrigger
           aria-labelledby={labelId}
-          className="press -my-sp-1 h-auto min-w-0 gap-sp-1 rounded-sm border-0 bg-transparent px-sp-1 py-sp-1 text-meta font-bold text-red-ink underline decoration-red-ink/50 underline-offset-2 hover:bg-red/10 focus-visible:outline-2 focus-visible:outline-red focus-visible:ring-0 disabled:opacity-40 data-[size=default]:h-auto [&>[data-slot=select-value]]:min-w-0 [&_svg]:text-red-ink"
+          className="press -my-sp-1 h-auto min-w-0 gap-sp-1 rounded-sm border-0 bg-transparent px-sp-1 py-sp-1 text-meta font-bold text-accent-ink underline decoration-accent-ink/50 underline-offset-2 hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-accent focus-visible:ring-0 disabled:opacity-40 data-[size=default]:h-auto [&>[data-slot=select-value]]:min-w-0 [&_svg]:text-accent-ink"
         >
           <SelectValue>{() => <span className="truncate">{current?.team?.team ?? "Pick a Team"}</span>}</SelectValue>
         </SelectTrigger>
@@ -167,7 +167,7 @@ export function TradeSide({
             aria-label={`Remove ${title}`}
             disabled={locked}
             onClick={onRemove}
-            className="press -my-sp-3 -mr-sp-2 grid size-touch flex-none cursor-pointer place-items-center rounded-card text-mute hover:text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red disabled:cursor-not-allowed disabled:opacity-40"
+            className="press -my-sp-3 -mr-sp-2 grid size-touch flex-none cursor-pointer place-items-center rounded-card text-mute hover:text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
           >
             <XIcon aria-hidden="true" className="size-4" />
           </button>
@@ -239,7 +239,7 @@ export function TradeSide({
                   layout={!off}
                   // A picked row enters and leaves as a side does.
                   {...enterExit(off)}
-                  className="flex min-h-touch w-full items-center gap-sp-3 rounded-card bg-pick py-sp-1 pl-sp-3 text-ink shadow-[inset_3px_0_0_var(--color-red)]"
+                  className="flex min-h-touch w-full items-center gap-sp-3 rounded-card bg-pick py-sp-1 pl-sp-3 text-ink shadow-[inset_3px_0_0_var(--color-accent)]"
                 >
                   <PlayerHeadshot player={player} />
                   <span className="flex min-w-0 flex-1 flex-col">
@@ -263,7 +263,7 @@ export function TradeSide({
                     aria-label={`Remove ${player.name}`}
                     disabled={locked}
                     onClick={() => onPickPlayers(ids.filter((id) => id !== player.player_id))}
-                    className="press grid size-touch flex-none cursor-pointer place-items-center rounded-card text-mute hover:text-red-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red disabled:cursor-not-allowed disabled:opacity-40"
+                    className="press grid size-touch flex-none cursor-pointer place-items-center rounded-card text-mute hover:text-accent-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <XIcon aria-hidden="true" className="size-4" />
                   </button>

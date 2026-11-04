@@ -55,7 +55,7 @@ export default async function WaiverPage({ params }: Props) {
         <WeekLine label="WEEK" number={board.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{`Built ${BUILT.format(new Date(board.built))}`}</div>
       </Masthead>
-      <main className="mx-auto max-w-page bg-wht">
+      <main className="mx-auto max-w-page bg-page">
         <WarChest board={board} teams={page.teams} avatars={weekAvatars(season, week, page.avatars)} />
       </main>
     </>

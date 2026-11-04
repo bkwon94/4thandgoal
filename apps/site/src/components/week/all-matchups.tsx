@@ -23,7 +23,7 @@ import { managerHrefOrNull } from "@/lib/routes";
 /* The top scorer of one side, or a dash when the side started no one. */
 function Star({ side }: { side: MatchupSide }) {
   return (
-    <div className="flex-1 rounded-card bg-gry px-sp-3 py-sp-2">
+    <div className="flex-1 rounded-card bg-card px-sp-3 py-sp-2">
       <span className="block text-label leading-tight tracking-caps text-mute uppercase">{`Top · ${side.team.name}`}</span>
       <b className="mt-sp-0 block text-body leading-tight tabular-nums">
         {side.top ? `${shortName(side.top.name)} ${num(side.top.points)}` : "—"}
@@ -44,7 +44,7 @@ function Panel({ matchup }: { matchup: Matchup }) {
         <Blurb>
           This is the Matchup of the Week. Read the full story at the top.{" "}
           {/* An inline link cannot scale, so the link is an inline block for the press. */}
-          <a href="#motw" className="press inline-block text-red-ink underline hover:decoration-2">
+          <a href="#motw" className="press inline-block text-accent-ink underline hover:decoration-2">
             Go to the top story
           </a>
         </Blurb>
@@ -72,7 +72,7 @@ function Row({
   const panelId = useId();
   // The JSON puts the winner first. A tie has no winner, so neither side is bold.
   const [winner, loser] = matchup.sides;
-  const bold = cn(winner.winner && "font-extrabold text-red-ink");
+  const bold = cn(winner.winner && "font-extrabold text-accent-ink");
   const loserHref = managerHrefOrNull(managersHref, loser.team.roster_id);
   // The panel stays in the DOM when closed, so find-in-page still finds the recap text.
   // Height 0 hides it from sight. aria-hidden and inert hide it from assistive tech and the tab order.
@@ -138,7 +138,7 @@ function Row({
         className={cn(
           "press mb-sp-3 flex min-h-touch w-full cursor-pointer items-center justify-center gap-sp-2 rounded-card border-0 px-sp-3",
           "text-meta font-bold tracking-caps uppercase [-webkit-tap-highlight-color:transparent]",
-          open ? "bg-card-blk text-on-dark" : "bg-gry text-red-ink hover:bg-rule",
+          open ? "bg-card-band text-on-dark" : "bg-card text-accent-ink hover:bg-rule",
         )}
       >
         <span>{open ? "Hide Recap" : "Read Recap"}</span>

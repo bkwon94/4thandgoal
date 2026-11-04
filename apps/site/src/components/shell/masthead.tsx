@@ -64,7 +64,7 @@ export function Masthead({
   const destinations = destinationsOf(weeks, links);
   return (
     // The black band spans the viewport at every tier. The inner box takes the page column, so the content lines up with the page below.
-    <header className="bg-blk text-on-dark">
+    <header className="bg-band text-on-dark">
       <div className="mx-auto max-w-page px-gutter pt-sp-5 pb-sp-4">
         {/* The brand line: the home link on the left and the menu button at the right end, where a thumb finds it.
             From the desktop tier up the row of the menu takes the place of the button, on its own line under the brand line.
@@ -95,7 +95,7 @@ export function Masthead({
                 key={destination.href}
                 href={destination.href}
                 aria-current={currentPage(destination, pageHref)}
-                className="inline-flex min-h-touch items-center text-label font-bold tracking-caps text-on-dark uppercase no-underline aria-[current=page]:text-red-lt"
+                className="inline-flex min-h-touch items-center text-label font-bold tracking-caps text-on-dark uppercase no-underline aria-[current=page]:text-accent-text"
               >
                 {destination.label}
               </a>

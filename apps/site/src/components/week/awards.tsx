@@ -17,7 +17,7 @@ import { Label } from "@/components/parts/label";
 function Tile({ award, headshots, index }: { award: Award; headshots: HeadshotMap; index: number }) {
   return (
     // The label is the first step of the stagger, so the first tile is the second.
-    <Reveal className="rounded-card bg-gry p-sp-3" delay={stagger(index + 1)}>
+    <Reveal className="rounded-card bg-card p-sp-3" delay={stagger(index + 1)}>
       {/* The MVB title takes two lines at phone width. Every title keeps two lines, so names and numbers align across a row. */}
       <Label className="mb-sp-1 min-h-[calc(2em*var(--leading-tight))]">{award.title}</Label>
       {award.missing ? (

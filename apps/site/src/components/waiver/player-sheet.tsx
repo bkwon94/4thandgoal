@@ -18,7 +18,7 @@ import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine 
 /* One box of the bid row: a small caps name, a big number, and the line that explains it. The hot box is the bid to win. */
 function BidBox({ name, value, hot, children }: { name: string; value: string; hot?: boolean; children: ReactNode }) {
   return (
-    <div className={cn("flex-1 rounded-card px-sp-3 py-sp-2", hot ? "bg-red" : "bg-chip-dark")}>
+    <div className={cn("flex-1 rounded-card px-sp-3 py-sp-2", hot ? "bg-accent" : "bg-chip-dark")}>
       <div className="text-label leading-tight tracking-caps text-on-dark-muted uppercase">{name}</div>
       <div className="text-stat leading-stat font-extrabold tabular-nums">{value}</div>
       <div className="mt-sp-0 text-meta leading-tight text-on-dark-2">{children}</div>
@@ -51,7 +51,7 @@ export function PlayerSheet({
   const outbidOver = price && viewerBudget !== null ? Math.min(price.bid, viewerBudget) : null;
   // The sheet is a black card. The dark theme turns ink into a text color, so ink would paint it white.
   return (
-    <section aria-label="Player sheet" className="mt-sp-3 rounded-card border border-rule-dark bg-card-blk px-sp-4 py-sp-3">
+    <section aria-label="Player sheet" className="mt-sp-3 rounded-card border border-rule-dark bg-card-band px-sp-4 py-sp-3">
       {/* A screen reader reads this one short line after a tap, and not the whole sheet. */}
       <p aria-live="polite" className="sr-only">
         {player ? `Sheet: ${player.name}` : ""}
@@ -63,7 +63,7 @@ export function PlayerSheet({
           <div className="mt-sp-0 text-meta text-on-dark-muted tabular-nums">{waiverMetaLine(player)}</div>
           {drop && (
             <>
-              <div className="mt-sp-1 text-meta font-bold text-red-lt">{holderLine(drop)}</div>
+              <div className="mt-sp-1 text-meta font-bold text-accent-text">{holderLine(drop)}</div>
               <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{beatenLine(drop)}</div>
             </>
           )}

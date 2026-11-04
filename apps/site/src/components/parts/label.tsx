@@ -25,7 +25,7 @@ export function Label({
       className={cn(
         "text-label leading-tight font-bold tracking-wide uppercase",
         "mb-sp-3",
-        dark ? "text-red-lt" : "text-red-ink",
+        dark ? "text-accent-text" : "text-accent-ink",
         className,
       )}
     >

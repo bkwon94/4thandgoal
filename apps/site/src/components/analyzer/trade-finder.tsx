@@ -49,7 +49,7 @@ function swapSides(trade: FinderTrade, asker: number): SwapSide[] {
 function FinderCard({ trade, asker, index, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; onOpen: () => void; locked: boolean }) {
   const sides = swapSides(trade, asker);
   return (
-    <article aria-label={`Trade ${index + 1}`} className="flex flex-col gap-sp-4 border-b-(length:--chap-rule) border-gry py-sp-5">
+    <article aria-label={`Trade ${index + 1}`} className="flex flex-col gap-sp-4 border-b-(length:--chap-rule) border-card py-sp-5">
       <SwapCard sides={sides} />
       <FairnessBlock sides={sides} fairness={trade.fairness} />
       {trade.reason !== null && <p className="m-0 text-body text-ink-2">{trade.reason}</p>}

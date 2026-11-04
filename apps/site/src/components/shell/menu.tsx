@@ -71,7 +71,7 @@ function MenuButton({ open, off, listId, className, ref }: MenuButtonProps) {
       aria-label="Menu"
       // The list lives in a portal that exists only while the sheet is open, so the reference exists only then.
       aria-controls={open ? listId : undefined}
-      className={`press -mr-sp-3 flex size-touch flex-none items-center justify-center text-on-dark hover-fine:text-red-lt ${className}`}
+      className={`press -mr-sp-3 flex size-touch flex-none items-center justify-center text-on-dark hover-fine:text-accent-text ${className}`}
     >
       <MenuIcon open={open} off={off} />
     </DialogTrigger>
@@ -92,7 +92,7 @@ function Item({ destination, pageHref, index, off }: ItemProps) {
       <a
         href={destination.href}
         aria-current={currentPage(destination, pageHref)}
-        className="press flex min-h-touch items-center border-b border-rule text-lead font-bold text-ink no-underline hover-fine:text-red-ink aria-[current=page]:text-red-ink"
+        className="press flex min-h-touch items-center border-b border-rule text-lead font-bold text-ink no-underline hover-fine:text-accent-ink aria-[current=page]:text-accent-ink"
       >
         {destination.label}
       </a>
@@ -107,7 +107,7 @@ function RowLink({ destination, pageHref }: { destination: Destination; pageHref
     <a
       href={destination.href}
       aria-current={currentPage(destination, pageHref)}
-      className="press inline-flex min-h-touch items-center text-label font-bold tracking-caps whitespace-nowrap text-on-dark uppercase no-underline hover-fine:text-red-lt aria-[current=page]:text-red-lt"
+      className="press inline-flex min-h-touch items-center text-label font-bold tracking-caps whitespace-nowrap text-on-dark uppercase no-underline hover-fine:text-accent-text aria-[current=page]:text-accent-text"
     >
       {destination.label}
     </a>
@@ -146,7 +146,7 @@ function Row({ destinations, pageHref, label, className, withThemeButton }: RowP
       {destinations.pastWeeks.length > 0 && (
         // Focus stays inside the open popover, as it does in the sheet. The page still scrolls and takes a click outside.
         <Popover open={pastOpen} onOpenChange={setPastOpen} modal="trap-focus">
-          <PopoverTrigger className="press inline-flex min-h-touch items-center text-label font-bold tracking-caps whitespace-nowrap text-on-dark uppercase hover-fine:text-red-lt">
+          <PopoverTrigger className="press inline-flex min-h-touch items-center text-label font-bold tracking-caps whitespace-nowrap text-on-dark uppercase hover-fine:text-accent-text">
             Past Weeks
           </PopoverTrigger>
           {/* Framer Motion owns the scale and the fade, so the CSS keyframes and the CSS transition of the primitive are off.
@@ -176,7 +176,7 @@ function Row({ destinations, pageHref, label, className, withThemeButton }: RowP
                       <a
                         href={destination.href}
                         aria-current={currentPage(destination, pageHref)}
-                        className="press flex min-h-touch items-center text-lead font-bold text-ink no-underline hover-fine:text-red-ink aria-[current=page]:text-red-ink"
+                        className="press flex min-h-touch items-center text-lead font-bold text-ink no-underline hover-fine:text-accent-ink aria-[current=page]:text-accent-ink"
                       >
                         {destination.label}
                       </a>
@@ -219,7 +219,7 @@ function CompactBar({ title, brand, off, children, ref }: CompactBarProps) {
       role="region"
       // A reader does not know the word "compact bar", so the landmark takes a name for where the bar sits.
       aria-label="Top bar"
-      className="fixed inset-x-0 top-0 z-40 h-touch bg-blk text-on-dark"
+      className="fixed inset-x-0 top-0 z-40 h-touch bg-band text-on-dark"
       initial={{ opacity: 0, ...offset }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, ...offset }}
@@ -330,14 +330,14 @@ export function Menu({ destinations, pageHref, title, brand }: MenuIslandProps) 
                   The duration-100 of the primitive gives a transition on every property. Framer writes the end opacity
                   when its fade ends, and WebKit then fades the overlay from 0 again, so the dimmed page blinks. */}
               <DialogOverlay
-                className="transition-none bg-blk/50 data-open:animate-none data-closed:animate-none supports-backdrop-filter:backdrop-blur-none"
+                className="transition-none bg-band/50 data-open:animate-none data-closed:animate-none supports-backdrop-filter:backdrop-blur-none"
                 style={{ top }}
                 render={<motion.div {...backdrop} />}
               />
               {/* The bottom rule marks the end of the sheet. In the dark theme the sheet and the dimmed page are both black, so the edge is lost without it. */}
               <DialogPopup
                 aria-label="Menu"
-                className="fixed inset-x-0 z-50 overflow-y-auto overscroll-contain border-b border-rule bg-wht text-ink outline-none"
+                className="fixed inset-x-0 z-50 overflow-y-auto overscroll-contain border-b border-rule bg-page text-ink outline-none"
                 style={{ top, maxHeight: `calc(100dvh - ${top}px)` }}
                 render={<motion.div {...sheet} />}
               >
@@ -351,7 +351,7 @@ export function Menu({ destinations, pageHref, title, brand }: MenuIslandProps) 
                     <>
                       <h2
                         id={pastId}
-                        className="mt-sp-5 mb-0 text-label leading-tight font-bold tracking-wide text-red-ink uppercase"
+                        className="mt-sp-5 mb-0 text-label leading-tight font-bold tracking-wide text-accent-ink uppercase"
                       >
                         Past Weeks
                       </h2>

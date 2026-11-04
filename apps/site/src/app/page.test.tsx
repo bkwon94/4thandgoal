@@ -31,7 +31,7 @@ describe("HomePage", () => {
     expect(screen.queryByText("League Weekly")).toBeNull();
     // The label and the red season number are separate text nodes.
     expect(screen.getByText("SEASON")).toBeTruthy();
-    expect(screen.getByText(String(season)).className).toContain("text-red");
+    expect(screen.getByText(String(season)).className).toContain("text-accent");
     expect(screen.getByText("Weekly Reports")).toBeTruthy();
   });
 

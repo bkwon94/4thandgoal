@@ -142,11 +142,11 @@ function GradingStatus() {
   return (
     <div role="status" aria-busy="true" className="flex flex-col gap-sp-2">
       <p className="m-0 text-body font-bold">Grading the Trade</p>
-      <div aria-hidden="true" className="relative h-sp-1 overflow-hidden rounded-sm bg-gry">
+      <div aria-hidden="true" className="relative h-sp-1 overflow-hidden rounded-sm bg-card">
         {!off && (
           <motion.div
             role="presentation"
-            className="absolute inset-y-0 left-0 w-1/3 bg-red"
+            className="absolute inset-y-0 left-0 w-1/3 bg-accent"
             initial={{ x: "-100%" }}
             animate={{ x: "300%" }}
             transition={{ duration: DURATION.sweep, ease: SWEEP_EASE, repeat: Infinity }}
@@ -353,7 +353,7 @@ export function TradeForm({ teams, season, finderOn, passphrase, onUnauthorized,
           <div>
             <Button
               variant="ghost"
-              className="press h-touch w-full justify-start gap-sp-2 rounded-card px-sp-3 text-row font-bold text-ink hover:bg-gry focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red focus-visible:ring-0 disabled:opacity-40"
+              className="press h-touch w-full justify-start gap-sp-2 rounded-card px-sp-3 text-row font-bold text-ink hover:bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-0 disabled:opacity-40"
               disabled={grading}
               onClick={addSide}
             >

@@ -72,7 +72,7 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
               aria-current={current === id ? "location" : undefined}
               className={cn(
                 "flex min-h-target items-center py-sp-1 text-label leading-tight font-bold tracking-wide uppercase transition-colors",
-                current === id ? "text-red-ink" : "text-mute hover-fine:text-ink",
+                current === id ? "text-accent-ink" : "text-mute hover-fine:text-ink",
               )}
             >
               {label}

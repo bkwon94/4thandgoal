@@ -77,7 +77,7 @@ function Legend() {
       sample: <line x1={0} y1={5} x2={16} y2={5} strokeWidth={1} strokeDasharray="4 3" className="stroke-mute" />,
     },
     { label: "Win", sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-ink stroke-ink" /> },
-    { label: "Loss", sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-wht stroke-ink" /> },
+    { label: "Loss", sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-page stroke-ink" /> },
   ];
   return (
     <ul aria-label="Legend" className="m-0 mt-sp-2 flex list-none flex-wrap gap-x-sp-4 gap-y-sp-1 p-0 text-meta text-mute">
@@ -170,8 +170,8 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
               vectorEffect="non-scaling-stroke"
               className={cn(
                 result === "win" && "fill-ink stroke-ink",
-                result === "loss" && "fill-wht stroke-ink",
-                result === "none" && "fill-wht stroke-mute",
+                result === "loss" && "fill-page stroke-ink",
+                result === "none" && "fill-page stroke-mute",
               )}
             />
           );

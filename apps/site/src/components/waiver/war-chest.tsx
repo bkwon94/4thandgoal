@@ -56,13 +56,13 @@ function BudgetRing({
           <Avatar
             src={avatarSrc(avatars, row.roster_id)}
             size="ring"
-            className="rounded-full border border-rule-dark bg-gry object-cover"
+            className="rounded-full border border-rule-dark bg-card object-cover"
           />
           {/* The bar is a picture of the number under it, so it is hidden from a screen reader. */}
           <span aria-hidden className="relative mt-sp-1 block h-ring-bar w-ring-bar-w overflow-hidden rounded-sm bg-rule-dark">
             <span
               data-viewer={row.roster_id === viewerId || undefined}
-              className={cn("absolute inset-x-0 bottom-0 rounded-sm", row.roster_id === viewerId ? "bg-red" : "bg-bar-off")}
+              className={cn("absolute inset-x-0 bottom-0 rounded-sm", row.roster_id === viewerId ? "bg-accent" : "bg-bar-off")}
               style={{ height: `${(row.budget_left / top) * 100}%` }}
             />
           </span>
@@ -111,7 +111,7 @@ function RestList({
                   "press min-h-touch w-full cursor-pointer border-0 bg-transparent px-0 py-sp-1 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
                 )}
               >
-                <span className={open ? "font-bold text-red-lt" : "text-on-dark-muted"}>{SLOTS.length + index + 1}</span>
+                <span className={open ? "font-bold text-accent-text" : "text-on-dark-muted"}>{SLOTS.length + index + 1}</span>
                 {/* The player name sits next to the headshot, so the image is decorative. */}
                 {/* The fill is the dark rule, so it stays one step off the black card in both themes. Ink-2 turns light grey in the dark theme. */}
                 <Headshot
@@ -183,7 +183,7 @@ export function WarChest({ board, teams, avatars }: { board: WaiverBoard; teams:
               onClick={() => setBucket(tab.key)}
               className={cn(
                 "press flex min-h-touch flex-1 cursor-pointer items-center justify-center rounded-full border-0 px-sp-2 text-label font-bold tracking-caps whitespace-nowrap uppercase",
-                on ? "bg-red text-on-dark" : "bg-chip-dark text-on-dark-2",
+                on ? "bg-accent text-on-dark" : "bg-chip-dark text-on-dark-2",
               )}
             >
               {tab.name}

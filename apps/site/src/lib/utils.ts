@@ -5,7 +5,7 @@
 import { createCn } from "cn/config"
 
 // The text scale in globals.css adds size names that cn does not know.
-// Without them cn reads text-label as a color and drops it next to text-red.
+// Without them cn reads text-label as a color and drops it next to text-accent.
 export const cn = createCn({
   extend: {
     // The spacing scale in globals.css adds names that cn does not know.
