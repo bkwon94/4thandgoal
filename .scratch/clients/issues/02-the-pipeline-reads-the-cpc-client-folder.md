@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-2, AT-19, AT-20, AT-2
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The CPC client folder holds `client.toml`, `copy.toml`, `prompts/`, and `data/` with the history and the raw weeks. The values are those of the spec.
 - [x] The shared NFL data and the Returns file sit in the root NFL data folder, outside each client.
