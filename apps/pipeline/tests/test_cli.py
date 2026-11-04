@@ -520,8 +520,8 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
         tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
     from fakes import FakeWriter
 
+    from analyzer.analysis import AnalysisOut
     from cornerstone import cli
-    from cornerstone.analysis import AnalysisOut
     from facts.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
 
     side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],

@@ -3,6 +3,7 @@
  * The site reads one client per build, so a value that changes with the league comes from these files and not the env.
  */
 
+import type { ComponentType } from "react";
 import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination, MenuLayout } from "@cpc/design/shell/menu";
 
@@ -36,3 +37,6 @@ export type ClientMenu = { layout: MenuLayout; items: MenuItem[] };
 /* The menu link of each package of the client: its label and its href. A package with no page to link yet gives null,
    so the menu has no entry. */
 export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
+
+/* The row of a package in the Tools chapter of the home page. The first row of the chapter has no top space. */
+export type HomeTool = ComponentType<{ first: boolean }>;

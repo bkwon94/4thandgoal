@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "cpc-analyzer",
     "cpc-facts",
     "cpc-league",
     "anthropic>=1.15.0",
@@ -17,6 +18,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
+cpc-analyzer = { workspace = true }
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
 
@@ -41,9 +43,9 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The pipeline imports the league and the facts packages as its own code, so each sorts as first party in one block.
+# The pipeline imports the league, the facts, and the analyzer packages as its own code, so each sorts as first party in one block.
 [tool.ruff.lint.isort]
-known-first-party = ["cornerstone", "facts", "league"]
+known-first-party = ["analyzer", "cornerstone", "facts", "league"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 # Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an

@@ -3,12 +3,10 @@
  * It is a server component, so the list is part of the static export.
  */
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { Movement } from "@/components/rankings/power-rankings";
 import { Reveal } from "@cpc/design/parts/reveal";
-import { TeamsPrefetch } from "@/components/analyzer/teams-prefetch";
 import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
@@ -17,30 +15,16 @@ import { currentManagersHref } from "@/lib/data/manager-data";
 import { stagger } from "@cpc/design/lib/motion";
 import { biggestMover } from "@/lib/format/rankings";
 import { loadRankings } from "@/lib/data/rankings-data";
-import { analyzeHref, homeHref, rankingsHref } from "@/lib/routes";
+import { homeHref, rankingsHref } from "@/lib/routes";
 import { cn } from "@cpc/design/lib/utils";
+import { homeTools } from "@/generated/registry";
+import { HomeRow } from "@/app/home-row";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { mastheadProps } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
   title: "Cornerstone Fantasy Football League",
 };
-
-/* A plain anchor, like the masthead link. An anchor skips the router, so the caller passes an href with the base path. */
-function HomeRow({ href, first, children }: { href: string; first?: boolean; children: ReactNode }) {
-  return (
-    <a
-      href={href}
-      className={cn(
-        "press group block border-b border-rule py-sp-3 text-inherit no-underline",
-        // The label already gives the first row its top space.
-        first && "pt-0",
-      )}
-    >
-      {children}
-    </a>
-  );
-}
 
 export default function HomePage() {
   const weeks = listWeekSummaries();
@@ -52,8 +36,6 @@ export default function HomePage() {
   const firstWeekStep = rankings ? 2 : 1;
   return (
     <>
-      {/* A reader who opens the analyzer next sees the pickers at once, because the teams are already in session storage. */}
-      <TeamsPrefetch />
       <Masthead {...mastheadProps()} pageHref={homeHref()}>
         <WeekLine label="SEASON" number={season} />
       </Masthead>
@@ -67,17 +49,13 @@ export default function HomePage() {
           {/* The masthead and the label show at once. Each row reveals as it enters the view. */}
           <Chapter>
             <Label heading>Tools</Label>
-            {/* The row reveals first, so a new week never pushes it down or delays it. */}
-            <Reveal delay={stagger(0)}>
-              <HomeRow href={analyzeHref()} first>
-                <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Trade Analyzer</b>
-                <span className="block text-meta text-mute">Grade a trade offer before you send it.</span>
-                <span className="block text-meta text-mute">League passphrase needed.</span>
-              </HomeRow>
-            </Reveal>
+            {/* The registry gives the tool of each package of the client, so an omitted package leaves no code here. */}
+            {homeTools.map((Tool, index) => (
+              <Tool key={index} first={index === 0} />
+            ))}
             {managersHref && (
               <Reveal delay={stagger(0)}>
-                <HomeRow href={managersHref}>
+                <HomeRow href={managersHref} first={homeTools.length === 0}>
                   <b className="mb-sp-1 block text-lead leading-tight group-hover:text-accent-ink">Managers</b>
                   <span className="block text-meta text-mute">One page per team: grade, odds, moves, and performers.</span>
                 </HomeRow>

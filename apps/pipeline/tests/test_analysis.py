@@ -10,9 +10,9 @@ import pytest
 from conftest import with_free_agents
 from cpc import cpc_client
 
-from cornerstone import analysis
-from cornerstone.analysis import AnalysisOut, analyze
-from cornerstone.rubric import ProposedTrade, TradeSide, grade
+from analyzer import analysis
+from analyzer.analysis import AnalysisOut, analyze
+from analyzer.rubric import ProposedTrade, TradeSide, grade
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
 from league.snapshot import build_snapshot, load_returns, load_snapshot
@@ -317,11 +317,11 @@ def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
     text = "Garrett Wilson is worth 27.5 to this roster. His target share went up. He is a starter."
     bad = _response(eleven=_side(11, analysis=text, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
     fake = FakeClaude(bad, bad)
-    with caplog.at_level(logging.WARNING, logger="cornerstone.analysis"):
+    with caplog.at_level(logging.WARNING, logger="analyzer.analysis"):
         assert analyze(trade, snap, call=fake).fallback
     # The retry feedback to Claude keeps the full failure text.
     assert "number 27.5 is not in the cited facts" in fake.calls[1][1]
-    records = [r.getMessage() for r in caplog.records if r.name == "cornerstone.analysis"]
+    records = [r.getMessage() for r in caplog.records if r.name == "analyzer.analysis"]
     assert len(records) == 2
     for message in records:
         assert "failed" in message
