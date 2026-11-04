@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-8.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Each token and class of the brand table of the spec takes its new name. `ink` and `mute` keep their names.
 - [x] The shadcn tokens `card` and `accent` point at the brand roles of the same name. The select item takes a focus fill with its own meaning.
