@@ -867,6 +867,14 @@ _Avoid_: Design system, UI kit, components, parts (alone; a part is one componen
 The sizes of one season of a league that the provider gives: the team count, the playoff spots, the roster slots, and the weeks of the regular season. The lines and the star ranks derive from them.
 _Avoid_: League config, sizes (alone), league rules
 
+**Median game**:
+The second game of each week, against the median score of the league. A league has it or not, and the League settings say which. With no median game, a week is one game.
+_Avoid_: All-play, league average game
+
+**Returns file**:
+The one shared NFL file that names the week each injured player returns. A return week is the same in each league, so no client owns the file.
+_Avoid_: Injury file, return list, returns.json (alone; that names the old file of one season)
+
 **Package value**:
 One value that a package names in its README, with its default. A client sets it in `client.toml` only when it differs from the default.
 _Avoid_: Flag, feature flag, setting, option

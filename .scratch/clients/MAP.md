@@ -25,10 +25,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - Eight packages, as bounded contexts: the kernel `league`, then `facts`, then `week`, `rankings`, `managers`, `waiver`, and `analyzer`, with `design` under each site side. The week takes chapters through a chapter port. `decisions/01-grill-the-package-map.md`.
 - `client.toml` holds the package list, the seasons, the timezone, the usage code, the package values, and the menu. The sizes come from the provider. Each package exports one JSON Schema, and an unknown key fails the check. `decisions/02-grill-the-client-toml-schema.md`.
 - A brand is `brand.toml`: six base color roles per set, two fonts, and two radii. The other colors derive, with an override. A brand with one set has no theme button. The color tokens take role names. `decisions/03-grill-the-brand-tokens.md`.
+- The second league is NorCal Apex 6: full PPR, no median game, no DEF, a dark brand. The League settings carry the median game and the positions, the chart is a value, the returns file is shared, and a client can override only the voice. `decisions/04-grill-the-second-league-week.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the second league need to build a week: its history, its prompts, its voice? `decisions/04-grill-the-second-league-week.md`.
 - Where is the second site hosted, and at what URL? `decisions/05-research-the-second-site-host.md`.
 - Can the provider port take the ESPN API and the Yahoo API later? `decisions/06-research-the-espn-and-yahoo-apis.md`.
 - How do `uv` and `pnpm` find the code of a package, and how does the check run per package? `decisions/07-prototype-one-workspace-two-languages.md`.
@@ -37,6 +37,7 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 
 ## OUT OF SCOPE
 
+- Player points computed from `scoring_settings`. It makes the 6-point passing touchdowns of NorCal exact, but it changes how CPC computes its points. A later spec.
 - A dark default for a two-set brand. ADR 0007 keeps light as the default, and no client asks for dark yet.
 - A type scale per brand. Each change needs a check at three widths, so a later spec opens it with that check.
 - A menu item that links outside the site. It needs a look in the shell, and a later spec can add a `link` kind to the closed set.
