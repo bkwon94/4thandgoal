@@ -27,10 +27,10 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - A brand is `brand.toml`: six base color roles per set, two fonts, and two radii. The other colors derive, with an override. A brand with one set has no theme button. The color tokens take role names. `decisions/03-grill-the-brand-tokens.md`.
 - The second league is NorCal Apex 6: full PPR, no median game, no DEF, a dark brand. The League settings carry the median game and the positions, the chart is a value, the returns file is shared, and a client can override only the voice. `decisions/04-grill-the-second-league-week.md`.
 - The host is Cloudflare Workers with static assets, one Worker per client, named by the client slug. NorCal serves at its free `workers.dev` URL, and CPC stays on GitHub Pages. `decisions/05-research-the-second-site-host.md`.
+- The provider port can take ESPN and Yahoo later. The Sleeper player ID is the canonical ID, the cache path moves into the adapter, and the `league` README lists each Sleeper shape as an adapter duty. `decisions/06-research-the-espn-and-yahoo-apis.md`.
 
 ## NOT YET SPECIFIED
 
-- Can the provider port take the ESPN API and the Yahoo API later? `decisions/06-research-the-espn-and-yahoo-apis.md`.
 - How do `uv` and `pnpm` find the code of a package, and how does the check run per package? `decisions/07-prototype-one-workspace-two-languages.md`.
 - How does the Next.js build select one client from `client.toml`? `decisions/08-prototype-the-client-build.md`.
 - The spec. `decisions/09-spec-clients.md`.
@@ -47,3 +47,5 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - A deploy of the API per client. The client choice is data, so a later spec can run the same image as a second Fly app with one env var.
 - The brand name and its domain. The end state is `<client>.<brand>.app` for each client, but Brian has not chosen a name. The domain is a setting of each Worker, so the move needs no code.
 - The move of CPC from GitHub Pages to a Cloudflare Worker. It is a second deploy seam, so it waits for the brand domain.
+- The split of `Provider` into a league provider and an NFL data source. The ESPN spec does it, because NorCal is a Sleeper league and cannot test it.
+- The move of the raw reads in the waiver modules, `snapshot.py`, `history.py`, `live.py`, and `pipeline.py` behind `parse.py`. It is real code with no second provider to need it yet, so it is a later ticket.
