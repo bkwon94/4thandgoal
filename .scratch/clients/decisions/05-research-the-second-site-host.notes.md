@@ -1,87 +1,157 @@
 # 05 notes: the host and the URL of the second site
+Ticket: .scratch/clients/decisions/05-research-the-second-site-host.md
 
-Research for `05-research-the-second-site-host.md`. Read on 2026-11-03. Brian makes the decision.
+Research date: 2026-11-03. Each claim cites its primary source. A claim marked **Local check** comes from a command in this repo, not from a doc.
 
-## The current deploy
+## Two local facts that change the answer
 
-- `.github/workflows/deploy.yml` builds and deploys the site. It runs on a push to `main` that changes `apps/site/**`, and on a manual dispatch.
-- The build job runs `pnpm check` in `apps/site`, then `actions/configure-pages@v5` and `actions/upload-pages-artifact@v3` with the path `apps/site/out`.
-- The deploy job runs `actions/deploy-pages@v4` with `pages: write` and `id-token: write`, in the `github-pages` environment.
-- `apps/site/next.config.ts` sets `output: "export"`, `trailingSlash: true`, and `basePath`.
-- `apps/site/src/lib/config.ts` reads `basePath` from `NEXT_PUBLIC_BASE_PATH`. The default is empty, because the site is at the domain root.
-- `apps/site/public/CNAME` holds `cpcfantasy.com`. A site from a custom workflow ignores this file. The domain comes from the Pages settings of the repo. Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
-- The repo is `bkwon94/cpcfantasyfootball` (`git remote -v`).
-- DNS: `dig` shows that `cpcfantasy.com` uses the Cloudflare nameservers `fish` and `rohin`. Its apex A records are the four GitHub Pages IPs, `185.199.108.153` to `185.199.111.153`. So the domain is already a Cloudflare zone.
-- The API is a separate Fly app, `cpcfantasy-api` in `apps/pipeline/fly.toml`. `.github/workflows/deploy-api.yml` runs `superfly/flyctl-actions/setup-flyctl@v1` and `flyctl deploy --remote-only`.
+1. **Local check:** `dig +short NS cpcfantasy.com` returns `rohin.ns.cloudflare.com` and `fish.ns.cloudflare.com`. The DNS of `cpcfantasy.com` is already a Cloudflare zone. The apex A records point to the GitHub Pages IPs `185.199.108-111.153`.
+2. **Local check:** `apps/site/public/` holds 130 files and 3.7 MB. The site is far below every file limit below.
+3. A Pages site from a custom workflow ignores `apps/site/public/CNAME`. The domain of CPC comes from the Pages settings of the repo. Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 
-## The hard limit on GitHub Pages
+Fact 1 matters for Cloudflare Workers. A Workers Custom Domain needs an active Cloudflare zone, and this zone exists. A subdomain such as `norcal.cpcfantasy.com` can point to any of the three hosts, while the apex stays on GitHub Pages.
 
-- A repo has a maximum of one Pages site. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages
-- `actions/deploy-pages` has no input for a target repo. It deploys an artifact to the Pages site of the repo that runs the workflow. Source: https://github.com/actions/deploy-pages
-- So this repo cannot serve a second site on GitHub Pages. A second GitHub Pages site needs a second repo.
+## 1. Cloudflare: a Pages project, or a Worker with static assets
 
-## Option A: a second Cloudflare Pages project
+### Which product
 
-1. Cost: free. "On both free and paid plans, requests to static assets are free and unlimited." Source: https://developers.cloudflare.com/pages/functions/pricing/
-2. Deploy step: a direct upload from GitHub Actions with `cloudflare/wrangler-action@v4`. The command is `pages deploy apps/site/out --project-name=<project>`. Source: https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/
-   - Secrets: `CLOUDFLARE_API_TOKEN`, a custom token with "Account, Cloudflare Pages, Edit". Also `CLOUDFLARE_ACCOUNT_ID`.
-   - The job grants `contents: read` and `deployments: write`.
-   - A matrix over the client slugs can build and deploy each client in one workflow, one project per client.
-3. Default URL: `<project>.pages.dev`. You choose the name when you create the project. Source: https://developers.cloudflare.com/pages/configuration/custom-domains/
-   - Custom domain: a subdomain needs only a CNAME to `<project>.pages.dev`. If the zone is on Cloudflare, Cloudflare adds the CNAME for you. Add the domain in the Pages dashboard first, or a 522 error can occur.
-   - An apex domain must be a Cloudflare zone on the same account. Same source.
-   - `cpcfantasy.com` is already a Cloudflare zone, so `<slug>.cpcfantasy.com` is a one-step setup.
-4. Limits on the Free plan: 100 projects per account, 20,000 files per site, 25 MiB per file, 500 builds per month, 100 custom domains per project. Source: https://developers.cloudflare.com/pages/platform/limits/
-   - Check the file count. Each week adds files, and the limit is per site, not per repo.
-   - A direct upload from Actions does not use the Cloudflare build system. The docs do not say if the 500-build limit counts direct uploads.
+The Pages docs carry a banner that advises against Pages for new projects: "Workers supports most Pages use cases and offers a broader feature set." Source: https://developers.cloudflare.com/pages/
 
-## Option B: a second GitHub repo for Pages
+Both products serve a folder of prebuilt files. The notes below cover both.
 
-1. Cost: free for a public repo. On GitHub Free, the repo must be public. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
-2. Deploy step: `actions/deploy-pages` cannot deploy from this repo to the second repo (see the hard limit above). Two paths exist:
-   - The second repo has its own workflow. It checks out this repo, builds with the client name, and deploys with `actions/deploy-pages@v4`. The trigger then lives in the second repo, not in this one.
-   - This repo builds, then pushes `out/` to a branch of the second repo. That needs a deploy key or a token with write access. The second repo publishes from that branch. Source for branch publish: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
-3. Default URL: `https://bkwon94.github.io/<repo>`. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages
-   - That URL has a path, so the build must set `NEXT_PUBLIC_BASE_PATH=/<repo>`. A custom domain removes the path.
-   - Custom domain: a subdomain needs a CNAME to `bkwon94.github.io`. The domain is set in the Pages settings of the second repo. Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
-4. Limits: 1 GB per site, a soft limit of 100 GB of bandwidth per month, and a timeout of 10 minutes per deploy. Pages is "not intended for or allowed to be used as a free web-hosting service to run your online business". Source: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
-   - Each new client needs one more repo and one more token. Ten clients mean ten repos.
+### Cost and free-tier limits
 
-## Option C: a static deploy on Fly
+Pages, Free plan:
 
-1. Cost: not free. "New organizations don't have a free tier or a monthly free usage allowance." Source: https://docs.fly.io/about/pricing
-   - The smallest Machine, `shared-cpu-1x` with 256 MB, costs $2.19 per month if it runs all the time.
-   - A stopped Machine costs $0.15 per GB per month of rootfs. Outbound bandwidth in North America costs $0.02 per GB.
-   - A shared IPv4 is free. The first 10 certificates per org are free, then $0.10 per month each.
-   - Brian already pays for the org of `cpcfantasy-api`, so the extra cost is small but not zero.
-2. Deploy step: a Dockerfile `FROM nginx:alpine` that copies the export into `/usr/share/nginx/html`. Set `internal_port = 80` in `fly.toml`. Run `flyctl deploy`. Source: https://docs.fly.io/languages-and-frameworks/static
-   - In this repo, the step matches `deploy-api.yml`: `superfly/flyctl-actions/setup-flyctl@v1`, then `flyctl deploy --remote-only`, with one `fly.toml` per client site.
-   - The example sets `auto_stop_machines = 'stop'` and `min_machines_running = 0`. An idle site stops, and the first visit then waits for a cold start. Same source.
-3. Default URL: `<app>.fly.dev`. Same source.
-   - Custom domain: run `fly certs add <domain>`, then add a CNAME from the subdomain to the app's `.fly.dev` target. An apex domain needs A and AAAA records. Source: https://docs.fly.io/networking/custom-domain/
-4. Limits: a server to run and patch, with an nginx image per client. The other two options have no server.
+- 500 builds a month, and one build at a time for each account. Source: https://developers.cloudflare.com/pages/platform/limits/
+- 20,000 files for each site, and 25 MiB for each file. Source: https://developers.cloudflare.com/pages/platform/limits/
+- 100 projects for each account, and 100 custom domains for each project. Source: https://developers.cloudflare.com/pages/platform/limits/
+- "On both free and paid plans, requests to static assets are free and unlimited." Source: https://developers.cloudflare.com/pages/functions/pricing/
+- The limits page states no bandwidth cap. Source: https://developers.cloudflare.com/pages/platform/limits/
 
-## Other options checked
+Workers with static assets, Free plan:
 
-- Cloudflare Workers static assets: "Like Pages, requests for static assets on Workers are free." The docs do not mark Pages as deprecated. Workers has more features, but a static export does not need them. No clear advantage, so it is not a full option here. Source: https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/
+- "Requests to static assets are free and unlimited." Source: https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/
+- 20,000 files for each Worker version on Free, 100,000 on Paid, and 25 MiB for each file. Source: https://developers.cloudflare.com/workers/platform/limits/
+- 100 Workers for each account. The 100,000 requests a day limit applies to requests that run Worker code. Source: https://developers.cloudflare.com/workers/platform/limits/
 
-## Summary
+Cost for one small static site: $0 on either product.
 
-| | A: Cloudflare Pages | B: second GitHub repo | C: Fly static |
+### Deploy step from GitHub Actions
+
+- The official action is `cloudflare/wrangler-action@v4`. It takes the inputs `apiToken` and `accountId` from secrets. Source: https://github.com/cloudflare/wrangler-action
+- For Pages, the command is `pages deploy <dir> --project-name=<name>`. The job also sets `deployments: write` if `gitHubToken` is given. Source: https://github.com/cloudflare/wrangler-action
+- The secrets are `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Source: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+- The Pages token needs Account > Cloudflare Pages > Edit. Source: https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/
+- The Workers token uses the "Edit Cloudflare Workers" template. Source: https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
+- Create a Pages project for CI with `wrangler pages project create`. "If you choose Direct Upload, you cannot switch to Git integration later." Source: https://developers.cloudflare.com/pages/get-started/direct-upload/
+- On Workers, the default `assets.html_handling` is `auto-trailing-slash`. It serves `foo/index.html` at `foo/`, which fits `trailingSlash: true`. Source: https://developers.cloudflare.com/workers/static-assets/routing/advanced/html-handling/
+
+### Custom domain and free URL
+
+- Pages gives a free `<project>.pages.dev` URL. Source: https://developers.cloudflare.com/pages/configuration/custom-domains/
+- For a Pages subdomain, add the domain in the dashboard first. Then add a CNAME to `<project>.pages.dev`. A CNAME added before the dashboard step fails with a 522 error. The subdomain does not need to be a Cloudflare zone. Source: https://developers.cloudflare.com/pages/configuration/custom-domains/
+- Workers gives a free `<worker>.<account-subdomain>.workers.dev` URL. Source: https://developers.cloudflare.com/workers/configuration/routing/workers-dev/
+- A Workers Custom Domain needs "An active Cloudflare zone" that you own. It cannot go on a hostname with an existing CNAME record. Source: https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
+- `cpcfantasy.com` is already a Cloudflare zone, so `norcal.cpcfantasy.com` works on both products. See the local check above.
+
+### Can one repo deploy two sites
+
+Yes. Each deploy names its target: `--project-name` for Pages, or the Worker name in its config. One token for each account deploys every project in the account. Ten clients need ten projects, inside the 100 limit. Sources: https://github.com/cloudflare/wrangler-action and https://developers.cloudflare.com/pages/platform/limits/
+
+## 2. A second GitHub repo that serves GitHub Pages
+
+### Cost and free-tier limits
+
+- GitHub Free gives "GitHub Pages in public repositories". Source: https://docs.github.com/en/get-started/learning-about-github/githubs-plans
+- "GitHub Actions usage is free for standard GitHub-hosted runners in public repositories". Source: https://docs.github.com/en/get-started/learning-about-github/githubs-plans
+- A published site is 1 GB or less. The soft bandwidth limit is 100 GB a month. A deploy times out after 10 minutes. The soft limit of 10 builds an hour does not apply to a custom Actions workflow. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+
+Cost: $0.
+
+### One site for each repo
+
+The docs state: "Maximum of one pages site per repository." The default URL of a project site is `<owner>.github.io/<repositoryname>`. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
+
+### Deploy step from GitHub Actions
+
+- The official actions are `actions/upload-pages-artifact` and `actions/deploy-pages`. The deploy job needs `pages: write` and `id-token: write`. The `token` input defaults to `github.token`. Source: https://github.com/actions/deploy-pages
+- The README of `deploy-pages` says nothing about a deploy to another repo. Source: https://github.com/actions/deploy-pages
+- The REST call under `deploy-pages` takes an artifact and an `oidc_token` "issued by GitHub Actions certifying the origin of the deployment". The artifact belongs to the target repository. Source: https://docs.github.com/en/rest/pages/pages#create-a-github-pages-deployment
+- So repo A cannot use `deploy-pages` to deploy to the Pages of repo B. This is an inference from the REST doc, not a direct GitHub statement.
+- The other publishing source is "publish from a branch". Source: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+- A cross-repo deploy therefore means a push of `out/` to a branch of repo B. That push needs a token with write access to repo B, such as a fine-grained PAT with Contents: write on repo B, stored as a secret in repo A. No first-party action does this push. **Inference**, from the two sources above.
+
+### Custom domain and free URL
+
+- Free URL: `<owner>.github.io/<repo>`. With `basePath` from config, the build must set the base path to `/<repo>` for this URL. Source: https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
+- For a subdomain, set the domain in Settings > Pages. Then add a CNAME to `<owner>.github.io`, without the repo name. Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+- With a custom Actions workflow, "no CNAME file is created, and any existing CNAME file is ignored and is not required." Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
+- A repo-level domain overrides the account default. So repo B can serve `norcal.cpcfantasy.com`, while this repo keeps the apex. Source: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages
+
+### Can one repo deploy two sites
+
+Not with the first-party Pages actions. This repo serves one site, and each new client needs a new repo, a new PAT secret, and a push step. Ten clients mean ten repos and ten tokens to rotate.
+
+## 3. A static deploy on Fly.io
+
+### Cost and free-tier limits
+
+- No free tier. A new org gets a trial of 2 hours of Machine runtime or 7 days. Source: https://docs.fly.io/about/pricing
+- The smallest `shared-cpu-1x` 256 MB Machine is $2.19 a month at full runtime. Source: https://docs.fly.io/about/pricing
+- Outbound data costs $0.02 a GB in North America and Europe, with no free allowance. Source: https://docs.fly.io/about/pricing
+- A stopped Machine costs $0.15 a GB a month of rootfs. Source: https://docs.fly.io/about/pricing
+- Shared IPv4 and IPv6 are free. A dedicated IPv4 is $2 a month. Source: https://docs.fly.io/about/pricing
+- The first 10 single-hostname certificates of each org are free. Then each costs $0.10 a month. Source: https://docs.fly.io/about/pricing
+- `auto_stop_machines` (default `"off"`) can stop an idle Machine, and `auto_start_machines` (default `true`) starts it on a request. Source: https://docs.fly.io/reference/configuration
+- `[[statics]]` serves files from a `guest_path` in the image, with up to 10 mappings for each app. Source: https://docs.fly.io/reference/configuration
+- There is no file count limit like Cloudflare's. The site is files inside an image, such as nginx or Caddy.
+
+Cost: about $0 to $2.19 a month for each site, plus bandwidth. An eleventh certificate adds $0.10 a month.
+
+### Deploy step from GitHub Actions
+
+- The action is `superfly/flyctl-actions/setup-flyctl@master`. The command is `flyctl deploy --remote-only`. The secret is `FLY_API_TOKEN`. Source: https://docs.fly.io/launch/continuous-deployment-with-github-actions
+- `fly tokens create deploy` makes a token for one app. `fly tokens create org` makes a token for every app in the org. Source: https://docs.fly.io/launch/continuous-deployment-with-github-actions
+- The API already uses this flow. A site app needs its own `fly.toml` and a Dockerfile, such as nginx with `out/` copied in.
+
+### Custom domain and free URL
+
+- Free URL: `<app>.fly.dev`. Source: https://docs.fly.io/networking/custom-domain
+- Run `fly certs add norcal.cpcfantasy.com`. Then add the CNAME that Fly shows. Source: https://docs.fly.io/networking/custom-domain
+- A certificate needs one more proof: an AAAA record, a `_acme-challenge` CNAME, or a `_fly-ownership` TXT record. Source: https://docs.fly.io/networking/custom-domain
+
+### Can one repo deploy two sites
+
+Yes. Each app has its own name and `fly.toml`, and `flyctl deploy` takes a config path. One org token deploys all apps. Ten clients mean ten apps and ten Machines. Source: https://docs.fly.io/launch/continuous-deployment-with-github-actions
+
+## Comparison
+
+| Point | Cloudflare Workers or Pages | Second GitHub repo, Pages | Fly.io static app |
 | --- | --- | --- | --- |
-| Cost | Free | Free (public repo) | About $0 to $2.19 per month, plus bandwidth |
-| Deploy from this repo | `wrangler-action`, one project per client | Not direct; a second repo with a token or its own workflow | `flyctl deploy`, one app per client |
-| Default URL | `<project>.pages.dev` | `bkwon94.github.io/<repo>` (needs a base path) | `<app>.fly.dev` |
-| Custom subdomain | CNAME, auto on the Cloudflare zone | CNAME to `bkwon94.github.io` | `fly certs add`, then CNAME |
-| Main limit | 20,000 files per site | 1 repo per client | Paid, cold start, a server |
+| Cost for one small site | $0 | $0 | $0 to $2.19 a month, plus $0.02 a GB out |
+| Free-tier limits | 20,000 files, 25 MiB a file, static requests unlimited; Pages 500 builds a month | 1 GB a site, 100 GB a month soft, 10 min deploy | No free tier |
+| Deploy action | `cloudflare/wrangler-action@v4` | `actions/deploy-pages@v4` only in its own repo; cross-repo needs a branch push | `superfly/flyctl-actions/setup-flyctl` |
+| Secrets | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A PAT with write access to each target repo | `FLY_API_TOKEN`, which exists today |
+| Free URL | `<name>.pages.dev` or `<worker>.<sub>.workers.dev` | `<owner>.github.io/<repo>` | `<app>.fly.dev` |
+| `norcal.cpcfantasy.com` | Yes; the zone is on Cloudflare | Yes; CNAME to `<owner>.github.io` | Yes; `fly certs add` and a CNAME |
+| One repo, two sites | Yes, by project name | No; one Pages site for each repo | Yes, by app name |
+| Ten clients | 10 projects of 100; one token | 10 repos; 10 tokens | 10 apps; up to about $22 a month |
+| A server to run | None | None | One Machine for each site |
 
 ## Recommendation
 
-Choose Option A: a second Cloudflare Pages project, at `<slug>.cpcfantasy.com`, with `<project>.pages.dev` as the default URL.
+**This is a suggestion for Brian to decide.**
 
-- It is free, and static requests have no limit.
-- The deploy stays in this repo. One `wrangler-action` step per client fits the plan of one build per client name.
-- `cpcfantasy.com` is already a Cloudflare zone, so the subdomain needs no DNS work by hand.
-- It needs no extra repo and no server, so client three costs one more project, not one more repo or app.
-- Open question for Brian: does CPC stay on GitHub Pages, or move to Cloudflare Pages too? One host for each client keeps one deploy path.
-- Check before the spec: the file count of a full season against the 20,000-file limit. `apps/site/public/` holds 130 files today, so the risk is low. The worktree has no `out/` to count.
+Host the second site, and each later client, as a Cloudflare Worker with static assets, at `<client>.cpcfantasy.com`.
+
+The reasons:
+
+1. One repo deploys many sites with one token and one action. Each deploy names its Worker.
+2. The cost is $0, and static requests are unlimited.
+3. The DNS of `cpcfantasy.com` is already on Cloudflare, so a Workers Custom Domain needs no new DNS host.
+4. Cloudflare points new projects to Workers, not Pages. A Pages project is a fine fallback with the same cost and URL shape.
+
+A second GitHub repo breaks the "one repo" constraint and needs a PAT for each client. Fly works, but it adds a Machine and a monthly cost for each site, with no gain for static files.
+
+Open question for Brian: does the first site, `cpcfantasy.com`, also move to Cloudflare later, so that every client deploys the same way? This choice is outside ticket 05.
