@@ -1,40 +1,50 @@
 """
-The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the route groups.
+The app factory of the Cornerstone API: CORS, the passphrase check, the rate limits, and the routes of each client.
 The service needs CORNERSTONE_PASSPHRASE, and ANTHROPIC_API_KEY for the Claude call. It reads CORNERSTONE_REPO,
 CORNERSTONE_RESULT_CACHE_DIR, and CORNERSTONE_ALLOWED_ORIGINS when set.
 Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.0.0.0 --port 8080`.
+At start it reads each client folder under clients/, and a bad client.toml stops the start.
+Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
 On start, the real app refreshes the slow sources in a background thread, so the first request finds them on disk.
 """
 import hmac
 import logging
 import threading
+from collections.abc import Mapping, Sequence
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from cornerstone.analysis import analyze
-from cornerstone.finder_reasons import write_reasons
-from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE, RATE_LIMIT_PER_MINUTE
-from cornerstone_api import analyzer as analyzer_routes
+from analyzer import routes as analyzer_routes
+from analyzer.analysis import analyze
+from analyzer.cache import ResultCache, TeamsCache
+from analyzer.finder_reasons import write_reasons
+from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
+from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
-from cornerstone_api.cache import ResultCache, TeamsCache
-from cornerstone_api.ratelimit import GradeLimiter, RateLimiter, client_address
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
-from league.client import Client, load_client, read_client_values
-from league.paths import client_dir, provider_cache_dir
+from league.client import Client, SettingsFetch, load_client, read_client_values
+from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
 from league.tunables import TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
 
-# The one client the API serves, until it serves each client by its path.
-CLIENT_SLUG = "cpc"
+# The client of the old paths with no client, such as /teams. A page from before the clients paths still calls them.
+DEFAULT_SLUG = "cpc"
+# The prefix of the routes of each client. The slug is the name of the client folder under clients/.
+CLIENT_PREFIX = "/clients/{slug}"
+
+# The API service: the count of requests one address may make in a fixed one-minute window, over every client.
+# Past it the route answers 429, so one browser cannot loop the API and run up the Claude bill.
+RATE_LIMIT_PER_MINUTE = 10
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
-# The file of the daily grade counts, in the result cache dir.
+# The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
 
 
@@ -53,7 +63,7 @@ class _RateLimited(Exception):
 def _guard(request: Request) -> None:
     """Stop a request past the rate limit or without the league passphrase. Every route group except health runs it."""
     # The count comes before the passphrase check, so wrong guesses count against the limit too.
-    retry_after = request.app.state.limiter.hit(client_address(request))
+    retry_after = request.app.state.limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
     given = request.headers.get(PASSPHRASE_HEADER, "")
@@ -62,39 +72,52 @@ def _guard(request: Request) -> None:
         raise _Unauthorized()
 
 
-def refresh_sources_on_start(settings: Settings, sources: Sources) -> None:
-    """Refresh the slow sources of the season that Sleeper is in, with the normal max age.
+def refresh_sources_on_start(settings: Settings, sources: Mapping[str, Sources]) -> None:
+    """Refresh the slow sources of each client, for the season that Sleeper is in, with the normal max age.
 
     The normal max age keeps a fresh file, so the refresh fetches only the old files again.
-    It runs in a background thread at start. Any error logs a warning and never raises, so the app keeps running.
-    The log names only the error type, as the chart read does, so it never holds a key.
+    It runs in a background thread at start. Any error logs a warning and never raises, so the app keeps running,
+    and the next client still refreshes. The log names only the client and the error type, so it never holds a key.
     """
-    try:
-        sources.refresh_current_season()
-    except Exception as error:  # noqa: BLE001 - the app keeps running after a failed refresh
-        logger.warning("The start-up refresh of the slow sources failed (%s)", type(error).__name__)
+    for slug, each in sources.items():
+        try:
+            each.refresh_current_season()
+        except Exception as error:  # noqa: BLE001 - the app keeps running after a failed refresh
+            logger.warning("The start-up refresh of the slow sources of %s failed (%s)", slug, type(error).__name__)
+
+
+def _real_sources(client: Client) -> Sources:
+    """The real fetches of `client`. The Sleeper adapter takes the shared NFL cache dir, which holds the players file."""
+    return Sources(client, clock=lambda: datetime.now(client.tz),
+                   fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live)
+
+
+def _served(settings: Settings, client: Client, sources: Sources) -> analyzer_routes.Served:
+    """The state of one client. Its result cache and its grade counts sit in its own folder of the result cache dir."""
+    folder = settings.result_cache_dir / client.slug
+    # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
+    # The day of the limit is the calendar day in the timezone of the client.
+    limiter = GradeLimiter(GRADES_PER_MINUTE, GRADES_PER_DAY, folder / GRADE_COUNTS_FILE, client.tz)
+    return analyzer_routes.Served(client=client, sources=sources, cache=ResultCache(folder),
+                                  teams_cache=TeamsCache(TEAMS_CACHE_SECONDS), grade_limiter=limiter)
 
 
 def create_app(
-        settings: Settings, client: Client, sources: Sources | None = None,
+        settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_reasons: analyzer_routes.ReasonWriter | None = None,
         *, refresh_on_start: bool = False) -> FastAPI:
-    """The app for these settings. Tests give fixture-backed sources, an analyzer, and a finder reason writer.
-    The defaults are the real ones.
+    """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, and a finder
+    reason writer. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
     """
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
-    # The Sleeper adapter takes the shared NFL cache dir of the client, which holds the players file.
-    app.state.sources = sources or Sources(client, clock=lambda: datetime.now(client.tz),
-                                           fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live)
-    app.state.cache = ResultCache(settings.result_cache_dir)
-    app.state.teams_cache = TeamsCache(TEAMS_CACHE_SECONDS)
+    given = sources or {}
+    app.state.sources = {client.slug: given.get(client.slug) or _real_sources(client) for client in clients}
+    app.state.served = {client.slug: _served(settings, client, app.state.sources[client.slug]) for client in clients}
+    app.state.default_slug = DEFAULT_SLUG
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
-    # The grade count file sits next to the result cache, so on Fly it is on the volume and a deploy keeps it.
-    app.state.grade_limiter = GradeLimiter(
-        GRADES_PER_MINUTE, GRADES_PER_DAY, settings.result_cache_dir / GRADE_COUNTS_FILE, client.tz)
     # The default is the real analyzer with the real Claude call. A test injects a stub, so no test needs the network.
     app.state.analyzer = analyzer or analyze
     # The finder reasons make the real Claude call by default too, so a test injects a writer with a fake call.
@@ -116,8 +139,10 @@ def create_app(
         return JSONResponse(status_code=429, content={"detail": "Too many requests. Try again later."},
                             headers={"Retry-After": str(exc.retry_after)})
 
-    app.include_router(analyzer_routes.router, dependencies=[Depends(_guard)])
-    app.include_router(refresh_routes.router, dependencies=[Depends(_guard)])
+    # Each route answers at /clients/<slug>/ and at the old path with no client, which answers as DEFAULT_SLUG.
+    for prefix in (CLIENT_PREFIX, ""):
+        app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
+        app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -135,14 +160,24 @@ def create_app(
     return app
 
 
+def load_clients(repo: Path, fetch: SettingsFetch = fetch_settings) -> list[Client]:
+    """Each client folder under `repo`/clients, with the League settings of its latest season, in slug order.
+
+    A folder with a missing or bad client.toml raises ClientError with the file and the key, so the start stops.
+    """
+    folders = sorted(path for path in (repo / "clients").iterdir() if path.is_dir())
+    clients = []
+    for folder in folders:
+        season = read_client_values(folder).latest_season
+        clients.append(load_client(repo, folder.name, season, fetch))
+    return clients
+
+
 def app_from_env() -> FastAPI:
-    """The app with the settings from the environment and the client. The uvicorn factory flag calls it.
+    """The app with the settings from the environment and each client. The uvicorn factory flag calls it.
 
     A missing or bad client.toml stops the start, so a bad value never reaches a reader.
     """
     settings = Settings.from_env()
-    # The one client of the process, with the League settings of its latest season. The passphrase stays in the
-    # settings, because it is a secret and not the league.
-    season = read_client_values(client_dir(settings.repo, CLIENT_SLUG)).latest_season
-    client = load_client(settings.repo, CLIENT_SLUG, season, fetch_settings)
-    return create_app(settings, client, refresh_on_start=True)
+    # The passphrase stays in the settings, because it is a secret and not the league.
+    return create_app(settings, load_clients(settings.repo), refresh_on_start=True)

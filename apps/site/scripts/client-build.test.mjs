@@ -134,6 +134,20 @@ describe("the client build", () => {
     expect(registry).toContain("  week: weekMenuLink,");
   });
 
+  it("gives the home page the analyzer tool through the registry only when the list takes analyzer", () => {
+    const taken = tempRepo();
+    buildClient(taken);
+    const withAnalyzer = readFileSync(join(taken.site, "src", "generated", "registry.ts"), "utf8");
+    expect(withAnalyzer).toContain('import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";');
+    expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool];");
+
+    const omitted = tempRepo(CPC_TOML.replace(', "analyzer"]', "]").replace('  { package = "analyzer", label = "Trade Analyzer" },\n', ""));
+    buildClient(omitted);
+    const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
+    expect(without).not.toContain("analyzer");
+    expect(without).toContain("export const homeTools: HomeTool[] = [];");
+  });
+
   it("writes the finder value, the usage code, and the latest season into the client values", () => {
     const repo = tempRepo(CPC_TOML.replace("[seasons.2026]", '[seasons.2025]\nprovider = "sleeper"\nleague_id = "1"\n\n[seasons.2026]'));
     buildClient(repo);

@@ -9,6 +9,7 @@
 @import "../generated/brand.css";
 /* Tailwind scans the app only. The site side of each package holds its own class names, so each one is a source too.
    A glob over packages/ finds no file, so each package takes its own line. */
+@source "../../../../packages/analyzer/site";
 @source "../../../../packages/design/site";
 @source "../../../../packages/league/site";
 @source "../../../../packages/waiver/site";

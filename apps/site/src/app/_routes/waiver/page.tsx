@@ -5,7 +5,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
-import { TeamPicker } from "@/components/analyzer/team-picker";
+import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { WarChest } from "@cpc/waiver/war-chest";
 import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";

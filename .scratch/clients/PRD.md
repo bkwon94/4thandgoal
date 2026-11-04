@@ -78,6 +78,10 @@ The proof is two numbers. The CPC week 8 rebuild has an empty golden diff, excep
 41. As a reader with low vision, I want each text pair of each brand to pass WCAG AA, so that I can read each page.
 42. As a manager of a league with no logo, I want the masthead to show the site name as text, so that the page still has a title.
 
+### Brian as the operator, after the spec
+
+43. As Brian, I want each client to have its own passphrase, so that the managers of one league cannot spend the grades of another.
+
 ## Implementation Decisions
 
 ### The structure
@@ -237,6 +241,7 @@ The design comes from decision 07.
 
 - One shared API serves each client, with the client in the path: `/clients/<slug>/teams`, `/clients/<slug>/analyze`, `/clients/<slug>/find`, and `/clients/<slug>/refresh`. `/health` stays at the root.
 - The rate limit of the grades counts per client and per address.
+- Each client has its own passphrase, in the env value `CORNERSTONE_PASSPHRASE_<SLUG>`, such as `CORNERSTONE_PASSPHRASE_CPC`. A passphrase is a secret, so it stays out of `client.toml`. The API fails at start if a client has no passphrase. No passphrase is shared, and no client falls back to another one. A call on an old path checks the `cpc` passphrase.
 - The API reads each client folder at start and fails at start on a bad `client.toml`.
 - The old paths with no client answer as `cpc`, so an old page that calls `api.cpcfantasy.com` still works.
 - The API serves at `api.4thandgoal.app`, with a second Fly cert. `api.cpcfantasy.com` keeps its cert.
@@ -276,6 +281,7 @@ Brian does each step. The ticket that needs a step names it as a blocker. When `
 3. Add the Custom Domain of each Worker: `cpc.4thandgoal.app` and `norcal.4thandgoal.app`.
 4. Add the Redirect Rule on `cpcfantasy.com`.
 5. Run `fly certs add api.4thandgoal.app`, and add its DNS record.
+6. Before the PR merges, run `fly secrets set CORNERSTONE_PASSPHRASE_CPC=<the current passphrase>`. Ticket 15 adds `CORNERSTONE_PASSPHRASE_NORCAL`.
 
 ## Testing Decisions
 

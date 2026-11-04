@@ -321,7 +321,7 @@ def test_parse_call_raises_on_a_refusal_and_on_no_parsed_output():
 
 
 def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
-    from cornerstone.analysis import AnalysisOut
+    from analyzer.analysis import AnalysisOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
@@ -337,7 +337,7 @@ def test_the_analyzer_call_alone_sets_the_one_hour_lifetime():
 
 
 def test_the_analyzer_call_alone_runs_at_medium_effort():
-    from cornerstone.analysis import AnalysisOut
+    from analyzer.analysis import AnalysisOut
     from facts.writer import analyzer_call, claude_call
 
     writer, sent = _stub_writer()
@@ -351,7 +351,7 @@ def test_the_analyzer_call_alone_runs_at_medium_effort():
 def test_analyze_uses_the_analyzer_call_by_default():
     import inspect
 
-    from cornerstone.analysis import analyze
+    from analyzer.analysis import analyze
     from facts.writer import analyzer_call
 
     assert inspect.signature(analyze).parameters["call"].default is analyzer_call

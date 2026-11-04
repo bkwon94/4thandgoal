@@ -9,6 +9,7 @@ resolution-markers = [
 [manifest]
 members = [
     "cornerstone",
+    "cpc-analyzer",
     "cpc-api",
     "cpc-facts",
     "cpc-league",
@@ -98,6 +99,7 @@ version = "0.1.0"
 source = { editable = "apps/pipeline" }
 dependencies = [
     { name = "anthropic" },
+    { name = "cpc-analyzer" },
     { name = "cpc-facts" },
     { name = "cpc-league" },
     { name = "httpx" },
@@ -118,6 +120,7 @@ packages = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=1.15.0" },
+    { name = "cpc-analyzer", editable = "packages/analyzer/python" },
     { name = "cpc-facts", editable = "packages/facts/python" },
     { name = "cpc-league", editable = "packages/league/python" },
     { name = "httpx", specifier = ">=0.28.1" },
@@ -134,17 +137,14 @@ dev = [
 packages = [{ name = "cpc-waiver", editable = "packages/waiver/python" }]
 
 [[package]]
-name = "cpc-api"
+name = "cpc-analyzer"
 version = "0.1.0"
-source = { editable = "apps/api" }
+source = { editable = "packages/analyzer/python" }
 dependencies = [
-    { name = "cornerstone" },
     { name = "cpc-facts" },
     { name = "cpc-league" },
     { name = "fastapi" },
-    { name = "httpx" },
     { name = "pydantic" },
-    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
@@ -156,7 +156,44 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cornerstone", editable = "apps/pipeline" },
+    { name = "cpc-facts", editable = "packages/facts/python" },
+    { name = "cpc-league", editable = "packages/league/python" },
+    { name = "fastapi", specifier = ">=0.158.0" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-api"
+version = "0.1.0"
+source = { editable = "apps/api" }
+dependencies = [
+    { name = "cpc-analyzer" },
+    { name = "cpc-facts" },
+    { name = "cpc-league" },
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "cornerstone" },
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cpc-analyzer", editable = "packages/analyzer/python" },
     { name = "cpc-facts", editable = "packages/facts/python" },
     { name = "cpc-league", editable = "packages/league/python" },
     { name = "fastapi", specifier = ">=0.158.0" },
@@ -167,6 +204,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "cornerstone", editable = "apps/pipeline" },
     { name = "pyright", specifier = ">=1.1.414" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = "==0.17.3" },

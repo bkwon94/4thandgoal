@@ -31,6 +31,12 @@ describe("config", () => {
     expect(usageCode).toBe("cpcfantasy");
   });
 
+  it("aims the analyzer at the routes of the cpc client of the API", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
+    const { apiTarget } = await import("./config");
+    expect(apiTarget).toEqual({ url: "http://localhost:8080", client: "cpc", season: 2026 });
+  });
+
   it("ignores the old env flags of the season, the finder, the waiver page, and the usage code", async () => {
     vi.stubEnv("NEXT_PUBLIC_SEASON", "2027");
     vi.stubEnv("NEXT_PUBLIC_FINDER", "on");

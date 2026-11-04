@@ -19,11 +19,11 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 from conftest import strip_trend_numbers
-from cpc import cpc_client
+from cpc import FIXTURE_LEAGUE, cli_root, cpc_client
 from fastapi.testclient import TestClient
 
-from cornerstone.adjusters import ROSTER_FIT, TREND
-from cornerstone.analysis import (
+from analyzer.adjusters import ROSTER_FIT, TREND
+from analyzer.analysis import (
     Analysis,
     SideAnalysis,
     _allowed,
@@ -33,18 +33,23 @@ from cornerstone.analysis import (
     analyze,
     code_only,
 )
-from cornerstone.finder import find_win_wins
-from cornerstone.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
-from cornerstone.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
-from cornerstone_api.analyzer import result_document
-from cornerstone_api.app import GRADE_COUNTS_FILE, create_app
-from cornerstone_api.cache import cache_key, finder_cache_key
-from cornerstone_api.ratelimit import GradeLimiter, seconds_to_midnight
+from analyzer.cache import cache_key, finder_cache_key
+from analyzer.finder import find_win_wins
+from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
+from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
+from analyzer.routes import result_document
+from analyzer.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
+from analyzer.tunables import GRADES_PER_MINUTE
+from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
+from league.client import ClientError
+from league.live import RefreshResult
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
+from league.paths import client_dir, league_file
 from league.player_ids import is_def
-from league.provider.sleeper import load_raw
+from league.provider.raw import RawLeague
+from league.provider.sleeper import league_settings, load_raw
 from league.ranks import recent_points_per_game
 from league.snapshot import SnapshotPlayer
 from league.tunables import TEAMS_CACHE_SECONDS
@@ -157,8 +162,13 @@ def _sides(four_gives: list[str], twelve_gives: list[str]) -> list[dict]:
 TRADE = {"season": 2026, "sides": _sides(["7569"], ["10236", "8146"]), "asker": 4}
 
 
+def _cpc(sources):
+    """The sources of each client the test app serves, by slug: only cpc."""
+    return {"cpc": sources}
+
+
 def _client(settings, sources, analyzer=None):
-    return TestClient(create_app(settings, CLIENT, sources=_here(sources, settings), analyzer=analyzer))
+    return TestClient(create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=analyzer))
 
 
 def test_health_needs_no_passphrase(settings, sources):
@@ -245,7 +255,7 @@ def test_a_teams_request_past_the_window_builds_again(settings, sources, fixture
     sleeper = CountingSleeper(fixture_raw_dir)
     client = _client(settings, dataclasses.replace(sources, fetch_sleeper=sleeper))
     clock = MonotonicClock()
-    client.app.state.teams_cache.clock = clock
+    client.app.state.served["cpc"].teams_cache.clock = clock
     client.get("/teams", params={"season": 2026}, headers=HEADERS)
     clock.now += TEAMS_CACHE_SECONDS - 1
     client.get("/teams", params={"season": 2026}, headers=HEADERS)
@@ -306,7 +316,7 @@ def test_the_start_up_refresh_refreshes_the_current_season_once(settings, source
     monkeypatch.setattr("cornerstone_api.sources.refresh_sources",
                         lambda season, now, week, **kwargs: calls.append((season, kwargs["max_age_seconds"])))
     sleeper = CountingSleeper(fixture_raw_dir)
-    app = create_app(settings, CLIENT, sources=_here(dataclasses.replace(sources, fetch_sleeper=sleeper), settings),
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(dataclasses.replace(sources, fetch_sleeper=sleeper), settings)),
                      refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
     # The refresh keeps the normal max age, so it fetches only the files older than a day.
@@ -317,7 +327,7 @@ def test_the_start_up_refresh_refreshes_the_current_season_once(settings, source
 def test_the_start_up_refresh_is_off_unless_the_app_asks_for_it(settings, sources, monkeypatch):
     calls = []
     monkeypatch.setattr(Sources, "refresh_current_season", lambda self, **kwargs: calls.append(self.client.folder))
-    app = create_app(settings, CLIENT, sources=_here(sources, settings))
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)))
     assert app.state.refresh_thread is None
     assert calls == []
 
@@ -327,9 +337,9 @@ def test_a_start_up_refresh_that_raises_logs_and_the_app_still_answers(settings,
         raise httpx.ConnectError("no network")
 
     monkeypatch.setattr(Sources, "refresh_current_season", raising)
-    app = create_app(settings, CLIENT, sources=_here(sources, settings), refresh_on_start=True)
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), refresh_on_start=True)
     app.state.refresh_thread.join(timeout=10)
-    assert "start-up refresh of the slow sources failed (ConnectError)" in caplog.text
+    assert "start-up refresh of the slow sources of cpc failed (ConnectError)" in caplog.text
     client = TestClient(app)
     assert client.get("/health").status_code == 200
     assert client.get("/teams", params={"season": 2026}, headers=HEADERS).status_code == 200
@@ -599,7 +609,7 @@ def test_a_graded_trade_carries_an_upside_factor_per_side(settings, sources):
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
-    import cornerstone_api.cache as cache_module
+    import analyzer.cache as cache_module
 
     analyzer = StubAnalyzer()
     monkeypatch.setattr(cache_module, "DOCUMENT_VERSION", 1)
@@ -647,7 +657,7 @@ def test_the_fairness_text_passes_the_prose_checks_of_the_analysis(settings, sou
 
 
 def test_the_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
-    import cornerstone_api.cache as cache_module
+    import analyzer.cache as cache_module
 
     trade = ProposedTrade.model_validate(TRADE)
     snapshot = _here(sources, settings).snapshot(trade.season)
@@ -943,7 +953,7 @@ def test_a_fallback_is_not_cached_so_a_repeat_tries_claude_again(settings, sourc
 
 
 def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sources):
-    from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
+    from cornerstone_api.app import RATE_LIMIT_PER_MINUTE
 
     client = _client(settings, sources)
     for _ in range(RATE_LIMIT_PER_MINUTE):
@@ -956,7 +966,7 @@ def test_past_the_rate_limit_the_route_is_429_with_a_retry_after(settings, sourc
 
 
 def test_each_fly_client_address_has_its_own_rate_limit(settings, sources):
-    from cornerstone.tunables import RATE_LIMIT_PER_MINUTE
+    from cornerstone_api.app import RATE_LIMIT_PER_MINUTE
 
     client = _client(settings, sources)
     # Behind the Fly proxy every request shares one peer address, so the header tells the clients apart.
@@ -984,7 +994,7 @@ class MovingClock:
 def _graded_client(settings, sources, clock, analyzer):
     """A client whose grade limit and general limit both read the moving clock."""
     client = _client(settings, sources, analyzer)
-    client.app.state.grade_limiter.clock = clock
+    client.app.state.served["cpc"].grade_limiter.clock = clock
     # The general limit reads the same clock, so a test can make more than its 10 requests in one real minute.
     client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
@@ -996,7 +1006,7 @@ def _uncached():
 
 
 def test_the_sixth_grade_in_a_minute_is_429_with_the_minute_text(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
     for _ in range(GRADES_PER_MINUTE):
@@ -1010,7 +1020,7 @@ def test_the_sixth_grade_in_a_minute_is_429_with_the_minute_text(settings, sourc
 
 
 def test_the_twenty_first_grade_in_a_day_is_429_across_a_restart(settings, sources):
-    from cornerstone.tunables import GRADES_PER_DAY
+    from analyzer.tunables import GRADES_PER_DAY
 
     clock = MovingClock(NOW)
     first = _graded_client(settings, sources, clock, _uncached())
@@ -1038,12 +1048,12 @@ def test_the_count_file_holds_only_today(settings, sources):
     client.post("/analyze", json=TRADE, headers=HEADERS)
     clock.advance(days=1)
     client.post("/analyze", json=TRADE, headers={**HEADERS, "Fly-Client-IP": "203.0.113.9"})
-    path = settings.result_cache_dir / GRADE_COUNTS_FILE
+    path = settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE
     assert json.loads(path.read_text()) == {"day": "2026-10-20", "counts": {"203.0.113.9": 1}}
 
 
 def test_a_malformed_count_file_starts_at_zero(settings, sources):
-    path = settings.result_cache_dir / GRADE_COUNTS_FILE
+    path = settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("{not json")
     client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
@@ -1052,7 +1062,7 @@ def test_a_malformed_count_file_starts_at_zero(settings, sources):
 
 
 def test_a_cached_repeat_does_not_count_as_a_grade(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     analyzer = StubAnalyzer()
     client = _graded_client(settings, sources, MovingClock(NOW), analyzer)
@@ -1062,7 +1072,7 @@ def test_a_cached_repeat_does_not_count_as_a_grade(settings, sources):
 
 
 def test_each_fly_client_address_has_its_own_grade_limit(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
     one = {**HEADERS, "Fly-Client-IP": "203.0.113.1"}
@@ -1075,7 +1085,7 @@ def test_each_fly_client_address_has_its_own_grade_limit(settings, sources):
 
 
 def test_grades_at_once_on_many_threads_never_pass_the_day_limit(tmp_path):
-    from cornerstone.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 
     # Each read of the clock is 61 seconds on, so only the day limit can stop a grade.
     ticks = itertools.count()
@@ -1094,7 +1104,7 @@ def test_the_seconds_to_midnight_count_the_extra_hour_when_the_clocks_go_back():
 
 
 def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(settings, sources, monkeypatch, caplog):
-    from cornerstone.tunables import GRADES_PER_DAY
+    from analyzer.tunables import GRADES_PER_DAY
 
     def full_volume(src, dst):
         raise OSError(28, "No space left on device")
@@ -1110,18 +1120,18 @@ def test_a_failed_count_write_keeps_the_count_in_memory_and_the_grade_runs(setti
     assert response.status_code == 429
     assert response.json() == {"detail": "Too many grades today. Try again tomorrow."}
     assert "not writable" in caplog.text
-    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+    assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
 
 
 def test_a_bad_trade_does_not_count_as_a_grade(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     # Garrett Wilson is on roster 12, not roster 4.
     bad = {**TRADE, "sides": _sides(["8146"], ["10236"])}
     bad_client = _graded_client(settings, sources, MovingClock(NOW), _uncached())
     for _ in range(GRADES_PER_MINUTE + 1):
         assert bad_client.post("/analyze", json=bad, headers=HEADERS).status_code == 422
-    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+    assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
     assert bad_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
 
@@ -1356,10 +1366,10 @@ class FakeFinderClaude:
 
 def _find_client(settings, sources, fake, clock=None):
     """A client whose finder reasons make the fake call. With a clock, the grade and general limits read it."""
-    client = TestClient(create_app(settings, CLIENT, sources=_here(sources, settings), analyzer=StubAnalyzer(),
+    client = TestClient(create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
                                    finder_reasons=functools.partial(write_reasons, call=fake)))
     if clock is not None:
-        client.app.state.grade_limiter.clock = clock
+        client.app.state.served["cpc"].grade_limiter.clock = clock
         client.app.state.limiter.clock = lambda: clock().timestamp()
     return client
 
@@ -1404,7 +1414,7 @@ def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_ca
     assert first["trades"] == []
     assert client.post("/find", json=FIND, headers=HEADERS).json() == first
     assert fake.calls == []
-    assert json.loads((settings.result_cache_dir / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
+    assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
 
 def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_raw_dir):
@@ -1436,11 +1446,11 @@ def test_find_with_the_same_roster_twice_or_a_roster_not_in_the_league_is_422(se
         "/find", json={"season": 2026, **pair}, headers=HEADERS)
     assert response.status_code == 422
     assert response.json() == {"detail": {"message": message}}
-    assert not (settings.result_cache_dir / GRADE_COUNTS_FILE).exists()
+    assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
 
 
 def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
     # A new partner each time, so no request is a cached repeat and each one counts as one grade.
@@ -1453,7 +1463,7 @@ def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, source
 
 
 def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     client = _find_client(settings, sources, FakeFinderClaude(), MovingClock(NOW))
     client.app.state.analyzer = _uncached()
@@ -1464,7 +1474,7 @@ def test_a_find_and_an_analyze_count_against_the_same_grade_limit(settings, sour
 
 
 def test_a_cached_find_repeat_does_not_count_and_makes_no_claude_call(settings, find_sources):
-    from cornerstone.tunables import GRADES_PER_MINUTE
+    from analyzer.tunables import GRADES_PER_MINUTE
 
     fake = FakeFinderClaude()
     client = _find_client(settings, find_sources, fake, MovingClock(NOW))
@@ -1472,7 +1482,7 @@ def test_a_cached_find_repeat_does_not_count_and_makes_no_claude_call(settings, 
     for _ in range(GRADES_PER_MINUTE):
         assert client.post("/find", json=FIND, headers=HEADERS).json() == first
     assert len(fake.calls) == 1
-    assert json.loads((settings.result_cache_dir / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
+    assert json.loads((settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).read_text())["counts"] == {"testclient": 1}
 
 
 def _with_as_of(snapshot, **update):
@@ -1492,7 +1502,7 @@ def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sou
 
 
 def test_the_find_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):
-    import cornerstone_api.cache as cache_module
+    import analyzer.cache as cache_module
 
     snapshot = _here(sources, settings).snapshot(2026)
     key = finder_cache_key(2026, 2, 3, snapshot)
@@ -1815,10 +1825,157 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
 
 
 def test_the_document_version_is_11():
-    import cornerstone_api.cache as cache_module
+    import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
     # The as-of block says when the week has no chart, so a document stored before that must never serve.
     # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
     # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
     assert cache_module.DOCUMENT_VERSION == 11
+
+
+# The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per
+# client, the points key of each client in the cache key, and the start over each folder under clients/.
+
+# The second client of these tests. Its folder lives only in the temp folder of a test, never under clients/.
+SECOND = "norcal"
+
+
+def _two_clients(settings, sources, analyzer=None):
+    """An app that serves cpc and a second client on the same fixture league, each with its own sources."""
+    cpc = _here(sources, settings)
+    second = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": SECOND}))
+    app = create_app(settings, [cpc.client, second.client], sources={"cpc": cpc, SECOND: second}, analyzer=analyzer)
+    for served in app.state.served.values():
+        served.grade_limiter.clock = MovingClock(NOW)
+    # The general limit counts every request of the address, so the test moves it past the minute with no wait.
+    app.state.limiter.limit = 1000
+    return TestClient(app)
+
+
+def test_the_teams_route_of_a_client_lists_its_teams_and_the_old_path_answers_as_cpc(settings, sources):
+    client = _two_clients(settings, sources)
+    by_path = client.get("/clients/cpc/teams", params={"season": 2026}, headers=HEADERS)
+    assert by_path.status_code == 200
+    assert len(by_path.json()["teams"]) == 12
+    old = client.get("/teams", params={"season": 2026}, headers=HEADERS)
+    assert old.status_code == 200
+    assert old.json() == by_path.json()
+
+
+def test_each_route_of_a_client_answers_at_its_path(settings, sources):
+    client = _two_clients(settings, sources, StubAnalyzer())
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    find = {"season": 2026, "asker": 4, "partner": 4}
+    # The same roster twice is 422 from the find route itself, so the path reached the route.
+    assert client.post(f"/clients/{SECOND}/find", json=find, headers=HEADERS).status_code == 422
+    refreshed = []
+
+    class Recorder:
+        """The refresh of the second client, which records its season and fetches nothing."""
+
+        def refresh(self, season, *, max_age_seconds):
+            refreshed.append(season)
+            return RefreshResult(refreshed=[], stale=[], trade_week=6, chart=None)
+
+    client.app.state.sources[SECOND] = Recorder()
+    response = client.post(f"/clients/{SECOND}/refresh", params={"season": 2026}, headers=HEADERS)
+    assert response.json() == {"refreshed": [], "stale": ["chart"]}
+    assert refreshed == [2026]
+
+
+def test_a_client_the_api_does_not_serve_is_404(settings, sources):
+    client = _two_clients(settings, sources)
+    response = client.get("/clients/nope/teams", params={"season": 2026}, headers=HEADERS)
+    assert response.status_code == 404
+    assert response.json() == {"detail": "The API serves no client nope."}
+
+
+def test_the_health_route_stays_at_the_root(settings, sources):
+    client = _two_clients(settings, sources)
+    assert client.get("/health").json() == {"status": "ok"}
+    assert client.get("/clients/cpc/health").status_code == 404
+
+
+def test_the_grade_limit_counts_per_client_and_per_address(settings, sources):
+    # A fallback is never cached, so each repeat is a new grade.
+    client = _two_clients(settings, sources, StubAnalyzer(claude_letters=["A", "C"]))
+    for _ in range(GRADES_PER_MINUTE):
+        assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 429
+    # The old path is cpc, so it shares the limit of cpc.
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 429
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    # Another address in the same client has its own count.
+    other = {**HEADERS, "Fly-Client-IP": "203.0.113.7"}
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=other).status_code == 200
+
+
+def test_each_client_keeps_its_own_result_cache(settings, sources):
+    analyzer = StubAnalyzer()
+    client = _two_clients(settings, sources, analyzer)
+    client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS)
+    client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS)
+    assert analyzer.calls == 1
+    # The same roster ids in another league are another trade, so the stored grade of cpc never serves it.
+    client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS)
+    assert analyzer.calls == 2
+    assert (settings.result_cache_dir / "cpc").is_dir()
+    assert (settings.result_cache_dir / SECOND).is_dir()
+
+
+def _with_week_n_points(snapshot, player, key, points):
+    """The snapshot with `key` set to `points` on the week N stat line of `player`."""
+    week_n = snapshot.stats.weeks[snapshot.as_of.stats_through]
+    stats = {**week_n.stats, player: {**week_n.stats.get(player, {}), key: points}}
+    weeks = {**snapshot.stats.weeks, week_n.week: week_n.model_copy(update={"stats": stats})}
+    return snapshot.model_copy(update={"stats": snapshot.stats.model_copy(update={"weeks": weeks})})
+
+
+def test_the_cache_key_reads_the_points_key_of_the_client(settings, sources):
+    trade = ProposedTrade.model_validate(TRADE)
+    half = _here(sources, settings).snapshot(trade.season)
+    client = half.client
+    full = half.model_copy(update={"client": client.model_copy(
+        update={"settings": client.settings.model_copy(update={"reception_points": 1.0})})})
+    assert full.client.settings.points_key == "pts_ppr"
+    player = half.rosters[4][0]
+    # A full PPR league grades on pts_ppr, so a new pts_ppr number misses and a new pts_half_ppr number keeps the hit.
+    assert cache_key(trade, _with_week_n_points(full, player, "pts_ppr", 77.0)) != cache_key(trade, full)
+    assert cache_key(trade, _with_week_n_points(full, player, "pts_half_ppr", 77.0)) == cache_key(trade, full)
+    assert finder_cache_key(2026, 4, 12, _with_week_n_points(full, player, "pts_ppr", 77.0)) != finder_cache_key(
+        2026, 4, 12, full)
+    # The half PPR league of cpc reads pts_half_ppr, as before.
+    assert cache_key(trade, _with_week_n_points(half, player, "pts_half_ppr", 77.0)) != cache_key(trade, half)
+
+
+def _fixture_settings(league_id, path):
+    """The League settings of the week 6 fixture league, for any league id, with no fetch."""
+    return league_settings(RawLeague.model_validate_json(FIXTURE_LEAGUE.read_text(encoding="utf-8")))
+
+
+def _second_folder(root):
+    """A second client folder in the temp repo `root`: the CPC client.toml and the league file of 2026."""
+    folder = client_dir(root, SECOND)
+    shutil.copytree(client_dir(root, "cpc"), folder)
+    return folder
+
+
+def test_the_start_reads_each_folder_under_clients(tmp_path):
+    root = cli_root(tmp_path)
+    _second_folder(root)
+    clients = load_clients(root, _fixture_settings)
+    assert [client.slug for client in clients] == ["cpc", SECOND]
+    assert all(client.settings.team_count == 12 for client in clients)
+    assert league_file(client_dir(root, SECOND), 2026).is_file()
+
+
+def test_a_bad_client_toml_stops_the_start_with_the_file_and_the_key(tmp_path):
+    root = cli_root(tmp_path)
+    folder = _second_folder(root)
+    path = folder / "client.toml"
+    path.write_text("\n".join(line for line in path.read_text().splitlines() if not line.startswith("timezone")))
+    with pytest.raises(ClientError) as error:
+        load_clients(root, _fixture_settings)
+    assert str(path) in str(error.value)
+    assert "- timezone: is required" in str(error.value)

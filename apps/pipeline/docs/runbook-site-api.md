@@ -37,7 +37,7 @@ The data layout:
 | `/data/clients/cpc/data/2026/` | The tracked CPC data: `league.json`, `history/`, and `week-NN/raw/`. The live path also writes week N-1 here. |
 | `/data/nfl/2026/returns.json` | The hand-kept Returns file. |
 | `/data/nfl/cache/` | The players, the nflverse files, and the charts. |
-| `/data/cache/results/` | The result cache and the grade counts. |
+| `/data/cache/results/<slug>/` | The result cache and the grade counts of each client. |
 | `/app/seed/data` | The tracked `clients/cpc/data/` and `data/nfl/` from the image. It is the seed of the volume. |
 
 At start, `apps/api/deploy/entrypoint.sh` does three things:
@@ -63,15 +63,15 @@ The settings:
 - The Sleeper league id is the constant `LEAGUE_ID` in `src/cornerstone/pipeline.py`. It is public, so it is
   not a secret.
 
-The rate limit counts each client address. On Fly every request comes through the proxy, so the app reads the
+The rate limit counts each request address. On Fly every request comes through the proxy, so the app reads the
 address from the `Fly-Client-IP` header.
 
-The analyze route also has a grade limit. Each client address gets 5 grades per minute and 20 per day.
-The day is a calendar day in Eastern time. A cached repeat of the same trade makes no Claude call, so it does not
-count. The daily counts live in `/data/cache/results/grade-counts.json` on the volume, so a deploy keeps them.
+The analyze route also has a grade limit. Each address gets 5 grades per minute and 20 per day in each client.
+The day is a calendar day in the timezone of the client. A cached repeat of the same trade makes no Claude call, so it does not
+count. The daily counts live in `/data/cache/results/<slug>/grade-counts.json` on the volume, so a deploy keeps them.
 The file holds only today. To clear the counts, delete the file. Past a limit the route answers `429` with a
-`Retry-After` to the end of the minute or to midnight Eastern. The values are `GRADES_PER_MINUTE` and
-`GRADES_PER_DAY` in `src/cornerstone/tunables.py`.
+`Retry-After` to the end of the minute or to midnight in the client timezone. The values are `GRADES_PER_MINUTE` and
+`GRADES_PER_DAY` in `packages/analyzer/python/src/analyzer/tunables.py`.
 
 The find route `POST /find` lists the top three trades between two rosters that are good for both. The body is
 `{"season": 2026, "asker": <roster id>, "partner": <roster id>}`, and the route needs the passphrase. One finder

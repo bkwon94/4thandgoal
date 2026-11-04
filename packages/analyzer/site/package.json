@@ -1,0 +1,27 @@
+{
+  "name": "@cpc/analyzer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The site side of the analyzer package: the trade form, the trade finder, the API client, the passphrase, and the teams store. It ships TSX source with no build step.",
+  "dependencies": {
+    "@cpc/design": "workspace:*",
+    "@cpc/league": "workspace:*",
+    "framer-motion": "^14.5.0",
+    "lucide-react": "^1.61.0",
+    "zod": "^4.6.7"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vitest": "^5.0.5"
+  }
+}

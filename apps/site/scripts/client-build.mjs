@@ -138,6 +138,10 @@ const ROUTES = {
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
 };
 
+/* The home tool of each package that has one: a row of the Tools chapter of the home page. The registry imports it only
+   for a package of the list, so the home page of a client that omits the package holds none of its code. */
+const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home" };
+
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
   const season = latestSeasonDir(published);
@@ -158,17 +162,22 @@ function routeText(slug, route) {
 }
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
-   the bundle. The map has an explicit type, so a client with no package still type-checks. */
+   the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
+  const tools = values.packages.filter((name) => name in HOME_TOOLS);
   return [
     headerLine(slug),
-    `import type { MenuLinks } from "@/lib/client-values";`,
+    `import type { HomeTool, MenuLinks } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
+    ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
+    "",
+    "/* The home tool of each package of the client that has one, in the order of the package list. */",
+    `export const homeTools: HomeTool[] = [${tools.map((name) => `${name}HomeTool`).join(", ")}];`,
     "",
   ].join("\n");
 }

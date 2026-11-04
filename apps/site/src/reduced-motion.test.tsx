@@ -5,23 +5,23 @@
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import { analyzeResponse as fixtureJson } from "@/fixtures/api";
+import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/page";
 import WeekPage from "@/app/_routes/week/page";
-import type { AnalyzeResponse } from "@/lib/analyze-types";
-import type { Team } from "@/lib/api";
+import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
+import type { Team } from "@cpc/analyzer/lib/api";
 import type { Manager } from "@/lib/manager-types";
-import AnalyzeResult from "@/components/analyzer/analyze-result";
+import AnalyzeResult from "@cpc/analyzer/form/analyze-result";
 import { managers as managersFixture } from "@/fixtures/managers";
 import { ManagerHero } from "@/components/managers/manager-hero";
 import { Roster } from "@/components/managers/roster";
 import { SeasonSoFar } from "@/components/managers/season-so-far";
 import { rankings } from "@/fixtures/rankings";
 import { PowerRankings } from "@/components/rankings/power-rankings";
-import { TradeForm } from "@/components/analyzer/trade-form";
+import { TradeForm } from "@cpc/analyzer/form/trade-form";
 import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "@cpc/waiver/war-chest";
-import { TeamPicker } from "@/components/analyzer/team-picker";
+import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6 } from "@/fixtures/week-page";
 
 vi.stubGlobal(
@@ -92,14 +92,14 @@ describe("Reduced motion", () => {
   });
 
   it("shows the picked team in the trigger at once", async () => {
-    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     expect(screen.getByRole("combobox", { name: "Your Team" }).textContent).toContain("Pukancun on 3");
   });
 
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
-    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
     await choose(screen.getByRole("combobox", { name: "Pukancun on 3 Gives" }), "Ana One");
@@ -114,7 +114,7 @@ describe("Reduced motion", () => {
 
 describe("Reduced motion on the trade form", () => {
   it("adds a side and a picked row at rest, and removes a side at once", async () => {
-    render(<TradeForm teams={TEAMS} season={2026} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
     await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
     await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
     fireEvent.click(screen.getByRole("button", { name: "Add a Team" }));

@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "cpc-analyzer",
     "cpc-facts",
     "cpc-league",
     "anthropic>=1.15.0",
@@ -17,6 +18,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
+cpc-analyzer = { workspace = true }
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
 cpc-waiver = { workspace = true }
@@ -29,8 +31,8 @@ requires = ["uv_build>=0.8.18,<0.9.0"]
 build-backend = "uv_build"
 
 # The core packages that the build calls sit in their own group, not in the dependencies. A group never passes to a
-# member that lists the pipeline, so the API, which lists the pipeline for the analyzer, gets no core package it does
-# not list, and "uv run --exact --package cpc-api" fails an import of one (AT-31).
+# member that lists the pipeline, so the API, whose dev group lists the pipeline for the test fixtures, gets no core
+# package it does not list, and "uv run --exact --package cpc-api" fails an import of one (AT-31).
 [dependency-groups]
 packages = ["cpc-waiver"]
 dev = [
@@ -50,10 +52,10 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The pipeline imports the league, the facts, and the waiver packages as its own code, so each sorts as first party
-# in one block.
+# The pipeline imports the league, the facts, the analyzer, and the waiver packages as its own code, so each sorts
+# as first party in one block.
 [tool.ruff.lint.isort]
-known-first-party = ["cornerstone", "facts", "league", "waiver"]
+known-first-party = ["analyzer", "cornerstone", "facts", "league", "waiver"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 # Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an
