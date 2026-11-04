@@ -32,6 +32,13 @@ holds the file for CPC.
 Rejected: a pydantic model and a Zod schema per package, which are two sources of truth. Also rejected: a checked
 `client.json` that Python writes for the site, which makes the site build run Python.
 
+## How the site selects a client
+
+The site build reads `clients/$CLIENT/client.toml` and generates its route files and its registry of
+import lines before `next build`. Only a generated list keeps an omitted package out of the bundle:
+an import in source code ships each client component of the package, under any guard. The generated
+files stay out of git. `.scratch/clients/decisions/08-prototype-the-client-build.md` records the proof.
+
 ## Why we break from One
 
 One puts a client under its app, at `apps/<app>/clients/<owner>/`, and the import lines of
