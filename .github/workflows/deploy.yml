@@ -1,5 +1,5 @@
 # Builds the Next.js static export and deploys it to GitHub Pages.
-# It runs on a push to main that changes the site or this workflow, and on a manual dispatch.
+# It runs on a push to main that changes the site, the client folders, or this workflow, and on a manual dispatch.
 name: Deploy
 
 on:
@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - "apps/site/**"
+      # The publish writes the weekly data into the client folder, so a publish starts the deploy.
+      - "clients/**"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -24,6 +26,9 @@ jobs:
     defaults:
       run:
         working-directory: apps/site
+    # The Pages site serves the CPC client.
+    env:
+      CLIENT: cpc
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -44,10 +49,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # One command runs typecheck, test, build, and the export check.
       # The deploy keeps its own check, so it never ships an unchecked build.
+      # The fast check runs the typecheck and the tests. The build and the export check then run for CLIENT only.
       - name: Check and build the export
-        run: pnpm check
+        run: pnpm check:fast && pnpm build && pnpm check:export
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

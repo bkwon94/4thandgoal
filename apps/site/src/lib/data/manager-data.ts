@@ -4,7 +4,6 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-// Relative imports, not the @ alias: next.config imports this module, and its loader does not resolve the alias.
 import { managersHref } from "../routes";
 import { managersFileSchema } from "../schemas/managers";
 import type { Manager, ManagerEntry, Managers } from "../manager-types";
@@ -71,10 +70,4 @@ export function currentManagersHref(): string | null {
    Only the latest season builds the managers routes, so a page of an older season gets null and plain names. */
 export function seasonManagersHref(season: string): string | null {
   return season === latestSeason() ? currentManagersHref() : null;
-}
-
-/* Whether the build has the managers routes. A static export fails on a dynamic route with no params,
-   so the route files only count as pages when the latest season has a managers file. */
-export function managersRouteOn(): boolean {
-  return currentManagersHref() !== null;
 }

@@ -2,8 +2,8 @@
 
 This repo holds three apps. The site and the pipeline each have a CLAUDE.md with its own commands and rules. Read the one for the app you change.
 
-- `apps/site/` is the Next.js site. It renders `apps/site/public/<season>/week-NN/page.json` and its images.
-- `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `apps/site/public/`.
+- `apps/site/` is the Next.js site. Its build copies `clients/<slug>/published/` of one client into `public/` and renders each `page.json` and its images.
+- `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `clients/<slug>/published/`.
 - `apps/api/` is the API of the trade analyzer. It imports the pipeline and deploys to Fly. Run `make help` in it.
 
 The root holds one uv workspace and one pnpm workspace, each with one lock file: `uv.lock` and `pnpm-lock.yaml`.
@@ -30,7 +30,7 @@ ADRs 0018 to 0021 set the flow. The spec `.scratch/one/` builds it, so its own t
 6. An agent records the evidence of each acceptance test `AT-<n>`. The agent gives no test verdict.
 7. Brian gives PASS, FAIL, or BLOCKED for each test in one PR comment. A check blocks the merge until each test has PASS (ADR 0020).
 
-The weekly `publish` is the one exception. It may push to `main`, and it may stage only `apps/site/public/<season>/`.
+The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`.
 
 The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
 

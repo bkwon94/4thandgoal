@@ -1,5 +1,6 @@
 # Makefile for the Cornerstone League Weekly site.
 # Each target wraps a pnpm script or a deploy step. Run "make" to list them.
+# The dev, build, and serve targets need the client slug, such as "make build CLIENT=cpc". Make passes CLIENT to pnpm.
 
 .PHONY: help install dev dev-local build test typecheck check serve deploy
 .DEFAULT_GOAL := help

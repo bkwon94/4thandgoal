@@ -13,7 +13,7 @@ const WEEKS: WeekSummary[] = [{ number: 7, dates: "Oct 22 – Oct 26, 2026", hre
 const TO_DARK = "Switch to dark theme";
 const TO_LIGHT = "Switch to light theme";
 
-/* The masthead of the week 7 report, with the waiver flag off. */
+/* The masthead of the week 7 report, with no waiver link. */
 function renderWeekMasthead() {
   render(
     <Masthead

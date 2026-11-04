@@ -1,7 +1,6 @@
 /**
  * The waiver page at /<season>/week-NN/waiver/, one static page per waiver.json in public/.
- * The .waiver.tsx name keeps it out of most builds: next.config adds the extension only with the flag on
- * and at least one week with a waiver file.
+ * The client build writes its route file only when the client takes waiver and at least one week has a waiver file.
  */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -14,9 +13,6 @@ import type { AvatarMap } from "@/lib/week-types";
 import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
-
-// The export is static, so a week with no waiver file at build time has no page.
-export const dynamicParams = false;
 
 export function generateStaticParams(): WeekRef[] {
   return listWaiverWeeks();

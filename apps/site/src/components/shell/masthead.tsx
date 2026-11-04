@@ -13,11 +13,12 @@ export { WeekLine } from "@/components/parts/week-line";
 /* The links of the masthead and its menu, each with the base path. The app layer builds them with the route builders. */
 export type MastheadLinks = {
   brand: Brand;
-  rankings: string;
-  analyze: string;
+  // The power rankings and the Trade Analyzer. A client that omits the package has no link.
+  rankings: string | null;
+  analyze: string | null;
   // The managers index. A season with no managers file has no route, so no link.
   managers: string | null;
-  // The waiver page of the latest week with a file. A build with the flag off has no route, so no link.
+  // The waiver page of the latest week with a file. A client that omits waiver has no route, so no link.
   waiver: string | null;
 };
 
@@ -44,9 +45,9 @@ function destinationsOf(weeks: WeekSummary[], links: MastheadLinks): Destination
     pages: [
       { label: "Home", href: links.brand.home },
       ...(current ? [week(current)] : []),
-      { label: "Power Rankings", href: links.rankings },
+      ...(links.rankings ? [{ label: "Power Rankings", href: links.rankings }] : []),
       ...(links.managers ? [{ label: "Managers", href: links.managers }] : []),
-      { label: "Trade Analyzer", href: links.analyze },
+      ...(links.analyze ? [{ label: "Trade Analyzer", href: links.analyze }] : []),
       ...(links.waiver ? [{ label: "Waiver Wire", href: links.waiver }] : []),
     ],
     pastWeeks: past.map(week),

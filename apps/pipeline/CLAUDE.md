@@ -13,7 +13,7 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 - Install: `make install`. The root `uv.lock` holds the locked versions of the whole uv workspace.
 - Check: `make check`. The hook runs `make check-fast`.
 - Build a week: `make build CLIENT=cpc WEEK=<W>`. Each league target needs the client slug.
-- Publish a week: `make publish CLIENT=cpc WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
+- Publish a week: `make publish CLIENT=cpc WEEK=<W>`. It commits `clients/<slug>/published/<season>/` and pushes `main`.
 - Local API on port 8080: `make -C ../api api`. The API is its own app in `apps/api/`.
 
 ## Pipeline
@@ -23,7 +23,7 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 3. Compute the stats for each chapter.
 4. Write the chapter text with the Anthropic API.
 5. Write `page.json` and the images into `site/`.
-6. Publish the week folder to `apps/site/public` of this repo.
+6. Publish the week folder to `clients/<slug>/published/` of this repo.
 
 ## Where the work sits
 

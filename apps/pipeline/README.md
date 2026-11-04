@@ -9,7 +9,7 @@ Each command that reads a league names its client with `--client <slug>`, such a
 slug stops with a plain message. The client folder `clients/<slug>/` at the repo root holds `client.toml` and `data/`.
 
 - `cornerstone build` builds the data of a week: `page.json` and the images.
-- `cornerstone publish` copies the week folder to `apps/site/public` of this repo and pushes it.
+- `cornerstone publish` copies the week folder to `clients/<slug>/published/` of this repo and pushes it.
 - `cornerstone rewrite --chapter <key>` rewrites one chapter.
 - `cornerstone page-json` writes `page.json` for a saved week.
 - `cornerstone settings` prints the League settings of a season and each size that derives from them.
@@ -25,7 +25,7 @@ Each worktree reads its own branch's `.pre-commit-config.yaml`.
 The `Makefile` holds the common tasks. Run `make help` to list them. A weekly run uses three targets:
 
 1. `make build CLIENT=cpc WEEK=<W>` builds the week.
-2. `make publish CLIENT=cpc WEEK=<W>` copies the week to `apps/site/public` and pushes it.
+2. `make publish CLIENT=cpc WEEK=<W>` copies the week to `clients/cpc/published/` and pushes it.
 3. `make push` pushes `main`. It stops if the branch is not `main` or the tree is not clean.
 
 ## Tuesday runbook
@@ -46,7 +46,7 @@ render context and a `schema_version` key. The image paths in it are relative to
 The default avatar and headshot paths point to `images/` under `apps/site/public/`, and the site repo serves
 those files.
 
-`cornerstone publish` copies the whole week folder to `apps/site/public/<season>/week-NN/` in the site
+`cornerstone publish` copies the whole week folder to `clients/<slug>/published/<season>/week-NN/` in the
 repo. It copies no `images/` folder and writes no `index.html`. The site repo reads `summary` from
 each `page.json` to list the weeks on the home page.
 

@@ -39,7 +39,7 @@ async function routeOver({ managers = true, rankings }: { managers?: boolean | o
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
   vi.resetModules();
-  return import("./page.managers");
+  return import("./manager-page");
 }
 
 /* Renders the page of one roster and returns the group of the three numbers. */

@@ -246,7 +246,7 @@ async function publicWithWeeks() {
   for (const week of ["week-05", "week-06", "week-07"]) mkdirSync(join(season, week), { recursive: true });
   writeFileSync(join(season, "week-05", "page.json"), weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }));
   for (const week of ["week-06", "week-07"]) {
-    copyFileSync(join(process.cwd(), "public", "2026", week, "page.json"), join(season, week, "page.json"));
+    copyFileSync(join(process.cwd(), "..", "..", "clients", "cpc", "published", "2026", week, "page.json"), join(season, week, "page.json"));
   }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.

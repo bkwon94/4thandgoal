@@ -1,6 +1,6 @@
 /**
  * The managers index at /<season>/managers/, read from the season managers file at build time.
- * The .managers.tsx name keeps it out of a build with no managers file: next.config adds the extension only when the file exists.
+ * The client build writes its route file only when the client takes managers and the latest season has a managers file.
  */
 import type { Metadata } from "next";
 import { Masthead } from "@/components/shell/masthead";
@@ -12,9 +12,6 @@ import { managersHref } from "@/lib/routes";
 import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<{ season: string }> };
-
-// The export is static, so a season with no managers file at build time has no page.
-export const dynamicParams = false;
 
 export function generateStaticParams(): { season: string }[] {
   const managers = loadManagers();

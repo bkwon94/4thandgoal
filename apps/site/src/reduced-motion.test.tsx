@@ -7,7 +7,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { analyzeResponse as fixtureJson } from "@/fixtures/api";
 import HomePage from "@/app/page";
-import WeekPage from "@/app/[season]/[week]/page";
+import WeekPage from "@/app/_routes/week/page";
 import type { AnalyzeResponse } from "@/lib/analyze-types";
 import type { Team } from "@/lib/api";
 import type { Manager } from "@/lib/manager-types";

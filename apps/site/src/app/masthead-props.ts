@@ -3,21 +3,21 @@
  * It reads public/ at build time in the app layer, so the masthead itself reads no file and builds no route.
  */
 import type { MastheadLinks } from "@/components/shell/masthead";
-import { currentManagersHref } from "@/lib/data/manager-data";
-import { currentWaiverHref } from "@/lib/data/waiver-data";
+import { menuHrefs } from "@/generated/registry";
 import { listWeekSummaries } from "@/lib/data/week-data";
-import { analyzeHref, homeHref, logoSrc, rankingsHref } from "@/lib/routes";
+import { homeHref, logoSrc } from "@/lib/routes";
 import type { WeekSummary } from "@/lib/week-types";
 
 export function mastheadProps(): { weeks: WeekSummary[]; links: MastheadLinks } {
+  // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   return {
     weeks: listWeekSummaries(),
     links: {
       brand: { home: homeHref(), logo: logoSrc() },
-      rankings: rankingsHref(),
-      analyze: analyzeHref(),
-      managers: currentManagersHref(),
-      waiver: currentWaiverHref(),
+      rankings: menuHrefs.rankings?.() ?? null,
+      analyze: menuHrefs.analyzer?.() ?? null,
+      managers: menuHrefs.managers?.() ?? null,
+      waiver: menuHrefs.waiver?.() ?? null,
     },
   };
 }

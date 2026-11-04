@@ -1,6 +1,6 @@
 /**
  * The manager page at /<season>/managers/<roster_id>/, one static page per entry in the season managers file.
- * The .managers.tsx name keeps it out of a build with no managers file: next.config adds the extension only when the file exists.
+ * The client build writes its route file only when the client takes managers and the latest season has a managers file.
  */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -17,9 +17,6 @@ import { mastheadProps } from "@/app/masthead-props";
 
 type Params = { season: string; roster: string };
 type Props = { params: Promise<Params> };
-
-// The export is static, so a roster with no entry in the managers file at build time has no page.
-export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
   const managers = loadManagers();

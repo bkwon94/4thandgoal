@@ -24,9 +24,6 @@ import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 
-// The export is static, so a week with no JSON at build time has no page.
-export const dynamicParams = false;
-
 export function generateStaticParams(): WeekRef[] {
   return listWeeks();
 }

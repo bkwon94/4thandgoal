@@ -14,7 +14,7 @@ const WEEKS: WeekSummary[] = [
   { number: 5, dates: "Oct 8 – Oct 12, 2026", href: "/2026/week-05/" },
 ];
 
-/* The links of a build with no base path, the waiver flag off, and no managers file. */
+/* The links of a build with no base path, a client with no waiver, and no managers file. */
 const LINKS: MastheadLinks = {
   brand: { home: "/", logo: "/images/logo.png" },
   rankings: "/rankings/",
@@ -23,7 +23,7 @@ const LINKS: MastheadLinks = {
   waiver: null,
 };
 
-/* The masthead of the week 7 report, with the waiver flag off and no managers file. A test overrides a link to change one value. */
+/* The masthead of the week 7 report, with no waiver and no managers file. A test overrides a link to change one value. */
 function renderWeekMasthead({
   waiverHref = null,
   managersHref = null,
@@ -268,7 +268,7 @@ describe("Masthead menu", () => {
     expect(button.getAttribute("aria-expanded")).toBe("false");
   });
 
-  it("lists the waiver page after the trade analyzer when the flag is on", async () => {
+  it("lists the waiver page after the trade analyzer when the client takes waiver", async () => {
     renderWeekMasthead({ waiverHref: "/2026/week-06/waiver/" });
     const menu = await openMenu();
     expect(linksIn(menu).slice(3, 5)).toEqual([
@@ -277,10 +277,21 @@ describe("Masthead menu", () => {
     ]);
   });
 
-  it("lists no waiver page when the flag is off", async () => {
+  it("lists no waiver page when the client omits waiver", async () => {
     renderWeekMasthead({ waiverHref: null });
     const menu = await openMenu();
     expect(within(menu).queryByRole("link", { name: "Waiver Wire" })).toBeNull();
+  });
+
+  it("lists no power rankings and no trade analyzer when the client omits those packages", async () => {
+    render(<Masthead subtitle="League Weekly" weeks={WEEKS} links={{ ...LINKS, rankings: null, analyze: null }} />);
+    const menu = await openMenu();
+    expect(linksIn(menu).slice(0, 2)).toEqual([
+      ["Home", "/"],
+      ["Week 7", "/2026/week-07/"],
+    ]);
+    expect(within(menu).queryByRole("link", { name: "Power Rankings" })).toBeNull();
+    expect(within(menu).queryByRole("link", { name: "Trade Analyzer" })).toBeNull();
   });
 
   it("lists the managers index after the power rankings only when the managers file exists", async () => {

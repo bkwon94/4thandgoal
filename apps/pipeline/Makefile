@@ -48,8 +48,8 @@ check-fast: lint typecheck rules ## Run lint, typecheck, and the rule tests
 build: need-client need-week ## Build the report of a week (CLIENT and WEEK required)
 	$(RUN) cornerstone build --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
-# This target commits apps/site/public and pushes the repo.
-publish: need-client need-week ## Publish a week to apps/site/public and push it (CLIENT and WEEK required)
+# This target commits clients/$(CLIENT)/published/<season>/ and pushes the repo.
+publish: need-client need-week ## Publish a week to clients/$(CLIENT)/published and push it (CLIENT and WEEK required)
 	$(RUN) cornerstone publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 page-json: need-client need-week ## Write page.json for a saved week (CLIENT and WEEK required)

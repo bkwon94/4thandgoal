@@ -1,6 +1,6 @@
 /**
  * Vitest config. Tests run in jsdom with the same @ alias as the app.
- * Only test files under src/ run.
+ * The test files under src/ and the script tests under scripts/ run.
  */
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
@@ -11,5 +11,5 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
-  test: { environment: "jsdom", include: ["src/**/*.test.{ts,tsx}"] },
+  test: { environment: "jsdom", include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"] },
 });

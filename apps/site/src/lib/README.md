@@ -3,7 +3,7 @@
 ## Knows
 
 - The build config in `src/lib/config.ts`, the route builders in `src/lib/routes.ts`, and the client of the site API in `src/lib/api.ts`.
-- The types of each published file and of each API document, in the `src/lib/*-types.ts` files.
+- The types of each published file, of each API document, and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`.
 - The browser stores: the passphrase, the team pick of the War chest page, the teams list, and the theme.
 - The motion timings, the default avatar and headshot, the usage helpers, and the `cn` helper.
 

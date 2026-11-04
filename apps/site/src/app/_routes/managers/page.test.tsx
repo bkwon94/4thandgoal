@@ -26,7 +26,7 @@ async function routeOver(managers?: unknown) {
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
   vi.resetModules();
-  return import("./page.managers");
+  return import("./page");
 }
 
 describe("generateStaticParams", () => {
