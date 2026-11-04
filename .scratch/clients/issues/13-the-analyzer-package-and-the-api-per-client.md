@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, AT-30, and AT-34
 
 **Blocked by:** 06, 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `analyzer` package holds the modules of decision 01, its prompts, and its API routes.
 - [x] The API answers `/clients/<slug>/teams`, `/analyze`, `/find`, and `/refresh` for each client. `/clients/cpc/teams` lists the CPC teams (AT-27).
