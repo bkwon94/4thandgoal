@@ -10,6 +10,8 @@ from pathlib import Path
 from rule_report import Offense, report
 
 SRC = Path(__file__).resolve().parent.parent / "src"
+# The API is its own app. Its tests run the same rule on its src, with the pipeline src beside it.
+API_SRC = SRC.parent.parent / "api" / "src"
 PACKAGE = "cornerstone"
 API = "cornerstone_api"
 
@@ -120,9 +122,13 @@ def _module_name(path: Path, src: Path) -> str:
     return ".".join(parts)
 
 
-def _modules(src: Path) -> dict[str, Path]:
-    """Every module of the pipeline package and the API package, by dotted name."""
-    return {_module_name(path, src): path for root in (PACKAGE, API) for path in sorted((src / root).rglob("*.py"))}
+def _modules(src: Path, api_src: Path | None = None) -> dict[str, Path]:
+    """Every module of the pipeline package and the API package, by dotted name.
+
+    The API package sits under api_src. With no api_src, both packages sit under src.
+    """
+    roots = [(src, PACKAGE), (api_src or src, API)]
+    return {_module_name(path, base): path for base, root in roots for path in sorted((base / root).rglob("*.py"))}
 
 
 def _repo_path(path: Path, src: Path) -> str:
@@ -245,12 +251,14 @@ def _stale_entry_offenses(src: Path, layer_of: dict[str, str] = LAYER_OF) -> lis
     ) for key in sorted(set(layer_of) - names)]
 
 
-def _import_offenses(src: Path) -> list[Offense]:
+def _import_offenses(src: Path, api_src: Path | None = None) -> list[Offense]:
     """The upward imports, and the imports of the API package from the pipeline package."""
-    modules = _modules(src)
+    modules = _modules(src, api_src)
     offenses: list[Offense] = []
     for name, path in modules.items():
         is_api = name.split(".")[0] == API
+        # The report names a path from the app that holds the module.
+        app_src = (api_src or src) if is_api else src
         if not is_api and _short(name) not in LAYER_OF:
             continue  # test_every_module_has_a_layer reports it.
         own = API_TOP_LAYER if is_api else LAYER_OF[_short(name)]
@@ -258,7 +266,7 @@ def _import_offenses(src: Path) -> list[Offense]:
             if target.split(".")[0] == API:
                 if not is_api:
                     offenses.append(Offense(
-                        path=_repo_path(path, src),
+                        path=_repo_path(path, app_src),
                         line=line,
                         rule_id="layers/api-import",
                         what=f"{name} imports {target}.",
@@ -278,7 +286,7 @@ def _import_offenses(src: Path) -> list[Offense]:
                     rule = UPWARD_RULE
                     fix = f"move the shared name to a module in a lower layer, or move {name} up in LAYER_OF."
                 offenses.append(Offense(
-                    path=_repo_path(path, src),
+                    path=_repo_path(path, app_src),
                     line=line,
                     rule_id="layers/upward-import",
                     what=f"{name} imports {target}.",
@@ -324,7 +332,7 @@ def test_the_map_names_only_modules_that_exist():
 
 
 def test_no_module_imports_from_a_higher_layer():
-    offenses = _import_offenses(SRC)
+    offenses = _import_offenses(SRC, API_SRC)
     assert not offenses, report(offenses)
 
 

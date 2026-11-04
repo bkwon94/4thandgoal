@@ -1,9 +1,13 @@
 # cpcfantasyfootball
 
-This repo holds two apps. Each app has a CLAUDE.md with its own commands and rules. Read the one for the app you change.
+This repo holds three apps. The site and the pipeline each have a CLAUDE.md with its own commands and rules. Read the one for the app you change.
 
 - `apps/site/` is the Next.js site. It renders `apps/site/public/<season>/week-NN/page.json` and its images.
 - `apps/pipeline/` is the Python pipeline. It builds each week and publishes it into `apps/site/public/`.
+- `apps/api/` is the API of the trade analyzer. It imports the pipeline and deploys to Fly. Run `make help` in it.
+
+The root holds one uv workspace and one pnpm workspace, each with one lock file: `uv.lock` and `pnpm-lock.yaml`.
+Run `uv sync --all-packages` and `pnpm install` at the root. A member runs with `uv run --exact --package <name>`.
 
 ## Style
 
@@ -52,5 +56,5 @@ after this file, then reads one ticket in the tracker.
 
 ## Commits
 
-The prek hook runs `pnpm check:fast` of the site, then `make check-fast` of the pipeline, before each commit.
+The prek hook runs `pnpm check:fast` of the site, then `make check-fast` of the pipeline and of the API, before each commit.
 Never commit with `--no-verify`.

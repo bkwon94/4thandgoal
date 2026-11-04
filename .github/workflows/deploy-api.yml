@@ -1,5 +1,6 @@
 # Deploys the Cornerstone API to Fly.
-# It runs on a push to main that changes the pipeline or this workflow, and only after the check passes.
+# It runs on a push to main that changes the API, the pipeline it imports, the root uv files, or this workflow,
+# and only after the check passes.
 # The deploy calls the check workflow as a job it needs. That is simpler than a workflow_run trigger,
 # which has no path filter and needs extra steps to find the pushed commit.
 name: Deploy API
@@ -8,7 +9,10 @@ on:
   push:
     branches: [main]
     paths:
+      - "apps/api/**"
       - "apps/pipeline/**"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/deploy-api.yml"
 
 # Each job only reads the repo, so the token gets no write scope.
@@ -28,15 +32,15 @@ jobs:
     concurrency:
       group: fly-deploy
       cancel-in-progress: false
-    # fly.toml and the Dockerfile sit in apps/pipeline, and flyctl uses the current folder as the build context.
-    defaults:
-      run:
-        working-directory: apps/pipeline
+    # fly.toml and the Dockerfile sit in apps/api. The build context is the repo root, because the API is a member
+    # of the root uv workspace, so the step runs at the root and passes each path as a flag.
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@v1
       # --remote-only builds the image on a Fly builder, so the runner needs no Docker.
       - name: Deploy the API
-        run: flyctl deploy --remote-only
+        run: >-
+          flyctl deploy . --remote-only --config apps/api/fly.toml --dockerfile apps/api/Dockerfile
+          --ignorefile apps/api/Dockerfile.dockerignore
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

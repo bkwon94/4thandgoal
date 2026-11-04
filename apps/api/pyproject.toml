@@ -1,0 +1,50 @@
+# The Cornerstone API app: the FastAPI service of the trade analyzer, a thin uv member apart from the pipeline.
+# It lists each package it imports, so "uv run --exact --package cpc-api" fails an import it does not list.
+[project]
+name = "cpc-api"
+version = "0.1.0"
+description = "Serves the Cornerstone trade analyzer over HTTP."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cornerstone",
+    "fastapi>=0.158.0",
+    "httpx>=0.28.1",
+    "pydantic>=2.14.1",
+    "uvicorn>=0.54.0",
+]
+
+[tool.uv.sources]
+cornerstone = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# The API imports the pipeline as its own code, so both sort as first party, as they did in one app.
+[tool.ruff.lint.isort]
+known-first-party = ["cornerstone", "cornerstone_api"]
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/cornerstone_api/cache.py"]
+
+[tool.uv.build-backend]
+module-name = "cornerstone_api"

@@ -1,5 +1,5 @@
 # The prek hook config of the repo. Install it one time per clone with "prek install".
-# The hook runs "make check-fast" at the root before each commit. That target runs the fast check of the site, then of the pipeline.
+# The hook runs "make check-fast" at the root before each commit. That target runs the fast check of the site, the pipeline, and the API.
 # CI runs "make check", the full set.
 repos:
   - repo: local

@@ -10,9 +10,9 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Status:** ready-for-agent
 
-- [ ] One root uv workspace holds the pipeline, the API, and the package globs, with one root `uv.lock`.
-- [ ] One root pnpm workspace holds the site and the package globs, with one root `pnpm-lock.yaml`.
+- [x] One root uv workspace holds the pipeline, the API, and the package globs, with one root `uv.lock`.
+- [x] One root pnpm workspace holds the site and the package globs, with one root `pnpm-lock.yaml`.
 - [ ] The API is its own app and its own uv member. Its deploy to Fly still runs, and `/health` answers 200.
-- [ ] The check runs each Python member with `uv run --exact --package`.
-- [ ] A diff of a root file runs the full check. The root files are the workspace files, the lock files, the root `Makefile`, and `.github/`.
-- [ ] The CPC golden diff is empty (AT-1).
+- [x] The check runs each Python member with `uv run --exact --package`.
+- [x] A diff of a root file runs the full check. The root files are the workspace files, the lock files, the root `Makefile`, and `.github/`.
+- [x] The CPC golden diff is empty (AT-1).

@@ -1,0 +1,4 @@
+# The root uv workspace of the repo: the pipeline, the API, and the Python side of each package, with one uv.lock.
+# The root holds no project of its own. The check runs each member with "uv run --exact --package <name>" (decision 07).
+[tool.uv.workspace]
+members = ["apps/pipeline", "apps/api", "packages/*/python"]

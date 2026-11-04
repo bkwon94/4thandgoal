@@ -32,23 +32,22 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: apps/site/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
-      # uv reads the Python version from apps/pipeline/.python-version, and the cache keys on the pipeline lock file.
+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
         with:
-          working-directory: apps/pipeline
           enable-cache: true
-          cache-dependency-glob: apps/pipeline/uv.lock
+          cache-dependency-glob: uv.lock
 
+      # One install at the root fills the whole pnpm workspace from the root lock file.
       - name: Install the site dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: apps/site
 
-      - name: Install the pipeline dependencies
-        run: uv sync --locked
-        working-directory: apps/pipeline
+      # Each check then runs its member with "uv run --exact --package", which trims the env to that member.
+      - name: Install the Python dependencies
+        run: uv sync --locked --all-packages
 
       - name: Run the check
         run: make check

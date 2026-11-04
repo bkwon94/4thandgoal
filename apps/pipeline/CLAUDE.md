@@ -10,11 +10,11 @@ The root CLAUDE.md holds the style, the flow, and the tracker. `GLOSSARY.md` nam
 
 Run these in `apps/pipeline/`. Run `make help` for the full list.
 
-- Install: `uv sync`
+- Install: `make install`. The root `uv.lock` holds the locked versions of the whole uv workspace.
 - Check: `make check`. The hook runs `make check-fast`.
 - Build a week: `make build WEEK=<W>`
 - Publish a week: `make publish WEEK=<W>`. It commits `apps/site/public` and pushes `main`.
-- Local API on port 8080: `make api`
+- Local API on port 8080: `make -C ../api api`. The API is its own app in `apps/api/`.
 
 ## Pipeline
 

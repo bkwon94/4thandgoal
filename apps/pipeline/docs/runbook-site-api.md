@@ -38,7 +38,7 @@ The data layout:
 | `/data/cache/` | The players, the nflverse files, the charts, and the result cache in `results/`. |
 | `/app/seed/data` | The tracked `data/` from the image. It is the seed of the volume. |
 
-At start, `deploy/entrypoint.sh` does two things:
+At start, `apps/api/deploy/entrypoint.sh` does two things:
 
 1. On the first boot, it copies `/app/seed/data` onto the volume. Then it writes the marker `/data/.seeded`.
    A new Fly volume holds `lost+found`, so the script checks the marker and not an empty volume.
@@ -77,15 +77,15 @@ grade. A document whose Claude call fell back is not stored, so the next request
 
 ## The deploy job
 
-- The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/pipeline` and passes the check.
+- The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/api`, `apps/pipeline`, or the root uv files, and passes the check.
 - To read the job, open the Actions tab, then the "Pipeline check" run of the push. The `deploy` log ends with the
   image and the machine state.
-- Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
+- Use `make deploy` in `apps/api` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
   `FLY_API_TOKEN` is absent.
 
 ## First deploy
 
-Run each command from `apps/pipeline`. Each step takes about one minute, except the deploy.
+Run each command from `apps/api`. Each step takes about one minute, except the deploy.
 
 1. Check the login. Expect `bkwon94@gmail.com`. If it differs, run `fly auth login`.
 
@@ -122,7 +122,7 @@ Run each command from `apps/pipeline`. Each step takes about one minute, except 
 5. Deploy. The first build takes about 3 minutes.
 
    ```sh
-   fly deploy
+   make deploy
    ```
 
 6. Add the certificate for the public hostname.
@@ -247,7 +247,7 @@ a changed prefix, or a prefix under the minimum size of the model.
 
 1. Edit `data/<season>/returns.json`.
 2. Commit the change.
-3. Run `fly deploy`. The entrypoint copies the returns file onto the volume at start.
+3. Run `make -C apps/api deploy` at the repo root. The entrypoint copies the returns file onto the volume at start.
 
 ## GitHub secret for the cron
 
