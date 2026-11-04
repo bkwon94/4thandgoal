@@ -30,10 +30,12 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - The provider port can take ESPN and Yahoo later. The Sleeper player ID is the canonical ID, the cache path moves into the adapter, and the `league` README lists each Sleeper shape as an adapter duty. `decisions/06-research-the-espn-and-yahoo-apis.md`.
 - One root uv workspace and one root pnpm workspace, each with one lock file. The API moves to `apps/api/`. A diff checks each touched package in both languages plus its dependents, with `uv run --exact`. A root file runs the full check. `decisions/07-prototype-one-workspace-two-languages.md`.
 - A `prebuild` script reads `clients/$CLIENT/client.toml` and generates the routes, a registry of import lines, and the client values, outside git. A source import leaks a client component, so only a generated list keeps a package out. The check builds each client. `decisions/08-prototype-the-client-build.md`.
+- The spec is `PRD.md`, approved 2026-11-04. It adds the client `data/` folder, the shared `data/nfl/` folder, `usage` in `design`, the derived role names, and the old API paths as `cpc`. `decisions/09-spec-clients.md`.
 
 ## NOT YET SPECIFIED
 
-- The spec. `decisions/09-spec-clients.md`.
+None.
+
 
 ## OUT OF SCOPE
 

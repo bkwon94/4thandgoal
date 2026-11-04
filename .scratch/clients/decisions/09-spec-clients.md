@@ -6,7 +6,7 @@ Map: `.scratch/clients/MAP.md`.
 
 **Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -16,4 +16,4 @@ Brian does the manual steps of the spec himself, on 2026-11-04 terms: "When the 
 
 ## Decision
 
-None yet.
+Brian approved the spec `.scratch/clients/PRD.md` on 2026-11-04. It records the choices of tickets 01 to 08 and sets five more values: the client `data/` folder, the shared `data/nfl/` folder, `lib/usage.ts` in `design`, the derived role names and formulas, and the old API paths as `cpc`. Its Further Notes list each one.
