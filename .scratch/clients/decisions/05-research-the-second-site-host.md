@@ -20,3 +20,7 @@ Brian decided each item on 2026-11-03, from the notes in `05-research-the-second
 2. **NorCal uses the free URL for now.** The Worker `norcal` serves at `norcal.<account>.workers.dev`. The domain is a setting of the Worker, not code, so the build takes the client slug only.
 3. **CPC stays on GitHub Pages at `cpcfantasy.com` in this spec.** `cpcfantasy.com` belongs to CPC alone, so no other client gets a subdomain of it.
 4. **The end state is `<client>.<brand>.app`.** A later step buys one brand domain on Cloudflare and moves both clients there, CPC too. Brian has not chosen the brand name yet.
+
+## Comments
+
+- 2026-11-04: Brian chose the brand 4th and Goal and owns `4thandgoal.app`. The end state is `<client>.4thandgoal.app`. The move stays out of scope for this spec.

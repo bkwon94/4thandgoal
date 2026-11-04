@@ -45,7 +45,7 @@ These came from the Stage 1 grill of 2026-11-03. Brian decided each one.
 - The ESPN provider and the Yahoo provider. Each is a later spec that plugs into the provider port. Two seams in one spec breaks the One test.
 - A client that swaps one part for its own code. The client folder holds values and no code, so ten clients do not become ten shells.
 - A deploy of the API per client. The client choice is data, so a later spec can run the same image as a second Fly app with one env var.
-- The brand name and its domain. The end state is `<client>.<brand>.app` for each client, but Brian has not chosen a name. The domain is a setting of each Worker, so the move needs no code.
+- The move of each client to `<client>.4thandgoal.app`. Brian owns `4thandgoal.app` since 2026-11-04. The domain is a setting of each Worker, so the move needs no code, and it waits for the move of CPC.
 - The move of CPC from GitHub Pages to a Cloudflare Worker. It is a second deploy seam, so it waits for the brand domain.
 - The split of `Provider` into a league provider and an NFL data source. The ESPN spec does it, because NorCal is a Sleeper league and cannot test it.
 - The move of the raw reads in the waiver modules, `snapshot.py`, `history.py`, `live.py`, and `pipeline.py` behind `parse.py`. It is real code with no second provider to need it yet, so it is a later ticket.
