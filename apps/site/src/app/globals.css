@@ -11,6 +11,7 @@
    A glob over packages/ finds no file, so each package takes its own line. */
 @source "../../../../packages/design/site";
 @source "../../../../packages/league/site";
+@source "../../../../packages/week/site";
 /*---break---
  */
 @custom-variant dark (&:is(.dark *));

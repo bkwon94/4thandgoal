@@ -109,7 +109,8 @@ describe("the readme rule", () => {
     // An empty list would pass with no folder read.
     const paths = packageFolders().map((dir) => relative(ROOT, dir));
     expect(paths).toEqual(expect.arrayContaining([
-        "src/components/week",
+        "src/components/rankings",
+        "../../packages/week/site/chapters",
         "src/lib",
         "src/lib/schemas",
         "src/hooks",

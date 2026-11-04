@@ -396,7 +396,8 @@ class WeekData(BaseModel):
     publish_date: str
     teams: dict[int, Team]
     matchups: list[MatchupFacts]
-    median: MedianFacts
+    # None for a league with no median game. GLOSSARY.md, "Median game".
+    median: MedianFacts | None
     table: list[Standing]
     awards: list[Award]
     pick: Pick

@@ -1,7 +1,8 @@
 """
 Checks that each module imports only from its own layer or a lower one, by the six-layer map of ADR 0010,
-that a module outside the sheet package imports only cornerstone.sheet or cornerstone.sheet.base, that the
-league package imports no app, and that the facts package imports only itself and the league package.
+that a module outside the week sheet imports only week.sheet or week.sheet.base, that the league package imports no
+app, that the facts package imports only itself and the league package, and that the week package imports only
+itself, the league package, and the facts package.
 It reads the import lines with ast and imports no pipeline code.
 """
 import ast
@@ -17,13 +18,16 @@ API_SRC = SRC.parent.parent / "api" / "src"
 LEAGUE_SRC = SRC.parent.parent.parent / "packages" / "league" / "python" / "src"
 # The facts package sits on the league package. The rule reads its src beside the pipeline src too.
 FACTS_SRC = SRC.parent.parent.parent / "packages" / "facts" / "python" / "src"
+# The week package sits on the league and the facts packages. The rule reads its src beside the pipeline src too.
+WEEK_SRC = SRC.parent.parent.parent / "packages" / "week" / "python" / "src"
 PACKAGE = "cornerstone"
 API = "cornerstone_api"
 LEAGUE = "league"
 FACTS = "facts"
+WEEK = "week"
 # The packages under each app, and the packages that each one may import. The dependency order of decision 01 is
 # league, then facts, then the core packages, so a package never imports an app or a package above it.
-PACKAGE_IMPORTS = {LEAGUE: {LEAGUE}, FACTS: {LEAGUE, FACTS}}
+PACKAGE_IMPORTS = {LEAGUE: {LEAGUE}, FACTS: {LEAGUE, FACTS}, WEEK: {LEAGUE, FACTS, WEEK}}
 
 # The model layer is lowest because the provider returns the models, so the provider must import them.
 LAYERS = ["model", "provider", "load", "facts", "write", "output"]
@@ -32,7 +36,7 @@ LAYERS = ["model", "provider", "load", "facts", "write", "output"]
 API_TOP_LAYER = "write"
 
 # The key is the module path under cornerstone. A package key names its __init__ file. The root package is "".
-# A module of the league or the facts package keeps its full name, such as "league.models".
+# A module of the league, the facts, or the week package keeps its full name, such as "league.models".
 # A "# PRD:" note marks a module that sits above its PRD layer because of the import the note names.
 # The map moves no file. The note goes when the import goes.
 LAYER_OF: dict[str, str] = {
@@ -52,6 +56,8 @@ LAYER_OF: dict[str, str] = {
     "facts.chapters": "model",
     "facts.names": "model",
     "facts.tokens": "model",
+    "week": "model",
+    "week.tunables": "model",
     # provider
     "league.provider": "provider",
     "league.provider.base": "provider",
@@ -79,16 +85,21 @@ LAYER_OF: dict[str, str] = {
     "league.lineup": "load",
     # facts
     "sheet": "facts",
-    "sheet.assemble": "facts",
-    "sheet.awards": "facts",
-    "sheet.base": "facts",
-    "sheet.drops": "facts",
-    "sheet.leaders": "facts",
-    "sheet.matchups": "facts",
-    "sheet.next_week": "facts",
     "sheet.rankings": "facts",
-    "sheet.standings": "facts",
-    "sheet.week": "facts",
+    "week.sheet": "facts",
+    "week.sheet.assemble": "facts",
+    "week.sheet.awards": "facts",
+    "week.sheet.base": "facts",
+    "week.sheet.drops": "facts",
+    "week.sheet.leaders": "facts",
+    "week.sheet.matchups": "facts",
+    "week.sheet.next_week": "facts",
+    "week.sheet.port": "facts",
+    "week.sheet.standings": "facts",
+    "week.sheet.week": "facts",
+    "week.facts_league": "facts",
+    "week.facts_matchup": "facts",
+    "week.facts_nflverse": "facts",
     "odds": "facts",
     "adjusters": "facts",
     "rubric": "facts",
@@ -105,18 +116,17 @@ LAYER_OF: dict[str, str] = {
     "manager_season": "facts",
     "power_rankings": "facts",
     "trade_facts": "facts",
-    "facts_league": "facts",
-    "facts_matchup": "facts",
-    "facts_nflverse": "facts",
     "finder": "facts",
     # write
     "facts.writer": "write",
     "facts.verifier": "write",
+    "week.median": "write",
     "analysis": "write",
     "finder_reasons": "write",
     "waiver_research": "write",
     # output
     "render": "output",
+    "week.page": "output",
     "publish": "output",
     "pipeline": "output",
     "cli": "output",
@@ -130,12 +140,14 @@ UPWARD_RULE = "a module imports only from its own layer or a lower one"
 PACKAGE_RULES = {
     LEAGUE: "the league package imports no app",
     FACTS: "the facts package imports only the league package and itself, never an app or a core package",
+    WEEK: "the week package imports only the league package, the facts package, and itself, never an app or another "
+          "core package",
 }
-SHEET = f"{PACKAGE}.sheet"
+SHEET = f"{WEEK}.sheet"
 # The base module holds the names that the chapters share, so a caller outside the sheet may import it too.
 SHEET_ENTRIES = {SHEET, f"{SHEET}.base"}
-SHEET_RULE = "outside the sheet package, a module imports only cornerstone.sheet or cornerstone.sheet.base"
-SHEET_FIX = "re-export the name from cornerstone/sheet/__init__.py, or import it from cornerstone.sheet.base."
+SHEET_RULE = "outside the week sheet, a module imports only week.sheet or week.sheet.base"
+SHEET_FIX = "re-export the name from week/sheet/__init__.py, or import it from week.sheet.base."
 
 
 def _module_name(path: Path, src: Path) -> str:
@@ -147,13 +159,14 @@ def _module_name(path: Path, src: Path) -> str:
 
 
 def _modules(src: Path, api_src: Path | None = None, league_src: Path | None = None,
-             facts_src: Path | None = None) -> dict[str, Path]:
-    """Every module of the pipeline package, the API package, the league package, and the facts package, by name.
+             facts_src: Path | None = None, week_src: Path | None = None) -> dict[str, Path]:
+    """Every module of the pipeline package, the API package, and the league, the facts, and the week packages, by name.
 
-    The API package sits under api_src, the league package under league_src, and the facts package under facts_src.
-    With none, each sits under src.
+    The API package sits under api_src, the league package under league_src, the facts package under facts_src, and
+    the week package under week_src. With none, each sits under src.
     """
-    roots = [(src, PACKAGE), (api_src or src, API), (league_src or src, LEAGUE), (facts_src or src, FACTS)]
+    roots = [(src, PACKAGE), (api_src or src, API), (league_src or src, LEAGUE), (facts_src or src, FACTS),
+             (week_src or src, WEEK)]
     return {_module_name(path, base): path for base, root in roots for path in sorted((base / root).rglob("*.py"))}
 
 
@@ -249,12 +262,12 @@ def _layer_of_lines() -> dict[str, int]:
 
 
 def _layered(name: str) -> bool:
-    """True for a module of the pipeline, the league, or the facts package, the three that LAYER_OF maps."""
-    return name.split(".")[0] in (PACKAGE, LEAGUE, FACTS)
+    """True for a module of the pipeline, the league, the facts, or the week package, the four that LAYER_OF maps."""
+    return name.split(".")[0] in (PACKAGE, LEAGUE, FACTS, WEEK)
 
 
 def _src_of(name: str, src: Path, api_src: Path | None, league_src: Path | None,
-            facts_src: Path | None = None) -> Path:
+            facts_src: Path | None = None, week_src: Path | None = None) -> Path:
     """The src folder that holds the module, so the report names a path from its own app or package."""
     top = name.split(".")[0]
     if top == API:
@@ -263,26 +276,30 @@ def _src_of(name: str, src: Path, api_src: Path | None, league_src: Path | None,
         return league_src or src
     if top == FACTS:
         return facts_src or src
+    if top == WEEK:
+        return week_src or src
     return src
 
 
-def _no_layer_offenses(src: Path, league_src: Path | None = None, facts_src: Path | None = None) -> list[Offense]:
+def _no_layer_offenses(src: Path, league_src: Path | None = None, facts_src: Path | None = None,
+                       week_src: Path | None = None) -> list[Offense]:
     # A missing key has no line of its own, so the offense names line 1 of the module.
     return [Offense(
-        path=_repo_path(path, _src_of(name, src, None, league_src, facts_src)),
+        path=_repo_path(path, _src_of(name, src, None, league_src, facts_src, week_src)),
         line=1,
         rule_id="layers/no-layer",
         what=f"{name} has no layer in LAYER_OF.",
         rule="each module of cornerstone and league has one layer in LAYER_OF",
         adr=ADR,
         fix=f'add "{_short(name)}" to LAYER_OF in tests/test_layers.py, in the lowest layer its imports allow.',
-    ) for name, path in _modules(src, league_src=league_src, facts_src=facts_src).items()
+    ) for name, path in _modules(src, league_src=league_src, facts_src=facts_src, week_src=week_src).items()
         if _layered(name) and _short(name) not in LAYER_OF]
 
 
 def _stale_entry_offenses(src: Path, layer_of: dict[str, str] = LAYER_OF, league_src: Path | None = None,
-                          facts_src: Path | None = None) -> list[Offense]:
-    names = {_short(name) for name in _modules(src, league_src=league_src, facts_src=facts_src) if _layered(name)}
+                          facts_src: Path | None = None, week_src: Path | None = None) -> list[Offense]:
+    names = {_short(name) for name in _modules(src, league_src=league_src, facts_src=facts_src, week_src=week_src)
+             if _layered(name)}
     lines = _layer_of_lines()
     return [Offense(
         # LAYER_OF is in this file for any src, so the path is from the root of this repo.
@@ -298,15 +315,15 @@ def _stale_entry_offenses(src: Path, layer_of: dict[str, str] = LAYER_OF, league
 
 
 def _import_offenses(src: Path, api_src: Path | None = None, league_src: Path | None = None,
-                     facts_src: Path | None = None) -> list[Offense]:
-    """The upward imports, the imports of the API package from the pipeline package, and the imports of the league
-    and the facts packages that PACKAGE_IMPORTS does not allow."""
-    modules = _modules(src, api_src, league_src, facts_src)
+                     facts_src: Path | None = None, week_src: Path | None = None) -> list[Offense]:
+    """The upward imports, the imports of the API package from the pipeline package, and the imports of the league,
+    the facts, and the week packages that PACKAGE_IMPORTS does not allow."""
+    modules = _modules(src, api_src, league_src, facts_src, week_src)
     offenses: list[Offense] = []
     for name, path in modules.items():
         is_api = name.split(".")[0] == API
         # The report names a path from the app or the package that holds the module.
-        app_src = _src_of(name, src, api_src, league_src, facts_src)
+        app_src = _src_of(name, src, api_src, league_src, facts_src, week_src)
         if not is_api and _short(name) not in LAYER_OF:
             continue  # test_every_module_has_a_layer reports it.
         own = API_TOP_LAYER if is_api else LAYER_OF[_short(name)]
@@ -357,12 +374,12 @@ def _import_offenses(src: Path, api_src: Path | None = None, league_src: Path | 
     return offenses
 
 
-def _sheet_entry_offenses(src: Path) -> list[Offense]:
-    """The imports of a sheet module other than the two entries, from a module outside the sheet package.
+def _sheet_entry_offenses(src: Path, week_src: Path | None = None) -> list[Offense]:
+    """The imports of a sheet module other than the two entries, from a module outside the week sheet.
 
     The rule does not read tests/, so a chapter test may import its chapter module.
     """
-    modules = _modules(src)
+    modules = _modules(src, week_src=week_src)
     offenses: list[Offense] = []
     for name, path in modules.items():
         if name == SHEET or name.startswith(f"{SHEET}."):
@@ -370,7 +387,7 @@ def _sheet_entry_offenses(src: Path) -> list[Offense]:
         for target, line in sorted(_targets(name, path, modules, read=_every_import).items()):
             if target.startswith(f"{SHEET}.") and target not in SHEET_ENTRIES:
                 offenses.append(Offense(
-                    path=_repo_path(path, src),
+                    path=_repo_path(path, _src_of(name, src, None, None, None, week_src)),
                     line=line,
                     rule_id="layers/sheet-entry",
                     what=f"{name} imports {target}.",
@@ -382,22 +399,22 @@ def _sheet_entry_offenses(src: Path) -> list[Offense]:
 
 
 def test_every_module_has_a_layer():
-    offenses = _no_layer_offenses(SRC, LEAGUE_SRC, FACTS_SRC)
+    offenses = _no_layer_offenses(SRC, LEAGUE_SRC, FACTS_SRC, WEEK_SRC)
     assert not offenses, report(offenses)
 
 
 def test_the_map_names_only_modules_that_exist():
-    offenses = _stale_entry_offenses(SRC, league_src=LEAGUE_SRC, facts_src=FACTS_SRC)
+    offenses = _stale_entry_offenses(SRC, league_src=LEAGUE_SRC, facts_src=FACTS_SRC, week_src=WEEK_SRC)
     assert not offenses, report(offenses)
 
 
 def test_no_module_imports_from_a_higher_layer():
-    offenses = _import_offenses(SRC, API_SRC, LEAGUE_SRC, FACTS_SRC)
+    offenses = _import_offenses(SRC, API_SRC, LEAGUE_SRC, FACTS_SRC, WEEK_SRC)
     assert not offenses, report(offenses)
 
 
 def test_no_module_outside_the_sheet_imports_a_chapter_module():
-    offenses = _sheet_entry_offenses(SRC)
+    offenses = _sheet_entry_offenses(SRC, WEEK_SRC)
     assert not offenses, report(offenses)
 
 
@@ -440,19 +457,21 @@ def test_the_rule_finds_a_stale_entry(tmp_path):
 
 def test_the_rule_finds_a_module_that_imports_a_chapter_module(tmp_path):
     src = tmp_path / "src"
-    sheet = src / PACKAGE / "sheet"
+    sheet = src / WEEK / "sheet"
     sheet.mkdir(parents=True)
+    (src / PACKAGE).mkdir()
     (src / PACKAGE / "__init__.py").write_text("")
+    (src / WEEK / "__init__.py").write_text("")
     (sheet / "__init__.py").write_text("")
     (sheet / "next_week.py").write_text("")
     # The import is inside a function, so the rule must read more than the imports at load.
     (src / PACKAGE / "writer.py").write_text(
-        '"""A write module."""\n\n\ndef write():\n    from cornerstone.sheet import next_week\n')
+        '"""A write module."""\n\n\ndef write():\n    from week.sheet import next_week\n')
     assert _sheet_entry_offenses(src) == [Offense(
         path="src/cornerstone/writer.py",
         line=5,
         rule_id="layers/sheet-entry",
-        what="cornerstone.writer imports cornerstone.sheet.next_week.",
+        what="cornerstone.writer imports week.sheet.next_week.",
         rule=SHEET_RULE,
         adr=ADR,
         fix=SHEET_FIX,
@@ -487,3 +506,19 @@ def test_the_rule_finds_a_facts_module_that_imports_the_pipeline_but_not_one_tha
     offenses = _import_offenses(src, league_src=tmp_path / "league_src", facts_src=tmp_path / "facts_src")
     assert [(offense.path, offense.line, offense.rule_id, offense.what) for offense in offenses] == [
         ("facts_src/facts/writer.py", 2, "layers/kernel-import", "facts.writer imports cornerstone.pipeline.")]
+
+
+def test_the_rule_finds_a_week_module_that_imports_the_pipeline_but_not_one_that_imports_facts(tmp_path):
+    src = tmp_path / "src"
+    week = tmp_path / "week_src" / WEEK
+    facts = tmp_path / "facts_src" / FACTS
+    for package in (src / PACKAGE, week, facts):
+        package.mkdir(parents=True)
+        (package / "__init__.py").write_text("")
+    (src / PACKAGE / "odds.py").write_text("")
+    (facts / "tokens.py").write_text("")
+    (week / "median.py").write_text(
+        '"""A week module."""\nfrom cornerstone import odds\nfrom facts import tokens\n')
+    offenses = _import_offenses(src, facts_src=tmp_path / "facts_src", week_src=tmp_path / "week_src")
+    assert [(offense.path, offense.line, offense.rule_id, offense.what) for offense in offenses] == [
+        ("week_src/week/median.py", 2, "layers/kernel-import", "week.median imports cornerstone.odds.")]

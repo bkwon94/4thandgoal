@@ -1,6 +1,7 @@
 """
 The tunable table: every algorithm number of the trade analyzer rubric, the power rankings, the playoff odds,
-the waiver board, and the next-week storylines. The numbers that change with the size of the league derive from league_settings.py.
+and the waiver board. The week package holds the numbers of the week in week/tunables.py.
+The numbers that change with the size of the league derive from league_settings.py.
 Each has a name and a reason. The rubric file in the prompts directory points here, so a number changes in one place.
 """
 from decimal import Decimal
@@ -8,9 +9,6 @@ from decimal import Decimal
 # Standing: a seller has more than this many wins fewer than the team in the last playoff spot. The analyzer reads it.
 # The league scores a median game each week, so each week gives two results, and two games are one week of results.
 SELLER_GAP = 2
-# Both best projected lineups for next week rank this high or higher for a shootout. The week reads it.
-# GLOSSARY.md, "Projected shootout": the top four of the league.
-SHOOTOUT_TOP = 4
 
 # The numbers are Decimal, so a ratio at a lower bound, such as 22 over 20, lands in its band exactly.
 
@@ -170,21 +168,6 @@ CLAIMS_PER_PLAYER = 2
 # author pages, the wider web, and one spare for a step that gave nothing. Each search costs $0.01.
 RESEARCH_SEARCHES = 4
 
-# The next-week storylines: the weight of each kind. GLOSSARY.md, "Storyline". A game's storyline score is the sum,
-# and the two games with the highest score are Must Watch. Stakes and a streak count most, because a reader feels
-# them every week. A shootout and the top of the table count next. A rematch and revenge only add color.
-# The order is the order of the reason when two weights tie: a streak comes before near the cut.
-STORYLINE_WEIGHTS = {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
-
-# The key starter: GLOSSARY.md, "Key starter", and ADR 0009. The rule reads real starts, so it shows the habit of
-# the manager.
-# The count of latest completed weeks the rule reads.
-KEY_STARTER_WEEKS = 4
-# The starts in those weeks that make a key starter. Three of four lets one benched or hurt week pass.
-KEY_STARTER_STARTS = 3
-# The starts a key starter needs when fewer than KEY_STARTER_WEEKS weeks are complete. It is also the fewest weeks
-# the rule reads, because one start in one week says nothing about a habit.
-KEY_STARTER_SHORT_STARTS = 2
 
 # The roster grade: GLOSSARY.md, "Roster grade". The score is 0 to 100, the sum of four parts, each 0 to 1, times
 # its weight. The weights sum to 100, so a roster with every part in full scores 100.
@@ -213,7 +196,3 @@ GRADE_DEPTH_SPARES = 1
 # put that roster at C, so the letters spread A to D across a league and the middle of the league is not a D.
 GRADE_BANDS = (("A", 70), ("B", 55), ("C", 40))
 GRADE_BELOW_BANDS = "D"
-
-# The most awards one player wins in a week. A reader expects the top scorer to be the top scorer, so the cap is
-# not one. Three tiles for one player reads as a bug, so the cap is two.
-AWARDS_PER_PLAYER = 2

@@ -33,6 +33,7 @@ CLIENT=cpc pnpm check:export
 The `prebuild` step runs `scripts/client-build.mjs`. It checks `clients/$CLIENT/client.toml` against the JSON Schema
 that the pipeline exports, with `ajv`. Then it writes the route file of each package of the client, the registry,
 and the client values, and copies the client's `published/` into `public/`. Git ignores each generated file.
+The registry lists the menu link and the home section of each package of the client only, so an omitted package ships no code.
 
 `pnpm check:export` runs after the build. It checks that every file under `public/` exists in
 `out/` with the same bytes, and that the export holds no route and no code of a package that the client omits.
@@ -67,6 +68,7 @@ All values are build-time. Only `src/lib/config.ts` reads them.
 | `NEXT_PUBLIC_API_URL` | `https://api.cpcfantasy.com` | Base URL of the site API. |
 | `NEXT_PUBLIC_BASE_PATH` | empty string | Pages base path. Empty because the site lives at the domain root. |
 | `CLIENT` | none | The slug of the client folder under `clients/`. The build fails with no value. |
+| `CLIENT_ROOT` | the repo root | The folder that holds `clients/` and the exported schema. Set it to build a test client from a temp folder. |
 
 A value that changes with the league comes from `client.toml`: the package list, the finder, the usage code, and the
 season, which is the latest season of the client.

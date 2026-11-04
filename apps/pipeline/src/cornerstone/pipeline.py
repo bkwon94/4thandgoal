@@ -17,7 +17,7 @@ from pydantic import TypeAdapter
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from cornerstone.power_rankings import power_rankings
-from cornerstone.render import _download_bytes, render_managers, render_page_json, render_rankings, render_week
+from cornerstone.render import render_managers, render_rankings, render_week
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -82,6 +82,8 @@ from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, load_returns, week_snapshot
 from league.standings_table import season_records, standings_order
 from league.trades import default_cutoff, trades_for_week
+from week.median import median_terms
+from week.page import download_bytes, render_page_json
 
 log = logging.getLogger(__name__)
 
@@ -358,7 +360,7 @@ def run_build(
     call: ClaudeCall,
     fetch: bool = True,
     news: NewsFetcher = fetch_news,
-    fetch_bytes: BytesFetcher = _download_bytes,
+    fetch_bytes: BytesFetcher = download_bytes,
     nflverse: NflverseFetcher | None = None,
     research: SearchCall | None = None,
     # The clock is a parameter so a build is reproducible.
@@ -408,7 +410,7 @@ def run_build(
     for chapter in bundle.sheet.chapters:
         reserved = reserved_words(chapter.key, bundle.sheet)
         blurbs[chapter.key], verify[chapter.key] = write_and_verify(
-            chapter, bundle.sheet, call, used | reserved, prompts_dir=client.voice_dir)
+            chapter, bundle.sheet, call, used | reserved, prompts_dir=client.voice_dir, terms=median_terms(client))
         used |= page_words(blurbs[chapter.key], chapter)
         _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, VerifyFile(build=record, chapters=verify))
@@ -579,7 +581,7 @@ def run_rewrite(
     chapter: str,
     call: ClaudeCall,
     news: NewsFetcher = fetch_news,
-    fetch_bytes: BytesFetcher = _download_bytes,
+    fetch_bytes: BytesFetcher = download_bytes,
     nflverse: NflverseFetcher | None = None,
     research: SearchCall | None = None,
     *,
@@ -598,7 +600,7 @@ def run_rewrite(
     verify = read_verify(directory / "verify.json")
     used = _other_page_words(bundle, blurbs, chapter)
     blurbs[chapter], verify.chapters[chapter] = write_and_verify(
-        chosen, bundle.sheet, call, used, prompts_dir=client.voice_dir)
+        chosen, bundle.sheet, call, used, prompts_dir=client.voice_dir, terms=median_terms(client))
     _log_chapter(chapter, blurbs[chapter])
     _save_blurbs(directory, blurbs, verify)
 
@@ -663,7 +665,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     verify = read_verify(directory / "verify.json")
     used = _other_page_words(bundle, blurbs, chapter.key)
     blurbs[chapter.key], verify.chapters[chapter.key] = write_and_verify(
-        chapter, bundle.sheet, call, used, prompts_dir=client.voice_dir)
+        chapter, bundle.sheet, call, used, prompts_dir=client.voice_dir, terms=median_terms(client))
     _log_chapter(chapter.key, blurbs[chapter.key])
     _save_blurbs(directory, blurbs, verify)
     season_history = _season_history(client, season, week)

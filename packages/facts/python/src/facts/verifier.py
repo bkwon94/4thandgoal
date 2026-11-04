@@ -5,7 +5,7 @@ A failed blurb is rewritten once with feedback, then replaced by a template sent
 import logging
 import re
 import string
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from pathlib import Path
 
 import anthropic
@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from facts.chapters import RANKINGS_CHAPTER, two_team_chapter
 from facts.names import last_name
 from facts.tokens import NUMBER_TOKEN
-from facts.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, write_blurb
+from facts.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, with_terms, write_blurb
 from league.models import (
     Blurb,
     Chapter,
@@ -467,9 +467,12 @@ def code_check(
     return failures
 
 
-def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: Path) -> tuple[str, str]:
-    # The vocabulary comes first so the verifier judges stat terms by the writer's definitions.
-    system = "\n\n".join(load_prompt(prompts_dir, name) for name in ("vocabulary.md", "verifier.md"))
+def build_verifier_prompt(
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, prompts_dir: Path, terms: Sequence[str] = (),
+) -> tuple[str, str]:
+    # The vocabulary and its extra terms come first so the verifier judges stat terms by the writer's definitions.
+    system = "\n\n".join([with_terms(load_prompt(prompts_dir, "vocabulary.md"), terms),
+                           load_prompt(prompts_dir, "verifier.md")])
     # The verifier sees every chapter fact, cited or not, so a true claim with a missed
     # citation is not judged false. Facts outside the chapter never reach it.
     lines = [
@@ -488,9 +491,10 @@ def build_verifier_prompt(blurb: Blurb, chapter: Chapter, sheet: FactSheet, *, p
 
 
 def claude_verify(
-    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, *, prompts_dir: Path
+    blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, *, prompts_dir: Path,
+    terms: Sequence[str] = (),
 ) -> list[Verdict]:
-    system, user = build_verifier_prompt(blurb, chapter, sheet, prompts_dir=prompts_dir)
+    system, user = build_verifier_prompt(blurb, chapter, sheet, prompts_dir=prompts_dir, terms=terms)
     verdicts = call(system, user, VerifyOut).verdicts
     n, m = len(verdicts), len(blurb.sentences)
     if n != m:
@@ -501,13 +505,13 @@ def claude_verify(
 
 def verify_blurb(
     blurb: Blurb, chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(),
-    *, prompts_dir: Path,
+    *, prompts_dir: Path, terms: Sequence[str] = (),
 ) -> VerifyResult:
     failures = code_check(blurb, chapter, sheet, used_words, prompts_dir=prompts_dir)
     # A code failure is final, so skip the paid Claude call.
     if failures:
         return VerifyResult(chapter=chapter.key, code_failures=failures, verdicts=[], passed=False)
-    verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir)
+    verdicts = claude_verify(blurb, chapter, sheet, call, prompts_dir=prompts_dir, terms=terms)
     return VerifyResult(
         chapter=chapter.key,
         code_failures=[],
@@ -527,15 +531,17 @@ def _feedback(result: VerifyResult) -> str:
 
 def write_and_verify(
     chapter: Chapter, sheet: FactSheet, call: ClaudeCall, used_words: Collection[str] = frozenset(), *,
-    prompts_dir: Path,
+    prompts_dir: Path, terms: Sequence[str] = (),
 ) -> tuple[Blurb, list[VerifyResult]]:
+    """Write one blurb and check it, with one retry. `terms` are the extra vocabulary of a core package."""
     results: list[VerifyResult] = []
     # The used words go to every attempt, so a retry for another failure still hears them.
     page_words = page_word_feedback(used_words)
     feedback = None
     for attempt in (1, 2):
         try:
-            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt, prompts_dir=prompts_dir)
+            blurb = write_blurb(chapter, sheet, call, feedback, page_words, attempt, prompts_dir=prompts_dir,
+                                terms=terms)
         except (RefusalError, WriterError, ValidationError, anthropic.AnthropicError) as err:
             # A writer error is a failed attempt, not a crash of the whole report.
             log.warning("writer failed for %s: %s", chapter.key, err)
@@ -547,7 +553,7 @@ def write_and_verify(
             )
         else:
             try:
-                result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir)
+                result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir, terms=terms)
             except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)

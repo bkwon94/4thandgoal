@@ -3,7 +3,7 @@
 ## Knows
 
 - The build config in `src/lib/config.ts`, the route builders in `src/lib/routes.ts`, and the client of the site API in `src/lib/api.ts`.
-- The types of each published file, of each API document, and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`.
+- The types of each published file, of each API document, and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`. The week package holds the types of the week page file.
 - The browser stores: the passphrase, the team pick of the War chest page, and the teams list.
 - The default avatar and headshot are in `@cpc/league`.
 

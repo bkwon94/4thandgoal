@@ -21,7 +21,7 @@ import { PowerRankings } from "@/components/rankings/power-rankings";
 import { TradeForm } from "@/components/analyzer/trade-form";
 import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "@/components/waiver/war-chest";
-import { week6 } from "@/fixtures/week-page";
+import { week6 } from "@cpc/week/fixtures/week-page";
 
 vi.stubGlobal(
   "matchMedia",

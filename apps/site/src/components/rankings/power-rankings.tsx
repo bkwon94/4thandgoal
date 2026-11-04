@@ -12,7 +12,7 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { Reveal } from "@cpc/design/parts/reveal";
-import { Who } from "@/components/parts/who";
+import { Who } from "@cpc/week/parts/who";
 import { avatarSrc } from "@cpc/league/images";
 import { record } from "@cpc/design/format/format";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -20,7 +20,7 @@ import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
 import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";
 import { managerHrefOrNull } from "@/lib/routes";
 import { cn } from "@cpc/design/lib/utils";
-import type { AvatarMap } from "@/lib/week-types";
+import type { AvatarMap } from "@cpc/week/schema/week-types";
 import { useSharedWeekChoice, useWeekChoice } from "./week-choice";
 
 /* The order and the column names of the four component ranks. */

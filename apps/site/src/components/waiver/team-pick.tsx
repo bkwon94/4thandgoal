@@ -10,7 +10,7 @@ import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
 import type { Team as PickerTeam } from "@/lib/api";
 import type { BudgetRow } from "@/lib/waiver-types";
-import type { AvatarMap, Team } from "@/lib/week-types";
+import type { AvatarMap, Team } from "@cpc/week/schema/week-types";
 import { teamName } from "./format";
 
 const LABEL = "Your team";

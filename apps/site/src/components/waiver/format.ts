@@ -4,7 +4,7 @@
  */
 import { num, thousands } from "@cpc/design/format/format";
 import type { ClaimStance, DropInfo, WaiverPlayer } from "@/lib/waiver-types";
-import type { Team } from "@/lib/week-types";
+import type { Team } from "@cpc/week/schema/week-types";
 
 /* The team name of a roster, or the roster number when the week page has no such team. */
 export function teamName(teams: Record<string, Team>, rosterId: number): string {

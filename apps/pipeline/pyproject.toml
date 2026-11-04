@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "cpc-facts",
     "cpc-league",
+    "cpc-week",
     "anthropic>=1.15.0",
     "httpx>=0.28.1",
     "pillow>=13.0.0",
@@ -19,6 +20,7 @@ dependencies = [
 [tool.uv.sources]
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
+cpc-week = { workspace = true }
 
 [project.scripts]
 cornerstone = "cornerstone.cli:main"
@@ -41,19 +43,17 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The pipeline imports the league and the facts packages as its own code, so each sorts as first party in one block.
+# The pipeline imports the league, the facts, and the week packages as its own code, so each sorts as first party in one block.
 [tool.ruff.lint.isort]
-known-first-party = ["cornerstone", "facts", "league"]
+known-first-party = ["cornerstone", "facts", "league", "week"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
-# Backlog: the sheet package has 16 errors, all in bodies that the move kept as they are. Most pass an
-# optional value, such as int | None, to Nums or to a helper that takes a plain value. base.py 1, drops.py 1,
-# leaders.py 1, next_week.py 11, trades.py 2.
+# The modules of the week sheet moved into packages/week/python, which lists them and their backlog.
 [tool.pyright]
 typeCheckingMode = "basic"
 # The modules of the league package have their own list in packages/league/python/pyproject.toml.
 include = ["src/cornerstone/rank_score.py", "src/cornerstone/render.py",
-           "src/cornerstone/sheet/assemble.py", "src/cornerstone/waiver_projection.py",
+           "src/cornerstone/sheet/__init__.py", "src/cornerstone/waiver_projection.py",
            "tests/fakes.py", "tests/rule_report.py", "tests/test_layers.py",
            "tests/test_offense_report.py", "tests/test_provider.py", "tests/test_rule_ports.py",
            "tests/test_rule_readmes.py", "tests/test_rule_suppressions.py", "tests/test_rule_tracker.py"]

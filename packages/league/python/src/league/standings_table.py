@@ -1,16 +1,20 @@
 """
 The standings table and the season records it reads, built from the parsed week and the saved history.
 It sits in the load layer, so the snapshot and the fact groups both read one table with no upward import.
+It also holds the plain clinch check, which the odds and the week both read.
 """
 import logging
 from collections import defaultdict
 from decimal import Decimal
 
 from league.client import Client
-from league.models import History, PastWeek, Standing, Week
+from league.models import History, OddsStatus, PastWeek, Standing, Week
 from league.numbers import r2
 
 logger = logging.getLogger(__name__)
+
+# A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
+MAX_WINS_PER_WEEK = 2
 
 
 def week_median(week: PastWeek) -> Decimal:
@@ -122,3 +126,19 @@ def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
         return None
     mine, theirs = week.scores[roster_id], week.scores[opponent]
     return opponent, (mine > theirs) - (mine < theirs)
+
+
+def roster_status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
+    """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
+
+    `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
+    `out`: this roster cannot reach the wins of the roster in the last spot with 2 wins every week left.
+    """
+    by_wins = sorted(records, key=lambda rid: (-records[rid][0], rid))
+    reach = MAX_WINS_PER_WEEK * weeks_left
+    wins = records[roster_id][0]
+    if roster_id in by_wins[:spots] and all(records[o][0] + reach < wins for o in by_wins[spots:]):
+        return "in"
+    if wins + reach < records[by_wins[spots - 1]][0]:
+        return "out"
+    return "open"
