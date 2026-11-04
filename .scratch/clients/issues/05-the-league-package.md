@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1 and AT-14.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `league` package holds the modules of decision 01, in Python, and `headshot` and `avatar` on the site side.
 - [x] The Sleeper adapter takes its cache dir in its constructor. The fetch calls drop the cache argument.
