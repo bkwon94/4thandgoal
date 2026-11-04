@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-31, and AT-32.
 
 **Blocked by:** 06, 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `waiver` package holds the modules of decision 01 and the research prompt, and writes the waiver board.
 - [x] A test import of `waiver` from the API fails the check with `ModuleNotFoundError` (AT-31).
