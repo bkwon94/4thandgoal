@@ -33,7 +33,7 @@ provider = "sleeper"
 league_id = "1386167364424318976"
 
 # Only the values that differ from the defaults in the package README.
-[packages.analyzer]
+[values.analyzer]
 finder = false
 
 # Each item names the home page or one package of the list. The order is the order of the menu.

@@ -120,7 +120,7 @@ usage_code = "cpcfantasy"
 provider = "sleeper"
 league_id = "1386167364424318976"
 
-[packages.analyzer]
+[values.analyzer]
 finder = false
 
 [menu]
@@ -136,6 +136,7 @@ items = [
 
 - The list omits `league`, `facts`, and `design`, because each client takes them.
 - Required: the seasons, with the provider and the league id of each, the timezone, and the package list. Optional: `usage_code`, the package values, and the menu.
+- The values of a package sit in the table `[values.<package>]`. The key `packages` holds only the list, because TOML forbids one key as both an array and a table.
 - Each package defines its **Package values** as one pydantic model. A step exports each model as a JSON Schema file into its package. The pipeline and the API check with the model. The site build checks with the JSON Schema and `ajv`. An unknown key fails, and a stale exported file fails.
 - The menu is a closed set. An item names the home page or one package of the list, with an optional label. The layout is `hamburger`, `bar`, or `tabs`. With no `items`, the menu takes the package list in its order. An item for an omitted package fails the check.
 - The site values follow one rule: a value that changes with the league goes into `client.toml`, and a value that changes with the deploy stays an env value. `NEXT_PUBLIC_WAIVER` becomes `waiver` in the list. `NEXT_PUBLIC_FINDER` becomes `finder` of `analyzer`. `NEXT_PUBLIC_SEASON` derives from the latest season. `NEXT_PUBLIC_USAGE_CODE` becomes `usage_code`. `NEXT_PUBLIC_API_URL` stays an env value, and its default becomes `https://api.4thandgoal.app`. `NEXT_PUBLIC_BASE_PATH` goes away, because each client serves at the root.

@@ -38,10 +38,10 @@ timezone = "America/New_York"
 provider = "sleeper"
 league_id = "1402948824305049600"
 
-[packages.league]
+[values.league]
 chart = "1QB1.0PPR4pt"               # the closest chart; no 6-point passing TD chart exists
 
-[packages.analyzer]
+[values.analyzer]
 finder = true
 
 [menu]
@@ -89,7 +89,7 @@ The site name in `copy.toml` is "NorCal Apex 6". NorCal has no logo, so the logo
 | The history | Fetched from Sleeper | Never missing. The first season starts at week 1. |
 | The sizes, the median game, and the positions | The League settings | Never missing. |
 | The player points | The key from the reception points | An unknown value fails the build. |
-| The chart | `chart` in `[packages.league]` | Each chart value is 0. |
+| The chart | `chart` in `[values.league]` | Each chart value is 0. |
 | The returns | The one shared NFL file | No player is due back. |
 | The voice | `facts`, or `prompts/` of the client | The default voice. |
 | The logo | `assets/` of the client | The masthead shows the site name as text. |

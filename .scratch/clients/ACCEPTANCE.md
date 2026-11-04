@@ -59,7 +59,7 @@ Evidence: the build command, a listing of the export routes, and a search of the
 AT-7: The CPC Trade Analyzer has no finder
 App: site
 Stories: 4
-Given: `finder = false` under `[packages.analyzer]` in `clients/cpc/client.toml`.
+Given: `finder = false` under `[values.analyzer]` in `clients/cpc/client.toml`.
 When: the reader opens the Trade Analyzer page of `cpc.4thandgoal.app`.
 Then: the page shows no finder.
 Evidence: screenshots of the Trade Analyzer page at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -123,7 +123,7 @@ Evidence: the WR, his projection in the published file, and the `pts_ppr` value 
 AT-15: The NorCal Trade Analyzer has the finder
 App: site
 Stories: 37
-Given: `finder = true` under `[packages.analyzer]` in `clients/norcal/client.toml`.
+Given: `finder = true` under `[values.analyzer]` in `clients/norcal/client.toml`.
 When: the reader opens the Trade Analyzer page of `norcal.4thandgoal.app`.
 Then: the page shows the finder.
 Evidence: screenshots of the Trade Analyzer page at 375, 768, and 1280 px, in the dark theme.
@@ -163,7 +163,7 @@ Evidence: the command, its output, and its exit code.
 AT-20: An unknown key in `client.toml` fails the check
 App: both
 Stories: 6
-Given: a copy of `clients/cpc/client.toml` with the extra key `finderr = true` under `[packages.analyzer]`.
+Given: a copy of `clients/cpc/client.toml` with the extra key `finderr = true` under `[values.analyzer]`.
 When: the agent runs the check of the client files, in the site build and in the pipeline.
 Then: each check fails with a message that names `finderr` and the file.
 Evidence: each command and its output.
@@ -320,4 +320,4 @@ Out of scope "A client that swaps one part for its own code": AT-33
 
 ## Revisions
 
-None yet.
+- 2026-11-04: AT-7, AT-15, and AT-20 name `[values.analyzer]`, not `[packages.analyzer]`. The old shape is not valid TOML. Brian chose the name.
