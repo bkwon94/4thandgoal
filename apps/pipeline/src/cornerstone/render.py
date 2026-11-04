@@ -11,7 +11,6 @@ from urllib.parse import urlparse
 import httpx
 from pydantic import TypeAdapter
 
-from cornerstone.facts_league import LEADER_POSITIONS
 from cornerstone.managers import managers
 from cornerstone.power_rankings import power_rankings
 from cornerstone.sheet.base import AWARD_TITLES
@@ -118,8 +117,8 @@ def _trades(bundle: Bundle, teams: dict, headshots: dict[str, str]) -> list[dict
 
 def _leaders(bundle: Bundle, teams: dict) -> list[dict]:
     """One board per position, in lineup order, each with its leaders from first to third."""
-    # All five boards show, even when no one started at a position.
-    boards = {position: {"position": position, "rows": []} for position in LEADER_POSITIONS}
+    # A board shows for each position the league starts, even when no one started at it.
+    boards = {position: {"position": position, "rows": []} for position in bundle.data.leader_positions}
     for lead in bundle.data.leaders:
         boards[lead.position]["rows"].append({
             "rank": lead.rank,

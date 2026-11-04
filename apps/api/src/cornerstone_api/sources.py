@@ -23,7 +23,7 @@ from league.live import (
 )
 from league.models import Week
 from league.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from league.provider.sleeper import SLEEPER
+from league.provider.sleeper import fetch_past_week
 from league.snapshot import Snapshot
 
 
@@ -36,9 +36,10 @@ class Sources:
     # The trade window week depends on the time of the request, so the clock is a source too.
     # It has no default, because the clock reads the league timezone. The API entry gives it with the client.
     clock: Callable[[], datetime]
-    fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live
+    # The Sleeper adapter takes the cache dir of the run in its constructor, so the API entry gives the fetch.
+    fetch_sleeper: SleeperFetcher
     fetch_nflverse: Callable[[str], bytes] = http_get
-    fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg
+    fetch_history_week: PastLegFetcher = fetch_past_week
     # One shared partial is safe as the default, because it holds no state that a call changes.
     read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # noqa: RUF009
 

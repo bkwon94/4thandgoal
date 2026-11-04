@@ -27,9 +27,20 @@ from league.trades import cutoff_date
 
 logger = logging.getLogger(__name__)
 
-# The WordPress media API lists every weekly file of the half-PPR redraft chart.
-MEDIA_URL = "https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100"
-FILE_DATE = re.compile(r"1QB0\.5PPR4pt_(\d{8})\.png$")
+# The WordPress media API lists every weekly file of one chart. The chart is the package value `chart` of league,
+# such as 1QB0.5PPR4pt, the half-PPR redraft chart that CPC reads. Each file of the chart is <chart>_<YYYYMMDD>.png.
+MEDIA_URL = "https://peakedinhighskool.com/wp-json/wp/v2/media?search={chart}&_fields=date,source_url&per_page=100"
+
+
+def media_url(chart: str) -> str:
+    """The media API search of every weekly file of the chart `chart`."""
+    return MEDIA_URL.format(chart=chart)
+
+
+def _file_date(chart: str) -> re.Pattern[str]:
+    """The pattern of a file name of the chart `chart`, with the date of the file as its group."""
+    return re.compile(rf"{re.escape(chart)}_(\d{{8}})\.png$")
+
 # WordPress.com turns away a client with no browser User-Agent.
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -78,11 +89,12 @@ def http_get(url: str) -> bytes:
     return response.content
 
 
-def _file_for_week(listing: list[dict], start: date, end: date) -> str | None:
-    """The newest file whose filename date is on or after start and before end."""
+def _file_for_week(listing: list[dict], start: date, end: date, chart: str) -> str | None:
+    """The newest file of the chart whose filename date is on or after start and before end."""
     dated = []
+    file_date = _file_date(chart)
     for item in listing:
-        match = FILE_DATE.search(item["source_url"])
+        match = file_date.search(item["source_url"])
         if match:
             chart_date = datetime.strptime(match.group(1), "%Y%m%d").date()
             if start <= chart_date < end:
@@ -90,8 +102,10 @@ def _file_for_week(listing: list[dict], start: date, end: date) -> str | None:
     return max(dated)[1] if dated else None
 
 
-def fetch_chart(season_start: date, week: int, nfl: Path, fetch: Callable[[str], bytes] = http_get) -> Path | None:
-    """The cached PNG of the week. It never raises: an outage gives the PNG of a recent earlier week or None."""
+def fetch_chart(season_start: date, week: int, nfl: Path, fetch: Callable[[str], bytes] = http_get, *,
+                chart: str) -> Path | None:
+    """The cached PNG of the week of the chart `chart`. It never raises: an outage gives the PNG of a recent earlier
+    week or None."""
     path = chart_image(nfl, week)
     # A PNG that is in the cache wins, so a hand-placed file stays and the build never re-fetches.
     if path.exists():
@@ -99,7 +113,7 @@ def fetch_chart(season_start: date, week: int, nfl: Path, fetch: Callable[[str],
     start = cutoff_date(season_start, week)
     end = cutoff_date(season_start, week + 1)
     try:
-        url = _file_for_week(json.loads(fetch(MEDIA_URL)), start, end)
+        url = _file_for_week(json.loads(fetch(media_url(chart))), start, end, chart)
     except (httpx.HTTPError, ValueError, KeyError, TypeError) as error:
         logger.warning("The chart list failed (%s)", error)
         return _fallback(nfl, week)
@@ -262,7 +276,7 @@ def _read_png(png: Path, read: ChartReader) -> ChartRead | None:
 
 
 def check_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
-                read: ChartReader) -> ChartCheck | None:
+                read: ChartReader, chart: str) -> ChartCheck | None:
     """The chart week, its parsed read, and the guard results, or None when no read exists. It never raises.
 
     After an outage the chart week can be an earlier week than the one asked for.
@@ -271,7 +285,7 @@ def check_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str],
     parsed = _current_saved_read(nfl, week)
     fresh = False
     if parsed is None:
-        png = fetch_chart(season_start, week, nfl, fetch)
+        png = fetch_chart(season_start, week, nfl, fetch, chart=chart)
         if png is None:
             return None
         chart_week = week_from_label(png.stem)
@@ -290,12 +304,12 @@ def check_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str],
 
 
 def load_chart(nfl: Path, season_start: date, week: int, fetch: Callable[[str], bytes] = http_get, *,
-               read: ChartReader) -> tuple[int, ChartRead] | None:
+               read: ChartReader, chart: str) -> tuple[int, ChartRead] | None:
     """The chart week and its parsed read, or None. It never raises, so a build goes on without trade values.
 
     After an outage the chart week can be an earlier week than the one asked for.
     """
-    check = check_chart(nfl, season_start, week, fetch, read=read)
+    check = check_chart(nfl, season_start, week, fetch, read=read, chart=chart)
     if check is None:
         return None
     failed = [name for name, ok in check.guards.items() if not ok]
@@ -310,7 +324,7 @@ def _write_json(path: Path, parsed: ChartRead) -> None:
 
 
 def chart_values(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine],
-                 fetch: Callable[[str], bytes] = http_get, *, read: ChartReader) -> ChartValues | None:
-    """The trade values of the players the chart lists, or None when the week has no good chart."""
-    loaded = load_chart(nfl, season_start, week, fetch, read=read)
+                 fetch: Callable[[str], bytes] = http_get, *, read: ChartReader, chart: str) -> ChartValues | None:
+    """The trade values of the players the chart `chart` lists, or None when the week has no good chart."""
+    loaded = load_chart(nfl, season_start, week, fetch, read=read, chart=chart)
     return match_chart(loaded[1], lines) if loaded else None

@@ -4,12 +4,13 @@ It imports no snapshot at run time, so the snapshot, the adjusters, and the waiv
 """
 from __future__ import annotations
 
+from collections.abc import Collection
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from league.history import player_points
 from league.models import PastWeek
-from league.tunables import LINEUP_WEEKS, POOL_POSITIONS
+from league.tunables import LINEUP_WEEKS
 
 if TYPE_CHECKING:
     # The snapshot module imports this one, so the snapshot is a name for the type checker only.
@@ -152,13 +153,14 @@ def due_back_week(snapshot: Snapshot, player_id: str) -> int | None:
     return week if week is not None and week > snapshot.as_of.completed_through else None
 
 
-def in_pool(entry: dict, rostered: set[str], player_id: str) -> bool:
+def in_pool(entry: dict, rostered: set[str], player_id: str, positions: Collection[str]) -> bool:
     """The waiver pool rule: a player with a team, active, at a pool position, and on no roster in the league.
 
+    The pool positions are `positions`, the positions the League settings start.
     A player with the status Inactive and an out injury status joins too, for stashes only.
     The waiver board and the snapshot's free agents both read this rule, so the two read the same pool.
     """
-    if player_id in rostered or not entry.get("team") or entry.get("position") not in POOL_POSITIONS:
+    if player_id in rostered or not entry.get("team") or entry.get("position") not in positions:
         return False
     # Sleeper gives a defense no status, only the active flag.
     if entry["position"] == "DEF":

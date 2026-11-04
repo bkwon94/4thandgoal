@@ -13,7 +13,7 @@ import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";
 import { Reveal } from "@/components/parts/reveal";
 import { Who } from "@/components/parts/who";
-import { avatarSrc } from "@cpc/league/avatar";
+import { avatarSrc } from "@cpc/league/images";
 import { record } from "@/lib/format/format";
 import { useMotionOff } from "@/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, stagger } from "@/lib/motion";

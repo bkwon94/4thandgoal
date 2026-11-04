@@ -57,9 +57,11 @@ class ChartRecorder:
     def __init__(self, chart):
         self.chart = chart
         self.weeks = []
+        self.charts = []
 
-    def __call__(self, repo, season_start, week, lines):
+    def __call__(self, repo, season_start, week, lines, *, chart):
         self.weeks.append((season_start, week))
+        self.charts.append(chart)
         return self.chart
 
 
@@ -90,6 +92,28 @@ def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, 
     assert [week for _, week in chart.weeks] == [7, 6]
     assert after.as_of.chart_week == chart_week6.week
     assert before.chart == chart_week6
+
+
+def test_the_chart_read_takes_the_chart_of_the_client(live_repo, sleeper, chart_week6):
+    chart = ChartRecorder(chart_week6)
+    live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                  fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,
+                  client=cpc_client(at=live_repo))
+    assert chart.charts == ["1QB0.5PPR4pt"]
+
+
+def test_a_client_with_no_chart_reads_no_chart_and_notes_none_stale(live_repo, sleeper, chart_week6):
+    # The default of the league package is no chart, and then each chart value is 0: the chart gives no side an edge.
+    cpc = cpc_client(at=live_repo)
+    values = cpc.values.model_copy(update={"values": cpc.values.values.model_copy(
+        update={"league": cpc.values.values.league.model_copy(update={"chart": None})})})
+    chart = ChartRecorder(chart_week6)
+    snap = live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,
+                         client=cpc.model_copy(update={"values": values}))
+    assert chart.weeks == []
+    assert snap.chart is None
+    assert "chart" not in snap.stale
 
 
 def test_the_stamps_hold_the_stats_through_week_and_the_rosters_fetch_time(live_repo, sleeper, chart_week6):
@@ -181,7 +205,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
     # Before the first kickoff of week 6 Sleeper has no week 6 line, so both paths read the saved weeks 1 to 5.
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
 
-    def before_kickoff(league_id, players_cache):
+    def before_kickoff(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.stats = []
         return raw, FETCHED
@@ -221,7 +245,7 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_
         live_repo, free_agent_raw_dir, fixture_history_root, chart_week6):
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
 
-    def before_kickoff(league_id, players_cache):
+    def before_kickoff(league_id):
         raw = load_raw(free_agent_raw_dir)
         raw.stats = []
         return raw, FETCHED
@@ -311,7 +335,7 @@ def test_on_the_tuesday_an_empty_stats_raw_week_leaves_a_good_saved_week_untouch
     save_week_to_history(fixture_raw_dir, saved)
     before = (saved / "stats.json").read_bytes()
 
-    def outage(league_id, players_cache):
+    def outage(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.stats = []
         return raw, FETCHED
@@ -435,7 +459,7 @@ def test_no_chart_reader_skips_the_chart_and_notes_no_stale_chart(live_repo, sle
 
 
 def test_a_chart_read_that_raises_gives_no_chart_and_notes_it_stale(live_repo, sleeper):
-    def read_chart(repo, season_start, week, lines):
+    def read_chart(repo, season_start, week, lines, chart):
         # The Anthropic client raises TypeError when the API key is absent.
         raise TypeError("no api key")
 
@@ -512,7 +536,7 @@ def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_car
 @pytest.fixture
 def sleeper_now(fixture_raw_dir):
     """The Sleeper fetch as fetch_live_raw gives it: the raw data with no projections ahead."""
-    def fetch(league_id, players_cache):
+    def fetch(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.projections_ahead = None
         return raw, FETCHED
@@ -523,8 +547,8 @@ class ProjectionsRecorder:
     def __init__(self):
         self.calls = []
 
-    def __call__(self, season, week, last_regular_week):
-        self.calls.append((season, week))
+    def __call__(self, season, week, last_regular_week, points_key):
+        self.calls.append((season, week, points_key))
         return [RawAheadWeek(week=7, projections={"5850": 18.0})]
 
 
@@ -548,10 +572,11 @@ def test_the_live_snapshot_fetches_the_projections_ahead_once_in_the_cache_windo
     assert snapshot().projections_ahead["5850"][7] == 18.0
     clock.now += TEAMS_CACHE_SECONDS - 1
     snapshot()
-    assert fetch.calls == [(2026, 6)]
+    # The fetch asks for the points key of the League settings: CPC scores half a point per reception.
+    assert fetch.calls == [(2026, 6, "pts_half_ppr")]
     clock.now += 1
     snapshot()
-    assert fetch.calls == [(2026, 6), (2026, 6)]
+    assert fetch.calls == [(2026, 6, "pts_half_ppr"), (2026, 6, "pts_half_ppr")]
 
 
 def test_the_rosters_snapshot_fetches_no_projections_ahead(live_repo, sleeper_now):

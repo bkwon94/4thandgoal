@@ -10,6 +10,9 @@ provider = "sleeper"
 league_id = "1386167364424318976"
 
 # Only the values that differ from the defaults in the package README.
+[values.league]
+chart = "1QB0.5PPR4pt"
+
 [values.analyzer]
 finder = false
 

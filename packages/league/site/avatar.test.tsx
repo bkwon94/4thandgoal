@@ -5,7 +5,8 @@
  */
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { AVATAR_FALLBACK, Avatar, avatarSrc } from "./avatar";
+import { Avatar } from "./avatar";
+import { AVATAR_FALLBACK, avatarSrc } from "./images";
 
 function renderAvatar(element: React.ReactElement) {
   const { container } = render(element);

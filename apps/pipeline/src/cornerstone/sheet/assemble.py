@@ -203,6 +203,7 @@ def build_bundle(
         history=c.season_history,
         ranks=c.ranks,
         leaders=c.leaders,
+        leader_positions=c.leader_positions,
         trades=trades if trades is not None else [],
         trade_players={pid: c.lines[pid].name for t in c.trades for pid in t.adds if pid in c.lines},
         drops=c.drops,

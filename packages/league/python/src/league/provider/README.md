@@ -3,9 +3,10 @@
 ## Knows
 
 - The fetches of the league data from the provider, and the raw shape of each file at the HTTP call.
-- The Sleeper adapter, with one raw JSON file per endpoint and a disk cache for the large players file.
+- The Sleeper adapter, with one raw JSON file per endpoint. It takes its cache dir, which holds the large players file, in its constructor.
 - The map of the Sleeper league file into the League settings, with the league file of each season as its cache.
 - Each Sleeper fetch takes an optional `httpx` transport, so a test passes an `httpx.MockTransport`.
+- The projections ahead hold the projection at the points key of the League settings.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports

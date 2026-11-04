@@ -2,11 +2,12 @@
   "name": "@cpc/league",
   "version": "0.1.0",
   "private": true,
-  "description": "The site side of the league package: the player headshot and the team avatar.",
+  "description": "The site side of the league package: the player headshot, the team avatar, and their default images.",
   "type": "module",
   "exports": {
+    "./avatar": "./avatar.tsx",
     "./headshot": "./headshot.tsx",
-    "./avatar": "./avatar.tsx"
+    "./images": "./images.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -31,8 +31,8 @@ from league.provider.raw import RawWeek
 from league.ranks import OUT_STATUSES, in_pool
 from league.slow_sources import SlowSources
 
-# The positions of the pool are POOL_POSITIONS. The Sleeper fetch asks for the same positions. A player at
-# another position, such as a linebacker, is never in the pool.
+# The positions of the pool are the positions of the League settings. A player at another position, such as a
+# linebacker, or a kicker in a league with no K slot, is never in the pool.
 BEST_ADDS = "best_adds"
 TRENDING = "trending"
 DROPS = "drops"
@@ -56,7 +56,8 @@ def waiver_board(
     """
     ahead = projections_ahead(raw)
     rostered = _rostered(raw)
-    pool = {pid: entry for pid, entry in sorted(raw.players.items()) if in_pool(entry, rostered, pid)}
+    pool = {pid: entry for pid, entry in sorted(raw.players.items())
+            if in_pool(entry, rostered, pid, client.settings.positions)}
     ros = {pid: rest_of_season(ahead, pid, week, client) for pid in pool}
     positions = {pid: entry["position"] for pid, entry in pool.items()}
     projection = rank_scores(positions, ros)

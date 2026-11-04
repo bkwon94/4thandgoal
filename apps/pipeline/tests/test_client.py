@@ -32,10 +32,16 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.seasons[2026].provider == "sleeper"
     assert values.seasons[2026].league_id == "1386167364424318976"
     assert values.values.analyzer.finder is False
-    assert values.values.league.chart is None
+    assert values.values.league.chart == "1QB0.5PPR4pt"
     assert values.menu.layout == "hamburger"
     assert [item.package or item.page for item in values.menu.items] == [
         "home", "week", "rankings", "managers", "analyzer"]
+
+
+def test_a_client_with_no_chart_value_has_no_chart(tmp_path):
+    # The default of the league package is no chart, and then each chart value is 0.
+    folder = _copy(tmp_path, '[values.league]\nchart = "1QB0.5PPR4pt"\n', "")
+    assert read_client_values(folder).values.league.chart is None
 
 
 def test_an_unknown_key_fails_with_the_key_and_the_file(tmp_path):

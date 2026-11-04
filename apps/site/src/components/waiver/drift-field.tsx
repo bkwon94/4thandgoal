@@ -7,7 +7,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { shortName } from "@/lib/format/format";
-import { Headshot, sleeperHeadshot } from "@cpc/league/headshot";
+import { Headshot } from "@cpc/league/headshot";
+import { sleeperHeadshot } from "@cpc/league/images";
 import { useMotionOff } from "@/hooks/use-motion-off";
 import { DRIFT_EASE, DURATION, INSTANT, rise, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";

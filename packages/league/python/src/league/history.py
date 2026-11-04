@@ -11,12 +11,13 @@ from pathlib import Path
 from typing import Literal
 
 from league.files import write_bytes_atomic
+from league.league_settings import DEFAULT_POINTS_KEY
 from league.models import History, PastWeek, UsageShare
 from league.numbers import round_half_up
 from league.parse import parse_past_week
 from league.paths import history_raw_dir, history_week_dir
 from league.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawWeek
-from league.provider.sleeper import SLEEPER, read_prev_transactions
+from league.provider.sleeper import fetch_past_week, read_prev_transactions
 from league.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS, TREND_WEEKS
 
 # The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
@@ -45,7 +46,7 @@ def fetch_history(
     through: int,
     root: Path,
     force: bool = False,
-    fetch: PastLegFetcher = SLEEPER.fetch_past_leg,
+    fetch: PastLegFetcher = fetch_past_week,
 ) -> list[int]:
     fetched = []
     for week in range(1, through + 1):
@@ -76,8 +77,11 @@ def _fresh_transactions(root: Path, week: int) -> list[RawTransaction] | None:
     return read_prev_transactions(history_raw_dir(root, week + 1))
 
 
-def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
-    """The saved weeks 1 to `through`, by week. A week that is not saved has no entry."""
+def load_saved_weeks(root: Path, through: int, points_key: str = DEFAULT_POINTS_KEY) -> dict[int, PastWeek]:
+    """The saved weeks 1 to `through`, by week. A week that is not saved has no entry.
+
+    Each week reads its projections and its stat line points at `points_key`, the points key of the League settings.
+    """
     weeks = {}
     for past in range(1, through + 1):
         saved = _read_week(history_week_dir(root, past))
@@ -85,7 +89,7 @@ def load_saved_weeks(root: Path, through: int) -> dict[int, PastWeek]:
             fresh = _fresh_transactions(root, past)
             if fresh is not None:
                 saved.transactions = fresh
-            weeks[past] = parse_past_week(saved, past)
+            weeks[past] = parse_past_week(saved, past, points_key)
     return weeks
 
 
@@ -97,19 +101,19 @@ def saved_through(root: Path, week: int) -> int:
     return last
 
 
-def load_history(root: Path, raw: RawWeek, week: int) -> History:
-    weeks = load_saved_weeks(root, week - 1)
+def load_history(root: Path, raw: RawWeek, week: int, points_key: str = DEFAULT_POINTS_KEY) -> History:
+    weeks = load_saved_weeks(root, week - 1, points_key)
     # The current week comes from the raw data of this run, not from the cache.
-    weeks[week] = parse_past_week(raw, week)
+    weeks[week] = parse_past_week(raw, week, points_key)
     return History(week=week, weeks=weeks)
 
 
 
 def player_points(past: PastWeek, player_id: str) -> float | None:
-    """Points of a player in a past week. The roster points come first, then the stat line."""
+    """Points of a player in a past week. The roster points come first, then the stat line at the points key."""
     if player_id in past.points:
         return past.points[player_id]
-    return (past.stats.get(player_id) or {}).get("pts_half_ppr")
+    return (past.stats.get(player_id) or {}).get(past.points_key)
 
 
 def player_trend(history: History, player_id: str, through: int | None = None) -> int | None:
@@ -162,7 +166,7 @@ def points_per_game(history: History, player_id: str, through: int) -> tuple[flo
     weeks = scored_weeks(history, player_id, through)
     if not weeks:
         return (0.0, 0)
-    # Sleeper leaves out a stat whose value is 0, so a game with no pts_half_ppr scored 0.
+    # Sleeper leaves out a stat whose value is 0, so a game with no value at the points key scored 0.
     # The Decimal start keeps the sum a Decimal for the type checker. The weeks are never empty here.
     total = sum((Decimal(str(player_points(history.weeks[w], player_id) or 0)) for w in weeks), Decimal(0))
     mean = (total / len(weeks)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
@@ -182,7 +186,7 @@ def season_rank(history: History, player_id: str, through: int) -> tuple[int, in
         past = history.weeks[week]
         positions.update(past.positions)
         for pid, line in past.stats.items():
-            totals[pid] = totals.get(pid, 0.0) + line.get("pts_half_ppr", 0.0)
+            totals[pid] = totals.get(pid, 0.0) + line.get(past.points_key, 0.0)
     position = positions.get(player_id)
     if position is None or player_id not in totals:
         return None

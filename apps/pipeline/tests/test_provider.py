@@ -16,7 +16,7 @@ from league.history import fetch_history
 from league.paths import history_root, week_dir
 from league.provider.base import Provider
 from league.provider.raw import RawPastWeek, RawWeek
-from league.provider.sleeper import SLEEPER, SleeperProvider
+from league.provider.sleeper import SleeperProvider
 
 CLIENT = cpc_client()
 
@@ -29,11 +29,11 @@ class RecordedProvider(FixtureProvider):
         self.week_calls: list[tuple[str, int, int, ZoneInfo]] = []
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-            last_regular_week: int, last_season_week: int) -> RawWeek:
+            self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int, points_key: str) -> RawWeek:
         self.week_calls.append((league_id, season, week, tz))
-        return super().fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week,
-                                  last_season_week)
+        return super().fetch_week(league_id, season, week, raw_dir, tz, last_regular_week, last_season_week,
+                                  points_key)
 
 
 def _no_claude(system, user, model):
@@ -41,10 +41,9 @@ def _no_claude(system, user, model):
     raise WriterError("this build makes no Claude call")
 
 
-def test_the_sleeper_provider_satisfies_the_protocol():
-    provider: Provider = SLEEPER
+def test_the_sleeper_provider_satisfies_the_protocol(tmp_path):
+    provider: Provider = SleeperProvider(tmp_path)
     assert isinstance(provider, Provider)
-    assert isinstance(SleeperProvider(), Provider)
 
 
 def test_the_fixture_provider_satisfies_the_protocol():
@@ -54,11 +53,11 @@ def test_the_fixture_provider_satisfies_the_protocol():
 
 def test_an_object_with_four_of_the_five_fetches_is_no_provider():
     class NoPlayers:
-        def fetch_week(self, league_id, season, week, raw_dir, players_cache, tz, last_regular_week,
-                       last_season_week): ...
-        def fetch_live(self, league_id, players_cache): ...
+        def fetch_week(self, league_id, season, week, raw_dir, tz, last_regular_week, last_season_week,
+                       points_key): ...
+        def fetch_live(self, league_id): ...
         def fetch_past_leg(self, league_id, season, week, out_dir): ...
-        def fetch_projections(self, season, week, last_regular_week): ...
+        def fetch_projections(self, season, week, last_regular_week, points_key): ...
 
     assert not isinstance(NoPlayers(), Provider)
 

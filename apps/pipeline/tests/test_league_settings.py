@@ -9,7 +9,7 @@ import pytest
 
 from league.league_settings import LeagueSettings
 from league.provider.raw import RawLeague
-from league.provider.sleeper import SLEEPER, league_settings
+from league.provider.sleeper import SleeperProvider, league_settings
 
 CPC_LEAGUE = Path(__file__).parents[3] / "clients" / "cpc" / "data" / "2026" / "league.json"
 
@@ -87,4 +87,20 @@ def test_an_unknown_flex_slot_fails_with_its_name():
 def test_the_sleeper_adapter_reads_the_cached_league_file_with_no_fetch(tmp_path):
     cache = tmp_path / "league.json"
     cache.write_text(CPC_LEAGUE.read_text(encoding="utf-8"), encoding="utf-8")
-    assert SLEEPER.fetch_settings("1386167364424318976", cache).team_count == 12
+    assert SleeperProvider(tmp_path).fetch_settings("1386167364424318976", cache).team_count == 12
+
+
+def test_the_cpc_roster_slots_start_no_kicker(cpc):
+    # CPC has a DEF slot and no K slot, so K leaves the pool and the leaders.
+    assert cpc.positions == ("QB", "RB", "WR", "TE", "DEF")
+
+
+def test_a_flex_slot_starts_each_position_it_takes():
+    # A league with no TE slot still starts a TE through its FLEX slots.
+    settings = league_settings(_raw(roster_positions=["QB", "RB", "RB", "WR", "WR", "FLEX", "K", "BN"]))
+    assert settings.positions == ("QB", "RB", "WR", "TE", "K")
+
+
+def test_a_league_with_no_def_slot_starts_no_def():
+    settings = league_settings(_raw(roster_positions=["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "BN"]))
+    assert "DEF" not in settings.positions

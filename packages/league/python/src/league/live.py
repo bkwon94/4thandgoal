@@ -10,6 +10,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
+from typing import Protocol
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -31,9 +32,9 @@ from league.nflverse import (
     is_fresh,
 )
 from league.parse import parse_week
-from league.paths import history_root, history_week_dir, nflverse_cache_dir, players_cache, returns_path
+from league.paths import history_root, history_week_dir, nflverse_cache_dir, returns_path
 from league.provider.raw import RawAheadWeek, RawWeek
-from league.provider.sleeper import SLEEPER
+from league.provider.sleeper import fetch_past_week, fetch_projections_ahead
 from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
 from league.trades import default_cutoff
@@ -41,14 +42,20 @@ from league.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
 
-# The Sleeper fetch takes the league id and the players cache file. It gives the raw data and the fetch time.
+# The Sleeper fetch takes the league id. It gives the raw data and the fetch time. The adapter holds its cache dir.
 # It has the shape of Provider.fetch_live. Each fetcher here stays a callable, so a test fakes one fetch, not five.
-SleeperFetcher = Callable[[str, Path], tuple[RawWeek, datetime]]
-# The chart read takes the NFL data folder, the season start, the chart week, and the player lines.
-ChartReader = Callable[[Path, date, int, Iterable[PlayerLine]], ChartValues | None]
-# The projections fetch takes the season, the raw week, and the last regular week. It gives the projections ahead of
-# that week. It has the shape of Provider.fetch_projections.
-ProjectionsFetcher = Callable[[int, int, int], list[RawAheadWeek]]
+SleeperFetcher = Callable[[str], tuple[RawWeek, datetime]]
+class ChartReader(Protocol):
+    """The chart read: the NFL data folder, the season start, the chart week, the player lines, and the chart of the
+    client, the package value `chart` of league."""
+
+    def __call__(self, nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine], *,
+                 chart: str) -> ChartValues | None: ...
+
+
+# The projections fetch takes the season, the raw week, the last regular week, and the points key. It gives the
+# projections ahead of that week. It has the shape of Provider.fetch_projections.
+ProjectionsFetcher = Callable[[int, int, int, str], list[RawAheadWeek]]
 
 # The nflverse sources that the grade reads now, with the plain name the snapshot gives each one.
 # The injuries file, the expected points file, and the weekly player file are here because on Fly no weekly build
@@ -107,14 +114,14 @@ def _refresh(
 
 def _read_chart(
         read_chart: ChartReader, nfl: Path, season_start: date, week: int,
-        lines: Iterable[PlayerLine]) -> tuple[ChartValues | None, bool]:
+        lines: Iterable[PlayerLine], chart: str) -> tuple[ChartValues | None, bool]:
     """The chart of `week`, and True when the read raised.
 
     The Anthropic client raises TypeError with no API key, so any error must not stop the service.
     The log names only the error type, so it never holds the key or the prompt.
     """
     try:
-        return read_chart(nfl, season_start, week, lines), False
+        return read_chart(nfl, season_start, week, lines, chart=chart), False
     except Exception as error:  # noqa: BLE001 - the docstring says why: no error may stop the service
         logger.warning("Chart read for week %d failed (%s), so the week has no chart", week, type(error).__name__)
         return None, True
@@ -134,8 +141,9 @@ class ProjectionsCache:
         self._entries: dict[tuple[int, int], tuple[float, list[RawAheadWeek]]] = {}
 
     def get_or_fetch(
-            self, season: int, week: int, last_regular_week: int, fetch: ProjectionsFetcher) -> list[RawAheadWeek]:
-        """The projections ahead of `week` through `last_regular_week` from memory within the window.
+            self, season: int, week: int, last_regular_week: int, points_key: str,
+            fetch: ProjectionsFetcher) -> list[RawAheadWeek]:
+        """The projections ahead of `week` through `last_regular_week`, at `points_key`, from memory within the window.
 
         Past it, `fetch` runs and the cache keeps its answer. One process serves one league, so the key needs no
         last week.
@@ -144,7 +152,7 @@ class ProjectionsCache:
             entry = self._entries.get((season, week))
             if entry is not None and self.clock() - entry[0] < self.max_age_seconds:
                 return entry[1]
-            ahead = fetch(season, week, last_regular_week)
+            ahead = fetch(season, week, last_regular_week, points_key)
             self._entries[(season, week)] = (self.clock(), ahead)
             return ahead
 
@@ -172,8 +180,9 @@ def fetch_current_week(
 
     The data is of the season that Sleeper is in.
     """
-    raw, fetched = fetch_sleeper(client.current_league_id, players_cache(client.nfl_dir))
-    return raw, fetched.astimezone(client.tz), parse_week(raw, team_count=client.settings.team_count)
+    raw, fetched = fetch_sleeper(client.current_league_id)
+    return raw, fetched.astimezone(client.tz), parse_week(raw, team_count=client.settings.team_count,
+                                                          points_key=client.settings.points_key)
 
 
 def fetch_live_week(
@@ -193,7 +202,7 @@ def refresh_sources(
         season: int, now: datetime, week: Week, *,
         client: Client,
         fetch_nflverse: Callable[[str], bytes] = http_get,
-        fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
+        fetch_history_week: PastLegFetcher = fetch_past_week,
         read_chart: ChartReader | None,
         max_age_seconds: int = CACHE_MAX_AGE_SECONDS) -> RefreshResult:
     """Refresh the nflverse sources older than their max age, the history weeks not yet saved, and the trade chart.
@@ -202,7 +211,7 @@ def refresh_sources(
     A failed fetch logs and leaves the old cache in place.
     The refresh route sets `max_age_seconds` to 0, because a late cron must still fetch a file 23 hours old.
     `read_chart` has no default, because the Claude read sits above this layer. With `read_chart` None, the run
-    skips the chart.
+    skips the chart. A client with no chart skips it too: the default of league is no chart, so each chart value is 0.
     """
     # The trade week is the chart week of the trade window, not Sleeper's display_week.
     # On a Monday night they match. On the Tuesday after the cutoff, Sleeper still shows the week before.
@@ -221,8 +230,9 @@ def refresh_sources(
     # The chart is the one of the trade window, which can be a week ahead of the last scored week.
     # The chart read caches its result per week, so a refresh before the first request saves that request the read.
     chart = None
-    if read_chart is not None:
-        chart, failed = _read_chart(read_chart, client.nfl_dir, week.season_start, trade_week, week_lines(week))
+    if read_chart is not None and client.chart is not None:
+        chart, failed = _read_chart(read_chart, client.nfl_dir, week.season_start, trade_week, week_lines(week),
+                                    client.chart)
         if failed:
             stale.append("chart")
     return RefreshResult(refreshed=refreshed, stale=stale, trade_week=trade_week, chart=chart)
@@ -236,7 +246,8 @@ def _build_live(
     `now` is the clock of the request, so the snapshot can tell the known games in progress.
     """
     root = history_root(client.folder, season)
-    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, trade_week, root, raw.league.scoring_settings)
+    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, trade_week, root, raw.league.scoring_settings,
+                             client.settings.points_key)
     returns = load_returns(returns_path(client.nfl_dir, season))
     out_for_season = load_out_for_season(returns_path(client.nfl_dir, season))
     return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now,
@@ -245,13 +256,15 @@ def _build_live(
 
 def live_snapshot(
         season: int, *, client: Client, now: datetime,
-        fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live,
+        fetch_sleeper: SleeperFetcher,
         fetch_nflverse: Callable[[str], bytes] = http_get,
-        fetch_history_week: PastLegFetcher = SLEEPER.fetch_past_leg,
+        fetch_history_week: PastLegFetcher = fetch_past_week,
         read_chart: ChartReader | None,
-        fetch_projections: ProjectionsFetcher = SLEEPER.fetch_projections,
+        fetch_projections: ProjectionsFetcher = fetch_projections_ahead,
         projections: ProjectionsCache = PROJECTIONS_CACHE) -> Snapshot:
     """The snapshot of the league now. Every fetch is a callable, with the real download as the default.
+
+    `fetch_sleeper` has no default, because the Sleeper adapter takes the cache dir of the run in its constructor.
 
     `read_chart` has no default, because the Claude read sits above this layer. The CLI and the API pass it.
     With `read_chart` None, the snapshot has no chart, and the chart is not noted as stale.
@@ -280,14 +293,15 @@ def live_snapshot(
     # Only the grade reads the projections ahead, so this route fetches them and the rosters route does not.
     # A fetcher that gives them already, as a saved week's raw data does, needs no fetch here.
     if raw.projections_ahead is None:
-        ahead = projections.get_or_fetch(season, week.week, client.settings.last_regular_week, fetch_projections)
+        ahead = projections.get_or_fetch(season, week.week, client.settings.last_regular_week,
+                                         client.settings.points_key, fetch_projections)
         raw = raw.model_copy(update={"projections_ahead": ahead})
     return _build_live(season, raw, fetched, trade_week, result.chart, stale, now, client)
 
 
 def live_rosters_snapshot(
         season: int, *, client: Client, now: datetime,
-        fetch_sleeper: SleeperFetcher = SLEEPER.fetch_live) -> Snapshot:
+        fetch_sleeper: SleeperFetcher) -> Snapshot:
     """The snapshot of the league now for the rosters only. The teams route reads it.
 
     It fetches only Sleeper. It reads the slow sources and the history from the disk as they are. It refreshes

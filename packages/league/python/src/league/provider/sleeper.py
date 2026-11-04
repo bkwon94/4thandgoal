@@ -14,7 +14,6 @@ import httpx
 from league.files import write_bytes_atomic
 from league.league_settings import BENCH_SLOTS, LeagueSettings, bracket_byes, star_ranks
 from league.provider.raw import RawAheadWeek, RawLeague, RawPastWeek, RawState, RawTransaction, RawWeek
-from league.tunables import POOL_POSITIONS
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +46,16 @@ PROJECTIONS_AHEAD_FILE = "projections_ahead.json"
 TRENDING_FILE = "trending.json"
 # The bucket holds 8, and the pool filter and the position filter drop some of the top adds, so 50 leaves room.
 TRENDING_PARAMS = {"lookback_hours": 24, "limit": 50}
+# The players file in the cache dir of the adapter. It is about 5 MB, so the adapter keeps one copy for every league.
+PLAYERS_FILE = "players.json"
+# The positions the adapter asks Sleeper for. The pool of a league keeps only the positions of its roster slots,
+# so a position the league does not start leaves after the fetch, in the League settings.
+FETCH_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
 
 
 def _position_params() -> list[tuple[str, str]]:
     # httpx repeats the key for each tuple, which Sleeper needs for position[].
-    return [("season_type", "regular")] + [("position[]", p) for p in POOL_POSITIONS]
+    return [("season_type", "regular")] + [("position[]", p) for p in FETCH_POSITIONS]
 
 
 def _get(client: httpx.Client, url: str, params=None):
@@ -147,29 +151,30 @@ def _schedule(client: httpx.Client, league: str, week: int, last_regular_week: i
     ]
 
 
-def _projections_ahead(client: httpx.Client, season: int, week: int, last: int) -> list[dict]:
-    """One entry per week from week + 1 to `last`, with the half-PPR projection of each player."""
+def _projections_ahead(client: httpx.Client, season: int, week: int, last: int, points_key: str) -> list[dict]:
+    """One entry per week from week + 1 to `last`, with the projection of each player at the points key of the league,
+    such as pts_half_ppr."""
     # Every player stays, so the waiver board can rank the waiver pool.
-    # A player with no half-PPR projection has no entry.
+    # A player with no projection at the points key has no entry.
     return [
         {"week": w, "projections": {
-            item["player_id"]: item["stats"]["pts_half_ppr"]
+            item["player_id"]: item["stats"][points_key]
             for item in _get_or_empty(client, f"{UNOFFICIAL_URL}/projections/nfl/{season}/{w}", _position_params())
-            if (item.get("stats") or {}).get("pts_half_ppr") is not None
+            if (item.get("stats") or {}).get(points_key) is not None
         }}
         for w in range(week + 1, last + 1)
     ]
 
 
 def fetch_projections_ahead(
-        season: int, week: int, last_regular_week: int, transport: httpx.BaseTransport | None = None,
+        season: int, week: int, last_regular_week: int, points_key: str, transport: httpx.BaseTransport | None = None,
 ) -> list[RawAheadWeek]:
-    """The projections ahead of `week` through `last_regular_week`, in the entries that fetch_week saves.
+    """The projections ahead of `week` through `last_regular_week` at `points_key`, in the entries that fetch_week saves.
 
     The trade grade reads no later week, so the live grade skips those calls.
     """
     with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
-        ahead = _projections_ahead(client, season, week, last_regular_week)
+        ahead = _projections_ahead(client, season, week, last_regular_week, points_key)
     return [RawAheadWeek.model_validate(entry) for entry in ahead]
 
 
@@ -207,11 +212,12 @@ def _league_raw(
 
 def fetch_week(
         league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-        last_regular_week: int, last_season_week: int, transport: httpx.BaseTransport | None = None) -> None:
+        last_regular_week: int, last_season_week: int, points_key: str,
+        transport: httpx.BaseTransport | None = None) -> None:
     """Fetch the raw files of `week` into `raw_dir`. The saved fetch time is in the league timezone `tz`.
 
     The schedule runs to `last_regular_week`. The projections ahead run to `last_season_week`, because the waiver
-    board reads the fantasy playoffs too.
+    board reads the fantasy playoffs too. They hold the projection at `points_key` of the League settings.
     """
     league = f"{OFFICIAL_URL}/league/{league_id}"
     with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
@@ -222,7 +228,7 @@ def fetch_week(
         fetched = datetime.now(tz)
         data = _league_raw(client, league, season, week, players_cache, {"transactions": transactions})
         schedule = _schedule(client, league, week, last_regular_week)
-        projections_ahead = _projections_ahead(client, season, week, last_season_week)
+        projections_ahead = _projections_ahead(client, season, week, last_season_week, points_key)
         trending = _trending(client)
     raw_dir.mkdir(parents=True, exist_ok=True)
     for name in RAW_FILES:
@@ -329,36 +335,36 @@ class SleeperProvider:
 
     The class gives one object that satisfies Provider, so a caller can swap the provider for another one.
     The module functions stay, because the tests and the CLI call them with the Sleeper arguments.
+    The cache dir holds the players file, which every league of the repo shares. The entry of a run builds the adapter
+    with the shared NFL cache dir, so no fetch takes a cache argument.
     The transport goes to each httpx client. None is the real network, and a test passes an httpx.MockTransport.
     """
 
-    def __init__(self, transport: httpx.BaseTransport | None = None):
+    def __init__(self, cache_dir: Path, transport: httpx.BaseTransport | None = None):
+        self.players_cache = cache_dir / PLAYERS_FILE
         self.transport = transport
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-            last_regular_week: int, last_season_week: int) -> RawWeek:
-        fetch_week(league_id, season, week, raw_dir, players_cache, tz, last_regular_week, last_season_week,
-                   self.transport)
+            self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int, points_key: str) -> RawWeek:
+        fetch_week(league_id, season, week, raw_dir, self.players_cache, tz, last_regular_week, last_season_week,
+                   points_key, self.transport)
         # The build reads the week from the saved files, so the model it gets is the one a rebuild loads.
         return load_raw(raw_dir)
 
     def fetch_settings(self, league_id: str, cache: Path) -> LeagueSettings:
         return fetch_settings(league_id, cache, self.transport)
 
-    def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
-        return fetch_live_raw(league_id, players_cache, self.transport)
+    def fetch_live(self, league_id: str) -> tuple[RawWeek, datetime]:
+        return fetch_live_raw(league_id, self.players_cache, self.transport)
 
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
         return fetch_past_week(league_id, season, week, out_dir, self.transport)
 
     # The protocol needs this fetch. No pipeline caller reads it yet.
-    def fetch_players(self, players_cache: Path) -> dict[str, dict]:
-        return fetch_players(players_cache, self.transport)
+    def fetch_players(self) -> dict[str, dict]:
+        return fetch_players(self.players_cache, self.transport)
 
-    def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
-        return fetch_projections_ahead(season, week, last_regular_week, self.transport)
-
-
-# The one Sleeper provider. Its transport is the real network, and it holds no other state, so every caller shares it.
-SLEEPER = SleeperProvider()
+    def fetch_projections(
+            self, season: int, week: int, last_regular_week: int, points_key: str) -> list[RawAheadWeek]:
+        return fetch_projections_ahead(season, week, last_regular_week, points_key, self.transport)

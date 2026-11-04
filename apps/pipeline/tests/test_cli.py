@@ -57,7 +57,7 @@ def test_build_with_week_reads_saved_raw(tmp_path, fixture_raw_dir, monkeypatch,
     monkeypatch.chdir(tmp_path)
 
     code = cli.main(["build", "--client", "cpc", "--week", "7", "--season", "2026"], writer=fake_writer,
-                    provider=SleeperProvider(transport=httpx.MockTransport(no_fetch)))
+                    provider=SleeperProvider(tmp_path / "cache", transport=httpx.MockTransport(no_fetch)))
 
     assert code == 2
     assert "not final" in capsys.readouterr().out
@@ -440,10 +440,10 @@ def _live_analyze(tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflve
     real = live.live_snapshot
     monkeypatch.setattr(cli, "live_snapshot", lambda season, **kw: real(
         season, client=kw["client"], now=datetime(2026, 10, 19, 12, 0, tzinfo=kw["client"].tz),
-        fetch_sleeper=lambda league_id, cache: (load_raw(fixture_raw_dir), fetched),
+        fetch_sleeper=lambda league_id: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=lambda url: pytest.fail(f"network call to {url}"),
         fetch_history_week=fetch_history_week,
-        read_chart=lambda nfl, start, week, lines: chart_week6))
+        read_chart=lambda nfl, start, week, lines, **_: chart_week6))
     return cli.main(["analyze", "--client", "cpc", "--season", "2026", "--side", "4:7569", "--side", "12:10236,8146",
                      "--asker", "4", "--no-claude"])
 

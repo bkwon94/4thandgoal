@@ -24,8 +24,8 @@ from cornerstone_api.ratelimit import GradeLimiter, RateLimiter, client_address
 from cornerstone_api.settings import Settings
 from cornerstone_api.sources import Sources
 from league.client import Client, load_client, read_client_values
-from league.paths import client_dir
-from league.provider.sleeper import SLEEPER
+from league.paths import client_dir, provider_cache_dir
+from league.provider.sleeper import SleeperProvider, fetch_settings
 from league.tunables import TEAMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,9 @@ def create_app(
     """
     app = FastAPI(title="Cornerstone API")
     app.state.settings = settings
-    app.state.sources = sources or Sources(client, clock=lambda: datetime.now(client.tz))
+    # The Sleeper adapter takes the shared NFL cache dir of the client, which holds the players file.
+    app.state.sources = sources or Sources(client, clock=lambda: datetime.now(client.tz),
+                                           fetch_sleeper=SleeperProvider(provider_cache_dir(client.nfl_dir)).fetch_live)
     app.state.cache = ResultCache(settings.result_cache_dir)
     app.state.teams_cache = TeamsCache(TEAMS_CACHE_SECONDS)
     app.state.limiter = RateLimiter(RATE_LIMIT_PER_MINUTE)
@@ -142,5 +144,5 @@ def app_from_env() -> FastAPI:
     # The one client of the process, with the League settings of its latest season. The passphrase stays in the
     # settings, because it is a secret and not the league.
     season = read_client_values(client_dir(settings.repo, CLIENT_SLUG)).latest_season
-    client = load_client(settings.repo, CLIENT_SLUG, season, SLEEPER.fetch_settings)
+    client = load_client(settings.repo, CLIENT_SLUG, season, fetch_settings)
     return create_app(settings, client, refresh_on_start=True)

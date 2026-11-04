@@ -10,6 +10,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from league.league_settings import DEFAULT_POINTS_KEY
 from league.models import ExpectedPoints
 from league.nflverse import (
     DEPTH_CHARTS_URL,
@@ -67,13 +68,15 @@ def _read(name: str, read, *args):
 
 
 def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Path,
-                      scoring: dict[str, float] | None = None) -> SlowSources:
+                      scoring: dict[str, float] | None = None,
+                      points_key: str = DEFAULT_POINTS_KEY) -> SlowSources:
     """The slow sources from the cache and the history, with no network call.
 
     The nflverse fetch fills the cache. The points allowed count the weeks before `week`,
     because the stat lines of the current week are not final. The injury report must hold the week
     before `week` too, so a file that ends earlier counts as missing.
     `scoring` is the league scoring. The expected points rescale to it, so without it they are None.
+    The points allowed read the stat lines at `points_key`, the points key of the League settings.
     The WOPR comes from the nflverse weekly player file. It ends at `week` when the file has it, else at the week
     before.
     The kickoffs are of the games of `week`, so the snapshot can tell a game in progress from a final one.
@@ -86,7 +89,7 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
         "schedules": _read("schedules", read_schedules, schedules_path, season) if schedules_path.exists() else None,
         "depth_charts": _read("depth_charts", read_depth_charts, depth_path) if depth_path.exists() else None,
         "id_map": _read("id_map", read_id_map, ffids_path) if ffids_path.exists() else None,
-        "points_allowed": _read("points_allowed", points_allowed, history_root, week - 1),
+        "points_allowed": _read("points_allowed", points_allowed, history_root, week - 1, points_key),
         "injuries": _read("injuries", read_injuries, injuries_path, week - 1) if injuries_path.exists() else None,
     }
     # The id map joins the gsis ids of the nflverse files to Sleeper ids, as it does for the depth chart.

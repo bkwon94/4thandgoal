@@ -13,12 +13,19 @@ RANKED_POSITIONS = ("QB", "RB", "WR", "TE")
 # counts half a RB slot and half a WR slot.
 FLEX_SLOT = "FLEX"
 FLEX_SHARE = {"RB": 0.5, "WR": 0.5}
+# The positions a FLEX slot takes. A league that starts a TE only through a FLEX slot still starts a TE.
+FLEX_POSITIONS = ("RB", "WR", "TE")
+# Every position the sizes know, in lineup order. The position lists of a league keep this order.
+LINEUP_POSITIONS = (*RANKED_POSITIONS, "K", "DEF")
 # The slots that are no starter slot.
 BENCH_SLOTS = frozenset({"BN", "IR", "TAXI"})
 # The starter slots the sizes know. Another slot, such as SUPER_FLEX, stops the build with a plain message.
 KNOWN_SLOTS = frozenset({*RANKED_POSITIONS, FLEX_SLOT, "K", "DEF"})
 # The reception points of each points key of a projection. Each key uses 4-point passing touchdowns.
 POINTS_KEYS = {0.0: "pts_std", 0.5: "pts_half_ppr", 1.0: "pts_ppr"}
+# The points key of a parse with no League settings, such as a test of the CPC fixtures, which score half PPR.
+# Each build and each live fetch passes the points key of its League settings.
+DEFAULT_POINTS_KEY = POINTS_KEYS[0.5]
 
 
 def playoff_rounds(playoff_spots: int) -> int:
@@ -76,6 +83,17 @@ class LeagueSettings(BaseModel):
     def points_key(self) -> str:
         """The projection key of the reception points: pts_std, pts_half_ppr, or pts_ppr."""
         return POINTS_KEYS[self.reception_points]
+
+    @property
+    def positions(self) -> tuple[str, ...]:
+        """The positions the league starts, in lineup order: each position with a slot, through a FLEX slot too.
+
+        They set the waiver pool and the leader boards, so a position the league never starts, such as K in CPC,
+        is out of both.
+        """
+        slots = set(self.roster_slots)
+        started = slots | (set(FLEX_POSITIONS) if FLEX_SLOT in slots else set())
+        return tuple(position for position in LINEUP_POSITIONS if position in started)
 
     def _slots(self, position: str) -> float:
         """The starter slots of `position`, with its share of each FLEX slot."""

@@ -5,7 +5,8 @@
 import type { ReactNode } from "react";
 import { num } from "@/lib/format/format";
 import type { ManagerPlayer } from "@/lib/manager-types";
-import { Headshot, sleeperHeadshot } from "@cpc/league/headshot";
+import { Headshot } from "@cpc/league/headshot";
+import { sleeperHeadshot } from "@cpc/league/images";
 
 /* The quiet line of a row. A null position adds no part, so the line starts at the next part. */
 export function playerMetaLine(player: ManagerPlayer, ...parts: string[]): string {

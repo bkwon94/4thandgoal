@@ -5,7 +5,8 @@
  */
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { HEADSHOT_FALLBACK, Headshot, headshotSrc, sleeperHeadshot } from "./headshot";
+import { Headshot } from "./headshot";
+import { HEADSHOT_FALLBACK, headshotSrc, sleeperHeadshot } from "./images";
 
 function renderHeadshot(element: React.ReactElement) {
   const { container } = render(element);

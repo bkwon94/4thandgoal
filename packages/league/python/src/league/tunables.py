@@ -29,9 +29,6 @@ TEAMS_CACHE_SECONDS = 300
 # The team trend is the mean of this many latest weeks. The form component of the power score reads the same window.
 TREND_WEEKS = 3
 
-# The positions of the waiver pool. Here and not in the engine, so the Sleeper client imports it with no cycle.
-POOL_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DEF")
-
 # The count of falls in a row of a rostered player's snap share that make him a drop candidate. One or two
 # falls can be a game script or a blowout, and three is a role that shrinks.
 DROP_WEEKS = 3

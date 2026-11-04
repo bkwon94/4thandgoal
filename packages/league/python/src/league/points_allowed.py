@@ -8,6 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from league.league_settings import DEFAULT_POINTS_KEY
 from league.nflverse import SKILL_POSITIONS
 from league.paths import history_week_dir
 
@@ -27,8 +28,9 @@ def _stat_lines(root: Path, week: int) -> list[dict] | None:
     return json.loads(path.read_text(encoding="utf-8")) or None
 
 
-def points_allowed(root: Path, through: int) -> dict[str, dict[str, PositionAllowed]] | None:
-    """The half-PPR points per game each defense gave up at each position in weeks 1 to `through`.
+def points_allowed(
+        root: Path, through: int, points_key: str = DEFAULT_POINTS_KEY) -> dict[str, dict[str, PositionAllowed]] | None:
+    """The points per game at `points_key` each defense gave up at each position in weeks 1 to `through`.
 
     The key is the Sleeper team code of the defense. The raw stat line names the opponent of the player,
     so the points and the games need no schedule. A week with no line for a defense is its bye.
@@ -47,7 +49,7 @@ def points_allowed(root: Path, through: int) -> dict[str, dict[str, PositionAllo
                 continue
             weeks_played.setdefault(line["opponent"], set()).add(week)
             by_position = totals.setdefault(line["opponent"], {p: Decimal(0) for p in SKILL_POSITIONS})
-            by_position[position] += Decimal(str(line["stats"].get("pts_half_ppr", 0)))
+            by_position[position] += Decimal(str(line["stats"].get(points_key, 0)))
     per_game = {team: {p: by_position[p] / len(weeks_played[team]) for p in SKILL_POSITIONS}
                 for team, by_position in totals.items()}
     allowed: dict[str, dict[str, PositionAllowed]] = {team: {} for team in totals}

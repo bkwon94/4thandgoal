@@ -524,14 +524,11 @@ def position_ranks(week: Week) -> list[PositionRank]:
     return out
 
 
-LEADER_POSITIONS = ("QB", "RB", "WR", "TE", "DEF")
-
-
-def position_leaders(week: Week) -> list[PositionLeader]:
-    """The top three started lines at each position, in lineup order."""
+def position_leaders(week: Week, positions: tuple[str, ...]) -> list[PositionLeader]:
+    """The top three started lines at each of `positions`, the positions of the League settings, in lineup order."""
     groups = _started_by_position(week)
     out = []
-    for position in LEADER_POSITIONS:
+    for position in positions:
         ordered = groups[position]
         out.extend(
             PositionLeader(line=line, position=position, rank=i + 1, of=len(ordered), roster_id=rid)

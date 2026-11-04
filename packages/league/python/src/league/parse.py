@@ -6,6 +6,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 from datetime import UTC, date, datetime
 
+from league.league_settings import DEFAULT_POINTS_KEY
 from league.models import (
     DraftPick,
     Drop,
@@ -59,9 +60,9 @@ def _teams(raw: RawWeek) -> dict[int, Team]:
     return teams
 
 
-def _projection_map(raw: RawWeek) -> dict[str, float | None]:
+def _projection_map(raw: RawWeek, points_key: str) -> dict[str, float | None]:
     return {
-        item.player_id: item.stats.get("pts_half_ppr")
+        item.player_id: item.stats.get(points_key)
         for item in raw.projections
     }
 
@@ -109,9 +110,9 @@ def _side(entry: RawMatchup, roster_positions, projections, players) -> Side:
     return Side(roster_id=entry.roster_id, points=entry.points, lines=lines)
 
 
-def _matchups(raw: RawWeek) -> list[Matchup]:
+def _matchups(raw: RawWeek, points_key: str) -> list[Matchup]:
     roster_positions = raw.league.roster_positions
-    projections = _projection_map(raw)
+    projections = _projection_map(raw, points_key)
     groups = defaultdict(list)
     for entry in raw.matchups:
         if entry.matchup_id is not None:
@@ -232,12 +233,13 @@ def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
 
 
 def parse_week(
-    raw: RawWeek, week: int | None = None, team_count: int | None = None,
+    raw: RawWeek, week: int | None = None, team_count: int | None = None, points_key: str = DEFAULT_POINTS_KEY,
 ) -> Week:
     """The week of the raw data.
 
     The weekly build and the live fetch pass `team_count` from the League settings. The settings set the ranks and
     the sizes that depend on the team count, so a league file with another roster count stops the parse.
+    They pass `points_key` too, so the projection of each line is the one of the league scoring.
     """
     if team_count is not None and len(raw.rosters) != team_count:
         raise ValueError(
@@ -250,7 +252,7 @@ def parse_week(
         # state.week is the current NFL week, not the scored week, so use display_week by default.
         week=week if week is not None else state.display_week,
         teams=_teams(raw),
-        matchups=_matchups(raw),
+        matchups=_matchups(raw, points_key),
         next_matchups=_next_matchups(raw),
         schedule=_schedule(raw),
         projections_ahead=_projections_ahead(raw),
@@ -270,7 +272,8 @@ def parse_week(
     )
 
 
-def parse_past_week(raw: RawPastWeek, week: int) -> PastWeek:
+def parse_past_week(raw: RawPastWeek, week: int, points_key: str = DEFAULT_POINTS_KEY) -> PastWeek:
+    """The past week of the raw files. The projections and the stat line points read `points_key`."""
     entries = raw.matchups
     # The caller passes stats lines here. Only a failed live fetch gives None, and the snapshot replaces it first.
     stats = raw.stats or []
@@ -290,10 +293,11 @@ def parse_past_week(raw: RawPastWeek, week: int) -> PastWeek:
         pairs=[tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2],
         points=points,
         projections={
-            item.player_id: item.stats["pts_half_ppr"]
+            item.player_id: item.stats[points_key]
             for item in raw.projections
-            if item.stats.get("pts_half_ppr") is not None
+            if item.stats.get(points_key) is not None
         },
+        points_key=points_key,
         stats={item.player_id: item.stats for item in stats},
         moves=parse_moves(raw.transactions),
         trades=parse_trades(raw.transactions),

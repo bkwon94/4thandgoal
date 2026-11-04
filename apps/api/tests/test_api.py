@@ -89,10 +89,10 @@ def _here(sources: Sources, settings: Settings) -> Sources:
 @pytest.fixture
 def sources(fixture_raw_dir, chart_week6):
     return Sources(
-        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
+        fetch_sleeper=lambda league_id: (load_raw(fixture_raw_dir), FETCHED),
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart_week6,
+        read_chart=lambda repo, season_start, week, lines, **_: chart_week6,
         clock=lambda: NOW, client=CLIENT,
     )
 
@@ -196,7 +196,7 @@ class RaisingChart:
     def __init__(self):
         self.calls = 0
 
-    def __call__(self, repo, season_start, week, lines):
+    def __call__(self, repo, season_start, week, lines, chart):
         self.calls += 1
         raise TypeError("no api key")
 
@@ -216,7 +216,7 @@ class CountingSleeper:
         self.fixture_raw_dir = fixture_raw_dir
         self.calls = 0
 
-    def __call__(self, league_id, players_cache):
+    def __call__(self, league_id):
         self.calls += 1
         return load_raw(self.fixture_raw_dir), FETCHED
 
@@ -488,9 +488,9 @@ def test_a_player_not_on_the_giving_roster_is_422_with_the_names_and_the_id(sett
 
 def _no_chart_sources(fixture_raw_dir):
     return Sources(
-        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), FETCHED),
+        fetch_sleeper=lambda league_id: (load_raw(fixture_raw_dir), FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: None, clock=lambda: NOW, client=CLIENT)
+        read_chart=lambda repo, season_start, week, lines, **_: None, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fixture_raw_dir):
@@ -876,9 +876,9 @@ def test_the_real_analyzer_with_a_fake_claude_gives_the_document_with_its_text(s
 def _at(fixture_raw_dir, chart, fetched):
     """Sources whose Sleeper fetch reports the time `fetched`."""
     return Sources(
-        fetch_sleeper=lambda league_id, players_cache: (load_raw(fixture_raw_dir), fetched),
+        fetch_sleeper=lambda league_id: (load_raw(fixture_raw_dir), fetched),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, client=CLIENT)
+        read_chart=lambda repo, season_start, week, lines, **_: chart, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_repeat_is_a_cache_hit_with_one_claude_call(settings, fixture_raw_dir, chart_week6):
@@ -917,9 +917,9 @@ def _without_a_bench_player(fixture_raw_dir, chart, roster_id):
     roster = next(r for r in raw.rosters if r.roster_id == roster_id)
     roster.players = (roster.players or [])[:-1]
     return Sources(
-        fetch_sleeper=lambda league_id, players_cache: (raw, FETCHED),
+        fetch_sleeper=lambda league_id: (raw, FETCHED),
         fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines: chart, clock=lambda: NOW, client=CLIENT)
+        read_chart=lambda repo, season_start, week, lines, **_: chart, clock=lambda: NOW, client=CLIENT)
 
 
 def test_a_changed_roster_or_another_asker_misses_the_cache(settings, fixture_raw_dir, chart_week6):
@@ -1284,14 +1284,14 @@ def test_a_failed_refresh_fetch_is_stale_and_keeps_the_old_cache(settings, sourc
 
 
 def test_a_refresh_with_no_chart_for_the_week_lists_the_chart_as_stale(settings, sources, fixture_nflverse_dir):
-    no_chart = dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: None,
+    no_chart = dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines, **_: None,
                                    fetch_nflverse=_fixture_fetch(fixture_nflverse_dir, []))
     response = _client(settings, no_chart).post("/refresh", params={"season": 2026}, headers=HEADERS)
     assert response.json() == {"refreshed": ALL_SOURCES, "stale": ["chart"]}
 
 
 def test_a_refresh_with_a_chart_read_that_raises_lists_the_chart_once(settings, sources, fixture_nflverse_dir):
-    def read_chart(repo, season_start, week, lines):
+    def read_chart(repo, season_start, week, lines, chart):
         raise TypeError("no api key")
 
     raising = dataclasses.replace(sources, read_chart=read_chart,
@@ -1319,7 +1319,7 @@ def find_sources(settings, sources, chart_week6, fixture_raw_dir):
 
     The fetch has no week 6 stat lines, as before the first week 6 game, so the trades match the find fixture.
     """
-    def before_kickoff(league_id, players_cache):
+    def before_kickoff(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.stats = []
         return raw, FETCHED
@@ -1330,7 +1330,7 @@ def find_sources(settings, sources, chart_week6, fixture_raw_dir):
             for roster_id in (2, 3) for pid in snapshot.rosters[roster_id]
             if snapshot.players[pid].position in CHART_POSITIONS and pid not in chart_week6.values}
     chart = chart_week6.model_copy(update={"values": {**chart_week6.values, **rows}})
-    return dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines: chart)
+    return dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines, **_: chart)
 
 
 class FakeFinderClaude:

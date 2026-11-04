@@ -7,7 +7,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { Team } from "@/lib/api";
-import { Avatar, AVATAR_FALLBACK } from "@cpc/league/avatar";
+import { Avatar } from "@cpc/league/avatar";
+import { AVATAR_FALLBACK } from "@cpc/league/images";
 import { useMotionOff } from "@/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT } from "@/lib/motion";
 import { cn } from "@/lib/utils";

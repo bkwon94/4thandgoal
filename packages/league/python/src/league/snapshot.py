@@ -262,7 +262,9 @@ def _snapshot_player(pid: str, entry: dict) -> SnapshotPlayer:
     )
 
 
-def _free_agents(entries: dict[str, dict], rosters: dict[int, list[str]]) -> dict[str, list[SnapshotPlayer]]:
+def _free_agents(
+        entries: dict[str, dict], rosters: dict[int, list[str]], positions: tuple[str, ...],
+) -> dict[str, list[SnapshotPlayer]]:
     """The free agents at each of QB, RB, WR, and TE in player id order, by the waiver pool's rule.
 
     The saved path and the live path both build here from the raw players file, so a Saturday grade and the Tuesday
@@ -271,7 +273,7 @@ def _free_agents(entries: dict[str, dict], rosters: dict[int, list[str]]) -> dic
     rostered = {pid for pids in rosters.values() for pid in pids}
     free_agents: dict[str, list[SnapshotPlayer]] = {position: [] for position in RANKED_POSITIONS}
     for pid, entry in sorted(entries.items()):
-        if entry.get("position") in free_agents and in_pool(entry, rostered, pid):
+        if entry.get("position") in free_agents and in_pool(entry, rostered, pid, positions):
             free_agents[entry["position"]].append(_snapshot_player(pid, entry))
     return free_agents
 
@@ -298,8 +300,9 @@ def load_out_for_season(path: Path) -> set[str]:
     return {pid for pid, week in json.loads(path.read_text(encoding="utf-8")).items() if week == SEASON_MARK}
 
 
-def _projections_by_player(raw: RawWeek, week: int) -> dict[str, dict[int, float]] | None:
-    """The half-PPR projections of the raw week and the weeks ahead by player id and week.
+def _projections_by_player(raw: RawWeek, week: int, points_key: str) -> dict[str, dict[int, float]] | None:
+    """The projections at `points_key` of the raw week, and the weeks ahead, by player id and week. The fetch saved
+    the weeks ahead at the same key.
 
     It is None when the raw data has no projections ahead.
     """
@@ -307,7 +310,7 @@ def _projections_by_player(raw: RawWeek, week: int) -> dict[str, dict[int, float
         return None
     by_player: dict[str, dict[int, float]] = {}
     for item in raw.projections:
-        points = item.stats.get("pts_half_ppr")
+        points = item.stats.get(points_key)
         if points is not None:
             by_player.setdefault(item.player_id, {})[week] = float(points)
     for entry in raw.projections_ahead:
@@ -360,7 +363,7 @@ def build_snapshot(
     # A failed live stats fetch gives None. The parses then read no lines.
     stats_lines = raw.stats
     raw = raw.model_copy(update={"stats": stats_lines or []})
-    week = parse_week(raw)
+    week = parse_week(raw, points_key=client.settings.points_key)
     stale = list(stale or [])
     # GLOSSARY.md, "Before the trade": weeks 1 to N-1, for a proposed trade in week N. The standings end there.
     # Player stats end at the known games: weeks 1 to N-1, plus the week N games with a stat line.
@@ -368,11 +371,11 @@ def build_snapshot(
     graded_now = trade_week is not None
     trade_week = week.week if trade_week is None else trade_week
     through = trade_week - 1
-    weeks = load_saved_weeks(history_root, through)
+    weeks = load_saved_weeks(history_root, through, client.settings.points_key)
     # On the Tuesday after the cutoff, Sleeper still shows week N-1 and its games are final.
     # The raw data of this run is then the freshest copy of week N-1.
     if week.week == through:
-        weeks[through] = parse_past_week(raw, through)
+        weeks[through] = parse_past_week(raw, through, client.settings.points_key)
     # Sleeper may not have scored week N-1 yet, or its fetch failed. The stamp then shows the last week held.
     completed_through = through if through in weeks else max(weeks, default=0)
     if completed_through < through and "history" not in stale:
@@ -396,7 +399,7 @@ def build_snapshot(
             known_games = KnownGames(week=trade_week, games=games, in_progress=len(set(in_progress.values())),
                                      pending=_pending(stats_lines, trade_week, slow.wopr if slow else None))
             if games > 0:
-                weeks[trade_week] = parse_past_week(raw, trade_week)
+                weeks[trade_week] = parse_past_week(raw, trade_week, client.settings.points_key)
                 stats_through = trade_week
     history = History(week=stats_through, weeks=weeks)
     rosters = {r.roster_id: list(r.players or []) for r in raw.rosters}
@@ -437,9 +440,9 @@ def build_snapshot(
         wopr=slow.wopr if slow else None,
         returns=returns or {},
         out_for_season=out_for_season or set(),
-        projections_ahead=_projections_by_player(raw, week.week),
+        projections_ahead=_projections_by_player(raw, week.week, client.settings.points_key),
         missing=missing,
         stale=stale,
         in_progress_teams=set(in_progress),
-        free_agents=_free_agents(entries, rosters),
+        free_agents=_free_agents(entries, rosters, client.settings.positions),
     )

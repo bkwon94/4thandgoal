@@ -208,6 +208,11 @@ class Client(BaseModel):
         return ZoneInfo(self.values.timezone)
 
     @property
+    def chart(self) -> str | None:
+        """The trade value chart of the client, the package value `chart` of league. None is no chart."""
+        return self.values.values.league.chart
+
+    @property
     def voice_dir(self) -> Path:
         """The prompts folder of the client. Its tone.md and vocabulary.md replace the default voice."""
         return self.folder / "prompts"

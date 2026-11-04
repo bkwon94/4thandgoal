@@ -60,7 +60,7 @@ from league.paths import (
     history_dir,
     history_root,
     nflverse_cache_dir,
-    players_cache,
+    provider_cache_dir,
     raw_dir,
     returns_path,
     week_dir,
@@ -70,7 +70,7 @@ from league.provider.base import Provider
 from league.provider.raw import RawState, RawWeek
 from league.provider.sleeper import (
     PROJECTIONS_AHEAD_FILE,
-    SLEEPER,
+    SleeperProvider,
     fetch_news,
     fetch_state,
     load_raw,
@@ -133,10 +133,10 @@ def _save_blurbs(directory: Path, blurbs: dict[str, Blurb], verify: VerifyFile) 
     (directory / "verify.json").write_bytes(verify.model_dump_json(indent=2).encode("utf-8"))
 
 
-def _load_history_or_none(root: Path, raw: RawWeek, week: int) -> History | None:
+def _load_history_or_none(root: Path, raw: RawWeek, week: int, points_key: str) -> History | None:
     # A bad past week never stops a build. The facts that need the history drop out.
     try:
-        return load_history(root, raw, week)
+        return load_history(root, raw, week, points_key)
     except (OSError, ValueError, KeyError) as err:
         log.warning("history unreadable, build goes on without it: %s", err)
         return None
@@ -284,13 +284,13 @@ def make_bundle(
     The build passes the `raw` week it loaded, so the week loads once. None loads it here."""
     if raw is None:
         raw = load_raw(raw_dir(client.folder, season, week))
-    parsed = parse_week(raw, week=week, team_count=client.settings.team_count)
+    parsed = parse_week(raw, week=week, team_count=client.settings.team_count, points_key=client.settings.points_key)
     # The gate runs before any Claude call, so a week that is not final costs nothing.
     message = check_week_is_buildable(week, parsed.last_scored_week, client)
     if message:
         raise BuildStopped(message)
 
-    history = _load_history_or_none(history_root(client.folder, season), raw, week)
+    history = _load_history_or_none(history_root(client.folder, season), raw, week, client.settings.points_key)
     started = started or datetime.now(client.tz)
     until = (fetched or read_fetch_time(raw_dir(client.folder, season, week))
              or _raw_fetch_time(client, season, week, client.tz))
@@ -306,7 +306,8 @@ def make_bundle(
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.
-    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, week + 1, history_root(client.folder, season))
+    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, week + 1, history_root(client.folder, season),
+                             points_key=client.settings.points_key)
     bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(client.folder, season), raw, week),
                                  slow=slow, returns=load_returns(returns_path(client.nfl_dir, season)), client=client)
     record = BuildRecord(
@@ -367,7 +368,8 @@ def run_build(
     # The loader is a seam: a test passes a counted one to prove the raw week loads once per build.
     raw_loader: RawLoader = load_raw,
     # The provider is a seam too. The client gives it the league id and the timezone of the fetch.
-    provider: Provider = SLEEPER,
+    # None is the Sleeper adapter with the shared NFL cache dir of the client.
+    provider: Provider | None = None,
     # The writer of the research call when `research` is None. A writer of None is the one ClaudeWriter of the process.
     writer: Writer | None = None,
 ) -> Path:
@@ -379,8 +381,10 @@ def run_build(
     # The page and the season files read this one load of the raw week.
     # A fetch gives back the week it saved, so a fetched week loads once too.
     if fetch:
-        raw = provider.fetch_week(client.league_id(season), season, week, raw_path, players_cache(client.nfl_dir), client.tz,
-                                  client.settings.last_regular_week, client.settings.last_season_week)
+        provider = provider or SleeperProvider(provider_cache_dir(client.nfl_dir))
+        raw = provider.fetch_week(client.league_id(season), season, week, raw_path, client.tz,
+                                  client.settings.last_regular_week, client.settings.last_season_week,
+                                  client.settings.points_key)
     elif not has_raw(client.folder, season, week):
         raise BuildStopped(f"No raw data for week {week}. Run without --no-fetch.")
     else:
@@ -446,7 +450,7 @@ def _season_history(client: Client, season: int, week: int) -> History:
     root = history_root(client.folder, season)
     # The file holds every week to date. A rebuild of an older week must not cut the later weeks from it.
     through = saved_through(root, week)
-    return History(week=through, weeks=load_saved_weeks(root, through))
+    return History(week=through, weeks=load_saved_weeks(root, through, client.settings.points_key))
 
 
 def _season_inputs(
@@ -506,7 +510,8 @@ def _write_managers(
 def _managers_chart(client: Client, week: int, raw: dict | None) -> ChartValues | None:
     """The trade values of the saved chart read of the week for the roster grade. None, with one log line, when no
     read is saved or the week has no raw data. It never fetches or reads an image."""
-    chart = saved_chart_read(client.nfl_dir, week) if raw is not None else None
+    # A client with no chart reads no saved chart read either: each of its chart values is 0.
+    chart = saved_chart_read(client.nfl_dir, week) if raw is not None and client.chart is not None else None
     if chart is None:
         # The grade still goes out. Its trade value part is 0 for every roster.
         log.info("no saved chart read for week %d: the roster grade has no trade value", week)
@@ -554,6 +559,8 @@ def _load_saved_week(client: Client, season: int, week: int) -> tuple[Bundle, di
     """Read the saved facts and blurbs of a week."""
     directory = week_dir(client.folder, season, week)
     bundle = read_bundle(directory / "facts.json")
+    # facts.json holds no leader positions, so the League settings of the client give them again.
+    bundle.data.leader_positions = list(client.settings.positions)
     blurbs = _BLURBS.validate_json((directory / "blurbs.json").read_text(encoding="utf-8"))
     return bundle, blurbs
 
@@ -645,7 +652,8 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     The writer runs for this week only. The other weeks keep the blurbs of the last file."""
     directory = week_dir(client.folder, season, week)
     bundle, blurbs = _load_saved_week(client, season, week)
-    history = History(week=week, weeks=load_saved_weeks(history_root(client.folder, season), week))
+    history = History(week=week, weeks=load_saved_weeks(history_root(client.folder, season), week,
+                                                        client.settings.points_key))
     # The check comes before the writer call, so a missing week costs no Claude call.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))

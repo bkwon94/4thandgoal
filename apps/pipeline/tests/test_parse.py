@@ -4,7 +4,10 @@ They use the recorded week 6 data.
 """
 from datetime import date
 
-from league.parse import parse_week
+import pytest
+
+from league.models import week_lines
+from league.parse import parse_past_week, parse_week
 from league.provider.raw import RawTransaction
 from league.provider.sleeper import load_raw
 
@@ -146,3 +149,20 @@ def test_the_pool_is_the_projected_players_on_no_roster_with_a_position(fixture_
     raw.projections_ahead[0].projections.update({"fa1": 12.0, "no_position": 8.0})
     raw.players.update({"fa1": {"position": "QB"}, "no_position": {}})
     assert parse_week(raw).pool == {"fa1": "QB"}
+
+
+# Jaxon Smith-Njigba starts in week 6. Sleeper projects him 15.82 standard, 19.15 half-PPR, and 22.48 full PPR.
+JSN = "9488"
+
+
+@pytest.mark.parametrize(("key", "projection"), [("pts_std", 15.82), ("pts_half_ppr", 19.15), ("pts_ppr", 22.48)])
+def test_the_points_key_of_the_league_chooses_the_projection_of_a_line(fixture_raw_dir, key, projection):
+    # AT-14: a full PPR league reads the pts_ppr projection of a WR.
+    wk = parse_week(load_raw(fixture_raw_dir), points_key=key)
+    assert next(line for line in week_lines(wk) if line.player_id == JSN).projection == projection
+
+
+def test_the_points_key_of_the_league_chooses_the_projections_of_a_past_week(fixture_raw_dir):
+    past = parse_past_week(load_raw(fixture_raw_dir), 6, points_key="pts_ppr")
+    assert past.projections[JSN] == 22.48
+    assert past.points_key == "pts_ppr"

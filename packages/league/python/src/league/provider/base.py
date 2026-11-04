@@ -14,15 +14,17 @@ from league.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
 # runtime_checkable lets a test check a fake with isinstance. It checks only that the six names exist.
 # Each fetch takes the league id and not the client, because the provider sits under the client. Its one model import
 # is the League settings, which the adapter maps into. The caller reads the id from the client. The last regular week
-# and the last season week come the same way, as plain numbers from the League settings.
+# the last season week, and the points key come the same way, as plain values from the League settings.
 @runtime_checkable
 class Provider(Protocol):
+    # An adapter takes its cache dir in its constructor, so no fetch takes a cache argument.
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-            last_regular_week: int, last_season_week: int) -> RawWeek:
+            self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int, points_key: str) -> RawWeek:
         """Save the raw files of `week` into `raw_dir` and give them back. The fetch time is in the timezone `tz`.
 
-        The schedule runs to `last_regular_week`, and the projections ahead run to `last_season_week`.
+        The schedule runs to `last_regular_week`, and the projections ahead run to `last_season_week`. The projections
+        ahead hold the projection at `points_key`, the points key of the League settings.
         """
         ...
 
@@ -30,7 +32,7 @@ class Provider(Protocol):
         """The League settings of the season of `league_id`. The league file at `cache` keeps them between runs."""
         ...
 
-    def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
+    def fetch_live(self, league_id: str) -> tuple[RawWeek, datetime]:
         """The raw data of the league now, and the aware time the rosters came back. It saves no weekly file."""
         ...
 
@@ -38,10 +40,11 @@ class Provider(Protocol):
         """Save the history files of the past `week` into `out_dir` and give them back."""
         ...
 
-    def fetch_players(self, players_cache: Path) -> dict[str, dict]:
-        """The players file by player id. The cache file keeps it between fetches."""
+    def fetch_players(self) -> dict[str, dict]:
+        """The players file by player id. The cache dir of the adapter keeps it between fetches."""
         ...
 
-    def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
-        """The projections of each week ahead of `week` that the trade grade reads, through `last_regular_week`."""
+    def fetch_projections(self, season: int, week: int, last_regular_week: int, points_key: str) -> list[RawAheadWeek]:
+        """The projections at `points_key` of each week ahead of `week` that the trade grade reads, through
+        `last_regular_week`."""
         ...

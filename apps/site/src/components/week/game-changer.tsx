@@ -8,7 +8,8 @@ import { DURATION, HERO_DELAY } from "@/lib/motion";
 import type { GameChanger as GameChangerData, HeadshotMap } from "@/lib/week-types";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
-import { Headshot, headshotSrc } from "@cpc/league/headshot";
+import { Headshot } from "@cpc/league/headshot";
+import { headshotSrc } from "@cpc/league/images";
 import { Label } from "@/components/parts/label";
 
 export function GameChanger({

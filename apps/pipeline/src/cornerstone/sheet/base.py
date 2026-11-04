@@ -346,7 +346,8 @@ class Context:
         self.next = next_week(week, self.table, history, self.projected, nfl.bye_weeks if nfl is not None else None,
                               snapshot.position_rank if snapshot is not None else None, client=client)
         self.ranks = position_ranks(week)
-        self.leaders = position_leaders(week)
+        self.leaders = position_leaders(week, client.settings.positions)
+        self.leader_positions = list(client.settings.positions)
         self.scores = {s.roster_id: s.points for m in week.matchups for s in (m.a, m.b)}
         self.line_owner = {
             line.player_id: s.roster_id

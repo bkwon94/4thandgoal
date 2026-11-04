@@ -8,6 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from league.league_settings import DEFAULT_POINTS_KEY
 from league.numbers import r2
 
 # The projections of each week ahead by player ID, keyed by week. A plain alias, so any dict of that shape fits.
@@ -140,6 +141,8 @@ class PastWeek(BaseModel):
     rosters: dict[int, list[str]] = {}
     # The drops of the week as their own models, because a drop can come with no add. See Drop.
     drops: list[Drop] = []
+    # The stat key of the player points and the projections, from the reception points of the League settings.
+    points_key: str = DEFAULT_POINTS_KEY
 
 
 class UsageShare(BaseModel):
@@ -402,6 +405,9 @@ class WeekData(BaseModel):
     ranks: list[PositionRank]
     # An old bundle has no leaders field.
     leaders: list[PositionLeader] = []
+    # The positions of the leader boards, from the League settings. The League settings give them, so facts.json
+    # does not hold them and the read of a saved bundle sets them again. The default is the five CPC boards.
+    leader_positions: list[str] = Field(default=["QB", "RB", "WR", "TE", "DEF"], exclude=True)
     trades: list[Trade] = []
     # The name of each traded player with a lineup line, by player ID. The trade card reads it.
     trade_players: dict[str, str] = {}

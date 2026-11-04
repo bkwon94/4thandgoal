@@ -39,7 +39,7 @@ def _fake_trending_get(calls: list[tuple[str, object]]):
 def test_the_week_fetch_saves_the_trending_file(tmp_path):
     calls: list[tuple[str, object]] = []
     fetch_week("1", 2026, 6, tmp_path / "raw", tmp_path / "players.json", CLIENT.tz, CLIENT.settings.last_regular_week,
-               CLIENT.settings.last_season_week, json_transport(_fake_trending_get(calls)))
+               CLIENT.settings.last_season_week, CLIENT.settings.points_key, json_transport(_fake_trending_get(calls)))
     saved = json.loads((tmp_path / "raw" / "trending.json").read_text())
     assert saved == [{"player_id": "4046", "count": 41200}, {"player_id": "NYJ", "count": 9}]
     # A query value is text on the wire.

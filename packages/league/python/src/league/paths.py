@@ -77,8 +77,9 @@ def _cache_dir(nfl: Path) -> Path:
     return nfl / "cache"
 
 
-def players_cache(nfl: Path) -> Path:
-    return _cache_dir(nfl) / "players.json"
+def provider_cache_dir(nfl: Path) -> Path:
+    """The cache dir of the provider adapter. It holds the players file, which every league of the repo shares."""
+    return _cache_dir(nfl)
 
 
 def nflverse_cache_dir(nfl: Path) -> Path:

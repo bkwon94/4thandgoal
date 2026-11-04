@@ -10,7 +10,7 @@
 ## Ports
 
 - The team pick in local storage, through `src/lib/team-pick.ts`.
-- Player headshots from the Sleeper CDN, through the URL from `@cpc/league/headshot`.
+- Player headshots from the Sleeper CDN, through the URL from `@cpc/league/images`.
 
 ## Does not do
 

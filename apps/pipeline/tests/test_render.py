@@ -222,6 +222,16 @@ def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
     assert boards[-1] == {"position": "DEF", "rows": []}
 
 
+def test_a_league_with_no_def_slot_has_no_def_board_and_no_def_leader(fixture_raw_dir):
+    # The roster slots set the leader positions. The CPC week 6 lines run in a league with no DEF slot here.
+    slots = tuple(slot for slot in CLIENT.settings.roster_slots if slot != "DEF")
+    client = CLIENT.model_copy(update={"settings": CLIENT.settings.model_copy(update={"roster_slots": slots})})
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], client=client)
+    boards = build_context(b, _blurbs(b), {}, {})["leaders"]
+    assert [x["position"] for x in boards] == ["QB", "RB", "WR", "TE"]
+    assert all(leader.position != "DEF" for leader in b.data.leaders)
+
+
 def test_position_leaders_hold_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))

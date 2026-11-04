@@ -46,10 +46,10 @@ from league.client import CLIENT_FILE, Client, ClientError, check_schema_file, l
 from league.live import live_snapshot
 from league.models import ChartValues, PlayerLine, week_lines
 from league.parse import parse_trades, parse_week
-from league.paths import history_root, nflverse_cache_dir, raw_dir
+from league.paths import history_root, nfl_dir, nflverse_cache_dir, provider_cache_dir, raw_dir
 from league.provider.base import Provider
 from league.provider.raw import RawState, RawWeek
-from league.provider.sleeper import SLEEPER, fetch_state, load_raw
+from league.provider.sleeper import SleeperProvider, fetch_state, load_raw
 from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, load_snapshot
 
@@ -225,11 +225,12 @@ def _saved_snapshot(args: argparse.Namespace, client: Client) -> Snapshot | None
     if args.chart is not None:
         chart = _given_chart(args.chart)
     else:
-        chart = _saved_chart_values(client.nfl_dir, args.week, raw)
+        # A client with no chart reads no saved chart read either: each of its chart values is 0.
+        chart = _saved_chart_values(client.nfl_dir, args.week, raw) if client.chart is not None else None
     history = history_root(client.folder, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), args.season, args.week, history,
-                             raw.league.scoring_settings)
+                             raw.league.scoring_settings, client.settings.points_key)
     return load_snapshot(raw_path, history, chart, slow, client=client)
 
 
@@ -242,7 +243,8 @@ def _live_snapshot(
         given = _given_chart(args.chart)
 
         # A given file is the chart of the trade, so the reader needs neither the week nor the lines.
-        def read_chart(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine]) -> ChartValues:
+        def read_chart(nfl: Path, season_start: date, week: int, lines: Iterable[PlayerLine], *,
+                       chart: str) -> ChartValues:
             return given
     try:
         return live_snapshot(args.season, client=client, now=datetime.now(client.tz), read_chart=read_chart,
@@ -395,6 +397,9 @@ def run_chart(
         client: Client, season: int, week: int, writer: Writer | None, fetch_state: Callable[[], RawState],
 ) -> int:
     """Print the parsed chart, every guard, and the match against the saved raw data of the week."""
+    if client.chart is None:
+        print(f"The client {client.slug} has no chart. Set chart under [values.league] of its client.toml.")
+        return 2
     raw = load_raw(raw_dir(client.folder, season, week)) if has_raw(client.folder, season, week) else None
     if raw is not None:
         league = parse_week(raw)
@@ -406,7 +411,8 @@ def run_chart(
             print(f"No raw data is saved for week {week} of {season}. Build the week first.")
             return 2
         season_start = date.fromisoformat(state.season_start_date)
-    check = check_chart(client.nfl_dir, season_start, week, read=claude_reader(partial(parse_call, writer=writer)))
+    check = check_chart(client.nfl_dir, season_start, week, read=claude_reader(partial(parse_call, writer=writer)),
+                        chart=client.chart)
     if check is None:
         print(f"Week {week} has no chart. The log says why.")
         return 1
@@ -466,10 +472,12 @@ def run_settings(client: Client, season: int) -> int:
 
 
 def main(
-        argv: list[str] | None = None, *, writer: Writer | None = None, provider: Provider = SLEEPER,
+        argv: list[str] | None = None, *, writer: Writer | None = None, provider: Provider | None = None,
         fetch_state: Callable[[], RawState] = fetch_state,
 ) -> int:
     """Run one command. The writer, the provider, and the state fetch are seams, so a test passes the fakes.
+
+    A provider of None is the Sleeper adapter with the shared NFL cache dir under the repo root.
 
     A writer of None is the one ClaudeWriter of the process, so a run makes one Claude client.
     """
@@ -488,6 +496,8 @@ def main(
     if root is None:
         print(f"No clients folder in {repo} or above it. Run cornerstone inside the repo.")
         return 2
+    # The adapter takes the shared cache dir of the repo, so every league of the repo shares one players file.
+    provider = provider or SleeperProvider(provider_cache_dir(nfl_dir(root)))
     # The Claude calls of the CLI. The chart read and the analyzer call get the writer in their commands.
     # The build gets the writer too, for its research call.
     call = partial(claude_call, writer=writer)

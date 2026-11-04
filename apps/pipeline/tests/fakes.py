@@ -67,7 +67,7 @@ def fixture_nflverse(cache: Path):
 class FixtureProvider:
     """A provider that reads the recorded week 6 files and the week 1 to 5 history. It never calls the network.
 
-    The league id, the season, and the cache file do not change what it gives, because the fixtures hold one league.
+    The league id, the season, and the points key do not change what it gives, because the fixtures hold one league.
     """
 
     def __init__(self, raw_dir: Path = RAW_FIXTURES, history_root: Path = HISTORY_FIXTURES,
@@ -77,15 +77,15 @@ class FixtureProvider:
         self.fetched = fetched
 
     def fetch_week(
-            self, league_id: str, season: int, week: int, raw_dir: Path, players_cache: Path, tz: ZoneInfo,
-            last_regular_week: int, last_season_week: int) -> RawWeek:
+            self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
+            last_regular_week: int, last_season_week: int, points_key: str) -> RawWeek:
         shutil.copytree(self.raw_dir, raw_dir, dirs_exist_ok=True)
         return load_raw(raw_dir)
 
     def fetch_settings(self, league_id: str, cache: Path) -> LeagueSettings:
         return league_settings(load_raw(self.raw_dir).league)
 
-    def fetch_live(self, league_id: str, players_cache: Path) -> tuple[RawWeek, datetime]:
+    def fetch_live(self, league_id: str) -> tuple[RawWeek, datetime]:
         return load_raw(self.raw_dir), self.fetched
 
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
@@ -94,10 +94,11 @@ class FixtureProvider:
         return RawPastWeek.model_validate({f.stem: json.loads(f.read_text(encoding="utf-8"))
                                            for f in saved.glob("*.json")})
 
-    def fetch_players(self, players_cache: Path) -> dict[str, dict]:
+    def fetch_players(self) -> dict[str, dict]:
         return load_raw(self.raw_dir).players
 
-    def fetch_projections(self, season: int, week: int, last_regular_week: int) -> list[RawAheadWeek]:
+    def fetch_projections(
+            self, season: int, week: int, last_regular_week: int, points_key: str) -> list[RawAheadWeek]:
         return load_raw(self.raw_dir).projections_ahead or []
 
 

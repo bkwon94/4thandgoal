@@ -4,7 +4,7 @@
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { sleeperHeadshot } from "@cpc/league/headshot";
+import { sleeperHeadshot } from "@cpc/league/images";
 import type { Manager, ManagerEntry } from "@/lib/manager-types";
 import { managers as fixture } from "@/fixtures/managers";
 import { Moves } from "./moves";

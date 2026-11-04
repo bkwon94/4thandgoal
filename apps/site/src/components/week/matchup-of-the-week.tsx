@@ -5,7 +5,8 @@
 import { num } from "@/lib/format/format";
 import { cn } from "@/lib/utils";
 import type { AvatarMap, MatchupSide, Pick } from "@/lib/week-types";
-import { Avatar, avatarSrc } from "@cpc/league/avatar";
+import { Avatar } from "@cpc/league/avatar";
+import { avatarSrc } from "@cpc/league/images";
 import { Blurb } from "@/components/parts/blurb";
 import { Chapter } from "@/components/parts/chapter";
 import { Label } from "@/components/parts/label";

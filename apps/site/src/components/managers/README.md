@@ -9,7 +9,7 @@
 
 ## Ports
 
-- Player headshots from the Sleeper CDN, through the URL from `@cpc/league/headshot`.
+- Player headshots from the Sleeper CDN, through the URL from `@cpc/league/images`.
 
 ## Does not do
 

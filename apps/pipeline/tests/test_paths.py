@@ -15,7 +15,7 @@ from league.paths import (
     league_file,
     nfl_dir,
     nflverse_cache_dir,
-    players_cache,
+    provider_cache_dir,
     raw_dir,
     results_cache_dir,
     returns_path,
@@ -70,8 +70,8 @@ def test_season_dir_is_under_the_site():
     assert season_dir(SITE, 2026) == Path("/repo/site/2026")
 
 
-def test_players_cache_is_one_file_in_the_cache():
-    assert players_cache(NFL) == Path("/repo/data/nfl/cache/players.json")
+def test_the_provider_cache_dir_is_the_shared_cache():
+    assert provider_cache_dir(NFL) == Path("/repo/data/nfl/cache")
 
 
 def test_nflverse_cache_dir_is_in_the_cache():

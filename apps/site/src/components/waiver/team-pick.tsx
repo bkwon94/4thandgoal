@@ -6,7 +6,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TeamPicker } from "@/components/analyzer/team-picker";
-import { Avatar, avatarSrc } from "@cpc/league/avatar";
+import { Avatar } from "@cpc/league/avatar";
+import { avatarSrc } from "@cpc/league/images";
 import type { Team as PickerTeam } from "@/lib/api";
 import type { BudgetRow } from "@/lib/waiver-types";
 import type { AvatarMap, Team } from "@/lib/week-types";
