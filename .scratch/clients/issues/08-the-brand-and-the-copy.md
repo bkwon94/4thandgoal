@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-5, AT-10, and AT-17.
 
 **Blocked by:** 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The design package exports a JSON Schema for `brand.toml`. A missing base role or an unknown role fails the check.
 - [x] The build writes the CSS custom properties from the brand. Each derived role has its formula, and a brand can override it.
