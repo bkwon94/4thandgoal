@@ -1,6 +1,6 @@
 # 13: The analyzer package and the API per client
 
-Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, and AT-30.
+Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, AT-30, and AT-34.
 
 **App:** both
 
@@ -15,5 +15,6 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-27, AT-29, and AT-30.
 - [x] The old paths with no client answer as `cpc`.
 - [x] The grade limit counts per client and per address (AT-29). The name of the request address no longer uses the word client.
 - [x] A bad `client.toml` stops the API at start with the file and the key (AT-30).
+- [ ] Each client has its own passphrase in `CORNERSTONE_PASSPHRASE_<SLUG>`. A wrong passphrase gets 401, and a missing one stops the API at start (AT-34).
 - [x] `finder` is a package value of `analyzer`, and the site calls the API with the client in the path.
 - [x] The CPC golden diff is empty (AT-1).
