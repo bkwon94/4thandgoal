@@ -10,14 +10,14 @@ import { XIcon } from "lucide-react";
 import type { PlayerPick } from "@/components/analyzer/trade-form";
 import { Avatar } from "@/components/parts/avatar";
 import { Headshot } from "@/components/parts/headshot";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@cpc/design/ui/select";
 import type { Team, TeamPlayer } from "@/lib/api";
 import { AVATAR_FALLBACK } from "@/lib/avatar";
-import { count } from "@/lib/format/format";
+import { count } from "@cpc/design/format/format";
 import { HEADSHOT_FALLBACK } from "@/lib/headshot";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { enterExit } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { enterExit } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 
 type TradeSideProps = {
   // The heading of the side, such as "Your Team". It also names the team picker.

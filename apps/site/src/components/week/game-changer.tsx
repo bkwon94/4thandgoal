@@ -2,15 +2,15 @@
  * The game changer hero: a black chapter with the player cutout on a red glow, the name, and the points.
  * It ports the .stage rules of the source stylesheet; the two gradients live in globals.css.
  */
-import { Reveal } from "@/components/parts/reveal";
-import { num } from "@/lib/format/format";
-import { DURATION, HERO_DELAY } from "@/lib/motion";
+import { Reveal } from "@cpc/design/parts/reveal";
+import { num } from "@cpc/design/format/format";
+import { DURATION, HERO_DELAY } from "@cpc/design/lib/motion";
 import type { GameChanger as GameChangerData, HeadshotMap } from "@/lib/week-types";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
 import { Headshot } from "@/components/parts/headshot";
 import { headshotSrc } from "@/lib/headshot";
-import { Label } from "@/components/parts/label";
+import { Label } from "@cpc/design/parts/label";
 
 export function GameChanger({
   gameChanger,

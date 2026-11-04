@@ -38,6 +38,12 @@ function published(root, slug, path, text = "{}") {
   writeFileSync(file, text);
 }
 
+/* The values that the client build wrote into src/generated/client-values.ts, read back as JSON. */
+function clientValuesOf(site) {
+  const text = readFileSync(join(site, "src", "generated", "client-values.ts"), "utf8");
+  return JSON.parse(text.slice(text.indexOf("= {") + 2, text.lastIndexOf("}") + 1));
+}
+
 /* Each generated route file under src/app/, as a path from src/app/, sorted. */
 function routeFiles(site) {
   const app = join(site, "src", "app");
@@ -115,8 +121,9 @@ describe("the client build", () => {
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).not.toContain("waiver");
-    expect(registry).toContain('import { menuHref as rankingsMenuHref } from "@/app/_routes/rankings/menu";');
-    expect(registry).toContain("  rankings: rankingsMenuHref,");
+    expect(registry).toContain('import { menuLink as rankingsMenuLink } from "@/app/_routes/rankings/menu";');
+    expect(registry).toContain("  rankings: rankingsMenuLink,");
+    expect(registry).toContain("  week: weekMenuLink,");
   });
 
   it("writes the finder value, the usage code, and the latest season into the client values", () => {
@@ -126,6 +133,55 @@ describe("the client build", () => {
     expect(text).toContain('"finder": false');
     expect(text).toContain('"usageCode": "cpcfantasy"');
     expect(text).toContain('"season": 2026');
+  });
+
+  it("writes the menu layout and the menu items of client.toml into the client values", () => {
+    const repo = tempRepo();
+    buildClient(repo);
+    const menu = clientValuesOf(repo.site).menu;
+    expect(menu).toEqual({
+      layout: "hamburger",
+      items: [
+        { page: "home", label: "Home" },
+        { package: "week" },
+        { package: "rankings", label: "Power Rankings" },
+        { package: "managers", label: "Managers" },
+        { package: "analyzer", label: "Trade Analyzer" },
+      ],
+    });
+  });
+
+  it("gives a test client with the layout bar and no items a bar with the items of the package list (AT-16)", () => {
+    const toml = [
+      'packages = ["week", "waiver", "rankings"]',
+      'timezone = "America/Los_Angeles"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+      "[menu]",
+      'layout = "bar"',
+      "",
+    ].join("\n");
+    const repo = tempRepo(toml, "bar-client");
+    buildClient(repo);
+    const values = clientValuesOf(repo.site);
+    expect(values.menu).toEqual({
+      layout: "bar",
+      items: [{ package: "week" }, { package: "waiver" }, { package: "rankings" }],
+    });
+    expect(values.usageCode).toBeNull();
+  });
+
+  it("gives a client with no [menu] the hamburger and the items of the package list", () => {
+    const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
+    const repo = tempRepo(toml);
+    buildClient(repo);
+    expect(clientValuesOf(repo.site).menu).toEqual({
+      layout: "hamburger",
+      items: [{ package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
+    });
   });
 
   it("copies only the published data of the client into public/, and drops a season of an earlier build", () => {

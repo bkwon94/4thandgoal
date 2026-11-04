@@ -17,5 +17,5 @@ export const season = clientValues.season;
 // The trade finder, from finder under [values.analyzer] of client.toml.
 export const finderOn = clientValues.finder;
 
-// The GoatCounter site code. The count script loads only when it is set.
-export const usageCode = clientValues.usageCode ?? "";
+// The GoatCounter site code, from usage_code of client.toml. The count script loads only when it is set.
+export const usageCode = clientValues.usageCode;

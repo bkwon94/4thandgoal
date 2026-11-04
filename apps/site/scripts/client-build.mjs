@@ -135,24 +135,29 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
-/* The packages with a menu link. The week link comes from the published weeks, so the week has none here. */
-const MENU_PACKAGES = ["rankings", "managers", "analyzer", "waiver"];
-
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
-   the bundle. The map has an explicit type, so a client with no linked package still type-checks. */
+   the bundle. The map has an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
-  const linked = MENU_PACKAGES.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { MenuHrefs } from "@/lib/client-values";`,
-    ...linked.map((name) => `import { menuHref as ${name}MenuHref } from "@/app/_routes/${name}/menu";`),
+    `import type { MenuLinks } from "@/lib/client-values";`,
+    ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
     "",
-    "/* The menu href of each package of the client. */",
-    "export const menuHrefs: MenuHrefs = {",
-    ...linked.map((name) => `  ${name}: ${name}MenuHref,`),
+    "/* The menu link of each package of the client. */",
+    "export const menuLinks: MenuLinks = {",
+    ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
     "",
   ].join("\n");
+}
+
+/* The menu of the client. The layout defaults to the hamburger, and with no items the menu takes the package list in its
+   order, as the Menu model of the pipeline says. */
+function menuOf(values) {
+  return {
+    layout: values.menu?.layout ?? "hamburger",
+    items: values.menu?.items ?? values.packages.map((name) => ({ package: name })),
+  };
 }
 
 /* The values of the client that the site reads. The site season is the latest season of the client. */
@@ -164,6 +169,7 @@ function clientValuesText(slug, values) {
     season: Math.max(...seasons),
     usageCode: values.usage_code ?? null,
     finder: values.values?.analyzer?.finder ?? false,
+    menu: menuOf(values),
   };
   return [
     headerLine(slug),

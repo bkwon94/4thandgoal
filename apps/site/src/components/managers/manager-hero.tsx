@@ -3,11 +3,11 @@
  * Under it sit the three numbers, the grade, the playoff odds, and the power rank, each with one quiet line of context.
  */
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/parts/reveal";
+import { Reveal } from "@cpc/design/parts/reveal";
 import { Avatar } from "@/components/parts/avatar";
-import { Chapter } from "@/components/parts/chapter";
-import { ordinal, record } from "@/lib/format/format";
-import { DURATION, REVEAL_STAGGER } from "@/lib/motion";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { ordinal, record } from "@cpc/design/format/format";
+import { DURATION, REVEAL_STAGGER } from "@cpc/design/lib/motion";
 import type { Manager, ManagerGrade } from "@/lib/manager-types";
 import { GradeMark, GradePopover } from "./grade-popover";
 import { OddsCount } from "./odds-count";

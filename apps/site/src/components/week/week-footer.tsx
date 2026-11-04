@@ -2,9 +2,9 @@
  * The week footer: the last row of the weekly report, with a link to the prior week on the left and the next week on the right.
  * It is a server component. The page finds both weeks at build time, so a new week needs no code change.
  */
-import { cn } from "@/lib/utils";
+import { cn } from "@cpc/design/lib/utils";
 import type { WeekSummary } from "@/lib/week-types";
-import { Chapter } from "@/components/parts/chapter";
+import { Chapter } from "@cpc/design/parts/chapter";
 
 /* A plain anchor in the home row style, like the week rows of the home page. An anchor skips the router, so the week href carries the base path.
    The touch height keeps a short row a comfortable target. */

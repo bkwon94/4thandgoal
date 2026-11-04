@@ -3,12 +3,12 @@
  * The weeks come newest first, in the order of the managers file. A week with no moves reads one quiet line.
  */
 import { Fragment } from "react";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { TeamName } from "@/components/parts/team-name";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { TeamName } from "@cpc/design/parts/team-name";
 import { managerHrefOrNull } from "@/lib/routes";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "@/lib/manager-types";
-import { cn } from "@/lib/utils";
+import { cn } from "@cpc/design/lib/utils";
 import { Headshot } from "@/components/parts/headshot";
 import { sleeperHeadshot } from "@/lib/headshot";
 

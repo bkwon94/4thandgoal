@@ -7,10 +7,10 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { Blurb } from "@/components/parts/blurb";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, rise } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, rise } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 import type { WaiverPlayer } from "@/lib/waiver-types";
 import type { Team } from "@/lib/week-types";
 import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine } from "./format";

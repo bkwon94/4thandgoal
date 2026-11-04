@@ -3,7 +3,7 @@
  * The first segment names the stats week, the known games, and the games in progress. Each pending count is its own segment.
  */
 import type { AsOf } from "@/lib/analyze-types";
-import { count } from "./format";
+import { count } from "@cpc/design/format/format";
 
 /* A document with no block, or no games read, gets the stats week alone, so the line never claims games it lacks. */
 export function knownGamesSegments(asOf: AsOf): string[] {

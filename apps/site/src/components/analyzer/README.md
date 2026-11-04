@@ -12,7 +12,7 @@
 - The site API, through the client in `src/lib/api.ts`. The calls are teams, analyze, and find.
 - The passphrase in local storage, through `src/lib/passphrase.ts`.
 - The teams list in session storage, through `src/lib/teams-store.ts`.
-- GoatCounter events, through `src/lib/usage.ts`.
+- GoatCounter events, through `packages/design/site/lib/usage.ts`.
 - Player headshots from the Sleeper CDN. The URL comes in the teams answer of the site API.
 
 ## Does not do

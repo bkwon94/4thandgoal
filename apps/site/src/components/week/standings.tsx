@@ -3,13 +3,13 @@
  * Points always show two decimals, so the column lines up in tabular figures.
  */
 import { Fragment, type ReactNode } from "react";
-import { record } from "@/lib/format/format";
-import { cn } from "@/lib/utils";
+import { record } from "@cpc/design/format/format";
+import { cn } from "@cpc/design/lib/utils";
 import type { AvatarMap, TableRow } from "@/lib/week-types";
 import { avatarSrc } from "@/lib/avatar";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
 import { managerHrefOrNull } from "@/lib/routes";
 import { Who } from "@/components/parts/who";
 

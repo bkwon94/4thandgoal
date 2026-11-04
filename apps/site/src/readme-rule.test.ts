@@ -1,6 +1,7 @@
 /**
  * Holds each package folder to the rule of ADR 0016: a README of under 25 lines with the headings Knows, Ports, and Does not do.
  * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/.
+ * Each package under packages/ is a package folder too (ADR 0023), with each folder directly under its site side.
  * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
  */
 import { execFileSync } from "node:child_process";
@@ -12,6 +13,7 @@ import { type Offense, report } from "./rule-report";
 
 const ROOT = process.cwd();
 const SRC = join(ROOT, "src");
+const PACKAGES = join(ROOT, "..", "..", "packages");
 
 /* The title, then the three headings in this order. The title text has no rule. */
 const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
@@ -24,8 +26,9 @@ const APP_CLAUDE_MD = /^apps\/[^/]+\/CLAUDE\.md$/;
 const ADR = "docs/adr/0016-the-rules-are-checks.md";
 
 function subfolders(dir: string): string[] {
+  if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.isDirectory() && entry.name !== "node_modules")
     .map((entry) => join(dir, entry.name));
 }
 
@@ -33,7 +36,9 @@ function subfolders(dir: string): string[] {
 function packageFolders(): string[] {
   const components = join(SRC, "components");
   const lib = join(SRC, "lib");
-  return [...subfolders(components), lib, ...subfolders(lib), join(SRC, "hooks")];
+  const packages = subfolders(PACKAGES);
+  const siteFolders = packages.flatMap((dir) => subfolders(join(dir, "site")));
+  return [...subfolders(components), lib, ...subfolders(lib), join(SRC, "hooks"), ...packages, ...siteFolders];
 }
 
 /* The source is null when the folder holds no README. */
@@ -103,7 +108,14 @@ describe("the readme rule", () => {
   it("finds the package folders", () => {
     // An empty list would pass with no folder read.
     const paths = packageFolders().map((dir) => relative(ROOT, dir));
-    expect(paths).toEqual(expect.arrayContaining(["src/components/ui", "src/lib", "src/lib/schemas", "src/hooks"]));
+    expect(paths).toEqual(expect.arrayContaining([
+        "src/components/week",
+        "src/lib",
+        "src/lib/schemas",
+        "src/hooks",
+        "../../packages/design",
+        "../../packages/design/site/shell",
+      ]),);
   });
 
   it("finds a README with the three headings and under 25 lines in each package folder", () => {

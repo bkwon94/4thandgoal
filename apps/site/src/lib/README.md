@@ -4,15 +4,14 @@
 
 - The build config in `src/lib/config.ts`, the route builders in `src/lib/routes.ts`, and the client of the site API in `src/lib/api.ts`.
 - The types of each published file, of each API document, and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`.
-- The browser stores: the passphrase, the team pick of the War chest page, the teams list, and the theme.
-- The motion timings, the default avatar and headshot, the usage helpers, and the `cn` helper.
+- The browser stores: the passphrase, the team pick of the War chest page, and the teams list.
+- The default avatar and headshot.
 
 ## Ports
 
 - The site API, through the client in `src/lib/api.ts`.
 - The env, through `src/lib/config.ts`. No other module reads `process.env`.
-- Local storage and session storage, through `src/lib/passphrase.ts`, `src/lib/team-pick.ts`, `src/lib/teams-store.ts`, and `src/lib/theme.ts`.
-- GoatCounter, through `src/lib/usage.ts`.
+- Local storage and session storage, through `src/lib/passphrase.ts`, `src/lib/team-pick.ts`, and `src/lib/teams-store.ts`.
 - The headshots of the Sleeper CDN, through the URL in `src/lib/headshot.ts`.
 
 ## Does not do
@@ -22,3 +21,4 @@
 - It holds no schema. `src/lib/schemas/` holds the Zod schemas. The types of a published file come from its schema.
 - It infers no request type and no view type. We write those types by hand.
 - It holds no React hook. Hooks live in `src/hooks/`.
+- It holds no theme, no motion timing, no usage count, and no `cn` helper. The design package holds them.

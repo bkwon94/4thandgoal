@@ -6,18 +6,18 @@
 
 import { motion } from "framer-motion";
 import { useId, useState } from "react";
-import { Reveal } from "@/components/parts/reveal";
-import { num, shortName } from "@/lib/format/format";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT, stagger } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { Reveal } from "@cpc/design/parts/reveal";
+import { num, shortName } from "@cpc/design/format/format";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 import type { AvatarMap, Matchup, MatchupSide } from "@/lib/week-types";
 import { Avatar } from "@/components/parts/avatar";
 import { avatarSrc } from "@/lib/avatar";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { TeamName } from "@/components/parts/team-name";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { TeamName } from "@cpc/design/parts/team-name";
 import { managerHrefOrNull } from "@/lib/routes";
 
 /* The top scorer of one side, or a dash when the side started no one. */

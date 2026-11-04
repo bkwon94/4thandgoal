@@ -6,9 +6,9 @@
 
 import { useState } from "react";
 import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "@/components/analyzer/analyze-result";
-import { ErrorLine } from "@/components/parts/error-line";
+import { ErrorLine } from "@cpc/design/parts/error-line";
 import { TeamPicker } from "@/components/analyzer/team-picker";
-import { Button } from "@/components/ui/button";
+import { Button } from "@cpc/design/ui/button";
 import { useRequest } from "@/hooks/use-request";
 import type { FindResponse, FinderTrade } from "@/lib/analyze-types";
 import { ApiError, postFind, toErrorLine, type Team } from "@/lib/api";

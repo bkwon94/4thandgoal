@@ -5,7 +5,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { week6 } from "@/fixtures/week-page";
-import { record } from "@/lib/format/format";
+import { record } from "@cpc/design/format/format";
 import { rankings } from "@/fixtures/rankings";
 import { Movement, PowerRankings } from "./power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "./week-choice";

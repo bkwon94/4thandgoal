@@ -9,9 +9,9 @@ import { useEffect, useRef, useState } from "react";
 import type { Team } from "@/lib/api";
 import { Avatar } from "@/components/parts/avatar";
 import { AVATAR_FALLBACK } from "@/lib/avatar";
-import { useMotionOff } from "@/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { DURATION, EASE_OUT, INSTANT } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 
 type TeamPickerProps = {
   // Also the name of the radio group, so two pickers on one page stay apart.

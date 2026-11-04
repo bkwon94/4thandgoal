@@ -3,13 +3,13 @@
  * It shows the last week in the file with a chip per week, or a short empty state when the pipeline has not written the file yet.
  */
 import type { Metadata } from "next";
-import { Masthead } from "@/components/shell/masthead";
-import { PageColumn } from "@/components/parts/page-column";
+import { Masthead } from "@cpc/design/shell/masthead";
+import { PageColumn } from "@cpc/design/parts/page-column";
 import { PowerRankings } from "@/components/rankings/power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "@/components/rankings/week-choice";
-import { Blurb } from "@/components/parts/blurb";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
+import { Blurb } from "@cpc/design/parts/blurb";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars, loadRankings } from "@/lib/data/rankings-data";
 import { rankingsHref } from "@/lib/routes";

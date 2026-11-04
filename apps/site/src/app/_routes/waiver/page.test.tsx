@@ -54,10 +54,10 @@ describe("WaiverPage", () => {
     expect(banner.textContent).toContain("Built Fri, Oct 23, 10:05 AM EDT");
   });
 
-  it("gives the menu a link to its own week, through the menu href of the waiver package", async () => {
+  it("gives the menu a link to its own week, through the menu link of the waiver package", async () => {
     await routeOver();
-    const { menuHref } = await import("./menu");
-    expect(menuHref()).toBe("/2026/week-06/waiver/");
+    const { menuLink } = await import("./menu");
+    expect(menuLink()).toEqual({ label: "Waiver Wire", href: "/2026/week-06/waiver/" });
   });
 
   it("shows the budgets with the avatars of the week folder, and the best adds after the top six", async () => {

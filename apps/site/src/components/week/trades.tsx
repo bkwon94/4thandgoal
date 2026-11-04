@@ -4,16 +4,16 @@
  * A phone stacks the cards; the tablet tier and up put two cards per row, so two trades compare side by side.
  */
 import { Fragment } from "react";
-import { Reveal } from "@/components/parts/reveal";
-import { stagger } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import { Reveal } from "@cpc/design/parts/reveal";
+import { stagger } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 import type { AvatarMap, Trade, TradeSide } from "@/lib/week-types";
 import { Avatar } from "@/components/parts/avatar";
 import { Headshot } from "@/components/parts/headshot";
 import { avatarSrc } from "@/lib/avatar";
-import { Chapter } from "@/components/parts/chapter";
-import { Label } from "@/components/parts/label";
-import { TeamName } from "@/components/parts/team-name";
+import { Chapter } from "@cpc/design/parts/chapter";
+import { Label } from "@cpc/design/parts/label";
+import { TeamName } from "@cpc/design/parts/team-name";
 import { managerHrefOrNull } from "@/lib/routes";
 
 /* Each column spans three rows of the card grid: the team, the Gets label, and the chips.
