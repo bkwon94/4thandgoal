@@ -6,8 +6,8 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the readers, which import this module.
 import { weekHref } from "../routes";
-import { weekPageSchema } from "../schemas/week";
-import type { WeekPage, WeekSummary } from "../week-types";
+import { weekPageSchema } from "@cpc/week/schema/week";
+import type { WeekPage, WeekSummary } from "@cpc/week/schema/week-types";
 
 /* The build and the tests both run from the repo root, so public/ sits under the working folder. */
 const PUBLIC_DIR = join(process.cwd(), "public");

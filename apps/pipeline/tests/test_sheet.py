@@ -21,7 +21,6 @@ from cornerstone.sheet import (
     power_facts,
     projected_totals,
     read_bundle,
-    standings,
     standings_facts,
     storyline_facts,
     swing_facts,
@@ -35,6 +34,7 @@ from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, 
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.snapshot import week_snapshot
+from week.sheet import standings
 
 CLIENT = cpc_client()
 PROMPTS = CLIENT.voice_dir
@@ -615,7 +615,7 @@ def test_clinched_and_out_odds_facts_hold_no_digit():
 
 
 def test_a_week_before_the_odds_week_has_no_odds_facts(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(sheet.rankings, "ODDS_FROM_WEEK", 7)
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
                      client=CLIENT)
@@ -776,7 +776,7 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
         seen.update(kwargs)
         return playoff_odds(*args, **kwargs)
 
-    monkeypatch.setattr(sheet.base, "playoff_odds", engine)
+    monkeypatch.setattr(sheet.rankings, "playoff_odds", engine)
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw)
     build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), client=CLIENT)
@@ -862,7 +862,7 @@ def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixtur
 
 
 def test_no_odds_means_no_odds_why(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(sheet.rankings, "ODDS_FROM_WEEK", 7)
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
     b = build_bundle(week, news=lambda pid: [], history=history, client=CLIENT)
     assert not any(fid.endswith(".why") and fid.startswith("ODDS.") for fid in b.sheet.facts)
@@ -1006,7 +1006,7 @@ def test_a_roster_player_with_no_lineup_line_is_on_the_bye_list_and_not_key(
 
 def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_raw_dir, fixture_history_root, caplog):
     raw = load_raw(fixture_raw_dir)
-    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+    with caplog.at_level(logging.WARNING, logger="week.facts_league"):
         b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
                          client=CLIENT)
     assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
@@ -1017,7 +1017,7 @@ def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_r
 def test_a_build_with_one_saved_week_has_empty_bye_lists(fixture_raw_dir, tmp_path, nfl_week6, caplog):
     raw = load_raw(fixture_raw_dir)
     # An empty history root saves no week, so the history holds week 6 alone.
-    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+    with caplog.at_level(logging.WARNING, logger="week.facts_league"):
         b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(tmp_path, raw, week=6),
                          nfl=nfl_week6, client=CLIENT)
     assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)

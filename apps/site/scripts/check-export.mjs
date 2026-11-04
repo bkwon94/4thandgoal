@@ -4,7 +4,7 @@
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ClientBuildError, readClient, REPO_ROOT } from "./client-build.mjs";
+import { ClientBuildError, clientRoot, readClient } from "./client-build.mjs";
 
 function filesUnder(dir) {
   return readdirSync(dir, { withFileTypes: true })
@@ -59,6 +59,8 @@ for (const file of pages) {
 // that only its client code holds, so a shared page that imports a part of the package fails the check.
 const PACKAGE_MARKS = {
   waiver: { route: /(^|\/)waiver\/index\.html$/, text: "War chest" },
+  // The movement cell of the rankings table, a client component that the home page chapter of rankings shows too.
+  rankings: { route: /^rankings\/index\.html$/, text: "No last week" },
   // The key prefix of the teams store of @cpc/analyzer. The analyzer page and the teams prefetch of the home page both
   // hold it, so the mark finds a home page that still imports a part of the analyzer.
   analyzer: { route: /(^|\/)analyze\/index\.html$/, text: "cpc.teams." },
@@ -67,7 +69,7 @@ const PACKAGE_MARKS = {
 if (!process.env.CLIENT) fail("set CLIENT to the client of the build, the same value as pnpm build");
 let values;
 try {
-  values = readClient(REPO_ROOT, process.env.CLIENT);
+  values = readClient(clientRoot(process.env), process.env.CLIENT);
 } catch (error) {
   if (!(error instanceof ClientBuildError)) throw error;
   fail(error.message);

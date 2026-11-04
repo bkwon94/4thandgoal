@@ -7,7 +7,13 @@ from pathlib import Path
 import pytest
 from cpc import cpc_client
 
-from cornerstone.facts_league import (
+from cornerstone.sheet import projected_totals
+from league.history import load_history
+from league.models import History, PastWeek, Standing
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.standings_table import standings
+from week.facts_league import (
     awards,
     key_starters,
     matchup_of_the_week,
@@ -17,13 +23,7 @@ from cornerstone.facts_league import (
     season_history,
     upset_signal,
 )
-from cornerstone.facts_matchup import matchup_facts
-from cornerstone.sheet import projected_totals
-from league.history import load_history
-from league.models import History, PastWeek, Standing
-from league.parse import parse_week
-from league.provider.sleeper import load_raw
-from league.standings_table import standings
+from week.facts_matchup import matchup_facts
 
 CLIENT = cpc_client()
 
@@ -469,7 +469,7 @@ def test_week_6_storylines_and_must_watch(fixture_raw_dir, fixture_history_root)
 
 
 def test_the_storyline_weights_come_from_the_tunables(fixture_raw_dir, monkeypatch):
-    from cornerstone import facts_league, tunables
+    from week import facts_league, tunables
     assert tunables.STORYLINE_WEIGHTS == {"streak": 3, "cut": 3, "shootout": 2, "table": 2, "rematch": 1, "revenge": 1}
     monkeypatch.setattr(facts_league, "STORYLINE_WEIGHTS", {**tunables.STORYLINE_WEIGHTS, "cut": 7})
     nx = next_week(_hand_week(fixture_raw_dir), _hand_table(from_cut={1: 1}), client=CLIENT)

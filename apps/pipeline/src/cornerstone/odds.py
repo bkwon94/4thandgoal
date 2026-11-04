@@ -10,10 +10,9 @@ from typing import Literal
 from cornerstone.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SEED_SHOW_AT, SIM_RUNS
 from league.client import Client
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
+from league.standings_table import roster_status
 
 ByeStatus = Literal["bye_sure", "bye_gone", "open"]
-# A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
-MAX_WINS_PER_WEEK = 2
 
 
 def playoff_odds(
@@ -175,22 +174,6 @@ def _median(scores: list[float]) -> float:
     ordered = sorted(scores, reverse=True)
     middle = len(ordered) // 2
     return (ordered[middle - 1] + ordered[middle]) / 2
-
-
-def roster_status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
-    """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
-
-    `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
-    `out`: this roster cannot reach the wins of the roster in the last spot with 2 wins every week left.
-    """
-    by_wins = sorted(records, key=lambda rid: (-records[rid][0], rid))
-    reach = MAX_WINS_PER_WEEK * weeks_left
-    wins = records[roster_id][0]
-    if roster_id in by_wins[:spots] and all(records[o][0] + reach < wins for o in by_wins[spots:]):
-        return "in"
-    if wins + reach < records[by_wins[spots - 1]][0]:
-        return "out"
-    return "open"
 
 
 def _shown(status: OddsStatus, made: int, runs: int) -> int:

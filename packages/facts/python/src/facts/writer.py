@@ -4,7 +4,7 @@ The template blurb is the safe fallback when the writer fails twice.
 """
 import logging
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import TypeVar
 
@@ -183,10 +183,20 @@ def load_prompt(voice_dir: Path, name: str, rules_dir: Path = DEFAULT_PROMPTS) -
     return (folder / name).read_text(encoding="utf-8").strip()
 
 
+def with_terms(vocabulary: str, terms: Sequence[str]) -> str:
+    """The vocabulary, then the extra terms that a core package adds, such as the median text of the week."""
+    return "\n\n".join([vocabulary, *terms])
+
+
 def build_writer_prompt(
-    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None, *, prompts_dir: Path
+    chapter: Chapter, sheet: FactSheet, feedback: str | None, page_words: str | None = None, *, prompts_dir: Path,
+    terms: Sequence[str] = (),
 ) -> tuple[str, str]:
-    system = "\n\n".join(load_prompt(prompts_dir, name) for name in PROMPT_FILES)
+    """The system and the user prompt of one chapter. `terms` go right after the vocabulary."""
+    system = "\n\n".join(
+        with_terms(load_prompt(prompts_dir, name), terms) if name == "vocabulary.md" else load_prompt(prompts_dir, name)
+        for name in PROMPT_FILES
+    )
     lines = [
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",
@@ -216,8 +226,9 @@ def write_blurb(
     attempt: int = 1,
     *,
     prompts_dir: Path,
+    terms: Sequence[str] = (),
 ) -> Blurb:
-    system, user = build_writer_prompt(chapter, sheet, feedback, page_words, prompts_dir=prompts_dir)
+    system, user = build_writer_prompt(chapter, sheet, feedback, page_words, prompts_dir=prompts_dir, terms=terms)
     out = call(system, user, WriterOut)
     # Any call, real or injected, can come back empty. That is a failed attempt, not a blurb.
     if out is None:

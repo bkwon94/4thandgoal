@@ -104,7 +104,7 @@ def sources(fixture_raw_dir, chart_week6):
 
 @pytest.fixture
 def settings(repo):
-    return Settings(passphrase=PASSPHRASE, repo=repo, result_cache_dir=repo / "results")
+    return Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results")
 
 
 class StubAnalyzer:
@@ -1227,15 +1227,21 @@ def test_a_season_that_is_not_in_progress_is_422(settings, sources):
     assert response.json() == {"detail": "The season 2025 is not in progress."}
 
 
-def test_settings_from_the_environment_need_a_passphrase(monkeypatch, tmp_path):
-    monkeypatch.delenv("CORNERSTONE_PASSPHRASE", raising=False)
-    with pytest.raises(RuntimeError, match="CORNERSTONE_PASSPHRASE"):
-        Settings.from_env()
-    monkeypatch.setenv("CORNERSTONE_PASSPHRASE", "secret")
+def test_settings_from_the_environment_need_a_passphrase_for_each_client(monkeypatch, tmp_path):
+    monkeypatch.delenv("CORNERSTONE_PASSPHRASE_CPC", raising=False)
+    monkeypatch.delenv("CORNERSTONE_PASSPHRASE_NORCAL", raising=False)
+    # No passphrase is shared, so the old shared value counts for no client.
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE", "shared")
+    with pytest.raises(RuntimeError, match="Set CORNERSTONE_PASSPHRASE_CPC before the API starts."):
+        Settings.from_env(["cpc"])
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_CPC", "secret")
+    with pytest.raises(RuntimeError, match="Set CORNERSTONE_PASSPHRASE_NORCAL before the API starts."):
+        Settings.from_env(["cpc", "norcal"])
+    monkeypatch.setenv("CORNERSTONE_PASSPHRASE_NORCAL", "other")
     monkeypatch.setenv("CORNERSTONE_REPO", str(tmp_path))
-    settings = Settings.from_env()
-    assert settings.passphrase == "secret"
-    assert "secret" not in repr(settings)
+    settings = Settings.from_env(["cpc", "norcal"])
+    assert settings.passphrases == {"cpc": "secret", "norcal": "other"}
+    assert "secret" not in repr(settings) and "other" not in repr(settings)
     assert settings.result_cache_dir == tmp_path.resolve() / "data" / "cache" / "results"
     assert "https://cpcfantasy.com" in settings.allowed_origins
 
@@ -1839,12 +1845,15 @@ def test_the_document_version_is_11():
 
 # The second client of these tests. Its folder lives only in the temp folder of a test, never under clients/.
 SECOND = "norcal"
+# The second client has its own passphrase, so the passphrase of cpc opens none of its routes.
+SECOND_HEADERS = {"X-League-Passphrase": "norcal-test"}
 
 
 def _two_clients(settings, sources, analyzer=None):
     """An app that serves cpc and a second client on the same fixture league, each with its own sources."""
     cpc = _here(sources, settings)
     second = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": SECOND}))
+    settings = dataclasses.replace(settings, passphrases={"cpc": PASSPHRASE, SECOND: SECOND_HEADERS["X-League-Passphrase"]})
     app = create_app(settings, [cpc.client, second.client], sources={"cpc": cpc, SECOND: second}, analyzer=analyzer)
     for served in app.state.served.values():
         served.grade_limiter.clock = MovingClock(NOW)
@@ -1865,10 +1874,10 @@ def test_the_teams_route_of_a_client_lists_its_teams_and_the_old_path_answers_as
 
 def test_each_route_of_a_client_answers_at_its_path(settings, sources):
     client = _two_clients(settings, sources, StubAnalyzer())
-    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 200
     find = {"season": 2026, "asker": 4, "partner": 4}
     # The same roster twice is 422 from the find route itself, so the path reached the route.
-    assert client.post(f"/clients/{SECOND}/find", json=find, headers=HEADERS).status_code == 422
+    assert client.post(f"/clients/{SECOND}/find", json=find, headers=SECOND_HEADERS).status_code == 422
     refreshed = []
 
     class Recorder:
@@ -1879,9 +1888,36 @@ def test_each_route_of_a_client_answers_at_its_path(settings, sources):
             return RefreshResult(refreshed=[], stale=[], trade_week=6, chart=None)
 
     client.app.state.sources[SECOND] = Recorder()
-    response = client.post(f"/clients/{SECOND}/refresh", params={"season": 2026}, headers=HEADERS)
+    response = client.post(f"/clients/{SECOND}/refresh", params={"season": 2026}, headers=SECOND_HEADERS)
     assert response.json() == {"refreshed": [], "stale": ["chart"]}
     assert refreshed == [2026]
+
+
+def test_each_client_checks_its_own_passphrase(settings, sources):
+    client = _two_clients(settings, sources, StubAnalyzer())
+    find = {"season": 2026, "asker": 4, "partner": 12}
+    # The passphrase of cpc opens no route of the second client, and the passphrase of the second client opens no route
+    # of cpc. The wrong passphrase is 401 with no body, as before.
+    for path, body in ((f"/clients/{SECOND}/analyze", TRADE), (f"/clients/{SECOND}/find", find)):
+        response = client.post(path, json=body, headers=HEADERS)
+        assert (response.status_code, response.content) == (401, b""), path
+    for path, body in (("/clients/cpc/analyze", TRADE), ("/clients/cpc/find", find)):
+        assert client.post(path, json=body, headers=SECOND_HEADERS).status_code == 401, path
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 200
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 200
+
+
+def test_an_app_with_a_client_that_has_no_passphrase_does_not_build(settings, sources):
+    # A client with no passphrase would run open, so the app refuses it before any route exists.
+    second = CLIENT.model_copy(update={"slug": SECOND})
+    with pytest.raises(ValueError, match="CORNERSTONE_PASSPHRASE_NORCAL"):
+        create_app(settings, [CLIENT, second], sources=_cpc(_here(sources, settings)))
+
+
+def test_an_old_path_checks_the_passphrase_of_cpc(settings, sources):
+    client = _two_clients(settings, sources, StubAnalyzer())
+    assert client.post("/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 401
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
 
 def test_a_client_the_api_does_not_serve_is_404(settings, sources):
@@ -1905,7 +1941,7 @@ def test_the_grade_limit_counts_per_client_and_per_address(settings, sources):
     assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 429
     # The old path is cpc, so it shares the limit of cpc.
     assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 429
-    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 200
     # Another address in the same client has its own count.
     other = {**HEADERS, "Fly-Client-IP": "203.0.113.7"}
     assert client.post("/clients/cpc/analyze", json=TRADE, headers=other).status_code == 200
@@ -1918,7 +1954,7 @@ def test_each_client_keeps_its_own_result_cache(settings, sources):
     client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS)
     assert analyzer.calls == 1
     # The same roster ids in another league are another trade, so the stored grade of cpc never serves it.
-    client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=HEADERS)
+    client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS)
     assert analyzer.calls == 2
     assert (settings.result_cache_dir / "cpc").is_dir()
     assert (settings.result_cache_dir / SECOND).is_dir()

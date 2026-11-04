@@ -8,11 +8,11 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-11, AT-13, and AT-23.
 
 **Blocked by:** 06, 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] The `week` package holds the modules of decision 01 and the median text.
-- [ ] The chapter port takes a chapter from another package. The registry of the site build lists only the chapters of the client.
-- [ ] A fixture test with the median off shows no Median Game chapter in `page.json` (AT-11).
-- [ ] A fixture test with no DEF slot shows no DEF in the pool and the leaders (AT-13).
-- [ ] A test client with only `week` builds a week with no rankings chapter and no rankings route (AT-23).
-- [ ] The CPC golden diff is empty (AT-1).
+- [x] The `week` package holds the modules of decision 01 and the median text.
+- [x] The chapter port takes a chapter from another package. The registry of the site build lists only the chapters of the client.
+- [x] A fixture test with the median off shows no Median Game chapter in `page.json` (AT-11).
+- [x] A fixture test with no DEF slot shows no DEF in the pool and the leaders (AT-13).
+- [x] A test client with only `week` builds a week with no rankings chapter and no rankings route (AT-23).
+- [x] The CPC golden diff is empty (AT-1).

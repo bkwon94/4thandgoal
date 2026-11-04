@@ -22,7 +22,7 @@ import { TradeForm } from "@cpc/analyzer/form/trade-form";
 import { waiver } from "@/fixtures/waiver";
 import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
-import { week6 } from "@/fixtures/week-page";
+import { week6 } from "@cpc/week/fixtures/week-page";
 
 vi.stubGlobal(
   "matchMedia",

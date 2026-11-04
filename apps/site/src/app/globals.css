@@ -13,6 +13,7 @@
 @source "../../../../packages/design/site";
 @source "../../../../packages/league/site";
 @source "../../../../packages/waiver/site";
+@source "../../../../packages/week/site";
 /*---break---
  */
 @custom-variant dark (&:is(.dark *));

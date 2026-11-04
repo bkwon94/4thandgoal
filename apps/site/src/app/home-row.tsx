@@ -1,6 +1,6 @@
 /**
- * One row of a chapter of the home page: a plain link with a rule under it.
- * The home page and the home tool of each package render it, so each row of the Tools chapter reads the same.
+ * One row of a home page chapter: a plain anchor with the press motion and the rule under it.
+ * The home section of each package renders its rows with it, so every row of the home page looks the same.
  */
 import type { ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";

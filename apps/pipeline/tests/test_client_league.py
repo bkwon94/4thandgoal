@@ -6,11 +6,11 @@ import pytest
 from cpc import cpc_client
 from pydantic import ValidationError
 
-from cornerstone.sheet.base import sentence_range
 from facts.chapters import RANKINGS_CHAPTER
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.standings_table import standings
+from week.sheet.base import sentence_range
 
 
 def test_the_league_id_comes_from_the_season():

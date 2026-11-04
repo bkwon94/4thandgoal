@@ -24,14 +24,12 @@ SUPPRESSION = re.compile("|".join(PATTERNS), re.IGNORECASE)
 # real offense. The key is the path from the repo root and the line text with no indent, not the line number.
 # So an entry does not go stale when a line above it moves. The value is the reason.
 ALLOW: dict[tuple[str, str], str] = {
-    ("src/cornerstone/render.py",
-     f"except Exception as exc:  # {MARKER}: BLE001 - a build never stops on one avatar"):
-        "a build never stops on one avatar",
     ("src/cornerstone/pipeline.py",
      f"except Exception as err:  # {MARKER}: BLE001 - the outer guard: the module catches only HTTP errors"):
         "the outer guard: the module catches only HTTP errors",
 }
-# The allow list of the league package is in packages/league/python/tests/test_rule_league.py.
+# The allow list of the league package is in packages/league/python/tests/test_rule_league.py, and the allow list of
+# the week package is in packages/week/python/tests/test_rule_week.py.
 
 
 def _suppressions(root: Path) -> list[tuple[str, int, str]]:

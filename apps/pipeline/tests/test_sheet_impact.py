@@ -10,7 +10,8 @@ from cpc import cpc_client
 from fakes import no_news
 
 from cornerstone.pipeline import make_bundle
-from cornerstone.sheet import base, build_bundle
+from cornerstone.sheet import build_bundle
+from cornerstone.sheet import rankings as rankings_chapter
 from league.history import load_history
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
@@ -177,13 +178,13 @@ def test_the_odds_after_the_week_match_the_saved_playoff_odds_of_each_team(week_
 @pytest.mark.skipif(not (SAVED / "week-08" / "raw").is_dir(), reason="no saved week 8 data")
 def test_the_build_runs_the_odds_engine_once_per_week(tmp_path, monkeypatch):
     runs = []
-    engine = base.playoff_odds
+    engine = rankings_chapter.playoff_odds
 
     def counted(*args, **kwargs):
         runs.append(kwargs["week"])
         return engine(*args, **kwargs)
 
-    monkeypatch.setattr(base, "playoff_odds", counted)
+    monkeypatch.setattr(rankings_chapter, "playoff_odds", counted)
     make_bundle(2026, 8, news=no_news, client=cpc_client(at=saved_repo(tmp_path, 8)))
     assert runs == [8]
 

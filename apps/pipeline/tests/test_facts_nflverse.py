@@ -8,7 +8,6 @@ import re
 import pytest
 from cpc import cpc_client
 
-from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
 from cornerstone.sheet import build_bundle
 from facts.tokens import NUMBER_TOKEN, fmt
 from facts.writer import DEFAULT_PROMPTS
@@ -16,6 +15,7 @@ from league.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, 
 from league.nflverse import nflverse_week
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
+from week.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
 
 CLIENT = cpc_client()
 

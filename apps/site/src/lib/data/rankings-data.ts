@@ -9,7 +9,7 @@ import { basePath } from "../config";
 import { rankingsSchema } from "../schemas/rankings";
 import type { Rankings } from "../rankings-types";
 import { listWeeks, loadWeek } from "./week-data";
-import type { AvatarMap } from "../week-types";
+import type { AvatarMap } from "@cpc/week/schema/week-types";
 
 /* The rankings file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;

@@ -12,6 +12,14 @@ import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, FONT_PATH, setsOf } from "@cpc/des
 
 /* The repo root, two folders above the site app. */
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+/* The site app that the script writes into. A build for another root still writes the generated files here. */
+const SITE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+/* The root that holds clients/ and the exported schema: the repo, or the root that CLIENT_ROOT names. A test client
+   then builds from a temp folder, and no test folder goes under clients/. */
+export function clientRoot(env) {
+  return env.CLIENT_ROOT ?? REPO_ROOT;
+}
 /* The JSON Schema that the league package exports from its pydantic model. "make schema" in packages/league/python rewrites it. */
 export const SCHEMA_FILE = join("packages", "league", "python", "src", "league", "client.schema.json");
 
@@ -138,9 +146,10 @@ const ROUTES = {
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
 };
 
-/* The home tool of each package that has one: a row of the Tools chapter of the home page. The registry imports it only
-   for a package of the list, so the home page of a client that omits the package holds none of its code. */
-const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home" };
+/* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
+   The registry imports it only for a package of the list, so the home page of a client that omits the package holds
+   none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
+const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
 
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
@@ -161,23 +170,35 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
+/* The packages that give the home page a chapter, in the order of the page: the chapter beside the tools, then the
+   weekly reports. Each one has src/app/_routes/<package>/home.tsx. The order is fixed here and not by the package
+   list, so the order of client.toml never moves a chapter. */
+const HOME_SECTIONS = ["rankings", "week"];
+
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
-  const tools = values.packages.filter((name) => name in HOME_TOOLS);
+  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
+  const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { HomeTool, MenuLinks } from "@/lib/client-values";`,
+    `import type { HomeSections, HomeTool, MenuLinks } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
+    ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
     "",
-    "/* The home tool of each package of the client that has one, in the order of the package list. */",
+    "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",
     `export const homeTools: HomeTool[] = [${tools.map((name) => `${name}HomeTool`).join(", ")}];`,
+    "",
+    "/* The home chapter of each package of the client, in the order of the home page. */",
+    "export const homeSections: HomeSections = [",
+    ...home.map((name) => `  ${name}HomeSection,`),
+    "];",
     "",
   ].join("\n");
 }
@@ -286,7 +307,7 @@ function main() {
       "Set CLIENT to the slug of one folder under clients/. Example: CLIENT=cpc pnpm build",
     );
   }
-  buildClient({ slug });
+  buildClient({ slug, root: clientRoot(process.env), site: SITE_DIR });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
