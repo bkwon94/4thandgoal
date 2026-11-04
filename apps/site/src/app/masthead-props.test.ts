@@ -63,4 +63,10 @@ describe("mastheadProps of cpc", () => {
     ]);
     expect(menu.pastWeeks.map((page) => page.label)).toEqual(["Week 7", "Week 6"]);
   });
+
+  it("takes the masthead text of copy.toml, the CPC logo, and the theme button of a two-set brand (AT-5)", () => {
+    const { title, brand } = mastheadProps();
+    expect(title).toBe("Cornerstone Fantasy Football League");
+    expect(brand).toEqual({ home: "/", logo: "/brand/logo.png", themeButton: true });
+  });
 });

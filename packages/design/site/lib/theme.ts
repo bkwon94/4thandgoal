@@ -25,3 +25,20 @@ export function storeTheme(theme: Theme): void {
  * It is plain ES5 and built from the two constants above, so the key and the class never drift.
  */
 export const BOOT_SCRIPT = `try{if(localStorage.getItem(${JSON.stringify(THEME_KEY)})==="dark"){document.documentElement.classList.add(${JSON.stringify(DARK_CLASS)})}}catch(e){}`;
+
+/* The sets of a brand, in paint order, as brand.toml gives them. */
+export type BrandSets = readonly Theme[];
+
+/*
+ * The first paint of a brand. A two-set brand paints light first, and the boot script applies a stored dark choice (ADR 0007).
+ * A one-set brand has no choice to apply, so it has no boot script and no theme button. A dark brand puts the dark class on
+ * the root at build time, so each dark: style applies from the first paint.
+ */
+export function paintOf(sets: BrandSets): { rootClass: string | undefined; bootScript: string | null; themeButton: boolean } {
+  const both = sets.length > 1;
+  return {
+    rootClass: !both && sets[0] === "dark" ? DARK_CLASS : undefined,
+    bootScript: both ? BOOT_SCRIPT : null,
+    themeButton: both,
+  };
+}

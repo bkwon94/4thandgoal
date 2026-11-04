@@ -1,46 +1,58 @@
 /**
- * Holds the color tokens of globals.css to their role names and to the CPC values.
- * A token keeps its value through a rename, so the CPC look does not change (AT-8).
+ * Holds the color tokens to their role names and to the CPC values. The values come from clients/cpc/brand.toml
+ * through the brand CSS of the design package, and globals.css adds the tokens that no brand sets (AT-8).
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { parse } from "smol-toml";
 import { describe, expect, it } from "vitest";
+import { brandCss, type BrandFile } from "@cpc/design/brand/brand";
 
-const CSS = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+const ROOT = join(process.cwd(), "..", "..");
+const BRAND = parse(readFileSync(join(ROOT, "clients", "cpc", "brand.toml"), "utf8")) as unknown as BrandFile;
+const CSS = brandCss(BRAND, { source: "clients/cpc/brand.toml", faces: [] }) + readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
 
-/* The CSS with comments and the shadcn mapping block removed, so only the brand tokens and the shadcn values stay. */
 function declarations(block: string): Map<string, string> {
   const map = new Map<string, string>();
   for (const [, name, value] of block.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/g)) map.set(name, value.trim());
   return map;
 }
 
-/* Cut the text of the block that starts at the opener, by brace depth. */
-function blockAt(css: string, opener: RegExp): string {
-  const start = css.search(opener);
-  if (start < 0) return "";
-  const open = css.indexOf("{", start);
-  let depth = 0;
-  for (let i = open; i < css.length; i++) {
-    if (css[i] === "{") depth++;
-    if (css[i] === "}" && --depth === 0) return css.slice(open + 1, i);
+/* The text of each block that starts at the opener, by brace depth. */
+function blocksAt(css: string, opener: RegExp): string[] {
+  const blocks: string[] = [];
+  for (const match of css.matchAll(new RegExp(opener, "g"))) {
+    const open = css.indexOf("{", match.index);
+    let depth = 0;
+    for (let i = open; i < css.length; i++) {
+      if (css[i] === "{") depth++;
+      if (css[i] === "}" && --depth === 0) {
+        blocks.push(css.slice(open + 1, i));
+        break;
+      }
+    }
   }
-  return "";
+  return blocks;
 }
 
 function resolve(value: string, map: Map<string, string>): string {
   return value.replace(/var\((--[a-z0-9-]+)\)/g, (_, name: string) => resolve(map.get(name) ?? `MISSING(${name})`, map));
 }
 
-const stripped = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
-const withoutInline = stripped.replace(blockAt(stripped, /@theme inline/), "");
-const darkBlock = blockAt(withoutInline, /\.dark\s*\{/);
-const lightMap = declarations(withoutInline.replace(darkBlock, ""));
-const darkMap = new Map([...lightMap, ...declarations(darkBlock)]);
+/* A short hex such as #fff and its long form #ffffff are one color, so each hex compares in its long form. */
+function longHex(value: string): string {
+  return value.toLowerCase().replace(/#([0-9a-f])([0-9a-f])([0-9a-f])(?![0-9a-f])/g, "#$1$1$2$2$3$3");
+}
+
+let stripped = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+for (const block of blocksAt(stripped, /@theme inline/)) stripped = stripped.replace(block, "");
+const darkBlocks = blocksAt(stripped, /\.dark\s*\{/);
+const lightMap = declarations(darkBlocks.reduce((css, block) => css.replace(block, ""), stripped));
+const darkMap = new Map([...lightMap, ...darkBlocks.flatMap((block) => [...declarations(block)])]);
 
 function value(theme: "light" | "dark", token: string): string {
   const map = theme === "light" ? lightMap : darkMap;
-  return resolve(map.get(`--color-${token}`) ?? `MISSING(${token})`, map);
+  return longHex(resolve(map.get(`--color-${token}`) ?? `MISSING(${token})`, map));
 }
 
 /* The resolved value of each color token before the rename, light and dark. The key is the new name. */
@@ -71,8 +83,16 @@ const CPC: Record<string, [string, string]> = {
 
 describe("the color tokens of the site", () => {
   it.each(Object.entries(CPC))("%s keeps its CPC value in both themes", (token, [light, dark]) => {
-    expect(value("light", token)).toBe(light);
-    expect(value("dark", token)).toBe(dark);
+    expect(value("light", token)).toBe(longHex(light));
+    expect(value("dark", token)).toBe(longHex(dark));
+  });
+
+  it("keeps the CPC fonts and radii", () => {
+    const helvetica = '"Helvetica Neue", Arial, sans-serif';
+    expect(resolve(lightMap.get("--font-sans") ?? "", lightMap)).toBe(helvetica);
+    expect(resolve(lightMap.get("--font-heading") ?? "", lightMap)).toBe(helvetica);
+    expect(lightMap.get("--radius-sm")).toBe("3px");
+    expect(lightMap.get("--radius-card")).toBe("8px");
   });
 });
 
@@ -91,6 +111,18 @@ describe("the source of the site (AT-8)", () => {
           .filter(({ text }) => pattern.test(text))
           .map(({ at, text }) => `${at}: ${text.trim()}`),
       );
+    expect(hits).toEqual([]);
+  });
+});
+
+describe("the fonts of the site", () => {
+  it("load from no outside host: no next/font, no font service, and no remote url in a stylesheet", () => {
+    const pattern = /next\/font|fonts\.googleapis|fonts\.gstatic|use\.typekit|url\(\s*["']?(https?:)?\/\//;
+    const dirs = [join(process.cwd(), "src"), join(ROOT, "packages", "design", "site")];
+    const hits = dirs
+      .flatMap((dir) => sourceFiles(dir))
+      .filter((file) => !file.endsWith("brand-tokens.test.ts") && !file.includes("node_modules"))
+      .filter((file) => pattern.test(readFileSync(file, "utf8")));
     expect(hits).toEqual([]);
   });
 });

@@ -5,18 +5,19 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { Masthead } from "./masthead";
+import type { MenuLayout } from "./menu";
 
 const TO_DARK = "Switch to dark theme";
 const TO_LIGHT = "Switch to light theme";
 
-/* The masthead of the week 7 report, with one page link and no past week. */
-function renderWeekMasthead() {
+/* The masthead of the week 7 report, with one page link and no past week. A brand with two sets shows the theme button. */
+function renderWeekMasthead({ themeButton = true, layout = "hamburger" }: { themeButton?: boolean; layout?: MenuLayout } = {}) {
   render(
     <Masthead
       subtitle="League Weekly"
-      brand={{ home: "/", logo: "/images/logo.png" }}
+      brand={{ home: "/", logo: "/images/logo.png", themeButton }}
       menu={{
-        layout: "hamburger",
+        layout,
         pages: [
           { label: "Home", href: "/" },
           { label: "Week 7", href: "/2026/week-07/" },
@@ -190,5 +191,23 @@ describe("Theme button", () => {
     fireEvent.click(mastheadButton(TO_DARK));
     expect(rootIsDark()).toBe(true);
     expect(mastheadButton(TO_LIGHT)).toBeTruthy();
+  });
+
+  it("shows in a brand with two sets in each layout (AT-5)", () => {
+    for (const layout of ["hamburger", "bar", "tabs"] as const) {
+      renderWeekMasthead({ layout });
+      expect(mastheadButton(TO_DARK)).toBeTruthy();
+      cleanup();
+    }
+  });
+
+  it("does not show in a brand with one set, in the masthead or the compact bar (AT-10)", () => {
+    for (const layout of ["hamburger", "bar", "tabs"] as const) {
+      renderWeekMasthead({ themeButton: false, layout });
+      scrollMastheadOut();
+      expect(screen.queryByRole("button", { name: TO_DARK })).toBeNull();
+      expect(screen.queryByRole("button", { name: TO_LIGHT })).toBeNull();
+      cleanup();
+    }
   });
 });

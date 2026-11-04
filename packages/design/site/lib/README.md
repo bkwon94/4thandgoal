@@ -3,6 +3,7 @@
 ## Knows
 
 - The theme store and the boot script that sets the stored theme before the first paint, in `theme.ts`.
+- The first paint of a brand from its set count, in `theme.ts`: a two-set brand paints light and runs the boot script.
 - The motion timings and the helpers of Framer Motion, in `motion.ts`.
 - The count URL and the event call of GoatCounter, in `usage.ts`.
 - The `cn` class-name helper of the shadcn primitives, in `utils.ts`.

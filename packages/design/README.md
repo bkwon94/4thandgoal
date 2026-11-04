@@ -6,6 +6,7 @@
 - The three menu layouts of the shell: `hamburger`, `bar`, and `tabs`.
 - The theme store and its boot script, the motion timings and hooks, the pure number formats, and the `cn` helper.
 - The usage count: the count script tag and the event call.
+- The brand: the schema of `brand.toml` and `copy.toml`, the formula of each derived role, and the brand CSS, in `site/brand/`.
 - It holds no rule of the league. It is the one package name that is not a league word (ADR 0023).
 
 ## Ports

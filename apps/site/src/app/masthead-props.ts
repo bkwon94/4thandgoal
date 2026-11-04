@@ -1,7 +1,8 @@
 /**
- * Builds the masthead props that every page shares: the brand and the menu, from the menu of client.toml.
+ * Builds the masthead props that every page shares: the title, the brand, and the menu, from client.toml, brand.toml, and copy.toml.
  * It reads public/ at build time in the app layer, so the masthead itself reads no file and builds no route.
  */
+import { paintOf } from "@cpc/design/lib/theme";
 import type { Brand, Destination, SiteMenu } from "@cpc/design/shell/menu";
 import { clientValues } from "@/generated/client-values";
 import { menuLinks } from "@/generated/registry";
@@ -19,7 +20,7 @@ export function menuPages(items: MenuItem[], links: MenuLinks, home: string): De
   });
 }
 
-export function mastheadProps(): { brand: Brand; menu: SiteMenu } {
+export function mastheadProps(): { title: string; brand: Brand; menu: SiteMenu } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
   // The newest week is the week link of the menu, so the past weeks are the rest. A client with no week lists none.
@@ -29,7 +30,8 @@ export function mastheadProps(): { brand: Brand; menu: SiteMenu } {
         .map((summary) => ({ label: `Week ${summary.number}`, href: summary.href }))
     : [];
   return {
-    brand: { home, logo: logoSrc() },
+    title: clientValues.copy.masthead,
+    brand: { home, logo: logoSrc(clientValues.brand.logo), themeButton: paintOf(clientValues.brand.sets).themeButton },
     menu: {
       layout: clientValues.menu.layout,
       pages: menuPages(clientValues.menu.items, menuLinks, home),

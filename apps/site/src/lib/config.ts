@@ -19,3 +19,6 @@ export const finderOn = clientValues.finder;
 
 // The GoatCounter site code, from usage_code of client.toml. The count script loads only when it is set.
 export const usageCode = clientValues.usageCode;
+
+// The sets of brand.toml in paint order. Their count decides the first paint and the theme button.
+export const brandSets = clientValues.brand.sets;

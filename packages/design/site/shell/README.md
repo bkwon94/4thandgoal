@@ -6,6 +6,7 @@
 - The three menu layouts. The `hamburger` has the menu button, the sheet, the desktop row, and the compact bar.
 - The `bar` wraps one row of links at every width. The `tabs` keep one row that scrolls sideways.
 - The Past weeks popover of each layout, the theme button, and the aria-current value of a menu link.
+- A brand with one set shows no theme button. A brand with no logo shows its title as text.
 - The count script tag of the head.
 
 ## Ports

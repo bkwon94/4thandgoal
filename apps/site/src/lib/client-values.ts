@@ -3,6 +3,7 @@
  * The site reads one client per build, so a value that changes with the league comes from these files and not the env.
  */
 
+import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination, MenuLayout } from "@cpc/design/shell/menu";
 
 /* A package that a client takes or omits. league, facts, and design are in every client, so the list never names them. */
@@ -20,6 +21,10 @@ export type ClientValues = {
   finder: boolean;
   // The menu of [menu] in client.toml. The client build fills the items from the package list when client.toml gives none.
   menu: ClientMenu;
+  // The sets of brand.toml in paint order, and the src of the logo in assets/, or null with no logo.
+  brand: { sets: BrandSets; logo: string | null };
+  // The words of copy.toml.
+  copy: { siteName: string; masthead: string; tagline: string };
 };
 
 /* One menu item: the home page or one package of the list. With no label, the item takes the label of its package. */

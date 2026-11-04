@@ -18,5 +18,5 @@ export const managerHref = (season: string, rosterId: number) => managerHrefFrom
    managerHref is taken by the season form above, so this one takes the managers index href that a component holds. */
 export const managerHrefOrNull = (managersHref: string | null, rosterId: number) =>
   managersHref === null ? null : managerHrefFrom(managersHref, rosterId);
-/* The logo is a plain img on every page, so its src takes the base path like a link. */
-export const logoSrc = () => `${basePath}/images/logo.png`;
+/* The logo is a plain img on every page, so its src takes the base path like a link. A client with no logo gives null. */
+export const logoSrc = (logo: string | null) => (logo === null ? null : `${basePath}${logo}`);

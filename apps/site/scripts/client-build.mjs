@@ -1,12 +1,14 @@
 /**
- * The client build: it reads clients/$CLIENT/client.toml, checks it, and writes the routes, the registry, and the client values.
- * It copies only that client's published data into public/. The prebuild step runs it, and the fast check runs it for cpc.
+ * The client build: it reads clients/$CLIENT/client.toml, brand.toml, and copy.toml, checks them, and writes the routes,
+ * the registry, the client values, and the brand CSS. It copies only that client's published data and assets into public/.
+ * The prebuild step runs it, and the fast check runs it for cpc.
  */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { parse } from "smol-toml";
+import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, FONT_PATH, setsOf } from "@cpc/design/brand/brand.ts";
 
 /* The repo root, two folders above the site app. */
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -26,25 +28,30 @@ function ruleLine(error) {
   return `- ${where.join(".") || "the file"}: ${error.message}`;
 }
 
-/* The checked values of clients/<slug>/client.toml. The JSON Schema checks each key and value, and an unknown key fails,
-   so a typo never passes as a default. */
-export function readClient(root, slug) {
-  const folder = join(root, "clients", slug);
-  const file = join(folder, "client.toml");
-  if (!existsSync(file)) throw new ClientBuildError(`No client.toml for the client ${slug} at ${file}.`);
+/* The checked values of the TOML file `name` of the client `slug`. The JSON Schema checks each key and value, and an
+   unknown key fails, so a typo never passes as a default. */
+function readChecked(root, slug, name, schema) {
+  const file = join(root, "clients", slug, name);
+  if (!existsSync(file)) throw new ClientBuildError(`No ${name} for the client ${slug} at ${file}.`);
   let values;
   try {
     values = parse(readFileSync(file, "utf8"));
   } catch (error) {
     throw new ClientBuildError(`${file} is not valid TOML: ${error.message}`);
   }
-  const schema = JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8"));
   const check = new Ajv({ allErrors: true }).compile(schema);
   if (!check(values)) {
     // An anyOf branch that fails adds a line for each branch, so the check keeps each line once.
     const lines = [...new Set(check.errors.map(ruleLine))];
     throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
   }
+  return values;
+}
+
+/* The checked values of clients/<slug>/client.toml, with the schema that the pipeline exports. */
+export function readClient(root, slug) {
+  const file = join(root, "clients", slug, "client.toml");
+  const values = readChecked(root, slug, "client.toml", JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8")));
   // A JSON Schema cannot tie a menu item to the package list, so this rule is code, as in the pydantic model.
   const omitted = (values.menu?.items ?? [])
     .filter((item) => item.package !== undefined && !values.packages.includes(item.package))
@@ -53,9 +60,24 @@ export function readClient(root, slug) {
   return values;
 }
 
+/* The checked values of clients/<slug>/brand.toml, with the schema of the design package. */
+export function readBrand(root, slug) {
+  return readChecked(root, slug, "brand.toml", BRAND_SCHEMA);
+}
+
+/* The checked values of clients/<slug>/copy.toml: the site name, the masthead text, and the tagline. */
+export function readCopy(root, slug) {
+  return readChecked(root, slug, "copy.toml", COPY_SCHEMA);
+}
+
 /* The folders that the build owns. It empties each one first, so a route of the last client never stays behind. */
 const ROUTE_GROUP = join("src", "app", "(client)");
 const GENERATED_DIR = join("src", "generated");
+/* The logo and the font files of the client, copied from its assets/. The site serves them at /brand/. */
+const BRAND_DIR = join("public", "brand");
+
+/* The logo of a client is the one file named logo in its assets/. A client with none shows its site name as text. */
+const LOGO = /^logo\.(png|svg|webp|jpg)$/;
 
 /* A season folder name, such as 2026. */
 const SEASON = /^\d{4}$/;
@@ -161,7 +183,7 @@ function menuOf(values) {
 }
 
 /* The values of the client that the site reads. The site season is the latest season of the client. */
-function clientValuesText(slug, values) {
+function clientValuesText(slug, values, brand, copy) {
   const seasons = Object.keys(values.seasons).map(Number);
   const site = {
     slug,
@@ -170,6 +192,8 @@ function clientValuesText(slug, values) {
     usageCode: values.usage_code ?? null,
     finder: values.values?.analyzer?.finder ?? false,
     menu: menuOf(values),
+    brand,
+    copy: { siteName: copy.site_name, masthead: copy.masthead, tagline: copy.tagline },
   };
   return [
     headerLine(slug),
@@ -193,6 +217,29 @@ function copyPublished(published, publicDir) {
   }
 }
 
+/* Copy the logo and each font file of the brand from the assets/ of the client into public/brand/. The folder of an
+   earlier build goes first, so the export never holds the logo of another client. A face with no file fails, because
+   the build fetches no font from an outside host. Returns the src of the logo, or null with no logo. */
+function copyAssets(root, slug, brand, site) {
+  const assets = join(root, "clients", slug, "assets");
+  const target = join(site, BRAND_DIR);
+  rmSync(target, { recursive: true, force: true });
+  for (const face of brand.fonts.faces ?? []) {
+    const file = join(assets, "fonts", face.file);
+    if (!existsSync(file)) {
+      throw new ClientBuildError(`The font face ${face.family} of clients/${slug}/brand.toml names ${file}, and the file does not exist.`);
+    }
+    // The brand CSS names each font file at FONT_PATH, so the copy goes to the same path.
+    mkdirSync(join(site, "public", FONT_PATH), { recursive: true });
+    cpSync(file, join(site, "public", FONT_PATH, face.file));
+  }
+  const logo = existsSync(assets) ? readdirSync(assets).filter((name) => LOGO.test(name)).sort()[0] : undefined;
+  if (logo === undefined) return null;
+  mkdirSync(target, { recursive: true });
+  cpSync(join(assets, logo), join(target, logo));
+  return `/brand/${logo}`;
+}
+
 function writeFile(file, text) {
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, text);
@@ -201,6 +248,8 @@ function writeFile(file, text) {
 /* Build the client `slug`: check its client.toml, then write the generated files of the site app `site`. */
 export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", "site") }) {
   const values = readClient(root, slug);
+  const brand = readBrand(root, slug);
+  const copy = readCopy(root, slug);
   const published = join(root, "clients", slug, "published");
   rmSync(join(site, ROUTE_GROUP), { recursive: true, force: true });
   rmSync(join(site, GENERATED_DIR), { recursive: true, force: true });
@@ -211,7 +260,12 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
     }
   }
   writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
-  writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values));
+  const logo = copyAssets(root, slug, brand, site);
+  writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy));
+  writeFile(
+    join(site, GENERATED_DIR, "brand.css"),
+    brandCss(brand, { source: `clients/${slug}/brand.toml`, faces: brand.fonts.faces ?? [] }),
+  );
   copyPublished(published, join(site, "public"));
   return values;
 }

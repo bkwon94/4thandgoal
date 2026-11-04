@@ -3,7 +3,7 @@
  * They read the class on the root element, with a stored dark choice, no choice, and blocked storage.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BOOT_SCRIPT, DARK_CLASS, THEME_KEY } from "./theme";
+import { BOOT_SCRIPT, DARK_CLASS, paintOf, THEME_KEY } from "./theme";
 
 const root = document.documentElement;
 
@@ -41,5 +41,19 @@ describe("boot script", () => {
     });
     expect(runBootScript).not.toThrow();
     expect(root.classList.contains(DARK_CLASS)).toBe(false);
+  });
+});
+
+describe("the first paint of a brand", () => {
+  it("paints a two-set brand light first and runs the boot script for a stored choice (AT-5)", () => {
+    expect(paintOf(["light", "dark"])).toEqual({ rootClass: undefined, bootScript: BOOT_SCRIPT, themeButton: true });
+  });
+
+  it("paints a light brand light, with no boot script and no theme button", () => {
+    expect(paintOf(["light"])).toEqual({ rootClass: undefined, bootScript: null, themeButton: false });
+  });
+
+  it("paints a dark brand dark from the build, with no boot script and no theme button (AT-10)", () => {
+    expect(paintOf(["dark"])).toEqual({ rootClass: DARK_CLASS, bootScript: null, themeButton: false });
   });
 });

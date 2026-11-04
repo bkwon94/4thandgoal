@@ -8,7 +8,7 @@ import { Masthead } from "./masthead";
 import type { Brand, SiteMenu } from "./menu";
 
 /* The brand of a build with no base path. */
-const BRAND: Brand = { home: "/", logo: "/images/logo.png" };
+const BRAND: Brand = { home: "/", logo: "/images/logo.png", themeButton: true };
 
 /* The menu of the week 7 report: four pages, then two past weeks, newest first. */
 const MENU: SiteMenu = {
@@ -153,6 +153,24 @@ describe("Masthead", () => {
     const home = brandLink(/Custom Brand/);
     expect(home.textContent).toContain("Custom Brand");
     expect(home.textContent).not.toContain("Cornerstone Fantasy Football League");
+  });
+
+  it("shows the logo next to the title when the brand has a logo", () => {
+    render(<Masthead title="NorCal Apex 6" brand={BRAND} menu={MENU} />);
+    expect(within(screen.getByRole("banner")).getAllByRole("presentation").map((img) => img.getAttribute("src"))).toEqual([
+      "/images/logo.png",
+    ]);
+  });
+
+  it("shows the title as text with no image when the brand has no logo", () => {
+    render(<Masthead title="NorCal Apex 6" brand={{ ...BRAND, logo: null }} menu={MENU} />);
+    const banner = screen.getByRole("banner");
+    expect(brandLink(/NorCal Apex 6/).textContent).toBe("NorCal Apex 6");
+    expect(banner.querySelector("img")).toBeNull();
+    reportMasthead(false);
+    const home = within(bar()).getByRole("link", { name: "NorCal Apex 6" });
+    expect(home.textContent).toBe("NorCal Apex 6");
+    expect(bar().querySelector("img")).toBeNull();
   });
 
   it("shows no week line when there are no children", () => {
