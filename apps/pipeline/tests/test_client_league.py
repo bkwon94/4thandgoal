@@ -6,7 +6,8 @@ import pytest
 from cpc import cpc_client
 from pydantic import ValidationError
 
-from cornerstone.sheet.base import RANKINGS_CHAPTER, sentence_range
+from cornerstone.sheet.base import sentence_range
+from facts.chapters import RANKINGS_CHAPTER
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.standings_table import standings

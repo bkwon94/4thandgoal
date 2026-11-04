@@ -404,7 +404,7 @@ def test_the_letter_rules_guard_the_fairness_state(trade, snap):
 
 
 def test_an_empty_response_or_a_refusal_falls_back(trade, snap):
-    from cornerstone.writer import RefusalError
+    from facts.writer import RefusalError
 
     def refuse(system, user, output_model):
         raise RefusalError("Claude refused the request for AnalysisOut.")

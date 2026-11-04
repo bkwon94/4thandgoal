@@ -6,7 +6,7 @@ It reads the snapshot and a proposed trade, not the weekly bundle, so it is not 
 """
 from cornerstone.adjusters import Side, due_back_week, hole_sentence, team_race, trade_handcuffs
 from cornerstone.rubric import ProposedTrade, build_sides
-from cornerstone.sheet.base import Nums, fact
+from facts.tokens import Nums, fact
 from league.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from league.lineup import FLEX_SLOTS, STRENGTH_SLOTS, StartingSlot, allowed_positions
 from league.models import Fact, UsageShare

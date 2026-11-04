@@ -8,7 +8,7 @@ from cpc import cpc_client
 from fakes import FakeWriter
 
 from cornerstone.sheet import build_bundle
-from cornerstone.verifier import (
+from facts.verifier import (
     build_verifier_prompt,
     claude_verify,
     code_check,
@@ -18,7 +18,7 @@ from cornerstone.verifier import (
     verify_blurb,
     write_and_verify,
 )
-from cornerstone.writer import RefusalError, claude_call
+from facts.writer import RefusalError, claude_call
 from league.history import load_history
 from league.models import Blurb, Sentence, Verdict, VerifyOut, WriterOut
 from league.parse import parse_week
@@ -302,7 +302,7 @@ def test_prompt_system_has_vocabulary_then_verifier_rules(fixture_raw_dir):
     ch = _ch(sheet, "median")
     b = _blurb("median", _s("The median was 106.83.", "MED.value"))
     system, _ = build_verifier_prompt(b, ch, sheet, prompts_dir=PROMPTS)
-    rules = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8").strip()
+    rules = resources.files("facts").joinpath("prompts").joinpath("verifier.md").read_text(encoding="utf-8").strip()
     assert "margin driver" in system
     assert rules.splitlines()[0] in system
     assert system.index("margin driver") < system.index(rules.splitlines()[0])
@@ -538,7 +538,7 @@ def test_fact_id_in_text_fails(fixture_raw_dir):
 def test_vocabulary_has_the_history_terms():
     from importlib import resources
 
-    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("streak", "team trend", "season high", "season low", "season average"):
         assert f"**{term}**" in text
 
@@ -546,7 +546,7 @@ def test_vocabulary_has_the_history_terms():
 def test_vocabulary_has_the_banned_phrases_line():
     from importlib import resources
 
-    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     line = ("Never write these phrases: the entire point, one of the problems, a lot to hang on, a polite way to say, "
             "expected points.")
     assert "## Banned phrases\n\n" + line in text
@@ -1170,7 +1170,7 @@ def test_a_recap_that_holds_a_turn_fact_and_does_not_cite_it_fails(story_bundle)
 def test_verifier_prompt_gates_a_rank_or_a_comparison_on_one_fact():
     from importlib import resources
 
-    text = resources.files("cornerstone.prompts").joinpath("verifier.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("verifier.md").read_text(encoding="utf-8")
     assert ("- Only one listed fact can state a rank, a superlative, or a comparison, cited or not. "
             "Do not compute it by comparing facts.") in text
     assert ('"The most", "the bottom", "topped everyone", "swept the board", "a full game in the standings" '

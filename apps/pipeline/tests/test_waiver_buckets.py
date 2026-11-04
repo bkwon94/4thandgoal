@@ -7,9 +7,9 @@ from zoneinfo import ZoneInfo
 
 from cpc import cpc_client
 
-from cornerstone.sheet import NUMBER_TOKEN
 from cornerstone.waiver import waiver_board
 from cornerstone.waiver_buckets import return_week
+from facts.tokens import NUMBER_TOKEN
 from league.models import NflverseWeek, UsageWeek
 from league.nflverse import TeamSchedule
 from league.provider.sleeper import load_raw

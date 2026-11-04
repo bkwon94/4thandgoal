@@ -12,7 +12,7 @@ import pytest
 from conftest import strip_trend_numbers, with_carries, with_free_agents
 from cpc import cpc_client
 
-from cornerstone import rubric
+from cornerstone import RULE_PROMPTS, rubric
 from cornerstone.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters
 from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from cornerstone.rubric import (
@@ -27,7 +27,7 @@ from cornerstone.rubric import (
     verdict,
 )
 from cornerstone.trade_facts import trade_fact_sheet
-from cornerstone.writer import load_prompt
+from facts.writer import load_prompt
 from league import tunables
 from league.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from league.lineup import best_lineup, bye_covers
@@ -399,7 +399,7 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
 
 def _prompt_section(heading: str) -> str:
     """One section of the rubric prompt, from its heading to the next, with the line breaks joined."""
-    text = load_prompt(PROMPTS, "rubric.md")
+    text = load_prompt(PROMPTS, "rubric.md", RULE_PROMPTS)
     section = text.split(f"## {heading}\n", 1)[1].split("\n## ", 1)[0]
     return " ".join(section.split())
 
@@ -1678,7 +1678,7 @@ def test_a_qb_with_a_flat_target_share_and_wopr_gets_no_upside_from_snaps(snap):
 
 
 def test_the_analysis_prompt_names_the_upside():
-    assert "the upside" in " ".join(load_prompt(PROMPTS, "analysis.md").split())
+    assert "the upside" in " ".join(load_prompt(PROMPTS, "analysis.md", RULE_PROMPTS).split())
 
 
 # The LAC depth chart: Omarion Hampton on roster 12 first, then Keaton Mitchell and Kimani Vidal on roster 11.

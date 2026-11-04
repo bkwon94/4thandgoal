@@ -4,13 +4,14 @@ facts, and the leader volume facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
 import re
-from pathlib import Path
 
 import pytest
 from cpc import cpc_client
 
 from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
-from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
+from cornerstone.sheet import build_bundle
+from facts.tokens import NUMBER_TOKEN, fmt
+from facts.writer import DEFAULT_PROMPTS
 from league.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
 from league.nflverse import nflverse_week
 from league.parse import parse_week
@@ -248,7 +249,7 @@ def test_a_starter_with_two_awards_never_wins_an_expected_award(fixture_raw_dir,
 
 
 def test_the_vocabulary_rule_lines_carry_the_floor():
-    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    vocabulary = (DEFAULT_PROMPTS / "vocabulary.md").read_text()
     floor = fmt(EXPECTED_AWARD_FLOOR)
     unlucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Unlucky**"))
     lucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Lucky**"))
@@ -470,7 +471,7 @@ def test_every_number_in_a_volume_fact_text_is_in_its_numbers(vbundle):
 
 
 def test_the_vocabulary_lines_define_wopr_and_carry_share():
-    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    vocabulary = (DEFAULT_PROMPTS / "vocabulary.md").read_text()
     wopr = next(line for line in vocabulary.splitlines() if line.startswith("- **WOPR**"))
     carry = next(line for line in vocabulary.splitlines() if line.startswith("- **carry share**"))
     assert "1.5 times target share plus 0.7 times air yards share" in wopr

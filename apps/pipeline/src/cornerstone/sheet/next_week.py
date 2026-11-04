@@ -5,7 +5,9 @@ The next week chapter reads them.
 from collections.abc import Callable
 
 from cornerstone.facts_nflverse import shootouts
-from cornerstone.sheet.base import BYE_FACT_PREFIX, Context, Nums, fact
+from cornerstone.sheet.base import Context
+from facts.chapters import BYE_FACT_PREFIX
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.lineup import bye_covers_for_roster
 from league.models import (

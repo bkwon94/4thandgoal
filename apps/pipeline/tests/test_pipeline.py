@@ -36,7 +36,7 @@ from cornerstone.power_rankings import power_rankings
 from cornerstone.publish import PublishError, run_publish
 from cornerstone.render import RANKINGS_ODDS_KEYS
 from cornerstone.sheet import read_bundle
-from cornerstone.writer import WriterError
+from facts.writer import DEFAULT_PROMPTS, WriterError
 from league.history import HISTORY_FILES, load_saved_weeks
 from league.models import (
     Blurb,
@@ -124,6 +124,25 @@ def test_an_old_verify_file_with_a_chart_flag_still_reads(tmp_path):
     verify = read_verify(path)
     assert verify.build.sources == {"history": True, "chart": True}
     assert verify.chapters == {"median": []}
+
+
+def test_a_client_with_no_prompts_folder_builds_with_the_default_voice(tmp_path, fixture_raw_dir, offline):
+    # The test client lives in the temp repo, and its folder holds no prompts/, so the voice falls back to facts.
+    repo = _repo(tmp_path, fixture_raw_dir)
+    client = cpc_client(at=repo)
+    assert not client.voice_dir.exists()
+    systems = []
+
+    def recording(system, user, model):
+        systems.append(system)
+        return _fake(system, user, model)
+
+    page = run_build(repo, 2026, 6, recording, fetch=False, **offline, client=client)
+    assert page.is_file()
+    voice = [(DEFAULT_PROMPTS / name).read_text(encoding="utf-8").strip() for name in ("tone.md", "vocabulary.md")]
+    writer_rules = (DEFAULT_PROMPTS / "writer.md").read_text(encoding="utf-8").strip()
+    writer_systems = [system for system in systems if writer_rules in system]
+    assert writer_systems and all(part in system for system in writer_systems for part in voice)
 
 
 def _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root):

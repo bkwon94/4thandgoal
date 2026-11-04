@@ -8,8 +8,10 @@ from cornerstone.facts_league import (
     head_to_head,
 )
 from cornerstone.power_rankings import power_rankings
-from cornerstone.sheet.base import RANKINGS_CHAPTER, Context, Nums, fact, sentence_range
+from cornerstone.sheet.base import Context, sentence_range
 from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
+from facts.chapters import RANKINGS_CHAPTER
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     Chapter,

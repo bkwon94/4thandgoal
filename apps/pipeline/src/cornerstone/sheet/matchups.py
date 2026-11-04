@@ -7,7 +7,8 @@ from decimal import Decimal
 
 from cornerstone.facts_league import STREAK_ON_THE_LINE, streak
 from cornerstone.odds import roster_status
-from cornerstone.sheet.base import MOVE_WORDS, Context, Nums, fact
+from cornerstone.sheet.base import MOVE_WORDS, Context
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     Fact,

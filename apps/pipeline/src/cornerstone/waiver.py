@@ -8,11 +8,11 @@ from typing import NamedTuple
 
 from cornerstone import waiver_buckets
 from cornerstone.rank_score import rank_scores
-from cornerstone.sheet.base import Nums, fact
 from cornerstone.tunables import BOARD_WEIGHTS, BUCKET_POSITIONS, BUCKET_SIZE, PER_POSITION, USAGE_WEEKS
 from cornerstone.waiver_drops import drop_candidates
 from cornerstone.waiver_price import budget_left, price_players
 from cornerstone.waiver_projection import next_week, projections_ahead, rest_of_season
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     BoardScores,

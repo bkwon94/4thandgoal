@@ -17,8 +17,6 @@ from cornerstone.sheet import (
     Context,
     build_bundle,
     check_week_is_buildable,
-    fmt,
-    is_motw_recap,
     odds_facts,
     power_facts,
     projected_totals,
@@ -30,6 +28,8 @@ from cornerstone.sheet import (
     week_dates,
     write_bundle,
 )
+from facts.chapters import is_motw_recap
+from facts.tokens import fmt
 from league.history import load_history
 from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
 from league.parse import parse_week
@@ -954,7 +954,7 @@ def test_storyline_facts_give_each_kind_its_numbers():
 
 
 def test_the_checker_accepts_a_cited_streak_length_and_projected_total():
-    from cornerstone.verifier import normalize_number, number_failures, remove_names
+    from facts.verifier import normalize_number, number_failures, remove_names
     by_rank = {3: _standing(3, 1, 4), 6: _standing(6, 3, -1)}
     game = NextMatchup(a=3, b=6, must_watch=True, reason="x", storylines=[
         _story("streak", 3, roster_id=3, length=4), _story("shootout", 2, totals=(123.0, 118.8))])
@@ -1079,7 +1079,7 @@ def test_a_build_with_no_snapshot_reads_the_byes_without_a_rank_or_a_cover(
 
 
 def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_the_bye_note(dbundle):
-    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    from facts.writer import BYES_NOTE, build_writer_prompt
     chapter = next(c for c in dbundle.sheet.chapters if c.key == "next_week")
     byes = [fid for fid in dbundle.sheet.facts if fid.startswith("NX.bye.")]
     assert set(byes) <= set(chapter.fact_ids)
@@ -1094,7 +1094,7 @@ def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_
 
 
 def test_a_chapter_with_no_bye_fact_has_no_bye_note(hbundle):
-    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    from facts.writer import BYES_NOTE, build_writer_prompt
     chapter = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
     _, user = build_writer_prompt(chapter, hbundle.sheet, None, prompts_dir=PROMPTS)
     assert BYES_NOTE not in user

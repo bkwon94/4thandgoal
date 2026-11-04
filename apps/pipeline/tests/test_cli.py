@@ -522,7 +522,7 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
 
     from cornerstone import cli
     from cornerstone.analysis import AnalysisOut
-    from cornerstone.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
+    from facts.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
 
     side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
             "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}

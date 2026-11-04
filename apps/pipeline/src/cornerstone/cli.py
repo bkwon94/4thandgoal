@@ -39,7 +39,7 @@ from cornerstone.rubric import (
     grade,
     verdict,
 )
-from cornerstone.writer import analyzer_call, claude_call, parse_call
+from facts.writer import analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import CLIENT_FILE, Client, ClientError, check_schema_file, load_client, read_client_values

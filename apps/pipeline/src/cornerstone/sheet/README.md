@@ -13,8 +13,8 @@
 
 ## Does not do
 
-- It writes no prose and makes no Claude call. `cornerstone/writer.py` writes each blurb.
-- It checks no blurb. `cornerstone/verifier.py` does.
+- It writes no prose and makes no Claude call. `facts/writer.py` writes each blurb.
+- It checks no blurb. `facts/verifier.py` does.
 - It holds no odds engine. `cornerstone/odds.py` holds it, and `sheet/base.py` calls it once per build.
 - It writes no page. `cornerstone/render.py` writes `page.json`.
 - It builds no fact sheet of a proposed trade. `cornerstone/trade_facts.py` does.

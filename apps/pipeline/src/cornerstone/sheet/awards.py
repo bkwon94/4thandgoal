@@ -6,7 +6,8 @@ import logging
 from collections import Counter
 
 from cornerstone.facts_nflverse import expected_awards
-from cornerstone.sheet.base import AWARD_TITLES, Context, Nums, fact
+from cornerstone.sheet.base import AWARD_TITLES, Context
+from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
     Fact,
