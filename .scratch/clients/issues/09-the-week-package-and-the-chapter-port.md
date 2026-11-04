@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1, AT-11, AT-13, and AT-23.
 
 **Blocked by:** 06, 07
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `week` package holds the modules of decision 01 and the median text.
 - [x] The chapter port takes a chapter from another package. The registry of the site build lists only the chapters of the client.
