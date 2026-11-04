@@ -14,6 +14,7 @@ from cornerstone.models import (
     FactSheet,
     History,
     NflverseWeek,
+    OddsResult,
     Trade,
     Week,
     WeekData,
@@ -180,10 +181,12 @@ def build_bundle(
     nfl: NflverseWeek | None = None,
     snapshot: Snapshot | None = None,
     today: date | None = None,
+    odds_before: OddsResult | None = None,
     *,
     config: LeagueConfig,
 ) -> Bundle:
-    c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, config=config)
+    c = Context(week, news, history, trades, nfl, snapshot=snapshot, today=today, odds_before=odds_before,
+                config=config)
     facts = {f.id: f for group in FACT_GROUPS for f in group(c, config)}
     data = WeekData(
         season=week.season,

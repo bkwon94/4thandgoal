@@ -47,3 +47,9 @@ Accuracy is the first rule. A boring sentence is better than a wrong one.
     - "Out" alone means a team out of the playoffs. For a player, write "listed Out" or name the injury.
 30. Give every blurb one concrete detail from its facts: the number, the player, or the lead change that made the chapter. Pick the one a league member would repeat to a friend. Name the player or give the number. "The trade went nowhere" is a summary, not a detail. Cite the fact it comes from. It fits inside the sentence range. The banned words, the number rules, and rule 11 still hold.
 31. State a rank, a superlative, or a comparison only when one listed fact states it. "The most", "nobody else was close", and "blew past everyone" need a fact that says so. A rank that a fact gives, such as 12th of 12, may read as last or first. A direction word such as fell, climbed, or slid is not a comparison when a fact gives the move.
+32. In the Matchup of the Week chapter and each recap chapter, an `M<n>.impact` fact gives what this week did to both teams. Its parts are the standings place, the cut, the playoff odds, the median, the streak, and a clinch or an out. Cite it, and say what the week did to both teams. Choose the parts that matter most. You need not give them all.
+    - Take an odds number in these chapters from the impact fact. Keep "playoff odds" and "this week" in its sentence. Rule 23 still governs the odds of the other chapters.
+    - The odds change is for the whole week, not for this one game. Rule 9 still holds.
+    - A standings place from the impact fact needs no `.upset` fact under rule 10.
+    - Six recaps of one page must not tell the impact the same way. Lead with a different team, part, or shape in each.
+    - In the Matchup of the Week chapter, name the upset in one sentence only.

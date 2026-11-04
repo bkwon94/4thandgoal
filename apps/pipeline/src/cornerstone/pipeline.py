@@ -301,7 +301,7 @@ def make_bundle(
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
     snapshot = week_snapshot(raw, history_root(repo, season), week, config=config)
     bundle = build_bundle(parsed, news=news, history=history, trades=trades, nfl=nfl, snapshot=snapshot,
-                          today=started.date(), config=config)
+                          today=started.date(), odds_before=_saved_odds(repo, season, week - 1), config=config)
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.
@@ -315,6 +315,22 @@ def make_bundle(
         fetched=until,
     )
     return bundle, record
+
+
+def _saved_odds(repo: Path, season: int, week: int) -> OddsResult | None:
+    """The odds that the saved facts of `week` hold. None when the week has no facts file, or its file has no odds.
+
+    The impact fact reads them as the odds before the next week, so the engine still runs once per build.
+    """
+    path = week_dir(repo, season, week) / "facts.json"
+    if not path.exists():
+        return None
+    try:
+        return read_bundle(path).odds
+    except ValueError as err:
+        # A facts file from an older build can fail to read. The impact fact then leaves out the odds part.
+        log.warning("week %d facts.json does not read (%s): the impact fact has no odds part", week, err)
+        return None
 
 
 def _first_build(saved: Path) -> BuildRecord | None:

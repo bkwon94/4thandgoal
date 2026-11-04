@@ -1,0 +1,6 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+M1.impact: Lil Fridge fell from 1st to 2nd in the standings, saw its playoff odds go from about 99% to 86% this week, and missed the median to go 0-2 this week. Maye d'force B with U stayed 5th in the standings, saw its playoff odds go from about 49% to 77% this week, and beat the median to go 2-0 this week.
+
+odds.teams.9.playoff = 77

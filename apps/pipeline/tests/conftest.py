@@ -1,6 +1,7 @@
 """
 Shared pytest fixtures for the Cornerstone Weekly tests.
-They give tests the path to the recorded Sleeper data.
+They give tests the path to the recorded Sleeper data and the saved week data.
+The `week_8` fixture builds the bundle of week 8 from them.
 """
 import json
 import re
@@ -10,13 +11,15 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
-from fakes import FakeWriter
+from fakes import FakeWriter, no_news
 
 from cornerstone.config import cornerstone_config
 from cornerstone.history import load_history
 from cornerstone.models import ChartValues, InjuryPlay, NflverseWeek
 from cornerstone.nflverse import nflverse_week
 from cornerstone.parse import parse_trades, parse_week
+from cornerstone.paths import history_root, week_dir
+from cornerstone.pipeline import make_bundle
 from cornerstone.provider.raw import RawWeek
 from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import build_bundle
@@ -177,3 +180,26 @@ def story_nfl(fixture_raw_dir) -> NflverseWeek:
 @pytest.fixture
 def story_bundle(fixture_raw_dir, story_nfl):
     return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, config=CONFIG)
+
+
+SAVED = Path(__file__).parent.parent / "data" / "2026"
+
+
+def saved_repo(tmp_path, week):
+    """A repo of links to the saved raw data of `week`, the saved history, and the saved facts of the week before."""
+    for path in (week_dir(tmp_path, 2026, week), history_root(tmp_path, 2026).parent):
+        path.mkdir(parents=True, exist_ok=True)
+    (week_dir(tmp_path, 2026, week) / "raw").symlink_to(SAVED / f"week-{week:02d}" / "raw")
+    history_root(tmp_path, 2026).symlink_to(SAVED / "history")
+    before = week_dir(tmp_path, 2026, week - 1)
+    before.mkdir(parents=True)
+    shutil.copy(SAVED / f"week-{week - 1:02d}" / "facts.json", before / "facts.json")
+    return tmp_path
+
+
+@pytest.fixture(scope="module")
+def week_8(tmp_path_factory):
+    """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
+    repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
+    bundle, _ = make_bundle(repo, 2026, 8, news=no_news, config=CONFIG)
+    return bundle

@@ -3407,6 +3407,30 @@
         ],
         "players": []
       },
+      "M1.impact": {
+        "id": "M1.impact",
+        "text": "Lil Fridge fell from 1st to 2nd in the standings, saw its playoff odds go from about 99% to 86% this week, and missed the median to go 0-2 this week. Maye d'force B with U stayed 5th in the standings, saw its playoff odds go from about 49% to 77% this week, and beat the median to go 2-0 this week.",
+        "numbers": [
+          "1",
+          "2",
+          "99",
+          "86",
+          "0",
+          "2",
+          "0-2",
+          "5",
+          "49",
+          "77",
+          "2",
+          "0",
+          "2-0"
+        ],
+        "teams": [
+          "Lil Fridge",
+          "Maye d'force B with U"
+        ],
+        "players": []
+      },
       "M2.result": {
         "id": "M2.result",
         "text": "Return of T Mac beat behold the lamb 111.97 to 85.76, a margin of 26.21.",
@@ -3840,6 +3864,31 @@
           "10",
           "6-10",
           "11"
+        ],
+        "teams": [
+          "Return of T Mac",
+          "behold the lamb"
+        ],
+        "players": []
+      },
+      "M2.impact": {
+        "id": "M2.impact",
+        "text": "Return of T Mac stayed 7th in the standings, saw its playoff odds go from about 54% to 42% this week, beat the median to go 2-0 this week, and has now won 5 straight. behold the lamb fell from 10th to 11th in the standings, saw its playoff odds go from about 6% to 4% this week, and missed the median to go 0-2 this week.",
+        "numbers": [
+          "7",
+          "54",
+          "42",
+          "2",
+          "0",
+          "2-0",
+          "5",
+          "10",
+          "11",
+          "6",
+          "4",
+          "0",
+          "2",
+          "0-2"
         ],
         "teams": [
           "Return of T Mac",
@@ -4782,6 +4831,30 @@
         ],
         "players": []
       },
+      "M3.impact": {
+        "id": "M3.impact",
+        "text": "The Blue Tent stayed 6th in the standings, saw its playoff odds go from about 42% to 75% this week, and beat the median to go 2-0 this week. London Cooking fell from 3rd to 4th in the standings, saw its playoff odds go from about 99% to 83% this week, and missed the median to go 0-2 this week.",
+        "numbers": [
+          "6",
+          "42",
+          "75",
+          "2",
+          "0",
+          "2-0",
+          "3",
+          "4",
+          "99",
+          "83",
+          "0",
+          "2",
+          "0-2"
+        ],
+        "teams": [
+          "The Blue Tent",
+          "London Cooking"
+        ],
+        "players": []
+      },
       "M4.result": {
         "id": "M4.result",
         "text": "All You Need Is Love beat Unsolicited Dak Picks 116.83 to 92.55, a margin of 24.28.",
@@ -5235,6 +5308,32 @@
           "10",
           "6-10",
           "10"
+        ],
+        "teams": [
+          "All You Need Is Love",
+          "Unsolicited Dak Picks"
+        ],
+        "players": []
+      },
+      "M4.impact": {
+        "id": "M4.impact",
+        "text": "All You Need Is Love rose from 4th to 1st in the standings, saw its playoff odds go from about 76% to 81% this week, beat the median to go 2-0 this week, and has now won 3 straight. Unsolicited Dak Picks fell from 9th to 10th in the standings, saw its playoff odds go from about 15% to 8% this week, and missed the median to go 0-2 this week.",
+        "numbers": [
+          "4",
+          "1",
+          "76",
+          "81",
+          "2",
+          "0",
+          "2-0",
+          "3",
+          "9",
+          "10",
+          "15",
+          "8",
+          "0",
+          "2",
+          "0-2"
         ],
         "teams": [
           "All You Need Is Love",
@@ -5734,6 +5833,29 @@
         ],
         "players": []
       },
+      "M5.impact": {
+        "id": "M5.impact",
+        "text": "NFC Least stayed 12th in the standings, saw its playoff odds go from about 1% to 1% this week, and missed the median to go 0-2 this week. Teehee stayed 8th in the standings, saw its playoff odds go from about 58% to 61% this week, and beat the median to go 2-0 this week.",
+        "numbers": [
+          "12",
+          "1",
+          "1",
+          "0",
+          "2",
+          "0-2",
+          "8",
+          "58",
+          "61",
+          "2",
+          "0",
+          "2-0"
+        ],
+        "teams": [
+          "NFC Least",
+          "Teehee"
+        ],
+        "players": []
+      },
       "M6.result": {
         "id": "M6.result",
         "text": "To Infinity and Bijan beat Bo Girds 118.89 to 88.2, a margin of 30.69.",
@@ -6202,6 +6324,33 @@
           "9",
           "7-9",
           "9"
+        ],
+        "teams": [
+          "Bo Girds",
+          "To Infinity and Bijan"
+        ],
+        "players": []
+      },
+      "M6.impact": {
+        "id": "M6.impact",
+        "text": "Bo Girds fell from 2nd to 3rd in the standings, saw its playoff odds go from about 99% to 76% this week, missed the median to go 0-2 this week, and has now lost 4 straight. To Infinity and Bijan rose from 11th to 9th in the standings, saw its playoff odds go from about 1% to 7% this week, beat the median to go 2-0 this week, and ended a 3-game losing streak.",
+        "numbers": [
+          "2",
+          "3",
+          "99",
+          "76",
+          "0",
+          "2",
+          "0-2",
+          "4",
+          "11",
+          "9",
+          "1",
+          "7",
+          "2",
+          "0",
+          "2-0",
+          "3"
         ],
         "teams": [
           "Bo Girds",
@@ -11379,6 +11528,7 @@
           "M3.turn",
           "M3.upset",
           "M3.records",
+          "M3.impact",
           "PICK",
           "S.6",
           "S.4",
@@ -11788,6 +11938,7 @@
           "M1.lead",
           "M1.upset",
           "M1.records",
+          "M1.impact",
           "S.2",
           "S.5",
           "H.3.streak",
@@ -11873,6 +12024,7 @@
           "M2.move.13294",
           "M2.lead",
           "M2.records",
+          "M2.impact",
           "S.7",
           "S.11",
           "H.8.streak",
@@ -11993,6 +12145,7 @@
           "M3.turn",
           "M3.upset",
           "M3.records",
+          "M3.impact",
           "S.6",
           "S.4",
           "H.1.streak",
@@ -12080,6 +12233,7 @@
           "M4.snaps.13287",
           "M4.lead",
           "M4.records",
+          "M4.impact",
           "S.1",
           "S.10",
           "H.2.streak",
@@ -12170,6 +12324,7 @@
           "M5.snaps.7547",
           "M5.lead",
           "M5.records",
+          "M5.impact",
           "S.12",
           "S.8",
           "H.12.streak",
@@ -12262,6 +12417,7 @@
           "M6.lead",
           "M6.upset",
           "M6.records",
+          "M6.impact",
           "S.3",
           "S.9",
           "H.6.streak",
@@ -13077,7 +13233,7 @@
   },
   "waiver": {
     "week": 8,
-    "built": "2026-11-03T12:15:18.891940-05:00",
+    "built": "2026-11-03T18:26:44.278398-05:00",
     "buckets": {
       "best_adds": [
         {
@@ -13134,7 +13290,7 @@
             },
             {
               "id": "WV.research.11729.1",
-              "text": "Justin Boone included Sione Vaki in his Week 9 waiver column as a running back pickup for the game at MIA, and listed him as 1% rostered on Yahoo. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "Justin Boone lists Sione Vaki as a running back pickup for Week 9 at MIA and notes that he is rostered in just 1% of Yahoo leagues. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "numbers": [
                 "9",
                 "1"
@@ -13194,11 +13350,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone included Sione Vaki in his Week 9 waiver column as a running back pickup for the game at MIA, and listed him as 1% rostered on Yahoo.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "Justin Boone lists Sione Vaki as a running back pickup for Week 9 at MIA and notes that he is rostered in just 1% of Yahoo leagues.",
+              "url": "https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "source": "Yahoo Fantasy",
               "date": "2026-11-03",
-              "stance": "backs"
+              "stance": "news"
             }
           ]
         },
@@ -13237,36 +13393,6 @@
               "numbers": [
                 "54",
                 "9"
-              ],
-              "teams": [],
-              "players": [
-                "Brevyn Spann-Ford"
-              ]
-            },
-            {
-              "id": "WV.research.11593.1",
-              "text": "RotoBaller's Nicho Roessler says Spann-Ford is worth a look as a deep-league Week 9 tight end streamer, because his snap share went from 53% in Week 7 to a season-high 88% in Week 8 after Jake Ferguson hurt his ankle. Source: RotoBaller, https://www.rotoballer.com/player-news/brevyn-spann-ford-emerges-as-potential-week-9-streaming-option-amid-jake-ferguson-injury/1982891",
-              "numbers": [
-                "9",
-                "53",
-                "7",
-                "88",
-                "8"
-              ],
-              "teams": [],
-              "players": [
-                "Brevyn Spann-Ford"
-              ]
-            },
-            {
-              "id": "WV.research.11593.2",
-              "text": "Roessler notes Spann-Ford has taken 5 targets in 2 of his last 3 games, but his value depends on whether Ferguson (ankle) sits in Week 9, since he averages only 2.3 targets per game this season. Source: RotoBaller, https://www.rotoballer.com/player-news/brevyn-spann-ford-emerges-as-potential-week-9-streaming-option-amid-jake-ferguson-injury/1982891",
-              "numbers": [
-                "5",
-                "2",
-                "3",
-                "9",
-                "2.3"
               ],
               "teams": [],
               "players": [
@@ -13319,22 +13445,7 @@
           "bye": 14,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "RotoBaller's Nicho Roessler says Spann-Ford is worth a look as a deep-league Week 9 tight end streamer, because his snap share went from 53% in Week 7 to a season-high 88% in Week 8 after Jake Ferguson hurt his ankle.",
-              "url": "https://www.rotoballer.com/player-news/brevyn-spann-ford-emerges-as-potential-week-9-streaming-option-amid-jake-ferguson-injury/1982891",
-              "source": "RotoBaller",
-              "date": "2026-11-03",
-              "stance": "backs"
-            },
-            {
-              "text": "Roessler notes Spann-Ford has taken 5 targets in 2 of his last 3 games, but his value depends on whether Ferguson (ankle) sits in Week 9, since he averages only 2.3 targets per game this season.",
-              "url": "https://www.rotoballer.com/player-news/brevyn-spann-ford-emerges-as-potential-week-9-streaming-option-amid-jake-ferguson-injury/1982891",
-              "source": "RotoBaller",
-              "date": "2026-11-03",
-              "stance": "news"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "9479",
@@ -13379,14 +13490,14 @@
             },
             {
               "id": "WV.research.9479.1",
-              "text": "Darnell Washington had 3 catches for a career-high 94 yards, including a 58-yard catch-and-run, in the 27-6 win over the Browns, and the article says his role in the Steelers offense has grown. Source: Yahoo Sports, https://sports.yahoo.com/articles/darnell-washingtons-rising-pff-grades-191616946.html",
+              "text": "Dynasty Nerds lists Darnell Washington as a Week 9 tight end waiver target at 49% rostered with a 2-4% FAAB bid, after a career-high 94 receiving yards in the Steelers' win over the Browns. Source: Dynasty Nerds, https://www.dynastynerds.com/dynasty/week-9-waiver-wire-2026/",
               "numbers": [
-                "3",
-                "94",
-                "58",
-                "27-6",
-                "27",
-                "6"
+                "9",
+                "49",
+                "2-4",
+                "2",
+                "4",
+                "94"
               ],
               "teams": [],
               "players": [
@@ -13395,12 +13506,9 @@
             },
             {
               "id": "WV.research.9479.2",
-              "text": "Washington got a PFF grade of 91.8 against the Browns, his highest of the season, and he has graded above 70 in 6 of Pittsburgh's 8 games. Source: Yahoo Sports, https://sports.yahoo.com/articles/darnell-washingtons-rising-pff-grades-191616946.html",
+              "text": "CBS Sports' Week 9 waiver column lists Darnell Washington among the tight ends on a bye this week. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
               "numbers": [
-                "91.8",
-                "70",
-                "6",
-                "8"
+                "9"
               ],
               "teams": [],
               "players": [
@@ -13455,16 +13563,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "Darnell Washington had 3 catches for a career-high 94 yards, including a 58-yard catch-and-run, in the 27-6 win over the Browns, and the article says his role in the Steelers offense has grown.",
-              "url": "https://sports.yahoo.com/articles/darnell-washingtons-rising-pff-grades-191616946.html",
-              "source": "Yahoo Sports",
-              "date": "2026-11-03",
+              "text": "Dynasty Nerds lists Darnell Washington as a Week 9 tight end waiver target at 49% rostered with a 2-4% FAAB bid, after a career-high 94 receiving yards in the Steelers' win over the Browns.",
+              "url": "https://www.dynastynerds.com/dynasty/week-9-waiver-wire-2026/",
+              "source": "Dynasty Nerds",
+              "date": "2026-11-02",
               "stance": "backs"
             },
             {
-              "text": "Washington got a PFF grade of 91.8 against the Browns, his highest of the season, and he has graded above 70 in 6 of Pittsburgh's 8 games.",
-              "url": "https://sports.yahoo.com/articles/darnell-washingtons-rising-pff-grades-191616946.html",
-              "source": "Yahoo Sports",
+              "text": "CBS Sports' Week 9 waiver column lists Darnell Washington among the tight ends on a bye this week.",
+              "url": "https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
+              "source": "CBS Sports",
               "date": "2026-11-03",
               "stance": "news"
             }
@@ -13524,9 +13632,9 @@
             },
             {
               "id": "WV.research.7567.1",
-              "text": "Yahoo Fantasy's Matt Harmon and Justin Boone said managers should consider adding Kenny Gainwell before Week 9. Source: Yahoo Fantasy Forecast, https://sports.yahoo.com/video/week-9-waiver-wire-kenny-gainwell-014251567.html",
+              "text": "SB Nation says Gainwell's big Sunday game came with the Bucs throwing only 3 passes in the rain, does not expect the performance to repeat, and still calls him worth rostering. Source: SB Nation via Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
               "numbers": [
-                "9"
+                "3"
               ],
               "teams": [],
               "players": [
@@ -13583,10 +13691,10 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Fantasy's Matt Harmon and Justin Boone said managers should consider adding Kenny Gainwell before Week 9.",
-              "url": "https://sports.yahoo.com/video/week-9-waiver-wire-kenny-gainwell-014251567.html",
-              "source": "Yahoo Fantasy Forecast",
-              "date": "2026-11-03",
+              "text": "SB Nation says Gainwell's big Sunday game came with the Bucs throwing only 3 passes in the rain, does not expect the performance to repeat, and still calls him worth rostering.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
+              "source": "SB Nation via Yahoo Sports",
+              "date": "2026-11-02",
               "stance": "backs"
             }
           ]
@@ -13634,10 +13742,10 @@
             },
             {
               "id": "WV.research.13322.1",
-              "text": "PFF says that with Cole Kmet out, Sam Roush moved into the Bears' 12 personnel sets, and the team brought up Stephen Carlson from the practice squad to play in 13 personnel. Source: PFF, https://www.pff.com/news/fantasy-football-takeaways-from-bears-seahawks",
+              "text": "CBS Sports reports Sam Roush played a season-high 37 of the Bears' 70 offensive snaps but drew no targets. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/bears-sam-roush-logs-season-high-snap-total-but-no-targets/",
               "numbers": [
-                "12",
-                "13"
+                "37",
+                "70"
               ],
               "teams": [],
               "players": [
@@ -13646,12 +13754,8 @@
             },
             {
               "id": "WV.research.13322.2",
-              "text": "247Sports says Cole Kmet will miss the rest of the 2026 season, which gives rookie Sam Roush a big chance to play more. Source: 247Sports, https://247sports.com/nfl/chicago-bears/article/chicago-bears-stat-pack-week-8-with-cole-kmet-out-a-big-opportunity-awaits-rookie-sam-roush--291836369/",
-              "numbers": [
-                "247",
-                "2026",
-                "247"
-              ],
+              "text": "Bears coach Ben Johnson said he is very pleased with Roush, who becomes the top backup tight end behind Colston Loveland after Cole Kmet's season-ending injury. Source: Yahoo Sports, https://sports.yahoo.com/articles/ben-johnson-confident-bears-rookie-153036475.html",
+              "numbers": [],
               "teams": [],
               "players": [
                 "Sam Roush"
@@ -13705,17 +13809,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "PFF says that with Cole Kmet out, Sam Roush moved into the Bears' 12 personnel sets, and the team brought up Stephen Carlson from the practice squad to play in 13 personnel.",
-              "url": "https://www.pff.com/news/fantasy-football-takeaways-from-bears-seahawks",
-              "source": "PFF",
+              "text": "CBS Sports reports Sam Roush played a season-high 37 of the Bears' 70 offensive snaps but drew no targets.",
+              "url": "https://www.cbssports.com/fantasy/football/news/bears-sam-roush-logs-season-high-snap-total-but-no-targets/",
+              "source": "CBS Sports",
               "date": "2026-11-03",
               "stance": "backs"
             },
             {
-              "text": "247Sports says Cole Kmet will miss the rest of the 2026 season, which gives rookie Sam Roush a big chance to play more.",
-              "url": "https://247sports.com/nfl/chicago-bears/article/chicago-bears-stat-pack-week-8-with-cole-kmet-out-a-big-opportunity-awaits-rookie-sam-roush--291836369/",
-              "source": "247Sports",
-              "date": "2026-11-03",
+              "text": "Bears coach Ben Johnson said he is very pleased with Roush, who becomes the top backup tight end behind Colston Loveland after Cole Kmet's season-ending injury.",
+              "url": "https://sports.yahoo.com/articles/ben-johnson-confident-bears-rookie-153036475.html",
+              "source": "Yahoo Sports",
+              "date": "2026-10-28",
               "stance": "news"
             }
           ]
@@ -13763,8 +13867,11 @@
             },
             {
               "id": "WV.research.13297.1",
-              "text": "RotoWire's Joe Bartel says Reggie Virgil, described as Arizona's nominal third-string wideout, got banged up in Sunday's game but returned to play. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "numbers": [],
+              "text": "Yahoo Fantasy's Week 9 waiver column lists Reggie Virgil as a dart-throw flex option if a starter is out, and has him at 0% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "numbers": [
+                "9",
+                "0"
+              ],
               "teams": [],
               "players": [
                 "Reggie Virgil"
@@ -13772,10 +13879,8 @@
             },
             {
               "id": "WV.research.13297.2",
-              "text": "Bartel notes that Arizona's receiver room is thin, with Michael Wilson out with multiple broken ribs and Kendrick Bourne hurt with a high-ankle sprain, but his Week 9 Cardinals receiver pickup is Devin Duvernay, not Virgil. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "numbers": [
-                "9"
-              ],
+              "text": "Sharp Football Analysis reports that Reggie Virgil ran into the goalpost and appeared to suffer a serious injury, so check his status before you add him. Source: Sharp Football Analysis, https://sharpfootballanalysis.com/fantasy/nfl-waiver-wire-pickups-week-9-2026",
+              "numbers": [],
               "teams": [],
               "players": [
                 "Reggie Virgil"
@@ -13831,16 +13936,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoWire's Joe Bartel says Reggie Virgil, described as Arizona's nominal third-string wideout, got banged up in Sunday's game but returned to play.",
-              "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "source": "RotoWire",
-              "date": "2026-11-03",
-              "stance": "news"
+              "text": "Yahoo Fantasy's Week 9 waiver column lists Reggie Virgil as a dart-throw flex option if a starter is out, and has him at 0% rostered.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-11-02",
+              "stance": "backs"
             },
             {
-              "text": "Bartel notes that Arizona's receiver room is thin, with Michael Wilson out with multiple broken ribs and Kendrick Bourne hurt with a high-ankle sprain, but his Week 9 Cardinals receiver pickup is Devin Duvernay, not Virgil.",
-              "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "source": "RotoWire",
+              "text": "Sharp Football Analysis reports that Reggie Virgil ran into the goalpost and appeared to suffer a serious injury, so check his status before you add him.",
+              "url": "https://sharpfootballanalysis.com/fantasy/nfl-waiver-wire-pickups-week-9-2026",
+              "source": "Sharp Football Analysis",
               "date": "2026-11-03",
               "stance": "news"
             }
@@ -13889,7 +13994,7 @@
             },
             {
               "id": "WV.research.6847.1",
-              "text": "In his Week 9 waiver column, Justin Boone lists Devin Duvernay as a pickup, with a matchup at SEA, and notes he is 0% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
+              "text": "In his Week 9 waiver column, Justin Boone lists Devin Duvernay as a dart-throw flex option at SEA, only if a starter is out, and notes he is 0% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "numbers": [
                 "9",
                 "0"
@@ -13949,7 +14054,7 @@
           "return_week": null,
           "research": [
             {
-              "text": "In his Week 9 waiver column, Justin Boone lists Devin Duvernay as a pickup, with a matchup at SEA, and notes he is 0% rostered.",
+              "text": "In his Week 9 waiver column, Justin Boone lists Devin Duvernay as a dart-throw flex option at SEA, only if a starter is out, and notes he is 0% rostered.",
               "url": "https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "source": "Yahoo Fantasy",
               "date": "2026-11-03",
@@ -14000,10 +14105,10 @@
             },
             {
               "id": "WV.research.4892.1",
-              "text": "In his Week 9 waiver column, Justin Boone lists Baker Mayfield as a quarterback pickup for his game at CHI and notes that he is 27% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "RotoBaller's Week 9 waiver rankings list Baker Mayfield as a quarterback to add in leagues with 14 or more teams. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-9-2026/1981756",
               "numbers": [
                 "9",
-                "27"
+                "14"
               ],
               "teams": [],
               "players": [
@@ -14060,10 +14165,10 @@
           "return_week": null,
           "research": [
             {
-              "text": "In his Week 9 waiver column, Justin Boone lists Baker Mayfield as a quarterback pickup for his game at CHI and notes that he is 27% rostered.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
+              "text": "RotoBaller's Week 9 waiver rankings list Baker Mayfield as a quarterback to add in leagues with 14 or more teams.",
+              "url": "https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-9-2026/1981756",
+              "source": "RotoBaller",
+              "date": "2026-11-03",
               "stance": "news"
             }
           ]
@@ -14124,26 +14229,13 @@
             },
             {
               "id": "WV.research.11625.1",
-              "text": "Justin Boone ranked Adonai Mitchell No. 10 among his top 10 overall Week 9 pickups after he caught 7 passes for 142 yards and 1 touchdown against the Raiders, and he lists him as 11% rostered with a $5 FAB bid. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "NBC Sports, via Yahoo Sports, lists Adonai Mitchell as one of the top waiver adds this week after a WR1 game in Week 8, but notes he and Cooper each ran 26 routes, so neither is locked in as the WR2. Source: Yahoo Sports (NBC Sports), https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-153048286.html",
               "numbers": [
-                "10",
-                "10",
-                "9",
-                "7",
-                "142",
                 "1",
-                "11",
-                "5"
+                "8",
+                "26",
+                "2"
               ],
-              "teams": [],
-              "players": [
-                "Adonai Mitchell"
-              ]
-            },
-            {
-              "id": "WV.research.11625.2",
-              "text": "Boone says Mitchell's problem is consistency, because he may be hard to trust in a Jets offense with many players who need the ball, including Garrett Wilson, Omar Cooper Jr., Mason Taylor and Breece Hall. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "numbers": [],
               "teams": [],
               "players": [
                 "Adonai Mitchell"
@@ -14199,18 +14291,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone ranked Adonai Mitchell No. 10 among his top 10 overall Week 9 pickups after he caught 7 passes for 142 yards and 1 touchdown against the Raiders, and he lists him as 11% rostered with a $5 FAB bid.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-03",
-              "stance": "news"
-            },
-            {
-              "text": "Boone says Mitchell's problem is consistency, because he may be hard to trust in a Jets offense with many players who need the ball, including Garrett Wilson, Omar Cooper Jr., Mason Taylor and Breece Hall.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-03",
-              "stance": "news"
+              "text": "NBC Sports, via Yahoo Sports, lists Adonai Mitchell as one of the top waiver adds this week after a WR1 game in Week 8, but notes he and Cooper each ran 26 routes, so neither is locked in as the WR2.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-153048286.html",
+              "source": "Yahoo Sports (NBC Sports)",
+              "date": "2026-11-02",
+              "stance": "backs"
             }
           ]
         },
@@ -14254,9 +14339,14 @@
             },
             {
               "id": "WV.research.6011.1",
-              "text": "In Justin Boone's Week 9 waiver column, he says Jacoby Brissett was benched Sunday after struggling this season, and the rest of the season could go to Gardner Minshew or, later on, Carson Beck. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "CBS Sports says Gardner Minshew II will start for Arizona in Week 9 at Seattle after replacing Jacoby Brissett in Week 8 at Dallas, where he completed 17 of 23 passes for 188 yards and 3 touchdowns in the second half. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
               "numbers": [
-                "9"
+                "9",
+                "8",
+                "17",
+                "23",
+                "188",
+                "3"
               ],
               "teams": [],
               "players": [
@@ -14265,17 +14355,10 @@
             },
             {
               "id": "WV.research.6011.2",
-              "text": "Yahoo says Minshew replaced Brissett when Arizona trailed 17-3 at Dallas, went 17 of 23 for 188 yards and 3 touchdowns, and is worth a $3 FAAB bid, but no Week 9 starter has been named for the game at Seattle. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-9-waiver-wire-faab-124020621.html",
+              "text": "CBS Sports says Minshew should be added in all Superflex and 2-quarterback leagues for at least 10 percent of remaining FAAB, though his next games against Seattle, the Rams, and Kansas City are tough. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
               "numbers": [
-                "17-3",
-                "17",
-                "3",
-                "17",
-                "23",
-                "188",
-                "3",
-                "3",
-                "9"
+                "2",
+                "10"
               ],
               "teams": [],
               "players": [
@@ -14332,17 +14415,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "In Justin Boone's Week 9 waiver column, he says Jacoby Brissett was benched Sunday after struggling this season, and the rest of the season could go to Gardner Minshew or, later on, Carson Beck.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
+              "text": "CBS Sports says Gardner Minshew II will start for Arizona in Week 9 at Seattle after replacing Jacoby Brissett in Week 8 at Dallas, where he completed 17 of 23 passes for 188 yards and 3 touchdowns in the second half.",
+              "url": "https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
+              "source": "CBS Sports",
               "date": "2026-11-03",
               "stance": "news"
             },
             {
-              "text": "Yahoo says Minshew replaced Brissett when Arizona trailed 17-3 at Dallas, went 17 of 23 for 188 yards and 3 touchdowns, and is worth a $3 FAAB bid, but no Week 9 starter has been named for the game at Seattle.",
-              "url": "https://sports.yahoo.com/articles/week-9-waiver-wire-faab-124020621.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
+              "text": "CBS Sports says Minshew should be added in all Superflex and 2-quarterback leagues for at least 10 percent of remaining FAAB, though his next games against Seattle, the Rams, and Kansas City are tough.",
+              "url": "https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
+              "source": "CBS Sports",
+              "date": "2026-11-03",
               "stance": "news"
             }
           ]
@@ -14401,10 +14484,23 @@
             },
             {
               "id": "WV.research.8132.1",
-              "text": "Yahoo Sports lists Tyler Allgeier as a Week 9 waiver target after he scored 36.1 PPR points when Bam Knight and Jeremiyah Love left the game injured, and says he keeps value while Love is out. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-pickups-162517176.html",
+              "text": "With Jeremiyah Love and Bam Knight both hurt early in Week 8, SI says Allgeier ran for 147 yards and a touchdown and caught 5 passes for 44 yards and another touchdown, and calls him the running back to target if you need a starter. Source: SI, https://www.si.com/onsi/fantasy/waiver-wire/week-9-fantasy-football-waiver-wire-running-back-targets-tyler-allgeier-mike-washington-jr-and-more-options",
               "numbers": [
-                "9",
-                "36.1"
+                "8",
+                "147",
+                "5",
+                "44"
+              ],
+              "teams": [],
+              "players": [
+                "Tyler Allgeier"
+              ]
+            },
+            {
+              "id": "WV.research.8132.2",
+              "text": "Jeremiyah Love has been placed on injured reserve, and this report names Allgeier the top Week 9 waiver wire add. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-injury-alert-jeremiyah-193459212.html",
+              "numbers": [
+                "9"
               ],
               "teams": [],
               "players": [
@@ -14461,10 +14557,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Sports lists Tyler Allgeier as a Week 9 waiver target after he scored 36.1 PPR points when Bam Knight and Jeremiyah Love left the game injured, and says he keeps value while Love is out.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-pickups-162517176.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
+              "text": "With Jeremiyah Love and Bam Knight both hurt early in Week 8, SI says Allgeier ran for 147 yards and a touchdown and caught 5 passes for 44 yards and another touchdown, and calls him the running back to target if you need a starter.",
+              "url": "https://www.si.com/onsi/fantasy/waiver-wire/week-9-fantasy-football-waiver-wire-running-back-targets-tyler-allgeier-mike-washington-jr-and-more-options",
+              "source": "SI",
+              "date": "2026-11-03",
+              "stance": "news"
+            },
+            {
+              "text": "Jeremiyah Love has been placed on injured reserve, and this report names Allgeier the top Week 9 waiver wire add.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-injury-alert-jeremiyah-193459212.html",
+              "source": "Yahoo Sports",
+              "date": "2026-11-03",
               "stance": "news"
             }
           ]
@@ -14509,8 +14612,12 @@
             },
             {
               "id": "WV.research.8135.1",
-              "text": "Yahoo Sports called Treylon Burks a speculative stash because he is getting deep shots and has the frame and high catch point to help in the red zone. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
-              "numbers": [],
+              "text": "Yahoo Fantasy says Treylon Burks is 93% available, averages 19.4 yards per reception, and has drawn a 134 passer rating from Commanders quarterbacks when targeted. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/adonai-mitchell-antonio-williams-3-204047761.html",
+              "numbers": [
+                "93",
+                "19.4",
+                "134"
+              ],
               "teams": [],
               "players": [
                 "Treylon Burks"
@@ -14518,9 +14625,13 @@
             },
             {
               "id": "WV.research.8135.2",
-              "text": "Sports Illustrated says the Commanders lost Terry McLaurin for the season, which leaves Antonio Williams and Treylon Burks, who is 6% rostered, as possible waiver adds. Source: Sports Illustrated, https://www.si.com/fantasy/week-9-waiver-wire-targets",
+              "text": "CBS Sports notes Burks had 3 catches for 81 yards on 5 targets in Week 8, the first game without Terry McLaurin (knee), and calls him worth up to 5% of FAAB in deeper leagues. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
               "numbers": [
-                "6"
+                "3",
+                "81",
+                "5",
+                "8",
+                "5"
               ],
               "teams": [],
               "players": [
@@ -14577,16 +14688,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Sports called Treylon Burks a speculative stash because he is getting deep shots and has the frame and high catch point to help in the red zone.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
+              "text": "Yahoo Fantasy says Treylon Burks is 93% available, averages 19.4 yards per reception, and has drawn a 134.0 passer rating from Commanders quarterbacks when targeted.",
+              "url": "https://sports.yahoo.com/articles/adonai-mitchell-antonio-williams-3-204047761.html",
               "source": "Yahoo Fantasy",
               "date": "2026-11-03",
               "stance": "news"
             },
             {
-              "text": "Sports Illustrated says the Commanders lost Terry McLaurin for the season, which leaves Antonio Williams and Treylon Burks, who is 6% rostered, as possible waiver adds.",
-              "url": "https://www.si.com/fantasy/week-9-waiver-wire-targets",
-              "source": "Sports Illustrated",
+              "text": "CBS Sports notes Burks had 3 catches for 81 yards on 5 targets in Week 8, the first game without Terry McLaurin (knee), and calls him worth up to 5% of FAAB in deeper leagues.",
+              "url": "https://www.cbssports.com/fantasy/football/news/fantasy-football-2026-week-9-waiver-wire/",
+              "source": "CBS Sports",
               "date": "2026-11-03",
               "stance": "news"
             }
@@ -14646,11 +14757,13 @@
             },
             {
               "id": "WV.research.8161.1",
-              "text": "PFF lists Malik Willis as a top Week 9 quarterback waiver target, noting he has scored at least 15 fantasy points in each of his last 3 games. Source: PFF, https://www.pff.com/news/fantasy-football-waiver-wire-targets-2026",
+              "text": "In Yahoo's Week 9 waiver column, Malik Willis ranks 8th among top pickups after scoring 15.6 fantasy points in a hard Week 8 matchup with the Patriots, which made him the QB16 that week. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
               "numbers": [
                 "9",
-                "15",
-                "3"
+                "8",
+                "15.6",
+                "8",
+                "16"
               ],
               "teams": [],
               "players": [
@@ -14659,9 +14772,10 @@
             },
             {
               "id": "WV.research.8161.2",
-              "text": "PFF says Willis gets a good matchup against the Detroit Lions, who have allowed the most fantasy points per game to quarterbacks, and notes he is rostered in 10.1% of ESPN leagues. Source: PFF, https://www.pff.com/news/fantasy-football-waiver-wire-targets-2026",
+              "text": "Yahoo notes that Willis plays the Detroit Lions in Week 9, and Detroit came into Week 8 giving up the most fantasy points per game to quarterbacks. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-130031562.html",
               "numbers": [
-                "10.1"
+                "9",
+                "8"
               ],
               "teams": [],
               "players": [
@@ -14718,17 +14832,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "PFF lists Malik Willis as a top Week 9 quarterback waiver target, noting he has scored at least 15 fantasy points in each of his last 3 games.",
-              "url": "https://www.pff.com/news/fantasy-football-waiver-wire-targets-2026",
-              "source": "PFF",
+              "text": "In Yahoo's Week 9 waiver column, Malik Willis ranks 8th among top pickups after scoring 15.6 fantasy points in a hard Week 8 matchup with the Patriots, which made him the QB16 that week.",
+              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "source": "Yahoo Fantasy",
               "date": "2026-11-02",
-              "stance": "news"
+              "stance": "backs"
             },
             {
-              "text": "PFF says Willis gets a good matchup against the Detroit Lions, who have allowed the most fantasy points per game to quarterbacks, and notes he is rostered in 10.1% of ESPN leagues.",
-              "url": "https://www.pff.com/news/fantasy-football-waiver-wire-targets-2026",
-              "source": "PFF",
-              "date": "2026-11-02",
+              "text": "Yahoo notes that Willis plays the Detroit Lions in Week 9, and Detroit came into Week 8 giving up the most fantasy points per game to quarterbacks.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-130031562.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-11-03",
               "stance": "news"
             }
           ]
@@ -14787,9 +14901,9 @@
             },
             {
               "id": "WV.research.7567.1",
-              "text": "Yahoo Fantasy's Matt Harmon and Justin Boone said managers should consider adding Kenny Gainwell before Week 9. Source: Yahoo Fantasy Forecast, https://sports.yahoo.com/video/week-9-waiver-wire-kenny-gainwell-014251567.html",
+              "text": "SB Nation says Gainwell's big Sunday game came with the Bucs throwing only 3 passes in the rain, does not expect the performance to repeat, and still calls him worth rostering. Source: SB Nation via Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
               "numbers": [
-                "9"
+                "3"
               ],
               "teams": [],
               "players": [
@@ -14846,10 +14960,10 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Fantasy's Matt Harmon and Justin Boone said managers should consider adding Kenny Gainwell before Week 9.",
-              "url": "https://sports.yahoo.com/video/week-9-waiver-wire-kenny-gainwell-014251567.html",
-              "source": "Yahoo Fantasy Forecast",
-              "date": "2026-11-03",
+              "text": "SB Nation says Gainwell's big Sunday game came with the Bucs throwing only 3 passes in the rain, does not expect the performance to repeat, and still calls him worth rostering.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
+              "source": "SB Nation via Yahoo Sports",
+              "date": "2026-11-02",
               "stance": "backs"
             }
           ]
@@ -14908,7 +15022,7 @@
             },
             {
               "id": "WV.research.11729.1",
-              "text": "Justin Boone included Sione Vaki in his Week 9 waiver column as a running back pickup for the game at MIA, and listed him as 1% rostered on Yahoo. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "Justin Boone lists Sione Vaki as a running back pickup for Week 9 at MIA and notes that he is rostered in just 1% of Yahoo leagues. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "numbers": [
                 "9",
                 "1"
@@ -14968,11 +15082,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone included Sione Vaki in his Week 9 waiver column as a running back pickup for the game at MIA, and listed him as 1% rostered on Yahoo.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "Justin Boone lists Sione Vaki as a running back pickup for Week 9 at MIA and notes that he is rostered in just 1% of Yahoo leagues.",
+              "url": "https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "source": "Yahoo Fantasy",
               "date": "2026-11-03",
-              "stance": "backs"
+              "stance": "news"
             }
           ]
         },
@@ -15030,22 +15144,10 @@
             },
             {
               "id": "WV.research.12540.1",
-              "text": "Justin Boone put Chimere Dike (2% rostered) on his Week 9 waiver list as a deeper WR option, and said none of this week's wideouts deserve a top waiver priority. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "numbers": [
-                "2",
-                "9"
-              ],
-              "teams": [],
-              "players": [
-                "Chimere Dike"
-              ]
-            },
-            {
-              "id": "WV.research.12540.2",
-              "text": "Yahoo Fantasy's Week 9 waiver column advises against chasing Dike's big Week 8 and expects him to go back to a very part-time role once Carnell Tate returns, with the Titans on a bye this week. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
+              "text": "Yahoo Fantasy's Week 9 waiver wire column lists Chimere Dike as a wide receiver pickup to consider, at 2% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
               "numbers": [
                 "9",
-                "8"
+                "2"
               ],
               "teams": [],
               "players": [
@@ -15102,18 +15204,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone put Chimere Dike (2% rostered) on his Week 9 waiver list as a deeper WR option, and said none of this week's wideouts deserve a top waiver priority.",
+              "text": "Yahoo Fantasy's Week 9 waiver wire column lists Chimere Dike as a wide receiver pickup to consider, at 2% rostered.",
               "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
               "source": "Yahoo Fantasy",
-              "date": "2026-11-03",
+              "date": "2026-11-02",
               "stance": "news"
-            },
-            {
-              "text": "Yahoo Fantasy's Week 9 waiver column advises against chasing Dike's big Week 8 and expects him to go back to a very part-time role once Carnell Tate returns, with the Titans on a bye this week.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-232823257.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-03",
-              "stance": "disputes"
             }
           ]
         }
@@ -15172,10 +15267,10 @@
             },
             {
               "id": "WV.research.13421.1",
-              "text": "RotoBaller's Week 9 waiver rankings list Eli Raridon as a TE to add in leagues with 12 or more teams. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-9-2026/1981756",
+              "text": "RotoBaller listed Eli Raridon as a deep-league tight end add for Week 9 and noted he is 1% rostered. Source: RotoBaller, https://www.rotoballer.com/week-9-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1981366",
               "numbers": [
                 "9",
-                "12"
+                "1"
               ],
               "teams": [],
               "players": [
@@ -15230,11 +15325,11 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoBaller's Week 9 waiver rankings list Eli Raridon as a TE to add in leagues with 12 or more teams.",
-              "url": "https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-9-2026/1981756",
+              "text": "RotoBaller listed Eli Raridon as a deep-league tight end add for Week 9 and noted he is 1% rostered.",
+              "url": "https://www.rotoballer.com/week-9-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1981366",
               "source": "RotoBaller",
-              "date": "2026-11-03",
-              "stance": "backs"
+              "date": "2026-11-02",
+              "stance": "news"
             }
           ]
         },
@@ -15434,10 +15529,23 @@
             },
             {
               "id": "WV.research.8132.1",
-              "text": "Yahoo Sports lists Tyler Allgeier as a Week 9 waiver target after he scored 36.1 PPR points when Bam Knight and Jeremiyah Love left the game injured, and says he keeps value while Love is out. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-pickups-162517176.html",
+              "text": "With Jeremiyah Love and Bam Knight both hurt early in Week 8, SI says Allgeier ran for 147 yards and a touchdown and caught 5 passes for 44 yards and another touchdown, and calls him the running back to target if you need a starter. Source: SI, https://www.si.com/onsi/fantasy/waiver-wire/week-9-fantasy-football-waiver-wire-running-back-targets-tyler-allgeier-mike-washington-jr-and-more-options",
               "numbers": [
-                "9",
-                "36.1"
+                "8",
+                "147",
+                "5",
+                "44"
+              ],
+              "teams": [],
+              "players": [
+                "Tyler Allgeier"
+              ]
+            },
+            {
+              "id": "WV.research.8132.2",
+              "text": "Jeremiyah Love has been placed on injured reserve, and this report names Allgeier the top Week 9 waiver wire add. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-injury-alert-jeremiyah-193459212.html",
+              "numbers": [
+                "9"
               ],
               "teams": [],
               "players": [
@@ -15494,10 +15602,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "Yahoo Sports lists Tyler Allgeier as a Week 9 waiver target after he scored 36.1 PPR points when Bam Knight and Jeremiyah Love left the game injured, and says he keeps value while Love is out.",
-              "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-pickups-162517176.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
+              "text": "With Jeremiyah Love and Bam Knight both hurt early in Week 8, SI says Allgeier ran for 147 yards and a touchdown and caught 5 passes for 44 yards and another touchdown, and calls him the running back to target if you need a starter.",
+              "url": "https://www.si.com/onsi/fantasy/waiver-wire/week-9-fantasy-football-waiver-wire-running-back-targets-tyler-allgeier-mike-washington-jr-and-more-options",
+              "source": "SI",
+              "date": "2026-11-03",
+              "stance": "news"
+            },
+            {
+              "text": "Jeremiyah Love has been placed on injured reserve, and this report names Allgeier the top Week 9 waiver wire add.",
+              "url": "https://sports.yahoo.com/articles/fantasy-football-injury-alert-jeremiyah-193459212.html",
+              "source": "Yahoo Sports",
+              "date": "2026-11-03",
               "stance": "news"
             }
           ]
@@ -15555,10 +15670,8 @@
             },
             {
               "id": "WV.research.10235.1",
-              "text": "Fox Sports reports that Roschon Johnson will stay the Bears' RB2 behind D'Andre Swift while Kyle Monangai is out, and Zavier Scott adds backfield depth. Source: Fox Sports, https://www.foxsports.com/nfl/kyle-monangai-player",
-              "numbers": [
-                "2"
-              ],
+              "text": "RotoBaller's Phil Clark lists Roschon Johnson as a high-upside handcuff and says Kyle Monangai's extended absence gives Johnson a chance to be a short-term starting option. Source: RotoBaller, https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "numbers": [],
               "teams": [],
               "players": [
                 "Roschon Johnson"
@@ -15566,10 +15679,14 @@
             },
             {
               "id": "WV.research.10235.2",
-              "text": "Bears On SI says that with Monangai out, Chicago will again use D'Andre Swift and Roschon Johnson as its top 2 backs, with Zavier Scott as the RB3. Source: Sports Illustrated (Bears On SI), https://www.si.com/nfl/bears/onsi/colston-loveland-kyle-monangai-injury-updates-bears-final-practice-report",
+              "text": "Clark notes that Johnson has a 31.6% snap share and 8.3 touches per game since Week 5, and that he had 6 touches for 28 total yards in Week 8. Source: RotoBaller, https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
               "numbers": [
-                "2",
-                "3"
+                "31.6",
+                "8.3",
+                "5",
+                "6",
+                "28",
+                "8"
               ],
               "teams": [],
               "players": [
@@ -15626,18 +15743,18 @@
           "return_week": null,
           "research": [
             {
-              "text": "Fox Sports reports that Roschon Johnson will stay the Bears' RB2 behind D'Andre Swift while Kyle Monangai is out, and Zavier Scott adds backfield depth.",
-              "url": "https://www.foxsports.com/nfl/kyle-monangai-player",
-              "source": "Fox Sports",
-              "date": "2026-11-01",
+              "text": "RotoBaller's Phil Clark lists Roschon Johnson as a high-upside handcuff and says Kyle Monangai's extended absence gives Johnson a chance to be a short-term starting option.",
+              "url": "https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "source": "RotoBaller",
+              "date": "2026-11-03",
               "stance": "backs"
             },
             {
-              "text": "Bears On SI says that with Monangai out, Chicago will again use D'Andre Swift and Roschon Johnson as its top 2 backs, with Zavier Scott as the RB3.",
-              "url": "https://www.si.com/nfl/bears/onsi/colston-loveland-kyle-monangai-injury-updates-bears-final-practice-report",
-              "source": "Sports Illustrated (Bears On SI)",
-              "date": "2026-11-01",
-              "stance": "backs"
+              "text": "Clark notes that Johnson has a 31.6% snap share and 8.3 touches per game since Week 5, and that he had 6 touches for 28 total yards in Week 8.",
+              "url": "https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "source": "RotoBaller",
+              "date": "2026-11-03",
+              "stance": "news"
             }
           ]
         },
@@ -15694,8 +15811,21 @@
             },
             {
               "id": "WV.research.8527.1",
-              "text": "RotoWire reports that Dont'e Thornton Jr. was a healthy scratch for Week 8 against the Jets, and that Jack Bech, Cody White and Dareke Young were set to rotate at wide receiver behind Tre Tucker and Jalen Nailor. Source: RotoWire, https://www.rotowire.com/football/headlines/donte-thornton-news-wont-play-against-nyj-645318",
+              "text": "RotoWire says Dont'e Thornton Jr. was a healthy scratch for Week 8 against the Jets, and Dareke Young was named with Jack Bech and Cody White as a rotational receiver behind Tre Tucker and Jalen Nailor. Source: RotoWire, https://www.rotowire.com/football/headlines/donte-thornton-news-wont-play-against-nyj-645318",
               "numbers": [
+                "8"
+              ],
+              "teams": [],
+              "players": [
+                "Dareke Young"
+              ]
+            },
+            {
+              "id": "WV.research.8527.2",
+              "text": "RotoWire notes that Thornton is fully recovered from a hamstring injury and came off injured reserve, so he could play again in Week 9 against the 49ers on Nov. 8. Source: RotoWire, https://www.rotowire.com/football/headlines/donte-thornton-news-wont-play-against-nyj-645318",
+              "numbers": [
+                "9",
+                "49",
                 "8"
               ],
               "teams": [],
@@ -15753,11 +15883,18 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoWire reports that Dont'e Thornton Jr. was a healthy scratch for Week 8 against the Jets, and that Jack Bech, Cody White and Dareke Young were set to rotate at wide receiver behind Tre Tucker and Jalen Nailor.",
+              "text": "RotoWire says Dont'e Thornton Jr. was a healthy scratch for Week 8 against the Jets, and Dareke Young was named with Jack Bech and Cody White as a rotational receiver behind Tre Tucker and Jalen Nailor.",
               "url": "https://www.rotowire.com/football/headlines/donte-thornton-news-wont-play-against-nyj-645318",
               "source": "RotoWire",
               "date": "2026-11-01",
               "stance": "backs"
+            },
+            {
+              "text": "RotoWire notes that Thornton is fully recovered from a hamstring injury and came off injured reserve, so he could play again in Week 9 against the 49ers on Nov. 8.",
+              "url": "https://www.rotowire.com/football/headlines/donte-thornton-news-wont-play-against-nyj-645318",
+              "source": "RotoWire",
+              "date": "2026-11-01",
+              "stance": "disputes"
             }
           ]
         },
@@ -15811,39 +15948,6 @@
                 "DeMario Douglas",
                 "A.J. Brown"
               ]
-            },
-            {
-              "id": "WV.research.9501.1",
-              "text": "Justin Boone ranks DeMario Douglas 9th among his top-10 overall Week 9 pickups, with a $9 FAB bid and a 37% rostered rate ahead of a game against GB. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "numbers": [
-                "9",
-                "-10",
-                "10",
-                "9",
-                "9",
-                "37"
-              ],
-              "teams": [],
-              "players": [
-                "DeMario Douglas"
-              ]
-            },
-            {
-              "id": "WV.research.9501.2",
-              "text": "Boone says Douglas has a low floor, with 3 catches for 23 yards in Week 7, but he scored at least 15 fantasy points and finished as a top-10 WR in each of his other 3 games over the last month. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "numbers": [
-                "3",
-                "23",
-                "7",
-                "15",
-                "-10",
-                "10",
-                "3"
-              ],
-              "teams": [],
-              "players": [
-                "DeMario Douglas"
-              ]
             }
           ],
           "price": {
@@ -15893,22 +15997,7 @@
           "bye": 11,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "Justin Boone ranks DeMario Douglas 9th among his top-10 overall Week 9 pickups, with a $9 FAB bid and a 37% rostered rate ahead of a game against GB.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
-              "stance": "news"
-            },
-            {
-              "text": "Boone says Douglas has a low floor, with 3 catches for 23 yards in Week 7, but he scored at least 15 fantasy points and finished as a top-10 WR in each of his other 3 games over the last month.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-11-02",
-              "stance": "news"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "8254",
@@ -15960,15 +16049,6 @@
                 "Julius Chestnut",
                 "Tyjae Spears"
               ]
-            },
-            {
-              "id": "WV.research.8254.1",
-              "text": "Yahoo Fantasy says Tennessee has kept Julius Chestnut active mostly as a special-teams player, and rookie Nicholas Singleton has not been active much because of that. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/10-fantasy-football-waiver-wire-005937794.html",
-              "numbers": [],
-              "teams": [],
-              "players": [
-                "Julius Chestnut"
-              ]
             }
           ],
           "price": {
@@ -16018,15 +16098,7 @@
           "bye": 9,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "Yahoo Fantasy says Tennessee has kept Julius Chestnut active mostly as a special-teams player, and rookie Nicholas Singleton has not been active much because of that.",
-              "url": "https://sports.yahoo.com/articles/10-fantasy-football-waiver-wire-005937794.html",
-              "source": "Yahoo Fantasy",
-              "date": "2026-10-31",
-              "stance": "backs"
-            }
-          ]
+          "research": []
         },
         {
           "player_id": "10214",
@@ -16078,27 +16150,6 @@
                 "Davis Allen",
                 "Colby Parkinson"
               ]
-            },
-            {
-              "id": "WV.research.10214.1",
-              "text": "NBC Sports Rotoworld reports that Colby Parkinson (ribs) was among the Rams inactives, and says his absence could put Davis Allen in the fantasy spotlight after Allen scored twice against the Raiders. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/colby-parkinson-among-rams-inactives",
-              "numbers": [],
-              "teams": [],
-              "players": [
-                "Davis Allen"
-              ]
-            },
-            {
-              "id": "WV.research.10214.2",
-              "text": "NBC Sports Rotoworld reports that Davis Allen was held to 8 receiving yards in Week 8. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/davis-allen-held-to-8-yards-in-week-8",
-              "numbers": [
-                "8",
-                "8"
-              ],
-              "teams": [],
-              "players": [
-                "Davis Allen"
-              ]
             }
           ],
           "price": {
@@ -16146,22 +16197,7 @@
           "bye": 11,
           "injury_status": null,
           "return_week": null,
-          "research": [
-            {
-              "text": "NBC Sports Rotoworld reports that Colby Parkinson (ribs) was among the Rams inactives, and says his absence could put Davis Allen in the fantasy spotlight after Allen scored twice against the Raiders.",
-              "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/colby-parkinson-among-rams-inactives",
-              "source": "NBC Sports",
-              "date": "2026-11-01",
-              "stance": "backs"
-            },
-            {
-              "text": "NBC Sports Rotoworld reports that Davis Allen was held to 8 receiving yards in Week 8.",
-              "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/davis-allen-held-to-8-yards-in-week-8",
-              "source": "NBC Sports",
-              "date": "2026-11-01",
-              "stance": "news"
-            }
-          ]
+          "research": []
         }
       ],
       "stashes": [
@@ -16194,15 +16230,27 @@
             },
             {
               "id": "WV.research.9511.1",
-              "text": "NBC Sports reports that Keaton Mitchell had 4 carries for 6 yards and 3 catches for 17 yards in the Week 8 loss to the Rams, and was third in rushing attempts behind Omarion Hampton (9) and Kimani Vidal (8). Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/mitchell-has-23-yards-vs-rams",
+              "text": "In his Week 9 waiver column, Justin Boone lists Keaton Mitchell as a pickup option for the matchup against HOU and notes he is 24% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
               "numbers": [
-                "4",
-                "6",
-                "3",
-                "17",
-                "8",
                 "9",
-                "8"
+                "24"
+              ],
+              "teams": [],
+              "players": [
+                "Keaton Mitchell"
+              ]
+            },
+            {
+              "id": "WV.research.9511.2",
+              "text": "RotoBaller calls Mitchell a deep-league stash after he played 32% of snaps with 4 carries, 12 routes and 3 targets for 23 yards, while Kimani Vidal played 44% and Omarion Hampton played 31%. Source: RotoBaller, https://www.rotoballer.com/week-9-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1981366",
+              "numbers": [
+                "32",
+                "4",
+                "12",
+                "3",
+                "23",
+                "44",
+                "31"
               ],
               "teams": [],
               "players": [
@@ -16259,10 +16307,17 @@
           "return_week": null,
           "research": [
             {
-              "text": "NBC Sports reports that Keaton Mitchell had 4 carries for 6 yards and 3 catches for 17 yards in the Week 8 loss to the Rams, and was third in rushing attempts behind Omarion Hampton (9) and Kimani Vidal (8).",
-              "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-01/mitchell-has-23-yards-vs-rams",
-              "source": "NBC Sports",
-              "date": "2026-11-01",
+              "text": "In his Week 9 waiver column, Justin Boone lists Keaton Mitchell as a pickup option for the matchup against HOU and notes he is 24% rostered.",
+              "url": "https://sports.yahoo.com/fantasy/article/fantasy-football-waiver-wire-week-9-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-155157280.html",
+              "source": "Yahoo Fantasy",
+              "date": "2026-11-03",
+              "stance": "news"
+            },
+            {
+              "text": "RotoBaller calls Mitchell a deep-league stash after he played 32% of snaps with 4 carries, 12 routes and 3 targets for 23 yards, while Kimani Vidal played 44% and Omarion Hampton played 31%.",
+              "url": "https://www.rotoballer.com/week-9-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1981366",
+              "source": "RotoBaller",
+              "date": "2026-11-02",
               "stance": "news"
             }
           ]
@@ -16307,9 +16362,12 @@
             },
             {
               "id": "WV.research.10219.1",
-              "text": "RotoWire's Joe Bartel calls Rodriguez more of a one-week play, pointing to a Week 9 game against Baltimore, which is down to its third-string quarterback on a short week. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
+              "text": "RotoBaller lists Chris Rodriguez Jr. as a secondary Week 9 running back add: he played a 22.6% snap share and an 18.8% rush share in Week 8 in a rotation behind lead back Bhayshul Tuten. Source: RotoBaller, https://rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
               "numbers": [
-                "9"
+                "9",
+                "22.6",
+                "18.8",
+                "8"
               ],
               "teams": [],
               "players": [
@@ -16318,8 +16376,15 @@
             },
             {
               "id": "WV.research.10219.2",
-              "text": "Bartel notes that in blowouts Jacksonville has leaned on Rodriguez to keep Bhayshul Tuten from taking on too much volume. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "numbers": [],
+              "text": "RotoBaller notes Rodriguez has a 29.6% snap share and a 28.8% rush share over the Jaguars' last 2 games, including a season-high 40.7% rush share in Week 6, and he is 26% rostered. Source: RotoBaller, https://rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "numbers": [
+                "29.6",
+                "28.8",
+                "2",
+                "40.7",
+                "6",
+                "26"
+              ],
               "teams": [],
               "players": [
                 "Chris Rodriguez Jr."
@@ -16375,16 +16440,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "RotoWire's Joe Bartel calls Rodriguez more of a one-week play, pointing to a Week 9 game against Baltimore, which is down to its third-string quarterback on a short week.",
-              "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "source": "RotoWire",
+              "text": "RotoBaller lists Chris Rodriguez Jr. as a secondary Week 9 running back add: he played a 22.6% snap share and an 18.8% rush share in Week 8 in a rotation behind lead back Bhayshul Tuten.",
+              "url": "https://rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "source": "RotoBaller",
               "date": "2026-11-03",
               "stance": "news"
             },
             {
-              "text": "Bartel notes that in blowouts Jacksonville has leaned on Rodriguez to keep Bhayshul Tuten from taking on too much volume.",
-              "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-9-145018",
-              "source": "RotoWire",
+              "text": "RotoBaller notes Rodriguez has a 29.6% snap share and a 28.8% rush share over the Jaguars' last 2 games, including a season-high 40.7% rush share in Week 6, and he is 26% rostered.",
+              "url": "https://rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "source": "RotoBaller",
               "date": "2026-11-03",
               "stance": "news"
             }
@@ -16433,11 +16498,24 @@
             },
             {
               "id": "WV.research.4147.1",
-              "text": "Justin Boone's Week 9 waiver column lists Samaje Perine as a dart-throw flex option against ATL, at 22% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
+              "text": "At RotoBaller, Phil Clark calls Perine a handcuff to Chase Brown and writes that he has had a 28.5% snap share and a 22.6% rush share since the Bengals' Week 6 bye, with 8 of his 11 red-zone carries coming since Week 5. Source: RotoBaller, https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
               "numbers": [
-                "9",
-                "22"
+                "28.5",
+                "22.6",
+                "6",
+                "8",
+                "11",
+                "5"
               ],
+              "teams": [],
+              "players": [
+                "Samaje Perine"
+              ]
+            },
+            {
+              "id": "WV.research.4147.2",
+              "text": "At FantasyPros, Pat Fitzmaurice lists Perine as a running back to stash and calls him a handcuff to Chase Brown, not a player with value on his own. Source: FantasyPros, https://www.fantasypros.com/2026/11/fantasy-football-waiver-wire-advice-players-to-add-stash-drop-week-9-2026/",
+              "numbers": [],
               "teams": [],
               "players": [
                 "Samaje Perine"
@@ -16493,9 +16571,16 @@
           "return_week": null,
           "research": [
             {
-              "text": "Justin Boone's Week 9 waiver column lists Samaje Perine as a dart-throw flex option against ATL, at 22% rostered.",
-              "url": "https://sports.yahoo.com/fantasy/article/week-9-fantasy-football-waiver-wire-mike-washington-jr-among-slew-of-good-rb-pickups-to-consider-182552018.html",
-              "source": "Yahoo Fantasy",
+              "text": "At RotoBaller, Phil Clark calls Perine a handcuff to Chase Brown and writes that he has had a 28.5% snap share and a 22.6% rush share since the Bengals' Week 6 bye, with 8 of his 11 red-zone carries coming since Week 5.",
+              "url": "https://www.rotoballer.com/running-back-waiver-wire-pickups-fantasy-football-week-9-2026/1977548",
+              "source": "RotoBaller",
+              "date": "2026-11-03",
+              "stance": "news"
+            },
+            {
+              "text": "At FantasyPros, Pat Fitzmaurice lists Perine as a running back to stash and calls him a handcuff to Chase Brown, not a player with value on his own.",
+              "url": "https://www.fantasypros.com/2026/11/fantasy-football-waiver-wire-advice-players-to-add-stash-drop-week-9-2026/",
+              "source": "FantasyPros",
               "date": "2026-11-03",
               "stance": "news"
             }

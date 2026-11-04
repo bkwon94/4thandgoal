@@ -1,0 +1,12 @@
+$ make -C apps/pipeline build WEEK=8
+(full build log: evidence/build-08/output.txt)
+
+motw: impact facts in scope = ['M3.impact']
+recap_1: impact facts in scope = ['M1.impact']
+recap_2: impact facts in scope = ['M2.impact']
+recap_3: impact facts in scope = ['M3.impact']
+recap_4: impact facts in scope = ['M4.impact']
+recap_5: impact facts in scope = ['M5.impact']
+recap_6: impact facts in scope = ['M6.impact']
+next_week: impact facts in scope = []
+game_changer: impact facts in scope = []

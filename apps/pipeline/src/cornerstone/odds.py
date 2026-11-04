@@ -58,7 +58,7 @@ def playoff_odds(
 
     # Sorted roster IDs, so each draw and each sort reads the rosters in one fixed order, whatever the dict order.
     rosters = sorted(records)
-    status = {rid: _status(rid, records, weeks_left, playoff_spots) for rid in rosters}
+    status = {rid: roster_status(rid, records, weeks_left, playoff_spots) for rid in rosters}
     bye_status = {rid: _bye_status(rid, records, weeks_left, bye_count) for rid in rosters}
     # The random seed derives from the season and the week, so the same inputs give the same odds.
     rng = random.Random(season * 100 + week)
@@ -182,7 +182,7 @@ def _median(scores: list[float]) -> float:
     return (ordered[middle - 1] + ordered[middle]) / 2
 
 
-def _status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
+def roster_status(roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int) -> OddsStatus:
     """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
 
     `in`: no roster outside the top spots by wins can reach this roster's wins with 2 wins every week left.
@@ -216,7 +216,7 @@ def _bye_status(
     `bye_gone`: this roster cannot reach the wins of the roster in the last bye spot with 2 wins every week left.
     """
     # The bye spots are the top `bye_count` seeds, so the playoff check with that count is the bye check.
-    return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[_status(roster_id, records, weeks_left, bye_count)]
+    return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[roster_status(roster_id, records, weeks_left, bye_count)]
 
 
 def _shown_bye(bye_status: ByeStatus, status: OddsStatus, byes: int, runs: int, playoff: int) -> int:
