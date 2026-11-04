@@ -151,12 +151,12 @@ function registryText(slug, values) {
   ].join("\n");
 }
 
-/* The menu of the client. The layout defaults to the hamburger, and with no items the menu takes the package list in its
-   order, as the Menu model of the pipeline says. */
+/* The menu of the client. The layout defaults to the hamburger. With no items, the menu takes the home page, then the
+   package list in its order, because Brian chose Home as the first item of a default menu. */
 function menuOf(values) {
   return {
     layout: values.menu?.layout ?? "hamburger",
-    items: values.menu?.items ?? values.packages.map((name) => ({ package: name })),
+    items: values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))],
   };
 }
 

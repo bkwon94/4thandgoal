@@ -151,7 +151,7 @@ describe("the client build", () => {
     });
   });
 
-  it("gives a test client with the layout bar and no items a bar with the items of the package list (AT-16)", () => {
+  it("gives a test client with the layout bar and no items a bar with Home, then the items of the package list (AT-16)", () => {
     const toml = [
       'packages = ["week", "waiver", "rankings"]',
       'timezone = "America/Los_Angeles"',
@@ -169,18 +169,18 @@ describe("the client build", () => {
     const values = clientValuesOf(repo.site);
     expect(values.menu).toEqual({
       layout: "bar",
-      items: [{ package: "week" }, { package: "waiver" }, { package: "rankings" }],
+      items: [{ page: "home" }, { package: "week" }, { package: "waiver" }, { package: "rankings" }],
     });
     expect(values.usageCode).toBeNull();
   });
 
-  it("gives a client with no [menu] the hamburger and the items of the package list", () => {
+  it("gives a client with no [menu] the hamburger, Home, and the items of the package list", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
     expect(clientValuesOf(repo.site).menu).toEqual({
       layout: "hamburger",
-      items: [{ package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
+      items: [{ page: "home" }, { package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
     });
   });
 
