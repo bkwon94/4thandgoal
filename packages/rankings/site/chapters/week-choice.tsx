@@ -6,7 +6,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { WeekLine } from "@cpc/design/parts/week-line";
-import type { RankingsWeek } from "@/lib/rankings-types";
+import type { RankingsWeek } from "../schema/rankings-types";
 
 export type WeekChoice = { week: RankingsWeek; choose: (week: number) => void };
 

@@ -11,10 +11,10 @@ from fakes import no_news
 
 from cornerstone.pipeline import make_bundle
 from cornerstone.sheet import build_bundle
-from cornerstone.sheet import rankings as rankings_chapter
 from league.history import load_history
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
+from rankings import chapter as rankings_chapter
 
 CLIENT = cpc_client()
 

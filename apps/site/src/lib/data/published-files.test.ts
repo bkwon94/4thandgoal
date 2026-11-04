@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "../schemas/managers";
-import { rankingsSchema } from "../schemas/rankings";
+import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import { waiverBoardSchema } from "../schemas/waiver";
 import { weekPageSchema } from "@cpc/week/schema/week";
 

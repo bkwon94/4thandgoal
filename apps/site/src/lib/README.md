@@ -3,7 +3,7 @@
 ## Knows
 
 - The build config in `src/lib/config.ts`, with the API target of the analyzer, and the route builders in `src/lib/routes.ts`.
-- The types of each published file and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`. The week package holds the types of the week page file.
+- The types of each published file and of the client values, in `src/lib/*-types.ts` and `src/lib/client-values.ts`. The week and the rankings packages hold the types of their own files.
 - The default avatar and headshot are in `@cpc/league`.
 
 ## Ports

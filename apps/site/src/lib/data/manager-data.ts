@@ -8,7 +8,7 @@ import { managersHref } from "../routes";
 import { managersFileSchema } from "../schemas/managers";
 import type { Manager, ManagerEntry, Managers } from "../manager-types";
 import { latestSeason, loadRankings } from "./rankings-data";
-import type { RankingsRow } from "../rankings-types";
+import type { RankingsRow } from "@cpc/rankings/schema/rankings-types";
 
 /* The managers file layout version this site reads. It counts apart from the page JSON version. */
 const SCHEMA_VERSION = 1;

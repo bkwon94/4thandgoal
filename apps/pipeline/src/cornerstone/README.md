@@ -4,7 +4,7 @@
 
 - The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
 - The `analyze` and `find` commands of the CLI. The `analyzer` package holds the rubric, the grade, and the finder.
-- The waiver board, the power rankings, the playoff odds, and the managers file.
+- The waiver board and the managers file. The `rankings` package holds the power rankings and the playoff odds.
 - The six layers: model, provider, load, facts, write, output. A module imports only from its own layer or a lower one.
 - The shared kernel is the league package in `packages/league/`. Every outside service enters through it.
 - The fact tokens, the writer, the verifier, and the default voice are the facts package in `packages/facts/`.

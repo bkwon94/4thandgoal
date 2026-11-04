@@ -4,39 +4,45 @@ Pure code over the saved history. No trade value and no chart enter the formula.
 """
 from decimal import Decimal
 
-from cornerstone.tunables import FORM_HEAD_TO_HEAD_WEIGHT, FORM_MEDIAN_WEIGHT, POWER_WEIGHTS
 from league.models import History, PastWeek, PowerRow
 from league.standings_table import head_to_head, season_records, standings_order, week_median
 from league.tunables import TREND_WEEKS
+from rankings.tunables import FORM_HEAD_TO_HEAD_WEIGHT, FORM_MEDIAN_WEIGHT, POWER_WEIGHTS
 
 # A quality win is a win against a team in this many top places of the standings.
 QUALITY_TOP = 4
 # The neutral half of a rate with no game behind it,
 # so the formula does not punish a team for a schedule it did not choose.
 NEUTRAL = 0.5
-# The longest form streak: both weighted games of every week in the form window.
-# The scale runs from minus this to plus this.
-STREAK_CAP = (FORM_HEAD_TO_HEAD_WEIGHT + FORM_MEDIAN_WEIGHT) * TREND_WEEKS
 
 
-def power_rankings(history: History, through: int) -> dict[int, list[PowerRow]]:
-    """The power rankings of every week from 1 to `through`, each as of that week, best first."""
+def streak_cap(median_game: bool) -> int:
+    """The longest form streak: every weighted game of every week in the form window. The scale runs from minus this
+    to plus this. With no median game, a week holds the head-to-head game only."""
+    return (FORM_HEAD_TO_HEAD_WEIGHT + (FORM_MEDIAN_WEIGHT if median_game else 0)) * TREND_WEEKS
+
+
+def power_rankings(history: History, through: int, *, median_game: bool = True) -> dict[int, list[PowerRow]]:
+    """The power rankings of every week from 1 to `through`, each as of that week, best first.
+
+    With `median_game` off, the league scores no median game, so the records count one game a week.
+    """
     out: dict[int, list[PowerRow]] = {}
     for week in range(1, through + 1):
         before = {row.roster_id: row.power_rank for row in out.get(week - 1, [])}
-        out[week] = _week_rows(history, week, before)
+        out[week] = _week_rows(history, week, before, median_game)
     return out
 
 
-def _week_rows(history: History, week: int, before: dict[int, int]) -> list[PowerRow]:
-    records = season_records(history, week)
+def _week_rows(history: History, week: int, before: dict[int, int], median_game: bool) -> list[PowerRow]:
+    records = season_records(history, week, median_game=median_game)
     standing = standings_order(records)
     standing_rank = {rid: i + 1 for i, rid in enumerate(standing)}
     weeks = [history.weeks[n] for n in range(1, week + 1)]
     recent = weeks[-TREND_WEEKS:]
     values = {
         "standing": {rid: _scaled(len(standing) - standing_rank[rid], 0, len(standing) - 1) for rid in standing},
-        "form": _form(recent, standing),
+        "form": _form(recent, standing, median_game),
         "schedule_played": _schedule_played(weeks, standing),
         "scoring": _scoring(weeks, records),
     }
@@ -53,7 +59,7 @@ def _week_rows(history: History, week: int, before: dict[int, int]) -> list[Powe
                 values={name: values[name][rid] for name in values},
                 ranks={name: ranks[name][rid] for name in ranks},
                 head_to_head=_head_to_head_record(recent, rid),
-                median=_median_record(recent, rid),
+                median=_median_record(recent, rid) if median_game else None,
                 form_weeks=len(recent),
             )
             for rid in standing
@@ -108,16 +114,18 @@ def _median_record(weeks: list[PastWeek], roster_id: int) -> tuple[int, int]:
     return results.count(1), results.count(-1)
 
 
-def _week_games(week: PastWeek, roster_id: int) -> list[tuple[int, int]]:
+def _week_games(week: PastWeek, roster_id: int, median_game: bool) -> list[tuple[int, int]]:
     """The results of one week's games with their weights, oldest first: the head-to-head game, then the median game.
 
-    A result is 1 for a win, -1 for a loss, 0 for a tie. A bye week has the median game only.
+    A result is 1 for a win, -1 for a loss, 0 for a tie. A bye week has the median game only. With no median game,
+    a week has the head-to-head game only, so a bye week has no game.
     """
     games = []
     game = head_to_head(week, roster_id)
     if game is not None:
         games.append((game[1], FORM_HEAD_TO_HEAD_WEIGHT))
-    games.append((_median_result(week, roster_id), FORM_MEDIAN_WEIGHT))
+    if median_game:
+        games.append((_median_result(week, roster_id), FORM_MEDIAN_WEIGHT))
     return games
 
 
@@ -134,12 +142,16 @@ def _form_streak(games: list[tuple[int, int]]) -> int:
     return run
 
 
-def _form(recent: list[PastWeek], rosters: list[int]) -> dict[int, float]:
-    """A third each over the recent weeks: the form streak, the weighted record of both games, the all-play rate."""
+def _form(recent: list[PastWeek], rosters: list[int], median_game: bool) -> dict[int, float]:
+    """A third each over the recent weeks: the form streak, the weighted record of both games, the all-play rate.
+
+    With no median game, the streak and the record read the head-to-head games only.
+    """
+    cap = streak_cap(median_game)
     out = {}
     for rid in rosters:
-        games = [game for week in recent for game in _week_games(week, rid)]
-        streak = _scaled(_form_streak(games), -STREAK_CAP, STREAK_CAP)
+        games = [game for week in recent for game in _week_games(week, rid, median_game)]
+        streak = _scaled(_form_streak(games), -cap, cap)
         wins = sum(weight for result, weight in games if result == 1)
         losses = sum(weight for result, weight in games if result == -1)
         out[rid] = (streak + _rate(wins, losses) + _all_play_rate(recent, rid)) / 3

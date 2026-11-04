@@ -17,4 +17,4 @@
 - It owns no shape. The pipeline owns each shape, and `src/lib/schemas/` holds the schemas (ADR 0013).
 - It runs in no browser. Only the app layer and `next.config.ts` call a loader (ADR 0012).
 - It writes no file. The pipeline publishes every file under `public/`.
-- It formats no number. `src/lib/format/` holds the formats.
+- It formats no number. Each package holds its own formats.

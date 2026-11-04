@@ -5,13 +5,13 @@ They run on the fixture history, and on small histories built for one rule each.
 import pytest
 from cpc import cpc_client
 
-from cornerstone.power_rankings import power_rankings
-from cornerstone.tunables import POWER_WEIGHTS
 from league.history import load_history
 from league.models import History, PastWeek
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.standings_table import standings
+from rankings.power_rankings import power_rankings
+from rankings.tunables import POWER_WEIGHTS
 
 CLIENT = cpc_client()
 

@@ -22,7 +22,6 @@ from fakes import fixture_nflverse, no_claims, no_network, no_news
 from cornerstone.pipeline import (
     BuildStopped,
     _nflverse_for_week,
-    _rankings_chapter,
     _write_managers,
     _write_rankings,
     make_bundle,
@@ -32,10 +31,8 @@ from cornerstone.pipeline import (
     run_rankings,
     run_rewrite,
 )
-from cornerstone.power_rankings import power_rankings
 from cornerstone.publish import PublishError, run_publish
-from cornerstone.render import RANKINGS_ODDS_KEYS
-from cornerstone.sheet import read_bundle
+from cornerstone.sheet import read_bundle, saved_chapter
 from facts.writer import DEFAULT_PROMPTS, WriterError
 from league.history import HISTORY_FILES, load_saved_weeks
 from league.models import (
@@ -53,6 +50,8 @@ from league.parse import parse_week
 from league.paths import history_dir, history_root, week_dir
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
+from rankings.power_rankings import power_rankings
+from rankings.published import RANKINGS_ODDS_KEYS
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.
@@ -299,7 +298,7 @@ def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir
     teams = read_bundle(week_dir(repo, 2026, 6) / "facts.json").data.teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
     history = History(week=6, weeks=load_saved_weeks(history_root(repo, 2026), 6))
-    out = _write_rankings(repo, 2026, 5, teams, SeasonInputs(history=history))
+    out = _write_rankings(repo, 2026, 5, teams, SeasonInputs(history=history), client=cpc_client(at=repo))
     data = json.loads(out.read_text(encoding="utf-8"))
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
     assert "covers weeks 1 to 6, past the built week 5" in caplog.text
@@ -434,7 +433,7 @@ def test_a_saved_pr_fact_with_an_old_rank_is_rebuilt_from_the_history_and_the_ru
     assert stale.text != fresh.text
     bundle.sheet.facts[stale.id] = stale
 
-    _rankings_chapter(bundle, history, CLIENT)
+    saved_chapter(bundle, history, CLIENT)
     assert bundle.sheet.facts[stale.id].text == fresh.text
     assert f"is {_ordinal(row.power_rank)} in the power rankings" in bundle.sheet.facts[stale.id].text
 
@@ -497,7 +496,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the odds engine")
 
-    monkeypatch.setattr("cornerstone.sheet.rankings.playoff_odds", no_engine)
+    monkeypatch.setattr("rankings.chapter.playoff_odds", no_engine)
     run_rewrite(repo, 2026, 6, "next_week", _fake, **offline, client=cpc_client(at=repo))
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds

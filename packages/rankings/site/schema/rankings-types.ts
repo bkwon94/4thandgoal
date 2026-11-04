@@ -1,10 +1,10 @@
 /**
  * The types of the season rankings file that the Python build writes beside the week folders.
- * Each type is inferred from its schema in schemas/rankings.ts.
+ * Each type is inferred from its schema in rankings.ts.
  * The file holds every week of the season, so a later trend chart needs no new file.
  */
 import type { z } from "zod";
-import type * as schema from "./schemas/rankings";
+import type * as schema from "./rankings";
 
 export type BlurbSentence = z.infer<typeof schema.blurbSentenceSchema>;
 export type Components = z.infer<typeof schema.componentsSchema>;

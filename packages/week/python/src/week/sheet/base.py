@@ -183,7 +183,7 @@ class Context:
         self.mfacts = [matchup_facts(m, self.moves, week.week) for m in week.matchups]
         self.table = standings(week, history, client=client)
         self.by_rank = {s.roster_id: s for s in self.table}
-        self.before = ranks_before(week, self.table, history)
+        self.before = ranks_before(week, self.table, history, median_game=client.settings.median_game)
         # A league with no median game has no median line, so no fact, chapter, or clause reads one.
         self.median = median_facts(week) if client.settings.median_game else None
         self.pick = matchup_of_the_week(week, self.mfacts, self.table, self.before, client=client)

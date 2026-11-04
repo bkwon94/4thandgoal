@@ -4,26 +4,28 @@ The rankings chapter reads them. `RANKINGS` gives the chapter, its facts, and th
 """
 import logging
 from collections.abc import Callable
+from typing import Protocol
 
-from cornerstone.odds import playoff_odds
-from cornerstone.power_rankings import power_rankings
-from cornerstone.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 from facts.chapters import RANKINGS_CHAPTER
 from facts.tokens import Nums, fact
 from league.client import Client
 from league.models import (
+    Bundle,
     Chapter,
     Fact,
     History,
+    NextMatchup,
     OddsResult,
     PowerRow,
     Standing,
     Week,
 )
 from league.numbers import round_half_up
-from league.standings_table import head_to_head, season_records
+from league.standings_table import head_to_head, season_records, standings_order
 from league.tunables import TREND_WEEKS
-from week.sheet.base import Context, sentence_range
+from rankings.odds import playoff_odds
+from rankings.power_rankings import power_rankings
+from rankings.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,44 @@ COMPONENT_WORDS = {
     "standing": "standing", "form": f"results over the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
     "scoring": "scoring",
 }
+
+
+class Context(Protocol):
+    """The part of the week context that the rankings reads. The week passes its own context through the chapter port.
+
+    The rankings package cannot import the week package, so it names only what it reads. Each one is read-only.
+    """
+
+    @property
+    def week(self) -> Week: ...
+
+    @property
+    def history(self) -> History | None: ...
+
+    @property
+    def client(self) -> Client: ...
+
+    @property
+    def projected(self) -> dict[int, dict[int, float]]: ...
+
+    @property
+    def before(self) -> dict[int, int]: ...
+
+    @property
+    def odds(self) -> OddsResult | None: ...
+
+    @property
+    def next(self) -> list[NextMatchup]: ...
+
+    @property
+    def table(self) -> list[Standing]: ...
+
+    def team(self, roster_id: int) -> str: ...
+
+
+def sentence_range(client: Client) -> tuple[int, int]:
+    """The (min, max) sentences of the rankings chapter: one to three for each team of `client`."""
+    return client.settings.team_count, 3 * client.settings.team_count
 
 
 def week_odds(
@@ -53,7 +93,7 @@ def week_odds(
         return None
     scores, remaining = inputs
     return playoff_odds(
-        scores, season_records(history, week.week), remaining, season=week.season, week=week.week,
+        scores, season_records(history, week.week, median_game=client.settings.median_game), remaining, season=week.season, week=week.week,
         client=client, projected=projected,
     )
 
@@ -85,7 +125,9 @@ def week_power(c: Context) -> list[PowerRow]:
     """The power rankings of this week. A gap in the history would shift every rank, so an incomplete history gives
     no power rankings."""
     h = c.history
-    return power_rankings(h, c.week.week)[c.week.week] if h is not None and h.complete() else []
+    if h is None or not h.complete():
+        return []
+    return power_rankings(h, c.week.week, median_game=c.client.settings.median_game)[c.week.week]
 
 
 def facts(context: Context) -> list[Fact]:
@@ -98,7 +140,8 @@ def facts(context: Context) -> list[Fact]:
     scores, remaining = inputs if inputs is not None else ({}, {})
     return (
         power_facts(power, context.team)
-        + rank_why_facts(context.history, power, context.before, context.team)
+        + rank_why_facts(context.history, power, context.before, context.team,
+                         median_game=context.client.settings.median_game)
         + odds_facts(context.odds, context.team)
         + swing_facts(context.odds, [(nx.a, nx.b) for nx in context.next if nx.must_watch], context.team)
         + odds_why_facts(context.odds, scores, context.projected, remaining, context.team)
@@ -226,17 +269,20 @@ def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
             f"{n.ord(row.ranks[key])} in {n.text(word)}" for key, word in COMPONENT_WORDS.items()
         )
         # The form component weighs both games of a week, so the fact names both records for the writer to quote.
+        # A league with no median game has the head-to-head record only.
         # Nums records each number in text order, so the records come before the count of weeks.
-        head_to_head, median = n.record(*row.head_to_head), n.record(*row.median)
+        head_to_head = f"{n.record(*row.head_to_head)} head-to-head"
+        median = f" and {n.record(*row.median)} at the median" if row.median is not None else ""
         window = "the last week" if row.form_weeks == 1 else f"the last {n(row.form_weeks)} weeks"
-        records = f"{head_to_head} head-to-head and {median} at the median over {window}"
+        records = f"{head_to_head}{median} over {window}"
         text = f"{name} is {rank} in the power rankings, {move}: {components}; {records}."
         out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
     return out
 
 
 def rank_why_facts(
-    history: History | None, rows: list[PowerRow], before: dict[int, int], team: Callable[[int], str],
+    history: History | None, rows: list[PowerRow], before: dict[int, int], team: Callable[[int], str], *,
+    median_game: bool = True,
 ) -> list[Fact]:
     """One fact per team on why its power rank moved or held, from the second week of the rankings on.
 
@@ -250,7 +296,7 @@ def rank_why_facts(
     w = history.week
     played = history.weeks[w]
     # Context keeps only week N of the rankings, so week N-1 comes from a second call on the same history.
-    last = {row.roster_id: row for row in power_rankings(history, w - 1)[w - 1]}
+    last = {row.roster_id: row for row in power_rankings(history, w - 1, median_game=median_game)[w - 1]}
     out = []
     for row in rows:
         n = Nums()
@@ -343,7 +389,7 @@ def rankings_chapter(
                     f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
                     f"ODDS.{row.roster_id}.why")
     ]
-    low, high = sentence_range(RANKINGS_CHAPTER, client)
+    low, high = sentence_range(client)
     return Chapter(
         key=RANKINGS_CHAPTER,
         title="Power rankings",
@@ -355,6 +401,33 @@ def rankings_chapter(
         max_sentences=high,
         required=required_why_ids(facts, rows, table, odds),
     )
+
+
+def saved_chapter(bundle: Bundle, history: History, client: Client) -> Chapter:
+    """The rankings chapter of a saved week, built from the history and the current rules. It replaces the chapter and
+    the PR facts in `bundle`.
+
+    The PR facts and the rank why facts derive from the history and the rules, never from the saved facts.
+    A rule change must reach the blurb, so the rows of rankings.json and the facts agree on every rank.
+    Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
+    """
+    median_game = client.settings.median_game
+    rows = power_rankings(history, history.week, median_game=median_game)[history.week]
+
+    def team(roster_id: int) -> str:
+        return bundle.data.teams[roster_id].name
+
+    # A saved week has no Week for ranks_before. With a complete history, ranks_before ranks the records
+    # through week N-1 in standings order, the same as here.
+    before = (
+        {rid: i + 1 for i, rid in enumerate(standings_order(season_records(history, history.week - 1, median_game=median_game)))}
+        if history.week > 1 else {}
+    )
+    bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
+    bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team, median_game=median_game)})
+    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, client=client)
+    bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
+    return built
 
 
 class RankingsChapter:

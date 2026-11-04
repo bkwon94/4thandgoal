@@ -13,6 +13,7 @@ members = [
     "cpc-api",
     "cpc-facts",
     "cpc-league",
+    "cpc-rankings",
     "cpc-week",
 ]
 
@@ -102,6 +103,7 @@ dependencies = [
     { name = "cpc-analyzer" },
     { name = "cpc-facts" },
     { name = "cpc-league" },
+    { name = "cpc-rankings" },
     { name = "cpc-week" },
     { name = "httpx" },
     { name = "pillow" },
@@ -121,6 +123,7 @@ requires-dist = [
     { name = "cpc-analyzer", editable = "packages/analyzer/python" },
     { name = "cpc-facts", editable = "packages/facts/python" },
     { name = "cpc-league", editable = "packages/league/python" },
+    { name = "cpc-rankings", editable = "packages/rankings/python" },
     { name = "cpc-week", editable = "packages/week/python" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pillow", specifier = ">=13.0.0" },
@@ -262,6 +265,37 @@ requires-dist = [
     { name = "anthropic", specifier = ">=1.15.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pillow", specifier = ">=13.0.0" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-rankings"
+version = "0.1.0"
+source = { editable = "packages/rankings/python" }
+dependencies = [
+    { name = "cpc-facts" },
+    { name = "cpc-league" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cpc-facts", editable = "packages/facts/python" },
+    { name = "cpc-league", editable = "packages/league/python" },
     { name = "pydantic", specifier = ">=2.14.1" },
 ]
 

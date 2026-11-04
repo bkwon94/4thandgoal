@@ -12,15 +12,14 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { Reveal } from "@cpc/design/parts/reveal";
-import { Who } from "@cpc/week/parts/who";
+import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
+import { TeamName } from "@cpc/design/parts/team-name";
 import { record } from "@cpc/design/format/format";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
-import type { Components, Odds, RankingsRow, RankingsWeek } from "@/lib/rankings-types";
-import { managerHrefOrNull } from "@/lib/routes";
+import type { Components, Odds, RankingsRow, RankingsWeek } from "../schema/rankings-types";
 import { cn } from "@cpc/design/lib/utils";
-import type { AvatarMap } from "@cpc/week/schema/week-types";
 import { useSharedWeekChoice, useWeekChoice } from "./week-choice";
 
 /* The order and the column names of the four component ranks. */
@@ -57,6 +56,27 @@ const GRID = `grid ${PHONE_COLS} page:grid-cols-[var(--spacing-standings-rank)_v
    The count stays in the text color. The arrow sits on two surfaces: the white page in the light theme and the dark page #141414 in the dark theme.
    On the black card blue is about 5.06 to 1 and red about 5.04 to 1. On white blue is about 3.64 to 1 and red about 3.66 to 1.
    Both pairs pass the 3 to 1 rule for a graphic. No movement, and no last week in week 1, show a dash. */
+/* The avatar of each roster id, with paths relative to the week folder, as the week page file holds them. */
+type AvatarMap = Readonly<Record<string, string>>;
+
+/* The manager page of one team from the managers index href, or null when the season has no managers file. It keeps
+   the path of managerHrefOrNull in the week parts. The rankings package takes no part of another core package. */
+const managerHref = (managersHref: string | null, rosterId: number) =>
+  managersHref === null ? null : `${managersHref}${rosterId}/`;
+
+/* The avatar and the team name as one group, with the markup of Who in the week parts. An href makes the name a link
+   to the manager page, and with no href the name is plain text. */
+function Team({ src, name, href }: { src: string; name: string; href: string | null }) {
+  return (
+    <span className="inline-flex items-center gap-sp-2 align-middle">
+      <Avatar src={src} />
+      <span>
+        <TeamName name={name} href={href} />
+      </span>
+    </span>
+  );
+}
+
 export function Movement({ movement }: { movement: number | null }) {
   if (movement === null || movement === 0) {
     return (
@@ -139,7 +159,7 @@ function Row({
       <div className={cn(GRID, "relative min-h-touch border-b-0 py-sp-1")}>
         <span>{row.rank}</span>
         <Movement movement={row.movement} />
-        <Who src={avatarSrc(avatars, row.roster_id)} name={row.name} href={managerHrefOrNull(managersHref, row.roster_id)} />
+        <Team src={avatarSrc(avatars, row.roster_id)} name={row.name} href={managerHref(managersHref, row.roster_id)} />
         <span className="text-right">{record(row.wins, row.losses)}</span>
         <span className="text-right">{playoffCell(row)}</span>
         {/* The header names these columns, so the cells hold only the rank. On a phone they move into the open row. */}

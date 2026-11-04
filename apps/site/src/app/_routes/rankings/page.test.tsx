@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
-import fixture from "@/fixtures/rankings.json";
+import fixture from "@cpc/rankings/fixtures/rankings.json";
 
 afterEach(() => {
   cleanup();

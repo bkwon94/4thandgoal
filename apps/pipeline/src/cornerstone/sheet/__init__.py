@@ -2,18 +2,19 @@
 The wire code of the week build: it gives the week package the chapter source of each package that the client takes.
 Outside this folder, a module of the app imports the week build and the rankings chapter only from here.
 """
-from cornerstone.sheet.rankings import (
+from league.client import Client
+from league.models import Bundle
+from rankings.chapter import (
     RANKINGS,
     odds_facts,
     odds_inputs,
     power_facts,
     rank_why_facts,
     rankings_chapter,
+    saved_chapter,
     swing_facts,
     week_odds,
 )
-from league.client import Client
-from league.models import Bundle
 from week import sheet as week_sheet
 from week.sheet import (
     ChapterSource,
@@ -45,5 +46,5 @@ def build_bundle(*args, client: Client, **kwargs) -> Bundle:
 __all__ = [
     "CHAPTER_SOURCES", "Context", "build_bundle", "chapter_sources", "check_week_is_buildable", "odds_facts",
     "odds_inputs", "power_facts", "projected_totals", "rank_why_facts", "rankings_chapter", "read_bundle",
-    "standings_facts", "storyline_facts", "swing_facts", "week_dates", "week_odds", "write_bundle",
+    "saved_chapter", "standings_facts", "storyline_facts", "swing_facts", "week_dates", "week_odds", "write_bundle",
 ]

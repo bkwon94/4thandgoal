@@ -322,14 +322,17 @@ def _first_statuses(c) -> dict[int, OddsStatus]:
     if h is None or not h.complete() or week > client.settings.last_regular_week:
         return {}
     spots, left = client.settings.playoff_spots, client.settings.last_regular_week - week
-    now, before = season_records(h, week), season_records(h, week - 1)
+    median_game = client.settings.median_game
+    now = season_records(h, week, median_game=median_game)
+    before = season_records(h, week - 1, median_game=median_game)
     out = {}
     # The saved odds start at ODDS_FROM_WEEK and the odds of the week before can be missing.
     # The plain check on the records works for every week.
     for rid in now:
-        status = roster_status(rid, now, left, spots)
+        status = roster_status(rid, now, left, spots, median_game=median_game)
         # A roster with no record before this week has no earlier status.
-        earlier = roster_status(rid, before, left + 1, spots) if len(before) == len(now) else "open"
+        earlier = (roster_status(rid, before, left + 1, spots, median_game=median_game) if len(before) == len(now)
+                   else "open")
         if status != "open" and status != earlier:
             out[rid] = status
     return out

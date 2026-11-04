@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 // A relative import, not the @ alias: next.config loads the managers reader, and its loader does not resolve the alias.
-import { oddsSchema } from "./rankings";
+import { oddsSchema } from "@cpc/rankings/schema/rankings";
 
 /* The team as the week page names it. The avatar URL is the Sleeper one; the pages show the week page avatars. */
 export const managerTeamSchema = z.object({ name: z.string(), owner: z.string(), avatar_url: z.string() });

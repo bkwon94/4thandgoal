@@ -5,7 +5,7 @@
  * The joined Manager and Managers types are not a published file. The loader builds them, so they stay hand-typed here.
  */
 import type { z } from "zod";
-import type { Odds } from "@/lib/rankings-types";
+import type { Odds } from "@cpc/rankings/schema/rankings-types";
 import type * as schema from "./schemas/managers";
 
 export type ManagerTeam = z.infer<typeof schema.managerTeamSchema>;

@@ -16,15 +16,12 @@ from pydantic import TypeAdapter
 
 from cornerstone.manager_season import saved_awards
 from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
-from cornerstone.power_rankings import power_rankings
-from cornerstone.render import render_managers, render_rankings, render_week
+from cornerstone.render import render_managers, render_week
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
-    power_facts,
-    rank_why_facts,
-    rankings_chapter,
     read_bundle,
+    saved_chapter,
     write_bundle,
 )
 from cornerstone.waiver import waiver_board
@@ -41,7 +38,6 @@ from league.models import (
     Blurb,
     BuildRecord,
     Bundle,
-    Chapter,
     ChartValues,
     History,
     NflverseWeek,
@@ -80,8 +76,8 @@ from league.provider.sleeper import (
 from league.season_inputs import SeasonInputs
 from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, load_returns, week_snapshot
-from league.standings_table import season_records, standings_order
 from league.trades import default_cutoff, trades_for_week
+from rankings.published import render_rankings
 from week.median import median_terms
 from week.page import download_bytes, render_page_json
 
@@ -430,13 +426,15 @@ def run_build(
         log.warning("rankings.json not written for week %d: %s", week, err)
         log.warning("managers.json not written for week %d: %s", week, err)
         return page
-    try:
-        rankings = _write_rankings(repo, season, week, bundle.data.teams, SeasonInputs(history=history),
-                                   blurbs.get(RANKINGS_CHAPTER), bundle.odds)
-        if rankings is None:
-            log.warning("history incomplete through week %d: rankings.json not written", week)
-    except (OSError, ValueError, KeyError) as err:
-        log.warning("rankings.json not written for week %d: %s", week, err)
+    # The rankings package writes its own file, so a client that omits it gets no rankings.json.
+    if "rankings" in client.values.packages:
+        try:
+            rankings = _write_rankings(repo, season, week, bundle.data.teams, SeasonInputs(history=history),
+                                       blurbs.get(RANKINGS_CHAPTER), bundle.odds, client=client)
+            if rankings is None:
+                log.warning("history incomplete through week %d: rankings.json not written", week)
+        except (OSError, ValueError, KeyError) as err:
+            log.warning("rankings.json not written for week %d: %s", week, err)
     # The managers file reads the same saved history, so it comes right after the rankings file.
     # The snapshot, the projections ahead, and the chart load inside this try, so their failure skips only this file.
     try:
@@ -468,7 +466,7 @@ def _season_inputs(
 
 def _write_rankings(
     repo: Path, season: int, week: int, teams: dict[int, Team], inputs: SeasonInputs, blurb: Blurb | None = None,
-    odds: OddsResult | None = None,
+    odds: OddsResult | None = None, *, client: Client,
 ) -> Path | None:
     """Write rankings.json from the history of the `inputs`: weeks 1 to the latest complete week, never less than
     `week`. The rankings blurb and the `odds` go into the rows of `week`. None when a week from 1 to `week` is
@@ -483,7 +481,8 @@ def _write_rankings(
         return None
     if history.week > week:
         log.info("rankings.json covers weeks 1 to %d, past the built week %d", history.week, week)
-    return render_rankings(history, season, teams, repo / "site", week, blurb, odds)
+    return render_rankings(history, season, teams, repo / "site", week, blurb, odds,
+                           median_game=client.settings.median_game)
 
 
 def _write_managers(
@@ -611,7 +610,8 @@ def run_rewrite(
         try:
             # The rankings file reads only the history, so a rewrite loads no raw week.
             inputs = SeasonInputs(history=_season_history(client, season, week))
-            if _write_rankings(repo, season, week, bundle.data.teams, inputs, blurbs[chapter], bundle.odds) is None:
+            if _write_rankings(repo, season, week, bundle.data.teams, inputs, blurbs[chapter], bundle.odds,
+                               client=client) is None:
                 log.warning("history incomplete through week %d: rankings.json not written", week)
         except (OSError, ValueError, KeyError) as err:
             log.warning("rankings.json not written for week %d: %s", week, err)
@@ -624,31 +624,6 @@ def run_page_json(repo: Path, season: int, week: int, *, client: Client) -> Path
     return render_page_json(bundle, blurbs, repo / "site")
 
 
-def _rankings_chapter(bundle: Bundle, history: History, client: Client) -> Chapter:
-    """The rankings chapter of a saved week, built from the history and the current rules.
-
-    The PR facts and the rank why facts derive from the history and the rules, never from the saved facts.
-    A rule change must reach the blurb, so the rows of rankings.json and the facts agree on every rank.
-    Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
-    """
-    rows = power_rankings(history, history.week)[history.week]
-
-    def team(roster_id: int) -> str:
-        return bundle.data.teams[roster_id].name
-
-    # A saved week has no Week for ranks_before. With a complete history, ranks_before ranks the records
-    # through week N-1 in standings order, the same as here.
-    before = (
-        {rid: i + 1 for i, rid in enumerate(standings_order(season_records(history, history.week - 1)))}
-        if history.week > 1 else {}
-    )
-    bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
-    bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team)})
-    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, client=client)
-    bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
-    return built
-
-
 def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
     """Write the rankings blurb of a saved week with one writer call, then rankings.json from the saved history.
     The writer runs for this week only. The other weeks keep the blurbs of the last file."""
@@ -659,7 +634,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     # The check comes before the writer call, so a missing week costs no Claude call.
     if not history.complete():
         raise BuildStopped(HISTORY_GAP.format(week=week))
-    chapter = _rankings_chapter(bundle, history, client)
+    chapter = saved_chapter(bundle, history, client)
     # The saved facts must hold the PR facts the blurb cites, so a later rewrite finds them.
     write_bundle(bundle, directory / "facts.json")
     verify = read_verify(directory / "verify.json")
@@ -670,7 +645,7 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     _save_blurbs(directory, blurbs, verify)
     season_history = _season_history(client, season, week)
     out = _write_rankings(repo, season, week, bundle.data.teams, SeasonInputs(history=season_history),
-                          blurbs[chapter.key], bundle.odds)
+                          blurbs[chapter.key], bundle.odds, client=client)
     if out is None:
         raise BuildStopped(HISTORY_GAP.format(week=week))
     # The command rebuilds the season files from the saved history, so the managers file comes along.

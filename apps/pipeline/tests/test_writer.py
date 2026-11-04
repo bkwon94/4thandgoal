@@ -511,7 +511,7 @@ def test_system_prompt_limits_the_odds_to_the_teams_where_they_matter(fixture_ra
 
 
 def test_rankings_rule_cites_the_why_facts_past_the_tunable_thresholds(fixture_raw_dir):
-    from cornerstone.tunables import WHY_MOVE_AT, WHY_ODDS_AT
+    from rankings.tunables import WHY_MOVE_AT, WHY_ODDS_AT
 
     sheet = _sheet(fixture_raw_dir)
     system, _ = build_writer_prompt(_chapter(sheet, "median"), sheet, None, prompts_dir=PROMPTS)

@@ -11,8 +11,6 @@ from decimal import ROUND_HALF_UP, Decimal
 import pytest
 from cpc import cpc_client
 
-from cornerstone import sheet
-from cornerstone.odds import playoff_odds
 from cornerstone.sheet import (
     Context,
     build_bundle,
@@ -34,6 +32,8 @@ from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, 
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.snapshot import week_snapshot
+from rankings import chapter as rankings_chapter
+from rankings.odds import playoff_odds
 from week.sheet import standings
 
 CLIENT = cpc_client()
@@ -615,7 +615,7 @@ def test_clinched_and_out_odds_facts_hold_no_digit():
 
 
 def test_a_week_before_the_odds_week_has_no_odds_facts(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.rankings, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(rankings_chapter, "ODDS_FROM_WEEK", 7)
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
                      client=CLIENT)
@@ -776,7 +776,7 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
         seen.update(kwargs)
         return playoff_odds(*args, **kwargs)
 
-    monkeypatch.setattr(sheet.rankings, "playoff_odds", engine)
+    monkeypatch.setattr(rankings_chapter, "playoff_odds", engine)
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw)
     build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), client=CLIENT)
@@ -787,9 +787,9 @@ def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_ra
     raw = load_raw(fixture_raw_dir)
     raw.projections_ahead = None
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
-    inputs = sheet.odds_inputs(week, history, client=CLIENT)
-    plain = sheet.week_odds(week, history, inputs, projected_totals(week, client=CLIENT), client=CLIENT)
-    assert sheet.week_odds(week, history, inputs, None, client=CLIENT) == plain
+    inputs = rankings_chapter.odds_inputs(week, history, client=CLIENT)
+    plain = rankings_chapter.week_odds(week, history, inputs, projected_totals(week, client=CLIENT), client=CLIENT)
+    assert rankings_chapter.week_odds(week, history, inputs, None, client=CLIENT) == plain
 
 
 def _why_inputs(fixture_raw_dir, fixture_history_root):
@@ -862,7 +862,7 @@ def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixtur
 
 
 def test_no_odds_means_no_odds_why(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.rankings, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(rankings_chapter, "ODDS_FROM_WEEK", 7)
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
     b = build_bundle(week, news=lambda pid: [], history=history, client=CLIENT)
     assert not any(fid.endswith(".why") and fid.startswith("ODDS.") for fid in b.sheet.facts)

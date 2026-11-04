@@ -7,12 +7,14 @@ import random
 from collections import Counter
 from typing import Literal
 
-from cornerstone.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SEED_SHOW_AT, SIM_RUNS
 from league.client import Client
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
+from rankings.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SEED_SHOW_AT, SIM_RUNS
 
 ByeStatus = Literal["bye_sure", "bye_gone", "open"]
+# The bye status of each playoff status, when the playoff check runs with the count of byes as its spots.
+BYE_OF: dict[OddsStatus, ByeStatus] = {"in": "bye_sure", "out": "bye_gone", "open": "open"}
 
 
 def playoff_odds(
@@ -41,10 +43,12 @@ def playoff_odds(
     score of a week moves by `projection_weight` times the gap from that total to the roster's season average.
     The gap reads from the raw average, not the shrunk level, because it measures the change in the roster,
     and the shrink already sits in the level.
-    `client` gives the count of playoff spots and the count of byes.
+    `client` gives the count of playoff spots, the count of byes, and the median game. With no median game, each run
+    counts one game a week, and the clinch check reaches one win a week.
     """
     playoff_spots, bye_count = client.settings.playoff_spots, client.settings.bye_count
-    if len(records) % 2:
+    median_game = client.settings.median_game
+    if median_game and len(records) % 2:
         raise ValueError(f"the median rule needs an even count of rosters, got {len(records)}")
     weeks_left = len(remaining)
     if not weeks_left:
@@ -52,8 +56,10 @@ def playoff_odds(
 
     # Sorted roster IDs, so each draw and each sort reads the rosters in one fixed order, whatever the dict order.
     rosters = sorted(records)
-    status = {rid: roster_status(rid, records, weeks_left, playoff_spots) for rid in rosters}
-    bye_status = {rid: _bye_status(rid, records, weeks_left, bye_count) for rid in rosters}
+    status: dict[int, OddsStatus] = {
+        rid: roster_status(rid, records, weeks_left, playoff_spots, median_game=median_game) for rid in rosters}
+    bye_status: dict[int, ByeStatus] = {
+        rid: _bye_status(rid, records, weeks_left, bye_count, median_game) for rid in rosters}
     # The random seed derives from the season and the week, so the same inputs give the same odds.
     rng = random.Random(season * 100 + week)
     order = [remaining[w] for w in sorted(remaining)]
@@ -85,7 +91,7 @@ def playoff_odds(
         drawn = {rid: [rng.gauss(level[rid], spread) for _ in range(weeks_left)] for rid in rosters}
         if shifts:
             drawn = {rid: [score + shift for score, shift in zip(d, shifts[rid])] for rid, d in drawn.items()}
-        table = _run(records, order, drawn)
+        table = _run(records, order, drawn, median_game)
         top = set(table[:playoff_spots])
         for place, rid in enumerate(table[:playoff_spots], start=1):
             made[rid] += 1
@@ -136,8 +142,10 @@ def _run(
     records: dict[int, tuple[int, int, float]],
     order: list[list[tuple[int, int]]],
     drawn: dict[int, list[float]],
+    median_game: bool,
 ) -> list[int]:
-    """One run of the remaining weeks. It returns the final table in seed order."""
+    """One run of the remaining weeks. It returns the final table in seed order. With `median_game` off, a week is
+    the head-to-head game only."""
     wins = {rid: r[0] for rid, r in records.items()}
     points = {rid: r[2] for rid, r in records.items()}
     for i, pairs in enumerate(order):
@@ -147,9 +155,9 @@ def _run(
                 wins[a] += 1
             elif week[b] > week[a]:
                 wins[b] += 1
-        median = _median(list(week.values()))
+        median = _median(list(week.values())) if median_game else None
         for rid, score in week.items():
-            if score > median:
+            if median is not None and score > median:
                 wins[rid] += 1
             points[rid] += score
     return _table_order(wins, points)
@@ -186,15 +194,15 @@ def _shown(status: OddsStatus, made: int, runs: int) -> int:
 
 
 def _bye_status(
-    roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, bye_count: int,
+    roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, bye_count: int, median_game: bool,
 ) -> ByeStatus:
     """Sure, gone, or open for the bye, by the same plain check on wins as the playoff status.
 
-    `bye_sure`: no roster outside the top `bye_count` by wins can reach this roster's wins with 2 wins every week left.
-    `bye_gone`: this roster cannot reach the wins of the roster in the last bye spot with 2 wins every week left.
+    `bye_sure`: no roster outside the top `bye_count` by wins can reach this roster's wins with every game left won.
+    `bye_gone`: this roster cannot reach the wins of the roster in the last bye spot with every game left won.
     """
     # The bye spots are the top `bye_count` seeds, so the playoff check with that count is the bye check.
-    return {"in": "bye_sure", "out": "bye_gone", "open": "open"}[roster_status(roster_id, records, weeks_left, bye_count)]
+    return BYE_OF[roster_status(roster_id, records, weeks_left, bye_count, median_game=median_game)]
 
 
 def _shown_bye(bye_status: ByeStatus, status: OddsStatus, byes: int, runs: int, playoff: int) -> int:

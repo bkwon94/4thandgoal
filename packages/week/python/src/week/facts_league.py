@@ -58,15 +58,15 @@ REASONS = {
 
 
 def ranks_before(
-    week: Week, table: list[Standing], history: History | None = None
+    week: Week, table: list[Standing], history: History | None = None, *, median_game: bool = True,
 ) -> dict[int, int]:
     """Rank of each roster before this week.
 
-    A complete history ranks the records of the weeks before this one. Without it, this
-    removes the week from the totals. Week 1 has no earlier record, so it also subtracts.
+    A complete history ranks the records of the weeks before this one, with the median game only when the league
+    scores one. Without it, this removes the week from the totals. Week 1 has no earlier record, so it also subtracts.
     """
     if history is not None and history.complete() and week.week > 1:
-        records = season_records(history, week.week - 1)
+        records = season_records(history, week.week - 1, median_game=median_game)
         ordered = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
         return {rid: i + 1 for i, rid in enumerate(ordered)}
 
@@ -86,11 +86,13 @@ def ranks_before(
             if side.points != other.points:
                 take_off(side.roster_id, side.points > other.points)
             points[side.roster_id] = sub(points[side.roster_id], side.points)
-    median = median_facts(week)
-    for rid in median.above:
-        take_off(rid, True)
-    for rid in median.below:
-        take_off(rid, False)
+    # The records of the table hold the median game only when the league scores one.
+    if median_game:
+        median = median_facts(week)
+        for rid in median.above:
+            take_off(rid, True)
+        for rid in median.below:
+            take_off(rid, False)
 
     ordered = sorted(wins, key=lambda rid: (-wins[rid], -points[rid]))
     return {rid: i + 1 for i, rid in enumerate(ordered)}
@@ -132,7 +134,7 @@ def matchup_of_the_week(
     """
     by_roster = {s.roster_id: s for s in table}
     if before is None:
-        before = ranks_before(week, table)
+        before = ranks_before(week, table, median_game=client.settings.median_game)
     max_margin = max(f.margin for f in mfacts)
     signals = []
     for f, m in zip(mfacts, week.matchups):

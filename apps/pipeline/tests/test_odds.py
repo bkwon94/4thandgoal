@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from cpc import cpc_client
 
-from cornerstone.odds import playoff_odds
+from rankings.odds import playoff_odds
 
 CLIENT = cpc_client()
 

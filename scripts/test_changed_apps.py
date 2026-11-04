@@ -114,16 +114,17 @@ class TheRepoWorkspace(unittest.TestCase):
         self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
 
     def test_a_change_in_the_league_package_of_the_repo_selects_each_app_and_each_package_on_it(self):
-        # The facts, the analyzer, and the week packages list the league package, so a change in league checks each.
+        # The facts, the analyzer, the rankings, and the week packages list the league package, so a change in league
+        # checks each.
         files = ["packages/league/python/src/league/models.py"]
         self.assertEqual(select_apps(REPO, files), ["site", "pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "league", "week"])
+        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "league", "rankings", "week"])
 
     def test_a_change_in_the_facts_package_of_the_repo_selects_the_apps_that_import_it_and_not_league(self):
-        # The analyzer and the week packages list the facts package, so a change in facts checks both too.
+        # The analyzer, the rankings, and the week packages list the facts package, so a change in facts checks each too.
         files = ["packages/facts/python/src/facts/writer.py"]
         self.assertEqual(select_apps(REPO, files), ["pipeline", "api"])
-        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "week"])
+        self.assertEqual(select_packages(REPO, files), ["analyzer", "facts", "rankings", "week"])
 
     def test_a_change_in_the_analyzer_package_of_the_repo_selects_the_apps_that_import_it(self):
         # The analyzer has both languages, so a change on either side selects the site and the two Python apps.
@@ -137,6 +138,13 @@ class TheRepoWorkspace(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(select_apps(REPO, [path]), ["site", "pipeline", "api"])
                 self.assertEqual(select_packages(REPO, [path]), ["week"])
+
+    def test_a_change_in_either_side_of_the_rankings_package_selects_each_app_and_only_the_rankings(self):
+        # No other package lists the rankings. The pipeline lists it, and a change in the pipeline selects the API too.
+        for path in ("packages/rankings/python/src/rankings/odds.py", "packages/rankings/site/chapters/top-three.tsx"):
+            with self.subTest(path=path):
+                self.assertEqual(select_apps(REPO, [path]), ["site", "pipeline", "api"])
+                self.assertEqual(select_packages(REPO, [path]), ["rankings"])
 
     def test_the_command_prints_the_apps_on_one_line(self):
         # HEAD against HEAD has no committed change, so only the files of the work tree count.

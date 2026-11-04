@@ -6,8 +6,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 // Relative imports, not the @ alias: next.config imports the managers reader, which imports this module.
 import { basePath } from "../config";
-import { rankingsSchema } from "../schemas/rankings";
-import type { Rankings } from "../rankings-types";
+import { rankingsSchema } from "@cpc/rankings/schema/rankings";
+import type { Rankings } from "@cpc/rankings/schema/rankings-types";
 import { listWeeks, loadWeek } from "./week-data";
 import type { AvatarMap } from "@cpc/week/schema/week-types";
 

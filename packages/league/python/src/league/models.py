@@ -345,8 +345,9 @@ class PowerRow(BaseModel):
     values: dict[str, float]
     ranks: dict[str, int]
     # Wins and losses over the form window: the head-to-head games, and the median games. A tie is neither.
+    # The median record is None for a league with no median game. GLOSSARY.md, "Median game".
     head_to_head: tuple[int, int]
-    median: tuple[int, int]
+    median: tuple[int, int] | None
     # The count of weeks in the form window: TREND_WEEKS, or fewer in the first weeks of the season.
     form_weeks: int
 
