@@ -98,7 +98,8 @@ export function Trades({
   if (trades.length === 0) return null;
   return (
     <WeekChapter id="trades" title="Trades" note={`${trades.length} this week`}>
-      <div className="grid grid-cols-1 gap-sp-2 tablet:grid-cols-2">
+      {/* Two cards per row start at the desktop tier. At the tablet tier a pair card is too narrow for a name such as "McConkey". */}
+      <div className="grid grid-cols-1 gap-sp-2 desktop:grid-cols-2">
         {trades.map((trade, index) => (
           <TradeCard key={index} trade={trade} avatars={avatars} managersHref={managersHref} />
         ))}

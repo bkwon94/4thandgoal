@@ -70,8 +70,32 @@ describe("PositionLeaders", () => {
     expect(screen.getByText("No starters this week")).toBeTruthy();
   });
 
-  it("shows the blurb as prose", () => {
+  /* The prose under the list, or null when the chapter shows none. */
+  const prose = (chapter: HTMLElement) => chapter.querySelector("p")?.textContent ?? null;
+  /* The top player of a position in the week 8 data. */
+  const top = (position: string) => week8.leaders.find((board) => board.position === position)!.rows[0].player;
+
+  it("shows the sentences of the blurb on the chosen position as prose, so QB first shows the QB text", () => {
     const chapter = renderLeaders();
-    expect(within(chapter).getByText(week8.blurbs.position_leaders!).tagName).toBe("P");
+    expect(chapter.querySelector("p")?.tagName).toBe("P");
+    expect(prose(chapter)).toContain(top("QB"));
+    expect(week8.blurbs.position_leaders).toContain(prose(chapter));
+    expect(prose(chapter)).not.toContain(top("TE"));
+  });
+
+  it("changes the prose with the chip, so after a tap on WR it describes the WR leaders (AT-18)", () => {
+    const chapter = renderLeaders();
+    const qb = prose(chapter);
+    fireEvent.click(chip(chapter, "WR"));
+    expect(prose(chapter)).toContain(top("WR"));
+    expect(prose(chapter)).not.toContain(top("QB"));
+    expect(prose(chapter)).not.toContain(top("TE"));
+    expect(prose(chapter)).not.toBe(qb);
+  });
+
+  it("hides the prose for a position that no sentence of the blurb names, such as DEF (AT-18)", () => {
+    const chapter = renderLeaders();
+    fireEvent.click(chip(chapter, "DEF"));
+    expect(prose(chapter)).toBeNull();
   });
 });

@@ -1,5 +1,6 @@
 /**
- * Position leaders: a chip for each position, and the top three started players of the chosen position, then the blurb.
+ * Position leaders: a chip for each position, and the top three started players of the chosen position,
+ * then the sentences of the blurb on that position.
  * It is a client component, because the chosen chip is state.
  */
 "use client";
@@ -30,6 +31,20 @@ function Row({ row, headshots }: { row: LeaderRow; headshots: HeadshotMap }) {
   );
 }
 
+/* A sentence ends at ".", "!", or "?" and a space, but not at the dot of a name such as "Harold Fannin Jr.". */
+const SENTENCE_END = /(?<=[.!?])(?<!\b(?:Jr|Sr|St)\.)\s+/;
+
+/* The pipeline writes one blurb for the whole chapter, with no text per position.
+   So the chapter shows only the sentences of the blurb that name the leader of the chosen board, in their order.
+   The leader, not any of the three, because a sentence on the top quarterback can name a receiver of the same roster.
+   A position whose leader no sentence names, such as DEF, shows no prose, so the text never describes another position. */
+function blurbFor(blurb: string | undefined, board: LeaderBoard | undefined): string | null {
+  const leader = board?.rows[0]?.player;
+  if (!blurb || !leader) return null;
+  const sentences = blurb.split(SENTENCE_END).filter((sentence) => sentence.includes(leader));
+  return sentences.length > 0 ? sentences.join(" ") : null;
+}
+
 export function PositionLeaders({
   leaders,
   headshots,
@@ -41,6 +56,7 @@ export function PositionLeaders({
 }) {
   const [chosen, setChosen] = useState(leaders[0]?.position);
   const board = leaders.find((item) => item.position === chosen) ?? leaders[0];
+  const text = blurbFor(blurb, board);
   return (
     <WeekChapter id="leaders" title="Position leaders">
       {/* Each chip is a 44px pill. The chosen chip is filled, and aria-pressed tells a screen reader which one. */}
@@ -76,7 +92,7 @@ export function PositionLeaders({
           )}
         </Card>
       )}
-      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>}
+      {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{text}</p>}
     </WeekChapter>
   );
 }

@@ -7,7 +7,7 @@ import { expect, test } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openPage, scanContrast, scanScroll, scanTargets, scanText } from "./floor";
+import { openPage, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
 import { serveDir } from "./serve";
 
 const PHONE = { width: 390, height: 844 };
@@ -53,6 +53,17 @@ test("a sideways scroll at 390px fails and names the widest element, and a box t
 
   await page.setContent(`<body style="margin:0"><div class="strip" style="width:500px">A strip of weeks</div></body>`);
   expect(await scanScroll(page)).toEqual([expect.stringMatching(/scrolls sideways: 500px wide in 390px.*div\.strip/)]);
+});
+
+test("a word split over two lines fails and names the word, and a wrap between words or after a hyphen passes", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<body style="margin:0;overflow-wrap:break-word;font:12px monospace">
+    <div class="tile" style="width:60px">UNDERPERFORMER</div>
+    <div class="wrap" style="width:60px">TOP SCORER</div>
+    <div class="hyphen" style="width:40px">my 5-game</div>
+    <div class="cut" style="width:60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">BENCHWARMER</div>
+  </body>`);
+  expect(await scanWords(page)).toEqual([expect.stringMatching(/div\.tile .*"UNDERPERFORMER" breaks over 2 lines/)]);
 });
 
 test("axe color-contrast fails on a violation and on an incomplete result, and passes a clear pair", async ({ page }) => {

@@ -41,9 +41,11 @@ export function GameChanger({
             </div>
           </div>
         </div>
-        <ul className="m-0 grid list-none grid-cols-3 gap-sp-2 p-0">
+        {/* The tiles share one row when each word fits, and a tile wraps to a new row where it does not, as on a phone.
+            A tile never shrinks under its longest word, so "Projected" and "+20.44" never split. */}
+        <ul className="m-0 flex list-none flex-wrap gap-sp-2 p-0">
           {tiles.map((tile) => (
-            <li key={tile.label} className="min-w-0">
+            <li key={tile.label} className="flex-1">
               <Tile label={tile.label} value={tile.value} className="h-full" />
             </li>
           ))}
