@@ -258,7 +258,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 1
+            "rank": 9
           },
           {
             "key": "depth",
@@ -604,7 +604,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 2
+            "rank": 11
           },
           {
             "key": "depth",
@@ -1040,7 +1040,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 3
+            "rank": 4
           },
           {
             "key": "depth",
@@ -1369,7 +1369,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 4
+            "rank": 10
           },
           {
             "key": "depth",
@@ -1701,7 +1701,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "B",
+        "letter": "A",
         "slots": [
           {
             "position": "QB",
@@ -1735,7 +1735,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 5
+            "rank": 8
           },
           {
             "key": "depth",
@@ -1994,7 +1994,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 6
+            "rank": 2
           },
           {
             "key": "depth",
@@ -2579,7 +2579,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "B",
+        "letter": "A",
         "slots": [
           {
             "position": "QB",
@@ -2613,7 +2613,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 7
+            "rank": 3
           },
           {
             "key": "depth",
@@ -2982,7 +2982,7 @@
         "underperformer": 1
       },
       "grade": {
-        "letter": "B",
+        "letter": "A",
         "slots": [
           {
             "position": "QB",
@@ -3016,7 +3016,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 8
+            "rank": 1
           },
           {
             "key": "depth",
@@ -3379,7 +3379,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 9
+            "rank": 5
           },
           {
             "key": "depth",
@@ -3768,7 +3768,7 @@
         "underperformer": 0
       },
       "grade": {
-        "letter": "C",
+        "letter": "B",
         "slots": [
           {
             "position": "QB",
@@ -3802,7 +3802,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 10
+            "rank": 6
           },
           {
             "key": "depth",
@@ -4323,7 +4323,7 @@
           },
           {
             "key": "trade_value",
-            "rank": 11
+            "rank": 7
           },
           {
             "key": "depth",
