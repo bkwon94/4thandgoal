@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-6, AT-14, and AT-15.
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] CPC shows "1.43" as the big number of the hero, and NorCal shows "10.62".
 - [x] Each package gives its own part through the registry, so a client with no rankings shows no rankings part.
