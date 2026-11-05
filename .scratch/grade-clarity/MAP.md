@@ -25,10 +25,12 @@ The analyze route gives a grade that a manager reads in under a minute. The grad
 - Each adjuster row hides when it says nothing, shows its step as a mark, and uses one plain sentence. Usage shows snap share, target share, air yards per target, and carry share by position. Each opponent shows with its rank at the player's position. No text names the value chart. `decisions/03-grill-plain-adjuster-rows.md`.
 - The Week line names no step-up when the depth chart is more than 48 hours old. Out counts for the trade week only. IR, PUP, NA, and Sus count for both weeks. Tuesday and Wednesday text says "listed Out last week". The cache key must hold the depth chart and each status. `decisions/02-research-depth-chart-freshness.md`.
 - The view is one column: the verdict, the trade, one card for each side, then the as-of line. Each card shows its two players, the bullets, and the Week lines before a tap. The adjuster rows sit in one closed fold for each side. `decisions/04-prototype-result-view.md`.
+- The Recent rank shows on a gap of 12 spots or more, at every position, as `RECENT_RANK_GAP`. `decisions/05-spec-recent-rank-gap.md`.
 
 ## NOT YET SPECIFIED
 
-- How large is the gap between the Season rank and the Recent rank that shows the Recent rank? `decisions/05-spec-recent-rank-gap.md`.
+None.
+
 
 ## OUT OF SCOPE
 

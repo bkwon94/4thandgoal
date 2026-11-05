@@ -6,7 +6,7 @@ Map: `.scratch/grade-clarity/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ A Recent rank shows beside the Season rank only on a large gap. The size of the 
 
 ## Decision
 
-None yet.
+The Recent rank shows only when it differs from the Season rank by 12 spots or more. One number holds for every position: `RECENT_RANK_GAP = 12` in `tunables.py` of the analyzer. Brian approved it with the spec on 2026-11-05. See `PRD.md`, "The ranks in the text".
