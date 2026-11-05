@@ -185,7 +185,7 @@ export function contrastRatio(a: Rgba, b: Rgba): number {
 /*
  * Each pair of a text role and the surface it sits on in the site. Each pair must reach 4.5 to 1 in each set (WCAG AA).
  * The page text sits on the page, the card, the raised surface, and the pick wash. The on-dark text is the hero text:
- * it sits on the band, the black card, the chip of the black card, and the accent fills.
+ * it sits on the band, the `card_band` surface, the chip on that surface, and the accent fills.
  */
 export const TEXT_PAIRS: [text: Role, surface: Role][] = [
   ["text", "page"],

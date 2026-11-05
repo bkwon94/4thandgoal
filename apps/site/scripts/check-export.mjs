@@ -88,13 +88,13 @@ for (const name of omitted) {
   const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
   if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
 }
-// The marks of the client values: the masthead text of copy.toml on the home page, the dark class on <html> of each
+// The marks of the client values: the top band text of copy.toml on the home page, the dark class on <html> of each
 // page and the theme button, because each brand gives both sets and dark is the default (ADR 0024), and the finder
 // flag of the analyzer page. The flag sits in the page data of the static HTML, because
 // the finder shows only after a reader picks two teams.
 const copy = readCopy(clientRoot(process.env), process.env.CLIENT);
 const home = readFileSync(join("out", "index.html"), "utf8");
-if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the masthead text "${copy.masthead}"`);
+if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the top band text "${copy.masthead}"`);
 const htmlPages = exported.filter((file) => file.endsWith(".html"));
 const light = htmlPages.find((file) => !/<html[^>]*\sclass="(?:[^"]*\s)?dark(?:\s[^"]*)?"/.test(readFileSync(file, "utf8")));
 if (light) fail(`${light} has no dark class on <html>, so it does not open dark`);

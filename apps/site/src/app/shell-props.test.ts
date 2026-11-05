@@ -67,7 +67,7 @@ describe("shellProps of cpc", () => {
     ]);
   });
 
-  it("takes the masthead text of copy.toml and the CPC logo", () => {
+  it("takes the top band text of copy.toml and the CPC logo", () => {
     const { title, brand } = shellProps();
     expect(title).toBe("Cornerstone Fantasy Football League");
     expect(brand).toEqual({ home: "/", logo: "/brand/logo.png" });
