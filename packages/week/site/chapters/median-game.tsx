@@ -1,62 +1,50 @@
 /**
- * The median game: three KPI cells, a bar chart of every score against the dashed median line, and the blurb.
+ * The median game: a bar for each team with its avatar, against the median line, then the blurb.
  * The bar widths and the line position come from the JSON as percents of the top score.
  */
-import { gap, num } from "@cpc/design/format/format";
+import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import type { Median } from "../schema/week-types";
-import { Blurb } from "@cpc/design/parts/blurb";
-import { Chapter } from "@cpc/design/parts/chapter";
-import { Label } from "@cpc/design/parts/label";
-
-function Kpi({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-card bg-card px-sp-2 py-sp-3 text-center">
-      <div className="text-stat leading-stat font-black tabular-nums">{value}</div>
-      <div className="mt-sp-1 text-label leading-tight tracking-caps text-mute uppercase">{label}</div>
-    </div>
-  );
-}
+import { Card } from "@cpc/design/parts/card";
+import type { AvatarMap, Median } from "../schema/week-types";
+import { Avatar } from "@cpc/league/avatar";
+import { avatarSrc } from "@cpc/league/images";
+import { WeekChapter } from "../parts/week-chapter";
 
 /* A week with no median game has no median chapter. */
-export function MedianGame({ median, blurb }: { median: Median | null; blurb?: string }) {
+export function MedianGame({ median, avatars, blurb }: { median: Median | null; avatars: AvatarMap; blurb?: string }) {
   if (median === null) return null;
   return (
-    <Chapter reveal id="median">
-      <Label heading>The Median Game</Label>
-      <div className="grid grid-cols-[1fr_1fr_1fr] gap-sp-2">
-        <Kpi value={num(median.value)} label="Median" />
-        <Kpi value={gap(median.above.gap)} label={`${median.above.team.name}, closest win`} />
-        <Kpi value={gap(median.below.gap)} label={`${median.below.team.name}, closest miss`} />
-      </div>
-      <div className="relative mt-sp-3">
-        {/* The plot box matches the bar column, so the median line shares the bars' percent scale. */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 right-[calc(var(--spacing-val-col)+var(--spacing-sp-2))]">
-          <div
-            className="absolute inset-y-0 border-l-2 border-dashed border-ink"
-            style={{ left: `${median.line_pct}%` }}
-            title={`Median ${num(median.value)}`}
-          />
-        </div>
-        {median.bars.map((bar) => (
-          <div
-            key={bar.team.roster_id}
-            // From the tablet tier a taller bar and more space between bars keep each bar readable across the width.
-            className="grid grid-cols-[1fr_var(--spacing-val-col)] items-end gap-sp-2 py-sp-1 tablet:py-sp-2 text-meta tabular-nums"
-          >
-            <div>
-              <div className="mb-sp-0 text-meta leading-tight text-ink-2">{bar.team.name}</div>
-              <div
-                className={cn("h-median-bar tablet:h-median-bar-wide rounded-sm", bar.above ? "bg-accent" : "bg-bar-off")}
-                style={{ width: `${bar.pct}%` }}
-              />
-            </div>
-            <b className="text-right leading-(--spacing-median-bar) tablet:leading-(--spacing-median-bar-wide)">{num(bar.score)}</b>
-          </div>
-        ))}
-      </div>
-      <p className="mx-0 mt-sp-2 mb-0 text-meta text-mute">{`Dashed line: median ${num(median.value)}.`}</p>
-      {blurb && <Blurb className="mt-sp-3">{blurb}</Blurb>}
-    </Chapter>
+    <WeekChapter id="median" title="The median game" note={`Line ${num(median.value)}`}>
+      <Card>
+        <ul aria-label="Scores against the median" className="m-0 flex list-none flex-col gap-sp-3 p-0">
+          {median.bars.map((bar) => (
+            // The name column is fixed, so every track starts at one place and the line falls at one place in each.
+            <li
+              key={bar.team.roster_id}
+              className="grid grid-cols-[auto_minmax(0,6.5rem)_minmax(0,1fr)_auto] items-center gap-sp-2 tablet:grid-cols-[auto_minmax(0,12rem)_minmax(0,1fr)_auto]"
+            >
+              <Avatar src={avatarSrc(avatars, bar.team.roster_id)} />
+              <span className="truncate text-meta leading-tight text-ink-2">{bar.team.name}</span>
+              {/* The track and the line are a graphic. The word after the score says above or below for a screen reader. */}
+              <span aria-hidden="true" className="relative h-sp-2 rounded-pill bg-raised">
+                <span
+                  className={cn("absolute inset-y-0 left-0 rounded-pill", bar.above ? "bg-accent" : "bg-bar-off")}
+                  style={{ width: `${bar.pct}%` }}
+                />
+                <span
+                  className="absolute -inset-y-sp-1 w-sp-0 bg-ink"
+                  style={{ left: `${median.line_pct}%` }}
+                />
+              </span>
+              <span className="text-right font-mono text-meta font-bold tabular-nums">
+                {num(bar.score)}
+                <span className="sr-only">{bar.above ? "Above" : "Below"}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{blurb}</p>}
+    </WeekChapter>
   );
 }

@@ -171,16 +171,18 @@ describe("Reduced motion on the static pages", () => {
     // One line from each chapter, from the top story to next week. The text must be there on the first render.
     // The chapter rail repeats the chapter labels, so the queries stay inside the page column.
     const main = within(screen.getByRole("main"));
-    expect(main.getByText("Matchup of the Week")).toBeTruthy();
-    expect(main.getByText("Game Changer")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 1 }).textContent).toBe("Week 06 // Matchup of the Week");
+    expect(main.getByRole("region", { name: "The week in numbers" })).toBeTruthy();
+    expect(main.getByText("Every game")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 2, name: "Game Changer" })).toBeTruthy();
     expect(main.getByText("WR · PIT · behold the lamb")).toBeTruthy();
     expect(main.getAllByText(week6.awards[0].title).length).toBeGreaterThan(0);
-    expect(main.getByText("Position Leaders")).toBeTruthy();
+    expect(main.getByText("Position leaders")).toBeTruthy();
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
-    expect(main.getAllByRole("button", { name: /Read Recap/ })).toHaveLength(week6.matchups.length);
-    expect(main.getByText("The Median Game")).toBeTruthy();
+    expect(main.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
-    expect(main.getByText(`Next Week · Week ${week6.week + 1}`)).toBeTruthy();
+    expect(main.getByText("Next week")).toBeTruthy();
   });
 
   it("shows every home page row at once", () => {
