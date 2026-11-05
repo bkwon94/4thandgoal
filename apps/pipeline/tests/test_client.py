@@ -128,14 +128,6 @@ def test_a_missing_client_folder_names_the_slug_folder(tmp_path):
         read_client_values(tmp_path / "clients" / "nope", VALUE_MODELS)
 
 
-def test_a_menu_with_no_items_takes_the_package_list_in_order(tmp_path):
-    folder = _copy(tmp_path, "[menu]", "[unused]")
-    text = (folder / "client.toml").read_text(encoding="utf-8")
-    (folder / "client.toml").write_text(text[:text.index("[unused]")] + '[menu]\nlayout = "bar"\n', encoding="utf-8")
-    values = read_client_values(folder, VALUE_MODELS)
-    assert [item.package for item in values.menu_items] == values.packages
-
-
 def test_the_kernel_schema_forbids_an_unknown_key_and_each_package_schema_sits_in_its_package():
     assert ClientValues.model_json_schema()["additionalProperties"] is False
     analyzer = schema_file(AnalyzerValues)

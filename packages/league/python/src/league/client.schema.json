@@ -2,7 +2,7 @@
   "$defs": {
     "Menu": {
       "additionalProperties": false,
-      "description": "The menu layout and its items. With no items, the menu takes the home page, then the package list in its order.",
+      "description": "The menu layout and its items. With no items, the site build puts the home page first, then the package list.",
       "properties": {
         "layout": {
           "default": "hamburger",

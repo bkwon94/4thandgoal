@@ -64,7 +64,7 @@ class MenuItem(_Strict):
 
 
 class Menu(_Strict):
-    """The menu layout and its items. With no items, the menu takes the home page, then the package list in its order."""
+    """The menu layout and its items. With no items, the site build puts the home page first, then the package list."""
     layout: Literal["hamburger", "bar", "tabs"] = "hamburger"
     items: list[MenuItem] | None = None
 
@@ -98,13 +98,6 @@ class ClientValues(_Strict):
             if item.package is not None and item.package not in self.packages:
                 raise ValueError(f"The menu item for {item.package} names a package that is not in the package list.")
         return self
-
-    @property
-    def menu_items(self) -> list[MenuItem]:
-        """The items of the menu, or one item per package of the list when the menu sets none."""
-        if self.menu.items is not None:
-            return self.menu.items
-        return [MenuItem(package=name) for name in self.packages]
 
     @property
     def latest_season(self) -> int:
