@@ -1,0 +1,537 @@
+{
+  "build": {
+    "started": "2026-11-04T19:51:10.143233-05:00",
+    "sources": {
+      "history": true,
+      "nflverse_pbp": false,
+      "nflverse_ftn": false,
+      "nflverse_injuries": true,
+      "ffverse": true,
+      "nflverse_snaps": true,
+      "ffopportunity": true,
+      "nflverse_stats_player": true
+    },
+    "fetched": "2026-11-04T19:51:06.293610-05:00"
+  },
+  "chapters": {
+    "motw": [
+      {
+        "chapter": "motw",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.top.4, M3.result, and M3.lead support 37.5 for Higgins, the loss, and the 5.36 Mean Machine lead after Sunday night."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.turn says kaiedmonds took the lead Monday with Williams scoring 15.98; M3.move.9754 confirms Johnston as a recent add with 7.7."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.regret.8132 states exactly this."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "The hurt and inj facts support Love hurt in the 1st quarter and listed Out (Ankle), and Cook and Watson hurt and listed Questionable."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "M3.move.8135 and M3.move.12499 give 11.1 and 6.4 for these recent adds on The Mean Machine."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "M3.impact gives the moves to 11th and 3rd."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "game_changer": [
+      {
+        "chapter": "game_changer",
+        "code_failures": [
+          "[2] number 3 is not in the cited facts AW.game_changer.news",
+          "[4] the sentence holds 3 numbers; the limit is 2"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "game_changer",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": false,
+            "reason": "The Game Changer fact gives 27.9 on 14.69, but no fact says this was the biggest gap above projection on any winning side; the award also weighs recent adds."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The score matches M4.result, and M4.swing.6790 makes Swift a swing player, which permits 'without Swift, that is a loss'."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Swift is a margin driver on the winning side, so 'won it' fits, and the news fact gives three touchdowns in a Monday night win over the Seahawks."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "P.6790.trend says he beat projection in 3 of the last 3 weeks."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "This is a reaction with no factual claim."
+          }
+        ],
+        "passed": false
+      }
+    ],
+    "awards": [
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.top_scorer and AW.overachiever both name Joe Burrow for Skol Daddy, with 52.48 on a 22.04 projection; 'swept' just means he won both awards."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "RANK.4881 gives 12 of 12 among started QBs (last), AW.underperformer names him, and W.injured lists him Out."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "AW.lucky gives Tuten 29.9 points on 13.35 expected points, and the sentence names the award and what it measures."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "W.adds lists Gesicki as a week 7 waiver add for VarsityBlue2 who scored 17.6 on a 7.95 projection."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "position_leaders": [
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "LEAD.QB.1 and LEAD.TE.1 put Burrow 1st among QBs at 52.48 and Bowers 1st among TEs at 28.2, both for Skol Daddy; 'owned the top of the board' is a fair flourish for two position firsts."
+          },
+          {
+            "index": 1,
+            "supported": false,
+            "reason": "LEAD.WR.1 ranks Higgins 1st only among the 46 started WRs, not every receiver. The wording also reads as though Chase played for The Mean Machine, but LEAD.WR.2 puts him on Skol Daddy."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "LEAD.RB.1 and LEAD.RB.2 rank Tuten 1st and Pollard 2nd among started RBs, both for BobBuckstein."
+          }
+        ],
+        "passed": false
+      },
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": false,
+            "reason": "Burrow (1st QB, 52.48) and Bowers (1st TE, 28.2) are supported, but 'hogged the leaderboard' implies a dominance no fact states. BobBuckstein also has three leaders."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Chase is 2nd of 46 started WRs for Skol Daddy, behind Higgins at 37.5 for The Mean Machine."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Tuten (29.9) is 1st and Pollard (28.7) is 2nd among started RBs, both for BobBuckstein."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "Wilson's WOPR ranks 1st among started WRs, correctly rendered in plain words, and he scored 26.8 for The Dart Side."
+          }
+        ],
+        "passed": false
+      }
+    ],
+    "recap_1": [
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.lead shows Davlionman led after Thursday and Skol Daddy led from the early Sunday games on, and M1.upset confirms the upset; 'bury' is tone."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "Burrow's 52.48 fed the 193.18 season high (H.5.high), and M1.move.4892 makes Mayfield a recent add who scored 1.4 at QB."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M1.impact gives Davlionman's fall from 3rd to 5th. London is a Davlionman starter and Meyers a Skol Daddy starter, and both inj facts list them Questionable."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_2": [
+      {
+        "chapter": "recap_2",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The score and the upset match M2.result and M2.upset, and M2.lead shows BobBuckstein took the lead after the early Sunday games and kept growing it."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M2.hurt.4881 places the injury in the 1st quarter, and the cited injury facts give Out (Thumb) for Jackson and Questionable for Tuten and St. Brown."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M2.impact states BobBuckstein has won 3 straight and Hock Tua fell from 2nd to 4th."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_3": [
+      {
+        "chapter": "recap_3",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.lead and M3.turn show The Mean Machine led after Sunday night and kaiedmonds, who had led earlier, retook the lead Monday with Caleb Williams scoring. M3.impact gives the moves to 3rd and 11th."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.hurt.13287 shows Love was hurt in his game, and M3.inj.13287 lists him Out. M3.regret.8132 states that swapping in Allgeier would have flipped the result."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.move.8135 and M3.move.12499 name Burks (11.1) and Ayomanor (6.4) as recent adds for The Mean Machine."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_4": [
+      {
+        "chapter": "recap_4",
+        "code_failures": [
+          "[1] fact ID M4.regret is not in this chapter",
+          "[1] number 25.3 is not in the cited facts M4.regret",
+          "[1] number 4.7 is not in the cited facts M4.regret"
+        ],
+        "verdicts": [],
+        "passed": false
+      },
+      {
+        "chapter": "recap_4",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M4.turn gives the 13.02 deficit after Sunday night, the Monday comeback and Swift's 27.9 on Monday, and M4.impact says Mitseeker5000 stayed 1st."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M4.inj.3214 and M4.inj.10232 give the Out and Questionable listings, and M4.move.12498 confirms Taylor is a recent add who scored 4.9."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M4.impact says The Dart Side stayed 12th, which reads as last, and M4.regret.13337 states that the Johnson-for-Hampton swap would have flipped the result."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_5": [
+      {
+        "chapter": "recap_5",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M5.result gives the score, M5.lead says VarsityBlue2 led after the early games and the lead never changed, and M5.upset calls it an upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "The move facts support Gesicki as a waiver add with 17.6 for the winner and Lamb as a trade add with 12.8 for the loser."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M5.impact gives the ended losing streak, the rise from 11th to 10th and the fall from 7th to 9th, and H.7.high calls 82.1 a season low."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "recap_6": [
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "The score, the upset, and Cousins as puurdygood's top scorer all match the cited facts; 'flattened' is tone."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M6.lead gives the 16.72 deficit after Thursday, the lead taken in the early Sunday games, and only 1 lead change; M6.impact gives the rise to 2nd."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M6.inj.4983 gives Moore's Questionable status, Tucker and Godwin both scored 0 for the losing Breece Mode, and M6.impact gives its fall from 4th to 6th."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "next_week": [
+      {
+        "chapter": "next_week",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "NX.6v8.streak, NX.6v8.shootout and NX.6v8.table state the streak on the line, the top-four lineup shootout and the top-of-table status."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "SW.6v8 says Mitseeker5000's odds stay near 97% either way, and S.1 makes Mitseeker5000 the 1st-place leader."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "SW.6v8 gives Hock Tua 💦 89% after a win and 65% after a loss; 'sweating' is tone, not a factual claim."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "The 3-game streak, near-cut game, Pollard bye and Perine cover at 4.5 a game all match NX.3v5.streak, NX.3v5.cut, NX.bye.3.5967 and NX.bye.3.5967.cover."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "SW.3v5 gives BobBuckstein, the streaking side, 75% with a win and 40% with a loss."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "SW.3v5 gives Skol Daddy 46% with a win and 14% with a loss."
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "rankings": [
+      {
+        "chapter": "rankings",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "PR.6 gives 1st in power rankings, 1st in standing and 1st in scoring."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "H.6.streak states 5 straight wins."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "ODDS.6 gives 97% playoff odds and a 73% bye."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "PR.3 and PR.3.why give 2nd place after a 78-point win; 'demolition job' is tone."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "S.7 gives a 4-4 record, 1 spot outside the playoff spots."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "ODDS.3 gives 57%; ODDS.3.why gives the hardest remaining schedule."
+          },
+          {
+            "index": 6,
+            "supported": true,
+            "reason": "PR.5 gives 3rd, up 4 places; PR.5.why gives an 87-point win."
+          },
+          {
+            "index": 7,
+            "supported": true,
+            "reason": "S.8 gives 3-5, 1 game below the cut."
+          },
+          {
+            "index": 8,
+            "supported": true,
+            "reason": "ODDS.5 gives 30%; ODDS.5.why gives the 10th easiest remaining schedule."
+          },
+          {
+            "index": 9,
+            "supported": true,
+            "reason": "PR.9 gives 4th, up 4; PR.9.why gives an 11-point win; 'escape' is tone."
+          },
+          {
+            "index": 10,
+            "supported": true,
+            "reason": "H.9.trend shows the 3-week scoring down from the season average."
+          },
+          {
+            "index": 11,
+            "supported": true,
+            "reason": "PR.1 gives up 5 places; PR.1.why gives a 45-point win."
+          },
+          {
+            "index": 12,
+            "supported": true,
+            "reason": "S.2 gives 2nd with a 5-3 record."
+          },
+          {
+            "index": 13,
+            "supported": true,
+            "reason": "PR.10 gives down 4; PR.10.why gives an 87-point loss."
+          },
+          {
+            "index": 14,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 15,
+            "supported": true,
+            "reason": "ODDS.10.why gives the easiest remaining schedule."
+          },
+          {
+            "index": 16,
+            "supported": true,
+            "reason": "PR.8 gives down 4; PR.8.why gives a 78-point loss."
+          },
+          {
+            "index": 17,
+            "supported": true,
+            "reason": "H.8.trend shows the 3-week scoring down from the season average."
+          },
+          {
+            "index": 18,
+            "supported": true,
+            "reason": "PR.11 gives down 2; PR.11.why gives a 45-point loss."
+          },
+          {
+            "index": 19,
+            "supported": true,
+            "reason": "H.11.streak gives 2 straight losses; S.6 gives the last playoff spot."
+          },
+          {
+            "index": 20,
+            "supported": true,
+            "reason": "ODDS.11 gives about 50%."
+          },
+          {
+            "index": 21,
+            "supported": true,
+            "reason": "PR.2 gives up 3; PR.2.why gives a 23-point win."
+          },
+          {
+            "index": 22,
+            "supported": true,
+            "reason": "S.10 gives 3-5, 1 game below the cut."
+          },
+          {
+            "index": 23,
+            "supported": true,
+            "reason": "PR.7 gives down 5; PR.7.why gives a 23-point loss."
+          },
+          {
+            "index": 24,
+            "supported": true,
+            "reason": "ODDS.7 gives 36%; ODDS.7.why gives the 2nd easiest remaining schedule."
+          },
+          {
+            "index": 25,
+            "supported": true,
+            "reason": "ODDS.7.why gives a projection of 133 against a 123 pace."
+          },
+          {
+            "index": 26,
+            "supported": true,
+            "reason": "PR.4 gives down 2; PR.4.why gives an 11-point loss."
+          },
+          {
+            "index": 27,
+            "supported": true,
+            "reason": "S.11 gives 883.14 points for and a 3-5 record."
+          },
+          {
+            "index": 28,
+            "supported": true,
+            "reason": "PR.12 gives 12th; PR.12.why gives a 2-point loss to the 1st-place team."
+          },
+          {
+            "index": 29,
+            "supported": true,
+            "reason": "S.12 gives 2-6, 2 games below the cut."
+          },
+          {
+            "index": 30,
+            "supported": true,
+            "reason": "ODDS.12 gives about 1%."
+          }
+        ],
+        "passed": true
+      }
+    ]
+  }
+}

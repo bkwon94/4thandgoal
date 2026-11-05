@@ -59,8 +59,7 @@ describe("loadWaiver", () => {
 });
 
 describe("currentWaiverHref", () => {
-  it("links the latest week with a waiver file when the flag is on", async () => {
-    vi.stubEnv("NEXT_PUBLIC_WAIVER", "on");
+  it("links the latest week with a waiver file", async () => {
     // Week 7 has a page but no waiver file yet, so the link stays on week 6.
     const { currentWaiverHref } = await readerOver(["week-05", "week-06", "week-07"], {
       "week-05": fixture,
@@ -69,33 +68,8 @@ describe("currentWaiverHref", () => {
     expect(currentWaiverHref()).toBe("/2026/week-06/waiver/");
   });
 
-  it("gives no link when the flag is off", async () => {
-    const { currentWaiverHref } = await readerOver(["week-06"], { "week-06": fixture });
-    expect(currentWaiverHref()).toBeNull();
-  });
-
   it("gives no link when no week has a waiver file", async () => {
-    vi.stubEnv("NEXT_PUBLIC_WAIVER", "on");
     const { currentWaiverHref } = await readerOver(["week-06"], {});
     expect(currentWaiverHref()).toBeNull();
-  });
-});
-
-describe("waiverRouteOn", () => {
-  it("is on with the flag on and a week with a waiver file", async () => {
-    vi.stubEnv("NEXT_PUBLIC_WAIVER", "on");
-    const { waiverRouteOn } = await readerOver(["week-06"], { "week-06": fixture });
-    expect(waiverRouteOn()).toBe(true);
-  });
-
-  it("is off with the flag off", async () => {
-    const { waiverRouteOn } = await readerOver(["week-06"], { "week-06": fixture });
-    expect(waiverRouteOn()).toBe(false);
-  });
-
-  it("is off with the flag on and no waiver file", async () => {
-    vi.stubEnv("NEXT_PUBLIC_WAIVER", "on");
-    const { waiverRouteOn } = await readerOver(["week-06"], {});
-    expect(waiverRouteOn()).toBe(false);
   });
 });

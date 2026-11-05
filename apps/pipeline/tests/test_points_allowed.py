@@ -5,7 +5,7 @@ They read the weekly stats of the history fixture.
 import json
 import shutil
 
-from cornerstone.points_allowed import points_allowed
+from league.points_allowed import points_allowed
 
 
 def test_points_allowed_ranks_a_defense_at_a_position(fixture_history_root):

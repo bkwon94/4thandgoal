@@ -1,0 +1,319 @@
+"""
+Parse the raw Sleeper JSON into the domain models.
+This is the only module that knows the shape of the raw data.
+"""
+from collections import defaultdict
+from collections.abc import Sequence
+from datetime import UTC, date, datetime
+
+from league.league_settings import DEFAULT_POINTS_KEY
+from league.models import (
+    DraftPick,
+    Drop,
+    Matchup,
+    Move,
+    PastWeek,
+    PlayerLine,
+    ProjectionsAhead,
+    Side,
+    Team,
+    Trade,
+    Week,
+)
+from league.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawUser, RawWeek, SchedulePair
+
+AVATAR_THUMB_URL = "https://sleepercdn.com/avatars/thumbs/{avatar}"
+MOVE_KINDS = ("waiver", "free_agent", "trade")
+
+
+def _avatar_url(user: RawUser) -> str | None:
+    metadata_avatar = user.metadata.avatar if user.metadata else None
+    if metadata_avatar:
+        return metadata_avatar
+    if user.avatar:
+        return AVATAR_THUMB_URL.format(avatar=user.avatar)
+    return None
+
+
+def team_name(user: RawUser) -> str:
+    """The team name the user set, else the display name."""
+    return (user.metadata.team_name if user.metadata else None) or user.display_name
+
+
+def _teams(raw: RawWeek) -> dict[int, Team]:
+    users = {u.user_id: u for u in raw.users}
+    teams = {}
+    for roster in raw.rosters:
+        user = users[roster.owner_id]
+        settings = roster.settings
+        # Sleeper splits the points into a whole part and a two-digit decimal part.
+        points_for = settings.fpts + settings.fpts_decimal / 100
+        teams[roster.roster_id] = Team(
+            roster_id=roster.roster_id,
+            name=team_name(user),
+            owner=user.display_name,
+            avatar_url=_avatar_url(user),
+            wins=settings.wins,
+            losses=settings.losses,
+            points_for=points_for,
+        )
+    return teams
+
+
+def _projection_map(raw: RawWeek, points_key: str) -> dict[str, float | None]:
+    return {
+        item.player_id: item.stats.get(points_key)
+        for item in raw.projections
+    }
+
+
+def player_name(player_id: str, entry: dict | None) -> str:
+    if entry is None:
+        return player_id
+    if entry.get("full_name"):
+        return entry["full_name"]
+    # A defense has no full_name, only a city in first_name and a nickname in last_name.
+    return f"{entry.get('first_name', '')} {entry.get('last_name', '')}".strip() or player_id
+
+
+def _line(player_id, entry, roster_positions, projections, players, starters) -> PlayerLine:
+    player = players.get(player_id)
+    started = player_id in starters
+    return PlayerLine(
+        player_id=player_id,
+        name=player_name(player_id, player),
+        position=player["position"] if player else "?",
+        nfl_team=player.get("team") if player else None,
+        points=(entry.players_points or {}).get(player_id, 0.0),
+        projection=projections.get(player_id),
+        # Version 1 has no season history, so no season average exists yet.
+        season_avg=None,
+        started=started,
+        slot=roster_positions[starters.index(player_id)] if started else None,
+        injury_status=player.get("injury_status") if player else None,
+        injury_body_part=player.get("injury_body_part") if player else None,
+    )
+
+
+EMPTY_SLOT = "0"
+
+
+def _side(entry: RawMatchup, roster_positions, projections, players) -> Side:
+    # Sleeper marks an empty starter slot with "0". The starters list keeps it, so the slot
+    # index of every other starter stays right, but "0" is never a player line.
+    starters = entry.starters or []
+    lines = [
+        _line(pid, entry, roster_positions, projections, players, starters)
+        for pid in entry.players or []
+        if pid != EMPTY_SLOT
+    ]
+    return Side(roster_id=entry.roster_id, points=entry.points, lines=lines)
+
+
+def _matchups(raw: RawWeek, points_key: str) -> list[Matchup]:
+    roster_positions = raw.league.roster_positions
+    projections = _projection_map(raw, points_key)
+    groups = defaultdict(list)
+    for entry in raw.matchups:
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry)
+    matchups = []
+    for matchup_id in sorted(groups):
+        first, second = sorted(groups[matchup_id], key=lambda e: e.roster_id)
+        matchups.append(Matchup(
+            matchup_id=matchup_id,
+            a=_side(first, roster_positions, projections, raw.players),
+            b=_side(second, roster_positions, projections, raw.players),
+        ))
+    return matchups
+
+
+def _pairs(entries: Sequence[RawMatchup | SchedulePair]) -> list[tuple[int, int]]:
+    groups = defaultdict(list)
+    for entry in entries:
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry.roster_id)
+    # A pair is a matchup. A lone entry, such as a bye, has no opponent to name.
+    return [tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2]
+
+
+def _next_matchups(raw: RawWeek) -> list[tuple[int, int]]:
+    return _pairs(raw.matchups_next)
+
+
+def _schedule(raw: RawWeek) -> dict[int, list[tuple[int, int]]]:
+    # A cached week can lack the schedule file, so it gives no weeks.
+    return {entry.week: _pairs(entry.matchups) for entry in raw.schedule or []}
+
+
+def _projections_ahead(raw: RawWeek) -> ProjectionsAhead:
+    # A cached week can lack the projections file, so it gives no weeks.
+    return {entry.week: entry.projections for entry in raw.projections_ahead or []}
+
+
+def _rosters(raw: RawWeek) -> dict[int, dict[str, str]]:
+    # A roster with no players has None in rosters.json. A player missing from the players file has position "?".
+    return {
+        r.roster_id: {pid: (raw.players.get(pid) or {}).get("position") or "?" for pid in r.players or []}
+        for r in raw.rosters
+    }
+
+
+def _roster_players(raw: RawWeek) -> dict[str, tuple[str, str | None]]:
+    # A player missing from the players file has his id as the name and no NFL team.
+    players = raw.players
+    return {
+        pid: (player_name(pid, players.get(pid)), (players.get(pid) or {}).get("team"))
+        for r in raw.rosters for pid in r.players or []
+    }
+
+
+def _injuries(raw: RawWeek) -> dict[str, str]:
+    # The players file gives a healthy player no injury status, so he gets no entry.
+    players = raw.players
+    return {
+        pid: status for r in raw.rosters for pid in r.players or []
+        if (status := (players.get(pid) or {}).get("injury_status"))
+    }
+
+
+def _pool(raw: RawWeek) -> dict[str, str]:
+    """The position of each pool player: a player with a projection and no roster.
+
+    `ranks.in_pool` adds the status and position filter, and this parse cannot import it because of the import
+    cycle through history.
+    """
+    # The cycle: ranks imports history, and history imports this module.
+    rostered = {pid for r in raw.rosters for pid in r.players or []}
+    projected = {pid for entry in raw.projections_ahead or [] for pid in entry.projections}
+    positions = {pid: (raw.players.get(pid) or {}).get("position") for pid in sorted(projected - rostered)}
+    # A player with no position can fill no slot, so he stays out of the pool.
+    return {pid: position for pid, position in positions.items() if position}
+
+
+def parse_moves(transactions: list[RawTransaction]) -> list[Move]:
+    moves = []
+    for transaction in transactions:
+        if transaction.status != "complete" or transaction.type not in MOVE_KINDS:
+            continue
+        for player_id, roster_id in (transaction.adds or {}).items():
+            moves.append(Move(
+                player_id=player_id,
+                roster_id=roster_id,
+                kind=transaction.type,
+                week=transaction.leg,
+                bid=transaction.settings.waiver_bid if transaction.settings else None,
+            ))
+    return moves
+
+
+def parse_drops(transactions: list[RawTransaction]) -> list[Drop]:
+    """The drops of the complete waiver claims and free agent pickups. A trade drop is a side of its trade."""
+    return [
+        Drop(player_id=player_id, roster_id=roster_id, week=transaction.leg)
+        for transaction in transactions
+        if transaction.status == "complete" and transaction.type in ("waiver", "free_agent")
+        for player_id, roster_id in (transaction.drops or {}).items()
+    ]
+
+
+def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
+    return [
+        Trade(
+            transaction_id=t.transaction_id,
+            created=datetime.fromtimestamp(t.created / 1000, tz=UTC),
+            roster_ids=t.roster_ids,
+            adds=t.adds or {},
+            drops=t.drops or {},
+            draft_picks=[DraftPick(**pick) for pick in t.draft_picks or []],
+        )
+        for t in transactions
+        if t.type == "trade" and t.status == "complete"
+    ]
+
+
+def parse_week(
+    raw: RawWeek, week: int | None = None, team_count: int | None = None, points_key: str = DEFAULT_POINTS_KEY,
+) -> Week:
+    """The week of the raw data.
+
+    The weekly build and the live fetch pass `team_count` from the League settings. The settings set the ranks and
+    the sizes that depend on the team count, so a league file with another roster count stops the parse.
+    They pass `points_key` too, so the projection of each line is the one of the league scoring.
+    """
+    if team_count is not None and len(raw.rosters) != team_count:
+        raise ValueError(
+            f"The league file has {len(raw.rosters)} rosters, but the League settings say {team_count} teams. "
+            "Delete the league.json of the season in the client data, so the next run fetches the settings again."
+        )
+    state = raw.state
+    return Week(
+        season=int(state.season),
+        # state.week is the current NFL week, not the scored week, so use display_week by default.
+        week=week if week is not None else state.display_week,
+        teams=_teams(raw),
+        matchups=_matchups(raw, points_key),
+        next_matchups=_next_matchups(raw),
+        schedule=_schedule(raw),
+        projections_ahead=_projections_ahead(raw),
+        moves=parse_moves(raw.transactions),
+        last_scored_week=raw.league.settings.last_scored_leg,
+        season_start=date.fromisoformat(state.season_start_date),
+        # The reserve slot counts: matchups.json lists the injured reserve player with the others.
+        roster_slots=len(raw.league.roster_positions) + raw.league.settings.reserve_slots,
+        roster_positions=raw.league.roster_positions,
+        rosters=_rosters(raw),
+        roster_players=_roster_players(raw),
+        injuries=_injuries(raw),
+        pool=_pool(raw),
+        scoring=raw.league.scoring_settings,
+        # A failed live stats fetch gives None, and the snapshot names it stale, so the parse reads no lines.
+        stats={item.player_id: item.stats for item in raw.stats or []},
+    )
+
+
+def parse_past_week(raw: RawPastWeek, week: int, points_key: str = DEFAULT_POINTS_KEY) -> PastWeek:
+    """The past week of the raw files. The projections and the stat line points read `points_key`."""
+    entries = raw.matchups
+    # The caller passes stats lines here. Only a failed live fetch gives None, and the snapshot replaces it first.
+    stats = raw.stats or []
+    groups = defaultdict(list)
+    points: dict[str, float] = {}
+    for entry in entries:
+        if entry.matchup_id is not None:
+            groups[entry.matchup_id].append(entry.roster_id)
+        # The empty slot "0" is not a player, so it never gets points.
+        points.update({
+            pid: pts for pid, pts in (entry.players_points or {}).items()
+            if pid != EMPTY_SLOT
+        })
+    return PastWeek(
+        week=week,
+        scores={e.roster_id: e.points for e in entries},
+        pairs=[tuple(sorted(groups[mid])) for mid in sorted(groups) if len(groups[mid]) == 2],
+        points=points,
+        projections={
+            item.player_id: item.stats[points_key]
+            for item in raw.projections
+            if item.stats.get(points_key) is not None
+        },
+        points_key=points_key,
+        stats={item.player_id: item.stats for item in stats},
+        moves=parse_moves(raw.transactions),
+        trades=parse_trades(raw.transactions),
+        positions={
+            item.player_id: item.player.position
+            for item in stats
+            if item.player and item.player.position
+        },
+        nfl_teams={item.player_id: item.team for item in stats if item.team},
+        # The empty slot "0" is not a player, so it is never a start.
+        starters={
+            e.roster_id: [pid for pid in e.starters or [] if pid != EMPTY_SLOT] for e in entries
+        },
+        # The empty slot "0" is not a player, so it is never on a roster.
+        rosters={
+            e.roster_id: [pid for pid in e.players or [] if pid != EMPTY_SLOT] for e in entries
+        },
+        drops=parse_drops(raw.transactions),
+    )

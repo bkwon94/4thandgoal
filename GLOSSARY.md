@@ -52,7 +52,7 @@ The surface behind the dark chapters. It is white in the light theme and black i
 _Avoid_: Background, canvas, body
 
 **Theme**:
-The light or dark set of surface and text colors. The reader picks one with the theme button, and the choice holds across visits.
+The light or dark set of surface and text colors, inside the brand of the client. The reader picks one with the theme button, and the choice holds across visits.
 _Avoid_: Mode, scheme, skin, color mode
 
 **Theme button**:
@@ -425,6 +425,10 @@ _Avoid_: anchor, base grade
 One named criterion of the rubric that moves a grade by at most one step: roster fit, standing,
 trend and usage, injury history, handcuff, schedule, or expected gap.
 
+**Lineup**:
+The best set of starters of one roster: which starting slot takes which player, who is out, and who covers a bye. It is a term of the league package, so every package reads the same lineup.
+_Avoid_: Starters (alone), depth, best ball
+
 **Lineup value**:
 The points per game a player counts for in a side's best lineup: his recent points per game, or his projection ahead when he is due back.
 _Avoid_: value (alone), worth
@@ -779,7 +783,7 @@ _Avoid_: potential, ceiling, buy low
 
 **Star**:
 A player with a chart value in the top of his position on the league's chart, such as the top 6 QB. `star_rank_by_position`
-in the league config sets the count per position. A position not in it has no stars.
+in the client sets the count per position. A position not in it has no stars.
 _Avoid_: stud, elite, top guy
 
 **Star return bet**:
@@ -823,21 +827,77 @@ _Avoid_: Score, rating, power score
 
 ### The platform
 
-**League config**:
-One object that names the league: its slug, its display name, its provider, the provider id per season, the owner's username, the timezone, the league-sized limits, and the prompts folder. Read once at start.
-_Avoid_: Settings, tunables, constants, env
-
 **Provider**:
 The service the league's data comes from. Sleeper is the one provider today. The provider's field names stop at its adapter; the rest of the pipeline sees only the models.
 _Avoid_: Source, platform, backend, API
 
 **Bundle**:
-The raw data, the history, and the facts of one week, loaded together before the writer runs. The code that builds a prose block reads the bundle and the league config, and nothing else.
+The raw data, the history, and the facts of one week, loaded together before the writer runs. The code that builds a prose block reads the bundle and the client, and nothing else.
 _Avoid_: Context, week data, state
 
 **Published file**:
-One JSON file the render step writes under `apps/pipeline/site/` and publish copies into `apps/site/public/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
+One JSON file the render step writes under the build folder `clients/<slug>/build/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
+
+## Client language
+
+The terms of the structure that both apps share: the clients, the packages, and the apps.
+
+**Client**:
+One league and its site, over every season. A client has one provider per season, its own packages, its own brand, and its own URL. Its slug is the league slug.
+_Avoid_: League config, tenant, customer, instance, site
+
+**Brand**:
+The look of one client: the color roles, the fonts, the radii, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only. It lives in `brand.toml`.
+_Avoid_: Theme, skin, style, palette
+
+**Build folder**:
+The folder `clients/<slug>/build/` of one client: each page file and season file that its build writes. Publish copies one week of it into the published data of the client.
+_Avoid_: Site folder, output folder, dist
+
+**Base role**:
+One of the six colors that a brand must set in each set: the accent, the band, the page, the card, the text, and the muted text.
+_Avoid_: Primary color, brand color, palette
+
+**Derived role**:
+A color that the design package computes from the base roles with a formula, such as the accent text or the lifted card. A brand can override it.
+_Avoid_: Computed color, secondary color, shade
+
+**Package**:
+One domain of the league, in both languages: the rules, the ports, the fakes, the parts, and the screens. A client takes a package or omits it as a whole.
+_Avoid_: Module, feature, plugin, library, lib
+
+**League package**:
+The one package that each client takes: the shape of any league, with its rosters, weeks, players, history, and provider. It names no client.
+_Avoid_: Core, common, shared, base, utils
+
+**Chapter port**:
+The port of the week package through which another package gives one chapter of the weekly report: its facts and its chapter. The week owns the page and the order of the chapters. A client that omits the package gets a week with no such chapter.
+_Avoid_: Plugin, hook, slot, extension point
+
+**Design package**:
+The one site package that each client takes: the primitives, the parts, the shell, and the code that applies a brand. It holds no rule of the league, so its name is not a league word.
+_Avoid_: Design system, UI kit, components, parts (alone; a part is one component of it)
+
+**League settings**:
+The sizes of one season of a league that the provider gives: the team count, the playoff spots, the roster slots, and the weeks of the regular season. The lines and the star ranks derive from them.
+_Avoid_: League config, sizes (alone), league rules
+
+**Median game**:
+The second game of each week, against the median score of the league. A league has it or not, and the League settings say which. With no median game, a week is one game.
+_Avoid_: All-play, league average game
+
+**Returns file**:
+The one shared NFL file that names the week each injured player returns. A return week is the same in each league, so no client owns the file.
+_Avoid_: Injury file, return list, returns.json (alone; that names the old file of one season)
+
+**Package value**:
+One value that a package names in its README, with its default. A client sets it in `client.toml` only when it differs from the default.
+_Avoid_: Flag, feature flag, setting, option
+
+**App**:
+One thing that we deploy, such as the site or the API. An app holds only the build config, the routes, and the code that wires the packages. It holds no rule of a domain.
+_Avoid_: Shell (that is the frame of a page), service, project
 
 ## Workflow
 

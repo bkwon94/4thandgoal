@@ -1,0 +1,51 @@
+$ git status --short
+$ CLIENT=cpc pnpm --dir apps/site build
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> node scripts/client-build.mjs
+
+
+> cpcfantasyfootball-site@0.1.0 build /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 85ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1027ms
+  Running TypeScript ...
+  Finished TypeScript in 424ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/22) ...
+  Generating static pages using 9 workers (5/22) 
+  Generating static pages using 9 workers (10/22) 
+  Generating static pages using 9 workers (16/22) 
+✓ Generating static pages using 9 workers (22/22) in 867ms
+  Finalizing page optimization ...
+  Exporting using 9 workers (0/3) ...
+✓ Exporting using 9 workers (3/3) in 347ms
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[season]/[week]
+│ ├ ● /2026/week-06
+│ ├ ● /2026/week-07
+│ └ ● /2026/week-08
+├   /[season]/managers
+│ └ ● /2026/managers
+├   /[season]/managers/[roster]
+│ ├ ● /2026/managers/2
+│ ├ ● /2026/managers/3
+│ ├ ● /2026/managers/6
+│ └ ● [+9 more paths]
+├ ○ /analyze
+└ ○ /rankings
+
+Route (pages)
+─ ○ /404 (338 ms)
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+exit code: 0

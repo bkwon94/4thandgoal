@@ -1,0 +1,7 @@
+$ python3 cmp2.py local live   # pillow: per-pixel difference of local/<w>-<t>.png and live/<w>-<t>.png
+375-light: local 375x900, live 375x900; 0 pixels differ over the shared area; box None
+375-dark: local 375x900, live 375x900; 0 pixels differ over the shared area; box None
+768-light: local 768x900, live 768x900; 0 pixels differ over the shared area; box None
+768-dark: local 768x900, live 768x900; 0 pixels differ over the shared area; box None
+1280-light: local 1280x900, live 1280x900; 0 pixels differ over the shared area; box None
+1280-dark: local 1280x900, live 1280x900; 0 pixels differ over the shared area; box None

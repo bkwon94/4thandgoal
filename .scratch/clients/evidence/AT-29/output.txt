@@ -1,0 +1,30 @@
+$ uv run --directory apps/api --exact --package cpc-api pytest -v tests/test_api.py -k "grade_limit_counts_per_client or sixth_grade_in_a_minute or each_fly_client_address_has_its_own_grade_limit"
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 146 items / 143 deselected / 3 selected
+
+tests/test_api.py::test_the_sixth_grade_in_a_minute_is_429_with_the_minute_text PASSED [ 33%]
+tests/test_api.py::test_each_fly_client_address_has_its_own_grade_limit PASSED [ 66%]
+tests/test_api.py::test_the_grade_limit_counts_per_client_and_per_address PASSED [100%]
+
+====================== 3 passed, 143 deselected in 6.62s =======================
+exit code: 0
+$ grep -n "GRADES_PER_MINUTE =\|GRADES_PER_DAY =" packages/analyzer/python/src/analyzer/tunables.py
+85:GRADES_PER_MINUTE = 5
+88:GRADES_PER_DAY = 20
+$ sed -n 1938,1949p apps/api/tests/test_api.py   # the test of AT-29
+def test_the_grade_limit_counts_per_client_and_per_address(settings, sources):
+    # A fallback is never cached, so each repeat is a new grade.
+    client = _two_clients(settings, sources, StubAnalyzer(claude_letters=["A", "C"]))
+    for _ in range(GRADES_PER_MINUTE):
+        assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 200
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 429
+    # The old path is cpc, so it shares the limit of cpc.
+    assert client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 429
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 200
+    # Another address in the same client has its own count.
+    other = {**HEADERS, "Fly-Client-IP": "203.0.113.7"}
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=other).status_code == 200

@@ -8,13 +8,14 @@ from datetime import date, datetime
 from importlib import resources
 from zoneinfo import ZoneInfo
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.parse import parse_trades, parse_week
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.trades import default_cutoff, is_late, trades_for_week
+from cpc import cpc_client
 
-CONFIG = cornerstone_config()
+from league.history import load_history
+from league.parse import parse_trades, parse_week
+from league.provider.sleeper import load_raw
+from league.trades import default_cutoff, is_late, trades_for_week
+
+CLIENT = cpc_client()
 
 ET = ZoneInfo("America/New_York")
 
@@ -81,13 +82,13 @@ def test_roster_slots_count_the_reserve_slot(fixture_raw_dir):
 
 
 def test_vocabulary_has_the_profile_terms():
-    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("points per game", "position rank by season points"):
         assert f"**{term}**" in text
 
 
 def test_vocabulary_drops_the_recap_terms_and_the_grade_terms():
-    text = resources.files("cornerstone.prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
+    text = resources.files("facts").joinpath("prompts").joinpath("vocabulary.md").read_text(encoding="utf-8")
     for term in ("trade impact", "trade swing", "late trade"):
         assert f"**{term}**" not in text
     for term in ("trade grade", "trade value", "roster need", "snap share", "target share", "red-zone use",

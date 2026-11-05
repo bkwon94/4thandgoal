@@ -1,5 +1,6 @@
 # Makefile for the Cornerstone League Weekly site.
 # Each target wraps a pnpm script or a deploy step. Run "make" to list them.
+# The dev, build, and serve targets need the client slug, such as "make build CLIENT=cpc". Make passes CLIENT to pnpm.
 
 .PHONY: help install dev dev-local build test typecheck check serve deploy
 .DEFAULT_GOAL := help
@@ -13,7 +14,7 @@ install: ## Install the dependencies from the lockfile
 dev: ## Start the dev server
 	pnpm dev
 
-# Local test of the analyzer against the API on this machine. First run "make -C ../pipeline api" from apps/site,
+# Local test of the analyzer against the API on this machine. First run "make -C ../api api" from apps/site,
 # which serves port 8080 with the passphrase "localtest". Then run this, open the analyzer, and enter that passphrase.
 dev-local: ## Start the dev server against the local API on port 8080
 	NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm dev
@@ -31,7 +32,7 @@ typecheck: ## Check the types
 check: ## Run typecheck, test, build, and the export check
 	pnpm check
 
-# The API must run on port 8080 from apps/pipeline. Start it with "make -C ../pipeline api".
+# The API must run on port 8080 from apps/api. Start it with "make -C ../api api".
 serve: ## Build against the local API and serve out/ on port 3000
 	NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 	cd out && python3 -m http.server 3000

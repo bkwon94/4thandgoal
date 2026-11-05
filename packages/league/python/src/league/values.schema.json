@@ -1,0 +1,20 @@
+{
+  "additionalProperties": false,
+  "description": "The package values of league. The default is no chart, and then each chart value is 0.",
+  "properties": {
+    "chart": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Chart"
+    }
+  },
+  "title": "LeagueValues",
+  "type": "object"
+}

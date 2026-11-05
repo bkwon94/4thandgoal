@@ -1,0 +1,41 @@
+# The Fly.io config of the Cornerstone API: one small machine in the New York area that always runs.
+# Secrets (ANTHROPIC_API_KEY, and CORNERSTONE_PASSPHRASE_<SLUG> for each client) never go here. Set them with `fly secrets set`.
+
+app = "cpcfantasy-api"
+primary_region = "ewr"
+
+# The build context is the repo root. "make deploy" passes the Dockerfile and its ignore file as flags.
+[build]
+  dockerfile = "Dockerfile"
+
+# Non-secret settings only. /app/data is a link to the /data volume, so the repo root is /app.
+[env]
+  CORNERSTONE_REPO = "/app"
+  CORNERSTONE_RESULT_CACHE_DIR = "/data/cache/results"
+  # The site of each client at its Worker, and the old CPC host for a page that a reader still has open.
+  CORNERSTONE_ALLOWED_ORIGINS = "https://cpc.4thandgoal.app,https://norcal.4thandgoal.app,https://cpcfantasy.com"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # One machine always runs, so no request waits for a cold start. The runbook gives the cost.
+  # Auto stop and start are on, so Fly stops any second machine a deploy makes.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/health"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
+
+# One volume holds the tracked data seed, the nflverse cache, the charts, and the result cache, so they survive a restart.
+[mounts]
+  source = "cornerstone_data"
+  destination = "/data"

@@ -4,18 +4,20 @@ They use the recorded week 6 data.
 """
 from datetime import date
 
-from cornerstone.config import cornerstone_config
-from cornerstone.parse import parse_week
-from cornerstone.provider.raw import RawTransaction
-from cornerstone.provider.sleeper import load_raw
+import pytest
+
+from league.models import week_lines
+from league.parse import parse_past_week, parse_week
+from league.provider.raw import RawTransaction
+from league.provider.sleeper import load_raw
 
 
 def test_parse_week_teams_and_matchups(fixture_raw_dir):
-    wk = parse_week(load_raw(fixture_raw_dir), cornerstone_config().owner_username)
+    wk = parse_week(load_raw(fixture_raw_dir))
     assert wk.week == 6 and wk.last_scored_week == 6
     assert len(wk.teams) == 12 and len(wk.matchups) == 6
     bo = next(t for t in wk.teams.values() if t.name == "Bo Girds")
-    assert bo.is_owner and (bo.wins, bo.losses) == (8, 4)
+    assert (bo.wins, bo.losses) == (8, 4)
     assert bo.avatar_url.endswith(".jpg")
     lamb = next(t for t in wk.teams.values() if t.name == "behold the lamb")
     assert lamb.avatar_url.startswith("https://sleepercdn.com/avatars/thumbs/")
@@ -96,7 +98,7 @@ def test_next_matchups_keep_pairs_only(fixture_raw_dir):
 
 
 def test_trade_with_null_draft_picks_parses():
-    from cornerstone.parse import parse_trades
+    from league.parse import parse_trades
     trade = {"type": "trade", "status": "complete", "transaction_id": "1", "created": 1791542003405, "leg": 6,
              "roster_ids": [2, 6], "adds": {"11610": 6}, "drops": {"11610": 2}, "draft_picks": None}
     assert parse_trades([RawTransaction.model_validate(trade)])[0].draft_picks == []
@@ -147,3 +149,20 @@ def test_the_pool_is_the_projected_players_on_no_roster_with_a_position(fixture_
     raw.projections_ahead[0].projections.update({"fa1": 12.0, "no_position": 8.0})
     raw.players.update({"fa1": {"position": "QB"}, "no_position": {}})
     assert parse_week(raw).pool == {"fa1": "QB"}
+
+
+# Jaxon Smith-Njigba starts in week 6. Sleeper projects him 15.82 standard, 19.15 half-PPR, and 22.48 full PPR.
+JSN = "9488"
+
+
+@pytest.mark.parametrize(("key", "projection"), [("pts_std", 15.82), ("pts_half_ppr", 19.15), ("pts_ppr", 22.48)])
+def test_the_points_key_of_the_league_chooses_the_projection_of_a_line(fixture_raw_dir, key, projection):
+    # AT-14: a full PPR league reads the pts_ppr projection of a WR.
+    wk = parse_week(load_raw(fixture_raw_dir), points_key=key)
+    assert next(line for line in week_lines(wk) if line.player_id == JSN).projection == projection
+
+
+def test_the_points_key_of_the_league_chooses_the_projections_of_a_past_week(fixture_raw_dir):
+    past = parse_past_week(load_raw(fixture_raw_dir), 6, points_key="pts_ppr")
+    assert past.projections[JSN] == 22.48
+    assert past.points_key == "pts_ppr"

@@ -1,0 +1,56 @@
+# The Python side of the week package: the sheet chapters, the league and matchup facts, the page writer, and the chapter port.
+# It lists only the league and the facts packages, so "uv run --exact --package cpc-week" fails an import of an app.
+[project]
+name = "cpc-week"
+version = "0.1.0"
+description = "The sheet chapters except rankings, the league and matchup facts, the page writer, the chapter port, and the median text."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cpc-league",
+    "cpc-facts",
+    "httpx>=0.28.1",
+    "pydantic>=2.14.1",
+]
+
+[tool.uv.sources]
+cpc-league = { workspace = true }
+cpc-facts = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# The week package imports the league and the facts packages as its own code, so all three sort as first party.
+[tool.ruff.lint.isort]
+known-first-party = ["facts", "league", "week"]
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+# Backlog: the sheet has 16 errors, all in bodies that the move kept as they are. Most pass an
+# optional value, such as int | None, to Nums or to a helper that takes a plain value. base.py 1, drops.py 1,
+# leaders.py 1, next_week.py 11, trades.py 2.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/week/median.py", "src/week/page.py", "src/week/sheet/assemble.py", "src/week/sheet/port.py",
+           "src/week/tunables.py", "tests"]
+# The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
+extraPaths = ["../../../apps/pipeline/tests"]
+
+[tool.uv.build-backend]
+module-name = "week"

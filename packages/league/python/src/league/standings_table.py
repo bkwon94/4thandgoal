@@ -1,0 +1,157 @@
+"""
+The standings table and the season records it reads, built from the parsed week and the saved history.
+It sits in the load layer, so the snapshot and the fact groups both read one table with no upward import.
+It also holds the plain clinch check, which the odds and the week both read.
+"""
+import logging
+from collections import defaultdict
+from decimal import Decimal
+
+from league.client import Client
+from league.models import History, OddsStatus, PastWeek, Standing, Week
+from league.numbers import r2
+
+logger = logging.getLogger(__name__)
+
+# A week has two games, the head-to-head game and the median game, so a roster wins at most 2 a week.
+MAX_WINS_PER_WEEK = 2
+
+
+def wins_per_week(median_game: bool) -> int:
+    """The most wins of one roster in one week: 2 with the median game, else 1. GLOSSARY.md, "Median game"."""
+    return MAX_WINS_PER_WEEK if median_game else 1
+
+
+def week_median(week: PastWeek) -> Decimal:
+    """The exact median score of one week, the line of the median game."""
+    ordered = sorted((Decimal(str(p)) for p in week.scores.values()), reverse=True)
+    # The same median as median_facts: the mean of the 6th and 7th scores.
+    # A past week holds no client, so the two middle ranks come from the count of scores. A league has an even team
+    # count, because every team plays a game each week.
+    middle = len(ordered) // 2
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def season_records(
+    history: History, through: int, *, median_game: bool = True,
+) -> dict[int, tuple[int, int, float]]:
+    """Wins, losses, and points for of each roster over weeks 1 to `through`.
+
+    Each week is two games: the head-to-head game and the game against the median. With `median_game` off, the
+    league scores no median game, so each week is the head-to-head game only.
+    A tie in a game counts as neither a win nor a loss.
+    """
+    wins: dict[int, int] = defaultdict(int)
+    losses: dict[int, int] = defaultdict(int)
+    points: dict[int, Decimal] = defaultdict(Decimal)
+
+    def settle(roster_id: int, mine: Decimal, theirs: Decimal) -> None:
+        if mine > theirs:
+            wins[roster_id] += 1
+        elif mine < theirs:
+            losses[roster_id] += 1
+
+    for number in range(1, through + 1):
+        scores = {rid: Decimal(str(p)) for rid, p in history.weeks[number].scores.items()}
+        for a, b in history.weeks[number].pairs:
+            settle(a, scores[a], scores[b])
+            settle(b, scores[b], scores[a])
+        median = week_median(history.weeks[number]) if median_game else None
+        for rid, score in scores.items():
+            if median is not None:
+                settle(rid, score, median)
+            points[rid] += score
+    return {rid: (wins[rid], losses[rid], r2(float(points[rid]))) for rid in points}
+
+
+def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
+    """The roster IDs in standings order: most wins first, then most points for.
+
+    The standings and the power rankings both use this order, so the two cannot drift.
+    """
+    return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+
+
+def standings(week: Week, history: History | None = None, *, client: Client) -> list[Standing]:
+    """The table after the week, in standings order. The cut reads the playoff spots of `client`, so it follows the
+    league."""
+    if history is not None and history.complete():
+        records = season_records(history, week.week, median_game=client.settings.median_game)
+    else:
+        if history is not None:
+            logger.warning("history incomplete: standings from rosters.json")
+        records = {
+            t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
+        }
+    ordered = standings_order(records)
+    cut_wins = records[ordered[client.settings.playoff_spots - 1]][0]
+    strength = {rid: _schedule_strength(week, rid, records) for rid in ordered}
+    # Rank the highest strength first. A team with no next matchup has no rank.
+    by_strength = sorted(
+        (rid for rid, s in strength.items() if s is not None),
+        key=lambda rid: -strength[rid],
+    )
+    strength_rank = {rid: i + 1 for i, rid in enumerate(by_strength)}
+    return [
+        Standing(
+            rank=i + 1,
+            roster_id=rid,
+            wins=records[rid][0],
+            losses=records[rid][1],
+            points_for=records[rid][2],
+            in_playoffs=i + 1 <= client.settings.playoff_spots,
+            games_from_cut=records[rid][0] - cut_wins,
+            schedule_strength=strength[rid],
+            strength_rank=strength_rank.get(rid),
+        )
+        for i, rid in enumerate(ordered)
+    ]
+
+
+def _schedule_strength(
+    week: Week, roster_id: int, records: dict[int, tuple[int, int, float]]
+) -> float | None:
+    """Mean win rate of the remaining opponents. Version 1 has only the next one."""
+    opponents = [
+        b if a == roster_id else a
+        for a, b in week.next_matchups
+        if roster_id in (a, b)
+    ]
+    if not opponents:
+        return None
+    rates = [records[o][0] / (records[o][0] + records[o][1]) for o in opponents]
+    return r2(sum(rates) / len(rates))
+
+
+def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
+    """The opponent and the result of one head-to-head game: 1 a win, -1 a loss, 0 a tie.
+
+    None when the roster has no pair that week, such as a bye. The median game is not in it.
+    """
+    opponent = next(
+        (b if a == roster_id else a for a, b in week.pairs if roster_id in (a, b)), None
+    )
+    if opponent is None:
+        return None
+    mine, theirs = week.scores[roster_id], week.scores[opponent]
+    return opponent, (mine > theirs) - (mine < theirs)
+
+
+def roster_status(
+    roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int, *,
+    median_game: bool = True,
+) -> OddsStatus:
+    """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.
+
+    `in`: no roster outside the top spots by wins can reach this roster's wins with every game won in each week left.
+    `out`: this roster cannot reach the wins of the roster in the last spot with every game won in each week left.
+    A week left holds 2 games with `median_game`, else 1.
+    """
+    by_wins = sorted(records, key=lambda rid: (-records[rid][0], rid))
+    reach = wins_per_week(median_game) * weeks_left
+    wins = records[roster_id][0]
+    if roster_id in by_wins[:spots] and all(records[o][0] + reach < wins for o in by_wins[spots:]):
+        return "in"
+    if wins + reach < records[by_wins[spots - 1]][0]:
+        return "out"
+    return "open"

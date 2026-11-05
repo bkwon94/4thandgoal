@@ -1,0 +1,5 @@
+# The root pnpm workspace of the repo: the site app and the site side of each package, with one pnpm-lock.yaml.
+# A package ships TSX source with no build step, and the site build compiles it (decision 07).
+packages:
+  - "apps/site"
+  - "packages/*/site"

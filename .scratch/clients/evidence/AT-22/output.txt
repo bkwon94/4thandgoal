@@ -1,0 +1,47 @@
+$ git diff -- packages/analyzer/python/src/analyzer/values.py
+diff --git a/packages/analyzer/python/src/analyzer/values.py b/packages/analyzer/python/src/analyzer/values.py
+index 4322ab5..d198d8f 100644
+--- a/packages/analyzer/python/src/analyzer/values.py
++++ b/packages/analyzer/python/src/analyzer/values.py
+@@ -13,3 +13,4 @@ class AnalyzerValues(PackageValues):
+     package: ClassVar[str] = "analyzer"
+ 
+     finder: bool = False
++    finder_limit: int = 5
+$ make -C apps/pipeline rules   # the rule tests that make check runs in the pipeline
+=================================== FAILURES ===================================
+______________________ test_each_exported_schema_is_fresh ______________________
+
+    def test_each_exported_schema_is_fresh():
+        # The kernel schema of league and the values schema of each package.
+>       check_schema_files(VALUE_MODELS)
+
+tests/test_rule_client.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../packages/league/python/src/league/client.py:223: in check_schema_files
+    check_schema_file(model)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = <class 'analyzer.values.AnalyzerValues'>
+path = PosixPath('/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/analyzer/python/src/analyzer/values.schema.json')
+
+    def check_schema_file(model: SchemaModel, path: Path | None = None) -> None:
+        """Raise ClientError when the schema file of `model` differs from the model, so a stale export fails the check."""
+        path = path or schema_file(model)
+        if not path.is_file() or path.read_text(encoding="utf-8") != _schema_text(model):
+            package = _package_of(model)
+>           raise ClientError(f"The schema file {path} of {package} is stale. Run make schema in packages/{package}/python "
+                              "and commit the file.")
+E           league.client.ClientError: The schema file /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/analyzer/python/src/analyzer/values.schema.json of analyzer is stale. Run make schema in packages/analyzer/python and commit the file.
+
+../../packages/league/python/src/league/client.py:216: ClientError
+=========================== short test summary info ============================
+FAILED tests/test_rule_client.py::test_each_exported_schema_is_fresh - league...
+1 failed, 46 passed in 1.63s
+make: *** [rules] Error 1
+exit code: 2
+$ uv run --directory apps/pipeline --exact --package cornerstone cornerstone check-client ../../clients/cpc
+The schema file /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/analyzer/python/src/analyzer/values.schema.json of analyzer is stale. Run make schema in packages/analyzer/python and commit the file.
+exit code: 2
+$ git restore packages/analyzer/python/src/analyzer/values.py
+$ git status --short -- packages

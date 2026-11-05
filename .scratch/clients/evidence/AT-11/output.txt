@@ -1,0 +1,4 @@
+$ make -C apps/pipeline page-json CLIENT=norcal WEEK=8
+uv run --exact --package cornerstone cornerstone page-json --client norcal --season 2026 --week 8
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/clients/norcal/build/2026/week-08/page.json
+exit code: 0

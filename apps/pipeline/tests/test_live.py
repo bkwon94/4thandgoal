@@ -11,12 +11,12 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
+from cpc import cpc_client
 from fakes import FixtureProvider
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import save_week_to_history
-from cornerstone.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
-from cornerstone.nflverse import (
+from league.history import save_week_to_history
+from league.live import ProjectionsCache, fetch_current_week, live_rosters_snapshot, live_snapshot, refresh_sources
+from league.nflverse import (
     DEPTH_CHARTS_URL,
     FFIDS_URL,
     FFOPPORTUNITY_URL,
@@ -25,14 +25,15 @@ from cornerstone.nflverse import (
     STATS_PLAYER_URL,
     cache_path,
 )
-from cornerstone.provider.raw import RawAheadWeek
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.snapshot import load_snapshot
-from cornerstone.tunables import TEAMS_CACHE_SECONDS
+from league.provider.raw import RawAheadWeek
+from league.provider.sleeper import load_raw
+from league.snapshot import load_snapshot
+from league.tunables import TEAMS_CACHE_SECONDS
+from league.values import LeagueValues
 
 ET = ZoneInfo("America/New_York")
-# The league config the builds and fetches of these tests read.
-CONFIG = cornerstone_config()
+# The client the builds and fetches of these tests read.
+CLIENT = cpc_client()
 FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ET)
 DAY = 24 * 60 * 60
 
@@ -57,9 +58,11 @@ class ChartRecorder:
     def __init__(self, chart):
         self.chart = chart
         self.weeks = []
+        self.charts = []
 
-    def __call__(self, repo, season_start, week, lines):
+    def __call__(self, repo, season_start, week, lines, *, chart):
         self.weeks.append((season_start, week))
+        self.charts.append(chart)
         return self.chart
 
 
@@ -81,21 +84,42 @@ def _no_history_fetch(league_id, season, week, out_dir):
 def test_the_chart_week_is_the_window_week_of_the_latest_past_cutoff(live_repo, sleeper, chart_week6):
     chart = ChartRecorder(chart_week6)
     # The cutoff of week 7 is Tuesday 2026-10-20 08:00.
-    after = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET),
+    after = live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET),
                           fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                          fetch_nflverse=_no_network, read_chart=chart, config=CONFIG)
-    before = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET),
+                          fetch_nflverse=_no_network, read_chart=chart, client=cpc_client(at=live_repo))
+    before = live_snapshot(2026, now=datetime(2026, 10, 20, 7, 59, tzinfo=ET),
                            fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                           fetch_nflverse=_no_network, read_chart=chart, config=CONFIG)
+                           fetch_nflverse=_no_network, read_chart=chart, client=cpc_client(at=live_repo))
     assert [week for _, week in chart.weeks] == [7, 6]
     assert after.as_of.chart_week == chart_week6.week
     assert before.chart == chart_week6
 
 
+def test_the_chart_read_takes_the_chart_of_the_client(live_repo, sleeper, chart_week6):
+    chart = ChartRecorder(chart_week6)
+    live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                  fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,
+                  client=cpc_client(at=live_repo))
+    assert chart.charts == ["1QB0.5PPR4pt"]
+
+
+def test_a_client_with_no_chart_reads_no_chart_and_notes_none_stale(live_repo, sleeper, chart_week6):
+    # The default of the league package is no chart, and then each chart value is 0: the chart gives no side an edge.
+    cpc = cpc_client(at=live_repo)
+    values = cpc.values.model_copy(update={"package_values": {**cpc.values.package_values, "league": LeagueValues()}})
+    chart = ChartRecorder(chart_week6)
+    snap = live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,
+                         client=cpc.model_copy(update={"values": values}))
+    assert chart.weeks == []
+    assert snap.chart is None
+    assert "chart" not in snap.stale
+
+
 def test_the_stamps_hold_the_stats_through_week_and_the_rosters_fetch_time(live_repo, sleeper, chart_week6):
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
                          fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                         fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.as_of.chart_week == 6
     assert snap.as_of.rosters_fetched == FETCHED
     assert snap.season == 2026
@@ -113,9 +137,9 @@ def test_a_source_older_than_a_day_refreshes_before_the_snapshot(live_repo, slee
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
                          fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), config=CONFIG)
+                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), client=cpc_client(at=live_repo))
     assert asked == [SCHEDULES_URL]
     assert time.time() - path.stat().st_mtime < DAY
     assert snap.stale == []
@@ -129,9 +153,9 @@ def test_a_failed_refresh_keeps_the_old_cache_and_notes_it(live_repo, sleeper):
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
                          fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), config=CONFIG)
+                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), client=cpc_client(at=live_repo))
     assert path.read_bytes() == before
     assert snap.stale == ["depth charts"]
     assert snap.depth_charts is not None
@@ -143,27 +167,27 @@ def test_a_source_with_no_cache_and_a_failed_fetch_is_missing_and_noted(live_rep
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
                          fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), config=CONFIG)
+                         fetch_nflverse=fetch, read_chart=ChartRecorder(None), client=cpc_client(at=live_repo))
     assert snap.stale == ["id map"]
     assert "id_map" in snap.missing
 
 
 def test_a_season_that_is_not_in_progress_stops_the_build(live_repo, sleeper):
     with pytest.raises(ValueError, match="2025"):
-        live_snapshot(live_repo, 2025, now=datetime(2026, 10, 19, tzinfo=ET),
+        live_snapshot(2025, now=datetime(2026, 10, 19, tzinfo=ET),
                       fetch_sleeper=sleeper, fetch_history_week=_no_history_fetch,
-                      fetch_nflverse=_no_network, read_chart=ChartRecorder(None), config=CONFIG)
+                      fetch_nflverse=_no_network, read_chart=ChartRecorder(None), client=cpc_client(at=live_repo))
 
 
 def test_on_monday_night_the_raw_week_is_the_trade_week_and_its_known_games_stay_out_of_the_saved_history(
         live_repo, sleeper, chart_week6):
     # Monday 2026-10-19 is before the week 7 cutoff, so the chart week is 6. Sleeper shows week 6 too.
     chart = ChartRecorder(chart_week6)
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,
-                         config=CONFIG)
+                         client=cpc_client(at=live_repo))
     assert [week for _, week in chart.weeks] == [6]
     assert snap.week == 6
     # The week 6 stat lines are the known games, so the player stats read them and the standings do not.
@@ -181,15 +205,15 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
     # Before the first kickoff of week 6 Sleeper has no week 6 line, so both paths read the saved weeks 1 to 5.
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
 
-    def before_kickoff(league_id, players_cache):
+    def before_kickoff(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.stats = []
         return raw, FETCHED
 
-    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
+    live = live_snapshot(2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert (live.week, live.as_of.stats_through) == (saved.week, saved.as_of.stats_through) == (6, 5)
     pool = {pid for past in saved.stats.weeks.values() for pid in past.positions} | set(saved.players)
     live_ranks = {pid: live.position_rank(pid) for pid in pool}
@@ -202,10 +226,10 @@ def test_a_known_game_of_week_n_moves_a_live_position_rank_and_weeks_1_to_n_minu
         live_repo, sleeper, fixture_raw_dir, fixture_history_root, chart_week6):
     # On Monday night the week 6 stat lines are known games. The saved week 6 never counts its own games.
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
-    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    live = live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert (live.as_of.stats_through, saved.as_of.stats_through) == (6, 5)
     assert all(live.stats.weeks[week] == saved.stats.weeks[week] for week in range(1, 6))
     # With the known games cut away, the live table is the saved table, so only week 6 moves a rank.
@@ -221,15 +245,15 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_free_agents_for_
         live_repo, free_agent_raw_dir, fixture_history_root, chart_week6):
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
 
-    def before_kickoff(league_id, players_cache):
+    def before_kickoff(league_id):
         raw = load_raw(free_agent_raw_dir)
         raw.stats = []
         return raw, FETCHED
 
-    live = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
+    live = live_snapshot(2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
-    saved = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
+    saved = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert live.free_agents == saved.free_agents
     # Perine, the back with no stat line, and Bigsby, in player id order, as the saved test reads them.
     assert [p.player_id for p in live.free_agents["RB"]] == ["4147", "80001", "9225"]
@@ -252,9 +276,9 @@ def _with_kickoff(repo, game_id, gametime):
 def test_on_monday_night_the_clock_of_the_request_puts_the_monday_game_in_progress(live_repo, sleeper, chart_week6):
     # The Commanders at the 49ers kick off at 8:15 pm Eastern on Monday 2026-10-19, so 9 pm is in the game.
     _with_kickoff(live_repo, "2026_06_WAS_SF", "20:15")
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.as_of.known_games.games == 14
     assert snap.as_of.known_games.in_progress == 1
     assert snap.in_progress_teams == {"WAS", "SF"}
@@ -262,9 +286,9 @@ def test_on_monday_night_the_clock_of_the_request_puts_the_monday_game_in_progre
 
 def test_on_the_tuesday_before_the_roll_the_raw_week_joins_the_history(live_repo, sleeper, chart_week6):
     # Tuesday 2026-10-20 09:00 is after the week 7 cutoff, so the chart week is 7. Sleeper still shows week 6.
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.week == 7
     assert snap.as_of.stats_through == 6
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5, 6]
@@ -280,9 +304,9 @@ def test_a_failed_history_fetch_keeps_the_saved_weeks_and_notes_it(live_repo, sl
         asked.append(week)
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=fetch, fetch_nflverse=_no_network, read_chart=ChartRecorder(chart_week6),
-                         config=CONFIG)
+                         client=cpc_client(at=live_repo))
     assert asked == [5]
     assert snap.stale == ["history"]
     # A gap at week 5 keeps the week 6 games out too, so the known games never skip a week.
@@ -296,9 +320,9 @@ def test_on_the_tuesday_before_the_roll_the_raw_week_is_saved_so_points_allowed_
     # The points allowed read weeks 1 to 6 from the history on disk, and only the raw data of this run holds week 6.
     saved = live_repo / "data" / "2026" / "history" / "week-06"
     assert not saved.exists()
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.points_allowed is not None
     assert "points_allowed" not in snap.missing
     assert (saved / "stats.json").exists()
@@ -311,14 +335,14 @@ def test_on_the_tuesday_an_empty_stats_raw_week_leaves_a_good_saved_week_untouch
     save_week_to_history(fixture_raw_dir, saved)
     before = (saved / "stats.json").read_bytes()
 
-    def outage(league_id, players_cache):
+    def outage(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.stats = []
         return raw, FETCHED
 
-    live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=outage,
+    live_snapshot(2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=outage,
                   fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                  read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                  read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert (saved / "stats.json").read_bytes() == before
 
 
@@ -326,9 +350,9 @@ def test_on_the_tuesday_a_failed_history_write_marks_history_stale_and_the_snaps
         live_repo, sleeper, chart_week6):
     # A file where the week 6 directory goes makes the write fail with an OSError.
     (live_repo / "data" / "2026" / "history" / "week-06").write_text("", encoding="utf-8")
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 20, 9, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert "history" in snap.stale
     assert snap.week == 7
 
@@ -341,9 +365,9 @@ def test_an_injuries_file_older_than_a_day_refreshes_before_the_snapshot(live_re
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=fetch, read_chart=ChartRecorder(None),
-                         config=CONFIG)
+                         client=cpc_client(at=live_repo))
     assert asked == [INJURIES_URL.format(season=2026)]
     assert time.time() - path.stat().st_mtime < DAY
     assert snap.stale == []
@@ -351,9 +375,9 @@ def test_an_injuries_file_older_than_a_day_refreshes_before_the_snapshot(live_re
 
 def test_the_live_path_keeps_a_file_one_hour_old(live_repo, sleeper, chart_week6):
     _age(live_repo, SCHEDULES_URL, 60 * 60)
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.stale == []
 
 
@@ -368,10 +392,10 @@ def _refresh_at_age(live_repo, sleeper, fixture_nflverse_dir, url, seconds, max_
             raise httpx.ConnectError("down")
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    _, _, week = fetch_current_week(live_repo, CONFIG, sleeper)
-    result = refresh_sources(live_repo, 2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
+    _, _, week = fetch_current_week(cpc_client(at=live_repo), sleeper)
+    result = refresh_sources(2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
                              fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
-                             max_age_seconds=max_age_seconds, config=CONFIG)
+                             max_age_seconds=max_age_seconds, client=cpc_client(at=live_repo))
     return result, asked
 
 
@@ -410,16 +434,16 @@ def test_a_failed_six_hour_refresh_keeps_the_file_and_does_not_name_it_stale(
 
 
 def test_a_forced_refresh_fetches_every_source(live_repo, sleeper, fixture_nflverse_dir):
-    _, _, week = fetch_current_week(live_repo, CONFIG, sleeper)
+    _, _, week = fetch_current_week(cpc_client(at=live_repo), sleeper)
     asked = []
 
     def fetch(url):
         asked.append(url)
         return (fixture_nflverse_dir / url.rsplit("/", 1)[-1]).read_bytes()
 
-    result = refresh_sources(live_repo, 2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
+    result = refresh_sources(2026, datetime(2026, 10, 19, 12, 0, tzinfo=ET), week,
                              fetch_nflverse=fetch, fetch_history_week=_no_history_fetch, read_chart=None,
-                             max_age_seconds=0, config=CONFIG)
+                             max_age_seconds=0, client=cpc_client(at=live_repo))
     assert set(asked) == {url.format(season=2026) for url in (
         SCHEDULES_URL, DEPTH_CHARTS_URL, FFIDS_URL, INJURIES_URL, FFOPPORTUNITY_URL, STATS_PLAYER_URL)}
     assert len(asked) == 6
@@ -427,29 +451,29 @@ def test_a_forced_refresh_fetches_every_source(live_repo, sleeper, fixture_nflve
 
 
 def test_no_chart_reader_skips_the_chart_and_notes_no_stale_chart(live_repo, sleeper):
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=None,
-                         config=CONFIG)
+                         client=cpc_client(at=live_repo))
     assert snap.chart is None
     assert "chart" not in snap.stale
 
 
 def test_a_chart_read_that_raises_gives_no_chart_and_notes_it_stale(live_repo, sleeper):
-    def read_chart(repo, season_start, week, lines):
+    def read_chart(repo, season_start, week, lines, chart):
         # The Anthropic client raises TypeError when the API key is absent.
         raise TypeError("no api key")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=read_chart,
-                         config=CONFIG)
+                         client=cpc_client(at=live_repo))
     assert snap.chart is None
     assert "chart" in snap.stale
 
 
 def test_the_live_snapshot_carries_the_expected_points_from_the_cache(live_repo, sleeper, chart_week6):
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.expected is not None and snap.expected.players
     assert snap.expected.through_week == snap.week - 1
 
@@ -465,9 +489,9 @@ def test_the_refresh_downloads_a_missing_expected_points_file_and_the_snapshot_c
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert asked == [FFOPPORTUNITY_URL.format(season=2026)]
     assert path.exists()
     assert snap.expected is not None and snap.expected.players
@@ -481,9 +505,9 @@ def test_the_live_snapshot_without_the_expected_points_file_and_a_failed_fetch_s
     def fetch(url):
         raise httpx.ConnectError("down")
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert snap.expected is None and snap.stale == ["expected points"]
 
 
@@ -498,9 +522,9 @@ def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_car
         asked.append(url)
         return (fixture_nflverse_dir / path.name).read_bytes()
 
-    snap = live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
+    snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=fetch,
-                         read_chart=ChartRecorder(chart_week6), config=CONFIG)
+                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
     assert asked == [STATS_PLAYER_URL.format(season=2026)]
     assert path.exists()
     # The file has rows of the trade week, so the known games read them.
@@ -512,7 +536,7 @@ def test_the_refresh_downloads_a_missing_weekly_player_file_and_the_snapshot_car
 @pytest.fixture
 def sleeper_now(fixture_raw_dir):
     """The Sleeper fetch as fetch_live_raw gives it: the raw data with no projections ahead."""
-    def fetch(league_id, players_cache):
+    def fetch(league_id):
         raw = load_raw(fixture_raw_dir)
         raw.projections_ahead = None
         return raw, FETCHED
@@ -523,8 +547,8 @@ class ProjectionsRecorder:
     def __init__(self):
         self.calls = []
 
-    def __call__(self, season, week, last_regular_week):
-        self.calls.append((season, week))
+    def __call__(self, season, week, last_regular_week, points_key):
+        self.calls.append((season, week, points_key))
         return [RawAheadWeek(week=7, projections={"5850": 18.0})]
 
 
@@ -541,21 +565,22 @@ def test_the_live_snapshot_fetches_the_projections_ahead_once_in_the_cache_windo
     cache = ProjectionsCache(TEAMS_CACHE_SECONDS, clock=clock)
 
     def snapshot():
-        return live_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper_now,
+        return live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper_now,
                              fetch_nflverse=_no_network, fetch_history_week=_no_history_fetch, read_chart=None,
-                             fetch_projections=fetch, projections=cache, config=CONFIG)
+                             fetch_projections=fetch, projections=cache, client=cpc_client(at=live_repo))
 
     assert snapshot().projections_ahead["5850"][7] == 18.0
     clock.now += TEAMS_CACHE_SECONDS - 1
     snapshot()
-    assert fetch.calls == [(2026, 6)]
+    # The fetch asks for the points key of the League settings: CPC scores half a point per reception.
+    assert fetch.calls == [(2026, 6, "pts_half_ppr")]
     clock.now += 1
     snapshot()
-    assert fetch.calls == [(2026, 6), (2026, 6)]
+    assert fetch.calls == [(2026, 6, "pts_half_ppr"), (2026, 6, "pts_half_ppr")]
 
 
 def test_the_rosters_snapshot_fetches_no_projections_ahead(live_repo, sleeper_now):
     # The teams route never grades, so it never waits on the projections.
-    snap = live_rosters_snapshot(live_repo, 2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
-                                 fetch_sleeper=sleeper_now, config=CONFIG)
+    snap = live_rosters_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET),
+                                 fetch_sleeper=sleeper_now, client=cpc_client(at=live_repo))
     assert snap.projections_ahead is None

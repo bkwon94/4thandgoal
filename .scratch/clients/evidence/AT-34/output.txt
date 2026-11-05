@@ -1,0 +1,32 @@
+$ uv run --directory apps/api --exact --package cpc-api pytest -v tests/test_api.py -k "each_client_checks_its_own_passphrase or client_that_has_no_passphrase or need_a_passphrase_for_each_client or old_path_checks_the_passphrase or wrong_passphrase or missing_passphrase"
+tests/test_api.py::test_a_wrong_passphrase_is_401_with_no_body PASSED    [ 16%]
+tests/test_api.py::test_a_missing_passphrase_is_401_with_no_body PASSED  [ 33%]
+tests/test_api.py::test_settings_from_the_environment_need_a_passphrase_for_each_client PASSED [ 50%]
+tests/test_api.py::test_each_client_checks_its_own_passphrase PASSED     [ 66%]
+tests/test_api.py::test_an_app_with_a_client_that_has_no_passphrase_does_not_build PASSED [ 83%]
+tests/test_api.py::test_an_old_path_checks_the_passphrase_of_cpc PASSED  [100%]
+====================== 6 passed, 140 deselected in 1.79s =======================
+exit code: 0
+$ sed -n 1898,1911p apps/api/tests/test_api.py   # the test of the wrong and the right passphrase
+def test_each_client_checks_its_own_passphrase(settings, sources):
+    client = _two_clients(settings, sources, StubAnalyzer())
+    find = {"season": 2026, "asker": 4, "partner": 12}
+    # The passphrase of cpc opens no route of the second client, and the passphrase of the second client opens no route
+    # of cpc. The wrong passphrase is 401 with no body, as before.
+    for path, body in ((f"/clients/{SECOND}/analyze", TRADE), (f"/clients/{SECOND}/find", find)):
+        response = client.post(path, json=body, headers=HEADERS)
+        assert (response.status_code, response.content) == (401, b""), path
+    for path, body in (("/clients/cpc/analyze", TRADE), ("/clients/cpc/find", find)):
+        assert client.post(path, json=body, headers=SECOND_HEADERS).status_code == 401, path
+    assert client.post(f"/clients/{SECOND}/analyze", json=TRADE, headers=SECOND_HEADERS).status_code == 200
+    assert client.post("/clients/cpc/analyze", json=TRADE, headers=HEADERS).status_code == 200
+
+
+$ cd apps/api && env -u CORNERSTONE_PASSPHRASE_NORCAL CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_REPO=/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 18082 2>&1 | tail -6
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/api/src/cornerstone_api/app.py", line 195, in app_from_env
+    settings = Settings.from_env(client.slug for client in clients)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/api/src/cornerstone_api/settings.py", line 44, in from_env
+    raise RuntimeError(f"Set {name} before the API starts.")
+RuntimeError: Set CORNERSTONE_PASSPHRASE_NORCAL before the API starts.
+exit code: 1

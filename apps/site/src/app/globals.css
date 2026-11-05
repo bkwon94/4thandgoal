@@ -1,10 +1,21 @@
 /**
- * Tailwind entry, the brand design tokens, and the shadcn theme variables for the app routes.
- * Pages in public/ do not load this file. Every hex color and pixel size of the app lives here.
+ * Tailwind entry, the design tokens, and the shadcn theme variables for the app routes. The brand of the client adds
+ * the color roles, the fonts, and the radii. Pages in public/ do not load this file. Every other hex color and pixel size lives here.
  */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* The brand of the client: the color roles of each set, the fonts, and the radii. The client build writes it. */
+@import "../generated/brand.css";
+/* Tailwind scans the app only. The site side of each package holds its own class names, so each one is a source too.
+   A glob over packages/ finds no file, so each package takes its own line. */
+@source "../../../../packages/analyzer/site";
+@source "../../../../packages/design/site";
+@source "../../../../packages/league/site";
+@source "../../../../packages/managers/site";
+@source "../../../../packages/rankings/site";
+@source "../../../../packages/waiver/site";
+@source "../../../../packages/week/site";
 /*---break---
  */
 @custom-variant dark (&:is(.dark *));
@@ -22,52 +33,16 @@
 /* The brand tokens, ported from the source stylesheet. Static keeps every token on :root,
    so the shadcn variables below can point at any token, even one without a utility. */
 @theme static {
-    /* Brand colors. */
-    --color-blk: #141414;
-    --color-red: #b8342a;
-    --color-gry: #ececec;
-    --color-wht: #fff;
+    /* The color roles, the fonts, and the radii come from the brand of the client. The client build writes them
+       into src/generated/brand.css from clients/$CLIENT/brand.toml, and the import at the top adds them.
+       The stylesheet calls the grey text "muted". The token is "mute", because shadcn owns "muted". */
 
-    /* Tints of the brand colors. One token per job keeps the greys from drifting apart.
-       The stylesheet calls the grey text "muted". Here it is "mute", because shadcn owns "muted". */
-    --color-red-lt: #f2a59e;
-    /* Red text on the page. Red text and red fills take different tokens because they sit on different grounds.
-       Brand red on white is 5.9 to 1, so the light theme keeps it. Brand red on black is only 3.1 to 1,
-       so the dark theme re-points this token to light red. White text sits on red fills, so fills keep brand red. */
-    --color-red-ink: var(--color-red);
-    --color-ink: #1a1a1a;
-    --color-ink-2: #333;
-    --color-mute: #666;
-    --color-rule: #e3e3e3;
-    --color-bar-off: #cfcfcf;
-    /* The thin rule between two columns. */
-    --color-divider: #cfcfcf;
-    --color-on-dark: #fff;
-    --color-on-dark-2: #ccc;
-    --color-on-dark-muted: #999;
-    --color-rule-dark: #333;
     /* The movement arrows of the power rankings: blue up, red down, a diverging pair that reads with red-green color blindness.
        The arrows sit on two surfaces. On the black card #141414 blue is about 5.06 to 1 and red about 5.04 to 1.
        On the white home page #ffffff blue is about 3.64 to 1 and red about 3.66 to 1. Both pass the 3 to 1 rule for a graphic.
        The arrow shape and the screen reader text also carry the direction, so the color is never the only sign. */
     --color-move-up: #3987e5;
     --color-move-down: #e05a4f;
-
-    /* The raised surface on the black card: a tab that is off and a box of the waiver sheet. It is one step up from the card, so it reads as a layer. */
-    --color-chip-dark: #262626;
-
-    /* The paint of the black card. It has its own token because the dark theme lifts the card while the masthead stays black. See ADR 0007. */
-    --color-card-blk: var(--color-blk);
-
-    /* The fill of a picked player row in the trade analyzer: a light wash of brand red, so a pick reads as red without red text on red.
-       Ink text on it is 14.9 to 1, mute 4.9, and brand red 5.1. The dark theme re-points it. See ADR 0007. */
-    --color-pick: color-mix(in srgb, var(--color-red) 10%, var(--color-wht));
-
-    /* The red glow behind a hero cutout on a black card. */
-    --color-red-glow: color-mix(in srgb, var(--color-red) 45%, transparent);
-
-    /* The font stack. The site uses the system Helvetica, so no web font loads. */
-    --font-sans: "Helvetica Neue", Arial, sans-serif;
 
     /* Spacing scale. Every padding, margin, and gap comes from this list. */
     --spacing-sp-0: 2px;
@@ -197,20 +172,15 @@
     --tracking-tight: -0.02em;
     --tracking-grade: -0.03em;
 
-    /* Radii: small for tags and bars, card for every grey card. */
-    --radius-sm: 3px;
-    --radius-card: 8px;
-
     /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
-    --shadow-orb: 0 0 24px var(--color-red-glow);
+    --shadow-orb: 0 0 24px var(--color-accent-glow);
 
-    /* The press easing. A strong ease-out gives instant feedback on a tap. src/lib/motion.ts holds the same curve as numbers. */
+    /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 /*---break---
  */
 @theme inline {
-    --font-heading: var(--font-sans);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -229,7 +199,6 @@
     --color-border: var(--border);
     --color-destructive: var(--destructive);
     --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
     --color-muted: var(--muted);
     --color-secondary-foreground: var(--secondary-foreground);
@@ -239,7 +208,6 @@
     --color-popover-foreground: var(--popover-foreground);
     --color-popover: var(--popover);
     --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
     --radius-md: calc(var(--radius) * 0.8);
@@ -254,86 +222,49 @@
 /* The shadcn variables point at the brand tokens, so a shadcn component wears the brand.
    The card is the brand grey, primary is the masthead black, and focus and danger are the brand red. */
 :root {
-    --background: var(--color-wht);
+    --background: var(--color-page);
     --foreground: var(--color-ink);
-    --card: var(--color-gry);
+    --card: var(--color-card);
     --card-foreground: var(--color-ink);
-    --popover: var(--color-wht);
+    --popover: var(--color-page);
     --popover-foreground: var(--color-ink);
-    --primary: var(--color-blk);
+    --primary: var(--color-band);
     --primary-foreground: var(--color-on-dark);
-    --secondary: var(--color-gry);
+    --secondary: var(--color-card);
     --secondary-foreground: var(--color-ink);
-    --muted: var(--color-gry);
+    --muted: var(--color-card);
     --muted-foreground: var(--color-mute);
-    --accent: var(--color-gry);
-    --accent-foreground: var(--color-ink);
-    --destructive: var(--color-red);
+    --accent: var(--color-accent);
+    --accent-foreground: var(--color-on-dark);
+    --destructive: var(--color-accent);
     --border: var(--color-rule);
     --input: var(--color-rule);
-    --ring: var(--color-red);
-    --chart-1: var(--color-red);
+    --ring: var(--color-accent);
+    --chart-1: var(--color-accent);
     --chart-2: var(--color-bar-off);
-    --chart-3: var(--color-blk);
+    --chart-3: var(--color-band);
     --chart-4: var(--color-ink-2);
     --chart-5: var(--color-mute);
     --radius: var(--radius-card);
-    --sidebar: var(--color-gry);
+    --sidebar: var(--color-card);
     --sidebar-foreground: var(--color-ink);
-    --sidebar-primary: var(--color-blk);
+    --sidebar-primary: var(--color-band);
     --sidebar-primary-foreground: var(--color-on-dark);
-    --sidebar-accent: var(--color-wht);
+    --sidebar-accent: var(--color-page);
     --sidebar-accent-foreground: var(--color-ink);
     --sidebar-border: var(--color-rule);
-    --sidebar-ring: var(--color-red);
+    --sidebar-ring: var(--color-accent);
 
     /* The light theme is the report look and the default. The .dark block below holds the dark theme. See ADR 0007. */
     color-scheme: light;
 }
-/* The dark theme: the .dark class on <html> re-points the light tokens to dark partners, so no component changes a class. See ADR 0007.
-   The page goes brand black, and the black card lifts one step to #262626, so it keeps its edge. The masthead and the compact bar
-   keep --color-blk, so they sit flush with the page. Red, the on-dark tokens, the glow, and the arrows do not re-point.
-   Brand red is 3.1 to 1 on #141414 and 2.6 to 1 on #262626, so it never carries text on a dark surface.
-   The two dark surfaces are the page #141414 and the raised surface #262626. Each ratio below is on those two, in that order. */
+/* The dark theme: the .dark class on <html> turns it on, and src/generated/brand.css re-points each color role in its own
+   .dark block, so no component changes a class. See ADR 0007. A brand with one dark set puts the class on <html> at build time. */
 .dark {
-    /* The page. White text on it is 18.4 to 1. */
-    --color-wht: #141414;
-    /* Body text: 18.4 to 1 on the page, 15.1 to 1 on the raised surface. */
-    --color-ink: #fff;
-    /* Second text: 11.5 to 1 on the page, 9.4 to 1 on the raised surface. */
-    --color-ink-2: #ccc;
-    /* Muted text: 6.5 to 1 on the page, 5.3 to 1 on the raised surface. */
-    --color-mute: #999;
-    /* The page rule: 1.5 to 1 on the page, 1.2 to 1 on the raised surface. A rule is a soft line, as #e3e3e3 is 1.3 to 1 on white. */
-    --color-rule: #333;
-    /* The light grey sits one step between the page and the lifted black card: the grey card, the body from the tablet tier up, and the grey chip.
-       A checked row in the team picker goes from this grey to the lifted black card, so the grey must not equal the card.
-       A picked player row does not paint this grey or the card. It paints the red wash of --color-pick.
-       #1f1f1f is 1.1 to 1 on the page and 1.1 to 1 under the lifted black card. On it white is 16.5 to 1, #ccc 10.3, #999 5.8, and light red 8.4. */
-    --color-gry: #1f1f1f;
-    /* The black card lifts to the raised surface, 1.2 to 1 on the page. White text on it is 15.1 to 1, #ccc 9.4, #999 5.3, light red 7.7,
-       the blue arrow 4.2, and the red arrow 4.1. Each text pair passes 4.5 to 1, and each arrow passes the 3 to 1 rule for a graphic. */
-    --color-card-blk: #262626;
-    /* Red text on the page: light red is 9.3 to 1 on the page and 7.7 to 1 on the raised surface. */
-    --color-red-ink: var(--color-red-lt);
-    /* The picked player row: a dark wash of brand red on the grey, #412421. White text on it is 14.1 to 1, #999 4.9, and light red 7.1.
-       Brand red never carries text here, as the left rule of the row is only a graphic. */
-    --color-pick: color-mix(in srgb, var(--color-red) 22%, var(--color-gry));
-    /* The dark rule, one step lighter, because #333 is only 1.2 to 1 on the lifted black card. #444 is 1.9 to 1 on the page and 1.6 to 1 on the raised surface. */
-    --color-rule-dark: #444;
-    /* The thin rule between two columns: 2.5 to 1 on the page and 2.0 to 1 on the raised surface. The light #cfcfcf is 1.6 to 1 on white. */
-    --color-divider: #555;
-    /* The off bar of a chart: 4.1 to 1 on the page and 3.4 to 1 on the raised surface, so it passes the 3 to 1 rule for a graphic.
-       In the waiver ring it sits in a #444 track at 2.2 to 1; the light theme puts it in a #333 track. */
-    --color-bar-off: #777;
-    /* The raised surface on the lifted black card: a tab that is off and a box of the waiver sheet. The light #262626 equals the lifted black card,
-       so the chip goes one step up. #313131 is 1.2 to 1 on the lifted black card. On it white is 13.0 to 1, #ccc 8.1, and #999 4.6.
-       The chip stops below #333, because #999 is only 4.4 to 1 on #333 and fails the 4.5 to 1 rule for text. */
-    --color-chip-dark: #313131;
     /* The shadcn button paints in --primary, the masthead black, which equals the dark page and the dialog. The button then has no edge,
        so the dark theme inverts it: a white button with page-black text, 18.4 to 1. */
     --primary: var(--color-ink);
-    --primary-foreground: var(--color-wht);
+    --primary-foreground: var(--color-page);
 
     color-scheme: dark;
 }
@@ -345,7 +276,7 @@
     /* Press feedback for every pressable element. Only transform animates, so it stays on the GPU. */
     --press: transform 140ms var(--ease-out);
 
-    /* The motion timings of the analyzer live in src/lib/motion.ts, because Framer Motion takes them as numbers. */
+    /* The motion timings of the analyzer live in packages/design/site/lib/motion.ts, because Framer Motion takes them as numbers. */
 
     /* If the script never hydrates, the reveal content shows after this delay.
        After hydration, the data-hydrated attribute turns the safety rule off and Framer Motion owns the reveal. */
@@ -376,7 +307,7 @@
   /* From the tablet tier up the column is narrower than the viewport. The body takes the softest brand grey,
      so the white column reads as the report's page. On a phone the column fills the width, so the body stays white. */
   body {
-    @apply bg-background tablet:bg-gry text-foreground text-body leading-body antialiased;
+    @apply bg-background tablet:bg-card text-foreground text-body leading-body antialiased;
     overflow-wrap: break-word;
     }
   /* The page column widens per tier. A media query cannot read a variable, so the tier variants carry the widths. */
@@ -419,7 +350,7 @@
     scroll-padding-top: var(--spacing-touch);
     }
   :focus-visible {
-    outline: 2px solid var(--color-red);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     }
 }
@@ -434,7 +365,7 @@
     .field-glow {
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 50% 45%, var(--color-red-glow), transparent 60%);
+        background: radial-gradient(circle at 50% 45%, var(--color-accent-glow), transparent 60%);
     }
     .stage-glow {
         position: absolute;
@@ -443,11 +374,11 @@
         top: 0;
         width: 90%;
         height: 90%;
-        background: radial-gradient(closest-side, var(--color-red-glow), transparent);
+        background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
     }
     /* The left-to-right gradient darkens the face under the text, so the name and points stay legible.
        The bottom fade turns the cut edge of the chest crop into the black card color. */
-    /* The stage sits on the black card, so both gradients read --color-card-blk. In the dark theme the card lifts,
+    /* The stage sits on the black card, so both gradients read --color-card-band. In the dark theme the card lifts,
        and the fade must end in the black card color, or a black band shows at the card edge. */
     .stage::after {
         content: "";
@@ -455,8 +386,8 @@
         z-index: 2;
         inset: 0;
         background:
-            linear-gradient(to right, var(--color-card-blk) 0%, color-mix(in srgb, var(--color-card-blk) 85%, transparent) 30%, transparent 62%),
-            linear-gradient(to top, var(--color-card-blk) 0%, transparent 30%);
+            linear-gradient(to right, var(--color-card-band) 0%, color-mix(in srgb, var(--color-card-band) 85%, transparent) 30%, transparent 62%),
+            linear-gradient(to top, var(--color-card-band) 0%, transparent 30%);
     }
 }
 

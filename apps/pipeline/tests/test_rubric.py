@@ -10,26 +10,12 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from conftest import strip_trend_numbers, with_carries, with_free_agents
+from cpc import cpc_client
 
-from cornerstone import rubric, tunables
-from cornerstone.adjusters import (
-    TREND,
-    _byes_left,
-    _return_bet,
-    _wopr,
-    best_lineup,
-    bye_covers,
-    due_back_week,
-    lineup_value,
-    rubric_adjusters,
-)
-from cornerstone.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
-from cornerstone.config import cornerstone_config
-from cornerstone.history import carry_share, points_per_game, red_zone, snap_share, target_share
-from cornerstone.models import ExpectedGame, ExpectedPoints
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.ranks import recent_points_per_game
-from cornerstone.rubric import (
+from analyzer import RULE_PROMPTS, rubric
+from analyzer.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters, team_race
+from analyzer.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
+from analyzer.rubric import (
     Adjuster,
     Breakdown,
     ProposedTrade,
@@ -40,13 +26,19 @@ from cornerstone.rubric import (
     grade,
     verdict,
 )
-from cornerstone.slow_sources import SlowSources, load_slow_sources
-from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
-from cornerstone.trade_facts import trade_fact_sheet
-from cornerstone.writer import load_prompt
+from analyzer.trade_facts import trade_fact_sheet
+from facts.writer import load_prompt
+from league import tunables
+from league.history import carry_share, points_per_game, red_zone, snap_share, target_share
+from league.lineup import best_lineup, bye_covers
+from league.models import ExpectedGame, ExpectedPoints
+from league.provider.sleeper import load_raw
+from league.ranks import due_back_week, lineup_value, recent_points_per_game
+from league.slow_sources import SlowSources, load_slow_sources
+from league.snapshot import build_snapshot, load_returns, load_snapshot
 
-CONFIG = cornerstone_config()
-PROMPTS = CONFIG.prompts_dir
+CLIENT = cpc_client()
+PROMPTS = CLIENT.voice_dir
 
 # Week 6 trade values from the fixture: Collins 46.5 and Croskey-Merritt 24.0 on roster 4,
 # McCaffrey 64.0 on roster 3, Kincaid 31.5 and Wilson 27.5 on roster 12,
@@ -58,7 +50,7 @@ HARRISON, B_ROBINSON, BIJAN = "11628", "8154", "9509"
 
 @pytest.fixture
 def snap(fixture_raw_dir, fixture_history_root, chart_week6):
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
 
 
 def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=None):
@@ -70,7 +62,7 @@ def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=No
     if edit is not None:
         edit(raw)
     return build_snapshot(raw, history_root, chart, slow, trade_week=6,
-                          returns=load_returns(history_root.parent / "returns.json"), now=now, config=CONFIG)
+                          returns=load_returns(history_root.parent / "returns.json"), now=now, client=CLIENT)
 
 
 @pytest.fixture
@@ -85,7 +77,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
+    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
 
 
 def _trade(*sides, asker: int | None = None) -> ProposedTrade:
@@ -407,7 +399,7 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
 
 def _prompt_section(heading: str) -> str:
     """One section of the rubric prompt, from its heading to the next, with the line breaks joined."""
-    text = load_prompt(PROMPTS, "rubric.md")
+    text = load_prompt(PROMPTS, "rubric.md", RULE_PROMPTS)
     section = text.split(f"## {heading}\n", 1)[1].split("\n## ", 1)[0]
     return " ".join(section.split())
 
@@ -418,14 +410,14 @@ FIT_BANNED = re.compile(r"\b(replacements?|tiers?|floors?|gaps?)\b", re.IGNORECA
 
 def test_the_rubric_prompt_states_the_step_rule_and_the_narrowed_handcuff_block():
     fit, handcuff = _prompt_section("Roster fit"), _prompt_section("Handcuff")
-    assert "`line_rb_wr` at RB and WR, and `line_qb_te` at QB and TE" in fit
+    assert "`lines` at each of QB, RB, WR, and TE" in fit
     assert "A hole is a starting slot that holds a player below the line, or holds no player." in fit
     assert "A new hole with no lineup gain is one step down." in fit
     assert "A gain that opens a new hole is no step, because the two cancel." in fit
     assert "A new hole blocks this step too, and the step is none." in fit
     assert "The block covers a lineup loss only. A new hole still steps down." in handcuff
     assert "broad" not in handcuff
-    assert CONFIG.line_rb_wr == 36 and CONFIG.line_qb_te == 24
+    assert CLIENT.settings.lines == {"QB": 24, "RB": 36, "WR": 36, "TE": 24}
 
 
 def test_the_rubric_prompt_states_the_no_cover_hole():
@@ -801,7 +793,7 @@ def test_a_trade_that_drops_the_top_24_starter_count_from_four_to_three_gives_a_
                                         "position rank of 24 or better go from 4 to 3.")
     assert {"24", "4", "3"} <= set(sheet["2.strength"].numbers)
     assert "12.strength" not in sheet
-    assert CONFIG.strength_rank == 24
+    assert CLIENT.settings.strength_rank == 24
 
 
 @pytest.fixture
@@ -809,7 +801,7 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6):
     """The week 6 snapshot with the hand-set free agents of conftest. Bigsby RB51 is the best free agent at RB and
     Darren Waller TE9 the best at TE. No free agent at QB or WR has a position rank."""
     return build_snapshot(with_free_agents(load_raw(fixture_raw_dir)), fixture_history_root, chart_week6,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"), config=CONFIG)
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT)
 
 
 def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_rank(fa_snap):
@@ -895,6 +887,23 @@ def test_a_team_in_the_middle_gets_no_standing_step(snap):
     standing = _adjuster(tenth, "standing")
     assert standing.step == 0
     assert standing.reason == "The team is neither in a playoff spot nor out of the race."
+
+
+def _two_wins_out(snap, roster_id: int, *, median_game: bool):
+    """The snapshot with the roster two wins under the cut, for a client with or without the median game."""
+    standings = [s.model_copy(update={"games_from_cut": -2}) if s.roster_id == roster_id else s
+                 for s in snap.standings]
+    return snap.model_copy(update={"standings": standings, "client": cpc_client(median_game=median_game)})
+
+
+def test_with_the_median_game_two_wins_out_is_one_week_out_so_the_team_is_in_the_middle(snap):
+    # Each week gives two results with the median game, so two wins are one week of results.
+    assert team_race(_two_wins_out(snap, 10, median_game=True), 10) == "middle"
+
+
+def test_with_the_median_game_off_two_wins_out_is_two_weeks_out_so_the_team_is_a_seller(snap):
+    # Each week gives one result with no median game, so two wins are two weeks of results.
+    assert team_race(_two_wins_out(snap, 10, median_game=False), 10) == "seller"
 
 
 def test_a_contender_steps_up_for_a_lineup_gain_now(snap):
@@ -1291,7 +1300,7 @@ def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_valu
     # This case grades the trade on the Tuesday after week 6, so points per game cover weeks 3 to 6.
     # Mahomes at 15.14 takes the QB spot from Lamar Jackson at 19.66, and Brian Robinson starts at flex.
     # The best lineup of roster 7 changes by about -0.60, which is less than the fit threshold.
-    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7, config=CONFIG)
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7, client=CLIENT)
     rosters = dict(snap.rosters)
     rosters[7] = [pid for pid in rosters[7] if pid not in (MAHOMES, B_ROBINSON)] + [LAMAR]
     rosters[6] = [pid for pid in rosters[6] if pid != LAMAR] + [MAHOMES, B_ROBINSON]
@@ -1573,7 +1582,7 @@ def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
     # Sleeper's IR status alone is not the mark, so the player is due back and reads as out with no near return.
     snap = _with_status(snap, SAQUON, "IR")
     assert SAQUON not in snap.out_for_season
-    assert due_back_week(snap, SAQUON) == CONFIG.return_by_week
+    assert due_back_week(snap, SAQUON) == CLIENT.settings.return_by_week
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
 
@@ -1639,7 +1648,7 @@ def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
     # top 12. He is still 24th of the 25 players on the chart.
     snap = _with_values(_with_status(snap, STAR, "Out"), {STAR: 2.0})
     fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
-    assert CONFIG.star_rank_by_position["RB"] == 12
+    assert CLIENT.settings.star_rank_by_position["RB"] == 12
     assert _adjuster(fourth, "upside").step == 0
     assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out with no near return."
 
@@ -1686,7 +1695,7 @@ def test_a_qb_with_a_flat_target_share_and_wopr_gets_no_upside_from_snaps(snap):
 
 
 def test_the_analysis_prompt_names_the_upside():
-    assert "the upside" in " ".join(load_prompt(PROMPTS, "analysis.md").split())
+    assert "the upside" in " ".join(load_prompt(PROMPTS, "analysis.md", RULE_PROMPTS).split())
 
 
 # The LAC depth chart: Omarion Hampton on roster 12 first, then Keaton Mitchell and Kimani Vidal on roster 11.
@@ -1986,7 +1995,7 @@ def test_the_clamp_holds_three_steps_down_to_one(snap):
     # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
     # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
     # Rice at 40 would be a star return bet, which the injury exempts, so no player is a star here.
-    no_stars = snap.model_copy(update={"config": CONFIG.model_copy(update={"star_rank_by_position": {}})})
+    no_stars = snap.model_copy(update={"client": cpc_client(star_rank_by_position={})})
     fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(no_stars, {RICE: 40.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
     assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0]

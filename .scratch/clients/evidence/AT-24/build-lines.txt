@@ -1,0 +1,10 @@
+$ grep -nE "==> site (build|check:export)|check:export passed|exit=" output.txt
+140:==> site build: cpc
+153:✓ Compiled successfully in 960ms
+189:==> site check:export: cpc
+194:check:export passed: 129 files are byte-identical; 3 week pages hold every team name; the client cpc omits waiver, and the export holds none of it; the pages show "Cornerstone Fantasy Football League", the theme button, and no finder.
+195:==> site build: norcal
+208:✓ Compiled successfully in 590ms
+242:==> site check:export: norcal
+247:check:export passed: 35 files are byte-identical; 1 week pages hold every team name; the client norcal omits waiver, and the export holds none of it; the pages show "NorCal Apex 6", no theme button, and the finder.
+359:exit=0

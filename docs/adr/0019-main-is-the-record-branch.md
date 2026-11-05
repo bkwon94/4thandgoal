@@ -18,9 +18,10 @@ The ticket commits stay in the spec branch until it is deleted.
 
 The weekly `publish` must put a new week on `main` with no pull request, because the report ships
 on a fixed day. So `publish` may push to `main`. It makes two commits, and each stages only its own folders. The
-first commit holds the week output of the pipeline, `apps/pipeline/site/` and `apps/pipeline/data/`. The
-second commit holds the published data of the site, `apps/site/public/`. The rule `publish/scope` checks
-the second commit.
+first commit holds the week output of the pipeline: the build folder `clients/<slug>/build/<season>/` and the
+data `clients/<slug>/data/<season>/`. The API image seeds from that data, so it must reach `main`. The second
+commit holds the published data of the client, `clients/<slug>/published/<season>/`. The rule `publish/scope`
+checks both commits against these three paths.
 A check enforces this. The check fails if the staged set holds any other path. The exception is
 narrow on purpose: it covers data and never code.
 

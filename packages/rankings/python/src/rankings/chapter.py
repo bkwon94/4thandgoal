@@ -1,0 +1,449 @@
+"""
+Builds the odds, the odds facts, the power facts, and the facts that explain each rank.
+The rankings chapter reads them. `RANKINGS` gives the chapter, its facts, and the odds to the week through the chapter port.
+"""
+import logging
+from collections.abc import Callable
+from typing import Protocol
+
+from facts.chapters import RANKINGS_CHAPTER
+from facts.tokens import Nums, fact
+from league.client import Client
+from league.models import (
+    Bundle,
+    Chapter,
+    Fact,
+    History,
+    NextMatchup,
+    OddsResult,
+    PowerRow,
+    Standing,
+    Week,
+)
+from league.numbers import round_half_up
+from league.standings_table import head_to_head, season_records, standings_order
+from league.tunables import TREND_WEEKS
+from rankings.odds import playoff_odds
+from rankings.power_rankings import power_rankings
+from rankings.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
+
+logger = logging.getLogger(__name__)
+
+# The first week whose sheet holds the odds facts. Week 6 is the first week the tool builds. Its 6 scores
+# per team are the fewest scores the engine reads for a team level. A week before it gets no odds.
+ODDS_FROM_WEEK = 6
+
+# The form component is a streak, a record, and an all-play rate. The word "results" keeps the writer from
+# reading it as scoring, which the .trend fact covers.
+COMPONENT_WORDS = {
+    "standing": "standing", "form": f"results over the last {TREND_WEEKS} weeks", "schedule_played": "schedule played",
+    "scoring": "scoring",
+}
+
+
+class Context(Protocol):
+    """The part of the week context that the rankings reads. The week passes its own context through the chapter port.
+
+    The rankings package cannot import the week package, so it names only what it reads. Each one is read-only.
+    """
+
+    @property
+    def week(self) -> Week: ...
+
+    @property
+    def history(self) -> History | None: ...
+
+    @property
+    def client(self) -> Client: ...
+
+    @property
+    def projected(self) -> dict[int, dict[int, float]]: ...
+
+    @property
+    def before(self) -> dict[int, int]: ...
+
+    @property
+    def odds(self) -> OddsResult | None: ...
+
+    @property
+    def next(self) -> list[NextMatchup]: ...
+
+    @property
+    def table(self) -> list[Standing]: ...
+
+    def team(self, roster_id: int) -> str: ...
+
+
+def sentence_range(client: Client) -> tuple[int, int]:
+    """The (min, max) sentences of the rankings chapter: one to three for each team of `client`."""
+    return client.settings.team_count, 3 * client.settings.team_count
+
+
+def week_odds(
+    week: Week, history: History | None,
+    inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
+    projected: dict[int, dict[int, float]] | None,
+    client: Client,
+) -> OddsResult | None:
+    """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
+
+    The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
+    """
+    if inputs is None or history is None:
+        return None
+    scores, remaining = inputs
+    return playoff_odds(
+        scores, season_records(history, week.week, median_game=client.settings.median_game), remaining, season=week.season, week=week.week,
+        client=client, projected=projected,
+    )
+
+
+def odds_inputs(
+    week: Week, history: History | None, client: Client,
+) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
+    """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
+    if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
+        return None
+    # A roster with no score in a week, such as a bye, adds no score for that week.
+    scores = {
+        rid: [history.weeks[n].scores[rid] for n in range(1, week.week + 1) if rid in history.weeks[n].scores]
+        for rid in week.teams
+    }
+    # The engine reads the first remaining week as week N+1. After the last regular week, the next pairs are
+    # playoff games, and the engine stops at the seeds, so they stay out.
+    remaining = {week.week + 1: week.next_matchups} if week.week < client.settings.last_regular_week else {}
+    remaining.update(week.schedule)
+    # A cached week can lack the schedule file. The engine would then end the season early and could
+    # call a team clinched or out by mistake, so the sheet gives no odds.
+    if set(remaining) != set(range(week.week + 1, client.settings.last_regular_week + 1)):
+        logger.warning("week %d has no full remaining schedule: no odds facts", week.week)
+        return None
+    return scores, remaining
+
+
+def week_power(c: Context) -> list[PowerRow]:
+    """The power rankings of this week. A gap in the history would shift every rank, so an incomplete history gives
+    no power rankings."""
+    h = c.history
+    if h is None or not h.complete():
+        return []
+    return power_rankings(h, c.week.week, median_game=c.client.settings.median_game)[c.week.week]
+
+
+def facts(context: Context) -> list[Fact]:
+    """The power ranks, the odds, the swing of each Must Watch game, and the reasons for the ranks and the odds.
+
+    The rankings chapter reads them. The median chapter reads the odds, and the next week chapter reads the swings.
+    """
+    power = week_power(context)
+    inputs = odds_inputs(context.week, context.history, context.client)
+    scores, remaining = inputs if inputs is not None else ({}, {})
+    return (
+        power_facts(power, context.team)
+        + rank_why_facts(context.history, power, context.before, context.team,
+                         median_game=context.client.settings.median_game)
+        + odds_facts(context.odds, context.team)
+        + swing_facts(context.odds, [(nx.a, nx.b) for nx in context.next if nx.must_watch], context.team)
+        + odds_why_facts(context.odds, scores, context.projected, remaining, context.team)
+    )
+
+
+def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact]:
+    """One fact per team: the playoff odds, the bye odds, and the most likely seed, or the clinch or the out.
+
+    The numbers are the engine's as given. The sheet computes none of them.
+    """
+    if odds is None:
+        return []
+    out = []
+    for rid, t in odds.teams.items():
+        n = Nums()
+        name = team(rid)
+        if t.status == "in":
+            text = f"{name} has clinched a playoff spot."
+        elif t.status == "out":
+            text = f"{name} is out of the playoff race."
+        else:
+            text = f"{name} makes the playoffs in about {n(t.playoff)}% of runs, with a bye in {n(t.bye)}%"
+            # The engine gives no seed below SEED_SHOW_AT, so the clause drops there.
+            text += f", most often as the {n.ord(t.seed)} seed." if t.seed is not None else "."
+        out.append(fact(f"ODDS.{rid}", text, n, [name], []))
+    return out
+
+
+def odds_why_facts(
+    odds: OddsResult | None,
+    scores: dict[int, list[float]],
+    projected: dict[int, dict[int, float]],
+    remaining: dict[int, list[tuple[int, int]]],
+    team: Callable[[int], str],
+) -> list[Fact]:
+    """One fact per team with projected totals: the projected pace, the season pace, and the remaining schedule.
+
+    The inputs are the engine's own, so the why names what drives the odds. It exists only beside the odds facts.
+    """
+    if odds is None:
+        return []
+    # The schedule rank uses the exact paces. A rounded pace would tie teams that differ by a fraction.
+    pace = {rid: sum(s) / len(s) for rid, s in scores.items() if s}
+    faced: dict[int, list[float]] = {rid: [] for rid in scores}
+    for pairs in remaining.values():
+        for a, b in pairs:
+            faced[a].append(pace[b])
+            faced[b].append(pace[a])
+    # Rank 1 is the easiest: the lowest mean pace of the opponents left. A tie goes to the lower roster ID.
+    order = sorted((rid for rid in faced if faced[rid]), key=lambda rid: (sum(faced[rid]) / len(faced[rid]), rid))
+    rank = {rid: i for i, rid in enumerate(order, 1)}
+    out = []
+    for rid in scores:
+        ahead = list(projected.get(rid, {}).values())
+        # A team with no projected totals has no projected pace, so the why has nothing to compare.
+        if not ahead or rid not in pace or rid not in rank:
+            continue
+        n = Nums()
+        name = team(rid)
+        season = int(round_half_up(pace[rid]))
+        # A pace read aloud as "eighty" or "eleven" takes "an", so the sentence reads right at any score.
+        article = "an" if 80 <= season < 90 or season in (8, 11, 18) else "a"
+        # The two ends read as words, so "1st easiest" and "12th easiest" never appear.
+        if rank[rid] == 1:
+            schedule = "the easiest"
+        elif rank[rid] == len(order):
+            schedule = "the hardest"
+        else:
+            schedule = f"the {n.ord(rank[rid])} easiest"
+        text = (
+            f"{name} projects {n(int(round_half_up(sum(ahead) / len(ahead))))} a week from here against "
+            f"{article} {n(season)} pace, with {schedule} remaining schedule."
+        )
+        out.append(fact(f"ODDS.{rid}.why", text, n, [name], []))
+    return out
+
+
+def swing_facts(odds: OddsResult | None, pairs: list[tuple[int, int]], team: Callable[[int], str]) -> list[Fact]:
+    """One fact per given next-week pair: each side's odds after a win and after a loss, in the pair order."""
+    if odds is None:
+        return []
+    swings = {(s.a, s.b): s for s in odds.swings}
+
+    def side(rid: int, win: int, loss: int, n: Nums) -> str:
+        t = odds.teams[rid]
+        # A clinched or out side cannot move, so its sentence holds no digit.
+        if t.status != "open":
+            return f"{team(rid)} is {t.status} either way."
+        # A gap under SWING_FLAT is noise, so the side reads as flat.
+        if abs(win - loss) < SWING_FLAT:
+            return f"The playoff odds of {team(rid)} stay near {n(t.playoff)}% either way."
+        # No possessive: a team name that ends in s, such as Bo Girds, breaks the "'s" form.
+        return f"A win puts the playoff odds of {team(rid)} at {n(win)}%, a loss at {n(loss)}%."
+
+    out = []
+    for a, b in pairs:
+        s = swings[(a, b)]
+        n = Nums()
+        text = f"{side(a, s.a_win, s.a_loss, n)} {side(b, s.b_win, s.b_loss, n)}"
+        out.append(fact(f"SW.{a}v{b}", text, n, [team(a), team(b)], []))
+    return out
+
+
+def power_facts(rows: list[PowerRow], team: Callable[[int], str]) -> list[Fact]:
+    """One fact per team: the power rank, the movement, the four component ranks as ordinals, and the form records.
+
+    It takes the rows and a name lookup, not a Context, so a saved week can get the facts from its history.
+    """
+    out = []
+    for row in rows:
+        n = Nums()
+        name = team(row.roster_id)
+        rank = n.ord(row.power_rank)
+        if row.movement is None:
+            move = "the first week of the power rankings"
+        elif row.movement == 0:
+            move = "no move from last week"
+        else:
+            places = "place" if abs(row.movement) == 1 else "places"
+            side = "up" if row.movement > 0 else "down"
+            move = f"{side} {n(abs(row.movement))} {places} from last week"
+        # A component word may hold a number, such as the 3 of "the last 3 weeks", so Nums records it too.
+        components = ", ".join(
+            f"{n.ord(row.ranks[key])} in {n.text(word)}" for key, word in COMPONENT_WORDS.items()
+        )
+        # The form component weighs both games of a week, so the fact names both records for the writer to quote.
+        # A league with no median game has the head-to-head record only.
+        # Nums records each number in text order, so the records come before the count of weeks.
+        head_to_head = f"{n.record(*row.head_to_head)} head-to-head"
+        median = f" and {n.record(*row.median)} at the median" if row.median is not None else ""
+        window = "the last week" if row.form_weeks == 1 else f"the last {n(row.form_weeks)} weeks"
+        records = f"{head_to_head}{median} over {window}"
+        text = f"{name} is {rank} in the power rankings, {move}: {components}; {records}."
+        out.append(fact(f"PR.{row.roster_id}", text, n, [name], []))
+    return out
+
+
+def rank_why_facts(
+    history: History | None, rows: list[PowerRow], before: dict[int, int], team: Callable[[int], str], *,
+    median_game: bool = True,
+) -> list[Fact]:
+    """One fact per team on why its power rank moved or held, from the second week of the rankings on.
+
+    A mover names this week's head-to-head game and the component whose rank changed most since last week.
+    A held team names its best and its worst component. Week 1 of the rankings has no last week, so no fact.
+    `before` is the standing rank of each roster before this week. Like power_facts, it takes no Context,
+    so a saved week can get the facts from its history.
+    """
+    if history is None or not rows or history.week < 2:
+        return []
+    w = history.week
+    played = history.weeks[w]
+    # Context keeps only week N of the rankings, so week N-1 comes from a second call on the same history.
+    last = {row.roster_id: row for row in power_rankings(history, w - 1, median_game=median_game)[w - 1]}
+    out = []
+    for row in rows:
+        n = Nums()
+        name = team(row.roster_id)
+        teams = [name]
+        if not row.movement:
+            # max and min keep the first of equal ranks, so a tie goes to the first in component order.
+            best = min(COMPONENT_WORDS, key=lambda k: row.ranks[k])
+            worst = max(COMPONENT_WORDS, key=lambda k: row.ranks[k])
+            text = (
+                f"{name} held {n.ord(row.power_rank)}: {n.text(COMPONENT_WORDS[best])} sits "
+                f"{n.ord(row.ranks[best])}, {n.text(COMPONENT_WORDS[worst])} {n.ord(row.ranks[worst])}."
+            )
+        else:
+            side = "up" if row.movement > 0 else "down"
+            places = "place" if abs(row.movement) == 1 else "places"
+            text = f"{name} moved {side} {n(abs(row.movement))} {places}"
+            game = head_to_head(played, row.roster_id)
+            # A bye week has no head-to-head game, so the text names no game.
+            if game is not None:
+                opponent_id, result = game
+                opponent = team(opponent_id)
+                teams.append(opponent)
+                margin = round(abs(played.scores[row.roster_id] - played.scores[opponent_id]))
+                # A margin under half a point rounds to 0, and "a 0-point win" reads as a tie.
+                size = f"{n(margin)}-point" if margin else "narrow"
+                if result == 0:
+                    game_text = f"a tie with {opponent}"
+                elif result > 0:
+                    game_text = f"a {size} win over {opponent}"
+                else:
+                    game_text = f"a {size} loss to {opponent}"
+                text += f" after {game_text}, the {n.ord(before[opponent_id])}-place team"
+            last_ranks = last[row.roster_id].ranks
+            key = max(COMPONENT_WORDS, key=lambda k: abs(last_ranks[k] - row.ranks[k]))
+            # The power score can move while every component rank holds. The text then names no component.
+            if last_ranks[key] != row.ranks[key]:
+                verb = "rose" if row.ranks[key] < last_ranks[key] else "fell"
+                text += (
+                    f": {n.text(COMPONENT_WORDS[key])} {verb} from {n.ord(last_ranks[key])} "
+                    f"to {n.ord(row.ranks[key])}"
+                )
+            text += "."
+        out.append(fact(f"PR.{row.roster_id}.why", text, n, teams, []))
+    return out
+
+
+def standing_ranks(table: list[Standing]) -> dict[int, int]:
+    """The standing rank of each roster, by roster ID. The sheet and a saved week both read it from here."""
+    return {s.roster_id: s.rank for s in table}
+
+
+def required_why_ids(
+    facts: dict[str, Fact], rows: list[PowerRow], table: list[Standing], odds: OddsResult | None,
+) -> list[str]:
+    """The why facts the rankings writer must cite, in power rank order.
+
+    A team that moved `WHY_MOVE_AT` or more places either way needs its rank why. A team whose record and odds
+    disagree needs its odds why: under .500 with odds at or above `WHY_ODDS_AT`, or over .500 with odds under it.
+    A team at .500 is neither under nor over. Only IDs in the facts go in.
+    """
+    record = {s.roster_id: (s.wins, s.losses) for s in table}
+    ids = []
+    for row in rows:
+        rid = row.roster_id
+        if row.movement is not None and abs(row.movement) >= WHY_MOVE_AT:
+            ids.append(f"PR.{rid}.why")
+        t = odds.teams.get(rid) if odds is not None else None
+        wins, losses = record[rid]
+        if t is not None and (
+            (wins < losses and t.playoff >= WHY_ODDS_AT) or (wins > losses and t.playoff < WHY_ODDS_AT)
+        ):
+            ids.append(f"ODDS.{rid}.why")
+    return [fid for fid in ids if fid in facts]
+
+
+def rankings_chapter(
+    facts: dict[str, Fact], rows: list[PowerRow], team: Callable[[int], str], table: list[Standing],
+    odds: OddsResult | None, *, client: Client,
+) -> Chapter:
+    """The rankings chapter: every team in power rank order, each with its PR, standing, streak, and trend facts.
+
+    The history cap does not apply here: the spec gives each team its own streak and trend facts.
+    """
+    standing_rank = standing_ranks(table)
+    ids = [
+        fid
+        for row in rows
+        for fid in (f"PR.{row.roster_id}", f"PR.{row.roster_id}.why", f"S.{standing_rank[row.roster_id]}",
+                    f"H.{row.roster_id}.streak", f"H.{row.roster_id}.trend", f"ODDS.{row.roster_id}",
+                    f"ODDS.{row.roster_id}.why")
+    ]
+    low, high = sentence_range(client)
+    return Chapter(
+        key=RANKINGS_CHAPTER,
+        title="Power rankings",
+        fact_ids=[fid for fid in ids if fid in facts],
+        scope_teams=[team(row.roster_id) for row in rows],
+        # No fact in the chapter names a player, so a player name in the blurb is an unsupported claim.
+        scope_players=[],
+        min_sentences=low,
+        max_sentences=high,
+        required=required_why_ids(facts, rows, table, odds),
+    )
+
+
+def saved_chapter(bundle: Bundle, history: History, client: Client) -> Chapter:
+    """The rankings chapter of a saved week, built from the history and the current rules. It replaces the chapter and
+    the PR facts in `bundle`.
+
+    The PR facts and the rank why facts derive from the history and the rules, never from the saved facts.
+    A rule change must reach the blurb, so the rows of rankings.json and the facts agree on every rank.
+    Week 1 of the rankings has no rank why. The odds why comes only from the saved facts, never from the raw week.
+    """
+    median_game = client.settings.median_game
+    rows = power_rankings(history, history.week, median_game=median_game)[history.week]
+
+    def team(roster_id: int) -> str:
+        return bundle.data.teams[roster_id].name
+
+    # A saved week has no Week for ranks_before. With a complete history, ranks_before ranks the records
+    # through week N-1 in standings order, the same as here.
+    before = (
+        {rid: i + 1 for i, rid in enumerate(standings_order(season_records(history, history.week - 1, median_game=median_game)))}
+        if history.week > 1 else {}
+    )
+    bundle.sheet.facts.update({f.id: f for f in power_facts(rows, team)})
+    bundle.sheet.facts.update({f.id: f for f in rank_why_facts(history, rows, before, team, median_game=median_game)})
+    built = rankings_chapter(bundle.sheet.facts, rows, team, bundle.data.table, bundle.odds, client=client)
+    bundle.sheet.chapters = [c for c in bundle.sheet.chapters if c.key != RANKINGS_CHAPTER] + [built]
+    return built
+
+
+class RankingsChapter:
+    """The rankings chapter of the week, through the chapter port of week.sheet.port. It gives the odds too."""
+
+    def odds(self, c: Context) -> OddsResult | None:
+        """The engine's odds after this week. The engine runs once per build here."""
+        return week_odds(c.week, c.history, odds_inputs(c.week, c.history, c.client), c.projected, c.client)
+
+    def facts(self, c: Context) -> list[Fact]:
+        return facts(c)
+
+    def chapter(self, c: Context, facts: dict[str, Fact]) -> Chapter | None:
+        """The rankings chapter, or None with no power rankings, such as a week with an incomplete history."""
+        power = week_power(c)
+        return rankings_chapter(facts, power, c.team, c.table, c.odds, client=c.client) if power else None
+
+
+RANKINGS = RankingsChapter()

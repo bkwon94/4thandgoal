@@ -1,22 +1,19 @@
 /**
- * One builder per href or src. Each joins the base path to the route.
+ * One builder per href or src. Each client serves at the root of its own host, so each route starts at /.
  * The app layer calls them, so a link change starts in this file.
  */
-import { basePath } from "./config";
+import { managerHrefFrom, managerHrefOrNull } from "@cpc/league/hrefs";
 
-export const homeHref = () => `${basePath}/`;
-export const rankingsHref = () => `${basePath}/rankings/`;
-export const analyzeHref = () => `${basePath}/analyze/`;
+export const homeHref = () => "/";
+export const rankingsHref = () => "/rankings/";
+export const analyzeHref = () => "/analyze/";
 /* The week is the folder name, such as week-06, as the published folders name it. */
-export const weekHref = (season: string, week: string) => `${basePath}/${season}/${week}/`;
+export const weekHref = (season: string, week: string) => `/${season}/${week}/`;
 export const waiverHref = (season: string, week: string) => `${weekHref(season, week)}waiver/`;
-export const managersHref = (season: string) => `${basePath}/${season}/managers/`;
-/* A component holds only the managers index href, so it calls this for a manager page and keeps no path format of its own. */
-export const managerHrefFrom = (managersHref: string, rosterId: number) => `${managersHref}${rosterId}/`;
+export const managersHref = (season: string) => `/${season}/managers/`;
 export const managerHref = (season: string, rosterId: number) => managerHrefFrom(managersHref(season), rosterId);
-/* The manager page href of one team, or null when the season has no managers file, so a part renders the name as plain text.
-   managerHref is taken by the season form above, so this one takes the managers index href that a component holds. */
-export const managerHrefOrNull = (managersHref: string | null, rosterId: number) =>
-  managersHref === null ? null : managerHrefFrom(managersHref, rosterId);
-/* The logo is a plain img on every page, so its src takes the base path like a link. */
-export const logoSrc = () => `${basePath}/images/logo.png`;
+/* The builders from a managers index href need no other value, so the league package holds them for the package parts.
+   The app parts take them from here, so a link change still starts in this file. */
+export { managerHrefFrom, managerHrefOrNull };
+/* The logo is a plain img on every page, and its src is a path from the root. A client with no logo gives null. */
+export const logoSrc = (logo: string | null) => logo;

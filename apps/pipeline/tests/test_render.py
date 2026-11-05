@@ -5,29 +5,27 @@ They build the JSON from the recorded fixture and check the values that the site
 import json
 
 import pytest
+from cpc import cpc_client
 from pydantic import TypeAdapter
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.models import Blurb, OddsResult, Sentence, TeamOdds
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.render import (
-    _saved_avatars,
-    _saved_headshots,
-    build_context,
-    render_managers,
-    render_rankings,
     render_week,
 )
-from cornerstone.season_inputs import SeasonInputs
 from cornerstone.sheet import build_bundle
+from league.history import load_history
+from league.models import Blurb, OddsResult, Sentence, TeamOdds
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.season_inputs import SeasonInputs
+from managers.render import render_managers
+from rankings.published import render_rankings
+from week.page import _saved_avatars, _saved_headshots, build_context
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
 def _bundle(d):
-    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], config=CONFIG)
+    return build_bundle(parse_week(load_raw(d)), news=lambda pid: [], client=CLIENT)
 
 
 def _blurbs(bundle):
@@ -222,6 +220,16 @@ def test_a_position_with_no_starters_keeps_its_board(fixture_raw_dir, tmp_path):
     assert boards[-1] == {"position": "DEF", "rows": []}
 
 
+def test_a_league_with_no_def_slot_has_no_def_board_and_no_def_leader(fixture_raw_dir):
+    # The roster slots set the leader positions. The CPC week 6 lines run in a league with no DEF slot here.
+    slots = tuple(slot for slot in CLIENT.settings.roster_slots if slot != "DEF")
+    client = CLIENT.model_copy(update={"settings": CLIENT.settings.model_copy(update={"roster_slots": slots})})
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], client=client)
+    boards = build_context(b, _blurbs(b), {}, {})["leaders"]
+    assert [x["position"] for x in boards] == ["QB", "RB", "WR", "TE"]
+    assert all(leader.position != "DEF" for leader in b.data.leaders)
+
+
 def test_position_leaders_hold_five_boards_and_fifteen_rows(fixture_raw_dir, tmp_path):
     b = _bundle(fixture_raw_dir)
     data = _page(render_week(b, _blurbs(b), tmp_path, _fake_png))
@@ -323,7 +331,7 @@ def test_two_side_card_has_two_sides_and_a_player_for_each_chip(tbundle, tmp_pat
 
 
 def test_three_side_card_has_three_sides_and_a_pick_row(tbundle, tmp_path):
-    from cornerstone.models import DraftPick, Trade
+    from league.models import DraftPick, Trade
     first = tbundle.data.trades[0]
     a, b = first.roster_ids
     c = next(rid for rid in tbundle.data.teams if rid not in (a, b))

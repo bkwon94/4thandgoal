@@ -1,0 +1,6 @@
+375 before press: html class="" stored=null button=1
+375 after press: html class="dark" stored="dark"
+768 before press: html class="" stored=null button=1
+768 after press: html class="dark" stored="dark"
+1280 before press: html class="" stored=null button=1
+1280 after press: html class="dark" stored="dark"

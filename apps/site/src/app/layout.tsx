@@ -1,13 +1,13 @@
 /**
- * Root layout for the app. It sets the viewport meta and loads globals.css.
+ * Root layout for the app. It sets the viewport meta, loads globals.css, and sets the first paint of the brand.
  * Every page of the site uses it.
  */
 import "./globals.css";
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
-import { usageCode } from "@/lib/config";
-import { BOOT_SCRIPT } from "@/lib/theme";
-import { usageScriptUrl } from "@/lib/usage";
+import { brandSets, usageCode } from "@/lib/config";
+import { paintOf } from "@cpc/design/lib/theme";
+import { UsageScript } from "@cpc/design/shell/usage-script";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -15,16 +15,16 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const usageUrl = usageScriptUrl(usageCode);
+  // A two-set brand paints light and runs the boot script. A one-set brand paints its one set and runs none.
+  const paint = paintOf(brandSets);
   return (
     // suppressHydrationWarning: the boot script may add the dark class before React hydrates.
     // The server markup has no class, so the two differ on purpose.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={paint.rootClass} suppressHydrationWarning>
       <head>
         {/* Inline and first in the head, so the stored theme applies before the body paints. */}
-        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
-        {/* The count script skips localhost on its own, so dev builds send nothing. */}
-        {usageUrl && <script async data-goatcounter={usageUrl} src="https://gc.zgo.at/count.js" />}
+        {paint.bootScript !== null && <script dangerouslySetInnerHTML={{ __html: paint.bootScript }} />}
+        <UsageScript code={usageCode} />
       </head>
       <body>
         {/* Every browser honors noscript. The (scripting: none) query in globals.css does not reach older browsers,

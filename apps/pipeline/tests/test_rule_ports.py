@@ -13,12 +13,13 @@ RULE = "no test patches a port, such as the Claude call or the provider"
 FIX = "pass a FakeWriter or a FixtureProvider from tests/fakes.py, or an httpx.MockTransport, in place of the patch."
 
 # The modules of the two ports. A patch of a name in one of them, or of a name imported from one, patches a port.
-# cornerstone.provider covers cornerstone.provider.sleeper.
-PORT_MODULES = ("cornerstone.writer", "cornerstone.claude_port", "cornerstone.provider")
+# league.provider covers league.provider.sleeper.
+PORT_MODULES = ("facts.writer", "league.claude_port", "league.provider")
 # The Claude calls, the state fetch, and the two port instances, under any module, such as cli.WRITER.
 # The Provider methods join them from the protocol.
 CALL_NAMES = {"claude_call", "analyzer_call", "parse_call", "_get_client", "fetch_state", "WRITER", "SLEEPER"}
-PROVIDER_BASE = ROOT / "src" / "cornerstone" / "provider" / "base.py"
+# The provider port lives in the league package, the shared kernel.
+PROVIDER_BASE = ROOT.parent.parent / "packages" / "league" / "python" / "src" / "league" / "provider" / "base.py"
 
 
 def _provider_methods(base: Path = PROVIDER_BASE) -> set[str]:
@@ -34,7 +35,7 @@ def _is_port_module(dotted: str) -> bool:
 
 
 def _imported_names(tree: ast.Module) -> dict[str, str]:
-    """The dotted source of each name that the file imports at any depth, such as cornerstone.provider.sleeper."""
+    """The dotted source of each name that the file imports at any depth, such as league.provider.sleeper."""
     names: dict[str, str] = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -130,12 +131,12 @@ def test_the_rule_finds_a_name_from_a_port_module_a_string_target_and_a_port_ins
     tests.mkdir()
     (tests / "test_fetch.py").write_text(
         '"""A fetch test."""\nfrom cornerstone import cli, pipeline\n\n\ndef test_fetch(monkeypatch):\n'
-        '    from cornerstone.provider import sleeper\n\n'
+        '    from league.provider import sleeper\n\n'
         '    monkeypatch.setattr(sleeper, "_get", f)\n'
-        '    monkeypatch.setattr("cornerstone.writer.MODEL", "x")\n'
+        '    monkeypatch.setattr("facts.writer.MODEL", "x")\n'
         '    monkeypatch.setattr(cli, "WRITER", w)\n'
         '    monkeypatch.setattr(cli, "SLEEPER", p)\n'
         '    monkeypatch.setattr(pipeline, "fetch_nflverse", f)\n')
     assert [(offense.line, offense.what) for offense in _patch_offenses(tmp_path)] == [
-        (8, "The test patches sleeper._get."), (9, "The test patches cornerstone.writer.MODEL."),
+        (8, "The test patches sleeper._get."), (9, "The test patches facts.writer.MODEL."),
         (10, "The test patches cli.WRITER."), (11, "The test patches cli.SLEEPER.")]

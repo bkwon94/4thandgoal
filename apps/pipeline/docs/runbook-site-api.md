@@ -1,12 +1,13 @@
 # Runbook: the site API on Fly.io
 
-This runbook tells you how to deploy, check, and run the Cornerstone API at `api.cpcfantasy.com`.
+This runbook tells you how to deploy, check, and run the Cornerstone API at `api.4thandgoal.app`.
+The old host `api.cpcfantasy.com` keeps its cert, so an old page that calls it still works.
 
 ## What runs where
 
 The API is one FastAPI app in one Docker image on Fly.io, app `cpcfantasy-api`, region `ewr`. One machine
 always runs, because `fly.toml` sets `min_machines_running = 1`. So no request waits for a cold start. A GitHub
-Actions cron calls `POST /refresh` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
+Actions cron calls `POST /clients/cpc/refresh` on `api.4thandgoal.app` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
 managers wake. The cron never deploys. The job `deploy` deploys. See "The deploy job".
 
 The cost of the machine: one `shared-cpu-1x` machine with 1 GB costs $6.70 per month at the Fly list price for
@@ -30,19 +31,26 @@ The data layout:
 
 | Path in the machine | What it holds |
 | --- | --- |
-| `/app` | The repo root, `CORNERSTONE_REPO`. It holds `src/` and the link `data`. |
-| `/app/data` | A link to `/data`, so every path helper lands on the volume with no change to the code. |
+| `/app` | The repo root, `CORNERSTONE_REPO`. It holds `src/`, `clients/cpc/`, and the link `data`. |
+| `/app/data` | A link to `/data`, so the NFL data and the result cache land on the volume. |
+| `/app/clients/cpc/data` | A link to `/data/clients/cpc/data`, so the CPC data lands on the volume. |
 | `/data` | The volume `cornerstone_data`, 1 GB. It survives a restart and a deploy. |
-| `/data/2026/history/`, `/data/2026/week-NN/raw/` | The tracked data. The live path also writes week N-1 here. |
-| `/data/2026/returns.json` | The hand-kept returns file. |
-| `/data/cache/` | The players, the nflverse files, the charts, and the result cache in `results/`. |
-| `/app/seed/data` | The tracked `data/` from the image. It is the seed of the volume. |
+| `/data/clients/cpc/data/2026/` | The tracked CPC data: `league.json`, `history/`, and `week-NN/raw/`. The live path also writes week N-1 here. |
+| `/data/nfl/2026/returns.json` | The hand-kept Returns file. |
+| `/data/nfl/cache/` | The players, the nflverse files, and the charts. |
+| `/data/cache/results/<slug>/` | The result cache and the grade counts of each client. |
+| `/app/seed/data` | The tracked `clients/cpc/data/` and `data/nfl/` from the image. It is the seed of the volume. |
 
-At start, `deploy/entrypoint.sh` does two things:
+At start, `apps/api/deploy/entrypoint.sh` does three things:
 
-1. On the first boot, it copies `/app/seed/data` onto the volume. Then it writes the marker `/data/.seeded`.
-   A new Fly volume holds `lost+found`, so the script checks the marker and not an empty volume.
-2. On every boot, it copies each `returns.json` from the image onto the volume. The service never writes that
+1. On the first boot, it copies `/app/seed/data` onto the volume. Then it writes the markers `/data/.seeded` and
+   `/data/.layout-clients`. A new Fly volume holds `lost+found`, so the script checks the marker and not an empty
+   volume.
+2. On a volume with no `/data/.layout-clients`, it moves the old layout one time. Each `/data/<season>/` moves to
+   `/data/clients/cpc/data/<season>/`, and its `returns.json` moves to `/data/nfl/<season>/`. The players, the
+   nflverse files, and the charts move from `/data/cache/` to `/data/nfl/cache/`. The log line is
+   `entrypoint: the volume moves to the client layout`.
+3. On every boot, it copies each `returns.json` from the image onto the volume. The service never writes that
    file, so a commit and a deploy are the only way it changes.
 
 Other tracked files arrive only on the first boot. The live path fetches a missing history week from Sleeper,
@@ -52,19 +60,20 @@ The settings:
 
 - `fly.toml` holds the settings that are not secret: `CORNERSTONE_REPO`, `CORNERSTONE_RESULT_CACHE_DIR`, and
   `CORNERSTONE_ALLOWED_ORIGINS`.
-- Fly secrets hold `ANTHROPIC_API_KEY` and `CORNERSTONE_PASSPHRASE`. No secret is in the repo.
+- Fly secrets hold `ANTHROPIC_API_KEY` and one passphrase per client, `CORNERSTONE_PASSPHRASE_<SLUG>`, such as
+  `CORNERSTONE_PASSPHRASE_CPC`. No passphrase is shared. The API stops at start if a client has none. No secret is in the repo.
 - The Sleeper league id is the constant `LEAGUE_ID` in `src/cornerstone/pipeline.py`. It is public, so it is
   not a secret.
 
-The rate limit counts each client address. On Fly every request comes through the proxy, so the app reads the
+The rate limit counts each request address. On Fly every request comes through the proxy, so the app reads the
 address from the `Fly-Client-IP` header.
 
-The analyze route also has a grade limit. Each client address gets 5 grades per minute and 20 per day.
-The day is a calendar day in Eastern time. A cached repeat of the same trade makes no Claude call, so it does not
-count. The daily counts live in `/data/cache/results/grade-counts.json` on the volume, so a deploy keeps them.
+The analyze route also has a grade limit. Each address gets 5 grades per minute and 20 per day in each client.
+The day is a calendar day in the timezone of the client. A cached repeat of the same trade makes no Claude call, so it does not
+count. The daily counts live in `/data/cache/results/<slug>/grade-counts.json` on the volume, so a deploy keeps them.
 The file holds only today. To clear the counts, delete the file. Past a limit the route answers `429` with a
-`Retry-After` to the end of the minute or to midnight Eastern. The values are `GRADES_PER_MINUTE` and
-`GRADES_PER_DAY` in `src/cornerstone/tunables.py`.
+`Retry-After` to the end of the minute or to midnight in the client timezone. The values are `GRADES_PER_MINUTE` and
+`GRADES_PER_DAY` in `packages/analyzer/python/src/analyzer/tunables.py`.
 
 The find route `POST /find` lists the top three trades between two rosters that are good for both. The body is
 `{"season": 2026, "asker": <roster id>, "partner": <roster id>}`, and the route needs the passphrase. One finder
@@ -77,15 +86,15 @@ grade. A document whose Claude call fell back is not stored, so the next request
 
 ## The deploy job
 
-- The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/pipeline` and passes the check.
+- The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/api`, `apps/pipeline`, or the root uv files, and passes the check.
 - To read the job, open the Actions tab, then the "Pipeline check" run of the push. The `deploy` log ends with the
   image and the machine state.
-- Use `make deploy` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
+- Use `make deploy` in `apps/api` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
   `FLY_API_TOKEN` is absent.
 
 ## First deploy
 
-Run each command from `apps/pipeline`. Each step takes about one minute, except the deploy.
+Run each command from `apps/api`. Each step takes about one minute, except the deploy.
 
 1. Check the login. Expect `bkwon94@gmail.com`. If it differs, run `fly auth login`.
 
@@ -116,13 +125,13 @@ Run each command from `apps/pipeline`. Each step takes about one minute, except 
    `--stage` stores the secrets with no restart, and the next deploy gives them to the machine.
 
    ```sh
-    fly secrets set --app cpcfantasy-api --stage ANTHROPIC_API_KEY=<the key> CORNERSTONE_PASSPHRASE=<the passphrase>
+    fly secrets set --app cpcfantasy-api --stage ANTHROPIC_API_KEY=<the key> CORNERSTONE_PASSPHRASE_CPC=<the passphrase>
    ```
 
 5. Deploy. The first build takes about 3 minutes.
 
    ```sh
-   fly deploy
+   make deploy
    ```
 
 6. Add the certificate for the public hostname.
@@ -171,17 +180,47 @@ Run each command from `apps/pipeline`. Each step takes about one minute, except 
 
 11. Set up the GitHub secret for the cron. See the last section.
 
+## The second hostname
+
+The API serves at `api.4thandgoal.app` and at `api.cpcfantasy.com`. The site of each client calls
+`api.4thandgoal.app`. Brian does these steps, the manual step 5 of `.scratch/clients/PRD.md`.
+
+1. Add the certificate.
+
+   ```sh
+   fly certs add api.4thandgoal.app --app cpcfantasy-api
+   ```
+
+2. Add the DNS record that the command gives, on the Cloudflare zone `4thandgoal.app`. That is a `CNAME` from `api` to
+   `cpcfantasy-api.fly.dev`, set to "DNS only". A proxied record hides the Fly challenge, and the cert stays pending.
+3. Wait until the certificate shows as issued.
+
+   ```sh
+   fly certs show api.4thandgoal.app --app cpcfantasy-api
+   ```
+
+4. Check both hosts. Each answers `{"status":"ok"}`.
+
+   ```sh
+   curl -s https://api.4thandgoal.app/health
+   curl -s https://api.cpcfantasy.com/health
+   ```
+
+`CORNERSTONE_ALLOWED_ORIGINS` in `fly.toml` lists `https://cpc.4thandgoal.app` and `https://cpcfantasy.com`. Add the
+host of each new client there, or the browser blocks its calls.
+
 ## Rotate the passphrase
 
-Change the passphrase in two places, or the cron fails with `401`.
+Each client has its own passphrase. The old paths with no client check the passphrase of `cpc`.
+Change the passphrase of `cpc` in two places, or the cron fails with `401`.
 
 1. Set the new Fly secret. Fly restarts the machine with the new value.
 
    ```sh
-    fly secrets set --app cpcfantasy-api CORNERSTONE_PASSPHRASE=<the new passphrase>
+    fly secrets set --app cpcfantasy-api CORNERSTONE_PASSPHRASE_CPC=<the new passphrase>
    ```
 
-2. Set the GitHub secret `CORNERSTONE_PASSPHRASE` to the same value. Use the steps in the last section.
+2. Set the GitHub secret `CORNERSTONE_PASSPHRASE_CPC` to the same value. Use the steps in the last section.
 3. Tell the managers the new passphrase. The site asks for it again after a `401`.
 
 ## Force a refresh
@@ -193,7 +232,7 @@ Use one of the two ways:
 
   ```sh
   curl --fail -s -X POST -H 'X-League-Passphrase: <the passphrase>' \
-    'https://api.cpcfantasy.com/refresh?season=2026'
+    'https://api.4thandgoal.app/clients/cpc/refresh?season=2026'
   ```
 
 The route fetches every nflverse file again, whatever its age. The cron can start late, so a file 23 hours old
@@ -245,18 +284,18 @@ a changed prefix, or a prefix under the minimum size of the model.
 
 ## Update the returns file
 
-1. Edit `data/<season>/returns.json`.
+1. Edit `data/nfl/<season>/returns.json` at the repo root.
 2. Commit the change.
-3. Run `fly deploy`. The entrypoint copies the returns file onto the volume at start.
+3. Run `make -C apps/api deploy` at the repo root. The entrypoint copies the returns file onto the volume at start.
 
 ## GitHub secret for the cron
 
-The cron reads the passphrase from the repository secret `CORNERSTONE_PASSPHRASE`.
+The cron reads the passphrase of `cpc` from the repository secret `CORNERSTONE_PASSPHRASE_CPC`.
 
 1. Run this command. It asks for the value, so the value stays out of the shell history.
 
    ```sh
-   gh secret set CORNERSTONE_PASSPHRASE --repo bkwon94/cpcfantasyfootball
+   gh secret set CORNERSTONE_PASSPHRASE_CPC --repo bkwon94/cpcfantasyfootball
    ```
 
 2. Merge the branch into `main`. GitHub runs a schedule only from the default branch.

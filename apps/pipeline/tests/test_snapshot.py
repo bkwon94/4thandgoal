@@ -6,16 +6,18 @@ import shutil
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from cornerstone.config import cornerstone_config
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.slow_sources import SlowSources, load_slow_sources
-from cornerstone.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
+from cpc import cpc_client
 
-CONFIG = cornerstone_config()
+from league.paths import returns_path
+from league.provider.sleeper import load_raw
+from league.slow_sources import SlowSources, load_slow_sources
+from league.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
+
+CLIENT = cpc_client()
 
 
 def test_week_6_snapshot_holds_rosters_teams_standings_and_slots(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.season == 2026
     assert sorted(snap.rosters) == list(range(1, 13))
     assert "7569" in snap.rosters[4]
@@ -29,7 +31,7 @@ def test_week_6_snapshot_holds_rosters_teams_standings_and_slots(fixture_raw_dir
 
 def test_week_6_snapshot_is_the_trade_week_and_its_inputs_end_at_week_5(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.week == 6
     assert snap.chart == chart_week6
     assert snap.as_of.chart_week == 6
@@ -42,7 +44,7 @@ def test_week_6_snapshot_is_the_trade_week_and_its_inputs_end_at_week_5(
 
 
 def test_week_6_standings_count_the_games_of_weeks_1_to_5(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Each week is two games for each of the 12 rosters: the head-to-head game and the median game.
     games = sum(s.wins + s.losses for s in snap.standings)
     assert games == 5 * 2 * 12
@@ -53,7 +55,7 @@ def test_a_history_without_week_5_stamps_the_last_week_it_holds_and_notes_it(
     root = tmp_path / "history"
     shutil.copytree(fixture_history_root, root)
     shutil.rmtree(root / "week-05")
-    snap = load_snapshot(fixture_raw_dir, root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, root, chart_week6, client=CLIENT)
     assert snap.week == 6
     assert snap.as_of.stats_through == 4
     assert snap.as_of.completed_through == 4
@@ -62,7 +64,7 @@ def test_a_history_without_week_5_stamps_the_last_week_it_holds_and_notes_it(
 
 
 def test_slow_sources_are_empty_and_named_as_missing(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.injuries is None
     assert snap.schedules is None
     assert snap.depth_charts is None
@@ -80,7 +82,7 @@ def test_slow_sources_fill_the_snapshot_and_only_the_files_not_in_the_cache_stay
     for name in ("games.csv", "depth_charts_2026.csv.gz", "db_playerids.csv", "injuries_2026.csv.gz"):
         shutil.copy(fixture_nflverse_dir / name, cache / name)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
     assert snap.schedules == slow.schedules and snap.schedules
     assert snap.depth_charts == slow.depth_charts and snap.depth_charts
     assert snap.id_map == slow.id_map and snap.id_map
@@ -91,7 +93,7 @@ def test_slow_sources_fill_the_snapshot_and_only_the_files_not_in_the_cache_stay
 
 
 def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history_root):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, None, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, None, client=CLIENT)
     assert snap.chart is None
     assert snap.as_of.chart_week is None
     assert "chart" in snap.missing
@@ -99,7 +101,7 @@ def test_a_week_with_no_chart_has_no_chart_week(fixture_raw_dir, fixture_history
 
 def test_the_returns_file_gives_the_return_week_and_sleeper_gives_the_injury_status(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Brian keeps the returns file by hand. Josh Jacobs, suspended in week 6, is back in week 7.
     assert snap.returns == {"5850": 7}
     assert snap.players["5850"].injury_status == "NA"
@@ -109,10 +111,10 @@ def test_the_returns_file_gives_the_return_week_and_sleeper_gives_the_injury_sta
 
 def test_a_season_with_no_returns_file_has_no_return_weeks_and_names_it_as_missing(
         fixture_raw_dir, fixture_history_root, chart_week6, tmp_path):
-    # The returns file sits beside the history, so a history root with no sibling file has none.
+    # The Returns file sits in the NFL data folder of the client, so a folder with no file has none.
     history_root = tmp_path / "2026" / "history"
     shutil.copytree(fixture_history_root, history_root)
-    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6, client=cpc_client(at=tmp_path))
     assert snap.returns == {}
     assert snap.missing[-1] == "returns"
 
@@ -122,27 +124,29 @@ def test_the_returns_file_marks_a_player_out_for_the_season_with_the_word_season
     # The commissioner writes `season` in place of a week. That player is out for the season, not due back.
     history_root = tmp_path / "2026" / "history"
     shutil.copytree(fixture_history_root, history_root)
-    (history_root.parent / "returns.json").write_text('{"5850": 7, "4866": "season"}', encoding="utf-8")
-    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6, config=CONFIG)
+    returns = returns_path(tmp_path / "data", 2026)
+    returns.parent.mkdir(parents=True)
+    returns.write_text('{"5850": 7, "4866": "season"}', encoding="utf-8")
+    snap = load_snapshot(fixture_raw_dir, history_root, chart_week6, client=cpc_client(at=tmp_path))
     assert snap.returns == {"5850": 7}
     assert snap.out_for_season == {"4866"}
 
 
 def test_a_returns_file_with_no_season_mark_has_no_player_out_for_the_season(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG).out_for_season == set()
+    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT).out_for_season == set()
 
 
 def test_the_snapshot_carries_the_wopr_by_player_and_week(fixture_raw_dir, fixture_history_root, chart_week6):
     snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, SlowSources(wopr={"12501": {5: 58}}),
-                         config=CONFIG)
+                         client=CLIENT)
     assert snap.wopr == {"12501": {5: 58}}
-    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG).wopr is None
+    assert load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT).wopr is None
 
 
 def test_the_snapshot_carries_the_projections_ahead_by_player_and_week(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Josh Jacobs has his bye in week 11, so that week has no row.
     assert snap.projections_ahead["5850"] == {7: 10.81, 8: 14.19, 9: 12.41, 10: 11.0, 12: 11.39, 13: 13.25, 14: 12.4}
 
@@ -150,7 +154,7 @@ def test_the_snapshot_carries_the_projections_ahead_by_player_and_week(
 def test_the_projections_ahead_start_at_the_raw_week(fixture_raw_dir, fixture_history_root, chart_week6):
     # A player due back in the raw week counts for that week too, so its half-PPR projection joins the weeks ahead.
     # Nico Collins has his bye in week 8, so that week has no row.
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.projections_ahead["7569"] == {
         6: 15.52, 7: 15.29, 9: 15.25, 10: 14.48, 11: 15.16, 12: 14.88, 13: 15.43, 14: 16.6}
 
@@ -159,7 +163,7 @@ def test_a_week_with_no_projections_ahead_file_has_none(fixture_raw_dir, fixture
     raw_dir = tmp_path / "raw"
     shutil.copytree(fixture_raw_dir, raw_dir)
     (raw_dir / "projections_ahead.json").unlink()
-    snap = load_snapshot(raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.projections_ahead is None
     # The missing list stays as it is. The fit reason says the projections are not available when a player is due back.
     assert "projections_ahead" not in snap.missing and "projections" not in snap.missing
@@ -179,7 +183,7 @@ def _known_games_raw(fixture_raw_dir, drop_game=None):
 def test_a_trade_week_with_stat_lines_reads_its_known_games_and_keeps_the_standings_at_the_week_before(
         fixture_raw_dir, fixture_history_root, chart_week6):
     raw = _known_games_raw(fixture_raw_dir, drop_game=BUF_MIA)
-    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
     assert snap.week == 6
     assert snap.as_of.stats_through == 6
     assert snap.as_of.completed_through == 5
@@ -191,9 +195,9 @@ def test_a_trade_week_with_stat_lines_reads_its_known_games_and_keeps_the_standi
 
 def test_the_standings_of_a_known_games_week_count_the_games_of_weeks_1_to_5_only(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     known = build_snapshot(_known_games_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
-                           config=CONFIG)
+                           client=CLIENT)
     assert sum(s.wins + s.losses for s in known.standings) == 5 * 2 * 12
     # The week 6 scores would move the records and the points for, so the same standings show week 6 is left out.
     assert known.standings == saved.standings
@@ -204,7 +208,7 @@ def test_a_trade_week_with_no_stat_lines_keeps_the_bound_at_the_week_before_and_
     # A good fetch before the first week 6 game gives an empty list. Nothing failed, so nothing is stale.
     raw = load_raw(fixture_raw_dir)
     raw.stats = []
-    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
     assert snap.as_of.stats_through == 5
     assert snap.as_of.completed_through == 5
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
@@ -218,7 +222,7 @@ def test_a_trade_week_with_only_lines_of_active_players_keeps_the_bound_at_the_w
     raw = load_raw(fixture_raw_dir)
     for row in raw.stats:
         row.stats = {"gms_active": 1.0}
-    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
     assert snap.as_of.stats_through == 5
     assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
     assert snap.as_of.known_games == KnownGames(week=6, games=0)
@@ -231,7 +235,7 @@ def test_a_failed_stats_fetch_keeps_the_bound_at_the_week_before_and_names_the_s
     failed = load_raw(fixture_raw_dir)
     failed.stats = None
     for raw in (failed,):
-        snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+        snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
         assert snap.as_of.stats_through == 5
         assert sorted(snap.stats.weeks) == [1, 2, 3, 4, 5]
         assert snap.as_of.known_games is None
@@ -247,7 +251,7 @@ CHI_ATL = SlowSources(kickoffs={"CHI": CHI_ATL_KICKOFF, "ATL": CHI_ATL_KICKOFF})
 def test_a_game_2_hours_after_its_kickoff_is_in_progress_and_the_block_counts_it(
         fixture_raw_dir, fixture_history_root, chart_week6):
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
-                          now=CHI_ATL_KICKOFF + timedelta(hours=2), config=CONFIG)
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2), client=CLIENT)
     assert snap.as_of.known_games == KnownGames(week=6, games=14, in_progress=1)
     assert snap.in_progress_teams == {"CHI", "ATL"}
 
@@ -255,7 +259,7 @@ def test_a_game_2_hours_after_its_kickoff_is_in_progress_and_the_block_counts_it
 def test_a_game_5_hours_after_its_kickoff_is_final_and_the_block_counts_zero_in_progress(
         fixture_raw_dir, fixture_history_root, chart_week6):
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
-                          now=CHI_ATL_KICKOFF + timedelta(hours=5), config=CONFIG)
+                          now=CHI_ATL_KICKOFF + timedelta(hours=5), client=CLIENT)
     assert snap.as_of.known_games == KnownGames(week=6, games=14, in_progress=0)
     assert snap.in_progress_teams == set()
 
@@ -264,21 +268,21 @@ def test_a_game_with_no_schedule_row_is_final(fixture_raw_dir, fixture_history_r
     # The schedules hold only the Bears and the Falcons, so the 1 pm game of the Ravens and the Browns has no row.
     # At 3 pm both 1 pm games are on, but only the game with a row counts as in progress.
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL, trade_week=6,
-                          now=CHI_ATL_KICKOFF + timedelta(hours=2), config=CONFIG)
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2), client=CLIENT)
     assert snap.as_of.known_games.in_progress == 1
     assert "BAL" not in snap.in_progress_teams and "CLE" not in snap.in_progress_teams
 
 
 def test_a_saved_week_has_no_game_in_progress(fixture_raw_dir, fixture_history_root, chart_week6):
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, CHI_ATL,
-                          now=CHI_ATL_KICKOFF + timedelta(hours=2), config=CONFIG)
+                          now=CHI_ATL_KICKOFF + timedelta(hours=2), client=CLIENT)
     assert snap.as_of.known_games is None
     assert snap.in_progress_teams == set()
 
 
 def test_on_the_tuesday_roll_the_raw_week_joins_the_history_and_the_new_trade_week_has_no_known_games(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7, config=CONFIG)
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=7, client=CLIENT)
     assert snap.week == 7
     assert snap.as_of.stats_through == 6
     assert snap.as_of.completed_through == 6
@@ -301,14 +305,14 @@ def _without_snaps(raw, game_ids):
 
 def test_a_known_game_with_no_snap_count_is_pending_for_snaps(fixture_raw_dir, fixture_history_root, chart_week6):
     raw = _without_snaps(load_raw(fixture_raw_dir), {BUF_MIA, GB_GAME})
-    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+    snap = build_snapshot(raw, fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
     assert snap.as_of.stats_through == 6
     assert snap.as_of.known_games == KnownGames(week=6, games=14, pending={"snaps": 2})
 
 
 def test_a_known_game_with_snap_counts_is_pending_for_nothing(fixture_raw_dir, fixture_history_root, chart_week6):
     # A final week has lines of players with no offense snap, because Sleeper leaves out a 0. They are no pending game.
-    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6, config=CONFIG)
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6, client=CLIENT)
     assert snap.as_of.known_games == KnownGames(week=6, games=14, pending={})
 
 
@@ -318,18 +322,18 @@ def test_a_player_file_with_no_row_of_the_trade_week_names_usage_pending_for_eac
     # The usage of the other 13 games is pending.
     wopr = {"8167": {5: 50, 6: 60}, "11620": {5: 70}}
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
-                          slow=SlowSources(wopr=wopr), config=CONFIG)
+                          slow=SlowSources(wopr=wopr), client=CLIENT)
     assert snap.as_of.known_games.pending == {"usage": 13}
     no_week_6 = {"8167": {5: 50}, "11620": {5: 70}}
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
-                          slow=SlowSources(wopr=no_week_6), config=CONFIG)
+                          slow=SlowSources(wopr=no_week_6), client=CLIENT)
     assert snap.as_of.known_games.pending == {"usage": 14}
 
 
 def test_a_missing_player_file_is_a_missing_source_and_not_a_pending_count(
         fixture_raw_dir, fixture_history_root, chart_week6):
     snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6,
-                          slow=SlowSources(missing=["player_weeks"]), config=CONFIG)
+                          slow=SlowSources(missing=["player_weeks"]), client=CLIENT)
     assert snap.as_of.known_games.pending == {}
     assert "player_weeks" in snap.missing
 
@@ -341,7 +345,7 @@ NO_GAME_RBS = ("12476", "8205")
 
 
 def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Tuten scored 12.475 points per game in 4 games of weeks 2 to 5, which the ranks show as 12.47. 14 backs have more.
     # The 14, by points per game of weeks 2 to 5. "ahead" marks a back out now who counts for his projection ahead.
     # Jahmyr Gibbs 27.28, Kenneth Walker 23.83, Bijan Robinson 21.22, Kyren Williams 20.45, James Cook 19.10, Jaylen
@@ -352,13 +356,13 @@ def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_histor
 
 def test_a_player_with_no_game_in_the_window_ranks_after_every_player_with_a_game(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # 77 backs have a stat line in weeks 1 to 5 or a roster spot. The two with no game in weeks 2 to 5 are last.
     assert sorted(snap.position_rank(pid) for pid in NO_GAME_RBS) == [76, 77]
 
 
 def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Jacobs has no game in weeks 2 to 5, so his recent points would rank him last. The returns file has him
     # back in week 7, and his projections of weeks 7 to 14 give 12.21 per game.
     assert snap.returns[JACOBS] == 7
@@ -366,7 +370,7 @@ def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_di
 
 
 def test_a_free_agent_with_a_stat_line_ranks_in_the_pool(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # The back is on no roster. He scored 12.5 points in 2 games, 6.25 per game, so 45 backs rank above him.
     assert all(FREE_AGENT_RB not in players for players in snap.rosters.values())
     assert snap.position_rank(FREE_AGENT_RB) == 46
@@ -374,7 +378,7 @@ def test_a_free_agent_with_a_stat_line_ranks_in_the_pool(fixture_raw_dir, fixtur
 
 def test_k_def_and_a_player_with_no_stat_line_and_no_roster_spot_have_no_rank(
         fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     defense = next(pid for players in snap.rosters.values() for pid in players
                    if snap.players[pid].position == "DEF")
     assert snap.position_rank(defense) is None
@@ -382,7 +386,7 @@ def test_k_def_and_a_player_with_no_stat_line_and_no_roster_spot_have_no_rank(
 
 
 def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.position_rank(JACOBS) == 16
     # With no projections file every player keeps his recent points. 6 backs then have no game in weeks 2 to 5,
     # so they hold ranks 72 to 77 in player id order. Jacobs is the third of them.
@@ -390,7 +394,7 @@ def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture
 
 
 def test_a_copy_of_the_snapshot_reads_its_own_rosters_and_values(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     roster_id = next(rid for rid, players in snap.rosters.items() if JACOBS in players)
     value = snap.lineup_value(JACOBS)
     assert JACOBS in snap.roster_read(roster_id, lambda _, roster: list(roster))
@@ -406,7 +410,7 @@ ACHANE, RODRIGUEZ, BIGSBY, PERINE, GAINWELL, NO_LINE_BACK = "9226", "10219", "92
 
 def test_the_week_6_snapshot_lists_the_free_agents_the_waiver_pool_reads_at_rb(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Bigsby is Active, Perine is Inactive and out as a stash, and the back with no stat line is Active too.
     # The list is in player id order.
     assert [p.player_id for p in snap.free_agents["RB"]] == [PERINE, NO_LINE_BACK, BIGSBY]
@@ -417,7 +421,7 @@ def test_the_week_6_snapshot_lists_the_free_agents_the_waiver_pool_reads_at_rb(
 
 
 def test_a_named_inactive_free_agent_is_not_in_the_free_agents(free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Achane is Inactive with no out tag. He still has a position rank, because his stat line is in the rank pool.
     assert ACHANE not in {p.player_id for p in snap.free_agents["RB"]}
     assert snap.position_rank(ACHANE) == 46
@@ -425,13 +429,13 @@ def test_a_named_inactive_free_agent_is_not_in_the_free_agents(free_agent_raw_di
 
 def test_a_free_agent_on_injured_reserve_with_no_out_tag_and_one_with_no_team_are_not_in_the_free_agents(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert {RODRIGUEZ, GAINWELL}.isdisjoint(p.player_id for p in snap.free_agents["RB"])
 
 
 def test_the_best_free_agent_is_the_one_with_the_best_position_rank(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     # Bigsby scored 15.3 points in 3 games of weeks 2 to 5, 5.10 a game. Perine scored 20.1 in 4, 5.03 a game.
     # 50 backs have more lineup value than Bigsby, so he is RB51. The back with no stat line has no rank.
     player, rank = snap.best_free_agent(["RB"])
@@ -442,7 +446,7 @@ def test_the_best_free_agent_is_the_one_with_the_best_position_rank(
 
 def test_a_position_with_no_free_agent_with_a_rank_has_no_best_free_agent(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, config=CONFIG)
+    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
     assert snap.best_free_agent(["QB"]) is None
     only_no_line = snap.model_copy(update={"free_agents": {"RB": snap.free_agents["RB"][1:2]}})
     assert only_no_line.best_free_agent(["RB"]) is None
@@ -450,9 +454,9 @@ def test_a_position_with_no_free_agent_with_a_rank_has_no_best_free_agent(
 
 def test_a_week_snapshot_with_no_returns_file_has_no_returns_and_nobody_out_for_the_season(
         fixture_raw_dir, fixture_history_root, tmp_path):
-    # The copied history has no returns.json beside it.
+    # The NFL data folder of the client holds no Returns file.
     root = tmp_path / "history"
     shutil.copytree(fixture_history_root, root)
-    snap = week_snapshot(load_raw(fixture_raw_dir), root, 6, config=CONFIG)
+    snap = week_snapshot(load_raw(fixture_raw_dir), root, 6, client=cpc_client(at=tmp_path))
     assert snap.returns == {} and "returns" in snap.missing
     assert snap.out_for_season == set()

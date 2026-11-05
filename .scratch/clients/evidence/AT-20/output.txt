@@ -1,0 +1,17 @@
+$ diff clients/cpc/client.toml <temp copy>/clients/cpc/client.toml
+17a18
+> finderr = true
+$ CLIENT=cpc CLIENT_ROOT=<temp copy> pnpm --dir apps/site build   # the prebuild step checks client.toml
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> node scripts/client-build.mjs
+
+client build failed: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at20/clients/cpc/client.toml breaks a rule:
+- values.analyzer.finderr: is not a known key
+ ELIFECYCLE  Command failed with exit code 1.
+exit code: 1
+$ uv run --directory apps/pipeline --exact --package cornerstone cornerstone check-client <temp copy>/clients/cpc
+/private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at20/clients/cpc/client.toml breaks a rule:
+- values.analyzer.finderr: is not a known key
+exit code: 2
+(<temp copy> is /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at20)

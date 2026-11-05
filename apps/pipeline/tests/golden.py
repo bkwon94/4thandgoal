@@ -10,19 +10,19 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from cpc import cpc_client
 from fakes import fixture_nflverse, no_claims, no_news
 
-from cornerstone.config import cornerstone_config
-from cornerstone.paths import history_root, week_dir
 from cornerstone.pipeline import run_build
-from cornerstone.writer import WriterError
+from facts.writer import WriterError
+from league.paths import history_root, week_dir
 
 FIXTURES = Path(__file__).parent / "fixtures"
 GOLDEN_DIR = FIXTURES / "golden"
 GOLDEN_FILES = ("facts.json", "page.json", "rankings.json", "managers.json")
 ET = ZoneInfo("America/New_York")
-# The league config the builds and fetches of these tests read.
-CONFIG = cornerstone_config()
+# The client the builds and fetches of these tests read.
+CLIENT = cpc_client()
 # Both times are fixed, so the build reads no clock and no file time.
 STARTED = datetime(2026, 10, 20, 12, 0, tzinfo=ET)
 FETCHED = "2026-10-20T11:56:00-04:00"
@@ -42,8 +42,8 @@ def build_golden(repo: Path, cache: Path) -> dict[str, Path]:
     (raw / "fetched.json").write_text(json.dumps({"transactions": FETCHED}), encoding="utf-8")
     shutil.copytree(FIXTURES / "2026" / "history", history_root(repo, 2026))
     page = run_build(repo, 2026, 6, _no_claude, fetch=False, news=no_news, fetch_bytes=lambda url: None,
-                     nflverse=fixture_nflverse(cache), research=no_claims, started=STARTED, config=CONFIG)
-    season = repo / "site" / "2026"
+                     nflverse=fixture_nflverse(cache), research=no_claims, started=STARTED, client=cpc_client(at=repo))
+    season = repo / "build" / "2026"
     return {"facts.json": week_dir(repo, 2026, 6) / "facts.json", "page.json": page,
             "rankings.json": season / "rankings.json", "managers.json": season / "managers.json"}
 

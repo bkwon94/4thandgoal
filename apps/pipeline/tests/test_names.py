@@ -4,8 +4,8 @@ They use plain names, so no test reads a fixture.
 """
 from types import SimpleNamespace
 
-from cornerstone.adjusters import _short_names
-from cornerstone.names import last_name
+from analyzer.adjusters import _short_names
+from facts.names import last_name
 
 
 def _snapshot(names):

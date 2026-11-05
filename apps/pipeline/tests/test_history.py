@@ -8,7 +8,7 @@ import shutil
 
 import pytest
 
-from cornerstone.history import (
+from league.history import (
     HISTORY_FILES,
     fetch_history,
     load_history,
@@ -21,10 +21,10 @@ from cornerstone.history import (
     snap_share,
     target_share,
 )
-from cornerstone.models import UsageShare
-from cornerstone.parse import parse_moves, parse_week
-from cornerstone.paths import history_week_dir
-from cornerstone.provider.sleeper import fetch_past_week, load_raw
+from league.models import UsageShare
+from league.parse import parse_moves, parse_week
+from league.paths import history_week_dir
+from league.provider.sleeper import fetch_past_week, load_raw
 
 
 def _fill_week_one(root):
@@ -235,3 +235,19 @@ def test_share_direction():
     assert share_direction(55, 50) == "up"
     assert share_direction(50, 55) == "down"
     assert share_direction(54.9, 50) == "flat"
+
+
+def test_the_stat_line_points_of_a_past_week_read_its_points_key():
+    # A player with no roster points falls back to his stat line, at the points key of the league scoring.
+    from league.history import player_points
+    from league.models import PastWeek
+
+    line = {"pts_std": 6.0, "pts_half_ppr": 8.0, "pts_ppr": 10.0}
+    past = PastWeek(week=3, scores={}, pairs=[], points={}, projections={}, stats={"6794": line}, moves=[],
+                    points_key="pts_ppr")
+    assert player_points(past, "6794") == 10.0
+
+
+def test_the_saved_weeks_take_the_points_key_of_the_league(fixture_history_root):
+    weeks = load_saved_weeks(fixture_history_root, 5, points_key="pts_ppr")
+    assert {past.points_key for past in weeks.values()} == {"pts_ppr"}

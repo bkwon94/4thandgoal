@@ -9,40 +9,40 @@ from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 
 import pytest
+from cpc import cpc_client
 
-from cornerstone import sheet
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
-from cornerstone.odds import playoff_odds
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
 from cornerstone.sheet import (
     Context,
     build_bundle,
     check_week_is_buildable,
-    fmt,
-    is_motw_recap,
     odds_facts,
     power_facts,
     projected_totals,
     read_bundle,
-    standings,
     standings_facts,
     storyline_facts,
     swing_facts,
     week_dates,
     write_bundle,
 )
-from cornerstone.snapshot import week_snapshot
+from facts.chapters import is_motw_recap
+from facts.tokens import fmt
+from league.history import load_history
+from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, Storyline, Swing, TeamOdds
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.snapshot import week_snapshot
+from rankings import chapter as rankings_chapter
+from rankings.odds import playoff_odds
+from week.sheet import standings
 
-CONFIG = cornerstone_config()
-PROMPTS = CONFIG.prompts_dir
+CLIENT = cpc_client()
+PROMPTS = CLIENT.voice_dir
 
 
 @pytest.fixture
 def bundle(fixture_raw_dir):
-    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], client=CLIENT)
 
 
 def test_week_dates():
@@ -50,9 +50,9 @@ def test_week_dates():
 
 
 def test_gate_messages():
-    assert check_week_is_buildable(6, 6, config=CONFIG) is None
-    assert "not final" in check_week_is_buildable(7, 6, config=CONFIG)
-    assert "playoff" in check_week_is_buildable(15, 15, config=CONFIG)
+    assert check_week_is_buildable(6, 6, client=CLIENT) is None
+    assert "not final" in check_week_is_buildable(7, 6, client=CLIENT)
+    assert "playoff" in check_week_is_buildable(15, 15, client=CLIENT)
 
 
 def test_fmt_keeps_the_shortest_form():
@@ -92,7 +92,7 @@ def test_tied_matchup_result_says_tied(fixture_raw_dir):
     m = week.matchups[0]
     tied = m.model_copy(update={"b": m.b.model_copy(update={"points": m.a.points})})
     week = week.model_copy(update={"matchups": [tied, *week.matchups[1:]]})
-    tied_bundle = build_bundle(week, news=lambda pid: [], config=CONFIG)
+    tied_bundle = build_bundle(week, news=lambda pid: [], client=CLIENT)
     assert "tied" in tied_bundle.sheet.facts["M1.result"].text
 
 
@@ -155,7 +155,7 @@ def test_news_fact_uses_the_newest_item(fixture_raw_dir):
             {"metadata": {"description": "Newest note, 3 targets."}, "published": "1792500000000"},
         ]
 
-    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, config=CONFIG)
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, client=CLIENT)
     fact = b.sheet.facts["AW.game_changer.news"]
     assert "Newest note" in fact.text and "Old note" not in fact.text
     assert "3" in fact.numbers
@@ -166,7 +166,7 @@ def test_news_failure_skips_the_fact(fixture_raw_dir):
     def broken(_player_id):
         raise RuntimeError("network down")
 
-    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=broken, config=CONFIG)
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=broken, client=CLIENT)
     assert "AW.game_changer.news" not in b.sheet.facts
 
 
@@ -188,7 +188,7 @@ def test_news_with_bad_published_skips_the_fact(fixture_raw_dir):
     def news(_player_id):
         return [{"metadata": {"description": "A note."}, "published": "yesterday"}]
 
-    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, config=CONFIG)
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, client=CLIENT)
     assert "AW.game_changer.news" not in b.sheet.facts
 
 
@@ -200,7 +200,7 @@ def test_long_news_ends_on_a_whole_word(fixture_raw_dir):
     def news(_player_id):
         return [{"metadata": {"description": description}, "published": "1792500000000"}]
 
-    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, config=CONFIG)
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=news, client=CLIENT)
     text = b.sheet.facts["AW.game_changer.news"].text
     assert text.endswith(" word")
     assert len(text.split(": ", 1)[1]) <= 300
@@ -226,16 +226,16 @@ def test_a_team_off_the_cut_keeps_its_games_from_the_cut(bundle):
 
 
 def test_one_fact_group_gives_the_facts_that_the_assembled_sheet_holds_for_it(bundle, fixture_raw_dir):
-    # A group reads only the context and the config, so the same inputs give the same facts as the assembly.
-    context = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
-    got = standings.facts(context, CONFIG)
+    # A group reads only the context and the client, so the same inputs give the same facts as the assembly.
+    context = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], client=CLIENT)
+    got = standings.facts(context, CLIENT)
     assert got
     assert got == [f for fid, f in bundle.sheet.facts.items() if fid.startswith(("S.", "MED."))]
 
 
 def _standing_text(fixture_raw_dir, rank, wins, losses, games_from_cut):
     # The fixture table with one row moved level with the last playoff spot, 6th.
-    c = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], config=CONFIG)
+    c = Context(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], client=CLIENT)
     c.table = [s.model_copy(update={"wins": wins, "losses": losses, "games_from_cut": games_from_cut})
                if s.rank == rank else s for s in c.table]
     return next(f.text for f in standings_facts(c) if f.id == f"S.{rank}")
@@ -278,7 +278,7 @@ def test_no_injury_status_gets_no_injury_fact(bundle):
 def test_injury_fact_without_body_part_drops_the_parenthesis(fixture_raw_dir):
     raw = load_raw(fixture_raw_dir)
     raw.players["11635"]["injury_body_part"] = None
-    b = build_bundle(parse_week(raw), news=lambda pid: [], config=CONFIG)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], client=CLIENT)
     assert b.sheet.facts["M5.inj.11635"].text == (
         "Ladd McConkey is now listed Out on Sleeper as of the Tuesday after this week's games. "
         "The status may have come from this game."
@@ -398,7 +398,7 @@ def test_tied_players_get_the_same_rank_in_the_rank_and_leader_facts(fixture_raw
             for line in side.lines:
                 if line.started and line.position == "RB":
                     line.points = 10.0
-    b = build_bundle(week, news=lambda pid: [], config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], client=CLIENT)
     rank_of = {r.player_id: r.rank for r in b.data.ranks}
     leads = [leader for leader in b.data.leaders if leader.position == "RB"]
     assert len(leads) == 3
@@ -510,7 +510,7 @@ def test_a_team_that_tied_its_game_reads_a_tie_with(fixture_raw_dir, fixture_his
     w6 = h.weeks[6]
     tied = w6.model_copy(update={"scores": {**w6.scores, 6: w6.scores[10]}})
     h = h.model_copy(update={"weeks": {**h.weeks, 6: tied}})
-    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, config=CONFIG)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, client=CLIENT)
     assert b.sheet.facts["PR.10.why"].text.startswith(
         "behold the lamb moved up 3 places after a tie with Bo Girds, the 2nd-place team: "
     )
@@ -522,7 +522,7 @@ def test_a_margin_that_rounds_to_zero_reads_narrow(fixture_raw_dir, fixture_hist
     w6 = h.weeks[6]
     close = w6.model_copy(update={"scores": {**w6.scores, 6: round(w6.scores[10] - 0.3, 2)}})
     h = h.model_copy(update={"weeks": {**h.weeks, 6: close}})
-    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, config=CONFIG)
+    b = build_bundle(parse_week(raw), news=lambda pid: [], history=h, client=CLIENT)
     assert b.sheet.facts["PR.10.why"].text.startswith("behold the lamb moved up ")
     assert " after a narrow win over Bo Girds, the 2nd-place team" in b.sheet.facts["PR.10.why"].text
 
@@ -544,7 +544,7 @@ def test_the_first_week_of_the_rankings_has_no_rank_why(fixture_raw_dir, fixture
     raw = load_raw(fixture_raw_dir)
     h = load_history(fixture_history_root, raw, week=6)
     week = parse_week(raw).model_copy(update={"week": 1})
-    b = build_bundle(week, news=lambda pid: [], history=History(week=1, weeks={1: h.weeks[1]}), config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], history=History(week=1, weeks={1: h.weeks[1]}), client=CLIENT)
     assert any(fid.startswith("PR.") for fid in b.sheet.facts)
     assert not any(fid.endswith(".why") for fid in b.sheet.facts)
 
@@ -615,10 +615,10 @@ def test_clinched_and_out_odds_facts_hold_no_digit():
 
 
 def test_a_week_before_the_odds_week_has_no_odds_facts(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(rankings_chapter, "ODDS_FROM_WEEK", 7)
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                     config=CONFIG)
+                     client=CLIENT)
     assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)
 
 
@@ -642,7 +642,7 @@ def test_rankings_chapter_lists_every_odds_fact(hbundle):
 def test_a_week_with_no_saved_schedule_has_no_odds_facts(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw).model_copy(update={"schedule": {}})
-    b = build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), client=CLIENT)
     assert not any(fid.startswith(("ODDS.", "SW.")) for fid in b.sheet.facts)
 
 
@@ -672,7 +672,7 @@ def test_a_clinched_side_and_an_out_side_hold_no_digit():
 
 def test_projected_totals_cover_every_roster_and_every_week_ahead(fixture_raw_dir):
     week = parse_week(load_raw(fixture_raw_dir))
-    totals = projected_totals(week, config=CONFIG)
+    totals = projected_totals(week, client=CLIENT)
     assert set(totals) == set(week.teams)
     assert all(sorted(by_week) == list(range(7, 15)) for by_week in totals.values())
     assert all(total > 50 for by_week in totals.values() for total in by_week.values())
@@ -684,7 +684,7 @@ def test_the_projected_total_counts_0_for_a_player_with_no_projection(fixture_ra
     bench = next(line for line in side.lines if not line.started)
     # Only one bench player has a projection, so the best lineup starts him and every other starter counts 0.
     totals = projected_totals(week.model_copy(update={"projections_ahead": {7: {bench.player_id: 50.0}}}),
-                              config=CONFIG)
+                              client=CLIENT)
     # A roster with no projected player that week has no total, so the engine gives it no shift.
     assert totals == {rid: ({7: 50.0} if rid == side.roster_id else {}) for rid in week.teams}
 
@@ -693,7 +693,7 @@ def test_the_projected_totals_stop_at_the_last_regular_week(fixture_raw_dir):
     week = parse_week(load_raw(fixture_raw_dir))
     # The projections file runs to week 17 for the waiver board. The playoff weeks never reach the odds.
     ahead = {**week.projections_ahead, 15: week.projections_ahead[14], 17: week.projections_ahead[14]}
-    totals = projected_totals(week.model_copy(update={"projections_ahead": ahead}), config=CONFIG)
+    totals = projected_totals(week.model_copy(update={"projections_ahead": ahead}), client=CLIENT)
     assert all(sorted(by_week) == list(range(7, 15)) for by_week in totals.values())
 
 
@@ -705,7 +705,7 @@ def test_the_projected_total_reads_the_current_roster_not_the_week_lineup(fixtur
     rosters = {**week.rosters, side.roster_id: {"added": "RB", **{
         pid: pos for pid, pos in week.rosters[side.roster_id].items() if pid != dropped}}}
     totals = projected_totals(week.model_copy(update={
-        "rosters": rosters, "projections_ahead": {7: {"added": 30.0, dropped: 20.0}}}), config=CONFIG)
+        "rosters": rosters, "projections_ahead": {7: {"added": 30.0, dropped: 20.0}}}), client=CLIENT)
     assert totals[side.roster_id] == {7: 30.0}
 
 
@@ -719,7 +719,7 @@ def _one_roster_total(fixture_raw_dir, roster, points, injuries, pool, bye_weeks
     totals = projected_totals(week.model_copy(update={
         "rosters": {rid: roster}, "projections_ahead": {7: points}, "injuries": injuries, "pool": pool,
         "roster_players": {pid: (pid, team) for pid, team in (teams or {}).items()},
-    }), config=CONFIG, bye_weeks=bye_weeks)
+    }), client=CLIENT, bye_weeks=bye_weeks)
     return totals[rid][7]
 
 
@@ -776,20 +776,20 @@ def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, f
         seen.update(kwargs)
         return playoff_odds(*args, **kwargs)
 
-    monkeypatch.setattr(sheet.base, "playoff_odds", engine)
+    monkeypatch.setattr(rankings_chapter, "playoff_odds", engine)
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw)
-    build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), config=CONFIG)
-    assert seen["projected"] == projected_totals(week, config=CONFIG)
+    build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), client=CLIENT)
+    assert seen["projected"] == projected_totals(week, client=CLIENT)
 
 
 def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     raw.projections_ahead = None
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
-    inputs = sheet.odds_inputs(week, history, config=CONFIG)
-    plain = sheet.week_odds(week, history, inputs, projected_totals(week, config=CONFIG), config=CONFIG)
-    assert sheet.week_odds(week, history, inputs, None, config=CONFIG) == plain
+    inputs = rankings_chapter.odds_inputs(week, history, client=CLIENT)
+    plain = rankings_chapter.week_odds(week, history, inputs, projected_totals(week, client=CLIENT), client=CLIENT)
+    assert rankings_chapter.week_odds(week, history, inputs, None, client=CLIENT) == plain
 
 
 def _why_inputs(fixture_raw_dir, fixture_history_root):
@@ -819,8 +819,8 @@ def test_rankings_chapter_requires_the_why_of_each_mover_and_of_odds_against_the
 
 def test_odds_why_paces_are_the_rounded_means_of_the_inputs(fixture_raw_dir, fixture_history_root):
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
-    b = build_bundle(week, news=lambda pid: [], history=history, config=CONFIG)
-    totals = projected_totals(week, config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], history=history, client=CLIENT)
+    totals = projected_totals(week, client=CLIENT)
     for rid in week.teams:
         played = [history.weeks[n].scores[rid] for n in range(1, 7) if rid in history.weeks[n].scores]
         ahead = int(Decimal(str(_mean(list(totals[rid].values())))).quantize(Decimal(1), rounding=ROUND_HALF_UP))
@@ -834,7 +834,7 @@ def test_odds_why_paces_are_the_rounded_means_of_the_inputs(fixture_raw_dir, fix
 
 def test_the_easiest_remaining_schedule_is_rank_1(fixture_raw_dir, fixture_history_root):
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
-    b = build_bundle(week, news=lambda pid: [], history=history, config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], history=history, client=CLIENT)
     pace = {rid: _mean([history.weeks[n].scores[rid] for n in range(1, 7) if rid in history.weeks[n].scores])
             for rid in week.teams}
     pairs = list(week.next_matchups) + [p for w in sorted(week.schedule) for p in week.schedule[w]]
@@ -855,16 +855,16 @@ def test_a_team_with_no_projected_totals_has_no_odds_why(fixture_raw_dir, fixtur
     mine = set(week.rosters[rid])
     ahead = {w: {pid: p for pid, p in proj.items() if pid not in mine} for w, proj in week.projections_ahead.items()}
     b = build_bundle(week.model_copy(update={"projections_ahead": ahead}), news=lambda pid: [], history=history,
-                     config=CONFIG)
+                     client=CLIENT)
     assert f"ODDS.{rid}" in b.sheet.facts
     assert f"ODDS.{rid}.why" not in b.sheet.facts
     assert len([fid for fid in b.sheet.facts if fid.startswith("ODDS.") and fid.endswith(".why")]) == 11
 
 
 def test_no_odds_means_no_odds_why(monkeypatch, fixture_raw_dir, fixture_history_root):
-    monkeypatch.setattr(sheet.base, "ODDS_FROM_WEEK", 7)
+    monkeypatch.setattr(rankings_chapter, "ODDS_FROM_WEEK", 7)
     week, history = _why_inputs(fixture_raw_dir, fixture_history_root)
-    b = build_bundle(week, news=lambda pid: [], history=history, config=CONFIG)
+    b = build_bundle(week, news=lambda pid: [], history=history, client=CLIENT)
     assert not any(fid.endswith(".why") and fid.startswith("ODDS.") for fid in b.sheet.facts)
 
 
@@ -954,7 +954,7 @@ def test_storyline_facts_give_each_kind_its_numbers():
 
 
 def test_the_checker_accepts_a_cited_streak_length_and_projected_total():
-    from cornerstone.verifier import normalize_number, number_failures, remove_names
+    from facts.verifier import normalize_number, number_failures, remove_names
     by_rank = {3: _standing(3, 1, 4), 6: _standing(6, 3, -1)}
     game = NextMatchup(a=3, b=6, must_watch=True, reason="x", storylines=[
         _story("streak", 3, roster_id=3, length=4), _story("shootout", 2, totals=(123.0, 118.8))])
@@ -999,16 +999,16 @@ def test_a_roster_player_with_no_lineup_line_is_on_the_bye_list_and_not_key(
     raw.rosters = [r.model_copy(update={"players": [*(r.players or []), "99999"]}) if r.roster_id == 8 else r
                    for r in raw.rosters]
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                     nfl=nfl_week6, config=CONFIG)
+                     nfl=nfl_week6, client=CLIENT)
     assert [(p.player_id, p.name, p.position, p.key) for p in _game(b, 3, 8).b_byes] == [
         ("99999", "Late Add", "WR", False)]
 
 
 def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_raw_dir, fixture_history_root, caplog):
     raw = load_raw(fixture_raw_dir)
-    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+    with caplog.at_level(logging.WARNING, logger="week.facts_league"):
         b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                         config=CONFIG)
+                         client=CLIENT)
     assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
     assert [r.message for r in caplog.records if "bye" in r.message] == [
         "no NFL schedule: the next-week games have no bye lists"]
@@ -1017,9 +1017,9 @@ def test_a_build_with_no_schedule_has_empty_bye_lists_and_one_log_line(fixture_r
 def test_a_build_with_one_saved_week_has_empty_bye_lists(fixture_raw_dir, tmp_path, nfl_week6, caplog):
     raw = load_raw(fixture_raw_dir)
     # An empty history root saves no week, so the history holds week 6 alone.
-    with caplog.at_level(logging.WARNING, logger="cornerstone.facts_league"):
+    with caplog.at_level(logging.WARNING, logger="week.facts_league"):
         b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(tmp_path, raw, week=6),
-                         nfl=nfl_week6, config=CONFIG)
+                         nfl=nfl_week6, client=CLIENT)
     assert all(nx.a_byes == [] and nx.b_byes == [] for nx in b.data.next)
     assert [r.message for r in caplog.records if "bye" in r.message] == [
         "history has 1 completed weeks: the next-week games have no bye lists"]
@@ -1068,7 +1068,7 @@ def test_a_build_with_no_snapshot_reads_the_byes_without_a_rank_or_a_cover(
         fixture_raw_dir, fixture_history_root, nfl_week6):
     raw = load_raw(fixture_raw_dir)
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                     nfl=nfl_week6, config=CONFIG)
+                     nfl=nfl_week6, client=CLIENT)
     facts = b.sheet.facts
     assert facts["NX.bye.12.7523"].text == (
         "Trevor Lawrence, QB, is on bye in week 7 and started 4 of the last 4 weeks for Amon-Ra Dawg Your Team.")
@@ -1079,7 +1079,7 @@ def test_a_build_with_no_snapshot_reads_the_byes_without_a_rank_or_a_cover(
 
 
 def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_the_bye_note(dbundle):
-    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    from facts.writer import BYES_NOTE, build_writer_prompt
     chapter = next(c for c in dbundle.sheet.chapters if c.key == "next_week")
     byes = [fid for fid in dbundle.sheet.facts if fid.startswith("NX.bye.")]
     assert set(byes) <= set(chapter.fact_ids)
@@ -1094,7 +1094,7 @@ def test_the_next_week_chapter_lists_the_bye_facts_in_two_to_six_sentences_with_
 
 
 def test_a_chapter_with_no_bye_fact_has_no_bye_note(hbundle):
-    from cornerstone.writer import BYES_NOTE, build_writer_prompt
+    from facts.writer import BYES_NOTE, build_writer_prompt
     chapter = next(c for c in hbundle.sheet.chapters if c.key == "next_week")
     _, user = build_writer_prompt(chapter, hbundle.sheet, None, prompts_dir=PROMPTS)
     assert BYES_NOTE not in user
@@ -1108,7 +1108,7 @@ def test_thin_data_makes_no_bye_fact_not_even_a_none_fact(thin, fixture_raw_dir,
     root = fixture_history_root if thin == "no schedule" else tmp_path
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(root, raw, week=6),
                      nfl=None if thin == "no schedule" else nfl_week6,
-                     snapshot=week_snapshot(raw, root, 6, config=CONFIG), config=CONFIG)
+                     snapshot=week_snapshot(raw, root, 6, client=CLIENT), client=CLIENT)
     assert not any(fid.startswith("NX.bye.") for fid in b.sheet.facts)
 
 
@@ -1119,12 +1119,12 @@ def test_a_bench_player_who_cannot_play_next_week_is_no_bye_cover(out, fixture_r
     # A return in week 9 keeps Marks out next week, and his projection ahead of 10 a game keeps him the best bench
     # back, so only the out rule can skip him. Out for the season, he cannot cover either.
     raw = load_raw(fixture_raw_dir)
-    snap = week_snapshot(raw, fixture_history_root, 6, config=CONFIG)
+    snap = week_snapshot(raw, fixture_history_root, 6, client=CLIENT)
     ahead = {**snap.projections_ahead, "12474": {week: 10.0 for week in range(9, 15)}}
     snap = snap.model_copy(update={"returns": {"12474": 9}, "projections_ahead": ahead} if out == "returns"
                            else {"out_for_season": {"12474"}})
     b = build_bundle(parse_week(raw), news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6),
-                     nfl=nfl_week6, snapshot=snap, config=CONFIG)
+                     nfl=nfl_week6, snapshot=snap, client=CLIENT)
     assert b.sheet.facts["NX.bye.5.8138.cover"].text == "With James Cook on bye, no bench player can fill his slot."
 
 

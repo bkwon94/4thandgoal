@@ -1,0 +1,61 @@
+$ git show 003c70c:apps/pipeline/src/cornerstone/config.py | sed -n 132,160p
+def cornerstone_config() -> LeagueConfig:
+    """The config of the Cornerstone league."""
+    return LeagueConfig(
+        slug="cornerstone",
+        display_name="Cornerstone League",
+        provider="sleeper",
+        league_ids=((2026, "1386167364424318976"),),
+        owner_username="bkwon",
+        timezone="America/New_York",
+        prompts_dir=Path(__file__).parent / "prompts",
+        team_count=12,
+        shootout_top=4,
+        playoff_spots=6,
+        seller_gap=2,
+        return_by_week=14,
+        bye_count=2,
+        last_regular_week=14,
+        last_season_week=17,
+        line_rb_wr=36,
+        line_qb_te=24,
+        strength_rank=24,
+        star_rank_by_position={"QB": 6, "RB": 12, "WR": 12, "TE": 6},
+    )
+
+$ git show 003c70c:apps/pipeline/src/cornerstone/config.py | sed -n 78,112p
+
+    @property
+    def lines(self) -> dict[str, int]:
+        """The line at each ranked position. GLOSSARY.md, "The line".
+
+        K and DEF have no line, so their slots are never holes.
+        """
+        return {"QB": self.line_qb_te, "RB": self.line_rb_wr, "WR": self.line_rb_wr, "TE": self.line_qb_te}
+
+    @property
+    def grade_spare_rank(self) -> dict[str, int]:
+        """The rank of a spare at each position on the manager page. GLOSSARY.md, "Roster grade".
+
+        The depth word of a position on the manager page counts a spare only inside the league's starter count at the
+        position. 12 teams start 1 QB, 2 RB, 2 WR, and 1 TE, flex aside. The line is looser, so a QB16 is startable.
+        He is a backup, not a second good player. Two spares read "stacked", one reads "deep", none reads "fine".
+        """
+        starters = {"QB": 1, "RB": 2, "WR": 2, "TE": 1}
+        return {position: count * self.team_count for position, count in starters.items()}
+
+    @property
+    def grade_strong_rank(self) -> int:
+        """The slot rank that reads "strong" in the grade sentence. The top quarter of a 12-team league is strong.
+
+        The quarter rounds down, so a ten-team league reads ranks 1 and 2 strong.
+        """
+        return self.team_count // 4
+
+    @property
+    def grade_soft_rank(self) -> int:
+        """The slot rank that reads "soft" in the grade sentence. The bottom quarter of a 12-team league is soft.
+
+        The quarter rounds down, so a ten-team league reads ranks 9 and 10 soft.
+        """
+        return self.team_count - self.team_count // 4 + 1

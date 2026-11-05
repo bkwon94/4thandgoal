@@ -8,16 +8,16 @@ import shutil
 
 import pytest
 from conftest import with_free_agents
+from cpc import cpc_client
 
-from cornerstone import analysis
-from cornerstone.analysis import AnalysisOut, analyze
-from cornerstone.config import cornerstone_config
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.rubric import ProposedTrade, TradeSide, grade
-from cornerstone.slow_sources import load_slow_sources
-from cornerstone.snapshot import build_snapshot, load_returns, load_snapshot
+from analyzer import analysis
+from analyzer.analysis import AnalysisOut, analyze
+from analyzer.rubric import ProposedTrade, TradeSide, grade
+from league.provider.sleeper import load_raw
+from league.slow_sources import load_slow_sources
+from league.snapshot import build_snapshot, load_returns, load_snapshot
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 # The week 6 Josh Jacobs trade: roster 11 gives Bhayshul Tuten and Garrett Wilson to roster 12
 # for Jacobs and Devaughn Vele. Roster 12 asked. Chart values: Tuten 3.0, Wilson 27.5, Jacobs 11.5, Vele 55.0.
@@ -31,7 +31,7 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, config=CONFIG)
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -47,7 +47,7 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse
     raw = with_free_agents(load_raw(fixture_raw_dir), {BATEMAN: {
         "full_name": "Rashod Bateman", "position": "WR", "team": "BAL", "status": "Active", "active": True}})
     snap = build_snapshot(raw, fixture_history_root, chart_week6, slow,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"), config=CONFIG)
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT)
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -317,11 +317,11 @@ def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
     text = "Garrett Wilson is worth 27.5 to this roster. His target share went up. He is a starter."
     bad = _response(eleven=_side(11, analysis=text, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
     fake = FakeClaude(bad, bad)
-    with caplog.at_level(logging.WARNING, logger="cornerstone.analysis"):
+    with caplog.at_level(logging.WARNING, logger="analyzer.analysis"):
         assert analyze(trade, snap, call=fake).fallback
     # The retry feedback to Claude keeps the full failure text.
     assert "number 27.5 is not in the cited facts" in fake.calls[1][1]
-    records = [r.getMessage() for r in caplog.records if r.name == "cornerstone.analysis"]
+    records = [r.getMessage() for r in caplog.records if r.name == "analyzer.analysis"]
     assert len(records) == 2
     for message in records:
         assert "failed" in message
@@ -404,7 +404,7 @@ def test_the_letter_rules_guard_the_fairness_state(trade, snap):
 
 
 def test_an_empty_response_or_a_refusal_falls_back(trade, snap):
-    from cornerstone.writer import RefusalError
+    from facts.writer import RefusalError
 
     def refuse(system, user, output_model):
         raise RefusalError("Claude refused the request for AnalysisOut.")

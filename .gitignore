@@ -6,3 +6,12 @@ out
 .claude/worktrees/
 .claude/settings.local.json
 __pycache__/
+# The caches of the NFL data and of the API results. Each run fills them again.
+data/nfl/cache/
+data/cache/
+# The client build of the site writes these from clients/$CLIENT/. See apps/site/scripts/client-build.mjs.
+apps/site/src/generated/
+apps/site/src/app/(client)/
+apps/site/public/[0-9][0-9][0-9][0-9]/
+apps/site/public/brand/
+apps/site/wrangler.jsonc

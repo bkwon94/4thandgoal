@@ -1,21 +1,32 @@
 /**
- * Holds every file under src/components/ to the rule of ADR 0012: a component takes data and returns markup.
+ * Holds the site side of each package, and src/components/ when it exists, to the rule of ADR 0012: a component takes data and returns markup.
  * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env.
  * A failure names the file and the line.
  */
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { type Offense, report } from "./rule-report";
 
 const COMPONENTS_DIR = join(process.cwd(), "src", "components");
+const PACKAGES_DIR = join(process.cwd(), "..", "..", "packages");
 
-/* Every source file under the component tree, tests too, because a test that reaches the config hides a prop the component lacks. */
+/* The site side of each package. A package holds no app layer, so each of its files is held to the rule. */
+function packageSiteDirs(): string[] {
+  if (!existsSync(PACKAGES_DIR)) return [];
+  return readdirSync(PACKAGES_DIR)
+    .map((name) => join(PACKAGES_DIR, name, "site"))
+    .filter((dir) => existsSync(dir));
+}
+
+/* Every source file under the component tree, tests too, because a test that reaches the config hides a prop the component lacks.
+   Each component now sits in a package, so the app has no src/components/. A folder that comes back there is held to the rule too. */
 function sourceFiles(dir = COMPONENTS_DIR): string[] {
+  if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) return sourceFiles(path);
+    if (entry.isDirectory()) return entry.name === "node_modules" ? [] : sourceFiles(path);
     return /\.(ts|tsx)$/.test(entry.name) ? [path] : [];
   });
 }
@@ -75,12 +86,28 @@ function fileOffenses(file: string): Offense[] {
 describe("the component rule", () => {
   it("finds the component tree", () => {
     // An empty list would pass with no file read.
-    expect(sourceFiles().length).toBeGreaterThan(0);
+    expect(packageSiteDirs().flatMap((dir) => sourceFiles(dir)).length).toBeGreaterThan(0);
   });
 
   it("finds no component that reads a file, reads the env, imports the config, or imports a loader", () => {
-    const found = sourceFiles().flatMap(fileOffenses);
+    const found = [COMPONENTS_DIR, ...packageSiteDirs()].flatMap((dir) => sourceFiles(dir)).flatMap(fileOffenses);
     if (found.length > 0) throw new Error(report(found));
+  });
+
+  it("finds no package file that imports the app through the @ alias", () => {
+    // A package sits under each app, so an import of the app turns the order around (ADR 0023).
+    const found = packageSiteDirs()
+      .flatMap((dir) => sourceFiles(dir))
+      .flatMap((file) =>
+        readFileSync(file, "utf8")
+          .split("\n")
+          .flatMap((line, index) =>
+            [...line.matchAll(SPECIFIER)]
+              .filter(([, specifier]) => specifier.startsWith("@/"))
+              .map(([, specifier]) => `${relative(process.cwd(), file)}:${index + 1} imports ${specifier}`),
+          ),
+      );
+    expect(found).toEqual([]);
   });
 
   it("finds one offense in a component that imports a loader", () => {

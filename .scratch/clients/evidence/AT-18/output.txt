@@ -1,0 +1,8 @@
+$ cd apps/site && env -u CLIENT pnpm build
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> node scripts/client-build.mjs
+
+client build failed: Set CLIENT to the slug of one folder under clients/. Example: CLIENT=cpc pnpm build
+ ELIFECYCLE  Command failed with exit code 1.
+exit code: 1

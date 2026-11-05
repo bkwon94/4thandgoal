@@ -1,0 +1,47 @@
+# The Python side of the league package: the shared kernel. Every outside service enters through it.
+# It lists no other member of the workspace, so "uv run --exact --package cpc-league" fails an import of the apps.
+[project]
+name = "cpc-league"
+version = "0.1.0"
+description = "The shared kernel of the league: the models, the provider port, the snapshot, and the lineup."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=1.15.0",
+    "httpx>=0.28.1",
+    "pillow>=13.0.0",
+    "pydantic>=2.14.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/league/claude_port.py", "src/league/client.py", "src/league/files.py", "src/league/league_settings.py",
+           "src/league/history.py", "src/league/live.py", "src/league/models.py", "src/league/numbers.py",
+           "src/league/parse.py", "src/league/paths.py", "src/league/player_ids.py", "src/league/provider",
+           "src/league/season_inputs.py", "src/league/values.py", "tests"]
+# The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
+extraPaths = ["../../../apps/pipeline/tests"]
+
+[tool.uv.build-backend]
+module-name = "league"

@@ -3,17 +3,17 @@ Tests for the power rankings formula.
 They run on the fixture history, and on small histories built for one rule each.
 """
 import pytest
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.models import History, PastWeek
-from cornerstone.parse import parse_week
-from cornerstone.power_rankings import power_rankings
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.standings_table import standings
-from cornerstone.tunables import POWER_WEIGHTS
+from league.history import load_history
+from league.models import History, PastWeek
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.standings_table import standings
+from rankings.power_rankings import power_rankings
+from rankings.tunables import POWER_WEIGHTS
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 PAIRS = [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10), (11, 12)]
 
@@ -61,7 +61,7 @@ def test_week_one_has_no_movement_and_week_two_is_the_rank_change(fixture_raw_di
 def test_standing_rank_is_the_standings_order(fixture_raw_dir, fixture_history_root):
     h = _history(fixture_raw_dir, fixture_history_root)
     rows = power_rankings(h, 6)[6]
-    table = standings(parse_week(load_raw(fixture_raw_dir)), h, config=CONFIG)
+    table = standings(parse_week(load_raw(fixture_raw_dir)), h, client=CLIENT)
     assert [r.roster_id for r in sorted(rows, key=lambda r: r.ranks["standing"])] == [s.roster_id for s in table]
 
 

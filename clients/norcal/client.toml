@@ -1,0 +1,23 @@
+# The values of the NorCal client: the package list, the seasons, the package values, and the menu.
+# league, facts, and design are in every client, so the list omits them. NorCal takes the same list as CPC.
+packages = ["week", "rankings", "managers", "analyzer"]
+timezone = "America/New_York"
+
+# One table per season. The provider gives the sizes, the scoring, and the median game of each season.
+[seasons.2026]
+provider = "sleeper"
+league_id = "1402948824305049600"
+
+# Only the values that differ from the defaults in the package README.
+[values.league]
+# The closest chart: no chart for 6-point passing touchdowns exists.
+# Known gap: each projection uses the Sleeper key pts_ppr, which counts 4-point passing touchdowns. NorCal counts 6,
+# so each QB projection is 2 points low for each passing touchdown. The matchup scores stay exact.
+chart = "1QB1.0PPR4pt"
+
+[values.analyzer]
+finder = true
+
+# With no items, the menu takes the home page, then the package list in its order.
+[menu]
+layout = "bar"

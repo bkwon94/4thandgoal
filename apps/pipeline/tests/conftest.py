@@ -11,24 +11,30 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.models import ChartValues, InjuryPlay, NflverseWeek
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_trades, parse_week
-from cornerstone.paths import history_root, week_dir
-from cornerstone.pipeline import make_bundle
-from cornerstone.provider.raw import RawWeek
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.sheet import build_bundle
-from cornerstone.snapshot import week_snapshot
-from cornerstone.trades import default_cutoff, trades_for_week
+from league.history import load_history
+from league.models import ChartValues, InjuryPlay, NflverseWeek
+from league.nflverse import nflverse_week
+from league.parse import parse_trades, parse_week
+from league.paths import history_root, week_dir
+from league.provider.raw import RawWeek
+from league.provider.sleeper import load_raw
+from league.snapshot import week_snapshot
+from league.trades import default_cutoff, trades_for_week
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 ET = ZoneInfo("America/New_York")
+
+
+def build_bundle(*args, **kwargs):
+    """The week build of the pipeline, imported at the call. The API tests load this file, and the API env holds no
+    core package, so an import at load of the wire code, which imports the rankings package, fails there (AT-31)."""
+    from cornerstone.sheet import build_bundle as build
+
+    return build(*args, **kwargs)
 
 # The trend reason gives share percents, WOPR values, and the weeks behind them, such as "52%", "WOPR 55", and
 # "weeks 4 and 5".
@@ -105,7 +111,7 @@ def hbundle(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     return build_bundle(parse_week(raw), news=lambda pid: [],
                         history=load_history(fixture_history_root, raw, week=6),
-                        snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG), config=CONFIG)
+                        snapshot=week_snapshot(raw, fixture_history_root, 6, client=CLIENT), client=CLIENT)
 
 
 def _window(raw, h):
@@ -119,7 +125,7 @@ def _trade_bundle(raw_dir, history_root, nfl=None):
     raw = load_raw(raw_dir)
     h = load_history(history_root, raw, week=6)
     return build_bundle(parse_week(raw), news=lambda pid: [], history=h, trades=_window(raw, h), nfl=nfl,
-                        snapshot=week_snapshot(raw, history_root, 6, config=CONFIG), config=CONFIG)
+                        snapshot=week_snapshot(raw, history_root, 6, client=CLIENT), client=CLIENT)
 
 
 @pytest.fixture
@@ -179,14 +185,15 @@ def story_nfl(fixture_raw_dir) -> NflverseWeek:
 
 @pytest.fixture
 def story_bundle(fixture_raw_dir, story_nfl):
-    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, config=CONFIG)
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=story_nfl, client=CLIENT)
 
 
-SAVED = Path(__file__).parent.parent / "data" / "2026"
+SAVED = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026"
 
 
 def saved_repo(tmp_path, week):
-    """A repo of links to the saved raw data of `week`, the saved history, and the saved facts of the week before."""
+    """A folder of links to the saved raw data of `week`, the saved history, and the saved facts of the week before.
+    cpc_client(at=folder) reads it."""
     for path in (week_dir(tmp_path, 2026, week), history_root(tmp_path, 2026).parent):
         path.mkdir(parents=True, exist_ok=True)
     (week_dir(tmp_path, 2026, week) / "raw").symlink_to(SAVED / f"week-{week:02d}" / "raw")
@@ -200,6 +207,10 @@ def saved_repo(tmp_path, week):
 @pytest.fixture(scope="module")
 def week_8(tmp_path_factory):
     """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
+    # The import sits here, not at the top: the API tests load this file, and the API env holds no waiver package, which
+    # the build imports. Only the pipeline tests take this fixture.
+    from cornerstone.pipeline import make_bundle
+
     repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
-    bundle, _ = make_bundle(repo, 2026, 8, news=no_news, config=CONFIG)
+    bundle, _ = make_bundle(2026, 8, news=no_news, client=cpc_client(at=repo))
     return bundle

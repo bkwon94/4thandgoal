@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
-import fixture from "@/fixtures/rankings.json";
+import fixture from "@cpc/rankings/fixtures/rankings.json";
 import { season } from "@/lib/config";
 import HomePage from "./page";
 
@@ -31,7 +31,7 @@ describe("HomePage", () => {
     expect(screen.queryByText("League Weekly")).toBeNull();
     // The label and the red season number are separate text nodes.
     expect(screen.getByText("SEASON")).toBeTruthy();
-    expect(screen.getByText(String(season)).className).toContain("text-red");
+    expect(screen.getByText(String(season)).className).toContain("text-accent");
     expect(screen.getByText("Weekly Reports")).toBeTruthy();
   });
 

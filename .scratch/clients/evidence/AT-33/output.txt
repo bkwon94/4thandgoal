@@ -1,0 +1,4 @@
+$ find clients -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.mjs" \)
+exit code: 0
+$ find clients -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.mjs" \) | wc -l
+       0

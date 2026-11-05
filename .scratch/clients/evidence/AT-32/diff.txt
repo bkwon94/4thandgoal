@@ -1,0 +1,13 @@
+$ git diff -- packages/waiver/python/src/waiver/price.py   # the diff of the run
+diff --git a/packages/waiver/python/src/waiver/price.py b/packages/waiver/python/src/waiver/price.py
+index ee320b8..1ebdf03 100644
+--- a/packages/waiver/python/src/waiver/price.py
++++ b/packages/waiver/python/src/waiver/price.py
+@@ -1,6 +1,6 @@
+ """
+ The waiver price: the bid to win of each player, the last like him, and the outbid counts per budget level.
+-Pure code over the raw files and the bid history of the season, so the same inputs give the same price.
++Pure code over the raw files and the bid history of the season, so the same inputs give the same price. 
+ """
+ import json
+ import math

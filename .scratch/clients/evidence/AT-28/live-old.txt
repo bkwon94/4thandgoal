@@ -1,0 +1,21 @@
+$ curl -sS -i 'https://api.cpcfantasy.com/teams'
+HTTP/2 401 
+date: Thu, 05 Nov 2026 02:32:48 GMT
+server: Fly/366e4bf88 (2026-10-27)
+content-length: 0
+vary: Origin
+via: 2 fly.io, 2 fly.io
+fly-request-id: 01M6MRTG0QFH6PHCFRQSF03A1C-iad
+
+
+
+$ curl -sS -i 'https://api.cpcfantasy.com/teams?season=2026'
+HTTP/2 401 
+date: Thu, 05 Nov 2026 02:32:48 GMT
+server: Fly/366e4bf88 (2026-10-27)
+content-length: 0
+vary: Origin
+via: 2 fly.io, 2 fly.io
+fly-request-id: 01M6MRTG382QM2A1ZD1DXYWJ77-iad
+
+

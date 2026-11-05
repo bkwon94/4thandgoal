@@ -1,0 +1,29 @@
+$ git -C /Users/brian.kwon/repos/cpcfantasyfootball rev-parse --short HEAD   # main checkout, branch main
+003c70c
+$ pnpm --dir apps/site build   # in /Users/brian.kwon/repos/cpcfantasyfootball
+✓ Exporting using 9 workers (3/3) in 345ms
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[season]/[week]
+│ ├ ● /2026/week-06
+│ ├ ● /2026/week-07
+│ └ ● /2026/week-08
+├   /[season]/managers
+│ └ ● /2026/managers
+├   /[season]/managers/[roster]
+│ ├ ● /2026/managers/2
+│ ├ ● /2026/managers/3
+│ ├ ● /2026/managers/6
+│ └ ● [+9 more paths]
+├ ○ /analyze
+└ ○ /rankings
+
+Route (pages)
+─ ○ /404
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+exit code: 0

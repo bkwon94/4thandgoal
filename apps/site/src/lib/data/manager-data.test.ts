@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
-import { managers as fixture } from "@/fixtures/managers";
-import { rankings as rankingsFixture } from "@/fixtures/rankings";
+import { managers as fixture } from "@cpc/managers/fixtures/managers";
+import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
 
 afterEach(() => {
   vi.restoreAllMocks();

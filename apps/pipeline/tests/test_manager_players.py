@@ -2,8 +2,8 @@
 Tests for the manager players module: the best adds and the top performers of a roster.
 They build small past weeks in the test, so each case reads one rule.
 """
-from cornerstone.manager_players import best_adds, top_performers
-from cornerstone.models import History, Move, PastWeek
+from league.models import History, Move, PastWeek
+from managers.players import best_adds, top_performers
 
 
 def _week(week, points, rosters, starters=None, moves=(), projections=None, positions=None):

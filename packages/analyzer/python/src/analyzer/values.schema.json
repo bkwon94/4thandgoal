@@ -1,0 +1,13 @@
+{
+  "additionalProperties": false,
+  "description": "The package values of analyzer. The finder is off by default.",
+  "properties": {
+    "finder": {
+      "default": false,
+      "title": "Finder",
+      "type": "boolean"
+    }
+  },
+  "title": "AnalyzerValues",
+  "type": "object"
+}

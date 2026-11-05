@@ -10,9 +10,9 @@ from pathlib import Path
 
 import httpx
 
-from cornerstone.nflverse import nflverse_week
-from cornerstone.nflverse_rows import _sleeper_team
-from cornerstone.nflverse_usage import read_environment, read_plays, read_snaps, read_usage
+from league.nflverse import nflverse_week
+from league.nflverse_rows import _sleeper_team
+from league.nflverse_usage import read_environment, read_plays, read_snaps, read_usage
 
 FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 PBP_FIELDS = ("game_id", "season_type", "week", "posteam", "play_type", "two_point_attempt", "pass", "rush",

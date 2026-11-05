@@ -1,0 +1,26 @@
+# The files that go into the Cornerstone API image. The build context is the repo root, so the list starts empty.
+# The image keeps the workspace files, the lock file, the pyproject of the pipeline, the league, facts, and analyzer
+# packages, the API, the deploy script, the values of each client, and the tracked data of each client and the NFL.
+# The published pages and the assets of each client are for the site, so the image leaves them out.
+# Docker reads this file because it sits beside apps/api/Dockerfile.
+*
+!pyproject.toml
+!uv.lock
+!apps/pipeline/pyproject.toml
+!apps/pipeline/README.md
+!packages/league/python/pyproject.toml
+!packages/league/python/src
+!packages/facts/python/pyproject.toml
+!packages/facts/python/src
+!packages/analyzer/python/pyproject.toml
+!packages/analyzer/python/src
+!clients
+!data/nfl
+!apps/api/pyproject.toml
+!apps/api/src
+!apps/api/deploy
+data/nfl/cache
+clients/*/published
+clients/*/assets
+**/__pycache__
+**/.venv

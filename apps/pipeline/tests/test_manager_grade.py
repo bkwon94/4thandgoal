@@ -7,10 +7,16 @@ Other tests change the saved points or the chart values of one roster and read i
 from datetime import date
 
 import pytest
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
-from cornerstone.history import load_history
-from cornerstone.manager_grade import (
+from league.history import load_history
+from league.models import ChartValues, History, PastWeek
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.season_inputs import SeasonInputs
+from league.snapshot import week_snapshot
+from managers.entries import managers
+from managers.grade import (
     GradeParts,
     SlotRank,
     _league_reads,
@@ -24,15 +30,9 @@ from cornerstone.manager_grade import (
     roster_parts,
     season_points_per_game,
 )
-from cornerstone.managers import managers
-from cornerstone.models import ChartValues, History, PastWeek
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.season_inputs import SeasonInputs
-from cornerstone.snapshot import week_snapshot
-from cornerstone.tunables import GRADE_WEIGHTS
+from managers.tunables import GRADE_WEIGHTS
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
 def _ahead(raw):
@@ -41,13 +41,13 @@ def _ahead(raw):
 
 def _entries(raw_dir, root, with_snapshot=True):
     raw = load_raw(raw_dir)
-    snapshot = week_snapshot(raw, root, 6, config=CONFIG) if with_snapshot else None
+    snapshot = week_snapshot(raw, root, 6, client=CLIENT) if with_snapshot else None
     inputs = SeasonInputs(history=load_history(root, raw, week=6), snapshot=snapshot, projections_ahead=_ahead(raw))
     return managers(inputs, parse_week(raw).teams)
 
 
 def _snapshot(raw_dir, root):
-    return week_snapshot(load_raw(raw_dir), root, 6, config=CONFIG)
+    return week_snapshot(load_raw(raw_dir), root, 6, client=CLIENT)
 
 
 def _depth(grade, position):
@@ -182,14 +182,14 @@ def test_the_grade_is_null_without_a_snapshot(fixture_raw_dir, fixture_history_r
 
 
 def test_the_value_is_the_mean_over_the_weeks_ahead_with_a_missing_week_as_0():
-    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}}, CONFIG)
+    values = projected_values({7: {"a": 10.0, "b": 4.0}, 8: {"a": 20.0}}, CLIENT)
     assert values == {"a": 15.0, "b": 2.0}
 
 
 def test_the_value_stops_at_the_last_regular_week():
-    last = CONFIG.last_regular_week
+    last = CLIENT.settings.last_regular_week
     ahead = {last - 1: {"a": 10.0}, last: {"a": 20.0}, last + 1: {"a": 90.0}}
-    assert projected_values(ahead, CONFIG) == {"a": 15.0}
+    assert projected_values(ahead, CLIENT) == {"a": 15.0}
 
 
 def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixture_raw_dir, fixture_history_root):
@@ -200,11 +200,11 @@ def test_a_player_with_a_cold_month_and_a_high_projection_ahead_ranks_high(fixtu
     ahead = _ahead(load_raw(fixture_raw_dir))
     ahead = {week: {**projections, cold: 99.0} for week, projections in ahead.items()}
     positions = {pid: player.position for pid, player in snapshot.players.items()}
-    assert position_ranks(projected_values(ahead, CONFIG), positions)[cold] == 1
+    assert position_ranks(projected_values(ahead, CLIENT), positions)[cold] == 1
 
 
 def test_a_player_with_no_projection_ahead_has_no_rank():
-    ranks = position_ranks(projected_values({7: {"a": 10.0}}, CONFIG), {"a": "QB", "b": "QB"})
+    ranks = position_ranks(projected_values({7: {"a": 10.0}}, CLIENT), {"a": "QB", "b": "QB"})
     assert ranks == {"a": 1}
 
 
@@ -233,7 +233,7 @@ def test_a_starter_with_no_projection_ahead_is_a_hole(fixture_raw_dir, fixture_h
 def test_the_grade_is_null_without_projections_ahead(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     inputs = SeasonInputs(history=load_history(fixture_history_root, raw, week=6),
-                          snapshot=week_snapshot(raw, fixture_history_root, 6, config=CONFIG))
+                          snapshot=week_snapshot(raw, fixture_history_root, 6, client=CLIENT))
     entries = managers(inputs, parse_week(raw).teams)
     assert all(entry.grade is None for entry in entries)
 
@@ -332,4 +332,4 @@ def _slot(position, rank, depth="fine"):
     ([_slot("QB", 5), _slot("RB", 6), _slot("WR", 4), _slot("TE", 7)], "Middle of the league at every position."),
 ])
 def test_the_grade_read_names_the_strong_deep_soft_and_thin_positions(slots, read):
-    assert grade_read(slots, config=CONFIG) == read
+    assert grade_read(slots, client=CLIENT) == read

@@ -1,9 +1,12 @@
 /**
- * Checks that out/ holds a byte-identical copy of every file under public/, and that each week page holds its text.
- * Run it after pnpm build. It exits 1 and names the first mismatch.
+ * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, that
+ * each package the client omits is absent, and that the pages show the copy, the theme button, and the finder of the
+ * client. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ClientBuildError, clientRoot, readBrand, readClient, readCopy } from "./client-build.mjs";
+import { setsOf } from "@cpc/design/brand/brand.ts";
 
 function filesUnder(dir) {
   return readdirSync(dir, { withFileTypes: true })
@@ -54,4 +57,55 @@ for (const file of pages) {
     if (!text.includes(escapeHtml(row.team.name))) fail(`${html} does not contain the team name ${row.team.name}`);
   }
 }
-console.log(`check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name.`);
+// An omitted package must leave no route and no code in the export. Each mark is a route of the package and a text
+// that only its client code holds, so a shared page that imports a part of the package fails the check.
+const PACKAGE_MARKS = {
+  waiver: { route: /(^|\/)waiver\/index\.html$/, text: "War chest" },
+  // The movement cell of the rankings table, a client component that the home page chapter of rankings shows too.
+  rankings: { route: /^rankings\/index\.html$/, text: "No last week" },
+  // The key prefix of the teams store of @cpc/analyzer. The analyzer page and the teams prefetch of the home page both
+  // hold it, so the mark finds a home page that still imports a part of the analyzer.
+  analyzer: { route: /(^|\/)analyze\/index\.html$/, text: "cpc.teams." },
+  // The title of the points line, a client component of @cpc/managers that only the manager page shows.
+  managers: { route: /(^|\/)managers\/index\.html$/, text: "Points per week" },
+};
+
+if (!process.env.CLIENT) fail("set CLIENT to the client of the build, the same value as pnpm build");
+let values;
+try {
+  values = readClient(clientRoot(process.env), process.env.CLIENT);
+} catch (error) {
+  if (!(error instanceof ClientBuildError)) throw error;
+  fail(error.message);
+}
+const exported = filesUnder("out");
+const omitted = Object.keys(PACKAGE_MARKS).filter((name) => !values.packages.includes(name));
+for (const name of omitted) {
+  const { route, text } = PACKAGE_MARKS[name];
+  const page = exported.find((file) => route.test(file.slice("out/".length)));
+  if (page) fail(`${page} is a route of ${name}, which the client ${process.env.CLIENT} omits`);
+  const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
+  if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
+}
+// The marks of the client values: the masthead text of copy.toml on the home page, the theme button only for a brand
+// with two sets, and the finder flag of the analyzer page. The flag sits in the page data of the static HTML, because
+// the finder shows only after a reader picks two teams.
+const copy = readCopy(clientRoot(process.env), process.env.CLIENT);
+const home = readFileSync(join("out", "index.html"), "utf8");
+if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the masthead text "${copy.masthead}"`);
+const themeButton = setsOf(readBrand(clientRoot(process.env), process.env.CLIENT)).length === 2;
+const themed = exported.find((file) => file.endsWith(".html") && readFileSync(file, "utf8").includes("Switch to"));
+if (themeButton && !themed) fail("no page shows the theme button, but the brand has two sets");
+if (!themeButton && themed) fail(`${themed} shows a theme button, but the brand has one set`);
+let finder = "no analyzer";
+if (values.packages.includes("analyzer")) {
+  const finderOn = values.values?.analyzer?.finder ?? false;
+  const analyze = readFileSync(join("out", "analyze", "index.html"), "utf8");
+  if (!analyze.includes(`finderOn\\":${finderOn}`)) fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
+  finder = finderOn ? "the finder" : "no finder";
+}
+console.log(
+  `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
+    `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it; ` +
+    `the pages show "${copy.masthead}", ${themeButton ? "the" : "no"} theme button, and ${finder}.`,
+);

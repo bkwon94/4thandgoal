@@ -1,0 +1,169 @@
+{
+  "$defs": {
+    "Menu": {
+      "additionalProperties": false,
+      "description": "The menu layout and its items. With no items, the site build puts the home page first, then the package list.",
+      "properties": {
+        "layout": {
+          "default": "hamburger",
+          "enum": [
+            "hamburger",
+            "bar",
+            "tabs"
+          ],
+          "title": "Layout",
+          "type": "string"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/MenuItem"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Items"
+        }
+      },
+      "title": "Menu",
+      "type": "object"
+    },
+    "MenuItem": {
+      "additionalProperties": false,
+      "description": "One menu item: the home page or one package of the list, with an optional label.",
+      "properties": {
+        "page": {
+          "anyOf": [
+            {
+              "const": "home",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "package": {
+          "anyOf": [
+            {
+              "enum": [
+                "week",
+                "rankings",
+                "managers",
+                "waiver",
+                "analyzer"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Package"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        }
+      },
+      "title": "MenuItem",
+      "type": "object"
+    },
+    "Season": {
+      "additionalProperties": false,
+      "description": "The provider and the league id of one season. The provider gives the league a new id each season.",
+      "properties": {
+        "provider": {
+          "const": "sleeper",
+          "title": "Provider",
+          "type": "string"
+        },
+        "league_id": {
+          "title": "League Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "league_id"
+      ],
+      "title": "Season",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The values of one client. The seasons, the timezone, and the package list are required.",
+  "properties": {
+    "packages": {
+      "items": {
+        "enum": [
+          "week",
+          "rankings",
+          "managers",
+          "waiver",
+          "analyzer"
+        ],
+        "type": "string"
+      },
+      "title": "Packages",
+      "type": "array"
+    },
+    "timezone": {
+      "title": "Timezone",
+      "type": "string"
+    },
+    "usage_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Usage Code"
+    },
+    "seasons": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Season"
+      },
+      "minProperties": 1,
+      "title": "Seasons",
+      "type": "object"
+    },
+    "values": {
+      "additionalProperties": {
+        "type": "object"
+      },
+      "title": "Values",
+      "type": "object"
+    },
+    "menu": {
+      "$ref": "#/$defs/Menu"
+    }
+  },
+  "required": [
+    "packages",
+    "timezone",
+    "seasons"
+  ],
+  "title": "ClientValues",
+  "type": "object"
+}

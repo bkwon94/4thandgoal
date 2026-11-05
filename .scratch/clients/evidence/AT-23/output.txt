@@ -1,0 +1,70 @@
+$ cat <temp root>/clients/solo/client.toml
+# A test client with only the week package.
+packages = ["week"]
+timezone = "America/New_York"
+
+[seasons.2026]
+provider = "sleeper"
+league_id = "1402948824305049600"
+
+[values.league]
+chart = "1QB1.0PPR4pt"
+
+[menu]
+layout = "bar"
+$ CLIENT=solo CLIENT_ROOT=<temp root> pnpm --dir apps/site build
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/5) ...
+  Generating static pages using 8 workers (1/5) 
+  Generating static pages using 8 workers (2/5) 
+  Generating static pages using 8 workers (3/5) 
+✓ Generating static pages using 8 workers (5/5) in 488ms
+  Finalizing page optimization ...
+  Exporting using 9 workers (0/3) ...
+✓ Exporting using 9 workers (3/3) in 343ms
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+└   /[season]/[week]
+  └ ● /2026/week-08
+
+Route (pages)
+─ ○ /404
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+exit code: 0
+$ (cd apps/site/out && find . -name "*.html" | sort)
+./_not-found/index.html
+./2026/week-08/index.html
+./404.html
+./404/index.html
+./index.html
+$ find apps/site/out -type d -name rankings
+exit code: 0
+(<temp root> is /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at23; it holds the brand, the copy, and the week 8 published data of norcal)
+$ grep -o "<section id=\"[a-z-]*\"" apps/site/out/2026/week-08/index.html
+<section id="motw"
+<section id="game-changer"
+<section id="awards"
+<section id="leaders"
+<section id="trades"
+<section id="matchups"
+<section id="standings"
+<section id="next-week"
+$ grep -o "<h2[^>]*>[^<]*</h2>" apps/site/out/2026/week-08/index.html | sed "s/<[^>]*>//g"
+Game Changer
+Awards
+Position Leaders
+Trades
+All Matchups
+Standings
+Next Week · Week 9
+$ grep -ci "power rankings\|/rankings/" apps/site/out/2026/week-08/index.html
+0
+$ grep -o "<h2[^>]*>[^<]*</h2>" apps/site/out/index.html | sed "s/<[^>]*>//g"   # the home page
+Weekly Reports
+$ grep -ci "power rankings" apps/site/out/index.html
+0

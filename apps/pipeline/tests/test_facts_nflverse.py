@@ -4,19 +4,20 @@ facts, and the leader volume facts.
 They use the recorded week 6 nflverse files and the recorded Sleeper data.
 """
 import re
-from pathlib import Path
 
 import pytest
+from cpc import cpc_client
 
-from cornerstone.config import cornerstone_config
-from cornerstone.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
-from cornerstone.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
-from cornerstone.nflverse import nflverse_week
-from cornerstone.parse import parse_week
-from cornerstone.provider.sleeper import load_raw
-from cornerstone.sheet import NUMBER_TOKEN, build_bundle, fmt
+from cornerstone.sheet import build_bundle
+from facts.tokens import NUMBER_TOKEN, fmt
+from facts.writer import DEFAULT_PROMPTS
+from league.models import ExpectedGame, ExpectedPoints, NflverseWeek, TeamWeek, UsageWeek
+from league.nflverse import nflverse_week
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from week.facts_nflverse import EXPECTED_AWARD_FLOOR, drop_lines, drop_value, volume_ranks
 
-CONFIG = cornerstone_config()
+CLIENT = cpc_client()
 
 
 def test_drop_value_golden(nfl_week6, fixture_raw_dir):
@@ -82,7 +83,7 @@ def test_stale_nflverse_week_degrades(fixture_nflverse_dir, fixture_raw_dir, tmp
 def test_no_drops_gives_source_none(fixture_raw_dir):
     wk = parse_week(load_raw(fixture_raw_dir))
     wk = wk.model_copy(update={"stats": {}})
-    bundle = build_bundle(wk, news=lambda pid: [], config=CONFIG)
+    bundle = build_bundle(wk, news=lambda pid: [], client=CLIENT)
     assert bundle.data.drop_source == "none" and bundle.data.drops == []
     assert "W.drops" not in bundle.sheet.facts
 
@@ -112,7 +113,7 @@ def test_no_return_claim_without_games_played(fixture_raw_dir, fixture_history_r
     raw = load_raw(fixture_raw_dir)
     wk = parse_week(raw)
     stats = {**wk.stats, "5927": {**wk.stats.get("5927", {}), "gp": 0}}
-    bundle = build_bundle(wk.model_copy(update={"stats": stats}), news=lambda pid: [], nfl=nfl_week6, config=CONFIG)
+    bundle = build_bundle(wk.model_copy(update={"stats": stats}), news=lambda pid: [], nfl=nfl_week6, client=CLIENT)
     assert "I.5927.history" not in bundle.sheet.facts
 
 
@@ -133,13 +134,13 @@ def test_one_drop_is_one_pass(fixture_raw_dir):
     stats = {p: {k: v for k, v in s.items() if k not in ("rec_drop", "rec_tgt")} for p, s in wk.stats.items()}
     stats[line.player_id] = {**stats.get(line.player_id, {}), "rec_drop": 1}
     week = wk.model_copy(update={"stats": stats})
-    f = build_bundle(week, news=lambda pid: [], config=CONFIG).sheet.facts
+    f = build_bundle(week, news=lambda pid: [], client=CLIENT).sheet.facts
     assert f[f"D.{line.player_id}"].text == f"{line.name} dropped 1 pass this week."
     assert f["W.drops"].text == f"Most drops this week: {line.name} ({wk.teams[side.roster_id].name}), 1 drop."
 
 
 def test_missing_yardline_is_not_the_end_zone(fixture_raw_dir):
-    from cornerstone.models import DropPlay
+    from league.models import DropPlay
     wk = parse_week(load_raw(fixture_raw_dir))
     play = DropPlay(game_id="g", play_id="p", air_yards=23.0, yardline_100=None)
     # One reception and 23 air yards, with no touchdown.
@@ -152,7 +153,7 @@ def _expected_bundle(fixture_raw_dir, nfl_week6, games: dict[str, list[tuple[int
         pid: [ExpectedGame(week=w, game_id=f"2026_{w:02d}_{pid}", expected=x) for w, x in played]
         for pid, played in games.items()})
     nfl = nfl_week6.model_copy(update={"expected": expected})
-    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl, config=CONFIG)
+    return build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl, client=CLIENT)
 
 
 # Started: Derrick Henry 4.5, Davante Adams 5.4, Stefon Diggs 13.4, Mike Evans 10.9.
@@ -207,7 +208,7 @@ def test_a_bench_player_never_gets_an_expected_award(fixture_raw_dir, nfl_week6)
 
 def test_missing_expected_data_builds_without_the_awards(fixture_raw_dir, nfl_week6):
     nfl = nfl_week6.model_copy(update={"expected": None})
-    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl, config=CONFIG)
+    b = build_bundle(parse_week(load_raw(fixture_raw_dir)), news=lambda pid: [], nfl=nfl, client=CLIENT)
     assert "AW.unlucky" not in b.sheet.facts and "AW.lucky" not in b.sheet.facts
     assert "awards" in {c.key for c in b.sheet.chapters}
 
@@ -248,7 +249,7 @@ def test_a_starter_with_two_awards_never_wins_an_expected_award(fixture_raw_dir,
 
 
 def test_the_vocabulary_rule_lines_carry_the_floor():
-    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    vocabulary = (DEFAULT_PROMPTS / "vocabulary.md").read_text()
     floor = fmt(EXPECTED_AWARD_FLOOR)
     unlucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Unlucky**"))
     lucky = next(line for line in vocabulary.splitlines() if line.startswith("- **Lucky**"))
@@ -266,7 +267,7 @@ def _shootout_bundle(fixture_raw_dir, environment, next_games=(("KC", "SEA"), ("
     wk = parse_week(load_raw(fixture_raw_dir))
     nfl = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, environment=environment,
                        next_games=None if next_games is None else list(next_games))
-    return build_bundle(wk, news=lambda pid: [], nfl=nfl, config=CONFIG)
+    return build_bundle(wk, news=lambda pid: [], nfl=nfl, client=CLIENT)
 
 
 # KC has a positive pass rate over expected over its last 3 games, though week 3 had many runs: 1530 over 300
@@ -359,7 +360,7 @@ def test_a_sheet_with_the_environment_missing_has_no_shootout_fact(fixture_raw_d
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, None)) == []
     assert _shootout_ids(_shootout_bundle(fixture_raw_dir, SHOOTOUT_ENVIRONMENT, next_games=None)) == []
     wk = parse_week(load_raw(fixture_raw_dir))
-    assert _shootout_ids(build_bundle(wk, news=lambda pid: [], config=CONFIG)) == []
+    assert _shootout_ids(build_bundle(wk, news=lambda pid: [], client=CLIENT)) == []
 
 
 def _usage(week: int = 6, wopr: int | None = None, carry_share: int = 0) -> UsageWeek:
@@ -370,7 +371,7 @@ def _usage(week: int = 6, wopr: int | None = None, carry_share: int = 0) -> Usag
 def _volume_facts(fixture_raw_dir, usage):
     wk = parse_week(load_raw(fixture_raw_dir))
     nfl = NflverseWeek(sources={}, gsis={}, drops=None, injuries=None, usage=usage)
-    return build_bundle(wk, news=lambda pid: [], nfl=nfl, config=CONFIG)
+    return build_bundle(wk, news=lambda pid: [], nfl=nfl, client=CLIENT)
 
 
 def _bench_id(fixture_raw_dir, position: str) -> str:
@@ -470,7 +471,7 @@ def test_every_number_in_a_volume_fact_text_is_in_its_numbers(vbundle):
 
 
 def test_the_vocabulary_lines_define_wopr_and_carry_share():
-    vocabulary = (Path(__file__).parents[1] / "src" / "cornerstone" / "prompts" / "vocabulary.md").read_text()
+    vocabulary = (DEFAULT_PROMPTS / "vocabulary.md").read_text()
     wopr = next(line for line in vocabulary.splitlines() if line.startswith("- **WOPR**"))
     carry = next(line for line in vocabulary.splitlines() if line.startswith("- **carry share**"))
     assert "1.5 times target share plus 0.7 times air yards share" in wopr

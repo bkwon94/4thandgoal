@@ -1,0 +1,10 @@
+$ git status --short
+?? .scratch/clients/evidence/
+exit code: 0
+
+$ git status --short -- . ':(exclude).scratch/clients/evidence'
+exit code: 0
+$ git check-ignore -v apps/site/out apps/site/public/2026 data/nfl/cache
+.gitignore:3:out	apps/site/out
+.gitignore:15:apps/site/public/[0-9][0-9][0-9][0-9]/	apps/site/public/2026
+.gitignore:10:data/nfl/cache/	data/nfl/cache

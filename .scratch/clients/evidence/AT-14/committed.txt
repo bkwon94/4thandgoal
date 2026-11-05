@@ -1,0 +1,13 @@
+$ jq -c ".pick.sides[1].top" clients/norcal/published/2026/week-08/page.json
+{"player_id":"6801","name":"Tee Higgins","position":"WR","nfl_team":"CIN","points":37.5,"projection":15.97,"season_avg":null,"started":true,"slot":"WR","injury_status":null,"injury_body_part":null}
+$ jq -c "paths(. == 15.97)" clients/norcal/published/2026/week-08/page.json
+["pick","sides",1,"top","projection"]
+["motw","top_scorer","4","projection"]
+["motw","drivers",0,"projection"]
+["matchups",2,"sides",1,"top","projection"]
+$ jq -c ".[] | select(.player_id==\"6801\") | {player_id, week, name: (.player.first_name+\" \"+.player.last_name), position: .player.position, pts_ppr: .stats.pts_ppr, pts_half_ppr: .stats.pts_half_ppr}" clients/norcal/data/2026/week-08/raw/projections.json
+{"player_id":"6801","week":8,"name":"Tee Higgins","position":"WR","pts_ppr":15.97,"pts_half_ppr":13.67}
+$ jq -c ".[] | select(.players | index(\"6801\")) | {roster_id}" clients/norcal/data/2026/week-08/raw/rosters.json
+{"roster_id":4}
+$ jq -c ".scoring_settings.rec" clients/norcal/data/2026/week-08/raw/league.json
+1.0
