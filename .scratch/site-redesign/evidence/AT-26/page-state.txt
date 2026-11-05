@@ -1,1 +1,13 @@
-{"boxRole":"alert","boxHTML":"<p role=\"alert\" class=\"m-0 text-body font-bold text-accent-ink\">Caleb Williams is no longer on Bo Girds.</p>","addPlayerEnabled":[true,true],"tryAgain":false}
+AT-26 on the CPC export with the real local API. Built from feef43b4.
+The trade of AT-23: Your Team Bo Girds gives Kenneth Walker III; Team Two Teehee gives Tee Higgins.
+Before the tap, a wrapper on window.fetch sets the player that Bo Girds gives to 11560, Caleb Williams of Lil Fridge, in the body of the POST to /analyze.
+The real local API checks the trade and answers. No answer is mocked.
+375 light bodies through the wrapper: ["{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}"]
+375 light: {"alert":"Caleb Williams is no longer on Bo Girds.","boxHasIcon":true,"tryAgain":["Try Again disabled=false"],"addPlayerEnabled":[true,true],"bar":["\"Grade the Trade\" disabled=false top=770"],"alertTop":841}
+375 dark bodies through the wrapper: ["{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}"]
+375 dark: {"alert":"Caleb Williams is no longer on Bo Girds.","boxHasIcon":true,"tryAgain":["Try Again disabled=false"],"addPlayerEnabled":[true,true],"bar":["\"Grade the Trade\" disabled=false top=770"],"alertTop":841}
+1280 light bodies through the wrapper: ["{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}"]
+1280 light: {"alert":"Caleb Williams is no longer on Bo Girds.","boxHasIcon":true,"tryAgain":["Try Again disabled=false"],"addPlayerEnabled":[true,true],"bar":["\"Grade the Trade\" disabled=false top=840"],"alertTop":626}
+The first 1280 dark try got 429 "Too many requests" from the rate limit of the API, and its page showed that message with Try Again. A retake after 75 s got the 422 and replaced it:
+1280 dark bodies through the wrapper: ["{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}"]
+1280 dark: {"alert":"Caleb Williams is no longer on Bo Girds.","boxHasIcon":true,"tryAgain":["Try Again disabled=false"],"addPlayerEnabled":[true,true],"bar":["\"Grade the Trade\" disabled=false top=840"],"alertTop":626}

@@ -1,0 +1,21 @@
+AT-20 on the CPC export with the real local API. Built from feef43b4.
+Your Team is Bo Girds (roster 6). Team Two is Teehee (roster 12).
+375 light sheet: {"tablist":44,"tabs":["Teehee 75x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+375 light card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+375 dark sheet: {"tablist":44,"tabs":["Teehee 75x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+375 dark card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+768 light sheet: {"tablist":44,"tabs":["Teehee 78x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+768 light card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+768 dark sheet: {"tablist":44,"tabs":["Teehee 78x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+768 dark card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+1280 light sheet: {"tablist":44,"tabs":["Teehee 82x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+1280 light card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+1280 dark sheet: {"tablist":44,"tabs":["Teehee 82x44 shown=true"],"search":true,"chips":"All QB RB WR TE DEF"}
+1280 dark card after Done: Tee HigginsWR CIN · from Teehee | Bhayshul TutenRB JAX · from Teehee
+375 dark, 2 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 75x44 shown=true"]}
+375 dark, 3 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 75x44 shown=true","The Blue Tent 112x44 shown=true"]}
+375 dark, 4 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 75x44 shown=true","The Blue Tent 112x44 shown=true","All You Need Is Love 147x44 shown=true"]}
+1280 dark, 2 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 82x44 shown=true"]}
+1280 dark, 3 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 82x44 shown=true","The Blue Tent 125x44 shown=true"]}
+1280 dark, 4 teams, sheet of "Add a player Your Team gets": {"tablist":44,"tabs":["Teehee 82x44 shown=true","The Blue Tent 125x44 shown=true","All You Need Is Love 166x44 shown=true"]}
+(waited 61 s for a new window of the rate limit)

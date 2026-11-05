@@ -1,6 +1,40 @@
 [
   {
+    "shot": "375-light",
     "url": "http://localhost:8080/clients/cpc/analyze",
+    "method": "POST",
+    "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
+    "status": 422,
+    "answer": "{\"detail\":{\"message\":\"Caleb Williams is no longer on Bo Girds.\",\"player_id\":\"11560\"}}"
+  },
+  {
+    "shot": "375-dark",
+    "url": "http://localhost:8080/clients/cpc/analyze",
+    "method": "POST",
+    "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
+    "status": 422,
+    "answer": "{\"detail\":{\"message\":\"Caleb Williams is no longer on Bo Girds.\",\"player_id\":\"11560\"}}"
+  },
+  {
+    "shot": "1280-light",
+    "url": "http://localhost:8080/clients/cpc/analyze",
+    "method": "POST",
+    "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
+    "status": 422,
+    "answer": "{\"detail\":{\"message\":\"Caleb Williams is no longer on Bo Girds.\",\"player_id\":\"11560\"}}"
+  },
+  {
+    "shot": "1280-dark, first try, replaced",
+    "url": "http://localhost:8080/clients/cpc/analyze",
+    "method": "POST",
+    "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
+    "status": 429,
+    "answer": "{\"detail\":\"Too many requests. Try again later.\"}"
+  },
+  {
+    "shot": "1280-dark",
+    "url": "http://localhost:8080/clients/cpc/analyze",
+    "method": "POST",
     "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
     "status": 422,
     "answer": "{\"detail\":{\"message\":\"Caleb Williams is no longer on Bo Girds.\",\"player_id\":\"11560\"}}"

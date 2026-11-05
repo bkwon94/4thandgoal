@@ -1,1 +1,86 @@
-"{\"reduce\":true}"
+AT-8 on the CPC export at 375 px, dark theme, with reducedMotion "reduce" in the Playwright context. Built from feef43b4. Real export on port 4173.
+Each case loads the page, waits 1.5 s, scrolls the card to 120 px under the top, holds the pointer down on it for 150 ms, and releases.
+The log counts running animations in each frame of requestAnimationFrame from the first script run, and records each animationstart, transitionrun, and transitionstart event.
+
+== week: http://localhost:4173/2026/week-08/
+prefers-reduced-motion: reduce matches: true
+While pressed: :active true, transform none, transition-duration 0s, width 341 px (width at rest 341 px)
+0 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+61 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+64 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+93 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+95 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+127 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+130 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+159 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+161 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+194 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+196 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+226 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+228 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+261 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+264 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+294 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+296 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+328 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+330 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+359 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+361 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+395 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+397 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+426 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+428 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+462 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+464 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+493 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+495 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+528 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+530 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+559 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+561 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+594 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+596 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":379,"running":0}
+Frames of requestAnimationFrame since the load: 179; frames with a running animation: 6
+Running animations seen: 38 ms reveal-safety on <div class="">; 40 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 40 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 40 ms reveal-safety on <div class="">; 40 ms reveal-safety on <div class="h-full">; 40 ms reveal-safety on <div class="flex flex-col gap-sp-3">; 61 ms reveal-safety on <div class="">; 61 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 61 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 61 ms reveal-safety on <div class="h-full">; 61 ms reveal-safety on <div class="flex flex-col gap-sp-3">; 94 ms reveal-safety on <div class="">; 94 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 94 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 94 ms reveal-safety on <div class="h-full">; 94 ms reveal-safety on <div class="flex flex-col gap-sp-3">; 100 ms reveal-safety on <div class="">; 100 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 100 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 100 ms reveal-safety on <div class="h-full">; 100 ms reveal-safety on <div class="flex flex-col gap-sp-3">; 117 ms reveal-safety on <div class="">; 117 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 117 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 117 ms reveal-safety on <div class="h-full">; 117 ms reveal-safety on <div class="flex flex-col gap-sp-3">; 124 ms reveal-safety on <div class="">; 124 ms reveal-safety on <div class="mt-sp-5 flex items-center justify-betwee">; 124 ms reveal-safety on <div class="mt-sp-5 flex flex-col gap-sp-3">; 124 ms reveal-safety on <div class="h-full">; 124 ms reveal-safety on <div class="flex flex-col gap-sp-3">
+animationstart, transitionrun, and transitionstart events: none
+
+== rankings: http://localhost:4173/rankings/
+prefers-reduced-motion: reduce matches: true
+While pressed: :active true, transform none, transition-duration 0s, width 341 px (width at rest 341 px)
+0 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":0,"running":0}
+32 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+35 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+74 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+77 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+111 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+114 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+143 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+146 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+179 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+182 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+211 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+213 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+247 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+249 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+292 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+294 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+328 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+330 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+361 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+363 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+393 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+395 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+427 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+429 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+463 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+465 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+511 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+515 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+543 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+545 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+577 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+579 ms after the tap: {"expanded":"true","panelHidden":false,"opacity":"1","transform":"none","height":299,"running":0}
+Frames of requestAnimationFrame since the load: 172; frames with a running animation: 3
+Running animations seen: 13 ms reveal-safety on <div class="">; 13 ms reveal-safety on <div class="mt-sp-5 grid grid-cols-3 gap-sp-2">; 28 ms reveal-safety on <div class="">; 28 ms reveal-safety on <div class="mt-sp-5 grid grid-cols-3 gap-sp-2">; 33 ms reveal-safety on <div class="">; 33 ms reveal-safety on <div class="mt-sp-5 grid grid-cols-3 gap-sp-2">
+animationstart, transitionrun, and transitionstart events: none
+

@@ -25,6 +25,7 @@ The CPC half:
 4. The instrument: `agent-browser` 0.25.4. The light theme sets `cpc.theme` to `"light"`. The dark theme removes the key, because dark is the default.
 5. Before each full-page shot, the page scrolls to the end and back, so each chapter that rises on view shows. The dock is fixed, so a full-page shot shows it where the first screen ends.
 6. A test of both clients keeps its CPC files under `cpc/`. A test with its own evidence list takes the widths and the themes of that list.
+7. Round 1 rebuilt the CPC export from `feef43b4` with the same commands. Its instrument is Playwright 1.64.1 of the repo, in one script per group of tests. An init script or a reload sets the theme the same way. A full-page shot still runs the scroll pass first.
 
 ## AT-1: Dark is the first paint with no stored choice
 
@@ -70,17 +71,21 @@ Observation: CPC: The home page shows the CPC red buttons and accents, the CPC l
 
 ## AT-7: The hero and the motion
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The hero shows a scan line once. The content under it rises in a stagger, and the share bars grow once.
-Files: `evidence/AT-7/cpc/animations.txt`, `evidence/AT-7/cpc/load-1280.webm`, `evidence/AT-7/cpc/load-375.webm`, `evidence/AT-7/norcal/load-375-dark.webm`, `evidence/AT-7/norcal/load-1280-dark.webm`
-Observation: CPC: `animations.txt` lists 5 running animations after the load, with the `hero-scan` animation first. The recording frames show the hero content and the tiles fade and rise in over about 0.3 s after the first paint; the scan line and the bar growth are too small to read in the frames at this size. NorCal: In both recordings, the first frame shows a light line at the top edge of the empty hero, then the hero content fades and rises in over about 0.5 s, and the share bar under the two teams of the hero shows. The game cards with their share bars sit under the first screen, so the recordings do not show their growth.
+Files: `evidence/AT-7/cpc/load-1280.webm`, `evidence/AT-7/cpc/load-375.webm`, `evidence/AT-7/cpc/hero-frames-1280.png`, `evidence/AT-7/cpc/hero-frames-375.png`, `evidence/AT-7/cpc/cards-frames-1280.png`, `evidence/AT-7/cpc/cards-frames-375.png`, `evidence/AT-7/cpc/animations.txt`, `evidence/AT-7/norcal/load-375-dark.webm`, `evidence/AT-7/norcal/load-1280-dark.webm`
+Observation: CPC: The hero crops at 1280 and 375 px show one thin light line that moves from the top of the hero to its foot between about 0.1 and 0.6 s, and `animations.txt` shows the `hero-scan` opacity at 0 from 1.6 s on, with no second pass. The hero content and the game cards fade and rise 8 px in. The share bars of the hero and of the game cards show at their full length in the first frame where they show: the fill widths stay 338, 197, and 194 px at 1280 px over the whole log, and no running animation changes the width or the scale of a bar fill. NorCal: In both recordings, the first frame shows a light line at the top edge of the empty hero, then the hero content fades and rises in over about 0.5 s, and the share bar under the two teams of the hero shows. The game cards with their share bars sit under the first screen, so the recordings do not show their growth.
 
 ## AT-8: Reduced motion
 
+Round 1: built from feef43b4.
+
 App: site
 Then: No scan line, no rise, no bar growth, and no tap scale. All content shows at rest.
-Files: `evidence/AT-8/animations.txt`, `evidence/AT-8/load-and-tap-375.webm`, `evidence/AT-8/state.txt`
-Observation: With reduced motion on, `animations.txt` lists 0 running animations in the 1.5 s after the load. The recording shows the page at rest from the first painted frame, then the open recap of The Blue Tent card after the tap. The animation list covers the load only, not the tap.
+Files: `evidence/AT-8/load-and-tap-375.webm`, `evidence/AT-8/week-load-375.png`, `evidence/AT-8/rankings-load-375.png`, `evidence/AT-8/week-tap-frames.png`, `evidence/AT-8/rankings-tap-frames.png`, `evidence/AT-8/state.txt`
+Observation: With reduced motion on, a tap on the Teehee game card and a tap on the Teehee ranking card each show the pressed card at its rest size (transform `none`, transition 0s, width 341 px while `:active`). Each recap or panel shows whole at opacity 1 and transform `none` from the first sample after the release, and no animation or transition event fires during the taps. In the first 104 ms of each load, before the page hydrates, the `reveal-safety` animation runs on the reveal boxes; the load shots show the page at rest.
 
 ## AT-9: The dock on a phone
 
@@ -91,17 +96,21 @@ Observation: CPC: At 375 px the dock stays at the bottom both at the top and at 
 
 ## AT-10: The pill bar on a desktop
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The top band shows the brand mark, the pill bar with full labels, the week chip, and the theme button. Rankings is marked, and the top band stays on screen.
-Files: `evidence/AT-10/cpc/768-light-scrolled.png`, `evidence/AT-10/cpc/768-light-top.png`, `evidence/AT-10/cpc/768-dark-scrolled.png`, `evidence/AT-10/cpc/768-dark-top.png`, `evidence/AT-10/cpc/1280-light-scrolled.png`, `evidence/AT-10/cpc/1280-light-top.png`, `evidence/AT-10/cpc/1280-dark-scrolled.png`, `evidence/AT-10/cpc/1280-dark-top.png`, `evidence/AT-10/cpc/state.txt`, `evidence/AT-10/norcal/768-light-top.png`, `evidence/AT-10/norcal/768-light-scrolled.png`, `evidence/AT-10/norcal/768-dark-top.png`, `evidence/AT-10/norcal/768-dark-scrolled.png`, `evidence/AT-10/norcal/1280-light-top.png`, `evidence/AT-10/norcal/1280-light-scrolled.png`, `evidence/AT-10/norcal/1280-dark-top.png`, `evidence/AT-10/norcal/1280-dark-scrolled.png`
-Observation: CPC: At 768 and 1280 px the top band shows the logo, the pill bar with full labels, the WK 08 chip, and the theme button, and Power Rankings is the marked pill. After a scroll of 898 px the band stays at the top (`position: sticky`, top 0). At 768 px the pill bar sits on a second row under the brand row. NorCal: The top band shows "NORCAL APEX 6", the pill bar with the full labels, the "WK 08" chip, and the theme button, and "Power Rankings" is marked. After the scroll to the end of the rankings page, the top band stays on screen. At 768 px the pill bar sits in a second row under the brand mark and the chip.
+Files: `evidence/AT-10/cpc/375-light-top.png`, `evidence/AT-10/cpc/375-light-scrolled.png`, `evidence/AT-10/cpc/375-dark-top.png`, `evidence/AT-10/cpc/375-dark-scrolled.png`, `evidence/AT-10/cpc/768-light-top.png`, `evidence/AT-10/cpc/768-light-scrolled.png`, `evidence/AT-10/cpc/768-dark-top.png`, `evidence/AT-10/cpc/768-dark-scrolled.png`, `evidence/AT-10/cpc/1024-light-top.png`, `evidence/AT-10/cpc/1024-light-scrolled.png`, `evidence/AT-10/cpc/1024-dark-top.png`, `evidence/AT-10/cpc/1024-dark-scrolled.png`, `evidence/AT-10/cpc/1280-light-top.png`, `evidence/AT-10/cpc/1280-light-scrolled.png`, `evidence/AT-10/cpc/1280-dark-top.png`, `evidence/AT-10/cpc/1280-dark-scrolled.png`, `evidence/AT-10/cpc/state.txt`, `evidence/AT-10/norcal/768-light-top.png`, `evidence/AT-10/norcal/768-light-scrolled.png`, `evidence/AT-10/norcal/768-dark-top.png`, `evidence/AT-10/norcal/768-dark-scrolled.png`, `evidence/AT-10/norcal/1280-light-top.png`, `evidence/AT-10/norcal/1280-light-scrolled.png`, `evidence/AT-10/norcal/1280-dark-top.png`, `evidence/AT-10/norcal/1280-dark-scrolled.png`
+Observation: CPC: At every width the top band is one row of 61 px, `position: sticky` at top 0, and it stays on screen after a scroll of about 900 px. At 1024 and 1280 px the band shows the logo, the pill bar with the full labels Home, Week 8, Power Rankings, Managers, and Trade Analyzer, the WK 08 chip, and the theme button, and Power Rankings is marked. At 375 and 768 px the band shows the logo, the WK 08 chip, and the theme button, the pill bar does not show, and the dock at the foot marks Rankings. NorCal: The top band shows "NORCAL APEX 6", the pill bar with the full labels, the "WK 08" chip, and the theme button, and "Power Rankings" is marked. After the scroll to the end of the rankings page, the top band stays on screen. At 768 px the pill bar sits in a second row under the brand mark and the chip.
 
 ## AT-11: The week chip and the strip of weeks
+
+Round 1: built from feef43b4.
 
 App: site
 Then: A strip shows weeks 6, 7, and 8, with the brand edge on week 8. A tap on week 7 opens the week 7 page.
 Files: `evidence/AT-11/375-light.png`, `evidence/AT-11/375-dark.png`, `evidence/AT-11/768-light.png`, `evidence/AT-11/768-dark.png`, `evidence/AT-11/1280-light.png`, `evidence/AT-11/1280-dark.png`, `evidence/AT-11/strip.txt`
-Observation: A tap on WK 08 opens a strip with WK 06, WK 07, and WK 08, and WK 08 has the red edge and `aria-current`. A tap on WK 07 opened `http://localhost:4173/2026/week-07/` with the title "Week 7 · Cornerstone Fantasy Football League". At 375 px the strip covers the top of the page title.
+Observation: A tap on WK 08 opens a strip with WK 06, WK 07, and WK 08 under the top band, and WK 08 has the red edge and `aria-current`. The band grows from 61 to 130 px, and at every width the strip ends at 129 px, above the page title at 164 px or lower. A tap on WK 07 opened `http://localhost:4173/2026/week-07/` with the title "Week 7 · Cornerstone Fantasy Football League".
 
 ## AT-12: The chapter rail
 
@@ -133,10 +142,12 @@ Observation: NorCal: The hero shows "10.62" as the big number, with kaiedmonds 1
 
 ## AT-16: The week page order
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The page shows one scroll with no tabs, in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, the median game, Standings, Next week, and the footer.
 Files: `evidence/AT-16/cpc/375-light.png`, `evidence/AT-16/cpc/375-dark.png`, `evidence/AT-16/cpc/768-light.png`, `evidence/AT-16/cpc/768-dark.png`, `evidence/AT-16/cpc/1280-light.png`, `evidence/AT-16/cpc/1280-dark.png`, `evidence/AT-16/cpc/headings.txt`, `evidence/AT-16/norcal/375-light.png`, `evidence/AT-16/norcal/375-dark.png`, `evidence/AT-16/norcal/768-light.png`, `evidence/AT-16/norcal/768-dark.png`, `evidence/AT-16/norcal/1280-light.png`, `evidence/AT-16/norcal/1280-dark.png`
-Observation: CPC: The full pages show one scroll with no tab (`[role=tab]` count 0), in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, The median game, Standings, Next week, and the Previous Week 7 link. At 375 px some tile labels break inside a word: "PROJECT/ED", "+20.4/4", "UNDERPERF/ORMER", "OVERACHIE/VER", and "BENCHWARM/ER"; at 1280 px the award labels also break ("UNDERPER/FORMER"). NorCal: The NorCal week 8 page is one scroll with no tabs: the hero, the four numbers, every game, Game Changer with D'Andre Swift at 27.9, Awards, Position leaders, Trades, Standings, and Next week. The page has no median game chapter and no `<footer>` element. At 375 and 768 px some Awards labels break inside a word, such as "UNDERPERF / ORMER" and "BENCHWARM / ER".
+Observation: CPC: The full pages show one scroll with no tab (`[role=tab]` count 0), in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, The median game, Standings, Next week, and the Previous Week 7 link. A scan of each word in `main` finds no tile or Awards label that breaks inside a word at 375, 768, or 1280 px; the one split word is "5-game" in Next week at 1280 px, which breaks after its hyphen. NorCal: The NorCal week 8 page is one scroll with no tabs: the hero, the four numbers, every game, Game Changer with D'Andre Swift at 27.9, Awards, Position leaders, Trades, Standings, and Next week. The page has no median game chapter and no `<footer>` element. At 375 and 768 px some Awards labels break inside a word, such as "UNDERPERF / ORMER" and "BENCHWARM / ER".
 
 ## AT-17: A recap opens on a tap
 
@@ -147,10 +158,12 @@ Observation: The tapped card of The Blue Tent and London Cooking opens its recap
 
 ## AT-18: Position leaders
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The chapter shows the top three WR of week 8.
 Files: `evidence/AT-18/cpc/375-dark.png`, `evidence/AT-18/cpc/1280-dark.png`, `evidence/AT-18/cpc/rows.txt`
-Observation: After a tap on WR, the chip shows as selected, and the chapter lists Tee Higgins 32.5, Ja'Marr Chase 25.6, and Michael Wilson 22.8. The prose under the list still describes the quarterbacks, and at 1280 px the rail marks AWARDS, not POSITION LEADERS.
+Observation: After a tap on WR, the WR chip shows as selected, and the chapter lists Tee Higgins 32.5, Ja'Marr Chase 25.6, and Michael Wilson 22.8. The text under the list changes from the quarterback line to "Teehee had the top receiver and the top running back, with Tee Higgins at 32.5 and Bhayshul Tuten at 28.9." At 1280 px the rail marks POSITION LEADERS before and after the tap.
 
 ## AT-19: The analyzer, empty
 
@@ -161,10 +174,12 @@ Observation: CPC: The empty analyzer shows "Trade Analyzer", "Who gets what?", t
 
 ## AT-20: The picker
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The sheet shows a tab for Team Two, a search field, and the chips All, QB, RB, WR, TE, and DEF. After Done, the Your Team card lists both players, each with a "from <Team Two>" tag.
-Files: `evidence/AT-20/375-light-done.png`, `evidence/AT-20/375-light-sheet.png`, `evidence/AT-20/375-dark-done.png`, `evidence/AT-20/375-dark-sheet-with-two-tabs.png`, `evidence/AT-20/375-dark-sheet.png`, `evidence/AT-20/768-light-done.png`, `evidence/AT-20/768-light-sheet.png`, `evidence/AT-20/768-dark-done.png`, `evidence/AT-20/768-dark-sheet.png`, `evidence/AT-20/1280-light-done.png`, `evidence/AT-20/1280-light-sheet.png`, `evidence/AT-20/1280-dark-done.png`, `evidence/AT-20/1280-dark-sheet.png`, `evidence/AT-20/card-after-done.txt`, `evidence/AT-20/setup.txt`, `evidence/AT-20/tab-375-dark.txt`, `evidence/AT-20/tabs-three-teams.txt`
-Observation: The open sheet shows a search field and the chips All, QB, RB, WR, TE, and DEF, but no visible tab for Team Two: the tablist holds a tab "Teehee" but has a height of 0, and with three teams the two tabs are also hidden (`tabs-three-teams.txt`, `375-dark-sheet-with-two-tabs.png`). After Done, the Your Team card lists Tee Higgins and Bhayshul Tuten, each with "from Teehee".
+Files: `evidence/AT-20/375-light-sheet.png`, `evidence/AT-20/375-light-done.png`, `evidence/AT-20/375-dark-sheet.png`, `evidence/AT-20/375-dark-done.png`, `evidence/AT-20/768-light-sheet.png`, `evidence/AT-20/768-light-done.png`, `evidence/AT-20/768-dark-sheet.png`, `evidence/AT-20/768-dark-done.png`, `evidence/AT-20/1280-light-sheet.png`, `evidence/AT-20/1280-light-done.png`, `evidence/AT-20/1280-dark-sheet.png`, `evidence/AT-20/1280-dark-done.png`, `evidence/AT-20/tabs-2-teams-375-dark.png`, `evidence/AT-20/tabs-3-teams-375-dark.png`, `evidence/AT-20/tabs-4-teams-375-dark.png`, `evidence/AT-20/tabs-2-teams-1280-dark.png`, `evidence/AT-20/tabs-3-teams-1280-dark.png`, `evidence/AT-20/tabs-4-teams-1280-dark.png`, `evidence/AT-20/state.txt`, `evidence/AT-20/setup.txt`
+Observation: The open sheet shows a Teehee tab, the search field, and the chips All, QB, RB, WR, TE, and DEF at each width and theme. The tab row is 44 px high with 2, 3, and 4 teams at 375 and 1280 px, and each tab is 44 px high; at 375 px with 4 teams the third tab, All You Need Is Love, runs past the right edge of the sheet. After Done, the Your Team card lists Tee Higgins and Bhayshul Tuten, each with "from Teehee".
 
 ## AT-21: The sheet closes three ways
 
@@ -203,10 +218,12 @@ Observation: The swap card shows one row for each team: Teehee and Lil Fridge wi
 
 ## AT-26: The error state
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The form unlocks, and a box with the alert icon, the message of `toErrorLine`, and "Try Again" sits above the bar.
 Files: `evidence/AT-26/375-light.png`, `evidence/AT-26/375-dark.png`, `evidence/AT-26/1280-light.png`, `evidence/AT-26/1280-dark.png`, `evidence/AT-26/api-response.txt`, `evidence/AT-26/page-state.txt`, `evidence/AT-26/setup.txt`
-Observation: The real API answered 422 `Caleb Williams is no longer on Bo Girds.` The page shows a box with the alert icon and that message above the bar, and both "Add a player" buttons are on. No "Try Again" button shows, because `toErrorLine` gives `retry: false` for a 422; the bar reads "Grade the Trade".
+Observation: The real API answered 422 `Caleb Williams is no longer on Bo Girds.` Each shot shows a box with the alert icon, that message, and an enabled "Try Again" button above the "Grade the Trade" bar, and both "Add a player" buttons are on. The first 1280 dark try got 429 from the rate limit, also with "Try Again"; a retake after 75 s got the 422 and replaced it.
 
 ## AT-27: The finder on NorCal only
 
@@ -217,10 +234,12 @@ Observation: CPC: The CPC analyzer has no "Find a Trade" card at any width or th
 
 ## AT-28: The rankings Ladder
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The hero shows "01", All You Need Is Love, 11-5, up 4, and the tiles Playoff, Bye, and Seed. Under it come the week chips, one card for each other team, and the note on the four parts.
-Files: `evidence/AT-28/cpc/375-light.png`, `evidence/AT-28/cpc/375-dark.png`, `evidence/AT-28/cpc/768-light.png`, `evidence/AT-28/cpc/768-dark.png`, `evidence/AT-28/cpc/1280-light.png`, `evidence/AT-28/cpc/1280-dark.png`, `evidence/AT-28/norcal/375-light.png`, `evidence/AT-28/norcal/375-dark.png`, `evidence/AT-28/norcal/768-light.png`, `evidence/AT-28/norcal/768-dark.png`, `evidence/AT-28/norcal/1280-light.png`, `evidence/AT-28/norcal/1280-dark.png`
-Observation: CPC: The hero shows "01", All You Need Is Love, "11-5", up 4, and the tiles Playoff 81%, Bye 33%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the 11 other teams, and the note on the four parts. At 375 px the week chip 8 wraps to a second row. NorCal: The NorCal rankings hero shows "01", Mitseeker5000, "6-2 · –", and the tiles Playoff 97%, Bye 73%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the other 11 teams, and the note on the four parts.
+Files: `evidence/AT-28/cpc/375-light.png`, `evidence/AT-28/cpc/375-dark.png`, `evidence/AT-28/cpc/768-light.png`, `evidence/AT-28/cpc/768-dark.png`, `evidence/AT-28/cpc/1280-light.png`, `evidence/AT-28/cpc/1280-dark.png`, `evidence/AT-28/cpc/chips.txt`, `evidence/AT-28/norcal/375-light.png`, `evidence/AT-28/norcal/375-dark.png`, `evidence/AT-28/norcal/768-light.png`, `evidence/AT-28/norcal/768-dark.png`, `evidence/AT-28/norcal/1280-light.png`, `evidence/AT-28/norcal/1280-dark.png`
+Observation: CPC: The hero shows "01", All You Need Is Love, "11-5", up 4, and the tiles Playoff 81%, Bye 33%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the 11 other teams, and the note on the four parts. The week chips sit on one row at 375, 768, and 1280 px; at 375 px the row scrolls sideways, and the shot shows chip 1 cut at the left edge with chip 8 in view. NorCal: The NorCal rankings hero shows "01", Mitseeker5000, "6-2 · –", and the tiles Playoff 97%, Bye 73%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the other 11 teams, and the note on the four parts.
 
 ## AT-29: A ranking card opens
 
@@ -259,10 +278,12 @@ Observation: NorCal: Each team row shows its Sleeper avatar, and VarsityBlue2 sh
 
 ## AT-34: The readability floor passes in CI
 
+Round 1: built from feef43b4.
+
 App: site
 Then: The floor passes for both clients: the full floor on the 7 pages and the 3 open states, and the fast sweep on every other page. The output prints the count of each text tier and each exempt link.
-Files: `evidence/AT-34/output.txt`
-Observation: No CI run exists, because the Spec branch has no PR yet. A local run of `build-each-client.mjs` on 2026-11-05 at 17:26 passed in 37 s: the floor of CPC passed 58 tests and the floor of NorCal 56, with the full floor on 8 paths and 3 open states (the week strip, a recap, and a ranking card) and the fast sweep on the other pages. The output prints the prose and other text count of each page, and it prints no exempt link line.
+Files: `evidence/AT-34/ci-floor.txt`, `evidence/AT-34/local-check.txt`
+Observation: CI run 42122278427 of `Check` on PR #11 passed on 605c4532, before the round 1 fixes: the floor of CPC ran from 22:35:05 to 22:35:41 UTC with 58 tests, and the floor of NorCal from 22:35:47 to 22:36:18 UTC with 56 tests, with the full floor on 8 pages and 3 open states, and its output prints no exempt-link line. The local `pnpm --dir apps/site check` on feef43b4 passed in 52 s: CPC 68 tests and NorCal 66, with the full floor on 7 pages (`/`, `/2026/managers/`, one manager page, `/2026/week-08/`, `/404-floor-check/`, `/analyze/`, `/rankings/`) and 3 open states (the week strip, a recap, a ranking card), and the fast sweep on 13 other pages of CPC and 11 of NorCal. Each of the 80 full-floor cases prints a prose and other text count and the line "exempt links inside prose: none".
 
 ## AT-35: The readability floor catches a break
 
