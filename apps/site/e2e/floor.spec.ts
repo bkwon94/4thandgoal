@@ -20,7 +20,10 @@ const NOT_FOUND_ROUTE = "/404-floor-check/";
  * The pages of the full floor: all four rules, in both themes, at both widths. A page ticket of the redesign adds its
  * pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
  */
-const FULL_FLOOR_PAGES: readonly string[] = [NOT_FOUND_ROUTE];
+const FULL_FLOOR_PAGES: readonly string[] = [
+  NOT_FOUND_ROUTE,
+  "/analyze/",
+];
 
 /* Every client has both sets (decision 12), so the full floor checks both themes. */
 const THEMES: readonly Theme[] = ["dark", "light"];

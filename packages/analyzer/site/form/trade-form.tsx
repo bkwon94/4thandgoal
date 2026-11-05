@@ -1,21 +1,37 @@
 /**
- * The trade form: one group of pickers per side, the submit button, the finder, and the result.
- * It owns the picks and the grade state, and it posts the trade to the analyze route.
+ * The trade form, the Stack: the hero, the teams row, one card for each side that says what it gets, the sheets, and the grade bar.
+ * It owns the trade and the grade state, and it posts the trade to the analyze route with the finder and the result after it.
  */
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
 import { ErrorLine } from "@cpc/design/parts/error-line";
+import { Hero } from "@cpc/design/parts/hero";
+import { Rise } from "@cpc/design/parts/rise";
+import { GetCard, type GotRow } from "./get-card";
+import { GradeBar } from "./grade-bar";
+import { PlayerSheet } from "./player-sheet";
+import { TeamSheet } from "./team-sheet";
+import { TeamsRow } from "./teams-row";
 import { TradeFinder } from "./trade-finder";
-import { TradeSide } from "./trade-side";
 import { Button } from "@cpc/design/ui/button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
 import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
+import {
+  analyzeRequest,
+  dropStaleGets,
+  EMPTY_SIDES,
+  everySideTrades,
+  type Get,
+  MAX_SIDES,
+  SIDE_TITLES,
+  type Sides,
+  teamOf,
+} from "../lib/trade";
 import { DURATION, enterExit, SWEEP_EASE } from "@cpc/design/lib/motion";
 import { countEvent } from "@cpc/design/lib/usage";
 
@@ -29,6 +45,7 @@ type GradeState =
   | { status: "error"; message: string; retry: boolean };
 
 type TradeFormProps = {
+  // The teams of the league. The list is empty until the teams arrive, and the empty Stack shows with each control off.
   teams: Team[];
   // The API of the client and the league season the analyze body sends, and the build flag that shows the finder.
   // The page reads them from the config, so the form imports no config.
@@ -39,101 +56,28 @@ type TradeFormProps = {
   onUnauthorized: () => void;
   // Analyze answered 422, so the page fetches the current rosters.
   onRostersStale?: () => void;
-  /* The page places the two parts. The result goes after the form's chapter and not inside it, so its own chapters
-     read as cards under the form card. The form keeps the grade state, so it hands the parts out and does not lift the state. */
+  /* The page places the parts, so it can put its own lines, such as a failed fetch, between the hero and the form.
+     The form keeps the grade state, so it hands the parts out and does not lift the state. */
   children?: (parts: FormParts) => ReactNode;
 };
 
-/* The form with the finder, and the result of a done grade. */
-type FormParts = { form: ReactNode; result: ReactNode };
+/* The hero, the form with the finder, and the result of a done grade. */
+type FormParts = { hero: ReactNode; form: ReactNode; result: ReactNode };
 
-/* With no layout from the page, the result follows the form. */
-const stackParts = ({ form, result }: FormParts) => (
+/* With no layout from the page, the parts follow in order. */
+const stackParts = ({ hero, form, result }: FormParts) => (
   <>
+    {hero}
     {form}
     {result}
   </>
 );
 
-/* A given player and the side he goes to. toSide is the id of the destination side, not its roster, so the destination
-   holds when that side changes its team. The post turns it into the roster id. See ADR 0008. */
-export type PlayerPick = { playerId: string; toSide: number };
-
-/* One side of the trade: a stable id, the picked roster, and the players it gives. The id keys the side, so a remove
-   keeps the state and the motion of the sides after it. */
-type Side = { id: number; rosterId: number | null; picks: PlayerPick[] };
-
-/* The sides of a trade in order. The first side is the asker, "Your Team". */
-type Sides = Side[];
-
-/* The heading of each side, by its place in the order. */
-export const SIDE_TITLES = ["Your Team", "Team Two", "Team Three", "Team Four"];
-
-/* The analyze route grades two to four sides. */
-const MAX_SIDES = 4;
-
-const EMPTY_SIDES: Sides = [
-  { id: 0, rosterId: null, picks: [] },
-  { id: 1, rosterId: null, picks: [] },
-];
-
 /* A trade to grade: the sides and the season of the data they come from. */
 type TradeToGrade = { sides: Sides; season: number };
 
-/* The default destination of a side's picks: the next side in order, and the first side for the last. With two sides it is the other side. */
-function defaultTo(sides: Sides, index: number): number {
-  return sides[(index + 1) % sides.length].id;
-}
-
-/* Points every pick at a side that still exists. With two sides the destination is always the other side.
-   With more, a kept destination holds, and a pick to a removed side or to its own side falls back to the default.
-   With reset, every pick takes the default. */
-function withDestinations(sides: Sides, reset = false): Sides {
-  return sides.map((side, index) => {
-    const fallback = defaultTo(sides, index);
-    const valid = (to: number) =>
-      !reset && (sides.length === 2 ? to === fallback : to !== side.id && sides.some((other) => other.id === to));
-    return side.picks.every((p) => valid(p.toSide))
-      ? side
-      : { ...side, picks: side.picks.map((p) => (valid(p.toSide) ? p : { ...p, toSide: fallback })) };
-  });
-}
-
-/* The team of a roster id, or undefined before a pick. */
-function teamOf(teams: Team[], rosterId: number | null): Team | undefined {
-  return teams.find((t) => t.roster_id === rosterId);
-}
-
-/* The teams a side can pick: every team that no other side holds, so one team cannot be two sides. */
-function freeTeams(teams: Team[], sides: Sides, index: number): Team[] {
-  return teams.filter((t) => !sides.some((other, i) => i !== index && other.rosterId === t.roster_id));
-}
-
-/* The other sides that a pick of a side can go to, each with its team once picked. */
-function destinationsOf(teams: Team[], sides: Sides, side: Side) {
-  return sides.filter((other) => other.id !== side.id).map((other) => ({ id: other.id, team: teamOf(teams, other.rosterId) }));
-}
-
-/* Every side gives at least one player and gets at least one player. The submit gate and the button read it. */
-function everySideTrades(sides: Sides): boolean {
-  return sides.every(
-    (side) =>
-      side.rosterId !== null &&
-      side.picks.length > 0 &&
-      sides.some((other) => other !== side && other.picks.some((p) => p.toSide === side.id)),
-  );
-}
-
-/* Drops each pick that is not on the current roster of the side's team. A fresh roster can lose a player after a trade.
-   It returns the same object when nothing drops, so React skips the render. */
-function dropStalePicks(side: Side, teams: Team[]): Side {
-  if (side.rosterId === null) return side;
-  const team = teamOf(teams, side.rosterId);
-  if (!team) return { ...side, rosterId: null, picks: [] };
-  const onRoster = new Set(team.players.map((p) => p.player_id));
-  const picks = side.picks.filter((p) => onRoster.has(p.playerId));
-  return picks.length === side.picks.length ? side : { ...side, picks };
-}
+/* The sheet that is open, if any: the team sheet of a slot or of a new side, or the picker of one side. */
+type OpenSheet = { kind: "team"; slot: number | "new" } | { kind: "players"; side: number } | null;
 
 /* The grading status. A red bar sweeps along a grey track, so a 20-second wait reads as work in progress.
    Only transform animates. With motion off, the track stays as a still grey line. */
@@ -141,7 +85,7 @@ function GradingStatus() {
   const off = useMotionOff();
   return (
     <div role="status" aria-busy="true" className="flex flex-col gap-sp-2">
-      <p className="m-0 text-body font-bold">Grading the Trade</p>
+      <p className="m-0 text-lead font-bold">Grading the Trade</p>
       <div aria-hidden="true" className="relative h-sp-1 overflow-hidden rounded-sm bg-card">
         {!off && (
           <motion.div
@@ -153,8 +97,22 @@ function GradingStatus() {
           />
         )}
       </div>
-      <p className="m-0 text-meta text-mute">This can take up to a minute early in the week.</p>
+      <p className="m-0 text-lead text-mute">This can take up to a minute early in the week.</p>
     </div>
+  );
+}
+
+/* The hero of the page: the title and the question of the Stack. Each line sits on a plate, so no grid sits under a letter. */
+function TitleHero() {
+  return (
+    <Hero label="Trade Analyzer">
+      <Rise step={0}>
+        <h1 className="plate m-0 w-fit text-headline leading-none font-bold">Trade Analyzer</h1>
+      </Rise>
+      <Rise step={1}>
+        <p className="plate mt-sp-3 mb-0 w-fit text-lead leading-body text-on-dark-2">Who gets what?</p>
+      </Rise>
+    </Hero>
   );
 }
 
@@ -162,6 +120,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
+  const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
   // A late answer from an old trade must not overwrite the state of a new one.
   const request = useRequest();
@@ -178,23 +137,27 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   }, [grade.status, off]);
 
   // The page can swap a stored list for the fresh one while the form shows, so a pick of a traded player drops.
-  // The check runs in the render, not in an effect, so no render ever shows a stale pick with the submit button on.
+  // The check runs in the render, not in an effect, so no render ever shows a stale pick with the grade bar on.
   const [seenTeams, setSeenTeams] = useState(teams);
   if (teams !== seenTeams) {
     setSeenTeams(teams);
-    const fresh = sides.map((side) => dropStalePicks(side, teams));
-    if (fresh.some((side, index) => side !== sides[index])) setSides(withDestinations(fresh));
+    const fresh = dropStaleGets(sides, teams);
+    if (fresh !== sides) setSides(fresh);
   }
 
   const asker = sides[0].rosterId;
   const myTeam = teamOf(teams, asker);
   const ready = everySideTrades(sides);
-  // A new side starts with no team, so the reader fills each side before the next one shows.
-  const canAdd = sides.length < MAX_SIDES && sides.every((side) => side.rosterId !== null);
   // The finder grades two sides, so it hides once the trade has a third side.
   const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
+  // With no teams yet, no slot and no picker has anything to show.
+  const locked = grading || teams.length === 0;
+  // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
+  const taken = sides.flatMap((side, i) =>
+    side.rosterId === null || (sheet?.kind === "team" && sheet.slot === i) ? [] : [side.rosterId],
+  );
 
   /* A change to the trade makes the old result stale, so it clears the result and drops a late answer to the old trade. */
   function changeTrade(update: (current: Sides) => Sides) {
@@ -203,45 +166,47 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     setGrade({ status: "idle" });
   }
 
-  // A new team makes the old picks and the old result stale, so a change clears them.
+  /* A new team for a side takes the old roster out of the trade, so each get from that side drops. The players the side
+     gets come from other teams, so they stay. */
   function pickTeam(index: number, rosterId: number) {
-    changeTrade((current) => withDestinations(current.map((side, i) => (i === index ? { ...side, rosterId, picks: [] } : side))));
+    changeTrade((current) => {
+      const id = current[index].id;
+      return current.map((side, i) => ({
+        ...side,
+        rosterId: i === index ? rosterId : side.rosterId,
+        gets: side.gets.filter((get) => get.fromSide !== id),
+      }));
+    });
   }
 
-  /* The player picker reports the full list of ids. A kept player keeps his pick, so his destination holds. */
-  function pickPlayers(index: number, playerIds: string[]) {
-    setSides((current) =>
-      withDestinations(
-        current.map((side, i) => {
-          if (i !== index) return side;
-          const picks = playerIds.map(
-            (playerId) => side.picks.find((p) => p.playerId === playerId) ?? { playerId, toSide: defaultTo(current, i) },
-          );
-          return { ...side, picks };
-        }),
-      ),
-    );
-  }
-
-  /* Points one pick at another side. Only a trade of three or more sides shows the To picker. */
-  function pickDestination(index: number, playerId: string, toSide: number) {
-    changeTrade((current) =>
-      current.map((side, i) =>
-        i === index ? { ...side, picks: side.picks.map((p) => (p.playerId === playerId ? { ...p, toSide } : p)) } : side,
-      ),
-    );
-  }
-
-  /* At two sides no destination is the reader's choice, so the move to three sides sets every pick to the default.
-     At three or more sides the picks hold. */
-  function addSide() {
+  /* "+" adds a side with the team that the reader taps, so a new side is never empty. */
+  function addSide(rosterId: number) {
     const id = nextSideId.current++;
-    changeTrade((current) => withDestinations([...current, { id, rosterId: null, picks: [] }], current.length === 2));
+    changeTrade((current) => [...current, { id, rosterId, gets: [] }]);
   }
 
-  /* A removed side takes its players out of the trade, and the players sent to it fall back to the default destination. */
+  /* A removed side takes its card out, and each player it gives leaves the other cards. */
   function removeSide(id: number) {
-    changeTrade((current) => withDestinations(current.filter((side) => side.id !== id)));
+    changeTrade((current) =>
+      current.filter((side) => side.id !== id).map((side) => ({ ...side, gets: side.gets.filter((get) => get.fromSide !== id) })),
+    );
+  }
+
+  /* A tap on a row of the picker checks or unchecks the player for the side of the sheet. */
+  function toggleGet(index: number, get: Get) {
+    changeTrade((current) =>
+      current.map((side, i) => {
+        if (i !== index) return side;
+        const has = side.gets.some((g) => g.playerId === get.playerId && g.fromSide === get.fromSide);
+        return { ...side, gets: has ? side.gets.filter((g) => g.playerId !== get.playerId) : [...side.gets, get] };
+      }),
+    );
+  }
+
+  function removeGet(index: number, playerId: string) {
+    changeTrade((current) =>
+      current.map((side, i) => (i === index ? { ...side, gets: side.gets.filter((g) => g.playerId !== playerId) } : side)),
+    );
   }
 
   /* A finder card opens its full result here, so the form shows the picks of the trade and the result matches them.
@@ -252,11 +217,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     if (asker === null || !own || !partner) return;
     // The finder shows only at two sides, so the card fills the two sides that are there.
     const [mine, theirs] = sides;
-    const toPicks = (side: { gives: { player_id: string }[] }, toSide: number) =>
-      side.gives.map((p) => ({ playerId: p.player_id, toSide }));
+    const toGets = (side: { gives: { player_id: string }[] }, fromSide: number) =>
+      side.gives.map((p) => ({ playerId: p.player_id, fromSide }));
     const next: Sides = [
-      { id: mine.id, rosterId: asker, picks: toPicks(own, theirs.id) },
-      { id: theirs.id, rosterId: partner.roster_id, picks: toPicks(partner, mine.id) },
+      { id: mine.id, rosterId: asker, gets: toGets(partner, theirs.id) },
+      { id: theirs.id, rosterId: partner.roster_id, gets: toGets(own, mine.id) },
     ];
     setSides(next);
     // The new picks are not in state until the next render, so the submit gets them as an argument.
@@ -267,8 +232,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   // The trade comes from the state by default. A finder card passes its own, because its picks land in state one render later.
   async function submit(trade?: TradeToGrade) {
     const toGrade = trade ?? { sides, season: target.season };
-    const askerId = toGrade.sides[0].rosterId;
-    if (askerId === null || !everySideTrades(toGrade.sides)) return;
+    const body = analyzeRequest(toGrade.sides, toGrade.season);
+    if (body === null || !everySideTrades(toGrade.sides)) return;
     const run = request.start();
     const { controller } = run;
     // Only a finder card passes a trade, and only that path scrolls to the result.
@@ -281,23 +246,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     setGrade({ status: "grading" });
     countEvent("analyze-grade");
     try {
-      const doc = await postAnalyze(
-        target,
-        passphrase,
-        {
-          season: toGrade.season,
-          asker: askerId,
-          // everySideTrades holds, so every side has a team and every pick points at a side of the trade.
-          sides: toGrade.sides.map((side) => ({
-            roster_id: side.rosterId!,
-            gives: side.picks.map((p) => ({
-              player_id: p.playerId,
-              to: toGrade.sides.find((other) => other.id === p.toSide)!.rosterId!,
-            })),
-          })),
-        },
-        controller.signal,
-      );
+      const doc = await postAnalyze(target, passphrase, body, controller.signal);
       if (run.isCurrent()) setGrade({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
@@ -310,75 +259,69 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     }
   }
 
+  /* The players a side gets, each with the team that gives him. A get of a player who left the roster shows no row. */
+  function rowsOf(index: number): GotRow[] {
+    return sides[index].gets.flatMap((get) => {
+      const from = teamOf(teams, sides.find((side) => side.id === get.fromSide)?.rosterId ?? null);
+      const player = from?.players.find((p) => p.player_id === get.playerId);
+      return from && player ? [{ player, from }] : [];
+    });
+  }
+
+  /* The other sides with a team: the tabs of the picker of one side. */
+  function sourcesOf(index: number) {
+    return sides.flatMap((side, i) => {
+      const team = teamOf(teams, side.rosterId);
+      return i !== index && team ? [{ sideId: side.id, team }] : [];
+    });
+  }
+
+  /* Each player that a side other than this one gets, with the name of that team. */
+  function elsewhereOf(index: number): Map<string, string> {
+    return new Map(
+      sides.flatMap((side, i) => (i === index ? [] : side.gets.map((get) => [get.playerId, teamOf(teams, side.rosterId)?.team ?? SIDE_TITLES[i]] as const))),
+    );
+  }
+
+  const teamSheetTitle =
+    sheet?.kind === "team" ? (sheet.slot === "new" ? `Pick ${SIDE_TITLES[sides.length] ?? "a Team"}` : `Pick ${SIDE_TITLES[sheet.slot]}`) : "";
+  const playerSide = sheet?.kind === "players" ? sheet.side : null;
+
   const form = (
     <>
-      {/* From the tablet tier the form is a two-column grid, one side per cell, in document order. A third and a fourth
-          side wrap to the next row. A phone and a screen reader get the same order as the one-column flow. The heading,
-          the grade button, and the parts after it span both columns. relative holds a removed side that popLayout lifts out. */}
-      <section
-        aria-labelledby="pick-teams"
-        className="relative flex flex-col gap-sp-5 tablet:grid tablet:grid-cols-2 tablet:items-start"
-      >
-        <h2 id="pick-teams" className="m-0 text-stat leading-stat font-black uppercase tablet:col-span-2">
-          Pick the Teams
-        </h2>
-        {/* popLayout takes a removed side out of the flow at once, so the sides after it slide into place while it fades. */}
-        <AnimatePresence initial={false} mode="popLayout">
-          {sides.map((side, index) => (
-            <motion.div
-              key={side.id}
-              layout={!off}
-              className="min-w-0"
-              {...enterExit(off)}
-            >
-              <TradeSide
-                title={SIDE_TITLES[index]}
-                // A team that another side holds is absent from this side's list, so one team cannot be two sides.
-                teams={freeTeams(teams, sides, index)}
-                team={teamOf(teams, side.rosterId)}
-                picks={side.picks}
-                // With two sides the destination is the other side, so no To picker shows.
-                destinations={twoSides ? null : destinationsOf(teams, sides, side)}
-                onPickTeam={(rosterId) => pickTeam(index, rosterId)}
-                onPickPlayers={(ids) => pickPlayers(index, ids)}
-                onPickDestination={(playerId, toSide) => pickDestination(index, playerId, toSide)}
-                // Only the third and fourth sides can leave. A trade always has two sides.
-                onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
-                locked={grading}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-        {canAdd && (
-          // The button takes the next grid cell after the last side, so a new side appears where the button was.
-          <div>
-            <Button
-              variant="ghost"
-              className="press h-touch w-full justify-start gap-sp-2 rounded-card px-sp-3 text-row font-bold text-ink hover:bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-0 disabled:opacity-40"
-              disabled={grading}
-              onClick={addSide}
-            >
-              <PlusIcon aria-hidden="true" className="size-4" />
-              Add a Team
-            </Button>
-          </div>
-        )}
-        <Button
-          className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold tablet:col-span-2"
-          disabled={!ready || grading}
-          aria-busy={grading || undefined}
-          // The arrow drops the click event, so submit reads the trade from the state.
-          onClick={() => submit()}
-        >
-          {grading ? "Grading…" : "Grade the Trade"}
-        </Button>
-        {grading && (
-          <div className="tablet:col-span-2">
-            <GradingStatus />
-          </div>
-        )}
+      <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+        <TeamsRow
+          slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
+          onPickSlot={(slot) => setSheet({ kind: "team", slot })}
+          onAdd={() => setSheet({ kind: "team", slot: "new" })}
+          locked={locked}
+        />
+        {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
+            side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
+        <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
+          {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {sides.map((side, index) => (
+              <motion.div key={side.id} layout={!off} className="min-w-0" {...enterExit(off)}>
+                <GetCard
+                  title={SIDE_TITLES[index]}
+                  team={teamOf(teams, side.rosterId)}
+                  rows={rowsOf(index)}
+                  canAdd={side.rosterId !== null && sourcesOf(index).length > 0}
+                  onAdd={() => setSheet({ kind: "players", side: index })}
+                  onRemovePlayer={(playerId) => removeGet(index, playerId)}
+                  // Only the third and fourth sides can leave. A trade always has two sides.
+                  onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
+                  locked={locked}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+        <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
+        {grading && <GradingStatus />}
         {grade.status === "error" && (
-          <div className="flex flex-col gap-sp-3 tablet:col-span-2">
+          <div className="flex flex-col gap-sp-3">
             <ErrorLine>{grade.message}</ErrorLine>
             {grade.retry && (
               <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
@@ -406,6 +349,33 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           />
         </div>
       )}
+      <TeamSheet
+        open={sheet?.kind === "team"}
+        title={teamSheetTitle}
+        teams={teams}
+        taken={taken}
+        onPick={(rosterId) => {
+          if (sheet?.kind === "team") {
+            if (sheet.slot === "new") {
+              if (sides.length < MAX_SIDES) addSide(rosterId);
+            } else pickTeam(sheet.slot, rosterId);
+          }
+          setSheet(null);
+        }}
+        onClose={() => setSheet(null)}
+      />
+      <PlayerSheet
+        // The key gives each side a fresh tab, search, and chip.
+        key={playerSide === null ? "closed" : sides[playerSide]?.id}
+        open={playerSide !== null && sides[playerSide] !== undefined}
+        title={playerSide === null ? "" : SIDE_TITLES[playerSide]}
+        sources={playerSide === null ? [] : sourcesOf(playerSide)}
+        gets={playerSide === null ? [] : (sides[playerSide]?.gets ?? [])}
+        elsewhere={playerSide === null ? new Map() : elsewhereOf(playerSide)}
+        onToggle={(get) => playerSide !== null && toggleGet(playerSide, get)}
+        onClose={() => setSheet(null)}
+      />
+      <GradeBar ready={ready} grading={grading} onGrade={() => submit()} />
     </>
   );
 
@@ -415,5 +385,5 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </div>
   );
 
-  return children({ form, result });
+  return children({ hero: <TitleHero />, form, result });
 }

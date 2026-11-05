@@ -62,15 +62,21 @@ function expectAtRest(element: HTMLElement) {
   }
 }
 
-/* Opens a picker with a click on its trigger and picks one item. Base UI commits a mouse pick only for a press that starts on the item. */
-async function choose(trigger: HTMLElement, name: string) {
-  fireEvent.click(trigger);
-  const list = await screen.findByRole("listbox");
-  const option = within(list).getByRole("option", { name: new RegExp(name) });
-  fireEvent.pointerDown(option, { pointerType: "mouse" });
-  fireEvent.click(option);
-  if (screen.queryByRole("listbox")) fireEvent.keyDown(list, { key: "Escape" });
-  await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+/* Opens the team sheet of a slot or of "+" with a click, and taps one team. */
+async function pickTeam(button: string | RegExp, team: string) {
+  fireEvent.click(screen.getByRole("button", { name: button }));
+  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+}
+
+/* Opens the picker of a side, checks one player on the tab of the source team, and taps Done. */
+async function pickPlayer(side: string, from: string, name: string) {
+  fireEvent.click(screen.getByRole("button", { name: `Add a player ${side} gets` }));
+  const open = within(await screen.findByRole("dialog"));
+  fireEvent.click(open.getByRole("tab", { name: from }));
+  fireEvent.click(open.getByRole("checkbox", { name: new RegExp(name) }));
+  fireEvent.click(open.getByRole("button", { name: /^Done/ }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
 afterEach(cleanup);
@@ -91,19 +97,21 @@ describe("Reduced motion", () => {
     expect(screen.getByText("Fair")).toBeTruthy();
   });
 
-  it("shows the picked team in the trigger at once", async () => {
+  it("shows the picked team on its card at once", async () => {
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    expect(screen.getByRole("combobox", { name: "Your Team" }).textContent).toContain("Pukancun on 3");
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    const card = screen.getByRole("region", { name: "Your Team gets" });
+    expect(within(card).getByText("Pukancun on 3")).toBeTruthy();
+    expectAtRest(card);
   });
 
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
-    await choose(screen.getByRole("combobox", { name: "Pukancun on 3 Gives" }), "Ana One");
-    await choose(screen.getByRole("combobox", { name: "Blitz Bakers Gives" }), "Ben One");
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
+    await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
     const status = screen.getByRole("status");
     expect(status.getAttribute("aria-busy")).toBe("true");
@@ -115,18 +123,17 @@ describe("Reduced motion", () => {
 describe("Reduced motion on the trade form", () => {
   it("adds a side and a picked row at rest, and removes a side at once", async () => {
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
-    fireEvent.click(screen.getByRole("button", { name: "Add a Team" }));
-    expectAtRest(screen.getByRole("group", { name: "Team Three" }));
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    await pickTeam("Add a team", "Punt Punks");
+    expectAtRest(screen.getByRole("region", { name: "Team Three gets" }));
 
-    await choose(screen.getByRole("combobox", { name: "Team Three" }), "Punt Punks");
-    await choose(screen.getByRole("combobox", { name: "Punt Punks Gives" }), "Cy One");
-    expectAtRest(within(screen.getByRole("list", { name: "Players Punt Punks Gives" })).getByRole("listitem"));
+    await pickPlayer("Team Three", "Pukancun on 3", "Ana One");
+    expectAtRest(within(screen.getByRole("list", { name: "Players Team Three gets" })).getByRole("listitem"));
 
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
     // The exit takes the instant transition, so the side leaves by the next frame. A real exit fails the short wait.
-    await waitFor(() => expect(screen.queryByRole("group", { name: "Team Three" })).toBeNull(), { timeout: 50 });
+    await waitFor(() => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull(), { timeout: 50 });
   });
 });
 
