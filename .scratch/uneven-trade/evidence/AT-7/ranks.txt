@@ -1,0 +1,19 @@
+The trade values come from data/nfl/cache/charts/1QB0.5PPR4pt/week-09.json, read on 2026-11-05. A tie shares the better rank.
+  Kenneth Walker: 64.0 (row 2 of the week 9 chart dated 2026-11-03)
+  Bijan Robinson: 60.5 (row 5 of the week 9 chart dated 2026-11-03)
+
+Trade: Bo Girds (roster 6) gives Kenneth Walker III (8151) to Return of T Mac (roster 8).
+Return of T Mac gives Bijan Robinson (9509) to Bo Girds. Bo Girds asks.
+Rank of Kenneth Walker III on the week 9 chart: 2 of the top 8. Only Jahmyr Gibbs (68.0) has a higher value.
+Rank of Bijan Robinson on the week 9 chart: 5 of the top 8. Gibbs 68.0, Walker 64.0, Smith-Njigba 63.5, and Nacua 61.5 have higher values.
+
+The top 9 rows of the chart:
+  1. Jahmyr Gibbs 68.0
+  2. Kenneth Walker 64.0
+  3. Jaxon Smith-Njigba 63.5
+  4. Puka Nacua 61.5
+  5. Bijan Robinson 60.5
+  6. Ja'Marr Chase 56.5
+  7. CeeDee Lamb 55.0
+  8. Christian McCaffrey 54.0
+  9. Amon-Ra St. Brown 54.0

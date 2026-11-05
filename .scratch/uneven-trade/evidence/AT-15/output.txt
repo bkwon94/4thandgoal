@@ -1,0 +1,18 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v --durations=0 "tests/test_finder.py::test_the_pair_with_the_most_candidates_runs_in_a_few_seconds"
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/apps/pipeline
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_finder.py::test_the_pair_with_the_most_candidates_runs_in_a_few_seconds PASSED [100%]
+
+============================== slowest durations ===============================
+2.14s call     tests/test_finder.py::test_the_pair_with_the_most_candidates_runs_in_a_few_seconds
+0.13s setup    tests/test_finder.py::test_the_pair_with_the_most_candidates_runs_in_a_few_seconds
+
+(1 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 1 passed in 2.29s ===============================
+[exit 0]

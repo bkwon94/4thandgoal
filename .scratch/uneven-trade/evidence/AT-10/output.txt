@@ -1,0 +1,56 @@
+$ make -C apps/pipeline analyze CLIENT=cpc SIDES="12:8146@5,12519@5,4983@5,10859@5 5:8112@12,10232@12,13346@12" ASKER=12
+uv run --exact --package cornerstone cornerstone analyze --client cpc --season 2026 --side 12:8146@5,12519@5,4983@5,10859@5 --side 5:8112@12,10232@12,13346@12 --asker 12 --no-claude
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+Week 9 of 2026. Chart week 9. Stats through week 8. Rosters fetched 2026-11-05T12:01-05:00.
+Known games of week 9: 0 read, 0 in progress.
+Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.
+
+Teehee (asked)
+  Gives: Garrett Wilson, Luther Burden III, DJ Moore, Sam LaPorta
+  Gets: Drake London, Michael Wilson, Denzel Boston
+  Start letter: C
+  Reason: The trade value it gets and the trade value it gives are about even. The side with more players counts its extra player at a discount before the sides count as even.
+  Roster fit: one step up. You keep 4 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player.
+  Standing: no step. Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same.
+  Trend and usage: no step. London plays 87% of the snaps (down), sees 29% of the targets, and averages 3.1 air yards per target; Michael Wilson plays 85% of the snaps, sees 27% of the targets (up), and averages 6.7 air yards per target; Boston plays 85% of the snaps (down), sees 25% of the targets, and averages 2.7 air yards per target; Garrett Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target; Burden plays 49% of the snaps (down), sees 20% of the targets, and averages 4.5 air yards per target; Moore plays 55% of the snaps (up), sees 14% of the targets, and averages 9.9 air yards per target; LaPorta plays 95% of the snaps (up), sees 13% of the targets (down), and averages 3.3 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Superstar: no step. No player it gets is a superstar.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: against. London has his bye in week 11 and faces WAS (14th most points to WRs), TB (26th), and NO (18th) in weeks 15 to 17. Wilson has his bye in week 14 and faces NYJ (23rd most points to WRs), NO (18th), and LV (8th) in weeks 15 to 17. Boston has his bye in week 11 and faces NYG (15th most points to WRs), BAL (9th), and IND (24th) in weeks 15 to 17.
+  Final letter: B
+
+London Cooking
+  Gives: Drake London, Michael Wilson, Denzel Boston
+  Gets: Garrett Wilson, Luther Burden III, DJ Moore, Sam LaPorta
+  Start letter: C
+  Reason: The trade value it gets and the trade value it gives are about even. The side with more players counts its extra player at a discount before the sides count as even.
+  Roster fit: no step. You keep 3 WRs in the top 36 and go from 2 TEs in the top 24 to 3.
+  Standing: no step. In a playoff spot, so you need points now, and this trade keeps your points about the same.
+  Trend and usage: no step. Garrett Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target; Burden plays 49% of the snaps (down), sees 20% of the targets, and averages 4.5 air yards per target; Moore plays 55% of the snaps (up), sees 14% of the targets, and averages 9.9 air yards per target; LaPorta plays 95% of the snaps (up), sees 13% of the targets (down), and averages 3.3 air yards per target; London plays 87% of the snaps (down), sees 29% of the targets, and averages 3.1 air yards per target; Michael Wilson plays 85% of the snaps, sees 27% of the targets (up), and averages 6.7 air yards per target; Boston plays 85% of the snaps (down), sees 25% of the targets, and averages 2.7 air yards per target.
+  Injury: one step down. Moore was on the injury report in 4 of 8 weeks.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Superstar: no step. No player it gets is a superstar.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: for. Wilson has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17. Burden faces BUF (3rd most points to WRs), GB (12th), and DET (4th) in weeks 15 to 17. Moore faces CHI (16th most points to WRs), DEN (27th), and MIA (30th) in weeks 15 to 17. LaPorta faces MIN (32nd most points to TEs), NYG (22nd), and CHI (21st) in weeks 15 to 17.
+  Final letter: D
+
+Verdict for Teehee: accept. The trade favors the asking side.
+Fairness: Lopsided: London Cooking gives more.
+  Teehee: You keep 4 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player.
+  London Cooking: Moore was on the injury report in 4 of 8 weeks.
+[exit 0]

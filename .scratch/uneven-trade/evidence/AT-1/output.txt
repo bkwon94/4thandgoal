@@ -1,0 +1,56 @@
+$ make -C apps/pipeline analyze CLIENT=cpc SIDES="6:9487@12,8151@12 12:6801@6,12490@6,5967@6" ASKER=6
+uv run --exact --package cornerstone cornerstone analyze --client cpc --season 2026 --side 6:9487@12,8151@12 --side 12:6801@6,12490@6,5967@6 --asker 6 --no-claude
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/10?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+Week 9 of 2026. Chart week 9. Stats through week 8. Rosters fetched 2026-11-05T11:59-05:00.
+Known games of week 9: 0 read, 0 in progress.
+Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.
+
+Bo Girds (asked)
+  Gives: Parker Washington, Kenneth Walker III
+  Gets: Tee Higgins, Bhayshul Tuten, Tony Pollard
+  Start letter: D
+  Reason: It gives more trade value than it gets. The side with more players counts its extra player at a discount before the sides count as even.
+  Roster fit: one step up. You go from 3 RBs in the top 36 to 4 and keep 3 WRs in the top 36, and your lineup scores more.
+  Standing: one step up. In a playoff spot, so you need points now, and this trade adds some.
+  Trend and usage: no step. Higgins plays 87% of the snaps (up), sees 24% of the targets, and averages 13.4 air yards per target; Tuten plays 54% of the snaps (down), takes 47% of the carries, and sees 10% of the targets; Pollard plays 79% of the snaps (up), takes 79% of the carries, and sees 12% of the targets (up); Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Walker plays 78% of the snaps, takes 88% of the carries, and sees 14% of the targets (up).
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: one step up. Pollard gets more work while Spears is out.
+  Superstar: no step. No player it gets is a superstar.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: against. Higgins faces CAR (22nd most points to WRs), IND (24th), and BAL (9th) in weeks 15 to 17. Tuten faces HOU (13th most points to RBs), DAL (3rd), and WAS (27th) in weeks 15 to 17. Pollard faces IND (7th most points to RBs), LV (5th), and PIT (24th) in weeks 15 to 17.
+  Final letter: C
+
+Teehee
+  Gives: Tee Higgins, Bhayshul Tuten, Tony Pollard
+  Gets: Parker Washington, Kenneth Walker III
+  Start letter: B
+  Reason: It gets more trade value than it gives. The side with more players counts its extra player at a discount before the sides count as even.
+  Roster fit: one step down. You go from 2 RBs in the top 36 to 1 and keep 4 WRs in the top 36.
+  Standing: no step. Outside a playoff spot but still in the race, so you need points now, and this trade gives some up.
+  Trend and usage: no step. Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Walker plays 78% of the snaps, takes 88% of the carries, and sees 14% of the targets (up); Higgins plays 87% of the snaps (up), sees 24% of the targets, and averages 13.4 air yards per target; Tuten plays 54% of the snaps (down), takes 47% of the carries, and sees 10% of the targets; Pollard plays 79% of the snaps (up), takes 79% of the carries, and sees 12% of the targets (up).
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Superstar: one step up. Kenneth Walker III is a superstar, a top 8 player this week.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: for. Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17. Walker faces NE (26th most points to RBs), SF (16th), and LAC (10th) in weeks 15 to 17.
+  Final letter: B
+
+Verdict for Bo Girds: counter. The other side does better, so ask for more.
+Fairness: Fair
+  Bo Girds: You go from 3 RBs in the top 36 to 4 and keep 3 WRs in the top 36, and your lineup scores more.
+  Teehee: Kenneth Walker III is a superstar, a top 8 player this week, but you go from 2 RBs in the top 36 to 1 and keep 4 WRs in the top 36.
+[exit 0]
