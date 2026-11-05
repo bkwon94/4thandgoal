@@ -8,7 +8,7 @@ Spec: `.scratch/transaction-history/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, 
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The CPC history of week 6 holds 83 rows, and its transaction IDs equal the live leg 6.
 - [x] The CPC history of week 7 holds 59 rows, and its transaction IDs equal the live leg 7.
