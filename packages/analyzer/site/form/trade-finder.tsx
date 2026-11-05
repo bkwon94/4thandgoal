@@ -22,7 +22,7 @@ type FindState =
   | { status: "idle" }
   | { status: "finding" }
   | { status: "done"; doc: FindResponse }
-  | { status: "error"; message: string; retry: boolean };
+  | { status: "error"; message: string };
 
 type TradeFinderProps = {
   teams: Team[];
@@ -162,11 +162,10 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
         {find.status === "error" && (
           <div className="flex flex-col gap-sp-3">
             <ErrorLine>{find.message}</ErrorLine>
-            {find.retry && (
-              <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={submit}>
-                Try Again
-              </Button>
-            )}
+            {/* Every error shows Try Again, the same as the error box of the trade form. */}
+            <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={submit}>
+              Try Again
+            </Button>
           </div>
         )}
         {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} locked={locked} />}

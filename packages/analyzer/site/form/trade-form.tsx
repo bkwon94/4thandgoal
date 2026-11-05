@@ -46,7 +46,7 @@ type GradeState =
   | { status: "idle" }
   | { status: "grading" }
   | { status: "done"; doc: AnalyzeResponse }
-  | { status: "error"; message: string; retry: boolean };
+  | { status: "error"; message: string };
 
 type TradeFormProps = {
   // The teams of the league. The list is empty until the teams arrive, and the empty Stack shows with each control off.
@@ -358,11 +358,10 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
                   <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
                   <ErrorLine>{grade.message}</ErrorLine>
                 </div>
-                {grade.retry && (
-                  <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
-                    Try Again
-                  </Button>
-                )}
+                {/* Every error shows Try Again, so the reader has one next step after a fix to the trade or a wait. */}
+                <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
+                  Try Again
+                </Button>
               </Card>
             </div>
           )}

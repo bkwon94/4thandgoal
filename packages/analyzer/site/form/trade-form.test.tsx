@@ -393,6 +393,19 @@ describe("TradeForm", () => {
     expect(await screen.findByText("Player p1 is not on the giving roster.")).toBeTruthy();
   });
 
+  it.each([
+    ["a 422", 422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } }, {}, "Player p1 is not on the giving roster."],
+    ["a 429", 429, { detail: "slow down" }, { "Retry-After": "12" }, "Too many requests. Try again in 12 seconds."],
+    ["a 502", 502, { detail: "bad shape" }, {}, "The API sent an answer the site cannot read."],
+  ])("shows Try Again under the line of toErrorLine on %s", async (_name, status, body, headers, line) => {
+    answer(status, body, headers);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const box = await screen.findByRole("group", { name: "The grade failed" });
+    expect(within(box).getByRole("alert").textContent).toBe(line);
+    expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
+  });
+
   it("shows the wait time on a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
     await pickTrade(TRADE);

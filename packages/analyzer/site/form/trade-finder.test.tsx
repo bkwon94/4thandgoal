@@ -169,12 +169,14 @@ describe("TradeFinder", () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
     find();
     expect(await screen.findByText("Too many requests. Try again in 12 seconds.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
   });
 
   it("shows the API message on a 422", async () => {
     answer(422, { detail: { message: "Pick two different teams." } });
     find();
     expect(await screen.findByText("Pick two different teams.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
     // The rosters are stale, so the page fetches the current ones.
     expect(onRostersStale).toHaveBeenCalledTimes(1);
   });
