@@ -41,7 +41,8 @@ The `Makefile` holds the common tasks. Run `make help` to list them. A weekly ru
 The build writes JSON and images only. It writes no HTML. The site repo renders the pages from
 the JSON, including the home page.
 
-The build writes `site/<season>/week-NN/page.json` with the images beside it. The file holds the
+The build writes `clients/<slug>/build/<season>/week-NN/page.json` with the images beside it.
+Each client has its own build folder, so the build of one client never overwrites the files of another. The file holds the
 render context and a `schema_version` key. The image paths in it are relative to the week folder.
 The default avatar and headshot paths point to `images/` under `apps/site/public/`, and the site repo serves
 those files.

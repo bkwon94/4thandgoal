@@ -39,7 +39,7 @@ def _outside_offenses(root: Path, commit: str) -> list[Offense]:
 
 
 def _built_repo(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
-    """A git repo with the pipeline at apps/pipeline and one built week 8 page.
+    """A git repo with the pipeline at apps/pipeline and one built week 8 page in the build folder of cpc.
 
     The prek hook sets GIT_DIR. The publish calls git with the process env, so the test clears it.
     """
@@ -47,7 +47,8 @@ def _built_repo(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
         monkeypatch.delenv(name, raising=False)
     root = tmp_path / "one"
     pipeline = root / "apps" / "pipeline"
-    page = pipeline / "site" / "2026" / "week-08" / "page.json"
+    pipeline.mkdir(parents=True)
+    page = root / "clients" / "cpc" / "build" / "2026" / "week-08" / "page.json"
     page.parent.mkdir(parents=True)
     page.write_text("{}")
     (root / "clients" / "cpc" / "data").mkdir(parents=True)
@@ -60,7 +61,7 @@ def _built_repo(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
 
 def test_a_publish_of_only_published_data_passes(tmp_path, monkeypatch):
     root, pipeline = _built_repo(tmp_path, monkeypatch)
-    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc" / "data", push=False)
+    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc", push=False)
     offenses = _outside_offenses(root, "HEAD")
     assert not offenses, report(offenses)
     assert _commit_paths(root, "HEAD") == ["clients/cpc/published/2026/week-08/page.json"]
@@ -69,7 +70,7 @@ def test_a_publish_of_only_published_data_passes(tmp_path, monkeypatch):
 def test_a_stray_file_stays_out_of_the_publish(tmp_path, monkeypatch):
     root, pipeline = _built_repo(tmp_path, monkeypatch)
     (root / "stray.txt").write_text("half-done work\n")
-    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc" / "data", push=False)
+    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc", push=False)
     assert _git(root, "status", "--short", "--", "stray.txt").strip() == "?? stray.txt"
     assert _outside_offenses(root, "HEAD") == []
 
@@ -79,7 +80,7 @@ def test_a_change_to_another_season_stays_out_of_the_publish(tmp_path, monkeypat
     old = root / "clients" / "cpc" / "published" / "2025" / "rankings.json"
     old.parent.mkdir(parents=True)
     old.write_text("{}")
-    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc" / "data", push=False)
+    run_publish(pipeline, 2026, 8, "cpc", root / "clients" / "cpc", push=False)
     assert _commit_paths(root, "HEAD") == ["clients/cpc/published/2026/week-08/page.json"]
     assert _git(root, "status", "--short", "--", "clients/cpc/published/2025").strip() == "?? clients/cpc/published/2025/"
 
@@ -94,7 +95,7 @@ def test_the_rule_names_a_file_outside_the_published_data(tmp_path, monkeypatch)
     _git(root, "commit", "-m", "Week 8")
     offenses = _outside_offenses(root, "HEAD")
     assert [(offense.path, offense.rule_id) for offense in offenses] == [
-        ("apps/pipeline/site/2026/week-08/page.json", "publish/scope"),
+        ("clients/cpc/build/2026/week-08/page.json", "publish/scope"),
         ("clients/cpc/data/history.json", "publish/scope"),
         ("stray.txt", "publish/scope"),
     ]

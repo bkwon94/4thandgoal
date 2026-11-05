@@ -22,7 +22,7 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 2. Save the raw data under `clients/<slug>/data/` and cache the shared NFL data under `data/nfl/cache/`, both at the repo root.
 3. Compute the stats for each chapter.
 4. Write the chapter text with the Anthropic API.
-5. Write `page.json` and the images into `site/`.
+5. Write `page.json` and the images into the build folder `clients/<slug>/build/`.
 6. Publish the week folder to `clients/<slug>/published/` of this repo.
 
 ## Where the work sits
