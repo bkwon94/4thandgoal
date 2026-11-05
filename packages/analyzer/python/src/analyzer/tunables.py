@@ -4,9 +4,10 @@ The rubric file in the prompts directory points here, so a number changes in one
 """
 from decimal import Decimal
 
-# Standing: a seller has more than this many wins fewer than the team in the last playoff spot. The analyzer reads it.
-# The league scores a median game each week, so each week gives two results, and two games are one week of results.
-SELLER_GAP = 2
+# Standing: a seller is more than this many weeks of results under the team in the last playoff spot. The analyzer reads
+# it. The gap counts weeks, not games: a week gives two results with the median game, else one, so the analyzer turns
+# it into wins with the League settings.
+SELLER_GAP_WEEKS = 1
 
 # The numbers are Decimal, so a ratio at a lower bound, such as 22 over 20, lands in its band exactly.
 

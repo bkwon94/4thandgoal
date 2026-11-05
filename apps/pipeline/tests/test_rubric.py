@@ -13,7 +13,7 @@ from conftest import strip_trend_numbers, with_carries, with_free_agents
 from cpc import cpc_client
 
 from analyzer import RULE_PROMPTS, rubric
-from analyzer.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters
+from analyzer.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters, team_race
 from analyzer.analysis import _allowed, _breakdown_text, _letter_failures, _prose_failures
 from analyzer.rubric import (
     Adjuster,
@@ -887,6 +887,23 @@ def test_a_team_in_the_middle_gets_no_standing_step(snap):
     standing = _adjuster(tenth, "standing")
     assert standing.step == 0
     assert standing.reason == "The team is neither in a playoff spot nor out of the race."
+
+
+def _two_wins_out(snap, roster_id: int, *, median_game: bool):
+    """The snapshot with the roster two wins under the cut, for a client with or without the median game."""
+    standings = [s.model_copy(update={"games_from_cut": -2}) if s.roster_id == roster_id else s
+                 for s in snap.standings]
+    return snap.model_copy(update={"standings": standings, "client": cpc_client(median_game=median_game)})
+
+
+def test_with_the_median_game_two_wins_out_is_one_week_out_so_the_team_is_in_the_middle(snap):
+    # Each week gives two results with the median game, so two wins are one week of results.
+    assert team_race(_two_wins_out(snap, 10, median_game=True), 10) == "middle"
+
+
+def test_with_the_median_game_off_two_wins_out_is_two_weeks_out_so_the_team_is_a_seller(snap):
+    # Each week gives one result with no median game, so two wins are two weeks of results.
+    assert team_race(_two_wins_out(snap, 10, median_game=False), 10) == "seller"
 
 
 def test_a_contender_steps_up_for_a_lineup_gain_now(snap):
