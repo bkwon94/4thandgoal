@@ -19,7 +19,7 @@ import { WeekFooter } from "@cpc/week/chapters/week-footer";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle, weekSubtitle } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { season, week } = await params;
   const page = loadWeek(season, week);
   return {
-    title: `Week ${page.week} · Cornerstone Fantasy Football League`,
+    title: pageTitle(undefined, `Week ${page.week}`),
     description: page.summary,
     // The pipeline reads this meta from a week page to list the week on the home page.
     other: { "cornerstone-summary": page.summary },
@@ -65,7 +65,7 @@ export default async function WeekPage({ params }: Props) {
   const next = seasonWeeks.filter((summary) => summary.number > page.week).at(-1) ?? null;
   return (
     <>
-      <Masthead {...mastheadProps()} subtitle="League Weekly" pageHref={weekHref(season, week)}>
+      <Masthead {...mastheadProps()} subtitle={weekSubtitle()} pageHref={weekHref(season, week)}>
         <WeekLine label="WEEK" number={page.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">
           {/* One string, so React writes one text node and the browser kerns the line as one run. */}

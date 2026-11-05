@@ -5,7 +5,8 @@
 import { z } from "zod";
 
 /* The team as the week page names it. The avatar URL is the Sleeper one; the pages show the week page avatars. */
-export const managerTeamSchema = z.object({ name: z.string(), owner: z.string(), avatar_url: z.string() });
+// A manager with no Sleeper avatar has avatar_url null, as the pipeline model ManagerTeam allows.
+export const managerTeamSchema = z.object({ name: z.string(), owner: z.string(), avatar_url: z.string().nullable() });
 
 /* A player of a move, an add, or a performer row. The position is null when the players file lacks him. */
 export const managerPlayerSchema = z.object({

@@ -9,10 +9,10 @@ import { Masthead } from "@cpc/design/shell/masthead";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { apiTarget, finderOn } from "@/lib/config";
 import { analyzeHref } from "@/lib/routes";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
-  title: "Trade Analyzer · Cornerstone Fantasy Football League",
+  title: pageTitle(undefined, "Trade Analyzer"),
 };
 
 export default function AnalyzePage() {

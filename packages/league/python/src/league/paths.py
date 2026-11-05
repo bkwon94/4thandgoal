@@ -87,16 +87,17 @@ def nflverse_cache_dir(nfl: Path) -> Path:
     return _cache_dir(nfl) / "nflverse"
 
 
-def charts_dir(nfl: Path) -> Path:
-    return _cache_dir(nfl) / "charts"
+def charts_dir(nfl: Path, chart: str) -> Path:
+    """The cache of the chart `chart`. Clients that read different charts share data/nfl, so each chart has its own dir."""
+    return _cache_dir(nfl) / "charts" / chart
 
 
-def chart_image(nfl: Path, week: int) -> Path:
-    return charts_dir(nfl) / f"{week_label(week)}.png"
+def chart_image(nfl: Path, chart: str, week: int) -> Path:
+    return charts_dir(nfl, chart) / f"{week_label(week)}.png"
 
 
-def chart_read(nfl: Path, week: int) -> Path:
-    return charts_dir(nfl) / f"{week_label(week)}.json"
+def chart_read(nfl: Path, chart: str, week: int) -> Path:
+    return charts_dir(nfl, chart) / f"{week_label(week)}.json"
 
 
 def results_cache_dir(root: Path) -> Path:

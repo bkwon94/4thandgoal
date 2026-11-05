@@ -13,7 +13,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { loadManagers, seasonManagersHref } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managerHref } from "@/lib/routes";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle } from "@/app/masthead-props";
 
 type Params = { season: string; roster: string };
 type Props = { params: Promise<Params> };
@@ -34,7 +34,7 @@ function managerOf(roster: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { roster } = await params;
   const found = managerOf(roster);
-  return { title: `${found?.manager.team.name ?? "Managers"} · Cornerstone Fantasy Football League` };
+  return { title: pageTitle(undefined, found?.manager.team.name ?? "Managers") };
 }
 
 export default async function ManagerPage({ params }: Props) {

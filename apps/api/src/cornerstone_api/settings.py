@@ -9,8 +9,11 @@ from pathlib import Path
 
 from league.paths import results_cache_dir
 
-# The CPC site at its Worker, its old host for a page that a reader still has open, and the two local dev servers.
-DEFAULT_ORIGINS = ("https://cpc.4thandgoal.app", "https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000")
+# The site of each client at its Worker, the old CPC host for a page that a reader still has open, and the two local dev servers.
+DEFAULT_ORIGINS = (
+    "https://cpc.4thandgoal.app", "https://norcal.4thandgoal.app", "https://cpcfantasy.com",
+    "http://localhost:5173", "http://localhost:3000",
+)
 
 
 @dataclass(frozen=True)

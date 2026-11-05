@@ -167,10 +167,10 @@ def _proposed_sides(sides: list[tuple[int, list[tuple[str, int | None]]]]) -> li
     return built
 
 
-def _saved_chart_values(nfl: Path, week: int, raw: RawWeek) -> ChartValues | None:
+def _saved_chart_values(nfl: Path, week: int, raw: RawWeek, chart_name: str) -> ChartValues | None:
     """The trade values of the saved chart read of the week, or None. It never fetches or reads an image."""
     # The chart module owns the rules for a saved read, so a bad or stale one gives None here too.
-    chart = saved_chart_read(nfl, week)
+    chart = saved_chart_read(nfl, week, chart=chart_name)
     if chart is None:
         return None
     return match_chart(chart, week_lines(parse_week(raw)))
@@ -226,7 +226,7 @@ def _saved_snapshot(args: argparse.Namespace, client: Client) -> Snapshot | None
         chart = _given_chart(args.chart)
     else:
         # A client with no chart reads no saved chart read either: each of its chart values is 0.
-        chart = _saved_chart_values(client.nfl_dir, args.week, raw) if client.chart is not None else None
+        chart = _saved_chart_values(client.nfl_dir, args.week, raw, client.chart) if client.chart is not None else None
     history = history_root(client.folder, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), args.season, args.week, history,

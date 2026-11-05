@@ -11,8 +11,8 @@ import { ThemeButton } from "./theme-button";
 export { WeekLine } from "../parts/week-line";
 
 type MastheadProps = {
-  // The brand line. It defaults to the league name, which every page shows.
-  title?: string;
+  // The brand line: the masthead text of copy.toml, which every page shows. The app layer passes it, so the masthead names no league.
+  title: string;
   // The page line under the brand. The home page leaves it out.
   subtitle?: string;
   // The week line under the brand. Pages with no week line leave it out.
@@ -26,7 +26,7 @@ type MastheadProps = {
 };
 
 export function Masthead({
-  title = "Cornerstone Fantasy Football League",
+  title,
   subtitle,
   children,
   brand,

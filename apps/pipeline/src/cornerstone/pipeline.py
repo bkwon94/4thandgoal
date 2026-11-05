@@ -522,7 +522,7 @@ def _managers_chart(client: Client, week: int, raw: dict | None) -> ChartValues 
     """The trade values of the saved chart read of the week for the roster grade. None, with one log line, when no
     read is saved or the week has no raw data. It never fetches or reads an image."""
     # A client with no chart reads no saved chart read either: each of its chart values is 0.
-    chart = saved_chart_read(client.nfl_dir, week) if raw is not None and client.chart is not None else None
+    chart = saved_chart_read(client.nfl_dir, week, chart=client.chart) if raw is not None and client.chart is not None else None
     if chart is None:
         # The grade still goes out. Its trade value part is 0 for every roster.
         log.info("no saved chart read for week %d: the roster grade has no trade value", week)

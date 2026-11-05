@@ -6,7 +6,7 @@ import { paintOf } from "@cpc/design/lib/theme";
 import type { Brand, Destination, SiteMenu } from "@cpc/design/shell/menu";
 import { clientValues } from "@/generated/client-values";
 import { menuLinks } from "@/generated/registry";
-import type { MenuItem, MenuLinks } from "@/lib/client-values";
+import type { ClientValues, MenuItem, MenuLinks } from "@/lib/client-values";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { homeHref, logoSrc } from "@/lib/routes";
 
@@ -18,6 +18,16 @@ export function menuPages(items: MenuItem[], links: MenuLinks, home: string): De
     const link = links[item.package]?.();
     return link ? [{ label: item.label ?? link.label, href: link.href }] : [];
   });
+}
+
+/* The metadata title of a page: the page name, then the site name of copy.toml. The home page gives no page name. */
+export function pageTitle(copy: ClientValues["copy"] = clientValues.copy, page?: string): string {
+  return page ? `${page} · ${copy.siteName}` : copy.siteName;
+}
+
+/* The subtitle of the week page: the tagline of copy.toml. */
+export function weekSubtitle(): string {
+  return clientValues.copy.tagline;
 }
 
 export function mastheadProps(): { title: string; brand: Brand; menu: SiteMenu } {

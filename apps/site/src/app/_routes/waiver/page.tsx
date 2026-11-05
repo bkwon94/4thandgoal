@@ -11,7 +11,7 @@ import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { waiverHref, weekHref } from "@/lib/routes";
 import type { AvatarMap } from "@cpc/waiver/types";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
 
@@ -20,7 +20,7 @@ export function generateStaticParams(): WeekRef[] {
 }
 
 export const metadata: Metadata = {
-  title: "Waiver Wire · Cornerstone Fantasy Football League",
+  title: pageTitle(undefined, "Waiver Wire"),
 };
 
 /* The league plays on US Eastern time, and the static build must not read the time zone of the build machine. */

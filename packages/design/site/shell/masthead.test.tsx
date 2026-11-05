@@ -10,6 +10,9 @@ import type { Brand, SiteMenu } from "./menu";
 /* The brand of a build with no base path. */
 const BRAND: Brand = { home: "/", logo: "/images/logo.png", themeButton: true };
 
+/* The site name of copy.toml. The masthead has no default title, so each render passes one. */
+const TITLE = "Cornerstone Fantasy Football League";
+
 /* The menu of the week 7 report: four pages, then two past weeks, newest first. */
 const MENU: SiteMenu = {
   layout: "hamburger",
@@ -27,7 +30,7 @@ const MENU: SiteMenu = {
 
 /* The masthead of the week 7 report. A test overrides the menu or the open page to change one value. */
 function renderWeekMasthead({ menu = MENU, pageHref = "/2026/week-07/" }: { menu?: SiteMenu; pageHref?: string } = {}) {
-  render(<Masthead subtitle="League Weekly" brand={BRAND} menu={menu} pageHref={pageHref} />);
+  render(<Masthead title={TITLE} subtitle="League Weekly" brand={BRAND} menu={menu} pageHref={pageHref} />);
 }
 
 /* The list of the open sheet. The row shares its name, so the query stays inside the dialog. */
@@ -131,7 +134,7 @@ afterAll(() => {
 
 describe("Masthead", () => {
   it("shows the title and the subtitle in the home link", () => {
-    render(<Masthead subtitle="Trade Analyzer" brand={BRAND} menu={MENU} />);
+    render(<Masthead title={TITLE} subtitle="Trade Analyzer" brand={BRAND} menu={MENU} />);
     const home = brandLink(/Cornerstone Fantasy Football League/);
     expect(home.textContent).toContain("Cornerstone Fantasy Football League");
     expect(home.textContent).toContain("Trade Analyzer");
@@ -140,7 +143,7 @@ describe("Masthead", () => {
 
   it("shows the week line children under the brand", () => {
     render(
-      <Masthead subtitle="League Weekly" brand={BRAND} menu={MENU}>
+      <Masthead title={TITLE} subtitle="League Weekly" brand={BRAND} menu={MENU}>
         <p>Week 6</p>
       </Masthead>,
     );
@@ -148,7 +151,7 @@ describe("Masthead", () => {
     expect(screen.getByText("League Weekly")).toBeTruthy();
   });
 
-  it("shows a custom title in place of the default brand", () => {
+  it("shows the title that the page passes, with no default brand", () => {
     render(<Masthead title="Custom Brand" subtitle="League Weekly" brand={BRAND} menu={MENU} />);
     const home = brandLink(/Custom Brand/);
     expect(home.textContent).toContain("Custom Brand");
@@ -174,12 +177,12 @@ describe("Masthead", () => {
   });
 
   it("shows no week line when there are no children", () => {
-    render(<Masthead subtitle="Trade Analyzer" brand={BRAND} menu={MENU} />);
+    render(<Masthead title={TITLE} subtitle="Trade Analyzer" brand={BRAND} menu={MENU} />);
     expect(screen.queryByText("Week 6")).toBeNull();
   });
 
   it("shows no subtitle when none is given", () => {
-    render(<Masthead brand={BRAND} menu={MENU} />);
+    render(<Masthead title={TITLE} brand={BRAND} menu={MENU} />);
     expect(brandLink(/Cornerstone Fantasy Football League/).textContent).toBe("Cornerstone Fantasy Football League");
   });
 

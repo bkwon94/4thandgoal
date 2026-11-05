@@ -1,10 +1,12 @@
 /**
- * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, and
- * that each package the client omits is absent. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
+ * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, that
+ * each package the client omits is absent, and that the pages show the copy, the theme button, and the finder of the
+ * client. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ClientBuildError, clientRoot, readClient } from "./client-build.mjs";
+import { ClientBuildError, clientRoot, readBrand, readClient, readCopy } from "./client-build.mjs";
+import { setsOf } from "@cpc/design/brand/brand.ts";
 
 function filesUnder(dir) {
   return readdirSync(dir, { withFileTypes: true })
@@ -85,7 +87,25 @@ for (const name of omitted) {
   const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
   if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
 }
+// The marks of the client values: the masthead text of copy.toml on the home page, the theme button only for a brand
+// with two sets, and the finder flag of the analyzer page. The flag sits in the page data of the static HTML, because
+// the finder shows only after a reader picks two teams.
+const copy = readCopy(clientRoot(process.env), process.env.CLIENT);
+const home = readFileSync(join("out", "index.html"), "utf8");
+if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the masthead text "${copy.masthead}"`);
+const themeButton = setsOf(readBrand(clientRoot(process.env), process.env.CLIENT)).length === 2;
+const themed = exported.find((file) => file.endsWith(".html") && readFileSync(file, "utf8").includes("Switch to"));
+if (themeButton && !themed) fail("no page shows the theme button, but the brand has two sets");
+if (!themeButton && themed) fail(`${themed} shows a theme button, but the brand has one set`);
+let finder = "no analyzer";
+if (values.packages.includes("analyzer")) {
+  const finderOn = values.values?.analyzer?.finder ?? false;
+  const analyze = readFileSync(join("out", "analyze", "index.html"), "utf8");
+  if (!analyze.includes(`finderOn\\":${finderOn}`)) fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
+  finder = finderOn ? "the finder" : "no finder";
+}
 console.log(
   `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
-    `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it.`,
+    `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it; ` +
+    `the pages show "${copy.masthead}", ${themeButton ? "the" : "no"} theme button, and ${finder}.`,
 );

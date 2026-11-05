@@ -12,10 +12,10 @@ import { season } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { cn } from "@cpc/design/lib/utils";
 import { homeSections, homeTools } from "@/generated/registry";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle } from "@/app/masthead-props";
 
 export const metadata: Metadata = {
-  title: "Cornerstone Fantasy Football League",
+  title: pageTitle(),
 };
 
 export default function HomePage() {

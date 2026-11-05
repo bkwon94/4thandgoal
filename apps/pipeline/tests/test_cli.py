@@ -136,7 +136,8 @@ def _pad_rows(value):
 def _save_chart(tmp_path, parsed):
     from league.paths import charts_dir
 
-    charts = charts_dir(tmp_path / "data" / "nfl")
+    # The chart of the cpc client in its client.toml.
+    charts = charts_dir(tmp_path / "data" / "nfl", "1QB0.5PPR4pt")
     charts.mkdir(parents=True)
     # A saved parse means the command makes no fetch and no Claude call.
     (charts / "week-06.json").write_text(parsed.model_dump_json())

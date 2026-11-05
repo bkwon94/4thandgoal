@@ -9,7 +9,7 @@ import { PageColumn } from "@cpc/design/parts/page-column";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managersHref } from "@/lib/routes";
-import { mastheadProps } from "@/app/masthead-props";
+import { mastheadProps, pageTitle } from "@/app/masthead-props";
 
 type Props = { params: Promise<{ season: string }> };
 
@@ -19,7 +19,7 @@ export function generateStaticParams(): { season: string }[] {
 }
 
 export const metadata: Metadata = {
-  title: "Managers · Cornerstone Fantasy Football League",
+  title: pageTitle(undefined, "Managers"),
 };
 
 export default async function ManagersPage({ params }: Props) {

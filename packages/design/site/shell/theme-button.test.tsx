@@ -14,6 +14,7 @@ const TO_LIGHT = "Switch to light theme";
 function renderWeekMasthead({ themeButton = true, layout = "hamburger" }: { themeButton?: boolean; layout?: MenuLayout } = {}) {
   render(
     <Masthead
+      title="Cornerstone Fantasy Football League"
       subtitle="League Weekly"
       brand={{ home: "/", logo: "/images/logo.png", themeButton }}
       menu={{

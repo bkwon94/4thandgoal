@@ -1,4 +1,4 @@
-# The daily refresh of the Cornerstone API: a cron ping to POST /clients/cpc/refresh at about 06:00 Eastern.
+# The daily refresh of the Cornerstone API: a cron ping to POST /clients/<slug>/refresh of each client at about 06:00 Eastern.
 # A stopped Fly machine cannot run a scheduler, so this ping starts it and runs the refresh. It never deploys.
 name: Daily refresh
 
@@ -19,12 +19,24 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      # A failed refresh of one client does not stop the refresh of another client.
+      fail-fast: false
+      # One entry per folder under clients/. Each client has its own passphrase in the secret
+      # CORNERSTONE_PASSPHRASE_<SLUG>, so a new client adds one line here and one GitHub secret.
+      matrix:
+        include:
+          - slug: cpc
+            secret: CORNERSTONE_PASSPHRASE_CPC
+          - slug: norcal
+            secret: CORNERSTONE_PASSPHRASE_NORCAL
     steps:
-      - name: Call the refresh route
+      - name: Call the refresh route of the client
         env:
-          PASSPHRASE: ${{ secrets.CORNERSTONE_PASSPHRASE_CPC }}
+          PASSPHRASE: ${{ secrets[matrix.secret] }}
+          SLUG: ${{ matrix.slug }}
         # --fail makes a 401 or a 5xx fail the job, so a broken refresh shows in the Actions tab.
         run: |
           curl --fail --silent --show-error --max-time 300 -X POST \
             -H "X-League-Passphrase: ${PASSPHRASE}" \
-            "https://api.4thandgoal.app/clients/cpc/refresh?season=${CORNERSTONE_SEASON}"
+            "https://api.4thandgoal.app/clients/${SLUG}/refresh?season=${CORNERSTONE_SEASON}"

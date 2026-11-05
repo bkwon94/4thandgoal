@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { MenuLinks } from "@/lib/client-values";
-import { mastheadProps, menuPages } from "./masthead-props";
+import { mastheadProps, menuPages, pageTitle } from "./masthead-props";
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
@@ -68,5 +68,21 @@ describe("mastheadProps of cpc", () => {
     const { title, brand } = mastheadProps();
     expect(title).toBe("Cornerstone Fantasy Football League");
     expect(brand).toEqual({ home: "/", logo: "/brand/logo.png", themeButton: true });
+  });
+});
+
+describe("pageTitle", () => {
+  const NORCAL = { siteName: "NorCal Apex 6", masthead: "NorCal Apex 6", tagline: "League Weekly" };
+
+  it("gives the site name of copy.toml alone for the home page", () => {
+    expect(pageTitle(NORCAL)).toBe("NorCal Apex 6");
+  });
+
+  it("puts the page name before the site name of copy.toml", () => {
+    expect(pageTitle(NORCAL, "Trade Analyzer")).toBe("Trade Analyzer · NorCal Apex 6");
+  });
+
+  it("reads the CPC site name from the generated client values by default", () => {
+    expect(pageTitle(undefined, "Week 8")).toBe("Week 8 · Cornerstone Fantasy Football League");
   });
 });

@@ -1,0 +1,27 @@
+# The brand of the NorCal client: the two radii, the two font stacks, and one dark set.
+# The schema is BRAND_SCHEMA in packages/design/site/brand/brand.ts. NorCal has no logo, so the masthead shows the site name as text.
+
+radius_card = "4px"
+radius_small = "2px"
+
+# The system font stack, so no font file loads.
+[fonts]
+body = 'system-ui, -apple-system, "Segoe UI", sans-serif'
+heading = 'system-ui, -apple-system, "Segoe UI", sans-serif'
+
+# No [light] table: one dark set, no theme button.
+# The palette is red, gold, orange, and mustard over dark greys and blacks.
+[dark]
+# Burnt red-orange: the fills with white text.
+accent = "#c2410c"
+band = "#0a0a0a"
+page = "#141414"
+card = "#232323"
+text = "#f5f0e6"
+muted = "#a8a29a"
+
+[dark.derived]
+# Gold: the accent as text on the dark band.
+accent_text = "#e0a526"
+# Gold too: the accent as text on the page and on the pick. The accent itself is 3.6 to 1 on the page, so it carries no text.
+accent_ink = "#e0a526"

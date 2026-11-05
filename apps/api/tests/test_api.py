@@ -1136,7 +1136,8 @@ def test_a_bad_trade_does_not_count_as_a_grade(settings, sources):
 
 
 @pytest.mark.parametrize(
-    "origin", ["https://cpc.4thandgoal.app", "https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000"])
+    "origin", ["https://cpc.4thandgoal.app", "https://norcal.4thandgoal.app", "https://cpcfantasy.com",
+               "http://localhost:5173", "http://localhost:3000"])
 def test_cors_allows_the_site_and_localhost(settings, sources, origin):
     response = _client(settings, sources).options("/analyze", headers={
         "Origin": origin, "Access-Control-Request-Method": "POST",

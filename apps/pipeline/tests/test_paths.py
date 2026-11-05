@@ -78,16 +78,16 @@ def test_nflverse_cache_dir_is_in_the_cache():
     assert nflverse_cache_dir(NFL) == Path("/repo/data/nfl/cache/nflverse")
 
 
-def test_charts_dir_is_in_the_cache():
-    assert charts_dir(NFL) == Path("/repo/data/nfl/cache/charts")
+def test_charts_dir_is_in_the_cache_under_the_chart_name():
+    assert charts_dir(NFL, "1QB0.5PPR4pt") == Path("/repo/data/nfl/cache/charts/1QB0.5PPR4pt")
 
 
 def test_chart_image_is_a_png_named_for_the_week():
-    assert chart_image(NFL, 6) == Path("/repo/data/nfl/cache/charts/week-06.png")
+    assert chart_image(NFL, "1QB0.5PPR4pt", 6) == Path("/repo/data/nfl/cache/charts/1QB0.5PPR4pt/week-06.png")
 
 
 def test_chart_read_is_a_json_named_for_the_week():
-    assert chart_read(NFL, 6) == Path("/repo/data/nfl/cache/charts/week-06.json")
+    assert chart_read(NFL, "1QB0.5PPR4pt", 6) == Path("/repo/data/nfl/cache/charts/1QB0.5PPR4pt/week-06.json")
 
 
 def test_results_cache_dir_is_in_the_cache():

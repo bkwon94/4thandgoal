@@ -204,10 +204,32 @@ def test_the_fetch_searches_and_picks_the_chart_of_the_client(tmp_path):
     assert "search=1QB1.0PPR4pt" in calls[0]
 
 
+def test_two_charts_of_one_week_keep_their_own_cache(tmp_path):
+    # Two clients that read two charts share data/nfl, so the cache of one chart never answers for the other.
+    full = "1QB1.0PPR4pt"
+    listing = [{"date": "2026-10-14T08:27:47", "source_url": _url("20261013")},
+               {"date": "2026-10-14T08:27:47", "source_url": _url("20261013").replace(CHART, full)}]
+
+    def fetch(url):
+        if url in (media_url(CHART), media_url(full)):
+            return json.dumps(listing).encode()
+        return PNG_SIGNATURE + b"png of " + url.rsplit("/", 1)[1].encode()
+
+    half_path = fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART)
+    full_path = fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=full)
+    assert half_path != full_path
+    assert half_path.read_bytes() == PNG_SIGNATURE + f"png of {CHART}_20261013.png".encode()
+    assert full_path.read_bytes() == PNG_SIGNATURE + f"png of {full}_20261013.png".encode()
+    read = _read((40.0, "Ja'Marr Chase", "WR"))
+    (charts_dir(tmp_path, CHART) / "week-06.json").write_text(read.model_dump_json(), encoding="utf-8")
+    assert saved_chart_read(tmp_path, 6, chart=CHART) == read
+    assert saved_chart_read(tmp_path, 6, chart=full) is None
+
+
 def test_fetch_picks_the_file_in_the_week_window(tmp_path):
     fetch = _site("20261006", "20261013", "20261020")
     path = fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART)
-    assert path == charts_dir(tmp_path) / "week-06.png"
+    assert path == charts_dir(tmp_path, CHART) / "week-06.png"
     assert path.read_bytes() == PNG_SIGNATURE + b"png of 20261013.png"
     path = fetch_chart(SEASON_START, 7, tmp_path, fetch, chart=CHART)
     assert path.read_bytes() == PNG_SIGNATURE + b"png of 20261020.png"
@@ -217,7 +239,7 @@ def test_a_fetched_body_that_is_not_a_png_is_a_failed_fetch(tmp_path, caplog):
     def fetch(url):
         return listing(url) if url == media_url(CHART) else b"<html>Not found</html>"
     assert fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART) is None
-    assert not (charts_dir(tmp_path) / "week-06.png").exists()
+    assert not (charts_dir(tmp_path, CHART) / "week-06.png").exists()
     assert "is not a PNG" in caplog.text
 
 
@@ -227,22 +249,22 @@ def test_fetch_finds_no_file_for_a_week_the_site_lacks(tmp_path):
 
 
 def test_a_hand_placed_png_wins_and_nothing_is_fetched(tmp_path):
-    charts_dir(tmp_path).mkdir(parents=True)
-    (charts_dir(tmp_path) / "week-06.png").write_bytes(b"by hand")
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
+    (charts_dir(tmp_path, CHART) / "week-06.png").write_bytes(b"by hand")
     fetch = _site("20261013")
     assert fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART).read_bytes() == b"by hand"
     assert fetch.calls == []
 
 
 def _cached(repo, *weeks):
-    charts_dir(repo).mkdir(parents=True)
+    charts_dir(repo, CHART).mkdir(parents=True)
     for week in weeks:
-        (charts_dir(repo) / f"week-{week:02d}.png").write_bytes(b"old")
+        (charts_dir(repo, CHART) / f"week-{week:02d}.png").write_bytes(b"old")
 
 
 def test_an_outage_uses_the_week_before(tmp_path):
     _cached(tmp_path, 6)
-    assert fetch_chart(SEASON_START, 7, tmp_path, _down, chart=CHART) == charts_dir(tmp_path) / "week-06.png"
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down, chart=CHART) == charts_dir(tmp_path, CHART) / "week-06.png"
 
 
 def test_an_outage_ignores_a_chart_three_weeks_old(tmp_path):
@@ -257,7 +279,7 @@ def test_an_outage_never_uses_a_later_week(tmp_path):
 
 def test_an_outage_uses_the_newest_of_the_two_weeks_before(tmp_path, caplog):
     _cached(tmp_path, 5, 6)
-    assert fetch_chart(SEASON_START, 7, tmp_path, _down, chart=CHART) == charts_dir(tmp_path) / "week-06.png"
+    assert fetch_chart(SEASON_START, 7, tmp_path, _down, chart=CHART) == charts_dir(tmp_path, CHART) / "week-06.png"
     assert "week 6 stands in for week 7" in caplog.text
 
 
@@ -266,7 +288,7 @@ def test_a_failed_file_fetch_falls_back_too(tmp_path):
     listing = _site("20261013")
     def fetch(url):
         return listing(url) if url == media_url(CHART) else _down(url)
-    assert fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART) == charts_dir(tmp_path) / "week-05.png"
+    assert fetch_chart(SEASON_START, 6, tmp_path, fetch, chart=CHART) == charts_dir(tmp_path, CHART) / "week-05.png"
 
 
 def test_an_outage_with_no_cache_gives_none(tmp_path):
@@ -301,8 +323,8 @@ def test_chart_values_fetch_read_match_and_cache(tmp_path):
     lines = [_line("1", "Ja'Marr Chase", "WR"), _line("2", "Kenneth Walker III", "RB")]
     values = chart_values(tmp_path, SEASON_START, 6, lines, fetch, read=reader, chart=CHART)
     assert values.values == {"1": 50.0, "2": 40.0}
-    assert (charts_dir(tmp_path) / "week-06.png").exists()
-    assert ChartRead.model_validate_json((charts_dir(tmp_path) / "week-06.json").read_text()) == reader.result
+    assert (charts_dir(tmp_path, CHART) / "week-06.png").exists()
+    assert ChartRead.model_validate_json((charts_dir(tmp_path, CHART) / "week-06.json").read_text()) == reader.result
 
 
 def test_a_parsed_json_is_reused_with_no_fetch_and_no_read(tmp_path):
@@ -317,15 +339,15 @@ def test_a_parsed_json_is_reused_with_no_fetch_and_no_read(tmp_path):
 
 
 def test_a_hand_placed_png_is_read_not_fetched(tmp_path):
-    charts_dir(tmp_path).mkdir(parents=True)
-    (charts_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
+    (charts_dir(tmp_path, CHART) / "week-06.png").write_bytes(_png(1500))
     reader = _Reader(_padded((50.0, "A", "RB")))
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=reader, chart=CHART) == (6, reader.result)
 
 
 def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
     import os
-    charts = charts_dir(tmp_path)
+    charts = charts_dir(tmp_path, CHART)
     charts.mkdir(parents=True)
     png, saved = charts / "week-06.png", charts / "week-06.json"
     png.write_bytes(_png(1500))
@@ -340,17 +362,17 @@ def test_a_hand_placed_png_newer_than_the_saved_read_is_read_again(tmp_path):
 
 
 def test_a_parsed_json_that_is_not_utf_8_is_read_again_from_the_image(tmp_path):
-    charts_dir(tmp_path).mkdir(parents=True)
-    (charts_dir(tmp_path) / "week-06.png").write_bytes(_png(1500))
-    (charts_dir(tmp_path) / "week-06.json").write_bytes(b"\xff\xfe not utf-8")
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
+    (charts_dir(tmp_path, CHART) / "week-06.png").write_bytes(_png(1500))
+    (charts_dir(tmp_path, CHART) / "week-06.json").write_bytes(b"\xff\xfe not utf-8")
     reader = _Reader(_padded((50.0, "A", "RB")))
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=reader, chart=CHART) == (6, reader.result)
     assert reader.calls == 1
 
 
 def test_a_hand_placed_file_with_html_inside_gives_no_trade_values_and_does_not_raise(tmp_path, caplog):
-    charts_dir(tmp_path).mkdir(parents=True)
-    (charts_dir(tmp_path) / "week-06.png").write_bytes(b"<html>Not found</html>")
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
+    (charts_dir(tmp_path, CHART) / "week-06.png").write_bytes(b"<html>Not found</html>")
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=_Reader(None), chart=CHART) is None
     assert "does not open as an image" in caplog.text
 
@@ -359,8 +381,8 @@ def test_a_failed_guard_keeps_the_png_writes_no_json_and_names_the_guard(tmp_pat
     fetch = _site_with_png("20261013")
     bad = _Reader(_read((10.0, "A", "RB"), (20.0, "B", "RB")))
     assert chart_values(tmp_path, SEASON_START, 6, [_line("1", "A", "RB")], fetch, read=bad, chart=CHART) is None
-    assert (charts_dir(tmp_path) / "week-06.png").exists()
-    assert not (charts_dir(tmp_path) / "week-06.json").exists()
+    assert (charts_dir(tmp_path, CHART) / "week-06.png").exists()
+    assert not (charts_dir(tmp_path, CHART) / "week-06.json").exists()
     assert "trade values never rise" in caplog.text
 
 
@@ -370,9 +392,9 @@ def test_a_failed_header_week_guard_gives_no_trade_values(tmp_path):
 
 
 def test_the_row_count_guard_uses_the_parsed_prior_week(tmp_path):
-    charts_dir(tmp_path).mkdir(parents=True)
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
     prior = _read(*_rows(200)).model_copy(update={"week": 5})
-    (charts_dir(tmp_path) / "week-05.json").write_text(prior.model_dump_json())
+    (charts_dir(tmp_path, CHART) / "week-05.json").write_text(prior.model_dump_json())
     short = _Reader(_read(*_rows(150, 100.0)))
     assert load_chart(tmp_path, SEASON_START, 6, _site_with_png("20261013"), read=short, chart=CHART) is None
 
@@ -389,8 +411,8 @@ def test_no_chart_and_no_cache_gives_no_trade_values(tmp_path):
 
 
 def test_an_outage_reads_the_stand_in_as_its_own_week(tmp_path):
-    charts_dir(tmp_path).mkdir(parents=True)
-    (charts_dir(tmp_path) / "week-05.png").write_bytes(_png(1500))
+    charts_dir(tmp_path, CHART).mkdir(parents=True)
+    (charts_dir(tmp_path, CHART) / "week-05.png").write_bytes(_png(1500))
     stand_in = _Reader(_padded((50.0, "A", "RB")).model_copy(update={"week": 5}))
     assert load_chart(tmp_path, SEASON_START, 6, _down, read=stand_in, chart=CHART) == (5, stand_in.result)
 
@@ -432,9 +454,9 @@ def test_live_week_6_chart_passes_the_guards(tmp_path):
 
 
 def test_saved_chart_read_gives_the_saved_read_or_none(tmp_path):
-    assert saved_chart_read(tmp_path, 6) is None
-    charts = charts_dir(tmp_path)
+    assert saved_chart_read(tmp_path, 6, chart=CHART) is None
+    charts = charts_dir(tmp_path, CHART)
     charts.mkdir(parents=True)
     read = _read((40.0, "Ja'Marr Chase", "WR"))
     (charts / "week-06.json").write_text(read.model_dump_json(), encoding="utf-8")
-    assert saved_chart_read(tmp_path, 6) == read
+    assert saved_chart_read(tmp_path, 6, chart=CHART) == read
