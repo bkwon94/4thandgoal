@@ -846,7 +846,8 @@ _Avoid_: stud, elite, top guy
 
 **Superstar**:
 A player in the top 8 chart values of the week, over all positions. `SUPERSTAR_RANK` sets the count. Every
-superstar is a star, but not every star is a superstar.
+superstar is a star, but not every star is a superstar. A week with no chart reads the newest saved chart of the
+two weeks before, and the reason then says "last week".
 _Avoid_: stud, elite, top-8 player
 
 **Star return bet**:

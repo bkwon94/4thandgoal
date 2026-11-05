@@ -252,6 +252,19 @@ def saved_chart_read(nfl: Path, week: int, *, chart: str) -> ChartRead | None:
     return _current_saved_read(nfl, chart, week)
 
 
+def chart_values_before(nfl: Path, week: int, lines: Iterable[PlayerLine], *, chart: str) -> ChartValues | None:
+    """The trade values of the newest saved read of the STAND_IN_WEEKS weeks before the week, or None.
+
+    The superstar check reads it when the week has no chart, so a star still counts early in the week. It never
+    fetches or reads an image, and it never reads the week itself or a later week.
+    """
+    for earlier in range(week - 1, week - 1 - STAND_IN_WEEKS, -1):
+        read = _current_saved_read(nfl, chart, earlier)
+        if read is not None:
+            return match_chart(read, lines)
+    return None
+
+
 def _prior_row_count(nfl: Path, chart: str, week: int) -> int | None:
     """The row count of the saved read of the week before, or None when no good read is saved."""
     prior = _saved_read(chart_read(nfl, chart, week - 1))

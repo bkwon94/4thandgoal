@@ -950,12 +950,14 @@ def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
 def _superstars(snapshot: Snapshot, players: list[str]) -> list[str]:
     """The players in the top SUPERSTAR_RANK trade values of the week, over all positions. GLOSSARY.md, "Superstar".
 
-    A tie shares the better rank, so a tie at the edge makes every tied player a superstar. With no chart, or with a
-    player not on it, he is no superstar. A player out for the season is never one, because he buys the side nothing.
+    A tie shares the better rank, so a tie at the edge makes every tied player a superstar. With no chart, the check
+    reads the saved chart of the weeks before. With neither, or with a player not on it, he is no superstar. A player
+    out for the season is never one, because he buys the side nothing.
     """
-    if snapshot.chart is None:
+    chart = snapshot.chart if snapshot.chart is not None else snapshot.chart_before
+    if chart is None:
         return []
-    values = snapshot.chart.values
+    values = chart.values
     return [pid for pid in players if pid in values and pid not in snapshot.out_for_season
             and 1 + sum(1 for other in values.values() if other > values[pid]) <= SUPERSTAR_RANK]
 
@@ -975,7 +977,9 @@ def _superstar(snapshot: Snapshot, side: Side) -> Adjuster:
         return Adjuster(name=SUPERSTAR, step=0,
                         reason=f"{names}, but the one-for-many margin already counts {'him' if len(stars) == 1 else 'them'}.")
     each = "a" if len(stars) == 1 else "each a"
-    return Adjuster(name=SUPERSTAR, step=1, reason=f"{names}, {each} top {SUPERSTAR_RANK} player this week.")
+    # With no chart this week, the rank comes from the chart of the weeks before, so the reason names that source.
+    when = "this week" if snapshot.chart is not None else "last week"
+    return Adjuster(name=SUPERSTAR, step=1, reason=f"{names}, {each} top {SUPERSTAR_RANK} player {when}.")
 
 
 def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:

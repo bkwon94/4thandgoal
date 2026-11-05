@@ -1,0 +1,661 @@
+{
+  "week": 8,
+  "date": "2026-10-27",
+  "rows": [
+    {
+      "value": 68.5,
+      "name": "Jahmyr Gibbs",
+      "position": "RB"
+    },
+    {
+      "value": 63.5,
+      "name": "Jaxon Smith-Njigba",
+      "position": "WR"
+    },
+    {
+      "value": 63.0,
+      "name": "Kenneth Walker",
+      "position": "RB"
+    },
+    {
+      "value": 62.5,
+      "name": "Bijan Robinson",
+      "position": "RB"
+    },
+    {
+      "value": 62.0,
+      "name": "Puka Nacua",
+      "position": "WR"
+    },
+    {
+      "value": 57.5,
+      "name": "Ja'Marr Chase",
+      "position": "WR"
+    },
+    {
+      "value": 56.0,
+      "name": "Amon-Ra St. Brown",
+      "position": "WR"
+    },
+    {
+      "value": 54.0,
+      "name": "Christian McCaffrey",
+      "position": "RB"
+    },
+    {
+      "value": 54.0,
+      "name": "CeeDee Lamb",
+      "position": "WR"
+    },
+    {
+      "value": 51.5,
+      "name": "Jonathan Taylor",
+      "position": "RB"
+    },
+    {
+      "value": 51.0,
+      "name": "Malik Nabers",
+      "position": "WR"
+    },
+    {
+      "value": 50.5,
+      "name": "James Cook",
+      "position": "RB"
+    },
+    {
+      "value": 46.5,
+      "name": "Kyren Williams",
+      "position": "RB"
+    },
+    {
+      "value": 46.0,
+      "name": "Derrick Henry",
+      "position": "RB"
+    },
+    {
+      "value": 44.0,
+      "name": "Javonte Williams",
+      "position": "RB"
+    },
+    {
+      "value": 43.5,
+      "name": "Zay Flowers",
+      "position": "WR"
+    },
+    {
+      "value": 42.5,
+      "name": "Josh Allen",
+      "position": "QB"
+    },
+    {
+      "value": 41.0,
+      "name": "Brock Bowers",
+      "position": "TE"
+    },
+    {
+      "value": 40.0,
+      "name": "Ashton Jeanty",
+      "position": "RB"
+    },
+    {
+      "value": 40.0,
+      "name": "Drake London",
+      "position": "WR"
+    },
+    {
+      "value": 39.0,
+      "name": "Justin Jefferson",
+      "position": "WR"
+    },
+    {
+      "value": 37.5,
+      "name": "D'Andre Swift",
+      "position": "RB"
+    },
+    {
+      "value": 35.5,
+      "name": "Chris Olave",
+      "position": "WR"
+    },
+    {
+      "value": 34.5,
+      "name": "Trey McBride",
+      "position": "TE"
+    },
+    {
+      "value": 33.5,
+      "name": "Christian Watson",
+      "position": "WR"
+    },
+    {
+      "value": 32.0,
+      "name": "Chuba Hubbard",
+      "position": "RB"
+    },
+    {
+      "value": 30.5,
+      "name": "Bucky Irving",
+      "position": "RB"
+    },
+    {
+      "value": 30.0,
+      "name": "Jaylen Warren",
+      "position": "RB"
+    },
+    {
+      "value": 29.5,
+      "name": "Josh Jacobs",
+      "position": "RB"
+    },
+    {
+      "value": 29.0,
+      "name": "Nico Collins",
+      "position": "WR"
+    },
+    {
+      "value": 29.0,
+      "name": "Parker Washington",
+      "position": "WR"
+    },
+    {
+      "value": 27.0,
+      "name": "Bhayshul Tuten",
+      "position": "RB"
+    },
+    {
+      "value": 27.0,
+      "name": "Tee Higgins",
+      "position": "WR"
+    },
+    {
+      "value": 26.5,
+      "name": "Tetairoa McMillan",
+      "position": "WR"
+    },
+    {
+      "value": 26.5,
+      "name": "Matthew Golden",
+      "position": "WR"
+    },
+    {
+      "value": 23.5,
+      "name": "Chase Brown",
+      "position": "RB"
+    },
+    {
+      "value": 23.5,
+      "name": "George Pickens",
+      "position": "WR"
+    },
+    {
+      "value": 22.5,
+      "name": "Breece Hall",
+      "position": "RB"
+    },
+    {
+      "value": 22.5,
+      "name": "Garrett Wilson",
+      "position": "WR"
+    },
+    {
+      "value": 22.0,
+      "name": "A.J. Brown",
+      "position": "WR"
+    },
+    {
+      "value": 21.5,
+      "name": "Luther Burden",
+      "position": "WR"
+    },
+    {
+      "value": 21.5,
+      "name": "Drake Maye",
+      "position": "QB"
+    },
+    {
+      "value": 21.0,
+      "name": "DeVonta Smith",
+      "position": "WR"
+    },
+    {
+      "value": 20.5,
+      "name": "Quinshon Judkins",
+      "position": "RB"
+    },
+    {
+      "value": 20.5,
+      "name": "Joe Burrow",
+      "position": "QB"
+    },
+    {
+      "value": 20.0,
+      "name": "George Kittle",
+      "position": "TE"
+    },
+    {
+      "value": 20.0,
+      "name": "Lamar Jackson",
+      "position": "QB"
+    },
+    {
+      "value": 19.5,
+      "name": "Saquon Barkley",
+      "position": "RB"
+    },
+    {
+      "value": 19.5,
+      "name": "Mike Evans",
+      "position": "WR"
+    },
+    {
+      "value": 19.5,
+      "name": "Jameson Williams",
+      "position": "WR"
+    },
+    {
+      "value": 18.5,
+      "name": "Jalen Coker",
+      "position": "WR"
+    },
+    {
+      "value": 18.0,
+      "name": "Rashee Rice",
+      "position": "WR"
+    },
+    {
+      "value": 17.5,
+      "name": "Emeka Egbuka",
+      "position": "WR"
+    },
+    {
+      "value": 17.0,
+      "name": "Carnell Tate",
+      "position": "WR"
+    },
+    {
+      "value": 16.5,
+      "name": "Jeremiyah Love",
+      "position": "RB"
+    },
+    {
+      "value": 16.5,
+      "name": "Michael Wilson",
+      "position": "WR"
+    },
+    {
+      "value": 16.5,
+      "name": "Isaiah Likely",
+      "position": "TE"
+    },
+    {
+      "value": 16.0,
+      "name": "Rhamondre Stevenson",
+      "position": "RB"
+    },
+    {
+      "value": 16.0,
+      "name": "Ollie Gordon",
+      "position": "RB"
+    },
+    {
+      "value": 15.0,
+      "name": "D.J. Moore",
+      "position": "WR"
+    },
+    {
+      "value": 15.0,
+      "name": "Sam LaPorta",
+      "position": "TE"
+    },
+    {
+      "value": 15.0,
+      "name": "Brock Purdy",
+      "position": "QB"
+    },
+    {
+      "value": 14.5,
+      "name": "DK Metcalf",
+      "position": "WR"
+    },
+    {
+      "value": 14.0,
+      "name": "Cam Skattebo",
+      "position": "RB"
+    },
+    {
+      "value": 14.0,
+      "name": "Tyler Warren",
+      "position": "TE"
+    },
+    {
+      "value": 13.5,
+      "name": "Tony Pollard",
+      "position": "RB"
+    },
+    {
+      "value": 13.0,
+      "name": "Stefon Diggs",
+      "position": "WR"
+    },
+    {
+      "value": 13.0,
+      "name": "Colston Loveland",
+      "position": "TE"
+    },
+    {
+      "value": 12.0,
+      "name": "Aaron Jones",
+      "position": "RB"
+    },
+    {
+      "value": 12.0,
+      "name": "Omar Cooper Jr.",
+      "position": "WR"
+    },
+    {
+      "value": 12.0,
+      "name": "Kyle Monangai",
+      "position": "RB"
+    },
+    {
+      "value": 11.5,
+      "name": "Travis Etienne",
+      "position": "RB"
+    },
+    {
+      "value": 11.5,
+      "name": "Rome Odunze",
+      "position": "WR"
+    },
+    {
+      "value": 11.5,
+      "name": "Trevor Lawrence",
+      "position": "QB"
+    },
+    {
+      "value": 11.5,
+      "name": "Denzel Boston",
+      "position": "WR"
+    },
+    {
+      "value": 11.0,
+      "name": "Blake Corum",
+      "position": "RB"
+    },
+    {
+      "value": 11.0,
+      "name": "Jaylen Waddle",
+      "position": "WR"
+    },
+    {
+      "value": 11.0,
+      "name": "Ladd McConkey",
+      "position": "WR"
+    },
+    {
+      "value": 11.0,
+      "name": "Jordyn Tyson",
+      "position": "WR"
+    },
+    {
+      "value": 10.5,
+      "name": "Jared Goff",
+      "position": "QB"
+    },
+    {
+      "value": 10.0,
+      "name": "Jordan Mason",
+      "position": "RB"
+    },
+    {
+      "value": 10.0,
+      "name": "Tre Tucker",
+      "position": "WR"
+    },
+    {
+      "value": 10.0,
+      "name": "Caleb Williams",
+      "position": "QB"
+    },
+    {
+      "value": 10.0,
+      "name": "Omarion Hampton",
+      "position": "RB"
+    },
+    {
+      "value": 10.0,
+      "name": "KC Concepcion",
+      "position": "WR"
+    },
+    {
+      "value": 10.0,
+      "name": "Germie Bernard",
+      "position": "WR"
+    },
+    {
+      "value": 9.5,
+      "name": "Tucker Kraft",
+      "position": "TE"
+    },
+    {
+      "value": 9.0,
+      "name": "Woody Marks",
+      "position": "RB"
+    },
+    {
+      "value": 9.0,
+      "name": "Patrick Mahomes",
+      "position": "QB"
+    },
+    {
+      "value": 8.5,
+      "name": "Jakobi Meyers",
+      "position": "WR"
+    },
+    {
+      "value": 8.5,
+      "name": "Jayden Daniels",
+      "position": "QB"
+    },
+    {
+      "value": 8.0,
+      "name": "Zach Charbonnet",
+      "position": "RB"
+    },
+    {
+      "value": 8.0,
+      "name": "Jordan Addison",
+      "position": "WR"
+    },
+    {
+      "value": 8.0,
+      "name": "Jordan Love",
+      "position": "QB"
+    },
+    {
+      "value": 7.5,
+      "name": "Dak Prescott",
+      "position": "QB"
+    },
+    {
+      "value": 7.5,
+      "name": "Xavier Worthy",
+      "position": "WR"
+    },
+    {
+      "value": 7.5,
+      "name": "Travis Kelce",
+      "position": "TE"
+    },
+    {
+      "value": 7.5,
+      "name": "Matthew Stafford",
+      "position": "QB"
+    },
+    {
+      "value": 7.0,
+      "name": "Braelon Allen",
+      "position": "RB"
+    },
+    {
+      "value": 7.0,
+      "name": "Keenan Allen",
+      "position": "WR"
+    },
+    {
+      "value": 7.0,
+      "name": "Marvin Harrison Jr.",
+      "position": "WR"
+    },
+    {
+      "value": 7.0,
+      "name": "Devaughn Vele",
+      "position": "WR"
+    },
+    {
+      "value": 6.5,
+      "name": "Dalton Kincaid",
+      "position": "TE"
+    },
+    {
+      "value": 6.0,
+      "name": "RJ Harvey",
+      "position": "RB"
+    },
+    {
+      "value": 6.0,
+      "name": "Davante Adams",
+      "position": "WR"
+    },
+    {
+      "value": 6.0,
+      "name": "Josh Downs",
+      "position": "WR"
+    },
+    {
+      "value": 5.5,
+      "name": "Rachaad White",
+      "position": "RB"
+    },
+    {
+      "value": 5.5,
+      "name": "Dallas Goedert",
+      "position": "TE"
+    },
+    {
+      "value": 5.5,
+      "name": "Tyler Shough",
+      "position": "QB"
+    },
+    {
+      "value": 5.0,
+      "name": "Jonah Coleman",
+      "position": "RB"
+    },
+    {
+      "value": 5.0,
+      "name": "Wan'Dale Robinson",
+      "position": "WR"
+    },
+    {
+      "value": 5.0,
+      "name": "Harold Fannin",
+      "position": "TE"
+    },
+    {
+      "value": 5.0,
+      "name": "Malik Washington",
+      "position": "WR"
+    },
+    {
+      "value": 4.5,
+      "name": "Rico Dowdle",
+      "position": "RB"
+    },
+    {
+      "value": 4.5,
+      "name": "T.J. Hockenson",
+      "position": "TE"
+    },
+    {
+      "value": 4.5,
+      "name": "Kyle Pitts",
+      "position": "TE"
+    },
+    {
+      "value": 4.5,
+      "name": "Brenton Strange",
+      "position": "TE"
+    },
+    {
+      "value": 4.0,
+      "name": "J.K. Dobbins",
+      "position": "RB"
+    },
+    {
+      "value": 4.0,
+      "name": "Deebo Samuel",
+      "position": "WR"
+    },
+    {
+      "value": 4.0,
+      "name": "C.J. Stroud",
+      "position": "QB"
+    },
+    {
+      "value": 3.5,
+      "name": "TreVeyon Henderson",
+      "position": "RB"
+    },
+    {
+      "value": 3.0,
+      "name": "Bryce Young",
+      "position": "QB"
+    },
+    {
+      "value": 2.5,
+      "name": "Alvin Kamara",
+      "position": "RB"
+    },
+    {
+      "value": 2.5,
+      "name": "Khalil Shakir",
+      "position": "WR"
+    },
+    {
+      "value": 2.5,
+      "name": "Juwan Johnson",
+      "position": "TE"
+    },
+    {
+      "value": 2.5,
+      "name": "Makai Lemon",
+      "position": "WR"
+    },
+    {
+      "value": 2.0,
+      "name": "Hunter Henry",
+      "position": "TE"
+    },
+    {
+      "value": 1.5,
+      "name": "Keon Coleman",
+      "position": "WR"
+    },
+    {
+      "value": 1.0,
+      "name": "Kirk Cousins",
+      "position": "QB"
+    },
+    {
+      "value": 0.5,
+      "name": "Caleb Douglas",
+      "position": "WR"
+    },
+    {
+      "value": 0.5,
+      "name": "Chris Godwin",
+      "position": "WR"
+    }
+  ]
+}
