@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
-from analyzer.adjusters import _short_names
+from analyzer.adjusters import _join, _short_names
 from analyzer.rubric import ProposedTrade
 from analyzer.tunables import STEP_UP_CHART_HOURS
 from league.lineup import _above_the_line
@@ -203,7 +203,3 @@ def _absence_sentences(snapshot: Snapshot, players: list[str], names: dict[str, 
             by_reason.setdefault(reason, []).append(names[pid])
     return [f"{_join(out)} {_absence_words(snapshot, kind, back, len(out) > 1)}."
             for (kind, back), out in by_reason.items()]
-
-
-def _join(names: list[str]) -> str:
-    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
