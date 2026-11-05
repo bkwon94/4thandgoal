@@ -8,7 +8,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, and AT-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A rubric test grades trade W first, test-first, and shows Bo Girds at D, 76.8 against 91.5, and Teehee at B, 91.5 against 76.8.
 - [x] The tunables hold the 1.10 margin as `UNEVEN_MARGIN`, beside `CONSOLIDATION_MARGIN`.
