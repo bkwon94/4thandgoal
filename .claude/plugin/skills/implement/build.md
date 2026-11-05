@@ -62,7 +62,7 @@ Merge one ticket at a time, in the Spec worktree. The other subagents continue m
 
 1. Write down the head of the Spec branch: `git rev-parse HEAD`. This is the head before the merge.
 2. Run `git merge --no-edit <slug>-<NN>`.
-3. Run `make check BASE=main`. It runs the full check of each changed app, and takes about 7 minutes with the pipeline. Run it in the background.
+3. Run `make check-fast BASE=main`. It takes about 1 minute. The full check runs in CI on the PR, so no ticket merge waits for it.
 4. If the merge has a conflict, run `git merge --abort`. Send the ticket back to its subagent: it merges `<slug>` into `<slug>-<NN>` with `resolving-merge-conflicts`, runs the check again, and reports again.
 5. If the check fails, run `git reset --hard <head before the merge>`. Send the failure to the subagent of the ticket. A red check never stays on the Spec branch.
 6. If the check passes, set the Status of the ticket to `in-review` in the Spec worktree. Commit it with the message `Mark <slug> <NN> in-review`.
@@ -85,6 +85,6 @@ If a subagent returns `STUCK`, or a ticket conflicts with the spec or an ADR:
 1. In the Spec worktree, call the Skill tool for `code-review`. The fixed point is `main`. The spec is `.scratch/<slug>/PRD.md`.
 2. Fix each finding in its own commit. The hook must pass.
 3. If you do not fix a finding, write down its id and the reason, such as a conflict with an ADR. The PR body lists it.
-4. Run `make check BASE=main` again.
+4. Run `make check-fast BASE=main` again. The CI check `Check` on the PR runs the full check.
 
 **Stop rule of stage 2.** If the check fails after the fixes, stop. Tell Brian the failed rule and the commit that broke it.
