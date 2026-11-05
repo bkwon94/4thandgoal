@@ -60,6 +60,11 @@ describe("Standings", () => {
     expect(screen.getByText(/Records include the weekly median game/)).toBeTruthy();
   });
 
+  it("leaves out the note when the league has no median game", () => {
+    render(<Standings table={week6.table} avatars={week6.avatars} hasMedianGame={false} />);
+    expect(screen.queryByText(/Records include the weekly median game/)).toBeNull();
+  });
+
   it("links a team name to its manager page only when the season has the managers file", () => {
     const { rerender } = render(<Standings table={week6.table} avatars={week6.avatars} managersHref="/2026/managers/" />);
     expect(screen.getByRole("link", { name: "Lil Fridge" }).getAttribute("href")).toBe("/2026/managers/3/");

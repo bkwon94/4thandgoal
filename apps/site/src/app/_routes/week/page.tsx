@@ -86,7 +86,12 @@ export default async function WeekPage({ params }: Props) {
         <Trades trades={page.trades} avatars={page.avatars} managersHref={managersHref} />
         <AllMatchups matchups={page.matchups} avatars={page.avatars} managersHref={managersHref} />
         <MedianGame median={page.median} blurb={page.blurbs.median} />
-        <Standings table={page.table} avatars={page.avatars} managersHref={managersHref} />
+        <Standings
+          table={page.table}
+          avatars={page.avatars}
+          managersHref={managersHref}
+          hasMedianGame={page.median !== null}
+        />
         <NextWeek week={page.week} games={page.next} avatars={page.avatars} blurb={page.blurbs.next_week} />
         <WeekFooter prior={prior} next={next} />
       </PageColumn>

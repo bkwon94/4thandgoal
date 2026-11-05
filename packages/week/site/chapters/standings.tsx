@@ -47,15 +47,18 @@ function Line({
   );
 }
 
-/* The managers href is the managers index of the season. With null the team names render as plain text. */
+/* The managers href is the managers index of the season. With null the team names render as plain text.
+   The note about the median game shows only for a league that plays one, so a league without it has no false note. */
 export function Standings({
   table,
   avatars,
   managersHref = null,
+  hasMedianGame = true,
 }: {
   table: TableRow[];
   avatars: AvatarMap;
   managersHref?: string | null;
+  hasMedianGame?: boolean;
 }) {
   return (
     <Chapter dark reveal id="standings">
@@ -95,9 +98,11 @@ export function Standings({
           </Fragment>
         ))}
       </div>
-      <Blurb dark className="mt-sp-3 text-meta">
-        Records include the weekly median game: every team plays its opponent and the league median each week.
-      </Blurb>
+      {hasMedianGame && (
+        <Blurb dark className="mt-sp-3 text-meta">
+          Records include the weekly median game: every team plays its opponent and the league median each week.
+        </Blurb>
+      )}
     </Chapter>
   );
 }
