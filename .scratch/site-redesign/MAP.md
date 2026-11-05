@@ -29,10 +29,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The analyzer is one scroll, the Stack. Each card says what a team gets, and each player shows its source team, so there is no send-to control. A teams row adds up to 4 teams. The verdict fills the hero, and the finder sits under the form. `decisions/06-prototype-the-analyzer.md`.
 - Rankings uses the Ladder: a hero for rank 1, then a card for each team that opens its part ranks. Managers uses Cards: a card with the grade box on the index, and the grade as the hero number on the manager page, with a W or L chip for each week. `decisions/07-prototype-managers-rankings-waiver.md`.
 - The home page is the Front page: the Matchup of the Week of the latest week as the hero, then its four numbers, the top three of the rankings, the tools, and the weekly reports. The 404 page is a hero with a big "404" and two buttons, to the latest week and home. `decisions/08-prototype-home-and-404.md`.
+- The light sets give a light page and white cards, but the hero stays dark on the `band` color in both themes. CPC accent text in light is `#a52e25`, NorCal `#9a3412`; NorCal gold shows only in the hero. `decisions/09-prototype-the-light-sets.md`.
 
 ## NOT YET SPECIFIED
 
-- What are the light sets of both brands in the look? `decisions/09-prototype-the-light-sets.md`.
 - Where are the edges of the readability floor? `decisions/13-grill-readability-floor-edges.md`.
 - How does dark become the default? `decisions/12-spec-dark-default-mechanism.md`.
 - The hand-off to the spec `decisions/11-spec-hand-off.md`.

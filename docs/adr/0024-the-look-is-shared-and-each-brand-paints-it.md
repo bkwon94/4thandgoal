@@ -8,5 +8,6 @@ The site kept the look of the printed report: Helvetica, a black masthead, white
 - `brand.toml` holds the `light` and the `dark` sets only, and both are required. The fonts and the radii of the look live in `apps/site/src/app/globals.css` (decision 01 of `site-redesign`).
 - A brand that wants its own font or radius gets no override. A new client gets the look as it is.
 - The hero surface carries the grid texture, the corner brackets, the brand glow, and a scan line on entry. Other surfaces stay plain, so the hero stays the one loud part of a page.
+- The hero stays dark in both themes. It sits on the `band` color of the brand, so the light theme has a light page and a dark hero, and the site has one hero (decision 09 of `site-redesign`).
 - Motion keeps the rule of the site: transform and opacity only, a strong ease-out, and none under reduced motion.
 - ADR 0006 is superseded. The rule "light is the default" of ADR 0007 is superseded. The `.dark` override of ADR 0007 stays until decision 12 of `site-redesign` picks how dark becomes the default.
