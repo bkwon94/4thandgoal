@@ -30,6 +30,7 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - Schedule luck is head-to-head wins minus All-play wins, with no median game. Lines of +1.5 and -1.5 give Smoke and mirrors and Snakebit. The Schedule swap is a 12 by 12 grid with the self-meet rule, and CPC cells keep the median game. Points against and close games under 5 points are context only. The injury luck chapter is Injury toll. `decisions/06-grill-luck-and-schedule-swap.md`.
 - The sim is a replay of one stored run per press, beside the odds of all runs. No reader picks. It plays the regular season, freezes the final standings, then plays the bracket by round to a champion, with a clear split. `decisions/08-prototype-the-sim-interaction.md`.
 - The replay moves like a sports broadcast: a lower third each week, a red PLAYOFFS wipe, a bracket that draws in, winners that slide along the lines, and a full champion card. About 20 seconds, with a skip and a reduced-motion version. `decisions/13-prototype-the-replay-motion.md`.
+- The sim is a module that plugs in anywhere, not a part of the report alone. Its engine and its replay part do not depend on the `midseason` package, so a weekly page or a standalone sim page can use it later. The spec sets the package boundary. Brian, on 2026-11-05.
 
 ## NOT YET SPECIFIED
 
@@ -46,4 +47,5 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - An injury date finer than the NFL week. No source gives one.
 - The fix of the transaction history. It ships first as the spec `transaction-history`.
 - A comparison of the Trade result with the analyzer's Grade at the time. The rubric changed since weeks 1 to 6, so it needs a re-run of the analyzer on old trades.
+- The sim on a weekly page or as a standalone page. The sim is built as a module so this can come later, but only the report ships it now.
 - A live sim, on a server or in the browser. Ticket 08 chose a replay, because Brian found a pick for a game confusing.
