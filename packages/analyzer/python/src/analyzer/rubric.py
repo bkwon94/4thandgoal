@@ -340,7 +340,10 @@ def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) 
     The grade and the trade fact sheet both read the sides here, so the facts name the same slots the grade reads.
     """
     top = _highest_value_player(trade, snapshot, handcuffs)
-    return tuple(build_side(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id), top, handcuffs)
+    # The start letters apply a margin only when every player in the trade has a trade value this week.
+    margin_applies = snapshot.chart is not None and not unlisted_players(snapshot, trade.player_ids, handcuffs)
+    return tuple(build_side(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id), top, handcuffs,
+                            margin_applies)
                  for side in trade.sides)
 
 

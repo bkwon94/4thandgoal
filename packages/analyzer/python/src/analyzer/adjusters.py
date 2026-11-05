@@ -83,9 +83,9 @@ STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
 
 
 def one_for_many(gives: int, gets: int) -> bool:
-    """True when a side gives one player for two or more, or two or more for one. Such a trade uses the
-    one-for-many margin, CONSOLIDATION_MARGIN, which pays for the one great player, so the superstar step does not
-    count him again."""
+    """True when a side gives one player for two or more, or two or more for one. When the start letters read the
+    trade values, such a trade uses the one-for-many margin, CONSOLIDATION_MARGIN, which pays for the one great
+    player, so the superstar step does not count him again."""
     return gives != gets and min(gives, gets) == 1
 
 
@@ -117,6 +117,9 @@ class Side(BaseModel):
     gives_highest_value: bool
     # Every handcuff in the trade, whichever side gets him.
     handcuffs: list[str] = []
+    # True when the start letters divide a sum of this trade by CONSOLIDATION_MARGIN. With no chart or with an
+    # unlisted player, every side starts at C and no margin applies, so a one-for-many trade alone is not enough.
+    uses_consolidation_margin: bool = False
 
     @property
     def gets_handcuffs(self) -> list[str]:
@@ -204,7 +207,8 @@ def _read_before(snapshot: Snapshot, roster: list[str]) -> tuple[list[StartingSl
 
 
 def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[str], top: str | None,
-          handcuffs: list[str]) -> Side:
+          handcuffs: list[str], margin_applies: bool = False) -> Side:
+    """The read of one side. `margin_applies` is True when the start letters read the trade values of the trade."""
     # The read before the trade depends on the roster as it is now only, so it builds once per roster.
     before, total_before = snapshot.roster_read(roster_id, _read_before)
     after = _with_byes_now(snapshot, roster_id, gets,
@@ -217,6 +221,7 @@ def build_side(snapshot: Snapshot, roster_id: int, gives: list[str], gets: list[
         gets_highest_value=top in gets,
         gives_highest_value=top in gives,
         handcuffs=handcuffs,
+        uses_consolidation_margin=margin_applies and one_for_many(len(gives), len(gets)),
     )
 
 
@@ -967,14 +972,14 @@ def _superstar(snapshot: Snapshot, side: Side) -> Adjuster:
     """Superstar: a side that gets one or more superstars steps up one step. GLOSSARY.md, "Superstar".
 
     It reads the players the side gets only, so the side that gives a superstar gets no step down: the trade values
-    already count the loss. In a one-for-many trade the one-for-many margin already pays for the great player, so the
-    step is 0 and the reason says so.
+    already count the loss. When the start letters use the one-for-many margin, it already pays for the great player, so
+    the step is 0 and the reason says so. With no chart or with an unlisted player, no margin applies, so he steps up.
     """
     stars = _superstars(snapshot, side.gets)
     if not stars:
         return Adjuster(name=SUPERSTAR, step=0, reason="No player it gets is a superstar.", silent=True)
     names = named(snapshot, stars, "is a superstar", "are superstars")
-    if one_for_many(len(side.gives), len(side.gets)):
+    if side.uses_consolidation_margin:
         return Adjuster(name=SUPERSTAR, step=0,
                         reason=f"{names}, but the one-for-many margin already counts {'him' if len(stars) == 1 else 'them'}.")
     each = "a" if len(stars) == 1 else "each a"

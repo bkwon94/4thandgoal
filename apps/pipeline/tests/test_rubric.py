@@ -308,6 +308,16 @@ def test_with_no_chart_this_week_the_superstar_reads_the_saved_read_of_last_week
     assert _adjuster(bo_girds, "superstar").reason == NO_SUPERSTAR
 
 
+def test_a_one_for_two_with_no_chart_this_week_steps_up_the_superstar_from_last_week(snap, fixture_raw_dir, tmp_path):
+    # Walker for Higgins and Tuten, with no week 9 chart and the real saved week 8 read in place. With no chart both
+    # sides start at C and no margin applies, so the one-for-many margin counts no one and the superstar steps up.
+    save_chart_read(tmp_path, 8, WEEK_8_READ)
+    bo_girds, teehee = grade(_trade(6, [WALKER], 12, [HIGGINS, "12490"]), _no_chart_week_9(snap, fixture_raw_dir, tmp_path))
+    assert (bo_girds.start_letter, teehee.start_letter) == ("C", "C")
+    assert _adjuster(teehee, "superstar").step == 1
+    assert _adjuster(teehee, "superstar").reason == "Kenneth Walker III is a superstar, a top 8 player last week."
+
+
 def test_with_no_chart_and_no_saved_read_of_the_weeks_before_no_player_is_a_superstar(snap, fixture_raw_dir,
                                                                                          tmp_path):
     _, teehee = grade(_trade(*TRADE_W), _no_chart_week_9(snap, fixture_raw_dir, tmp_path))
