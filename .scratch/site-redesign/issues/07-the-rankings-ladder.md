@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-28 and AT-29.
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] CPC week 8 shows All You Need Is Love at "01", 11-5, up 4.
 - [x] Each card is a link-sized target of 44px or more.
