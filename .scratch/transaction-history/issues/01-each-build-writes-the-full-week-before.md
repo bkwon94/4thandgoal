@@ -8,7 +8,7 @@ Spec: `.scratch/transaction-history/PRD.md`. Acceptance tests AT-4, AT-5, and AT
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test of the history module shows that a short `transactions.json` of week N−1 becomes the full list from `transactions_prev.json` of week N.
 - [x] A test shows that with no `transactions_prev.json`, or with no history of week N−1, the history stays byte for byte the same and no error rises. A week 1 build writes nothing.
