@@ -11,7 +11,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-34, AT-38, and AT-41.
 **Status:** ready-for-agent
 
 - [ ] The floor passes in CI for both clients, with its time in the log.
-- [ ] `GLOSSARY.md` holds the term changes of the spec: Top band, Menu, Sheet, Chapter, Page, Hero, Shell, and Pill bar. Masthead, Menu button, Compact bar, and Black chapter are gone.
-- [ ] No client builds a waiver page, and its URL shows the 404 page.
-- [ ] The branch changes no path under `apps/pipeline/`, `apps/api/`, or `clients/<slug>/published/`.
+- [x] `GLOSSARY.md` holds the term changes of the spec: Top band, Menu, Sheet, Chapter, Page, Hero, Shell, and Pill bar. Masthead, Menu button, Compact bar, and Black chapter are gone.
+- [x] No client builds a waiver page, and its URL shows the 404 page. The floor test "no waiver page is built, and its URL shows the 404 page" proves it for each client.
+- [x] The branch changes no path under `apps/pipeline/`, `apps/api/`, or `clients/<slug>/published/`. The one exception is `apps/pipeline/tests/test_client.py`, which Brian accepted in the comment on ticket 04.
 - [ ] The evidence of AT-34, AT-38, and AT-41 is recorded in `EVIDENCE.md`.

@@ -17,4 +17,4 @@
 
 - It computes no rank, no movement, and no playoff odds. The pipeline writes them into the rankings file.
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012). The app layer passes the data of the rankings file.
-- It imports no other core package. Its team group keeps the markup of `Who` in the week parts. The manager href comes from `@cpc/league/hrefs`.
+- It imports no other core package. Its team row takes `Avatar` from `@cpc/league/avatar`, and the manager href comes from `@cpc/league/hrefs`.

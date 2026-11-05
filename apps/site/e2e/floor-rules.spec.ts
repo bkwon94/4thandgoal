@@ -72,6 +72,16 @@ test("axe color-contrast fails on a violation and on an incomplete result, and p
   );
 });
 
+test("axe color-contrast with a scope checks only the open part, so text that the open part covers passes", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    <p class="covered" style="color:#bbb">Text under the strip.</p>
+    <nav class="strip" style="background:#fff"><a class="week" href="/w" style="color:#bbb">WK 08</a></nav>
+  </main>`);
+  const failures = await scanContrast(page, "nav.strip");
+  expect(failures).toEqual([expect.stringMatching(/^violation: a .*contrast.*#bbbbbb/)]);
+});
+
 test("openPage sets each theme through the shipped boot script and the server gives 404.html for a missing path", async ({
   page,
 }) => {

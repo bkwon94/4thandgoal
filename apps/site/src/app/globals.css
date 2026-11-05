@@ -105,39 +105,15 @@
     --spacing-pick-chip: 52px;
     /* The chevron on a recap button: a small square turned 45 degrees, so it reads as an arrow. */
     --spacing-chevron: 6px;
-    /* The median chart: the bar height, and the score column on the right. The plot box ends where the
-       score column starts, so the median line and the bars share one percent scale. */
-    --spacing-median-bar: 14px;
-    --spacing-val-col: 52px;
-    /* The median bar from the tablet tier up. A bar that spans a 640px column reads as a thin line at 14px,
-       so a taller bar keeps each team's bar easy to tell apart from the next. */
-    --spacing-median-bar-wide: 20px;
-    /* The standings columns: rank, W-L, and points. The points column fits 000.00 at the row size. */
+    /* The rank column and the value column of a row of the waiver war chest. The value column fits 000.00 at the row size. */
     --spacing-standings-rank: 24px;
-    --spacing-standings-record: 44px;
-    --spacing-standings-points: 56px;
+    --spacing-val-col: 52px;
     /* The chapter rail on a desktop and the gap between it and the page column. 184px fits the longest chapter label,
        Matchup of the Week at the desktop label size, on one line. */
     --spacing-rail: 184px;
     --spacing-rail-gap: var(--spacing-sp-6);
-    /* The standings columns from the tablet tier up. The phone tokens pack the numbers against the names,
-       so the wide row gives each number column more room and the eye can follow a row across the width. */
-    --spacing-standings-rank-wide: 40px;
-    --spacing-standings-record-wide: 72px;
-    --spacing-standings-points-wide: 96px;
     /* The power rankings columns for movement, the record, the playoff odds, and each component rank. 40px fits a five-letter column name in caps. */
     --spacing-rankings-col: 40px;
-    /* The power rankings columns from the tablet tier up. A team name stays on one line there, so the team track must hold
-       the avatar 28px, its gap 8px, and the longest full name. "Amon-Ra Dawg Your Team" is 168.5px at the 14px tablet row
-       and 180.6px at the 15px desktop row, so the track needs 205px and 217px. The numbers spread only with the width left.
-       The chapter content is the page column minus two 16px gutters, and the row has nine gaps of 8px.
-       A component column must also hold its header on one line. "SCHED" in caps is 43px at the 11px tablet label
-       and 46.9px at the 12px desktop label. On a tablet only the four component columns take 44px; the movement,
-       the record, and the playoff odds keep 40px.
-       Tablet: 640 - 32 = 608px. The phone rank 24 + 6 + 3 × 40 + 4 × 44 + 9 × 8 = 398px, so the team gets 210px.
-       Desktop: 720 - 32 = 688px. The wide rank 40 + 6 + 7 × 48 + 9 × 8 = 454px, so the team gets 234px. */
-    --spacing-rankings-col-tablet: 44px;
-    --spacing-rankings-col-desktop: 48px;
 
     /* The three tiers the site designs for, on Tailwind's default sm and lg values. A phone is any width under the tablet tier.
        The phone token starts at zero, so the set names every tier; max-tablet: is the variant for a phone only. */
@@ -166,10 +142,6 @@
     --container-measure: 68ch;
     /* The gap between two chapter cards on the grey body, from the tablet tier up. */
     --spacing-card-gap: var(--spacing-sp-4);
-    /* The game changer hero height from the tablet tier up. A set height lets a long name and a short name give the same hero,
-       and the cutout fills it without a push. The desktop hero is taller, because its points and its column are bigger. */
-    --spacing-hero-tablet: 360px;
-    --spacing-hero-desktop: 420px;
 
     /* Type scale: label, meta, row, body, lead, stat, score, headline. Row is for dense lists,
        so names and scores stay on one line. A size sets no line height, so text keeps the inherited body leading.
@@ -405,39 +377,13 @@
     }
 }
 
-/* The game changer stage. Two layered gradients cannot be Tailwind classes cleanly, so they live here.
-   On a phone the image and the text share one grid cell, so the taller of the two, most often the image, sets the stage height.
-   From the tablet tier up the text and the image are two columns, and the hero height token sets the stage height. */
+/* The glow of the waiver page. A radial gradient cannot be a Tailwind class cleanly, so it lives here. */
 @layer components {
-    /* The red glow sits behind the head, so the cutout lifts off the black card.
-       The glow is an element and not a pseudo-element, so the hero can fade it in on its own. */
     /* The red glow under the waiver drift field. It sits a little below the middle, behind the top add. */
     .field-glow {
         position: absolute;
         inset: 0;
         background: radial-gradient(circle at 50% 45%, var(--color-accent-glow), transparent 60%);
-    }
-    .stage-glow {
-        position: absolute;
-        z-index: 0;
-        right: -10%;
-        top: 0;
-        width: 90%;
-        height: 90%;
-        background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
-    }
-    /* The left-to-right gradient darkens the face under the text, so the name and points stay legible.
-       The bottom fade turns the cut edge of the chest crop into the black card color. */
-    /* The stage sits on the black card, so both gradients read --color-card-band. In the dark theme the card lifts,
-       and the fade must end in the black card color, or a black band shows at the card edge. */
-    .stage::after {
-        content: "";
-        position: absolute;
-        z-index: 2;
-        inset: 0;
-        background:
-            linear-gradient(to right, var(--color-card-band) 0%, color-mix(in srgb, var(--color-card-band) 85%, transparent) 30%, transparent 62%),
-            linear-gradient(to top, var(--color-card-band) 0%, transparent 30%);
     }
 }
 

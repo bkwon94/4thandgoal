@@ -17,10 +17,12 @@ const CLIENT = process.env.CLIENT ?? "cpc";
 const NOT_FOUND_ROUTE = "/404-floor-check/";
 
 /*
- * An open state of a page: the page after one tap on the element that the CSS selector names, such as an open card.
+ * An open state of a page: the page after one tap on the element that the CSS selector names, such as an open card or an open strip.
  * The floor taps it after the load, and the run has reduced motion, so the open part is at rest at once.
+ * A scope, a CSS selector of the open part, limits the contrast scan to that part. An open part that covers the page
+ * hides the text under it from axe, and the closed page has its own entry in the full floor.
  */
-type OpenState = { route: string; tap: string };
+type OpenState = { route: string; tap: string; scope?: string };
 
 /* The route of the latest week: the last week page of the export, as the routes sort by season and then by week. */
 const LATEST_WEEK_ROUTE = builtRoutes().filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route)).at(-1) ?? "/no-week/";
@@ -36,6 +38,7 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
   "/2026/managers/",
   // The manager page of the longest team name of each client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
+  // In cpc, rosters 7, 9, and 11 tie at 21 characters, and roster 7 stands for the three.
   // Both clients build both roster ids, so each client checks both pages.
   "/2026/managers/7/",
   "/2026/managers/4/",
@@ -44,6 +47,8 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },
   "/",
+  // The open strip of weeks: a tap on the week chip of the top band opens the strip of the weeks of the season.
+  { route: "/", tap: "header details > summary", scope: 'header nav[aria-label="Weeks of the season"]' },
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
@@ -99,6 +104,15 @@ test("each page of the full floor is a built page", () => {
   expect(unknown, `FULL_FLOOR_PAGES names a page that ${CLIENT} does not build`).toEqual([]);
 });
 
+/* No client takes the waiver package, so no client builds a waiver page, even where the week publishes a waiver file.
+   The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
+test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
+  expect(routes.filter((route) => route.includes("waiver"))).toEqual([]);
+  const response = await page.goto(`${server.url}${LATEST_WEEK_ROUTE}waiver/`);
+  expect(response?.status()).toBe(404);
+  await expect(page.getByText("ERROR // PAGE NOT FOUND")).toBeVisible();
+});
+
 for (const entry of FULL_FLOOR_PAGES) {
   const route = routeOf(entry);
   const state = typeof entry === "string" ? "" : ` tap ${entry.tap}`;
@@ -113,12 +127,19 @@ for (const entry of FULL_FLOOR_PAGES) {
           const control = page.locator(entry.tap);
           await control.click();
           // A tap that opens nothing fails here, so the floor never checks a closed state by mistake.
-          await expect(control).toHaveAttribute("aria-expanded", "true");
+          // A button shows its open state with aria-expanded, and a summary shows it with the open attribute of its details.
+          await expect
+            .poll(() =>
+              control.evaluate((el) =>
+                el.tagName === "SUMMARY" ? el.parentElement?.hasAttribute("open") === true : el.getAttribute("aria-expanded") === "true",
+              ),
+            )
+            .toBe(true);
         }
         const failures = await textFloor(page, label, started);
         const targets = await scanTargets(page);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
-        failures.push(...targets.failures, ...(await scanContrast(page)));
+        failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
       });
     }

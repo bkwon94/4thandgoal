@@ -123,9 +123,11 @@ export async function scanScroll(page: Page): Promise<string[]> {
  * Runs axe with the one rule color-contrast, at the WCAG AA split of 4.5 to 1 and 3 to 1 for large text.
  * An incomplete result fails too: axe gives no verdict on text over an image, a gradient, alpha, or an overlap,
  * and a check that read only the violations would pass that text with no test.
+ * A scope, a CSS selector, limits the scan to one part of the page, such as an open strip that covers the page under it.
  */
-export async function scanContrast(page: Page): Promise<string[]> {
-  const result = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
+export async function scanContrast(page: Page, scope?: string): Promise<string[]> {
+  const builder = new AxeBuilder({ page }).withRules(["color-contrast"]);
+  const result = await (scope === undefined ? builder : builder.include(scope)).analyze();
   const lines = (kind: string, items: typeof result.violations) =>
     items.flatMap((rule) =>
       rule.nodes.map((node) => `${kind}: ${node.target.join(" ")} ${node.failureSummary ?? rule.help}`.replace(/\s+/g, " ")),
