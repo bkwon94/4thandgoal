@@ -26,10 +26,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The look is the blend of Instrument and Glass HUD: Space Grotesk and JetBrains Mono, brand surfaces, a loud hero with the grid, brackets, glow, and scan line, round photo frames, and a staggered rise. ADR 0024. `decisions/03-prototype-the-look.md`.
 - The phone uses a dock at the bottom and a week chip in the top band. The desktop uses a pill bar and, on the week page, the chapter rail. The `layout` key of the client menu goes away. `decisions/04-prototype-the-navigation.md`.
 - The week page goes: the hero, four numbers, every game with tap recaps, Game Changer, Awards, Position leaders, Trades, the median game, Standings, Next week, and the footer. No tabs. `decisions/05-prototype-the-week-page.md`.
+- The analyzer is one scroll, the Stack. Each card says what a team gets, and each player shows its source team, so there is no send-to control. A teams row adds up to 4 teams. The verdict fills the hero, and the finder sits under the form. `decisions/06-prototype-the-analyzer.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the analyzer look like in the look? `decisions/06-prototype-the-analyzer.md`.
 - What do the managers, rankings, and waiver pages look like? `decisions/07-prototype-managers-rankings-waiver.md`.
 - What do the home page and the 404 page show? `decisions/08-prototype-home-and-404.md`.
 - What are the light sets of both brands in the look? `decisions/09-prototype-the-light-sets.md`.
