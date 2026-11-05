@@ -1,0 +1,269 @@
+{
+  "trade": {
+    "asker": 4,
+    "sides": [
+      {
+        "roster_id": 4,
+        "team": "NFC Least",
+        "gives": [
+          {
+            "player_id": "11620",
+            "name": "Rome Odunze",
+            "position": "WR",
+            "nfl_team": "CHI",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11620.jpg",
+            "season_rank": "WR35",
+            "recent_rank": "WR49",
+            "to": 12
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "11783",
+            "name": "Ryan Flournoy",
+            "position": "WR",
+            "nfl_team": "DAL",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11783.jpg",
+            "season_rank": "WR31",
+            "recent_rank": null,
+            "from": 7
+          }
+        ]
+      },
+      {
+        "roster_id": 12,
+        "team": "Teehee",
+        "gives": [
+          {
+            "player_id": "8146",
+            "name": "Garrett Wilson",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR13",
+            "recent_rank": "WR33",
+            "to": 7
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "11620",
+            "name": "Rome Odunze",
+            "position": "WR",
+            "nfl_team": "CHI",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11620.jpg",
+            "season_rank": "WR35",
+            "recent_rank": "WR49",
+            "from": 4
+          }
+        ]
+      },
+      {
+        "roster_id": 7,
+        "team": "To Infinity and Bijan",
+        "gives": [
+          {
+            "player_id": "11783",
+            "name": "Ryan Flournoy",
+            "position": "WR",
+            "nfl_team": "DAL",
+            "headshot": "https://sleepercdn.com/content/nfl/players/11783.jpg",
+            "season_rank": "WR31",
+            "recent_rank": null,
+            "to": 4
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "8146",
+            "name": "Garrett Wilson",
+            "position": "WR",
+            "nfl_team": "NYJ",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR13",
+            "recent_rank": "WR33",
+            "from": 12
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 4,
+    "answer": "yes",
+    "reason": "Flournoy has slightly outscored Odunze and his snap share is rising, which suits a team out of the race.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "fair",
+    "gives_more": null,
+    "sides": [
+      {
+        "roster_id": 4,
+        "reason": "Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target; Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target."
+      },
+      {
+        "roster_id": 12,
+        "reason": "Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target; Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target."
+      },
+      {
+        "roster_id": 7,
+        "reason": "You go from 1 WR in the top 36 to 2, and your lineup scores more."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 4,
+      "bullets": [
+        "Flournoy's snap share rose to 78 percent, while Odunze's held flat.",
+        "Flournoy scored 7.7 points per game, slightly ahead of 7.4 for Odunze.",
+        "Flournoy's playoff schedule is tougher, with LAR ranked 28th in points allowed to WRs."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 3. Flournoy plays at IND, 24th most points to WRs."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play stay at 2. Flournoy plays SF at home, 21st most points to WRs. Smith has a bye."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "Not every player in the trade has a value this week, so both sides start even."
+        },
+        {
+          "name": "roster fit",
+          "lean": "even",
+          "reason": "You keep 3 WRs in the top 36."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, and no player in the trade is clearly better."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "for",
+          "reason": "Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target; Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "against",
+          "reason": "Flournoy has his bye in week 14 and faces LAR (28th most points to WRs), JAX (6th), and NYG (15th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 12,
+      "bullets": [
+        "Wilson scored 11.5 points per game, against 7.4 for Odunze.",
+        "They drop from 4 WRs in the top 36 to 3.",
+        "Odunze and Burden both have a bye in week 10."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play go from 4 to 3. Odunze plays TB at home, 26th most points to WRs."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play go from 3 to 2. Burden and Odunze have a bye."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "Not every player in the trade has a value this week, so both sides start even."
+        },
+        {
+          "name": "roster fit",
+          "lean": "even",
+          "reason": "You go from 4 WRs in the top 36 to 3."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "for",
+          "reason": "Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target; Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "for",
+          "reason": "Odunze faces BUF (3rd most points to WRs), GB (12th), and DET (4th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 7,
+      "bullets": [
+        "Wilson scored 11.5 points per game, against 7.7 for Flournoy.",
+        "They go from 1 WR in the top 36 to 2, and the lineup scores more.",
+        "Wilson's snap share fell to 83 percent, a usage trend worth watching."
+      ],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play go from 1 to 2. Wilson plays at KC, 31st most points to WRs."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play go from 1 to 2. Wilson plays BUF at home, 3rd most points to WRs."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "Not every player in the trade has a value this week, so both sides start even."
+        },
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "You go from 1 WR in the top 36 to 2, and your lineup scores more."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "against",
+          "reason": "Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target; Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "Wilson has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 9,
+    "stats_through": 8,
+    "completed_through": 8,
+    "rosters_fetched": "2026-11-05T03:39:21.567521-05:00",
+    "known_games": {
+      "week": 9,
+      "games": 0,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": false,
+  "missing": [],
+  "stale": []
+}

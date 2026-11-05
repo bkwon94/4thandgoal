@@ -23,6 +23,8 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR30",
+              "recent_rank": null,
               "to": 3
             },
             {
@@ -31,6 +33,8 @@
               "position": "RB",
               "nfl_team": "MIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "season_rank": "RB15",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -41,6 +45,8 @@
               "position": "RB",
               "nfl_team": "BAL",
               "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "season_rank": "RB3",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -55,6 +61,8 @@
               "position": "RB",
               "nfl_team": "BAL",
               "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "season_rank": "RB3",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -65,6 +73,8 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR30",
+              "recent_rank": null,
               "from": 2
             },
             {
@@ -73,6 +83,8 @@
               "position": "RB",
               "nfl_team": "MIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "season_rank": "RB15",
+              "recent_rank": null,
               "from": 2
             }
           ]
@@ -84,11 +96,11 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The best lineup gains after the trade."
+            "reason": "You keep 3 RBs in the top 36 and go from 4 WRs in the top 36 to 3, and your lineup scores more."
           },
           {
             "roster_id": 3,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Tucker: snap share 70%, up, over weeks 4 and 5. Jones: target share 28%, up, over weeks 4 and 5."
+            "reason": "Tucker plays 70% of the snaps (up), sees 21% of the targets, and averages 4.9 air yards per target; Jones plays 80% of the snaps, takes 71% of the carries, and sees 28% of the targets (up); Henry plays 59% of the snaps, takes 94% of the carries, and sees 9% of the targets."
           }
         ]
       },
@@ -106,6 +118,8 @@
               "position": "RB",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
+              "season_rank": "RB13",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -116,6 +130,8 @@
               "position": "QB",
               "nfl_team": "CHI",
               "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "season_rank": "QB23",
+              "recent_rank": null,
               "from": 3
             },
             {
@@ -124,6 +140,8 @@
               "position": "RB",
               "nfl_team": "DEN",
               "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
+              "season_rank": "RB35",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -138,6 +156,8 @@
               "position": "QB",
               "nfl_team": "CHI",
               "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "season_rank": "QB23",
+              "recent_rank": null,
               "to": 2
             },
             {
@@ -146,6 +166,8 @@
               "position": "RB",
               "nfl_team": "DEN",
               "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
+              "season_rank": "RB35",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -156,6 +178,8 @@
               "position": "RB",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
+              "season_rank": "RB13",
+              "recent_rank": null,
               "from": 2
             }
           ]
@@ -167,11 +191,11 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Dobbins: target share 11%, up, over weeks 4 and 5. Jeanty: snap share 61%, down, over weeks 4 and 5."
+            "reason": "Dobbins plays 42% of the snaps, takes 63% of the carries, and sees 11% of the targets (up); Jeanty plays 61% of the snaps (down), takes 68% of the carries, and sees 23% of the targets."
           },
           {
             "roster_id": 3,
-            "reason": "The best lineup gains after the trade."
+            "reason": "You keep 2 QBs in the top 24 and go from 2 RBs in the top 36 to 3, and your lineup scores more."
           }
         ]
       },
@@ -189,6 +213,8 @@
               "position": "WR",
               "nfl_team": "CIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "season_rank": "WR10",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -199,6 +225,8 @@
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "season_rank": "QB21",
+              "recent_rank": null,
               "from": 3
             },
             {
@@ -207,6 +235,8 @@
               "position": "WR",
               "nfl_team": "BUF",
               "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
+              "season_rank": "WR48",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -221,6 +251,8 @@
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "season_rank": "QB21",
+              "recent_rank": null,
               "to": 2
             },
             {
@@ -229,6 +261,8 @@
               "position": "WR",
               "nfl_team": "BUF",
               "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
+              "season_rank": "WR48",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -239,6 +273,8 @@
               "position": "WR",
               "nfl_team": "CIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "season_rank": "WR10",
+              "recent_rank": null,
               "from": 2
             }
           ]
@@ -250,11 +286,11 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "The players it gets gain snap or target share, and the players it gives lose it. Shakir: snap share 72%, up, target share 35%, up, over weeks 4 and 5. Chase: snap share 52%, down, target share 19%, down, over weeks 4 and 5."
+            "reason": "Shakir plays 72% of the snaps (up), sees 35% of the targets (up), and averages 3.8 air yards per target; Chase plays 52% of the snaps (down), sees 19% of the targets (down), and averages 5.8 air yards per target."
           },
           {
             "roster_id": 3,
-            "reason": "The best lineup gains after the trade."
+            "reason": "You go from 2 QBs in the top 24 to 1 and go from 2 WRs in the top 36 to 3, and your lineup scores more."
           }
         ]
       },

@@ -7,6 +7,7 @@ import logging
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from decimal import Decimal
+from itertools import pairwise
 from pathlib import Path
 
 from pydantic import BaseModel, PrivateAttr
@@ -14,13 +15,13 @@ from pydantic import BaseModel, PrivateAttr
 from league.client import Client
 from league.history import load_saved_weeks, snap_share, target_share
 from league.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare
-from league.nflverse import TeamSchedule
+from league.nflverse import TeamSchedule, gsis_id
 from league.parse import parse_past_week, parse_week, player_name
 from league.paths import returns_path
 from league.points_allowed import PositionAllowed
 from league.provider.raw import RawStatLine, RawWeek
 from league.provider.sleeper import load_raw, read_fetch_time
-from league.ranks import RANKED_POSITIONS, in_pool, lineup_value, rank_table
+from league.ranks import RANKED_POSITIONS, RankMeasure, in_pool, lineup_value, rank_table
 from league.slow_sources import SlowSources
 from league.standings_table import standings
 from league.tunables import IN_PROGRESS_MINUTES
@@ -71,6 +72,9 @@ class AsOf(BaseModel):
     rosters_fetched: datetime | None
     # None for a saved week, a failed week N fetch, or a raw week that is not the trade week.
     known_games: KnownGames | None = None
+    # The time of the grade, the clock of the request. None for a saved week with no clock.
+    # The Week line reads it: on a Tuesday or a Wednesday, a status of Out is the one of the last game.
+    graded_at: datetime | None = None
 
 
 class Snapshot(BaseModel):
@@ -101,6 +105,12 @@ class Snapshot(BaseModel):
     schedules: dict[str, TeamSchedule] | None = None
     # The gsis_ids in depth order, by NFL team and position. The id map joins them to Sleeper ids.
     depth_charts: dict[str, dict[str, list[str]]] | None = None
+    # The scrape time of the newest depth chart. None with no depth chart. The Week line names no step-up from a chart
+    # that is too old.
+    depth_chart_dt: datetime | None = None
+    # The player directly ahead of each player on his NFL team's depth chart at his position, by Sleeper id. It reads
+    # the full Sleeper players file, because the player ahead is often on no roster. Decision 02 of grade-clarity.
+    ahead_on_chart: dict[str, SnapshotPlayer] = {}
     # Sleeper id to gsis_id.
     id_map: dict[str, str] | None = None
     # The points each defense allows to a position, by NFL team and position.
@@ -134,6 +144,9 @@ class Snapshot(BaseModel):
     # pool reads. The hole fact names the best of them, and `players` holds rostered players only, so each one
     # carries his name here. Empty when the raw data has no free agent.
     free_agents: dict[str, list[SnapshotPlayer]] = {}
+    # The points per game that the lineup value and the position rank read. The grade reads "season".
+    # week_snapshot gives "recent", so the weekly report keeps the 4-week measure.
+    rank_measure: RankMeasure = "season"
     # The player ids per position in position rank order, and the rank of each player, built on the first read.
     # GLOSSARY.md, "Position rank".
     _rank_table: dict[str, list[str]] | None = PrivateAttr(default=None)
@@ -278,6 +291,32 @@ def _free_agents(
     return free_agents
 
 
+def _ahead_on_chart(entries: dict[str, dict], slow: SlowSources | None) -> dict[str, SnapshotPlayer]:
+    """The player directly ahead of each player on his NFL team's depth chart at his position, by Sleeper id.
+
+    The depth chart lists gsis_ids. The Sleeper players file and the id map join them to Sleeper ids. A player on a
+    chart of a team or a position that Sleeper does not give him is not on his own chart, so he has no entry.
+    Empty with no depth chart.
+    """
+    if slow is None or slow.depth_charts is None:
+        return {}
+    id_map = slow.id_map or {}
+    sleeper_of_gsis = {gsis: pid for pid, gsis in sorted(id_map.items())}
+    # The Sleeper file gives a gsis_id for some new players that the id map lacks.
+    for pid in sorted(entries):
+        if (gsis := gsis_id(pid, entries, id_map)) is not None:
+            sleeper_of_gsis.setdefault(gsis, pid)
+    ahead: dict[str, SnapshotPlayer] = {}
+    for team, positions in slow.depth_charts.items():
+        for position, chart in positions.items():
+            for first, second in pairwise(chart):
+                pid, ahead_pid = sleeper_of_gsis.get(second), sleeper_of_gsis.get(first)
+                entry = entries.get(pid or "") or {}
+                if ahead_pid is not None and entry.get("team") == team and entry.get("position") == position:
+                    ahead[pid] = _snapshot_player(ahead_pid, entries.get(ahead_pid) or {})
+    return ahead
+
+
 # The word the commissioner writes in the returns file in place of a week for a player out for the season.
 SEASON_MARK = "season"
 
@@ -341,8 +380,10 @@ def week_snapshot(raw: RawWeek, history_root: Path, week: int, *, client: Client
     """
     # The Returns file is shared NFL data, so the client gives its folder.
     returns_file = returns_path(client.nfl_dir, int(raw.state.season))
-    return build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
-                          out_for_season=load_out_for_season(returns_file), client=client)
+    snapshot = build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
+                              out_for_season=load_out_for_season(returns_file), client=client)
+    # The weekly report keeps the 4-week measure of its position ranks. Only the grade reads the season measure.
+    return snapshot.model_copy(update={"rank_measure": "recent"})
 
 
 def build_snapshot(
@@ -430,9 +471,12 @@ def build_snapshot(
             completed_through=completed_through,
             rosters_fetched=rosters_fetched,
             known_games=known_games,
+            graded_at=now,
         ),
         schedules=slow.schedules if slow else None,
         depth_charts=slow.depth_charts if slow else None,
+        depth_chart_dt=slow.depth_chart_dt if slow else None,
+        ahead_on_chart=_ahead_on_chart(entries, slow),
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
         injuries=slow.injuries if slow else None,

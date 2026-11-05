@@ -12,6 +12,7 @@ from typing import NamedTuple
 
 from analyzer.adjusters import due_back_week
 from analyzer.rubric import ProposedTrade
+from analyzer.week_line import chart_is_fresh, counted_status, last_game_status
 from league.snapshot import Snapshot
 
 # The stat fields the grade reads from a week N line, past the points key of the League settings of the client.
@@ -24,7 +25,7 @@ STAT_FIELDS = ("gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 11
+DOCUMENT_VERSION = 18
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -45,9 +46,32 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
+        # On a Tuesday and a Wednesday the Week line says "listed Out last week", so a grade of another day misses it.
+        "last_game_status": last_game_status(snapshot),
+        # A new depth chart can move a step-up, and a chart that grows too old names none. Decision 02.
+        "depth_chart_dt": snapshot.depth_chart_dt.isoformat() if snapshot.depth_chart_dt else None,
+        "chart_is_fresh": chart_is_fresh(snapshot),
+        "week_line_statuses": _week_line_statuses(snapshot, roster_ids),
         "content": _content_hash(snapshot, roster_ids),
     }
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()
+
+
+def _week_line_statuses(snapshot: Snapshot, roster_ids: list[int]) -> dict[str, list]:
+    """The status of each player on the rosters in the trade, and of the player ahead of him on his depth chart.
+
+    The Week line reads both: the first for the absences, the second for a step-up. The player ahead is often on no
+    roster, so no other part of the key holds his status or his return week. A status that the Week line never
+    counts, such as Questionable, reads as None, so a move between two of them keeps the hit.
+    """
+    statuses: dict[str, list] = {}
+    for player in sorted({pid for roster_id in roster_ids for pid in snapshot.rosters[roster_id]}):
+        entry: list = [counted_status(snapshot.players[player].injury_status)]
+        ahead = snapshot.ahead_on_chart.get(player)
+        if ahead is not None:
+            entry += [ahead.player_id, counted_status(ahead.injury_status), snapshot.returns.get(ahead.player_id)]
+        statuses[player] = entry
+    return statuses
 
 
 def _content_hash(snapshot: Snapshot, roster_ids: list[int]) -> str:

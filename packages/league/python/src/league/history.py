@@ -247,10 +247,21 @@ def _team_total(past: PastWeek, player_id: str, stat: str) -> float:
     team = past.nfl_teams.get(player_id)
     if team is None:
         return 0.0
-    return sum(
-        past.stats.get(pid, {}).get(stat, 0.0)
-        for pid, nfl_team in past.nfl_teams.items() if nfl_team == team
-    )
+    # The finder reads a team total for many players of many trades, so the totals of each stat build once per week.
+    # Each team sums its players in the order of nfl_teams from an int 0, as sum() does, so each total is the same.
+    # The cache holds the stats and the teams it read, so a model_copy of the week with other stats starts afresh.
+    cached = past._team_totals
+    if cached is None or cached[0] is not past.stats or cached[1] is not past.nfl_teams:
+        cached = (past.stats, past.nfl_teams, {})
+        past._team_totals = cached
+    by_stat = cached[2]
+    totals = by_stat.get(stat)
+    if totals is None:
+        totals = {}
+        for pid, nfl_team in past.nfl_teams.items():
+            totals[nfl_team] = totals.get(nfl_team, 0) + past.stats.get(pid, {}).get(stat, 0.0)
+        by_stat[stat] = totals
+    return totals[team]
 
 
 def target_share(history: History, player_id: str, through: int) -> UsageShare | None:
@@ -269,6 +280,30 @@ def air_yards_share(history: History, player_id: str, through: int) -> UsageShar
         numerator=lambda past: past.stats[player_id].get("rec_air_yd", 0.0),
         denominator=lambda past: _team_total(past, player_id, "rec_air_yd"),
     )
+
+
+def recent_carry_share(history: History, player_id: str, through: int) -> UsageShare | None:
+    """The share of the carries of his NFL team that the player took, over the window of the snap and target shares.
+
+    The usage row reads it beside them. The handcuff test reads `carry_share`, over its own count of games.
+    """
+    return _usage_share(
+        history, player_id, through,
+        numerator=lambda past: past.stats[player_id].get("rush_att", 0.0),
+        denominator=lambda past: _team_total(past, player_id, "rush_att"),
+    )
+
+
+def air_yards_per_target(history: History, player_id: str, through: int) -> float | None:
+    """The air yards per target of the player over the weeks of his target share. None with no target in them."""
+    share = target_share(history, player_id, through)
+    if share is None:
+        return None
+    lines = [history.weeks[week].stats[player_id] for week in share.weeks_used]
+    targets = sum(line.get("rec_tgt", 0.0) for line in lines)
+    if targets == 0:
+        return None
+    return sum(line.get("rec_air_yd", 0.0) for line in lines) / targets
 
 
 def carry_share(history: History, player_id: str, through: int) -> float | None:

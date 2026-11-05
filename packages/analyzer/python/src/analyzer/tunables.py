@@ -27,11 +27,21 @@ START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "
 # A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
 
-# Roster fit and standing compare a side's best lineup before and after the trade. LINEUP_WEEKS of
-# league/tunables.py picks the best lineup.
+# Roster fit and standing compare a side's best lineup before and after the trade. The season points per game
+# of each player pick the best lineup of the grade. GLOSSARY.md, "Lineup value".
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
+
+# The ranks in the text of a grade: the Season rank always, and the Recent rank beside it only when the two differ by
+# this many spots or more. GLOSSARY.md, "Recent rank". Decision 05 of grade-clarity: one number for every position.
+# 12 spots is half the line at QB and TE, and a third of it at RB and WR, so a smaller swing shows no Recent rank.
+RECENT_RANK_GAP = 12
+
+# The Week line names no step-up when the newest depth chart is more than this many hours older than the grade.
+# Decision 02 of grade-clarity: the chart is 3 to 27 hours old by design, and about 35 with a late daily run. 48 hours
+# lets one late run pass and stops a chart after a missed day.
+STEP_UP_CHART_HOURS = 48
 
 # Trend and usage compares snap and target share over the SHARE_WEEKS windows of league/tunables.py.
 # The change in mean WOPR between the two windows that counts as up or down. WOPR is 1.5 times target share plus

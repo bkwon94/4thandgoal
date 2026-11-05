@@ -1,0 +1,138 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# The run date is Thursday 2026-11-05, not a Tuesday or a Wednesday.
+# sides[].week_lines:
+{
+  "10": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye."
+    }
+  ],
+  "6": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs."
+    }
+  ]
+}
+
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+# status of each WR of rosters 6 and 10 now (no WR is Out or on IR):
+WRs of rosters 6 and 10: bye week, Sleeper injury_status, return week
+  roster 10: 12514 Emeka Egbuka TB bye=10 status=Questionable return=None
+  roster 10: 13274 Germie Bernard PIT bye=9 status=None return=None
+  roster 10: 13276 Omar Cooper Jr. NYJ bye=13 status=None return=None
+  roster 10: 1479 Keenan Allen IND bye=13 status=None return=None
+  roster 10: 5872 Deebo Samuel Sr. SF bye=8 status=Questionable return=None
+  roster 10: 9493 Puka Nacua LAR bye=11 status=None return=None
+  roster 6: 11610 Malik Washington MIA bye=6 status=None return=None
+  roster 6: 12501 Matthew Golden GB bye=11 status=None return=None
+  roster 6: 13301 Antonio Williams WAS bye=7 status=None return=None
+  roster 6: 9487 Parker Washington JAX bye=7 status=None return=None
+  roster 6: 9997 Zay Flowers BAL bye=13 status=None return=None
+
+
+# Extra 1: the same code with the grade time set to Wednesday 2026-11-04T17:00Z through the Sources clock.
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> 2026-11-04T17:00:00+00:00
+grade time (as_of.graded_at): 2026-11-04T17:00:00+00:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: -1 day, 9:58:27
+chart_is_fresh: True
+last_game_status (Tue or Wed): True
+trade week: 9, stats_through: 8, chart_week: 9
+
+SF WR depth chart gsis order: ['00-0031408', '00-0035719', '00-0034775', '00-0040172', '00-0031236', '00-0039365', '00-0032775', '00-0041035', '00-0039916', '00-0036261']
+SF WRs with a player ahead on the chart (Sleeper file):
+2216 Mike Evans status=Questionable roster=1 ahead=None
+13417 De'Zhaun Stribling status=IR roster=9 ahead=Demarcus Robinson
+5872 Deebo Samuel Sr. status=Questionable roster=10 ahead=Mike Evans
+
+Trade S: roster 10 gives 5872 Deebo Samuel Sr. to roster 6 for 9487 Parker Washington.
+  roster 10: Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye.
+  roster 10: Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye.
+  roster 6: Week 9: WRs in the top 36 who play stay at 3. Samuel plays LV at home, 8th most points to WRs.
+  roster 6: Week 10: WRs in the top 36 who play stay at 3. Samuel plays at DAL, 7th most points to WRs.
+
+Trade T: roster 8 gives 13279 Carnell Tate to roster 2 for 8126 Wan'Dale Robinson. Roster 8 asks.
+  roster 8: Week 9: WRs in the top 36 who play stay at 1. Robinson has a bye. Pierce is on IR.
+  roster 8: Week 10: WRs in the top 36 who play go from 2 to 1. Robinson plays JAX at home, 6th most points to WRs. Lemon has a bye. Pierce is on IR.
+  roster 2: Week 9: WRs in the top 36 who play stay at 3. Tate has a bye. Tate was listed Out last week.
+  roster 2: Week 10: WRs in the top 36 who play go from 3 to 4. Tate plays JAX at home, 6th most points to WRs.
+13279 Carnell Tate team=TEN status=Out roster=8 ahead=None
+8126 Wan'Dale Robinson team=TEN status=None roster=2 ahead=13279 Carnell Tate status=Out
+Malik Lemon: not in the players file of the snapshot
+Chris Godwin: not in the players file of the snapshot
+12514 Emeka Egbuka team=TB status=Questionable roster=10 ahead=None
+Dontayvion Wicks: not in the players file of the snapshot
+Jordan Watkins: not in the players file of the snapshot
+
+Every rostered player who steps up in week 9 or 10 at this grade time:
+  (end of list)
+
+Trade A at this grade time:
+  roster 10: Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye.
+  roster 10: Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye.
+  roster 6: Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs.
+  roster 6: Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs.
+
+
+# Extra 2: trade A on the saved week 8 data (trade week 8, no grade time), where Egbuka and Samuel were Out.
+$ uv run --all-packages python evidence/scripts/probe3.py <repo>
+snapshot week 8, graded_at None, chart is None: True
+{
+  "as_of": {
+    "chart_week": null,
+    "stats_through": 7,
+    "completed_through": 7,
+    "rosters_fetched": "2026-11-03T08:05:54.670568-05:00",
+    "known_games": null,
+    "no_chart": true,
+    "no_chart_note": "This week's player values are not out yet, so both sides start even."
+  },
+  "week_lines": {
+    "10": [
+      {
+        "week": 8,
+        "text": "Week 8: WRs in the top 36 who play stay at 2. Washington plays IND at home, 24th most points to WRs. Samuel has a bye. Egbuka and Samuel are listed Out."
+      },
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play stay at 3. Washington plays at BAL, 8th most points to WRs. Bernard has a bye."
+      }
+    ],
+    "6": [
+      {
+        "week": 8,
+        "text": "Week 8: WRs in the top 36 who play stay at 3. Cooper plays LV at home, 13th most points to WRs."
+      },
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+      }
+    ]
+  },
+  "deal_rows": {
+    "10": {
+      "name": "deal",
+      "lean": "even",
+      "reason": "This week's player values are not out yet, so both sides start even."
+    },
+    "6": {
+      "name": "deal",
+      "lean": "even",
+      "reason": "This week's player values are not out yet, so both sides start even."
+    }
+  }
+}

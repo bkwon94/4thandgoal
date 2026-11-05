@@ -4,6 +4,7 @@ The provider adapter maps its own settings into this model, so no other module r
 """
 import math
 from collections import Counter
+from functools import cached_property
 
 from pydantic import BaseModel, ConfigDict
 
@@ -116,7 +117,10 @@ class LeagueSettings(BaseModel):
         is a return bet."""
         return self.last_regular_week
 
-    @property
+    # The settings are frozen, so the lines never change. The finder reads them for each player of each graded trade,
+    # so they build once per settings object. cached_property writes to the instance dict, which a frozen model
+    # allows, and no code may change the dict it returns.
+    @cached_property
     def lines(self) -> dict[str, int]:
         """The line at each ranked position: the last position rank a starter can hold. GLOSSARY.md, "The line".
 

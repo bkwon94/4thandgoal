@@ -1,0 +1,70 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# sides[].week_lines:
+{
+  "10": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye."
+    }
+  ],
+  "6": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs."
+    }
+  ]
+}
+
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+grade time (as_of.graded_at): 2026-11-05T03:38:17.393116-05:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: 1:36:44.393116
+chart_is_fresh: True
+last_game_status (Tue or Wed): False
+trade week: 9, stats_through: 8, chart_week: 9
+
+Points allowed to WRs, rank 1 the most:
+   1 TEN points=33.0 games=8
+   2 PHI points=33.0 games=8
+   3 BUF points=31.1 games=7
+   4 DET points=30.6 games=7
+   5 HOU points=30.6 games=7
+   6 JAX points=30.1 games=7
+   7 DAL points=29.7 games=8
+   8 LV points=28.7 games=8
+   9 BAL points=28.6 games=8
+  10 ARI points=28.6 games=8
+  11 NE points=27.8 games=8
+  12 GB points=27.8 games=8
+  13 CIN points=27.4 games=7
+  14 WAS points=27.3 games=7
+  15 NYG points=26.0 games=7
+  16 CHI points=25.7 games=8
+  17 LAC points=25.0 games=7
+  18 NO points=24.5 games=7
+  19 ATL points=24.1 games=8
+  20 CLE points=24.1 games=8
+  21 SF points=23.7 games=7
+  22 CAR points=23.7 games=7
+  23 NYJ points=23.6 games=8
+  24 IND points=22.7 games=8
+  25 PIT points=22.7 games=8
+  26 TB points=22.6 games=8
+  27 DEN points=22.4 games=8
+  28 LAR points=22.4 games=8
+  29 MIN points=20.9 games=7
+  30 MIA points=20.7 games=7
+  31 KC points=19.9 games=7
+  32 SEA points=18.5 games=8

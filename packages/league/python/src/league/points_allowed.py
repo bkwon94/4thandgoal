@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 from league.league_settings import DEFAULT_POINTS_KEY
 from league.nflverse import SKILL_POSITIONS
+from league.numbers import ordinal
 from league.paths import history_week_dir
 
 
@@ -59,3 +60,18 @@ def points_allowed(
             allowed[team][position] = PositionAllowed(
                 points=float(by_position[position]), games=len(weeks_played[team]), rank=above + 1)
     return allowed or None
+
+
+def opponent_rank(allowed: dict[str, dict[str, PositionAllowed]], opponent: str, position: str) -> int | None:
+    """The rank of the opponent in points allowed per game to the position. None when the opponent has no row."""
+    row = allowed.get(opponent, {}).get(position)
+    return None if row is None else row.rank
+
+
+def most_points_text(rank: int, position: str) -> str:
+    """The rank of a defense at a position in a manager's words, such as "3rd most points to WRs".
+
+    Rank 1 gives up the most, so it reads "the most points to WRs", never "1st most".
+    The schedule row and the Week line of the grade both name an opponent this way.
+    """
+    return f"{'the' if rank == 1 else ordinal(rank)} most points to {position}s"

@@ -1,0 +1,68 @@
+$ make -C apps/pipeline analyze CLIENT=cpc SIDES="10:13276@6 6:9487@10" ASKER=10
+# This target runs --no-claude and prints no rank. Its full output:
+# run at 2026-11-05T08:34Z (Thursday). The httpx request lines are left out.
+uv run --exact --package cornerstone cornerstone analyze --client cpc --season 2026 --side 10:13276@6 --side 6:9487@10 --asker 10 --no-claude
+Installed 8 packages in 11ms
+INFO facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13466
+Week 9 of 2026. Chart week 9. Stats through week 8. Rosters fetched 2026-11-05T03:34-05:00.
+Known games of week 9: 0 read, 0 in progress.
+Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.
+
+behold the lamb (asked)
+  Gives: Omar Cooper Jr.
+  Gets: Parker Washington
+  Start letter: A
+  Reason: It gets far more trade value than it gives.
+  Roster fit: one step up. You keep 4 WRs in the top 36, and you get the better player.
+  Standing: one step up. Out of the playoff race, so you want the better player for the rest of the season, and you get him.
+  Trend and usage: no step. Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: for. Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17.
+  Final letter: A
+
+Bo Girds
+  Gives: Parker Washington
+  Gets: Omar Cooper Jr.
+  Start letter: F
+  Reason: It gives far more trade value than it gets.
+  Roster fit: no step. You keep 3 WRs in the top 36.
+  Standing: no step. In a playoff spot, so you need points now, and this trade keeps your points about the same.
+  Trend and usage: no step. Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target; Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: against. Cooper has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17.
+  Final letter: F
+
+Verdict for behold the lamb: accept. The trade favors the asking side.
+Fairness: Lopsided: Bo Girds gives more.
+  behold the lamb: You keep 4 WRs in the top 36, and you get the better player.
+  Bo Girds: You give far more than you get.
+
+
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# trade.sides[].gives players of the document:
+[
+  {
+    "player_id": "13276",
+    "name": "Omar Cooper Jr.",
+    "position": "WR",
+    "nfl_team": "NYJ",
+    "season_rank": "WR60",
+    "recent_rank": "WR18"
+  },
+  {
+    "player_id": "9487",
+    "name": "Parker Washington",
+    "position": "WR",
+    "nfl_team": "JAX",
+    "season_rank": "WR21",
+    "recent_rank": null
+  }
+]

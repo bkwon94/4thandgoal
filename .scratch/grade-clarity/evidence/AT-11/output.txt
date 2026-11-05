@@ -1,0 +1,28 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# sides[].week_lines:
+{
+  "10": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye."
+    }
+  ],
+  "6": [
+    {
+      "week": 9,
+      "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+    },
+    {
+      "week": 10,
+      "text": "Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs."
+    }
+  ]
+}

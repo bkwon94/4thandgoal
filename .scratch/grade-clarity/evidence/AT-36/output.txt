@@ -1,0 +1,56 @@
+# The trade of AT-25: roster 4 gives Tyjae Spears (9508) to roster 12 for Kenny Gainwell (7567).
+$ make -C apps/pipeline analyze CLIENT=cpc SIDES=4:9508@12 12:7567@4 ASKER=4
+# run at 2026-11-05T08:38:51Z
+uv run --exact --package cornerstone cornerstone analyze --client cpc --season 2026 --side 4:9508@12 --side 12:7567@4 --asker 4 --no-claude
+Uninstalled 3 packages in 9ms
+Installed 3 packages in 2ms
+Week 9 of 2026. Chart week 9. Stats through week 8. Rosters fetched 2026-11-05T03:38-05:00.
+Known games of week 9: 0 read, 0 in progress.
+Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.
+
+NFC Least (asked)
+  Gives: Tyjae Spears
+  Gets: Kenny Gainwell
+  Start letter: C
+  Reason: Kenny Gainwell has no trade value, so the chart gives neither side an edge.
+  Roster fit: one step up. You keep 2 RBs in the top 36, and you get the better player.
+  Standing: one step up. Out of the playoff race, so you want the better player for the rest of the season, and you get him.
+  Trend and usage: one step up. Gainwell plays 40% of the snaps (up), takes 37% of the carries, and sees 7% of the targets; Tyjae Spears is a handcuff, so his use does not count.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: even. Gainwell faces NO (the most points to RBs), ATL (6th), and LAR (25th) in weeks 15 to 17.
+  Final letter: B
+
+Teehee
+  Gives: Kenny Gainwell
+  Gets: Tyjae Spears
+  Start letter: C
+  Reason: Kenny Gainwell has no trade value, so the chart gives neither side an edge.
+  Roster fit: no step. You keep 2 RBs in the top 36.
+  Standing: no step. Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same.
+  Trend and usage: one step down. Gainwell plays 40% of the snaps (up), takes 37% of the carries, and sees 7% of the targets; Tyjae Spears is a handcuff, so his use does not count.
+  Injury: one step down. Spears is out with no return week on file. He was on the injury report in 5 of 8 weeks.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. Spears backs up your RB, Pollard, on the Titans depth chart.
+  Schedule: even. Spears faces IND (7th most points to RBs), LV (5th), and PIT (24th) in weeks 15 to 17.
+  Final letter: D
+
+Verdict for NFC Least: accept. The trade favors the asking side.
+Fairness: Lopsided: Teehee gives more.
+  NFC Least: You keep 2 RBs in the top 36, and you get the better player.
+  Teehee: Not every player in the trade has a value this week, so both sides start even.
+
+
+# the injury row of roster 12 in evidence/AT-25/spears.document.json:
+{
+  "name": "injury",
+  "lean": "against",
+  "reason": "Spears is out with no return week on file. He was on the injury report in 5 of 8 weeks."
+}
+
+$ cat data/nfl/2026/returns.json
+{
+  "5850": 7
+}
+# The Returns file holds one player, with week 7, so no rostered player has a return week ahead.

@@ -6,7 +6,7 @@ handcuffs.
 from __future__ import annotations
 
 from collections.abc import Callable
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 from fractions import Fraction
 from typing import TYPE_CHECKING, Literal, NamedTuple
 
@@ -25,24 +25,29 @@ from analyzer.tunables import (
 from facts.names import last_name
 from league.history import (
     SHARE_DIRECTION_WEEKS,
+    air_yards_per_target,
     air_yards_share,
     carry_share,
     player_points,
+    recent_carry_share,
     red_zone,
     scored_weeks,
     stats_complete,
 )
 from league.lineup import STRENGTH_SLOTS, StartingSlot, _above_the_line, _last_window_week, _lineup_total, lineup_slots
+from league.models import UsageShare
+from league.nfl_teams import team_name
 from league.nflverse import SKILL_POSITIONS, TeamSchedule
 from league.nflverse_expected import WINDOW_MIN_GAMES, window_gap
-from league.numbers import round_half_up
+from league.numbers import one_decimal_text, ordinal, round_half_up
+from league.points_allowed import most_points_text, opponent_rank
 from league.ranks import (
     OUT_STATUSES,
+    RANKED_POSITIONS,
     _back_in_a_known_game,
     _played_weeks,
     back_inside,
     due_back_week,
-    projection_ahead,
 )
 from league.snapshot import Snapshot
 from league.standings_table import wins_per_week
@@ -67,6 +72,9 @@ class Adjuster(BaseModel):
     reason: str
     # Only the schedule adjuster has a lean. It never moves a letter, so its step is always 0.
     lean: Lean | None = None
+    # True when the row says nothing: a step of 0 and no new fact, such as "No player it gets is a handcuff."
+    # The result document drops a silent row. GLOSSARY.md, "Silent row".
+    silent: bool = False
 
 
 # The analyze output and the analysis prompt name an adjuster's step in words.
@@ -289,57 +297,61 @@ HANDCUFF = "handcuff"
 SCHEDULE = "schedule"
 EXPECTED = "expected gap"
 
-# The schedule adjuster and roster fit both say this when the schedule map is None.
+# The schedule adjuster says this when the schedule map is None.
 NO_SCHEDULES = "The schedule sources are not available."
 
 
 def _fit(snapshot: Snapshot, side: Side) -> Adjuster:
-    """Roster fit: the change in the side's best lineup, with a note for each player due back in the trade.
+    """Roster fit: the change in the side's best lineup, in one sentence that counts the players in the top N.
 
-    The note gives the lineup value of a player due back, because his recent points do not show it.
+    The sentence opens with the count at each position the trade touches, then names the cause of the step.
     """
     adjuster = _fit_step(snapshot, side)
-    # With no schedule map, no bye read runs, so the reason names the missing schedules next to the step.
-    notes = ([NO_SCHEDULES] if snapshot.schedules is None else []) + _due_back_notes(snapshot, side)
-    if not notes:
-        return adjuster
-    return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
+    counts = _counts(snapshot, side)
+    if counts:
+        return adjuster.model_copy(update={"reason": f"{counts}{adjuster.reason}."})
+    # A trade of kickers and defenses has no count, so the tail stands alone, and with no tail the row says nothing.
+    tail = adjuster.reason.removeprefix(", and ").removeprefix(", but ")
+    if not tail:
+        return adjuster.model_copy(update={"reason": "No player in the trade has a line at his position.",
+                                           "silent": adjuster.step == 0})
+    return adjuster.model_copy(update={"reason": f"{tail[0].upper()}{tail[1:]}."})
 
 
-def _due_back_notes(snapshot: Snapshot, side: Side) -> list[str]:
-    """One sentence per player due back in the trade with the projection he counts for, or one sentence that says
-    the projections are not available.
+def _plural(count: int, position: str) -> str:
+    return f"{count} {position}" if count == 1 else f"{count} {position}s"
+
+
+def _counts(snapshot: Snapshot, side: Side) -> str:
+    """The count of the side's players in the top N at each position the trade touches, before and after.
+
+    N is the line of the position, as a plain rank. GLOSSARY.md, "Depth". K and DEF have no line, so no count.
     """
-    due_back = [pid for pid in side.gets + side.gives if due_back_week(snapshot, pid) is not None]
-    if not due_back:
-        return []
-    if snapshot.projections_ahead is None:
-        return ["The projections ahead are not available, so " + named(
-            snapshot, due_back, "counts for his recent points per game.", "count for their recent points per game.")]
-    return [_due_back_note(snapshot, pid) for pid in due_back]
-
-
-def _due_back_note(snapshot: Snapshot, player_id: str) -> str:
-    """The sentence that names a player due back, the week he counts as back, and the projection he counts for.
-
-    A player out with no returns row has no known return, so the sentence says he counts as back, not that he is due.
-    """
-    name, week = snapshot.players[player_id].name, due_back_week(snapshot, player_id)
-    # The quantize keeps the Decimal exact. round_half_up goes through a float, which can print a long tail.
-    ahead = projection_ahead(snapshot, player_id).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
-    if player_id not in snapshot.returns:
-        return (f"{name} has no return week on file, so he counts as back in week {week} "
-                f"for his projection ahead of {ahead} a game.")
-    return f"{name} is due back in week {week}, so he counts for his projection ahead of {ahead} a game."
+    lines = snapshot.client.settings.lines
+    touched = {snapshot.players[pid].position for pid in side.gets + side.gives}
+    clauses = []
+    for position in (pos for pos in RANKED_POSITIONS if pos in touched and pos in lines):
+        before, after = side.depth(snapshot, position)
+        top = f"in the top {lines[position]}"
+        if before != after:
+            clauses.append(f"go from {_plural(before, position)} {top} to {after}")
+        elif before == 0:
+            clauses.append(f"have no {position} {top}")
+        else:
+            clauses.append(f"keep {_plural(before, position)} {top}")
+    return "You " + _join(clauses) if clauses else ""
 
 
 def hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
-    """The sentence that names a new hole: the slot, the player, and his position rank.
+    """The sentence that names a new hole: the slot, the player, and his position rank. The hole fact reads it.
+
+    The sentence says "leaves the slot short", because "hole" is an inner word of the grade that no bullet may use.
 
     A rank that reads a week N game in progress ends with "game in progress", because it can still move.
-    A player out with no returns row has no known return, so the sentence names no week, as _due_back_note does.
+    A player out with no returns row has no known return, so the sentence names no week, as the roster row does.
     """
-    lead = f"{slot.name} is a hole after the trade:"
+    # The hole fact puts the team name first, as in "For Team, the trade leaves RB2 short:", so the lead is lowercase.
+    lead = f"the trade leaves {slot.name} short:"
     if slot.player is None:
         return f"{lead} no player fills it."
     player = snapshot.players[slot.player]
@@ -361,43 +373,72 @@ def hole_sentence(snapshot: Snapshot, slot: StartingSlot) -> str:
     return f"{lead} {player.name} is {player.position}{slot.rank}{label}."
 
 
+def _short_name(snapshot: Snapshot, player_id: str) -> str:
+    return _short_names(snapshot, [player_id])[player_id]
+
+
+def _cause(snapshot: Snapshot, slot: StartingSlot) -> str | None:
+    """Why a new hole is a hole, when the count of the roster row does not show it, or None when it does.
+
+    A slot with no player, or with a player below the line, shows in the count. A bye, an absence with no cover,
+    and a player with no rank do not.
+    """
+    if slot.player is None:
+        return None
+    name = _short_name(snapshot, slot.player)
+    if slot.bye_now:
+        return f"{name} has his bye in week {snapshot.week}, and you need the win"
+    if slot.absence is not None and not slot.absence.covered:
+        week = slot.absence.week
+        if slot.player not in snapshot.returns:
+            return f"{name} is out with no return week on file"
+        if week > _last_window_week(snapshot):
+            return f"{name} is due back in week {week}"
+        return f"{name} is due back in week {week}, and no other player covers him"
+    if slot.rank is None:
+        return f"{name} has no rank this season"
+    return None
+
+
 def _fit_step(snapshot: Snapshot, side: Side) -> Adjuster:
-    """The roster fit step and its reason, from the new holes and the change in the side's best lineup."""
+    """The roster fit step, and the tail of its reason after the counts, from the new holes and the lineup change.
+
+    The tail starts with a comma, or is empty when the counts say it all. _fit puts the counts in front.
+    """
     # A new hole costs the side on Sunday, so it blocks every step up, and a handcuff never hides it.
-    # A lineup gain or the highest-value player cancels the hole to no step, and the reason names both.
+    # A lineup gain or the better player cancels the hole to no step, and the reason names both.
     # With no gain, the hole is one step down. With a lineup loss too, the hole is the reason.
-    holes = " ".join(hole_sentence(snapshot, slot) for slot in side.new_holes(snapshot))
+    holes = side.new_holes(snapshot)
     if holes:
+        causes = [cause for slot in holes if (cause := _cause(snapshot, slot)) is not None]
+        but = "".join(f", but {cause}" if index == 0 else f", and {cause}" for index, cause in enumerate(causes))
         if side.lineup_gains:
-            return Adjuster(name=ROSTER_FIT, step=0, reason=f"The best lineup gains after the trade. {holes}")
+            return Adjuster(name=ROSTER_FIT, step=0, reason=f", and your lineup scores more{but}")
         if side.gets_highest_value and not side.lineup_loses:
-            return Adjuster(name=ROSTER_FIT, step=0,
-                            reason="It gets the highest-value player in the trade, and the best lineup does not "
-                                   f"lose. {holes}")
-        return Adjuster(name=ROSTER_FIT, step=-1, reason=holes)
+            return Adjuster(name=ROSTER_FIT, step=0, reason=f", and you get the better player{but}")
+        return Adjuster(name=ROSTER_FIT, step=-1, reason="".join(f", and {cause}" for cause in causes))
     if side.lineup_loses:
         # A handcuff is insurance that sits on the bench, so a lineup loss in a trade for him does not count.
         if side.gets_handcuffs:
-            handcuffs = named(snapshot, side.gets_handcuffs, "is a handcuff", "are handcuffs")
+            handcuffs = _join([_short_name(snapshot, pid) for pid in side.gets_handcuffs])
+            are = "is a handcuff" if len(side.gets_handcuffs) == 1 else "are handcuffs"
             return Adjuster(name=ROSTER_FIT, step=0,
-                            reason=f"The best lineup loses after the trade, but {handcuffs}, "
-                                   "so the loss does not count.")
-        return Adjuster(name=ROSTER_FIT, step=-1, reason="The best lineup loses after the trade.")
+                            reason=f", and your lineup scores less, but {handcuffs} {are}, so the loss does not count")
+        return Adjuster(name=ROSTER_FIT, step=-1, reason=", and your lineup scores less")
     # In a one-for-two-or-more trade, the side that gets the depth must start every player it gets.
-    # Otherwise it pays for a bench player, so neither the gain nor the highest-value player earns the step up.
+    # Otherwise it pays for a bench player, so neither the gain nor the better player earns the step up.
     gets_depth = len(side.gets) > 1 and len(side.gives) == 1
     if gets_depth and not all(pid in side.starters_after for pid in side.gets):
         if side.lineup_gains:
             return Adjuster(name=ROSTER_FIT, step=0,
-                            reason="The best lineup gains after the trade, but not every player it gets starts.")
-        return Adjuster(name=ROSTER_FIT, step=0, reason="Not every player it gets starts.")
+                            reason=", and your lineup scores more, but you get more players than you can start")
+        return Adjuster(name=ROSTER_FIT, step=0, reason=", but you get more players than you can start")
     if side.lineup_gains:
-        return Adjuster(name=ROSTER_FIT, step=1, reason="The best lineup gains after the trade.")
+        return Adjuster(name=ROSTER_FIT, step=1, reason=", and your lineup scores more")
     # A lineup change smaller than the fit threshold is no lineup loss, so it does not block this step.
     if side.gets_highest_value:
-        return Adjuster(name=ROSTER_FIT, step=1,
-                        reason="It gets the highest-value player in the trade, and the best lineup does not lose.")
-    return Adjuster(name=ROSTER_FIT, step=0, reason="The best lineup stays about the same.")
+        return Adjuster(name=ROSTER_FIT, step=1, reason=", and you get the better player")
+    return Adjuster(name=ROSTER_FIT, step=0, reason="")
 
 
 def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "seller", "middle"]:
@@ -448,52 +489,72 @@ def _credited_return_bets(snapshot: Snapshot, side: Side) -> list[str]:
 
 
 def _gain_when(snapshot: Snapshot, side: Side) -> str:
-    """The function gives the time of the side's lineup gain.
+    """The function gives the time of the side's lineup gain, as a tail of the standing row.
 
-    The text is "now" when the side gets no starter who is due back.
+    The text is empty when the side gets no starter who is due back, because the gain is now.
     A player due back does not play this week, so a gain he makes in the lineup comes after his return, not now.
     The text names each player due back that the side gets and starts. It gives the latest return week of them.
     A player out with no returns row has no known return, so the text says he counts as back, as the fit note does.
     """
     due_back = [pid for pid in side.gets if pid in side.starters_after and due_back_week(snapshot, pid) is not None]
     if not due_back:
-        return "now"
+        return ""
     week = max(due_back_week(snapshot, pid) for pid in due_back)
+    names = _join([_short_name(snapshot, pid) for pid in due_back])
     if any(pid not in snapshot.returns for pid in due_back):
-        return f"from week {week}, when " + named(snapshot, due_back, "counts as back", "count as back")
-    returns = named(snapshot, due_back, "returns", "return")
-    return f"after {returns} in week {week}"
+        back = "counts as back" if len(due_back) == 1 else "count as back"
+        return f" from week {week}, when {names} {back}"
+    returns = "returns" if len(due_back) == 1 else "return"
+    return f" after {names} {returns} in week {week}"
+
+
+# The race and the need of each race, the lead of every standing row.
+CONTENDER_NEED = "In a playoff spot, so you need points now"
+SELLER_NEED = "Out of the playoff race, so you want the better player for the rest of the season"
+MIDDLE_NEED = "Outside a playoff spot but still in the race, so you need points now"
+
+
+def _points_now(snapshot: Snapshot, side: Side) -> str:
+    """Whether the trade meets the need for points now, from the change in the side's best lineup."""
+    if side.lineup_gains:
+        return f"this trade adds some{_gain_when(snapshot, side)}"
+    if side.lineup_loses:
+        return "this trade gives some up"
+    return "this trade keeps your points about the same"
 
 
 def _standing(snapshot: Snapshot, side: Side) -> Adjuster:
-    """Standing: a contender's win-now move or return bet, and a seller's bet on the future."""
+    """Standing: the race of the team, its need, and whether the trade meets it, in one sentence.
+
+    A contender steps up for points now or for a return before the playoffs. A seller steps up for the better player.
+    """
     race = team_race(snapshot, side.roster_id)
     if race == "contender":
-        lead = "The team holds a playoff spot"
         if side.lineup_gains:
-            return Adjuster(name=STANDING, step=1,
-                            reason=f"{lead}, and the best lineup gains {_gain_when(snapshot, side)}.")
+            return Adjuster(name=STANDING, step=1, reason=f"{CONTENDER_NEED}, and {_points_now(snapshot, side)}.")
         bets = _credited_return_bets(snapshot, side)
         if bets:
-            due = named(snapshot, bets, "is", "are")
-            return Adjuster(name=STANDING, step=1, reason=f"{lead}, and {due} due back before the playoffs.")
+            names = _join([_short_name(snapshot, pid) for pid in bets])
+            due = "is" if len(bets) == 1 else "are"
+            return Adjuster(name=STANDING, step=1,
+                            reason=f"In a playoff spot, so you need points by the playoffs, and {names} {due} "
+                                   "due back before them.")
         late = [(pid, why) for pid in side.gets if (why := _late_return(snapshot, pid)) is not None]
         if side.lineup_loses and late:
             pid, why = late[0]
             return Adjuster(name=STANDING, step=-1,
-                            reason=f"{lead}, but the best lineup loses now for {snapshot.players[pid].name}, "
-                                   f"who {why}.")
-        return Adjuster(name=STANDING, step=0, reason=f"{lead}, and the trade is no win-now move or return bet.")
+                            reason=f"{CONTENDER_NEED}, and this trade gives some up for "
+                                   f"{_short_name(snapshot, pid)}, who {why}.")
+        return Adjuster(name=STANDING, step=0, reason=f"{CONTENDER_NEED}, and {_points_now(snapshot, side)}.")
     if race == "seller":
-        lead = "The team is out of the playoff race"
         if side.gets_highest_value:
-            return Adjuster(name=STANDING, step=1,
-                            reason=f"{lead}, and it gets the highest-value player in the trade.")
+            return Adjuster(name=STANDING, step=1, reason=f"{SELLER_NEED}, and you get him.")
         if side.gives_highest_value and side.lineup_gains:
-            return Adjuster(name=STANDING, step=-1,
-                            reason=f"{lead}, but it gives the highest-value player in the trade for a lineup gain now.")
-        return Adjuster(name=STANDING, step=0, reason=f"{lead}, and the trade is no bet on the future.")
-    return Adjuster(name=STANDING, step=0, reason="The team is neither in a playoff spot nor out of the race.")
+            return Adjuster(name=STANDING, step=-1, reason=f"{SELLER_NEED}, but you give him up for points now.")
+        if side.gives_highest_value:
+            return Adjuster(name=STANDING, step=0, reason=f"{SELLER_NEED}, but you give him up.")
+        return Adjuster(name=STANDING, step=0, reason=f"{SELLER_NEED}, and no player in the trade is clearly better.")
+    return Adjuster(name=STANDING, step=0, reason=f"{MIDDLE_NEED}, and {_points_now(snapshot, side)}.")
 
 
 class _WoprWindow(NamedTuple):
@@ -552,31 +613,43 @@ def _weeks_text(weeks: list[int]) -> str:
 IN_PROGRESS_LABEL = ", game in progress"
 
 
-def _share_sentences(snapshot: Snapshot, players: list[str]) -> list[str]:
-    """One sentence per player with a snap or target share that moved: the percent and direction of each moved share.
+def _share_mark(share: UsageShare) -> str:
+    """The direction of a share as a mark after its percent, such as " (up)". A flat share has no mark."""
+    return f" ({share.direction})" if share.direction in ("up", "down") else ""
 
-    The reader cannot check a bare direction, so each sentence gives the numbers and the weeks behind each percent.
-    When the two moved shares of a player have the same weeks, the weeks come once at the end of his sentence.
-    When they differ, the weeks come after each percent.
-    A share that reads a week N game in progress ends the sentence with "game in progress", because it can still move.
+
+def _usage_clause(snapshot: Snapshot, player_id: str, name: str) -> str | None:
+    """One clause of the usage row for one player, with the numbers of his position and no weeks.
+
+    A WR or a TE gives the snap share, the target share, and the air yards per target. An RB gives the snap share,
+    the carry share, and the target share. A QB plays nearly every snap, so he has no clause, unless his snap share
+    or his target share moved: the step reads that move, so the row names it. A kicker and a defense have no clause.
+    The snap share and the target share carry their direction, because the step reads them.
+    A number that reads a week N game in progress ends the clause with "game in progress", because it can still move.
+    None when the player has no clause or no number to give.
     """
-    names = _short_names(snapshot, players)
-    sentences = []
-    for pid in players:
-        moved = [(kind, share) for kind, share in zip(("snap share", "target share"), snapshot.usage_shares(pid))
-                 if share is not None and share.direction in ("up", "down")]
-        if not moved:
-            continue
-        label = IN_PROGRESS_LABEL if _reads_a_game_in_progress(
-            snapshot, pid, [week for _, share in moved for week in share.weeks_used]) else ""
-        if len({tuple(share.weeks_used) for _, share in moved}) == 1:
-            shares = ", ".join(f"{kind} {share.percent}%, {share.direction}" for kind, share in moved)
-            sentences.append(f"{names[pid]}: {shares}, over {_weeks_text(moved[0][1].weeks_used)}{label}.")
-        else:
-            shares = ", ".join(f"{kind} {share.percent}% ({_weeks_text(share.weeks_used)}), {share.direction}"
-                               for kind, share in moved)
-            sentences.append(f"{names[pid]}: {shares}{label}.")
-    return sentences
+    position = snapshot.players[player_id].position
+    snap, target = snapshot.usage_shares(player_id)
+    if position == "QB":
+        snap, target = (share if share is not None and share.direction in ("up", "down") else None
+                        for share in (snap, target))
+    elif position not in ("WR", "TE", "RB"):
+        return None
+    through = snapshot.as_of.stats_through
+    parts = []
+    if snap is not None:
+        parts.append(f"plays {snap.percent}% of the snaps{_share_mark(snap)}")
+    if position == "RB" and (carries := recent_carry_share(snapshot.stats, player_id, through)) is not None:
+        parts.append(f"takes {carries.percent}% of the carries")
+    if target is not None:
+        parts.append(f"sees {target.percent}% of the targets{_share_mark(target)}")
+    if position != "RB" and (air := air_yards_per_target(snapshot.stats, player_id, through)) is not None:
+        parts.append(f"averages {one_decimal_text(air)} air yards per target")
+    if not parts:
+        return None
+    weeks = [week for share in (snap, target) if share is not None for week in share.weeks_used]
+    label = IN_PROGRESS_LABEL if _reads_a_game_in_progress(snapshot, player_id, weeks) else ""
+    return f"{name} {_series(parts)}{label}"
 
 
 def _reads_a_game_in_progress(snapshot: Snapshot, player_id: str, weeks: list[int]) -> bool:
@@ -628,17 +701,30 @@ def _trend(snapshot: Snapshot, side: Side) -> Adjuster:
     When every share is flat, the WOPR direction of a WR or TE breaks the tie first, and red-zone use breaks it next.
     A handcuff's use does not count on either side, so the trend never steps a side down because of him.
     A player due back has no recent use to compare, so his use does not count on either side either.
+    The row gives one clause per player, the players it gets first, then a clause for each player left out, then the
+    tie break that made a step. The mark shows the step, so the row names no direction of its own.
     """
     left_out, notes = _left_out(snapshot, side, "use")
-    adjuster = _trend_step(snapshot, [pid for pid in side.gets if pid not in left_out],
-                           [pid for pid in side.gives if pid not in left_out])
-    if not notes:
-        return adjuster
-    return adjuster.model_copy(update={"reason": " ".join([adjuster.reason, *notes])})
+    gets = [pid for pid in side.gets if pid not in left_out]
+    gives = [pid for pid in side.gives if pid not in left_out]
+    step, tail = _trend_step(snapshot, gets, gives)
+    names = _short_names(snapshot, side.gets + side.gives)
+    clauses = [clause for pid in gets + gives if (clause := _usage_clause(snapshot, pid, names[pid])) is not None]
+    clauses += [note.removesuffix(".") for note in notes]
+    if tail is not None:
+        clauses.append(tail)
+    if not clauses:
+        if step == 0:
+            # A trade of quarterbacks, kickers, and defenses has no usage line, so the row says nothing.
+            return Adjuster(name=TREND, step=0, reason="No player in the trade has a usage line.", silent=True)
+        clauses.append("the players you get gain snap or target share, and the players you give lose it" if step > 0
+                       else "the players you get lose snap or target share, and the players you give gain it")
+    reason = "; ".join(clauses)
+    return Adjuster(name=TREND, step=step, reason=f"{reason[0].upper()}{reason[1:]}.")
 
 
-def _wopr_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster | None:
-    """The trend when every share is flat and the WOPR of the WR and TE points one way.
+def _wopr_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> int | None:
+    """The trend step when every share is flat and the WOPR of the WR and TE points one way.
 
     None when no WOPR moved or when it points both ways.
     """
@@ -648,42 +734,41 @@ def _wopr_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuste
         return None
     got = {woprs[pid].direction for pid in gets if pid in woprs}
     gave = {woprs[pid].direction for pid in gives if pid in woprs}
-    lead = "The snap and target shares are flat."
     if got <= {"up"} and gave <= {"down"}:
-        step, lead = 1, f"{lead} The players it gets gain WOPR, and the players it gives lose it."
-    elif got <= {"down"} and gave <= {"up"}:
-        step, lead = -1, f"{lead} The players it gets lose WOPR, and the players it gives gain it."
-    else:
-        # WOPR only breaks a tie, so a WOPR that points both ways leaves the tie to red-zone use.
-        return None
-    names = _short_names(snapshot, gets + gives)
-    sentences = [f"{names[pid]}: WOPR {wopr.value}, {wopr.direction}, over {_weeks_text(wopr.weeks_used)}."
-                 for pid, wopr in woprs.items()]
-    return Adjuster(name=TREND, step=step, reason=" ".join([lead, *sentences]))
+        return 1
+    if got <= {"down"} and gave <= {"up"}:
+        return -1
+    # WOPR only breaks a tie, so a WOPR that points both ways leaves the tie to red-zone use.
+    return None
 
 
-def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> Adjuster:
+# The tail of the usage row when every share is flat and a tie break makes the step.
+FLAT = "the shares are flat"
+WOPR_TAILS = {1: f"{FLAT}, and the receivers you get gain WOPR, a mix of target share and air yards share",
+              -1: f"{FLAT}, and the receivers you give gain WOPR, a mix of target share and air yards share"}
+RED_ZONE_TAILS = {1: f"{FLAT}, and the players you get have more red-zone use",
+                  -1: f"{FLAT}, and the players you give have more red-zone use"}
+
+
+def _trend_step(snapshot: Snapshot, gets: list[str], gives: list[str]) -> tuple[int, str | None]:
+    """The trend step, and the tail of the row when a tie break makes it, else None."""
     got, gave = _directions(snapshot, gets), _directions(snapshot, gives)
     if not got and not gave:
         # Every share is flat, so the WOPR of a WR or TE decides, and then red-zone use.
         wopr = _wopr_step(snapshot, gets, gives)
         if wopr is not None:
-            return wopr
+            return wopr, WOPR_TAILS[wopr]
         got_rz, gave_rz = _red_zone_touches(snapshot, gets), _red_zone_touches(snapshot, gives)
-        lead = "The snap and target shares are flat"
-        if got_rz > gave_rz:
-            return Adjuster(name=TREND, step=1, reason=f"{lead}, and the players it gets have more red-zone use.")
-        if got_rz < gave_rz:
-            return Adjuster(name=TREND, step=-1, reason=f"{lead}, and the players it gives have more red-zone use.")
-        return Adjuster(name=TREND, step=0, reason=f"{lead}, and the red-zone use is even.")
+        if got_rz != gave_rz:
+            step = 1 if got_rz > gave_rz else -1
+            return step, RED_ZONE_TAILS[step]
+        return 0, None
     # A player with one share up and one share down puts both in his side's set, so his trade is mixed.
     if got <= {"up"} and gave <= {"down"}:
-        step, lead = 1, "The players it gets gain snap or target share, and the players it gives lose it."
-    elif got <= {"down"} and gave <= {"up"}:
-        step, lead = -1, "The players it gets lose snap or target share, and the players it gives gain it."
-    else:
-        step, lead = 0, "The snap and target shares point both ways."
-    return Adjuster(name=TREND, step=step, reason=" ".join([lead, *_share_sentences(snapshot, gets + gives)]))
+        return 1, None
+    if got <= {"down"} and gave <= {"up"}:
+        return -1, None
+    return 0, None
 
 
 def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
@@ -712,28 +797,65 @@ def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
     return sum(1 for week in weeks if week <= snapshot.as_of.completed_through)
 
 
+def _out_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | None:
+    """How long the player is out, such as "Cooper is out until week 11.", or None when he is not out.
+
+    A player out with a return week after the last completed week is out until that week. A player out with no
+    returns row has no known return.
+    """
+    if player_id in snapshot.out_for_season:
+        return f"{name} is out for the season."
+    if _due_back(snapshot, player_id):
+        return f"{name} is out until week {snapshot.returns[player_id]}."
+    if snapshot.players[player_id].injury_status in OUT_STATUSES:
+        return f"{name} is out with no return week on file."
+    return None
+
+
+def _report_sentence(snapshot: Snapshot, player_id: str, lead: str) -> str | None:
+    """The count of weeks on the injury report, such as "He was on the injury report in 5 of 8 weeks.".
+
+    `lead` is the name, or "He" after a sentence that names him. None when no count ran or the count is 0.
+    """
+    weeks = _report_weeks(snapshot, player_id)
+    if not weeks:
+        return None
+    return f"{lead} was on the injury report in {weeks} of {snapshot.as_of.completed_through} weeks."
+
+
+def _injury_text(snapshot: Snapshot, player_id: str, name: str) -> str:
+    """The injury sentences of one player: how long he is out, then his weeks on the injury report."""
+    out = _out_sentence(snapshot, player_id, name)
+    report = _report_sentence(snapshot, player_id, name if out is None else "He")
+    return " ".join(sentence for sentence in (out, report) if sentence is not None)
+
+
 def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
-    """Injury: a player it gets who is out for the season, out with no near return, or on the report in many weeks."""
+    """Injury: a player it gets who is out for the season, out with no near return, or on the report in many weeks.
+
+    With no step, the row still names each player it gets who is out now, because his return week is news.
+    """
     # A star return bet is the upside's credit, so the injury never counts him against the same side. ADR 0005.
     exempt = set(_credited_return_bets(snapshot, side)) | {pid for pid in side.gets if _star_return_bet(snapshot, pid)}
+    names = _short_names(snapshot, side.gets)
     for pid in side.gets:
         if pid in exempt:
             continue
-        name = snapshot.players[pid].name
-        # The season mark comes first, so the reason names the plain cause and not the weaker "no near return".
-        if pid in snapshot.out_for_season:
-            return Adjuster(name=INJURY, step=-1, reason=f"{name} is out for the season.")
-        if _out_with_no_near_return(snapshot, pid):
-            return Adjuster(name=INJURY, step=-1, reason=f"{name} is out with no near return.")
-        if (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS:
-            return Adjuster(name=INJURY, step=-1, reason=f"{name} was on the injury report in many weeks this season.")
-    reason = "No player it gets is out for long or often on the injury report."
+        # The season mark comes first, then no near return, then the count of report weeks, as the step reads them.
+        if (pid in snapshot.out_for_season or _out_with_no_near_return(snapshot, pid)
+                or (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS):
+            return Adjuster(name=INJURY, step=-1, reason=_injury_text(snapshot, pid, names[pid]))
+    out_now = [_injury_text(snapshot, pid, names[pid]) for pid in side.gets
+               if _out_sentence(snapshot, pid, names[pid]) is not None]
+    notes = []
     if not _has_injury_report(snapshot):
-        reason += " The injury report is not available, so no count of report weeks ran."
+        notes.append("The injury report is not available, so no count of report weeks ran.")
     elif unmapped := _not_in_id_map(snapshot, side.gets):
-        reason += " " + named(snapshot, unmapped, "is not in the id map, so no report count ran for him.",
-                               "are not in the id map, so no report count ran for them.")
-    return Adjuster(name=INJURY, step=0, reason=reason)
+        notes.append(named(snapshot, unmapped, "has no injury report count on file.",
+                           "have no injury report count on file."))
+    reason = " ".join([*out_now, *notes]) or "No player it gets is out for long or often on the injury report."
+    # A count that did not run is a fact the reader needs, so only a full count that finds nothing is silent.
+    return Adjuster(name=INJURY, step=0, reason=reason, silent=not out_now and not notes)
 
 
 def _star(snapshot: Snapshot, player_id: str) -> bool:
@@ -799,19 +921,22 @@ def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
     for pid in side.gets:
         if pid in snapshot.out_for_season:
             continue
-        name = snapshot.players[pid].name
         if _star_return_bet(snapshot, pid):
-            return Adjuster(name=UPSIDE, step=1, reason=f"{name} is a star out now with a return in play.")
+            name = _short_name(snapshot, pid)
+            position = snapshot.players[pid].position
+            week = snapshot.returns.get(pid)
+            back = f"due back in week {week}" if week is not None else "out now with no return week on file"
+            return Adjuster(name=UPSIDE, step=1, reason=f"{name} is a top {position}, {back}.")
         teammate = _opportunity_from(snapshot, pid)
         if teammate is None:
             continue
-        signal = _rising_signal(snapshot, pid)
-        if signal is not None:
+        if _rising_signal(snapshot, pid) is not None:
             # _out_with_no_near_return holds the season mark too, so the reason names the plainer cause first.
-            out = ("out for the season" if teammate in snapshot.out_for_season else "out with no near return")
-            return Adjuster(name=UPSIDE, step=1,
-                            reason=f"{name} gains {signal} with {snapshot.players[teammate].name} {out}.")
-    return Adjuster(name=UPSIDE, step=0, reason="No player it gets is a star out now or has an opportunity.")
+            out = "out for the season" if teammate in snapshot.out_for_season else "out"
+            names = _short_names(snapshot, [pid, teammate])
+            return Adjuster(name=UPSIDE, step=1, reason=f"{names[pid]} gets more work while {names[teammate]} is {out}.")
+    return Adjuster(name=UPSIDE, step=0, reason="No player it gets is a top player out now or gets more work.",
+                    silent=True)
 
 
 def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
@@ -825,23 +950,31 @@ def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
         return Adjuster(name=HANDCUFF, step=0, reason="The depth chart is not available, so no handcuff check ran.")
     if snapshot.id_map is None:
         return Adjuster(name=HANDCUFF, step=0, reason="The id map is not available, so no handcuff check ran.")
-    parts = []
-    if side.gets_handcuffs:
-        parts.append(named(snapshot, side.gets_handcuffs, "backs up the team's own starter, so he counts as insurance.",
-                           "back up the team's own starters, so they count as insurance."))
     after = _roster_after(snapshot, side.roster_id, side.gives, side.gets)
+    parts = [f"{_backs_up(snapshot, pid, after)}." for pid in side.gets_handcuffs]
     freed = [pid for pid in side.gets if pid not in side.handcuffs and _behind_a_starter(snapshot, pid, after)]
     # The gate compares the exact share. The reason shows it rounded, as every other percent in a reason.
-    parts.extend(f"{snapshot.players[pid].name} backs up the team's own starter but takes "
-                 f"{int(round_half_up(_carry_share(snapshot, pid)))}% of the carries, so he counts as a running back."
+    parts.extend(f"{_backs_up(snapshot, pid, after)}, but he takes {int(round_half_up(_carry_share(snapshot, pid)))}% "
+                 "of the carries, so he is no handcuff."
                  for pid in freed)
     reason = " ".join(parts) if parts else "No player it gets is a handcuff."
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.
     unmapped = _not_in_id_map(snapshot, [pid for pid in side.gets if snapshot.players[pid].position == "RB"])
     if unmapped:
-        reason += " " + named(snapshot, unmapped, "is not in the id map, so no handcuff check ran for him.",
-                               "are not in the id map, so no handcuff check ran for them.")
-    return Adjuster(name=HANDCUFF, step=0, reason=reason)
+        reason += " " + named(snapshot, unmapped, "has no handcuff check on file.",
+                               "have no handcuff check on file.")
+    # A check that did not run is a fact the reader needs, so only a full check that finds no handcuff is silent.
+    return Adjuster(name=HANDCUFF, step=0, reason=reason, silent=not parts and not unmapped)
+
+
+def _backs_up(snapshot: Snapshot, player_id: str, roster: list[str]) -> str:
+    """The player, the starter on the roster that he backs up, and the team, such as
+    "Spears backs up your RB, Pollard, on the Titans depth chart". The player is behind a starter on the roster."""
+    team = snapshot.players[player_id].nfl_team or ""
+    sleeper_of_gsis = {snapshot.id_map[pid]: pid for pid in roster if pid in snapshot.id_map}
+    starter = sleeper_of_gsis[_rb_chart(snapshot, team)[0]]
+    names = _short_names(snapshot, [player_id, starter])
+    return f"{names[player_id]} backs up your RB, {names[starter]}, on the {team_name(team)} depth chart"
 
 
 def _scheduled(snapshot: Snapshot, player_id: str) -> TeamSchedule | None:
@@ -894,28 +1027,70 @@ def _schedule(snapshot: Snapshot, side: Side) -> Adjuster:
     byes_got, byes_gave = _byes_left(snapshot, side.gets), _byes_left(snapshot, side.gives)
     bye_lean: Lean = "for" if byes_got < byes_gave else "against" if byes_got > byes_gave else "even"
     rank_got, rank_gave = _playoff_rank(snapshot, side.gets), _playoff_rank(snapshot, side.gives)
+    playoff_lean: Lean
     if rank_got is None or rank_gave is None:
         playoff_lean = "even"
-        playoffs = "the playoff opponents do not compare"
     elif rank_gave - rank_got >= SCHEDULE_RANK_GAP:
         playoff_lean = "for"
-        playoffs = "the players it gets face softer playoff opponents at their positions"
     elif rank_got - rank_gave >= SCHEDULE_RANK_GAP:
         playoff_lean = "against"
-        playoffs = "the players it gets face harder playoff opponents at their positions"
     else:
         playoff_lean = "even"
-        playoffs = "the playoff opponents are about as hard on both sides"
-    byes = {
-        "for": "The players it gets have fewer byes left than the players it gives",
-        "against": "The players it gets have more byes left than the players it gives",
-        "even": "The players it gets and the players it gives have the same count of byes left",
-    }[bye_lean]
     # Two signals that agree, or one signal with the other even, give the lean. Two that conflict cancel out.
     leans = {bye_lean, playoff_lean} - {"even"}
     lean: Lean = leans.pop() if len(leans) == 1 else "even"
-    verdict = "The schedule is even." if lean == "even" else f"The schedule leans {lean} this side."
-    return Adjuster(name=SCHEDULE, step=0, lean=lean, reason=f"{byes}, and {playoffs}. {verdict}")
+    # The mark shows the lean, so the row names the facts behind it: each bye and each playoff opponent.
+    names = _short_names(snapshot, side.gets)
+    sentences = [sentence for pid in side.gets if (sentence := _schedule_sentence(snapshot, pid, names[pid]))]
+    if not sentences:
+        return Adjuster(name=SCHEDULE, step=0, lean=lean, reason="No player you get has a playoff schedule.",
+                        silent=lean == "even")
+    return Adjuster(name=SCHEDULE, step=0, lean=lean, reason=" ".join(sentences))
+
+
+def _span_text(weeks: list[int]) -> str:
+    """The weeks as a span, such as "weeks 15 to 17", when they run in a row, else as a list."""
+    if len(weeks) > 2 and weeks == list(range(weeks[0], weeks[-1] + 1)):
+        return f"weeks {weeks[0]} to {weeks[-1]}"
+    return _weeks_text(weeks)
+
+
+def _schedule_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | None:
+    """The bye of the player after the Week line weeks, and each playoff opponent with its rank at his position.
+
+    The Week line covers the trade week and the next week, so a bye in those weeks is its fact, not this row's.
+    The first opponent gives the rank in full, such as "TEN (3rd most points to WRs)", and the rest give the ordinal.
+    None for a player with no schedule, or with no bye left and no playoff game.
+    """
+    schedule = _scheduled(snapshot, player_id)
+    if schedule is None:
+        return None
+    position = snapshot.players[player_id].position
+    parts = []
+    if schedule.bye_week is not None and schedule.bye_week > snapshot.week + 1:
+        parts.append(f"has his bye in week {schedule.bye_week}")
+    weeks = sorted(schedule.playoff_opponents)
+    if weeks:
+        opponents = []
+        for opponent in (schedule.playoff_opponents[week] for week in weeks):
+            rank = opponent_rank(snapshot.points_allowed, opponent, position)
+            if rank is None:
+                opponents.append(opponent)
+            elif not any("(" in text for text in opponents):
+                opponents.append(f"{opponent} ({most_points_text(rank, position)})")
+            else:
+                opponents.append(f"{opponent} ({ordinal(rank)})")
+        parts.append(f"faces {_series(opponents)} in {_span_text(weeks)}")
+    if not parts:
+        return None
+    return f"{name} {' and '.join(parts)}."
+
+
+def _series(items: list[str]) -> str:
+    """The items as a list with a comma before the last "and", such as "TEN, CLE, and HOU"."""
+    if len(items) <= 2:
+        return " and ".join(items)
+    return ", ".join(items[:-1]) + ", and " + items[-1]
 
 
 def _league_points(snapshot: Snapshot, player_id: str) -> dict[int, float]:

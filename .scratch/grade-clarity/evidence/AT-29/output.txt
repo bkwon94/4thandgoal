@@ -1,0 +1,46 @@
+$ ANTHROPIC_API_KEY=sk-ant-invalid-evidence-key CORNERSTONE_RESULT_CACHE_DIR=<scratch dir> CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_REPO=<repo> uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8081
+# A second local API with a bad key and an empty result cache, so the cached grade of trade A cannot serve.
+$ curl -s -X POST localhost:8081/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:40:12Z
+# API log lines:
+analysis attempt 1 failed: Error code: # - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_#CgjUsKcibcWRz#v#nYBoN'}
+analysis attempt 2 failed: Error code: # - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_#CgjUsKw#LrM#zE#qKGhHT'}
+INFO:     127.0.0.1:52907 - "POST /clients/cpc/analyze HTTP/1.1" 200 OK
+
+# fallback, and per side: bullets, weeks of week_lines, factor names. Full document: evidence/AT-29/fallback.document.json
+{
+  "fallback": true,
+  "sides": [
+    {
+      "roster_id": 10,
+      "bullets": [],
+      "week_lines": [
+        9,
+        10
+      ],
+      "factors": [
+        "deal",
+        "roster fit",
+        "standing",
+        "trend and usage",
+        "schedule"
+      ]
+    },
+    {
+      "roster_id": 6,
+      "bullets": [],
+      "week_lines": [
+        9,
+        10
+      ],
+      "factors": [
+        "deal",
+        "roster fit",
+        "standing",
+        "trend and usage",
+        "schedule"
+      ]
+    }
+  ]
+}

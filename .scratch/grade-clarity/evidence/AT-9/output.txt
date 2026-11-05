@@ -1,0 +1,23 @@
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+grade time (as_of.graded_at): 2026-11-05T03:38:17.393116-05:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: 1:36:44.393116
+chart_is_fresh: True
+last_game_status (Tue or Wed): False
+trade week: 9, stats_through: 8, chart_week: 9
+
+position_rank(13276) = WR27
+WR rank table, places 20 to 30:
+  WR20 12519 Luther Burden III season_ppg=11.82 lineup_value=11.82 due_back_week=None
+  WR21 9487 Parker Washington season_ppg=11.57 lineup_value=11.57 due_back_week=None
+  WR22 8146 Garrett Wilson season_ppg=11.52 lineup_value=11.52 due_back_week=None
+  WR23 2449 Stefon Diggs season_ppg=11.45 lineup_value=11.45 due_back_week=None
+  WR24 8112 Drake London season_ppg=11.29 lineup_value=11.29 due_back_week=None
+  WR25 11646 Jalen Coker season_ppg=10.82 lineup_value=10.82 due_back_week=None
+  WR26 10232 Michael Wilson season_ppg=10.77 lineup_value=10.77 due_back_week=None
+  WR27 13276 Omar Cooper Jr. season_ppg=10.70 lineup_value=10.70 due_back_week=None
+  WR28 10213 Tre Tucker season_ppg=10.66 lineup_value=10.66 due_back_week=None
+  WR29 8137 George Pickens season_ppg=10.60 lineup_value=10.60 due_back_week=None
+  WR30 5872 Deebo Samuel Sr. season_ppg=10.28 lineup_value=10.28 due_back_week=None
+13276 Omar Cooper Jr.: shown_ranks=('WR60', 'WR18') raw recent_rank=18 recent_ppg=13.10 season_ppg=10.70
+9487 Parker Washington: shown_ranks=('WR21', None) raw recent_rank=19 recent_ppg=12.97 season_ppg=11.57

@@ -12,6 +12,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "season_rank": "WR20",
+            "recent_rank": null,
             "to": 12
           }
         ],
@@ -22,6 +24,8 @@
             "position": "TE",
             "nfl_team": "BUF",
             "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "season_rank": "TE10",
+            "recent_rank": "TE39",
             "from": 12
           },
           {
@@ -30,6 +34,8 @@
             "position": "WR",
             "nfl_team": "NYJ",
             "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR11",
+            "recent_rank": null,
             "from": 12
           }
         ]
@@ -44,6 +50,8 @@
             "position": "TE",
             "nfl_team": "BUF",
             "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "season_rank": "TE10",
+            "recent_rank": "TE39",
             "to": 4
           },
           {
@@ -52,6 +60,8 @@
             "position": "WR",
             "nfl_team": "NYJ",
             "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR11",
+            "recent_rank": null,
             "to": 4
           }
         ],
@@ -62,6 +72,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "season_rank": "WR20",
+            "recent_rank": null,
             "from": 4
           }
         ]
@@ -80,92 +92,110 @@
     "sides": [
       {
         "roster_id": 4,
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+        "reason": "What you get and what you give are about even, after a discount on the side with more players."
       },
       {
         "roster_id": 12,
-        "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+        "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
       }
     ]
   },
   "sides": [
     {
       "roster_id": 4,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "even",
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
+      "week_lines": [
+        {
+          "week": 6,
+          "text": "Week 6: WRs in the top 36 who play stay at 2. TEs in the top 24 who play go from 1 to 2. Kincaid plays at LV, 13th most points to TEs. Wilson plays at NE, 17th most points to WRs. Williams has a bye. Warren is listed Out."
+        },
+        {
+          "week": 7,
+          "text": "Week 7: WRs in the top 36 who play stay at 3. TEs in the top 24 who play stay at 2. Wilson plays MIA at home, 31st most points to WRs. Kincaid has a bye."
+        }
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "even",
-          "reason": "Not every player it gets starts."
+          "reason": "You keep 3 WRs in the top 36 and go from 2 TEs in the top 24 to 3."
         },
         {
           "name": "standing",
           "lean": "even",
-          "reason": "The team is out of the playoff race, and the trade is no bet on the future."
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, but you give him up."
         },
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways."
+          "reason": "Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target; Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Garrett Wilson are not in the id map, so no report count ran for them."
-        },
-        {
-          "name": "handcuff",
-          "lean": "even",
-          "reason": "No player it gets is a handcuff."
+          "reason": "Dalton Kincaid and Garrett Wilson have no injury report count on file."
         },
         {
           "name": "schedule",
           "lean": "against",
-          "reason": "The players it gets have more byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans against this side."
+          "reason": "Kincaid faces CHI (27th most points to TEs), DEN (11th), and MIA (3rd) in weeks 15 to 17. Wilson has his bye in week 13 and faces ARI (2nd most points to WRs), NE (17th), and MIN (16th) in weeks 15 to 17."
         }
       ]
     },
     {
       "roster_id": 12,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "even",
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
+      "week_lines": [
+        {
+          "week": 6,
+          "text": "Week 6: WRs in the top 36 who play stay at 2. TEs in the top 24 who play go from 1 to 0. Collins plays at JAX, 8th most points to WRs. LaPorta, Higgins and St. Brown have a bye. Moore is listed Out."
+        },
+        {
+          "week": 7,
+          "text": "Week 7: WRs in the top 36 who play stay at 4. TEs in the top 24 who play stay at 1. Collins plays NYG at home, 13th most points to WRs. Moore has a bye."
+        }
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "for",
-          "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+          "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
         },
         {
           "name": "standing",
           "lean": "even",
-          "reason": "The team is neither in a playoff spot nor out of the race."
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
         },
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways."
+          "reason": "Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target; Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
-        },
-        {
-          "name": "handcuff",
-          "lean": "even",
-          "reason": "No player it gets is a handcuff."
+          "reason": "Nico Collins has no injury report count on file."
         },
         {
           "name": "schedule",
           "lean": "for",
-          "reason": "The players it gets have fewer byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans for this side."
+          "reason": "Collins has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
         }
       ]
     }

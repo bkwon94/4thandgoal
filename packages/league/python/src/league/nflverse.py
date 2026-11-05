@@ -9,6 +9,7 @@ import time
 from collections.abc import Callable, Collection
 from datetime import datetime
 from pathlib import Path
+from typing import NamedTuple
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -75,10 +76,19 @@ REGULAR_SEASON_WEEKS = range(1, 19)
 SKILL_POSITIONS = ("QB", "RB", "WR", "TE")
 
 
+class ScheduledGame(BaseModel):
+    """One regular-season game of an NFL team: the Sleeper code of the opponent, and True when the team is at home."""
+
+    opponent: str
+    home: bool
+
+
 class TeamSchedule(BaseModel):
     bye_week: int | None
     # Week to the Sleeper code of the opponent, for the weeks of PLAYOFF_WEEKS with a game.
     playoff_opponents: dict[int, str]
+    # Week to the game of that week. The Week line of the grade reads the trade week and the next week.
+    games: dict[int, ScheduledGame] = {}
 
 
 def _bye_week(played: set[int]) -> int | None:
@@ -185,12 +195,14 @@ def read_injury_plays(path: Path, week: int) -> dict[str, InjuryPlay] | None:
 
 
 def read_schedules(path: Path, season: int) -> dict[str, TeamSchedule] | None:
-    """The bye week and the opponents of weeks 15 to 17 by Sleeper team code. None when no game of the season.
+    """The bye week, the game of each week, and the opponents of weeks 15 to 17 by Sleeper team code. None when no
+    game of the season.
 
     The file holds every season, so the reader filters the rows by season. Only regular-season games count.
     """
     weeks: dict[str, set[int]] = {}
     playoff: dict[str, dict[int, str]] = {}
+    games: dict[str, dict[int, ScheduledGame]] = {}
     for row in _rows(path):
         if row["season"] != str(season) or row["game_type"] != "REG":
             continue
@@ -198,13 +210,15 @@ def read_schedules(path: Path, season: int) -> dict[str, TeamSchedule] | None:
         away, home = (_sleeper_team(row[side]) for side in ("away_team", "home_team"))
         for team, opponent in ((away, home), (home, away)):
             weeks.setdefault(team, set()).add(week)
+            games.setdefault(team, {})[week] = ScheduledGame(opponent=opponent, home=team == home)
             if week in PLAYOFF_WEEKS:
                 playoff.setdefault(team, {})[week] = opponent
     if not weeks:
         return None
     return {team: TeamSchedule(
                 bye_week=_bye_week(played),
-                playoff_opponents=playoff.get(team, {}))
+                playoff_opponents=playoff.get(team, {}),
+                games=games[team])
             for team, played in weeks.items()}
 
 
@@ -240,8 +254,17 @@ def read_kickoffs(path: Path, season: int, week: int) -> dict[str, datetime]:
     return kickoffs
 
 
-def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
-    """The ordered gsis_ids by Sleeper team code and position, from the latest snapshot. None when no row.
+class DepthCharts(NamedTuple):
+    """The newest depth chart: the ordered gsis_ids by Sleeper team code and position, and the scrape time `dt`."""
+
+    charts: dict[str, dict[str, list[str]]]
+    # The file has no week, only the time of the scrape, so the age of the chart comes from it. Decision 02.
+    dt: datetime
+
+
+def read_depth_charts(path: Path) -> DepthCharts | None:
+    """The ordered gsis_ids by Sleeper team code and position, from the latest snapshot, with its `dt`. None when no
+    row.
 
     The file holds a snapshot of every day of the season, so only the latest is the live depth chart.
     The ids are gsis_ids, as the id map gives, so a caller joins them to Sleeper players with that map.
@@ -262,7 +285,7 @@ def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
         ordered = charts.setdefault(SLEEPER_TEAM.get(row["team"], row["team"]), {}).setdefault(row["pos_abb"], [])
         if row["gsis_id"] not in ordered:
             ordered.append(row["gsis_id"])
-    return charts or None
+    return DepthCharts(charts=charts, dt=datetime.fromisoformat(latest)) if charts else None
 
 
 def read_id_map(path: Path) -> dict[str, str]:

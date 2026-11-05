@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Collection
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from league.history import player_points
 from league.models import PastWeek
@@ -24,6 +24,12 @@ POSITION_ORDER = ("RB", "WR", "TE", "QB", "K", "DEF")
 # client. The lineup value counts him as due back at that week, so his projection ahead gives his value.
 OUT_STATUSES = frozenset({"Out", "IR", "NA", "Sus", "PUP"})
 
+# The points per game that the lineup value reads. GLOSSARY.md, "Position rank".
+# "recent" reads the last LINEUP_WEEKS weeks. The weekly report reads it.
+# "season" reads every week of the season. The grade reads it, so one big game in a short window cannot move a player
+# about 40 spots. Decision 01 of grade-clarity.
+RankMeasure = Literal["recent", "season"]
+
 
 def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     """The points per game over the last weeks through the player stat bound, LINEUP_WEEKS at most.
@@ -31,7 +37,18 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     The window ends at the known games for a player who played in week N, and at the last completed week otherwise.
     So a player's points per game move only when he plays. A player with no game in the window has 0.
     """
-    played = _played_weeks(snapshot, player_id)
+    return _points_per_game(snapshot, player_id, _played_weeks(snapshot, player_id, "recent"))
+
+
+def season_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
+    """The points per game over every game the player played this season, through the player stat bound.
+
+    The season ends at the known games by the rule of recent_points_per_game. A player with no game has 0.
+    """
+    return _points_per_game(snapshot, player_id, _played_weeks(snapshot, player_id, "season"))
+
+
+def _points_per_game(snapshot: Snapshot, player_id: str, played: list[PastWeek]) -> Decimal:
     if not played:
         return Decimal(0)
     # Sleeper leaves out a stat whose value is 0. A game with no points entry is a game of 0 points.
@@ -39,13 +56,18 @@ def recent_points_per_game(snapshot: Snapshot, player_id: str) -> Decimal:
     return total / len(played)
 
 
-def _played_weeks(snapshot: Snapshot, player_id: str) -> list[PastWeek]:
-    """The weeks the player played in the window of his recent points per game, LINEUP_WEEKS at most."""
+def _played_weeks(snapshot: Snapshot, player_id: str, measure: RankMeasure | None = None) -> list[PastWeek]:
+    """The weeks the player played in the window of `measure`, the rank measure of the snapshot by default.
+
+    The "recent" window holds LINEUP_WEEKS weeks at most. The "season" window starts at week 1.
+    """
+    measure = measure or snapshot.rank_measure
     last = snapshot.as_of.stats_through
     if last > snapshot.as_of.completed_through and not _has_known_game(snapshot, player_id):
         last = snapshot.as_of.completed_through
+    first = 1 if measure == "season" else max(1, last - LINEUP_WEEKS + 1)
     return [
-        snapshot.stats.weeks[week] for week in range(max(1, last - LINEUP_WEEKS + 1), last + 1)
+        snapshot.stats.weeks[week] for week in range(first, last + 1)
         if week in snapshot.stats.weeks
         and (snapshot.stats.weeks[week].stats.get(player_id) or {}).get("gp", 0) > 0
     ]
@@ -68,7 +90,8 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
     """The points per game the player counts for in a best lineup.
 
     A player due back has no recent games, so his projection ahead gives his lineup value.
-    Recent points show current play, so every other player keeps them. With no projections file, all players keep them.
+    Every other player keeps his points per game by the rank measure of the snapshot: recent or season.
+    With no projections file, all players keep them.
     A player out for the season plays no more games, so he counts for 0.
     """
     # He is never due back, so without this he would keep the recent points of the games before his injury.
@@ -76,6 +99,8 @@ def lineup_value(snapshot: Snapshot, player_id: str) -> Decimal:
         return Decimal(0)
     if snapshot.projections_ahead is not None and due_back_week(snapshot, player_id) is not None:
         return projection_ahead(snapshot, player_id)
+    if snapshot.rank_measure == "season":
+        return season_points_per_game(snapshot, player_id)
     return recent_points_per_game(snapshot, player_id)
 
 
@@ -112,6 +137,24 @@ def rank_table(snapshot: Snapshot) -> dict[str, list[str]]:
 
     return {position: sorted((pid for pid in pool if positions[pid] == position), key=order)
             for position in RANKED_POSITIONS}
+
+
+def recent_rank(snapshot: Snapshot, player_id: str) -> int | None:
+    """The player's Recent rank: his place at his position by points per game over the last LINEUP_WEEKS weeks.
+
+    GLOSSARY.md, "Recent rank". The pool is the pool of the position rank. The rank has no due-back step and no
+    out-for-season step, so it shows what the player scored, not what the grade counts him for.
+    A tie shares the better place. None for a player outside the pool or with no game in the window.
+    """
+    player = snapshot.players.get(player_id)
+    position = player.position if player is not None else None
+    if position not in RANKED_POSITIONS or not _played_weeks(snapshot, player_id, "recent"):
+        return None
+    peers = snapshot.rank_table()[position]
+    if player_id not in peers:
+        return None
+    mine = recent_points_per_game(snapshot, player_id)
+    return 1 + sum(recent_points_per_game(snapshot, pid) > mine for pid in peers)
 
 
 def _has_known_game(snapshot: Snapshot, player_id: str) -> bool:

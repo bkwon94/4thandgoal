@@ -1,0 +1,40 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# scanned 17 texts: the verdict reason, each bullet, each factor reason
+# match: case-insensitive, whole word or phrase, with an optional plural s (so 'the line' does not match 'the lineup')
+'trade value': 0 hits 
+'highest-value': 0 hits 
+'best lineup': 0 hits 
+'the line': 0 hits 
+'hole': 0 hits 
+'win-now move': 0 hits 
+'return bet': 0 hits 
+'star': 0 hits 
+'opportunity': 0 hits 
+'one step': 0 hits 
+'no step': 0 hits 
+'takes RB': 0 hits 
+'takes WR': 0 hits 
+'sits on the bench': 0 hits 
+
+# the texts:
+decision.reason: Washington outranks Cooper with WR21 season production and 22 percent of the targets, so this side gets more in the trade.
+roster 10 bullet 1: This side gets the better player, as Washington ranks WR21 by season points against WR60 for Cooper.
+roster 10 bullet 2: Washington has seen 22 percent of the targets over the last 2 weeks, while Cooper saw 8 percent.
+roster 10 bullet 3: Washington also brings 8 red-zone targets this season and a playoff run that includes HOU and DAL.
+roster 10 factor deal: You get far more than you give.
+roster 10 factor roster fit: You keep 4 WRs in the top 36, and you get the better player.
+roster 10 factor standing: Out of the playoff race, so you want the better player for the rest of the season, and you get him.
+roster 10 factor trend and usage: Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target.
+roster 10 factor schedule: Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17.
+roster 6 bullet 1: Bo Girds gives up the better player while sitting 3rd of 12 in a playoff spot.
+roster 6 bullet 2: Cooper has drawn only 8 percent of the targets over the last 2 weeks, down from the 2 weeks before.
+roster 6 bullet 3: They keep 3 WRs in the top 36 playing in week 9, but Cooper faces KC, 31st in points to WRs.
+roster 6 factor deal: You give far more than you get.
+roster 6 factor roster fit: You keep 3 WRs in the top 36.
+roster 6 factor standing: In a playoff spot, so you need points now, and this trade keeps your points about the same.
+roster 6 factor trend and usage: Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target; Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target.
+roster 6 factor schedule: Cooper has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17.

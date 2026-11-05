@@ -5,7 +5,7 @@ They read the weekly stats of the history fixture.
 import json
 import shutil
 
-from league.points_allowed import points_allowed
+from league.points_allowed import most_points_text, points_allowed
 
 
 def test_points_allowed_ranks_a_defense_at_a_position(fixture_history_root):
@@ -52,3 +52,9 @@ def test_points_allowed_with_an_outage_week_is_none(fixture_history_root, tmp_pa
     shutil.copytree(fixture_history_root, tmp_path / "history")
     (tmp_path / "history" / "week-03" / "stats.json").write_text(json.dumps([]))
     assert points_allowed(tmp_path / "history", 5) is None
+
+
+def test_rank_1_reads_the_most_points_and_every_other_rank_reads_its_ordinal():
+    assert most_points_text(1, "WR") == "the most points to WRs"
+    assert most_points_text(3, "WR") == "3rd most points to WRs"
+    assert most_points_text(32, "RB") == "32nd most points to RBs"

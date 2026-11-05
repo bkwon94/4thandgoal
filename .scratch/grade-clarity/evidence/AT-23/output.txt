@@ -1,0 +1,18 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# the standing row of each side:
+{
+  "10": {
+    "name": "standing",
+    "lean": "for",
+    "reason": "Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+  },
+  "6": {
+    "name": "standing",
+    "lean": "even",
+    "reason": "In a playoff spot, so you need points now, and this trade keeps your points about the same."
+  }
+}

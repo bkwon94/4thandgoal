@@ -1,12 +1,12 @@
 /**
- * The analyzer result from one analyze document: the decision for the asker, the fairness line, the swap card, and a read per side.
+ * The analyzer result from one analyze document, in one column: the decision for the asker, the fairness line, the swap card, and a card per side.
  * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Player, TradeSide } from "../lib/analyze-types";
+import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
@@ -39,8 +39,18 @@ function Caps({ children, className }: { children: ReactNode; className?: string
 /* The move of a player in the swap card with three or more sides: "To" or "From", and the team. */
 type Move = { word: "To" | "From"; team: string };
 
-/* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one. */
-function PlayerChip({ player, move }: { player: Player; move?: Move }) {
+/* The ranks of a traded player: the Season rank, then the Recent rank with its label only when the document sends one. */
+function rankLine(player: TradedPlayer): string | null {
+  if (!player.season_rank) return null;
+  return player.recent_rank
+    ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}`
+    : `Season rank ${player.season_rank}`;
+}
+
+/* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one.
+   ranks shows the rank line. Only the side card passes it, so the swap card and the finder cards show no rank. */
+function PlayerChip({ player, move, ranks }: { player: TradedPlayer; move?: Move; ranks?: boolean }) {
+  const line = ranks ? rankLine(player) : null;
   return (
     <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative. */}
@@ -53,6 +63,7 @@ function PlayerChip({ player, move }: { player: Player; move?: Move }) {
       <span className="py-sp-1 text-meta text-mute">
         {player.position} · {player.nfl_team}
       </span>
+      {line && <span className="text-meta text-ink-2">{line}</span>}
       {/* A long team name wraps under the name, so the tag never clips at the phone width. */}
       {/* The word is a muted caps label and the team keeps its own case, so a team name that starts with "To" reads apart.
           The space between the two spans keeps the text "To <Team>" for a screen reader. */}
@@ -156,6 +167,20 @@ const MARKS = {
   even: { symbol: "–", color: "text-mute" },
 } as const;
 
+/* The page name of each factor. The document keeps the code name of the adjuster, and this map is the one place
+   that turns it into the word a manager reads. A name not in the map shows as sent. */
+const FACTOR_NAME: Record<string, string> = {
+  deal: "The deal",
+  "roster fit": "Roster",
+  standing: "Standing",
+  "trend and usage": "Usage",
+  injury: "Injury",
+  upside: "Upside",
+  handcuff: "Handcuff",
+  schedule: "Schedule",
+  "expected gap": "Expected gap",
+};
+
 function Mark({ lean }: { lean: Factor["lean"] }) {
   const mark = MARKS[lean];
   return (
@@ -237,41 +262,83 @@ export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness
   );
 }
 
-/* The small label over a part of one side. */
-function Part({ children }: { children: ReactNode }) {
-  return <Caps className="mt-sp-4 mb-sp-2 block text-ink">{children}</Caps>;
+/* The players a side gets and gives. A phone stacks the two groups. From the tablet tier they stand next to each other. */
+function SidePlayers({ side }: { side: Side }) {
+  return (
+    <div className="flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4">
+      <ChipGroup label={side.mine ? "You Get" : "Gets"}>
+        {side.gets.map((player) => (
+          <PlayerChip key={player.player_id} player={player} ranks />
+        ))}
+      </ChipGroup>
+      <ChipGroup label={side.mine ? "You Give" : "Gives"}>
+        {side.gives.map((player) => (
+          <PlayerChip key={player.player_id} player={player} ranks />
+        ))}
+      </ChipGroup>
+    </div>
+  );
 }
 
+/* The summary of the fold names the count of rows, so the reader knows what opens. */
+function foldSummary(rows: number): string {
+  return `How the grade adds up · ${rows} ${rows === 1 ? "row" : "rows"}`;
+}
+
+/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a contender reads it first. */
+function WeekLines({ side }: { side: Side }) {
+  return (
+    // A region, not a section, because each section of the view is one chapter.
+    <div role="region" aria-label="This week and next" className="mt-sp-4 border border-rule px-sp-3 py-sp-2">
+      <Caps className="text-ink">This week and next</Caps>
+      <ul className="mt-sp-2 mb-0 flex max-w-measure list-none flex-col gap-sp-1 p-0 text-meta text-ink-2">
+        {side.week_lines.map((line) => (
+          <li key={line.week}>{line.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* One card per side: the players, then the bullets, then the Week lines, then the rows in a closed fold. The fold keeps the card short before a tap. */
 function SideRead({ side }: { side: Side }) {
-  const analysis = side.analysis;
   return (
     <div>
       <Label>
         {side.team}
         {side.mine && " · Your Side"}
       </Label>
-      {analysis === null ? (
-        <p className="m-0 text-body text-mute">The analysis is unavailable, so the data stands alone.</p>
+      <SidePlayers side={side} />
+
+      {side.bullets.length === 0 ? (
+        <p className="mt-sp-4 mb-0 text-body text-mute">The analysis is unavailable, so the rows stand alone.</p>
       ) : (
-        <Blurb>{analysis}</Blurb>
+        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-body text-ink-2">
+          {side.bullets.map((bullet) => (
+            <li key={bullet}>{bullet}</li>
+          ))}
+        </ul>
       )}
 
-      <Part>The Data</Part>
-      <p className="m-0 text-meta leading-tight text-ink-2">{side.chart.reason}</p>
+      <WeekLines side={side} />
 
-      <Part>The Reasoning</Part>
-      <ul className="m-0 list-none border-y-2 border-ink p-0 text-meta leading-tight">
-        {side.factors.map((f) => (
-          <li
-            key={f.name}
-            className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
-          >
-            <Mark lean={f.lean} />
-            <Caps>{f.name}</Caps>
-            <span className="col-start-2">{f.reason}</span>
-          </li>
-        ))}
-      </ul>
+      <details className="mt-sp-4">
+        <summary className="cursor-pointer py-sp-2">
+          <Caps className="text-ink">{foldSummary(side.factors.length)}</Caps>
+        </summary>
+        <ul className="m-0 list-none border-y-2 border-ink p-0 text-meta leading-tight">
+          {side.factors.map((f) => (
+            <li
+              key={f.name}
+              className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
+            >
+              <Mark lean={f.lean} />
+              <Caps>{FACTOR_NAME[f.name] ?? f.name}</Caps>
+              <span className="col-start-2">{f.reason}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
     </div>
   );
 }
@@ -283,10 +350,10 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   const tradeWeek = as_of.known_games?.week ?? as_of.stats_through + 1;
   // Stats that failed to fetch leave the line stale, so the line says so.
   const staleSegments = stale.includes("stats") ? [`Week ${tradeWeek} stats not fetched`] : [];
-  const chartSegments = as_of.chart_week !== null ? [`Chart week ${as_of.chart_week}`] : [];
+  // The line names no chart week, because no page text names the source of the player values.
   return (
     <p className="m-0 text-meta text-mute tabular-nums">
-      {[...knownGamesSegments(as_of), ...staleSegments, ...chartSegments].join(" · ")}
+      {[...knownGamesSegments(as_of), ...staleSegments].join(" · ")}
       {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
     </p>
   );
@@ -311,7 +378,7 @@ function RostersFetched({ iso }: { iso: string }) {
   );
 }
 
-/* A week with no chart gets one meta line that says so. A document without the flag shows nothing. */
+/* A week with no player values gets one meta line that says so. A document without the flag shows nothing. */
 export function NoChartLine({ asOf }: { asOf: AsOf }) {
   if (!asOf.no_chart || !asOf.no_chart_note) return null;
   return <p className="m-0 pt-sp-3 text-meta text-mute">{asOf.no_chart_note}</p>;

@@ -48,6 +48,24 @@ CONSOLIDATION_REASON = (
     "before the sides count as even."
 )
 NO_CHART_REASON = "The week has no trade values, so the chart gives neither side an edge."
+# The end of the reason for a trade with an unlisted player. The result document reads it to pick its deal row.
+UNLISTED_REASON_END = " no trade value, so the chart gives neither side an edge."
+
+# The line the site shows when the trade week has no chart, and the deal row of each side then. The grade then reads
+# the adjusters alone. It names no source, so a manager reads plain advice and never the inner parts of the grade.
+NO_CHART_NOTE = "This week's player values are not out yet, so both sides start even."
+# The deal row of a side, from its start letter. Its words name no source of the values, so the row reads as plain
+# advice. The result document shows it as the first factor, and the fairness line shows it with no step up.
+DEAL_REASONS = {
+    "A": "You get far more than you give.",
+    "B": "You get more than you give.",
+    "C": "What you get and what you give are about even.",
+    "D": "You give more than you get.",
+    "F": "You give far more than you get.",
+}
+# One player for two or more divides the sum of the two or more by a margin before the sides compare.
+CONSOLIDATION_DEAL = ", after a discount on the side with more players."
+UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
 
 
 class TradeInputError(ValueError):
@@ -248,8 +266,7 @@ def _start_letters(
     values = _trade_values(snapshot, handcuffs)
     unlisted = unlisted_players(snapshot, trade.player_ids, handcuffs)
     if unlisted:
-        reason = (named(snapshot, unlisted, "has", "have")
-                  + " no trade value, so the chart gives neither side an edge.")
+        reason = named(snapshot, unlisted, "has", "have") + UNLISTED_REASON_END
         return _all_at_c(trade, reason)
 
     def start(side: TradeSide) -> tuple[Letter, str]:
@@ -372,10 +389,25 @@ def verdict(trade: ProposedTrade, breakdowns: tuple[Breakdown, ...]) -> Verdict:
     return Verdict(choice="counter", reason=f"{sides}, so ask for more.")
 
 
+def deal_reason(breakdown: Breakdown) -> str:
+    """The deal row of one side in plain words, from its start letter and the case of its start reason.
+
+    The start reason names the chart for the prompt, so the row reads the case from it and writes its own words.
+    """
+    if breakdown.reason == NO_CHART_REASON:
+        return NO_CHART_NOTE
+    if breakdown.reason.endswith(UNLISTED_REASON_END):
+        return UNLISTED_DEAL
+    if CONSOLIDATION_REASON in breakdown.reason:
+        return DEAL_REASONS[breakdown.start_letter].removesuffix(".") + CONSOLIDATION_DEAL
+    return DEAL_REASONS[breakdown.start_letter]
+
+
 def _gain_reason(breakdown: Breakdown) -> str:
-    """The reason of the first adjuster with a step up, in rubric order, else the reason of the start letter."""
+    """The reason of the first adjuster with a step up, in rubric order, else the deal row of the side."""
     # A step up is what a side gains past the trade values, so it is the reason the side would take the trade.
-    return next((a.reason for a in breakdown.adjusters if a.step > 0), breakdown.reason)
+    # The fairness line shows it to a manager, so it reads the plain deal row, not the start reason of the prompt.
+    return next((a.reason for a in breakdown.adjusters if a.step > 0), deal_reason(breakdown))
 
 
 def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> Fairness:

@@ -36,13 +36,12 @@ def build_bundle(*args, **kwargs):
 
     return build(*args, **kwargs)
 
-# The trend reason gives share percents, WOPR values, and the weeks behind them, such as "52%", "WOPR 55", and
-# "weeks 4 and 5".
-_TREND_NUMBERS = re.compile(r"\b\d+%|\bWOPR -?\d+|\bweeks? \d+(?:(?:, | and )\d+)*")
+# The trend reason gives share percents and the air yards per target, such as "52%" and "6.1 air yards per target".
+_TREND_NUMBERS = re.compile(r"\b\d+%|\b\d+\.\d air yards per target")
 
 
 def strip_trend_numbers(reason: str) -> str:
-    """The trend reason with its share percents and share weeks removed, so a check can find any other number."""
+    """The trend reason with its share percents and air yards removed, so a check can find any other number."""
     return _TREND_NUMBERS.sub("", reason)
 
 

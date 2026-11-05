@@ -1,0 +1,18 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# the schedule row of each side:
+{
+  "10": {
+    "name": "schedule",
+    "lean": "for",
+    "reason": "Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17."
+  },
+  "6": {
+    "name": "schedule",
+    "lean": "against",
+    "reason": "Cooper has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17."
+  }
+}

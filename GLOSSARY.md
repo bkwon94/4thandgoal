@@ -430,7 +430,9 @@ The best set of starters of one roster: which starting slot takes which player, 
 _Avoid_: Starters (alone), depth, best ball
 
 **Lineup value**:
-The points per game a player counts for in a side's best lineup: his recent points per game, or his projection ahead when he is due back.
+The points per game a player counts for in a side's best lineup, or his projection ahead when he is due back.
+Inside the grade, the points per game are his season points per game, over the games he played. The weekly
+report reads his points per game over the last 4 weeks. A player out for the season counts for 0.
 _Avoid_: value (alone), worth
 
 **Due back**:
@@ -498,9 +500,39 @@ _Avoid_: finder result, suggestions
 The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
 _Avoid_: criterion (alone)
 
-**Chart lean**:
-More, even, or less: how the trade values lean for one side. It maps from the start letter: A and
-B to more, C to even, D and F to less. Use "start letter" in code and "chart lean" on the page.
+**Deal row**:
+The first factor of each side: the start letter as one plain sentence, such as "You get far more
+than you give." It names no source. Its lean maps from the start letter: A and B to for, C to
+even, D and F to against. Use "start letter" in code and "deal row" on the page.
+_Avoid_: chart lean, The Data
+
+**Silent row**:
+A factor with no step and no new fact, such as "No player it gets is a handcuff." The adjuster marks it
+silent, and the result document drops it. A row with a step always shows. A check that did not run is a
+new fact, so its row shows. Use `silent` in code.
+_Avoid_: empty row, hidden factor
+
+**Roster row**:
+The roster fit factor on the page. It counts the side's players in the top N at each position the trade
+touches, before and after, where N is the line of the position as a plain rank: "You keep 3 WRs in the
+top 36, and you get the better player." It never names a slot or the best lineup.
+_Avoid_: hole sentence (on the page)
+
+**Standing row**:
+The standing factor on the page: the race of the side, its need, and whether the trade meets it, in one
+sentence. "Out of the playoff race, so you want the better player for the rest of the season, and you
+get him."
+
+**Inner word**:
+A word of the grade's code that a manager does not use: "trade value", "highest-value", "best lineup",
+"the line", "hole", "win-now move", "return bet", "star", "opportunity", "one step", "no step", "takes RB",
+"takes WR", "takes TE", "takes QB", and "sits on the bench". No bullet, row, or verdict reason holds one.
+"The better player" replaces "the highest-value player". Decision 03 of grade-clarity.
+_Avoid_: banned word (alone)
+
+**Bullets**:
+The 2 or 3 sentences that Claude writes for one side, one claim each. The fallback has none.
+_Avoid_: analysis paragraph
 
 **Factor lean**:
 For, against, or even, for one factor. It maps from the sign of the adjuster's step, or from the
@@ -559,8 +591,34 @@ K, K over DEF.
 **Position rank**:
 A player's place at his position among every player with a stat line in the known games, rostered or
 not, by lineup value. RB24 is the 24th running back in the league, not on the 12 rosters. A player with
-no game in the window ranks last.
+no game in the window ranks last. Inside the grade, the window is the season, so the rank sorts by season points
+per game. The weekly report keeps the window of the last 4 weeks.
 _Avoid_: positional rank, tier (alone), ranking
+
+**Season rank**:
+A player's place at his position by his total points this season, as Sleeper sorts it. It is the rank that the
+text of a grade shows, such as WR60.
+_Avoid_: overall rank, position rank (that is the measure inside the grade)
+
+**Recent rank**:
+A player's place at his position by points per game over the games he played in the last 4 weeks, with no due-back
+step. A grade shows it only beside the Season rank, with its label, when the two differ by `RECENT_RANK_GAP` spots or
+more.
+_Avoid_: form rank, hot rank, rank (alone)
+
+**Week line**:
+The line of a grade that says, for one side and one week, how the trade changes the players who play that week at
+each position the trade touches. It names byes, players listed Out or IR, players who step up, and the opponent of
+each player the side gets with its rank at his position. The code writes it for the trade week and the next week. It
+never moves the letter.
+_Avoid_: weekly impact, matchup line, lineup fit
+
+**Steps up**:
+A player steps up for a week when the player directly ahead of him on his NFL team's depth chart, at his
+position, is out for that week by the out rules of the Week line. The player ahead can be on no roster. A player who
+is out himself, or whose team has a bye, does not step up. The Week line names no step-up when the newest depth chart
+is more than `STEP_UP_CHART_HOURS` older than the grade, or when the grade has no time.
+_Avoid_: promoted, next man up, starts (alone)
 
 **The line**:
 The last position rank a starter can hold: 36 at RB and WR, 24 at QB and TE. A flex slot reads the

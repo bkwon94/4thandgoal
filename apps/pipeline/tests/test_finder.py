@@ -2,6 +2,7 @@
 Tests for the finder: the ranked win-win trades between two rosters of the week 6 snapshot.
 They feed two roster ids and the snapshot at the finder seam, and fixture items at the rank seam.
 """
+import re
 import shutil
 import time
 from itertools import combinations
@@ -9,10 +10,11 @@ from math import comb
 
 import pytest
 from conftest import with_carries
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 
 from analyzer.adjusters import Adjuster, due_back_week
 from analyzer.finder import FinderTrade, candidates, find_win_wins, rank
+from analyzer.finder_reasons import trade_facts
 from analyzer.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
 from league.provider.sleeper import load_raw
 from league.ranks import recent_points_per_game
@@ -28,7 +30,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
+    return four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT))
 
 
 # The fixture chart cannot serve the count tests. It lists 25 players, mostly stars, so every trade of listed
@@ -95,6 +97,15 @@ def test_a_pair_with_three_or_more_win_wins_returns_three_ranked(slow_snap):
     assert all(item.fairness.state == "win_win" for item in found)
     assert all(item.trade.asker == 2 and item.trade.sides[0].roster_id == 2 for item in found)
     assert rank(found) == found
+
+
+def test_the_finder_facts_give_the_season_rank_and_no_slot_fact(slow_snap):
+    snap = _roster_rows(_no_absences(slow_snap), 2, 3)
+    item = find_win_wins(2, 3, snap)[0]
+    facts = trade_facts(1, item, snap)
+    assert not [fid for fid in facts if fid.endswith(".slot")]
+    for pid in (pid for side in item.trade.sides for pid in side.player_ids):
+        assert re.search(r"His Season rank is (QB|RB|WR|TE)\d+, by total points this season\.", facts[f"t1.{pid}.ppg"].text)
 
 
 def test_the_three_trades_share_no_player_when_the_best_win_wins_do(slow_snap):

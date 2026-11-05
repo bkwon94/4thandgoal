@@ -23,11 +23,19 @@ export const teamSchema = z.object({
 
 export const teamsResponseSchema = z.object({ teams: z.array(teamSchema) });
 
+/* A traded player with his ranks. season_rank is his place at his position by total points this season, such as WR60.
+   recent_rank is his place by points per game over the last 4 weeks, and it is null unless the gap to the Season rank is large.
+   An old document lacks both, so each is optional. */
+export const tradedPlayerSchema = playerSchema.extend({
+  season_rank: z.string().nullable().optional(),
+  recent_rank: z.string().nullable().optional(),
+});
+
 /* A player a side gives. to is the roster id of the side he goes to. An old document lacks it, so it is optional. */
-export const givenPlayerSchema = playerSchema.extend({ to: z.number().optional() });
+export const givenPlayerSchema = tradedPlayerSchema.extend({ to: z.number().optional() });
 
 /* A player a side gets. from is the roster id of the side he comes from. An old document lacks it, so it is optional. */
-export const gotPlayerSchema = playerSchema.extend({ from: z.number().optional() });
+export const gotPlayerSchema = tradedPlayerSchema.extend({ from: z.number().optional() });
 
 /* One team in the trade: the players it gives and the players it gets. */
 export const tradeSideSchema = z.object({
@@ -45,24 +53,24 @@ export const decisionSchema = z.object({
   differs: z.boolean(),
 });
 
-/* What the trade value chart says: the side gets more value than it gives, about even, or less. */
-export const chartSchema = z.object({
-  lean: z.enum(["more", "even", "less"]),
-  reason: z.string(),
-});
-
-/* One factor leans for the side, against it, or neither way. */
+/* One factor leans for the side, against it, or neither way. The first factor of a side is the deal row. */
 export const factorSchema = z.object({
   name: z.string(),
   lean: z.enum(["for", "against", "even"]),
   reason: z.string(),
 });
 
-/* The read of one side. analysis is null when the writer call failed, so the data stands alone. */
+/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
+export const weekLineSchema = z.object({
+  week: z.number(),
+  text: z.string(),
+});
+
+/* The read of one side: 2 or 3 bullets, each one sentence, the Week lines of the trade week and the next week, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
 export const decidedSideSchema = z.object({
   roster_id: z.number(),
-  analysis: z.string().nullable(),
-  chart: chartSchema,
+  bullets: z.array(z.string()),
+  week_lines: z.array(weekLineSchema),
   factors: z.array(factorSchema),
 });
 
@@ -94,7 +102,7 @@ export const knownGamesSchema = z.object({
 });
 
 export const asOfSchema = z.object({
-  // Null when the week has no trade value chart yet.
+  // Null when the week has no trade value chart yet. The page never shows it.
   chart_week: z.number().nullable(),
   stats_through: z.number(),
   // A document can lack both fields, so each is optional.
@@ -119,7 +127,7 @@ export const analyzeResponseSchema = z.object({
   fairness: fairnessSchema.optional(),
   sides: z.array(decidedSideSchema),
   as_of: asOfSchema,
-  // True when the writer call failed, so the analysis text is not real.
+  // True when the writer call failed, so no side has bullets.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),

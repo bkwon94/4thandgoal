@@ -1,0 +1,18 @@
+$ git diff main -- packages/analyzer/python/src/analyzer/prompts/finder.md
+(no output: the finder prompt file has no change)
+
+$ git diff --stat main -- packages/analyzer/site/form/trade-finder.tsx packages/analyzer/site/form/trade-side.tsx
+(no output: the finder card files have no change)
+
+$ git diff --stat main -- packages/analyzer/site/form/analyze-result.tsx   # the finder imports AsOfLine from this file
+ packages/analyzer/site/form/analyze-result.tsx | 127 +++++++++++++++++++------
+ 1 file changed, 97 insertions(+), 30 deletions(-)
+7:import { useState } from "react";
+8:import { AsOfLine, FairnessBlock, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
+9:import { ErrorLine } from "@cpc/design/parts/error-line";
+10:import { TeamPicker } from "./team-picker";
+11:import { Button } from "@cpc/design/ui/button";
+12:import { useRequest } from "./use-request";
+13:import type { FindResponse, FinderTrade } from "../lib/analyze-types";
+14:import { ApiError, type ApiTarget, postFind, toErrorLine, type Team } from "../lib/api";
+28:  // imports no config.

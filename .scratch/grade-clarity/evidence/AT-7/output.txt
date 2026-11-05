@@ -1,0 +1,18 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# Cooper (13276) in the document:
+{
+  "player_id": "13276",
+  "name": "Omar Cooper Jr.",
+  "position": "WR",
+  "nfl_team": "NYJ",
+  "season_rank": "WR60",
+  "recent_rank": "WR18"
+}
+# gap: season 60 - recent 18 = 42
+
+$ grep -n RECENT_RANK_GAP packages/analyzer/python/src/analyzer/tunables.py
+39:RECENT_RANK_GAP = 12

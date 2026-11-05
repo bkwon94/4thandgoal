@@ -1,0 +1,194 @@
+{
+  "trade": {
+    "asker": 8,
+    "sides": [
+      {
+        "roster_id": 8,
+        "team": "Return of T Mac",
+        "gives": [
+          {
+            "player_id": "13279",
+            "name": "Carnell Tate",
+            "position": "WR",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13279.jpg",
+            "season_rank": "WR33",
+            "recent_rank": null,
+            "to": 2
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "8126",
+            "name": "Wan'Dale Robinson",
+            "position": "WR",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg",
+            "season_rank": "WR34",
+            "recent_rank": "WR52",
+            "from": 2
+          }
+        ]
+      },
+      {
+        "roster_id": 2,
+        "team": "All You Need Is Love",
+        "gives": [
+          {
+            "player_id": "8126",
+            "name": "Wan'Dale Robinson",
+            "position": "WR",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/8126.jpg",
+            "season_rank": "WR34",
+            "recent_rank": "WR52",
+            "to": 8
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "13279",
+            "name": "Carnell Tate",
+            "position": "WR",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/13279.jpg",
+            "season_rank": "WR33",
+            "recent_rank": null,
+            "from": 8
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 8,
+    "answer": "no",
+    "reason": "The trade costs the asking side too much.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "lopsided",
+    "gives_more": 8,
+    "sides": [
+      {
+        "roster_id": 8,
+        "reason": "Robinson gets more work while Tate is out."
+      },
+      {
+        "roster_id": 2,
+        "reason": "You go from 3 WRs in the top 36 to 4, and your lineup scores more."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 8,
+      "bullets": [],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 1. Robinson has a bye. Pierce is on IR."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play go from 2 to 1. Robinson plays JAX at home, 6th most points to WRs. Lemon has a bye. Pierce is on IR."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "against",
+          "reason": "You give far more than you get."
+        },
+        {
+          "name": "roster fit",
+          "lean": "against",
+          "reason": "You go from 2 WRs in the top 36 to 1, and your lineup scores less."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade gives some up."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Robinson plays 79% of the snaps (up), sees 19% of the targets (down), and averages 2.1 air yards per target; Tate plays 83% of the snaps, sees 27% of the targets, and averages 6.9 air yards per target."
+        },
+        {
+          "name": "upside",
+          "lean": "for",
+          "reason": "Robinson gets more work while Tate is out."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "Robinson faces IND (24th most points to WRs), LV (8th), and PIT (25th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 2,
+      "bullets": [],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: WRs in the top 36 who play stay at 3. Tate has a bye. Tate is listed Out."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: WRs in the top 36 who play go from 3 to 4. Tate plays JAX at home, 6th most points to WRs."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "for",
+          "reason": "You get far more than you give."
+        },
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "You go from 3 WRs in the top 36 to 4, and your lineup scores more."
+        },
+        {
+          "name": "standing",
+          "lean": "for",
+          "reason": "In a playoff spot, so you need points now, and this trade adds some from week 14, when Tate counts as back."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "even",
+          "reason": "Tate plays 83% of the snaps, sees 27% of the targets, and averages 6.9 air yards per target; Robinson plays 79% of the snaps (up), sees 19% of the targets (down), and averages 2.1 air yards per target."
+        },
+        {
+          "name": "injury",
+          "lean": "against",
+          "reason": "Tate is out with no return week on file. He was on the injury report in 2 of 8 weeks."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "Tate faces IND (24th most points to WRs), LV (8th), and PIT (25th) in weeks 15 to 17."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 9,
+    "stats_through": 8,
+    "completed_through": 8,
+    "rosters_fetched": "2026-11-05T03:38:17.470281-05:00",
+    "known_games": {
+      "week": 9,
+      "games": 0,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": true,
+  "missing": [],
+  "stale": []
+}

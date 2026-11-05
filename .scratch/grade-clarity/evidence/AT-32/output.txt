@@ -1,0 +1,108 @@
+$ make -C apps/pipeline build CLIENT=cpc WEEK=8
+# run at 2026-11-05T08:40:31Z on grade-clarity 099b004
+uv run --exact --package cornerstone cornerstone build --client cpc --season 2026 --week 8
+Uninstalled 3 packages in 8ms
+Installed 3 packages in 2ms
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=8258 cache_read_input_tokens=14064 input_tokens=221
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1578 cache_read_input_tokens=20697 input_tokens=204
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=5419 cache_read_input_tokens=40257 input_tokens=198
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3274 cache_read_input_tokens=29016 input_tokens=228
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3493 cache_read_input_tokens=28760 input_tokens=194
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1539 cache_read_input_tokens=20693 input_tokens=197
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1566 cache_read_input_tokens=20700 input_tokens=197
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4292 cache_read_input_tokens=37946 input_tokens=198
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4408 cache_read_input_tokens=38042 input_tokens=235
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3257 cache_read_input_tokens=46341 input_tokens=198
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1564 cache_read_input_tokens=20734 input_tokens=229
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3049 cache_read_input_tokens=28487 input_tokens=189
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4029 cache_read_input_tokens=28905 input_tokens=222
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2733 cache_read_input_tokens=37880 input_tokens=227
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1509 cache_read_input_tokens=20714 input_tokens=221
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1573 cache_read_input_tokens=20731 input_tokens=229
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3270 cache_read_input_tokens=37908 input_tokens=262
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4136 cache_read_input_tokens=47328 input_tokens=232
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3011 cache_read_input_tokens=38048 input_tokens=228
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=4061 cache_read_input_tokens=47272 input_tokens=230
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=2071 cache_read_input_tokens=20838 input_tokens=226
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=1807 cache_read_input_tokens=28931 input_tokens=223
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=3128 cache_read_input_tokens=28920 input_tokens=199
+INFO facts.writer: ResearchOut call: cache_creation_input_tokens=7008 cache_read_input_tokens=49439 input_tokens=199
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=7988 cache_read_input_tokens=0 input_tokens=5404
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=3336 cache_read_input_tokens=0 input_tokens=5713
+INFO cornerstone.pipeline: chapter motw: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=488
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=525
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=666
+INFO cornerstone.pipeline: chapter game_changer: attempt 2, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1637
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1882
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1774
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1911
+INFO cornerstone.pipeline: chapter awards: attempt 0, fallback True
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1480
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1707
+INFO cornerstone.pipeline: chapter position_leaders: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2531
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2706
+INFO cornerstone.pipeline: chapter recap_1: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2719
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2874
+INFO cornerstone.pipeline: chapter recap_2: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4696
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=4765
+INFO cornerstone.pipeline: chapter recap_3: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2776
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=2959
+INFO cornerstone.pipeline: chapter recap_4: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2900
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3137
+INFO cornerstone.pipeline: chapter recap_5: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=2976
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3155
+INFO cornerstone.pipeline: chapter recap_6: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=1775
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=1882
+INFO cornerstone.pipeline: chapter median: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=3579
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=3877
+INFO cornerstone.pipeline: chapter next_week: attempt 1, fallback False
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=7988 input_tokens=4692
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3336 input_tokens=5627
+INFO cornerstone.pipeline: chapter rankings: attempt 1, fallback False
+INFO cornerstone.pipeline: no saved chart read for week 8: the roster grade has no trade value
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/grade-clarity/clients/cpc/build/2026/week-08/page.json
+Site page after publish: https://cpc.4thandgoal.app/2026/week-08/
+exit 0
+
+$ git diff --stat   # after the build, before git restore
+ clients/cpc/build/2026/managers.json       |   28 +-
+ clients/cpc/build/2026/rankings.json       |  109 +-
+ clients/cpc/build/2026/week-08/page.json   |   40 +-
+ clients/cpc/build/2026/week-08/waiver.json | 1277 ++++++++++---------
+ clients/cpc/data/2026/week-08/blurbs.json  |  351 +++--
+ clients/cpc/data/2026/week-08/facts.json   | 1901 ++++++++++++++++------------
+ clients/cpc/data/2026/week-08/verify.json  |  378 ++----
+ 7 files changed, 2119 insertions(+), 1965 deletions(-)
+
+# main side: the committed main build of week 8, read with git show main:clients/cpc/build/2026/week-08/page.json (no main build was run, so the main checkout stays read-only).
+
+$ jq -S "{leaders: .leaders, table: [.table[] | .standing]}" on both page.json files, then diff
+(no difference: every rank, strength_rank, and leaders row is the same)
+
+# Every other changed key of page.json is publish_date or a Claude prose block (blurbs, recap).
+
+# managers.json, value by value, main -> branch:
+managers.0.grade.letter A -> B
+managers.0.grade.parts.2(trade_value).rank 7 -> 1
+managers.1.grade.parts.2(trade_value).rank 3 -> 2
+managers.2.grade.letter A -> B
+managers.2.grade.parts.2(trade_value).rank 6 -> 3
+managers.3.grade.parts.2(trade_value).rank 10 -> 4
+managers.4.grade.parts.2(trade_value).rank 1 -> 5
+managers.5.grade.letter A -> B
+managers.5.grade.parts.2(trade_value).rank 2 -> 6
+managers.6.grade.parts.2(trade_value).rank 12 -> 7
+managers.7.grade.parts.2(trade_value).rank 9 -> 8
+managers.8.grade.parts.2(trade_value).rank 5 -> 9
+managers.9.grade.parts.2(trade_value).rank 8 -> 10
+managers.11.grade.parts.2(trade_value).rank 4 -> 12

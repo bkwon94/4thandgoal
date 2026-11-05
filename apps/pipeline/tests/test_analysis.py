@@ -8,14 +8,18 @@ import shutil
 
 import pytest
 from conftest import with_free_agents
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 
 from analyzer import analysis
-from analyzer.analysis import AnalysisOut, analyze
+from analyzer.analysis import AnalysisOut, analyze, code_only
+from analyzer.routes import result_document
 from analyzer.rubric import ProposedTrade, TradeSide, grade
+from analyzer.trade_facts import trade_fact_sheet
+from analyzer.tunables import RECENT_RANK_GAP
+from league.paths import returns_path
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
-from league.snapshot import build_snapshot, load_returns, load_snapshot
+from league.snapshot import build_snapshot, load_out_for_season, load_returns, load_snapshot
 
 CLIENT = cpc_client()
 
@@ -31,7 +35,7 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
+    snap = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT))
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -46,8 +50,8 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
     raw = with_free_agents(load_raw(fixture_raw_dir), {BATEMAN: {
         "full_name": "Rashod Bateman", "position": "WR", "team": "BAL", "status": "Active", "active": True}})
-    snap = build_snapshot(raw, fixture_history_root, chart_week6, slow,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT)
+    snap = four_week(build_snapshot(raw, fixture_history_root, chart_week6, slow,
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT))
     rosters = dict(snap.rosters)
     rosters[11] = [pid for pid in rosters[11] if pid not in (JACOBS, VELE)] + [TUTEN, WILSON]
     rosters[12] = [pid for pid in rosters[12] if pid not in (TUTEN, WILSON)] + [JACOBS, VELE]
@@ -84,11 +88,16 @@ class FakeClaude:
 JACOBS_CODE_LETTERS = {11: "B", 12: "D"}
 
 
-def _side(roster_id, letter=None, reason=None, analysis=None, cited=None):
+def _split(text):
+    """The sentences of a text, one bullet each. No test text holds a period inside a sentence."""
+    return re.split(r"(?<=\.) (?=[A-Z])", text)
+
+
+def _side(roster_id, letter=None, reason=None, bullets=None, cited=None):
     return {
         "roster_id": roster_id, "final_letter": letter or JACOBS_CODE_LETTERS[roster_id], "reason": reason,
-        "analysis": analysis or ("Garrett Wilson scored 14.2 points per game before the trade. "
-                                 "His target share went up. The trade moves him to a new roster."),
+        "bullets": bullets or ["Garrett Wilson scored 14.2 points per game before the trade.",
+                               "His target share went up.", "The trade moves him to a new roster."],
         "cited": cited or [f"{WILSON}.ppg", f"{WILSON}.targets"],
     }
 
@@ -107,7 +116,7 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
     system, user = fake.calls[0]
     facts = _facts(user)
     # Points per game and season rank, before the trade only.
-    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "season rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "His Season rank is WR7," in facts[f"{WILSON}.ppg"]
     assert "position rank" not in facts[f"{WILSON}.ppg"]
     assert f"{WILSON}.usage" in facts and f"{WILSON}.targets" in facts and f"{WILSON}.redzone" in facts
     # Jacobs is suspended, and the returns file has him back in week 7.
@@ -130,7 +139,7 @@ def test_a_good_response_passes_through(trade, snap):
     assert len(fake.calls) == 1
     assert not result.fallback
     assert [s.final_letter for s in result.sides] == ["B", "D"]
-    assert result.sides[0].analysis.startswith("Garrett Wilson scored 14.2 points per game")
+    assert result.sides[0].bullets[0] == "Garrett Wilson scored 14.2 points per game before the trade."
     assert result.sides[0].cited == [f"{WILSON}.ppg", f"{WILSON}.targets"]
     assert result.verdict.choice == "decline" and result.verdict.reason == "The trade is fair for both sides."
     assert not result.verdict_differs
@@ -158,7 +167,8 @@ def test_a_letter_two_steps_off_retries_then_falls_back_to_the_code(trade, snap)
     assert "final letter D is 2 steps from the code's B" in fake.calls[1][1]
     assert result.fallback
     assert [s.final_letter for s in result.sides] == ["B", "D"]
-    assert [s.analysis for s in result.sides] == ["Analysis unavailable", "Analysis unavailable"]
+    # The fallback gives no bullets, so the page shows the rows alone.
+    assert [s.bullets for s in result.sides] == [[], []]
     assert result.verdict == result.code_verdict and not result.verdict_differs
 
 
@@ -179,7 +189,7 @@ def test_a_retry_that_passes_stands(trade, snap):
     "Garrett Wilson scored 14.2 points per game before the trade. Peaked in High Skool likes him. He starts.",
 ])
 def test_a_chart_value_sum_or_word_in_the_prose_fails(trade, snap, analysis):
-    bad = _response(eleven=_side(11, analysis=analysis, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
+    bad = _response(eleven=_side(11, bullets=_split(analysis), cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
     fake = FakeClaude(bad, bad)
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 2
@@ -196,11 +206,12 @@ def test_a_number_not_in_a_cited_fact_fails(trade, snap):
 
 @pytest.mark.parametrize("sentence", [
     "He tops the depth chart.",
-    "The side gets more trade value.",
+    "The whole lineup gets a starter.",
+    "He is the starter on his team, and his lineup slot is safe.",
 ])
-def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sentence):
-    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+def test_the_depth_chart_and_a_word_that_holds_an_inner_word_pass(trade, snap, sentence):
+    bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
+    fake = FakeClaude(_response(eleven=_side(11, bullets=bullets)))
     assert not analyze(trade, snap, call=fake).fallback
     assert len(fake.calls) == 1
 
@@ -214,11 +225,53 @@ def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sent
     ("Kendre Miller is below the floor.", "floor"),
 ])
 def test_a_banned_word_fails(trade, snap, sentence, word):
-    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
-    bad = _response(eleven=_side(11, analysis=text))
+    bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
+    bad = _response(eleven=_side(11, bullets=bullets))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
     assert f"the word '{word}' is not allowed" in fake.calls[1][1]
+
+
+# Decision 03 of grade-clarity: no bullet or verdict reason uses an inner word of the grade.
+@pytest.mark.parametrize("sentence, word", [
+    ("The side gets more trade value.", "trade value"),
+    ("Garrett Wilson is the highest-value player.", "highest-value"),
+    ("He helps the best lineup.", "best lineup"),
+    ("He sits above the line.", "the line"),
+    ("He fills a hole at receiver.", "hole"),
+    ("This is a win-now move.", "win-now move"),
+    ("Jacobs is a return bet.", "return bet"),
+    ("Wilson is a star.", "star"),
+    ("Tuten has an opportunity.", "opportunity"),
+    ("It moves one step up.", "one step"),
+    ("The schedule gives no step.", "no step"),
+    ("Tuten takes RB1 for this side.", "takes RB"),
+    ("Wilson takes WR2 for this side.", "takes WR"),
+    ("Tuten sits on the bench.", "sits on the bench"),
+])
+def test_an_inner_word_in_a_bullet_or_the_verdict_reason_fails(trade, snap, sentence, word):
+    bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
+    bad = _response(eleven=_side(11, bullets=bullets))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 bullet 2: the words '{word}' are not allowed" in fake.calls[1][1]
+
+    def bad_verdict(facts):
+        response = _response()(facts)
+        response["verdict"]["reason"] = sentence
+        return response
+    fake = FakeClaude(bad_verdict, bad_verdict)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"verdict reason: the words '{word}' are not allowed" in fake.calls[1][1]
+
+
+def test_the_analysis_prompt_lists_each_inner_word_and_drops_the_roster_fit_words(trade, snap):
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    system = " ".join(fake.calls[0][0].split())
+    for word in analysis.INNER_WORDS:
+        assert f'"{word}"' in system
+    assert "say position rank, the line, and hole" not in system
 
 
 def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
@@ -230,37 +283,35 @@ def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
 
     monkeypatch.setattr(analysis, "grade", grade_with_a_digit)
     text = "Garrett Wilson scored 14.2 points per game before the trade. He takes 41 snaps a game. He starts."
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text))))
     assert not analyze(trade, snap, call=fake).fallback
     assert len(fake.calls) == 1
 
 
-def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
-    # The hand count of the RB lines in weeks 2 to 5 puts Tuten 15th. Jacobs is due back, so his projection ahead
-    # of weeks 7 to 14 puts him 16th.
-    fake = FakeClaude(_response(eleven=_side(11, analysis=(
-        "Bhayshul Tuten is RB15 by points per game. His snap share went up. He moves to a new roster."),
-        cited=[f"{TUTEN}.ppg"])))
+def test_the_points_per_game_fact_names_the_season_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
+    # Tuten's 59 points through week 5 put him 16th among the backs. Vele is WR23 by total points, and WR41 by points
+    # per game over weeks 2 to 5, so the gap of 18 shows his Recent rank.
+    fake = FakeClaude(_response(eleven=_side(11, bullets=[
+        "Bhayshul Tuten is RB16 this season.", "Devaughn Vele has a Recent rank of WR41.", "He moves to a new roster."],
+        cited=[f"{TUTEN}.ppg", f"{VELE}.ppg"])))
     result = analyze(trade, snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert "Bhayshul Tuten is RB15 by points per game." in facts[f"{TUTEN}.ppg"]
-    assert "Josh Jacobs is RB16 by his projection ahead." in facts[f"{JACOBS}.ppg"]
+    assert "His Season rank is RB16, by total points this season." in facts[f"{TUTEN}.ppg"]
+    assert "Recent rank" not in facts[f"{TUTEN}.ppg"]
+    assert "His Recent rank is WR41, by points per game over the last 4 weeks." in facts[f"{VELE}.ppg"]
     assert not result.fallback
     assert len(fake.calls) == 1
 
 
 def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_strength_count(trade, snap):
-    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver above the line after, from 2.
+    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver in the top 36 after, from 2.
     # Tuten RB15 and Wilson leave its RB1, RB2, WR1, and WR2 starters, and Jacobs RB16 and Vele come in.
-    text = ("Josh Jacobs takes RB2 on this side. WR depth above the line goes from 2 to 1. "
+    text = ("Its WRs in the top 36 go from 2 to 1. "
             "Its starters with a position rank of 24 or better go from 4 to 3.")
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text,
-                                             cited=[f"{JACOBS}.slot", "11.depth.wr", "11.strength"])))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=["11.depth.wr", "11.strength"])))
     result = analyze(trade, snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert facts[f"{JACOBS}.slot"] == "Josh Jacobs takes RB2, which Bhayshul Tuten held before the trade."
-    assert facts[f"{VELE}.slot"] == "Devaughn Vele takes WR2, and George Pickens moves to WR1."
-    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, WR depth above the line goes from 2 to 1."
+    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, the WRs in the top 36 go from 2 to 1."
     assert facts["11.strength"] == ("For Unsolicited Dak Picks, the starters at RB1, RB2, WR1, and WR2 with a "
                                     "position rank of 24 or better go from 4 to 3.")
     assert not result.fallback
@@ -268,14 +319,14 @@ def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_stren
 
 
 def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_agent(trade, fa_snap):
-    # Vele WR40 takes WR2 of roster 11, below the line. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
+    # Vele WR40 holds WR2 of roster 11, outside the top 36. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
     # 9.33 a game. 32 receivers have more lineup value, so he is WR33, the best free agent at WR.
-    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR33. "
-            "Waivers can fix the hole.")
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"])))
+    text = ("The trade leaves WR2 short for this side. The best free agent at WR is Rashod Bateman, WR33. "
+            "Waivers can fix that.")
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=["11.hole.wr2"])))
     result = analyze(trade, fa_snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, WR2 is a hole after the trade: Devaughn Vele is WR40. "
+    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, the trade leaves WR2 short: Devaughn Vele is WR40. "
                                     "Garrett Wilson held WR1 before the trade. The best free agent at WR is Rashod "
                                     "Bateman, WR33.")
     assert not result.fallback
@@ -283,9 +334,9 @@ def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_a
 
 
 def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
-    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR31. "
-            "Waivers can fix the hole.")
-    bad = _response(eleven=_side(11, analysis=text, cited=["11.hole.wr2"]))
+    text = ("The trade leaves WR2 short for this side. The best free agent at WR is Rashod Bateman, WR31. "
+            "Waivers can fix that.")
+    bad = _response(eleven=_side(11, bullets=_split(text), cited=["11.hole.wr2"]))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, fa_snap, call=fake).fallback
     assert "number 31 is not in the cited facts" in fake.calls[1][1]
@@ -293,21 +344,21 @@ def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
 
 def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
     # The depth fact of roster 11 holds 2 and 1, and no breakdown reason holds 38, so a count of 38 is a new number.
-    text = "Josh Jacobs takes RB2 on this side. WR depth above the line goes from 38 to 1. He starts."
-    bad = _response(eleven=_side(11, analysis=text, cited=[f"{JACOBS}.slot", "11.depth.wr"]))
+    text = "Josh Jacobs moves to this side. WR depth above the line goes from 38 to 1. He starts."
+    bad = _response(eleven=_side(11, bullets=_split(text), cited=["11.depth.wr"]))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
     assert "number 38 is not in the cited facts" in fake.calls[1][1]
 
 
 def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):
-    # The trend reason of roster 11 gives Tuten's snap share of 64% over weeks 4 and 5. No cited fact holds 64.
+    # The trend reason of roster 11 gives Tuten's snap share of 64%. No cited fact holds 64.
     text = ("Garrett Wilson scored 14.2 points per game before the trade. "
-            "Bhayshul Tuten took 64% of the snaps over weeks 4 and 5. He starts.")
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text, cited=[f"{WILSON}.ppg"])))
+            "Bhayshul Tuten took 64% of the snaps in his last games. He starts.")
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=[f"{WILSON}.ppg"])))
     result = analyze(trade, snap, call=fake)
     trend = next(a for a in result.breakdowns[0].adjusters if a.name == "trend and usage")
-    assert "Tuten: snap share 64%, up, over weeks 4 and 5." in trend.reason
+    assert "Tuten plays 64% of the snaps (up)" in trend.reason
     assert "64" not in _facts(fake.calls[0][1])[f"{WILSON}.ppg"]
     assert not result.fallback
     assert len(fake.calls) == 1
@@ -315,7 +366,7 @@ def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):
 
 def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
     text = "Garrett Wilson is worth 27.5 to this roster. His target share went up. He is a starter."
-    bad = _response(eleven=_side(11, analysis=text, cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
+    bad = _response(eleven=_side(11, bullets=_split(text), cited=[f"{WILSON}.ppg", f"{WILSON}.value"]))
     fake = FakeClaude(bad, bad)
     with caplog.at_level(logging.WARNING, logger="analyzer.analysis"):
         assert analyze(trade, snap, call=fake).fallback
@@ -328,34 +379,35 @@ def test_the_log_line_holds_no_number_from_the_failure(trade, snap, caplog):
         assert not re.search(r"\d", message.split("failed", 1)[1])
 
 
-@pytest.mark.parametrize("analysis_text", [
+@pytest.mark.parametrize("bullets", [
     # The period in a name ends no sentence.
-    ("Amon-Ra St. Brown is not in the trade. Garrett Wilson starts. His target share went up. "
-     "He moves to a new roster. He is a starter."),
+    ["Amon-Ra St. Brown is not in the trade.", "Garrett Wilson starts."],
     # The period in a decimal ends no sentence.
-    ("Garrett Wilson scored 14.2 points per game before the trade. He starts. His target share went up. "
-     "He moves to a new roster. He is a starter."),
-    # Claude writes the short form of a name, a suffix, and "vs." with a decimal in the same analysis.
-    ("St. Brown is not in the trade, and Garrett Wilson scored 14.2 points per game. Harrison Jr. lost snaps. "
-     "Garrett Wilson vs. Devaughn Vele is close. St. Brown stays put. He is a starter."),
+    ["Garrett Wilson scored 14.2 points per game before the trade.", "He starts."],
+    # Claude writes the short form of a name, a suffix, and "vs." with a decimal in the same bullets.
+    ["St. Brown is not in the trade, and Garrett Wilson scored 14.2 points per game.", "Harrison Jr. lost snaps.",
+     "Garrett Wilson vs. Devaughn Vele is close."],
     # A run of initials ends no sentence, in a full name and in a form the snapshot does not hold.
-    ("Garrett Wilson starts. A.J. Brown is not in the trade. D.J. Moore is not in it either. "
-     "His target share went up. He is a starter."),
+    ["A.J. Brown is not in the trade.", "D.J. Moore is not in it either."],
 ])
-def test_a_period_in_a_name_or_a_decimal_ends_no_sentence(trade, snap, analysis_text):
-    # Five sentences pass. A miscount gives six, which fails.
+def test_a_period_in_a_name_or_a_decimal_ends_no_sentence(trade, snap, bullets):
+    # One sentence per bullet passes. A miscount gives two, which fails.
     assert "Amon-Ra St. Brown" in {p.name for p in snap.players.values()}
-    fake = FakeClaude(_response(eleven=_side(11, analysis=analysis_text)))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=bullets)))
     assert not analyze(trade, snap, call=fake).fallback
 
 
-@pytest.mark.parametrize("analysis", [
-    "Garrett Wilson scored 14.2 points per game before the trade. He is a starter.",
-    "One. Two. Three. Four. Five. Six.",
+@pytest.mark.parametrize("bullets, failure", [
+    (["Garrett Wilson scored 14.2 points per game before the trade."], "roster 12: it has 1 bullets; the range is 2 to 3"),
+    (["One.", "Two.", "Three.", "Four."], "roster 12: it has 4 bullets; the range is 2 to 3"),
+    (["Garrett Wilson scored 14.2 points per game before the trade. He is a starter.", "His target share went up."],
+     "roster 12: bullet 1 has 2 sentences; it needs exactly 1"),
 ])
-def test_an_analysis_outside_three_to_five_sentences_fails(trade, snap, analysis):
-    bad = _response(twelve=_side(12, analysis=analysis))
-    assert analyze(trade, snap, call=FakeClaude(bad, bad)).fallback
+def test_a_side_outside_two_to_three_bullets_or_a_bullet_of_two_sentences_fails(trade, snap, bullets, failure):
+    bad = _response(twelve=_side(12, bullets=bullets))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert failure in fake.calls[1][1]
 
 
 def test_a_cited_id_not_in_the_facts_fails(trade, snap):
@@ -438,38 +490,38 @@ def test_a_repeated_side_fails_and_the_retry_names_the_exact_side_shape(trade, s
 
 
 def test_every_retry_names_the_side_shape_with_both_roster_ids(trade, snap):
-    # A sentence count failure on one side must not lead Claude to send that side alone.
-    six_sentences = "One. Two. Three. Four. Five. Six."
-    fake = FakeClaude(_response(twelve=_side(12, analysis=six_sentences)), _response())
+    # A bullet count failure on one side must not lead Claude to send that side alone.
+    four = ["One.", "Two.", "Three.", "Four."]
+    fake = FakeClaude(_response(twelve=_side(12, bullets=four)), _response())
     assert not analyze(trade, snap, call=fake).fallback
     retry = fake.calls[1][1]
-    assert "roster 12: the analysis has 6 sentences" in retry
+    assert "roster 12: it has 4 bullets" in retry
     assert "Give the whole response again with exactly 2 sides: roster 11 first, then roster 12, each once" in retry
 
 
-def test_a_side_analysis_that_names_its_team_twice_fails(trade, snap):
+def test_the_bullets_of_a_side_that_names_its_team_twice_fails(trade, snap):
     team = snap.teams[11].name
     text = f"{team} gets Garrett Wilson. {team} needs a receiver. His target share went up."
-    bad = _response(eleven=_side(11, analysis=text))
+    bad = _response(eleven=_side(11, bullets=_split(text)))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
-    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
+    assert f"roster 11 bullets: team {team} is named 2 times" in fake.calls[1][1]
 
 
-def test_a_side_analysis_that_names_each_team_once_passes(trade, snap):
+def test_the_bullets_of_a_side_that_names_each_team_once_passes(trade, snap):
     text = (f"{snap.teams[11].name} gets Garrett Wilson. {snap.teams[12].name} gives him up. "
             "His target share went up.")
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text))))
     assert not analyze(trade, snap, call=fake).fallback
 
 
-def test_a_side_analysis_that_names_the_other_trade_team_twice_fails(trade, snap):
+def test_the_bullets_of_a_side_that_names_the_other_trade_team_twice_fails(trade, snap):
     team = snap.teams[12].name
     text = f"{team} gives up Garrett Wilson. {team} gets Bhayshul Tuten back. His target share went up."
-    bad = _response(eleven=_side(11, analysis=text))
+    bad = _response(eleven=_side(11, bullets=_split(text)))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
-    assert f"roster 11 analysis: team {team} is named 2 times" in fake.calls[1][1]
+    assert f"roster 11 bullets: team {team} is named 2 times" in fake.calls[1][1]
 
 
 @pytest.mark.parametrize("sentence, failure", [
@@ -481,11 +533,11 @@ def test_a_side_analysis_that_names_the_other_trade_team_twice_fails(trade, snap
     ("This side is C-level after the trade.", "'C-level' names a letter grade"),
 ])
 def test_a_letter_grade_in_a_side_analysis_fails(trade, snap, sentence, failure):
-    text = f"Garrett Wilson scored 14.2 points per game before the trade. {sentence} He is a starter."
-    bad = _response(eleven=_side(11, analysis=text))
+    bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
+    bad = _response(eleven=_side(11, bullets=bullets))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
-    assert f"roster 11 analysis: {failure}" in fake.calls[1][1]
+    assert f"roster 11 bullet 2: {failure}" in fake.calls[1][1]
 
 
 @pytest.mark.parametrize("reason, failure", [
@@ -505,7 +557,7 @@ def test_a_letter_grade_in_the_verdict_reason_fails(trade, snap, reason, failure
 def test_a_side_that_does_well_in_plain_words_passes(trade, snap):
     text = ("Garrett Wilson scored 14.2 points per game before the trade. This side does well in the trade. "
             "He is a starter.")
-    fake = FakeClaude(_response(eleven=_side(11, analysis=text)))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text))))
     assert not analyze(trade, snap, call=fake).fallback
 
 
@@ -527,15 +579,15 @@ UPSIDE_TEXT = "Garrett Wilson scored 14.2 points per game before the trade. He h
 
 def test_an_upside_claim_fails_when_the_upside_adjuster_credits_no_one(trade, snap, monkeypatch):
     _grade_with_upside(monkeypatch, 0)
-    bad = _response(eleven=_side(11, analysis=UPSIDE_TEXT))
+    bad = _response(eleven=_side(11, bullets=_split(UPSIDE_TEXT)))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
-    assert "roster 11 analysis: 'upside' claims upside" in fake.calls[1][1]
+    assert "roster 11 bullet 2: 'upside' claims upside" in fake.calls[1][1]
 
 
 def test_an_upside_claim_passes_when_the_upside_adjuster_credits_a_player(trade, snap, monkeypatch):
     _grade_with_upside(monkeypatch, 1)
-    fake = FakeClaude(_response(eleven=_side(11, analysis=UPSIDE_TEXT)))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(UPSIDE_TEXT))))
     assert not analyze(trade, snap, call=fake).fallback
 
 # A three-side trade on the same snapshot: roster 4 sends Nico Collins to roster 11, roster 11 sends Tuten to roster 12
@@ -600,3 +652,77 @@ def test_the_user_message_names_the_destination_of_each_given_player_and_the_sou
     assert f"Gets: Nico Collins from {team[4]}, Josh Jacobs from {team[12]}, Devaughn Vele from {team[12]}" in user
     # The rules ask for one side per roster in the order of the user message, for any count of sides.
     assert "one side for each roster in the trade, in the order of the user message" in system
+
+
+def test_the_prompt_asks_for_two_or_three_bullets_of_one_sentence_each(trade, snap):
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    # The prompt wraps its lines, so the check reads it as one line.
+    system = " ".join(fake.calls[0][0].split())
+    assert "Write 2 or 3 bullets for each side. Each bullet is one sentence that makes one claim." in system
+    assert "three to five sentences" not in system
+
+
+# The real 2026 data after week 8, graded in week 9. Trade A: roster 10 gives Omar Cooper Jr. to roster 6 for
+# Parker Washington. Roster 10 asks.
+SAVED = CLIENT.folder / "data" / "2026"
+COOPER, WASHINGTON = "13276", "9487"
+
+
+@pytest.fixture(scope="module")
+def week_9():
+    returns_file = returns_path(CLIENT.nfl_dir, 2026)
+    return build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, trade_week=9,
+                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
+                          client=CLIENT)
+
+
+@pytest.fixture
+def trade_a():
+    return ProposedTrade(season=2026, sides=(TradeSide(roster_id=10, gives=[{"player_id": COOPER, "to": 6}]),
+                                             TradeSide(roster_id=6, gives=[{"player_id": WASHINGTON, "to": 10}])),
+                         asker=10)
+
+
+def _quote(trade, snapshot, bullets):
+    """A response with the code letters and the code verdict, and the bullets for the first side."""
+    code = code_only(trade, snapshot)
+    letters = {b.roster_id: b.final_letter for b in code.breakdowns}
+    plain = ["The trade moves a receiver.", "Both sides get a receiver back."]
+    return lambda facts: {
+        "sides": [{"roster_id": rid, "final_letter": letters[rid], "reason": None,
+                   "bullets": bullets if rid == trade.sides[0].roster_id else plain,
+                   "cited": [f"{COOPER}.ppg"]} for rid in letters],
+        "verdict": {"choice": code.verdict.choice, "reason": "The trade is close for both sides."},
+    }
+
+
+def test_each_traded_player_carries_his_season_rank_and_his_recent_rank_on_a_large_gap(trade_a, week_9):
+    document = result_document(trade_a, week_9, code_only(trade_a, week_9))
+    players = {p["player_id"]: p for side in document["trade"]["sides"] for p in side["gives"] + side["gets"]}
+    # Cooper: WR60 by total points through week 8, WR18 by points per game over weeks 5 to 8. The gap is 42.
+    assert (players[COOPER]["season_rank"], players[COOPER]["recent_rank"]) == ("WR60", "WR18")
+    # Washington: WR21 and WR19. The gap is 2, under RECENT_RANK_GAP, so no Recent rank shows.
+    assert (players[WASHINGTON]["season_rank"], players[WASHINGTON]["recent_rank"]) == ("WR21", None)
+    assert RECENT_RANK_GAP == 12
+
+
+def test_the_facts_give_the_season_rank_and_the_recent_rank_with_its_label_and_the_checks_accept_them(
+        trade_a, week_9):
+    bullets = ["Omar Cooper Jr. is WR60 this season.", "His Recent rank is WR18.", "He moves to a new roster."]
+    fake = FakeClaude(_quote(trade_a, week_9, bullets))
+    result = analyze(trade_a, week_9, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert "His Season rank is WR60, by total points this season." in facts[f"{COOPER}.ppg"]
+    assert "His Recent rank is WR18, by points per game over the last 4 weeks." in facts[f"{COOPER}.ppg"]
+    assert "His Season rank is WR21, by total points this season." in facts[f"{WASHINGTON}.ppg"]
+    assert "Recent rank" not in facts[f"{WASHINGTON}.ppg"]
+    # No Position rank number: the grade measure is WR27 for Cooper, and no fact gives it.
+    assert "27" not in facts[f"{COOPER}.ppg"] and "by points per game." not in facts[f"{COOPER}.ppg"]
+    assert not result.fallback and len(fake.calls) == 1
+
+
+def test_the_fact_sheet_has_no_slot_fact(trade_a, week_9):
+    facts = trade_fact_sheet(trade_a, week_9)
+    assert not [fid for fid in facts if fid.endswith(".slot")]
+    assert not [f.text for f in facts.values() if "sits on the bench" in f.text or " takes " in f.text]

@@ -1,0 +1,42 @@
+# Grade clarity: map
+
+App: both.
+Spec branch: `grade-clarity`.
+
+## DESTINATION
+
+The analyze route gives a grade that a manager reads in under a minute. The grade says why each side wins or loses this week and for the rest of the season, and each number in it matches Sleeper.
+
+## DECISIONS SO FAR
+
+- The goal: a manager reads a grade in under a minute, sees why each side wins or loses this week and for the season, and trusts each number. Brian, 2026-11-05.
+- The spec covers the trade grade only. The finder gets the shared fixes of the facts, but its prompt and its view stay as they are. Brian, 2026-11-05.
+- The view leads with the verdict and one "why" sentence. Each side gets 2 or 3 short bullets in place of the paragraph. The adjuster rows fold away. Brian, 2026-11-05.
+- No text names the value chart or another inner part of the grade. Each adjuster row uses plain words. Brian, 2026-11-05.
+- The slot fact goes, so no text says "takes RB1" or "sits on the bench". The best lineup stays inside the code as a measure of depth. Brian, 2026-11-05.
+- The main rank in the text is the Season rank, by total points, as Sleeper sorts it. A Recent rank shows only on a large gap, always with its label. Brian, 2026-11-05.
+- Each side gets a Week line for the trade week and the next week. It stands beside the letter and never moves it. The verdict can name it. Brian, 2026-11-05.
+- The Week line counts, for each position the trade touches, the players of the side who play that week, are not out, and rank above the line. It assigns no lineup slot. Brian, 2026-11-05.
+- A player steps up for a week when the player directly ahead of him on his NFL team's depth chart, at his position, is listed Out or IR. Questionable and Doubtful do not count. QB, RB, WR, and TE only. Brian, 2026-11-05.
+- The Week line shows for every side. ADR 0004 still holds for the roster fit adjuster. The race of the side weighs the Week line in the verdict only. Brian, 2026-11-05.
+- The other data of a grade is correct for now, so no audit of the numbers runs. Brian, 2026-11-05.
+- The terms Season rank, Recent rank, Week line, and Steps up go into `GLOSSARY.md`. Position rank keeps its name as the measure inside the grade. Brian, 2026-11-05.
+- The Position rank inside the grade sorts by season points per game, games played only. `decisions/01-research-rank-measure.md`.
+- Each adjuster row hides when it says nothing, shows its step as a mark, and uses one plain sentence. Usage shows snap share, target share, air yards per target, and carry share by position. Each opponent shows with its rank at the player's position. No text names the value chart. `decisions/03-grill-plain-adjuster-rows.md`.
+- The Week line names no step-up when the depth chart is more than 48 hours old. Out counts for the trade week only. IR, PUP, NA, and Sus count for both weeks. Tuesday and Wednesday text says "listed Out last week". The cache key must hold the depth chart and each status. `decisions/02-research-depth-chart-freshness.md`.
+- The view is one column: the verdict, the trade, one card for each side, then the as-of line. Each card shows its two players, the bullets, and the Week lines before a tap. The adjuster rows sit in one closed fold for each side. `decisions/04-prototype-result-view.md`.
+- The Recent rank shows on a gap of 12 spots or more, at every position, as `RECENT_RANK_GAP`. `decisions/05-spec-recent-rank-gap.md`.
+
+## NOT YET SPECIFIED
+
+None.
+
+
+## OUT OF SCOPE
+
+- The prompt and the view of the trade finder. The goal is about the grade, and only `norcal` turns on the finder.
+- The Position rank of the weekly report. The weekly report has its own readers, and this spec changes the grade only.
+- A Week line past the next week. The letter already grades the rest of the season.
+- Route share in the usage row. No cached nflverse file holds routes, so it needs a new source.
+- The expected gap row. Its adjuster is off in the code.
+- An audit of the other numbers of a grade. Brian sees no other wrong number now.

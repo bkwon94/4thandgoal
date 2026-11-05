@@ -335,13 +335,13 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     # The fairness line follows the verdict, then one reason per side in the order of the sides.
-    # Jacobs is a star out now, so the upside step up gives the reason of Unsolicited Dak Picks.
+    # Jacobs is a top RB out now, so the upside step up gives the reason of Unsolicited Dak Picks.
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
-        "  Unsolicited Dak Picks: Josh Jacobs is a star out now with a return in play.\n"
-        "  Amon-Ra Dawg Your Team: The best lineup gains after the trade. "
-        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 12.2 a game.\n")
+        "  Unsolicited Dak Picks: Jacobs is a top RB, due back in week 7.\n"
+        "  Amon-Ra Dawg Your Team: You keep 4 RBs in the top 36 and keep 5 WRs in the top 36, and your lineup scores "
+        "more.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out
@@ -517,7 +517,7 @@ JACOBS_ARGS = ["analyze", "--client", "cpc", "--season", "2026", "--week", "6", 
                "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12"]
 
 
-def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
+def test_analyze_with_claude_prints_the_bullets_the_letters_and_the_verdict(
         tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
     from fakes import FakeWriter
 
@@ -526,7 +526,7 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     from facts.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
 
     side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
-            "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
+            "bullets": ["Garrett Wilson scored 14.2 points per game before the trade.", "He moves.", "He starts."]}
     writer = FakeWriter([AnalysisOut.model_validate({
         "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
                   {**side, "roster_id": 12}],
@@ -544,9 +544,10 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     assert "  Rubric letter: B\n" in out and "  Rubric letter: D\n" in out
     assert "  Final letter: C. Reason: Jacobs has not played.\n" in out
     assert "  Final letter: D\n" in out
-    assert out.count("  Analysis: Garrett Wilson scored 14.2 points per game before the trade.") == 2
+    assert out.count("  Bullets:\n    - Garrett Wilson scored 14.2 points per game before the trade.\n"
+                     "    - He moves.\n    - He starts.\n") == 2
     assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: C")
-            < out.index("Analysis: "))
+            < out.index("Bullets:"))
     # The fairness reads Claude's letters, C and D, so the trade is still lopsided.
     assert ("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
             "(differs from the rubric's default)\nFairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
@@ -563,7 +564,7 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     out = capsys.readouterr().out
     assert code == 0
     assert len(fake_writer.calls) == 2
-    assert out.count("  Analysis: Analysis unavailable\n") == 2
+    assert out.count("  Bullets: none\n") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert ("\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
@@ -610,9 +611,8 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
         "\n1. All You Need Is Love gives: Joe Burrow\n"
         "   Lil Fridge gives: Bryce Young\n"
         "Fairness: Good for both\n"
-        "  All You Need Is Love: The players it gets gain snap or target share, and the players it gives lose it. "
-        "Young: snap share 100%, up, over weeks 3 and 4.\n"
-        "  Lil Fridge: It gets the highest-value player in the trade, and the best lineup does not lose.\n")
+        "  All You Need Is Love: Young plays 100% of the snaps (up).\n"
+        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player.\n")
     assert "\n2. " not in out
 
 

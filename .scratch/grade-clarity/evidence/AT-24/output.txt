@@ -1,0 +1,18 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# the trend and usage row of each side:
+{
+  "10": {
+    "name": "trend and usage",
+    "lean": "even",
+    "reason": "Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target; Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target."
+  },
+  "6": {
+    "name": "trend and usage",
+    "lean": "even",
+    "reason": "Cooper plays 72% of the snaps (up), sees 8% of the targets (down), and averages 10.2 air yards per target; Washington plays 70% of the snaps (down), sees 22% of the targets, and averages 3.2 air yards per target."
+  }
+}

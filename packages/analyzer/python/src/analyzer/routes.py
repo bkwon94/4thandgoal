@@ -18,15 +18,23 @@ from analyzer.errors import season_in_progress
 from analyzer.finder import NO_WIN_WIN, FinderTrade, find_win_wins
 from analyzer.finder_reasons import FinderReasons
 from analyzer.ratelimit import GradeLimiter, request_address
-from analyzer.rubric import ProposedTrade, TradeInputError, check_trade, fairness
+from analyzer.rubric import (
+    NO_CHART_NOTE,
+    Breakdown,
+    ProposedTrade,
+    TradeInputError,
+    check_trade,
+    deal_reason,
+    fairness,
+)
+from analyzer.trade_facts import shown_ranks
+from analyzer.week_line import week_lines
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
 
 router = APIRouter()
 
-# The line the site shows when the trade week has no chart. The grade then reads the adjusters alone.
-NO_CHART_NOTE = "Week {week} has no trade value chart yet, so the chart gives neither side an edge."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -96,6 +104,15 @@ def _player(snapshot: Snapshot, player_id: str) -> dict:
     }
 
 
+def _traded_player(snapshot: Snapshot, player_id: str) -> dict:
+    """A traded player as a side card shows him: the player, his Season rank, and his Recent rank when the gap holds.
+
+    `recent_rank` is null when the gap does not hold, so the card shows the Recent rank only when it is present.
+    """
+    season, recent = shown_ranks(snapshot, player_id)
+    return {**_player(snapshot, player_id), "season_rank": season, "recent_rank": recent}
+
+
 @router.get("/teams")
 def teams(season: int, served: ServedClient) -> dict:
     """Each roster of the league with its team name, its manager, and its players, for the trade form."""
@@ -134,16 +151,22 @@ def _as_of(snapshot: Snapshot) -> dict:
         # The chart site posts the new chart hours after the trade week starts. The grade runs in that window too,
         # so the document says the week has no chart, and the site shows the note with no words of its own.
         "no_chart": snapshot.chart is None,
-        "no_chart_note": NO_CHART_NOTE.format(week=snapshot.week) if snapshot.chart is None else None,
+        "no_chart_note": NO_CHART_NOTE if snapshot.chart is None else None,
     }
 
 
 # The decision a manager acts on, from the verdict choice of the rubric.
 Answer = Literal["yes", "no", "not_as_is"]
 ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_as_is"}
-# The chart lean of a side, from its start letter. No letter reaches the document.
-ChartLean = Literal["more", "even", "less"]
-CHART_LEANS: dict[str, ChartLean] = {"A": "more", "B": "more", "C": "even", "D": "less", "F": "less"}
+# The deal row of a side, from its start letter. It is the first factor, and no letter reaches the document.
+# Its words name no source of the values, so the row reads as plain advice.
+DEAL = "deal"
+DEAL_LEANS: dict[str, Lean] = {"A": "for", "B": "for", "C": "even", "D": "against", "F": "against"}
+
+
+def _deal_row(breakdown: Breakdown) -> dict:
+    """The deal row of one side: the start letter as a lean and one plain sentence."""
+    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": deal_reason(breakdown)}
 
 
 def _factor_lean(adjuster: Adjuster) -> Lean:
@@ -154,7 +177,10 @@ def _factor_lean(adjuster: Adjuster) -> Lean:
 
 
 def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
-    """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets."""
+    """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets.
+
+    Each player carries his Season rank and his Recent rank, in the finder document too, so a side has one shape.
+    """
     # The analyze document and the finder document share this shape, so the site renders a side one way.
     # Each given player carries `to` and each got player carries `from`, so the site can tag a player by team.
     givers = trade.givers
@@ -162,27 +188,34 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
         {
             "roster_id": side.roster_id,
             "team": snapshot.teams[side.roster_id].name,
-            "gives": [{**_player(snapshot, player.player_id), "to": player.to} for player in side.gives],
-            "gets": [{**_player(snapshot, pid), "from": givers[pid]} for pid in trade.gets(side.roster_id)],
+            "gives": [{**_traded_player(snapshot, player.player_id), "to": player.to} for player in side.gives],
+            "gets": [{**_traded_player(snapshot, pid), "from": givers[pid]} for pid in trade.gets(side.roster_id)],
         }
         for side in trade.sides
     ]
 
 
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the analysis, chart lean, and factors per side.
+    """The result the site renders: a decision first, the fairness, then the bullets, the Week lines, and the factors
+    per side.
+
+    The deal row is the first factor of each side. The Week lines are never a factor, because they move no letter.
 
     It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
     """
     echoed = _echoed_sides(trade, snapshot)
+    lines = week_lines(trade, snapshot)
     sides = [
         {
             "roster_id": breakdown.roster_id,
-            "analysis": side.analysis,
-            "chart": {"lean": CHART_LEANS[breakdown.start_letter], "reason": breakdown.reason},
+            "bullets": side.bullets,
+            "week_lines": [line.model_dump() for line in lines[breakdown.roster_id]],
             "factors": [
-                {"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
-                for adj in breakdown.adjusters
+                _deal_row(breakdown),
+                # A row shows when it moves the grade or says something new, so a silent row with no step drops.
+                # The letter math still reads every step.
+                *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
+                  for adj in breakdown.adjusters if adj.step != 0 or not adj.silent),
             ],
         }
         for breakdown, side in zip(analysis.breakdowns, analysis.sides)

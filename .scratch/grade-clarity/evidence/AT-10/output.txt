@@ -1,0 +1,36 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# sides[].bullets, the count, and the count of sentence ends in each bullet:
+[
+  {
+    "roster_id": 10,
+    "bullets": [
+      "This side gets the better player, as Washington ranks WR21 by season points against WR60 for Cooper.",
+      "Washington has seen 22 percent of the targets over the last 2 weeks, while Cooper saw 8 percent.",
+      "Washington also brings 8 red-zone targets this season and a playoff run that includes HOU and DAL."
+    ],
+    "count": 3,
+    "sentences": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "roster_id": 6,
+    "bullets": [
+      "Bo Girds gives up the better player while sitting 3rd of 12 in a playoff spot.",
+      "Cooper has drawn only 8 percent of the targets over the last 2 weeks, down from the 2 weeks before.",
+      "They keep 3 WRs in the top 36 playing in week 9, but Cooper faces KC, 31st in points to WRs."
+    ],
+    "count": 3,
+    "sentences": [
+      1,
+      1,
+      1
+    ]
+  }
+]

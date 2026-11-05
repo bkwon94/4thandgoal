@@ -6,7 +6,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from league.league_settings import DEFAULT_POINTS_KEY
 from league.numbers import r2
@@ -143,6 +143,11 @@ class PastWeek(BaseModel):
     drops: list[Drop] = []
     # The stat key of the player points and the projections, from the reception points of the League settings.
     points_key: str = DEFAULT_POINTS_KEY
+    # The total of one stat for each NFL team, keyed by stat, built on the first read by history._team_total. The
+    # usage row reads a team total for each player of each graded trade, and the stats of a past week never change
+    # after the parse, so one pass over the week per stat serves every read. model_copy copies this private value,
+    # so it holds the stats and the nfl_teams it read, and a copy with other stats or teams builds its own totals.
+    _team_totals: tuple[dict, dict, dict[str, dict[str, float]]] | None = PrivateAttr(default=None)
 
 
 class UsageShare(BaseModel):

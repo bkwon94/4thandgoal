@@ -1,0 +1,66 @@
+$ uv run --all-packages python evidence/scripts/probe3.py <repo>
+# Trade A with no Claude call on the saved week 8 data, the snapshot that `cornerstone analyze --week 8` loads.
+snapshot week 8, graded_at None, chart is None: True
+{
+  "as_of": {
+    "chart_week": null,
+    "stats_through": 7,
+    "completed_through": 7,
+    "rosters_fetched": "2026-11-03T08:05:54.670568-05:00",
+    "known_games": null,
+    "no_chart": true,
+    "no_chart_note": "This week's player values are not out yet, so both sides start even."
+  },
+  "week_lines": {
+    "10": [
+      {
+        "week": 8,
+        "text": "Week 8: WRs in the top 36 who play stay at 2. Washington plays IND at home, 24th most points to WRs. Samuel has a bye. Egbuka and Samuel are listed Out."
+      },
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play stay at 3. Washington plays at BAL, 8th most points to WRs. Bernard has a bye."
+      }
+    ],
+    "6": [
+      {
+        "week": 8,
+        "text": "Week 8: WRs in the top 36 who play stay at 3. Cooper plays LV at home, 13th most points to WRs."
+      },
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs."
+      }
+    ]
+  },
+  "deal_rows": {
+    "10": {
+      "name": "deal",
+      "lean": "even",
+      "reason": "This week's player values are not out yet, so both sides start even."
+    },
+    "6": {
+      "name": "deal",
+      "lean": "even",
+      "reason": "This week's player values are not out yet, so both sides start even."
+    }
+  }
+}
+
+
+# Extra: the live snapshot of week 9 with its chart taken off (chart=None), the same code path:
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+{
+  "chart_week": null,
+  "stats_through": 8,
+  "completed_through": 8,
+  "rosters_fetched": "2026-11-05T03:38:17.470281-05:00",
+  "known_games": {
+    "week": 9,
+    "games": 0,
+    "in_progress": 0,
+    "pending": {}
+  },
+  "no_chart": true,
+  "no_chart_note": "This week's player values are not out yet, so both sides start even."
+}

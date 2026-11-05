@@ -15,6 +15,7 @@ from league.nflverse import (
     DEPTH_CHARTS_URL,
     PBP_URL,
     SCHEDULES_URL,
+    ScheduledGame,
     download,
     gsis_id,
     http_get,
@@ -246,6 +247,16 @@ def test_read_schedules_gives_the_bye_week_and_the_playoff_opponents(fixture_nfl
     assert schedules["BAL"].bye_week == 13
 
 
+def test_read_schedules_gives_the_opponent_and_the_home_team_of_each_week(fixture_nflverse_dir):
+    # JAX plays at BAL in week 9 and at TEN in week 10. NYJ plays BUF at home in week 10.
+    schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
+    assert schedules["JAX"].games[9] == ScheduledGame(opponent="BAL", home=False)
+    assert schedules["JAX"].games[10] == ScheduledGame(opponent="TEN", home=False)
+    assert schedules["NYJ"].games[10] == ScheduledGame(opponent="BUF", home=True)
+    # A bye week has no game.
+    assert 7 not in schedules["JAX"].games
+
+
 def test_read_schedules_names_the_rams_as_sleeper_does(fixture_nflverse_dir):
     schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
     assert "LAR" in schedules and "LA" not in schedules
@@ -290,7 +301,7 @@ def test_read_kickoffs_of_a_file_with_no_game_time_is_empty(fixture_nflverse_dir
 
 
 def test_read_depth_charts_gives_the_backfield_in_order(fixture_nflverse_dir):
-    charts = read_depth_charts(fixture_nflverse_dir / "depth_charts_2026.csv.gz")
+    charts = read_depth_charts(fixture_nflverse_dir / "depth_charts_2026.csv.gz").charts
     assert charts["SF"]["RB"] == ["00-0033280", "00-0041052", "00-0040177", "00-0039363"]
     assert "LAR" in charts and "LA" not in charts
 
@@ -303,7 +314,13 @@ def test_read_depth_charts_uses_only_the_latest_snapshot(tmp_path):
         "2026-10-21T12:00:00Z,SF,New Backup,00-3,RB,11,2\n"
         "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,11,1\n"
         "2026-10-21T12:00:00Z,SF,New Starter,00-2,RB,12,1\n")
-    assert read_depth_charts(path) == {"SF": {"RB": ["00-2", "00-3"]}}
+    assert read_depth_charts(path).charts == {"SF": {"RB": ["00-2", "00-3"]}}
+
+
+def test_read_depth_charts_gives_back_the_newest_dt(fixture_nflverse_dir):
+    # The age rule of the step-up reads the scrape time of the newest snapshot. Decision 02 of grade-clarity.
+    path = fixture_nflverse_dir / "depth_charts_2026.csv.gz"
+    assert read_depth_charts(path).dt == datetime(2026, 10, 21, 12, 53, 27, tzinfo=ZoneInfo("UTC"))
 
 
 def test_read_depth_charts_skips_a_row_with_a_bad_rank(tmp_path):
@@ -313,7 +330,7 @@ def test_read_depth_charts_skips_a_row_with_a_bad_rank(tmp_path):
         "2026-10-21T12:00:00Z,SF,Starter,00-1,RB,11,1\n"
         "2026-10-21T12:00:00Z,SF,Bad Row,00-9,RB,11,NA\n"
         "2026-10-21T12:00:00Z,SF,Backup,00-2,RB,11,2\n")
-    assert read_depth_charts(path) == {"SF": {"RB": ["00-1", "00-2"]}}
+    assert read_depth_charts(path).charts == {"SF": {"RB": ["00-1", "00-2"]}}
 
 
 def test_read_depth_charts_without_a_row_is_none(tmp_path):

@@ -3,8 +3,8 @@ The shared tunables of the league kernel: the numbers that the kernel modules re
 packages read. Each package keeps the rest of its numbers in its own tunables module.
 """
 
-# Roster fit and standing compare a side's best lineup before and after the trade.
-# The count of completed weeks whose points per game pick the best lineup. Fewer weeks use what exists.
+# The count of completed weeks whose points per game give the lineup value of the 4-week measure, which the weekly
+# report reads. The grade reads the season measure. Fewer weeks use what exists.
 LINEUP_WEEKS = 4
 
 # Trend and usage compares snap and target share over the last weeks against the same count of weeks before them.
