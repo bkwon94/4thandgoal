@@ -8,7 +8,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-5, AT-6, AT-7, and AT-
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A rubric test grades trade W first, test-first, and shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player this week." Bo Girds' row reads "No player it gets is a superstar."
 - [x] The tunables hold the rank as `SUPERSTAR_RANK = 8`. A tie at rank 8 makes every tied player a superstar.
