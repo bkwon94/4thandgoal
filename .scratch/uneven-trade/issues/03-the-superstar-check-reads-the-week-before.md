@@ -8,7 +8,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance test AT-8.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A rubric test grades trade W with no week 9 chart and the real saved week 8 read in place, test-first.
 - [x] The test shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player last week." Both sides start at C.
