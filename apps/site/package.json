@@ -14,7 +14,9 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "check:export": "node scripts/check-export.mjs",
-    "check": "pnpm check:fast && node scripts/build-each-client.mjs",
+    "check:floor": "playwright test --project=floor",
+    "test:floor": "playwright test --project=rules",
+    "check": "pnpm check:fast && pnpm test:floor && node scripts/build-each-client.mjs",
     "check:fast": "CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test",
     "hook:install": "prek install"
   },
@@ -38,6 +40,8 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "~1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
