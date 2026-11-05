@@ -29,10 +29,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - Each trade gets a Trade result from net Points over the line since the trade: Robbery, Clear win, Slight edge, Push, or Too soon. The record since is context, and "hurt on arrival" is a tag. Every trade shows, with the top 3 as cards. `decisions/04-grill-trade-grade-to-date.md`.
 - Schedule luck is head-to-head wins minus All-play wins, with no median game. Lines of +1.5 and -1.5 give Smoke and mirrors and Snakebit. The Schedule swap is a 12 by 12 grid with the self-meet rule, and CPC cells keep the median game. Points against and close games under 5 points are context only. The injury luck chapter is Injury toll. `decisions/06-grill-luck-and-schedule-swap.md`.
 - The sim is a replay of one stored run per press, beside the odds of all runs. No reader picks. It plays the regular season, freezes the final standings, then plays the bracket by round to a champion, with a clear split. `decisions/08-prototype-the-sim-interaction.md`.
+- The replay moves like a sports broadcast: a lower third each week, a red PLAYOFFS wipe, a bracket that draws in, winners that slide along the lines, and a full champion card. About 20 seconds, with a skip and a reduced-motion version. `decisions/13-prototype-the-replay-motion.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the replay move: the move to the playoffs, the bracket, each winner, and the champion? `decisions/13-prototype-the-replay-motion.md`.
 - What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
 - Which awards, top performers, and players to watch does the report name? `decisions/10-grill-awards-and-players.md`.
 - How long does the takeover last, what is the build command, how does the review run, and what scale has the `roast` setting? `decisions/11-spec-takeover-build-review-roast.md`.
