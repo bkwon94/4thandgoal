@@ -1,8 +1,9 @@
 /**
  * The share bar of a game: the share of the points of the lead side, as a pill bar with a meter role.
- * The hero tone sits in the hero, and the page tone sits on a card.
+ * The hero tone sits in the hero, and the page tone sits on a card. The fill grows once through the shared bar fill.
  */
 import { cn } from "@cpc/design/lib/utils";
+import { BarFill } from "@cpc/design/parts/bar-fill";
 
 /* The share of the first score in the total, in percent with one decimal: 100.31 and 98.88 give 50.4.
    A game with no points gives an even split, so the bar never divides by zero. */
@@ -24,7 +25,7 @@ export function ShareBar({ share, tone }: { share: number; tone: keyof typeof TR
       aria-valuenow={share}
       className={cn("h-sp-1 overflow-hidden rounded-pill", TRACKS[tone])}
     >
-      <div className="h-full rounded-pill bg-accent" style={{ width: `${share}%` }} />
+      <BarFill pct={share} className="block h-full rounded-pill bg-accent" />
     </div>
   );
 }

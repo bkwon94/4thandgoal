@@ -4,6 +4,7 @@
  */
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
+import { BarFill } from "@cpc/design/parts/bar-fill";
 import { Card } from "@cpc/design/parts/card";
 import type { AvatarMap, Median } from "../schema/week-types";
 import { Avatar } from "@cpc/league/avatar";
@@ -27,9 +28,9 @@ export function MedianGame({ median, avatars, blurb }: { median: Median | null; 
               <span className="truncate text-meta leading-tight text-ink-2">{bar.team.name}</span>
               {/* The track and the line are a graphic. The word after the score says above or below for a screen reader. */}
               <span aria-hidden="true" className="relative h-sp-2 rounded-pill bg-raised">
-                <span
+                <BarFill
+                  pct={bar.pct}
                   className={cn("absolute inset-y-0 left-0 rounded-pill", bar.above ? "bg-accent" : "bg-bar-off")}
-                  style={{ width: `${bar.pct}%` }}
                 />
                 <span
                   className="absolute -inset-y-sp-1 w-sp-0 bg-ink"
