@@ -1,0 +1,5 @@
+$ curl -s http://localhost:4173/ | grep -o "<html[^>]*>"
+<html lang="en" class="dark bKuuTq_variable hQ5RIa_variable">
+
+$ curl -s http://localhost:4173/ | grep -o "<script>try{if(localStorage[^<]*</script>"
+<script>try{if(localStorage.getItem("cpc.theme")==="light"){document.documentElement.classList.remove("dark")}}catch(e){}</script>

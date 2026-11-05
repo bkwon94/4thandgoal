@@ -1,0 +1,16 @@
+$ sed -n '/^\[menu\]/,$p' clients/cpc/client.toml
+[menu]
+items = [
+  { page = "home", label = "Home" },
+  { package = "week" },
+  { package = "rankings", label = "Power Rankings" },
+  { package = "managers", label = "Managers" },
+  { package = "analyzer", label = "Trade Analyzer" },
+]
+$ grep -n layout clients/cpc/client.toml
+(exit 1 : no line holds layout)
+
+$ sed -n '/^\[menu\]/,$p' clients/norcal/client.toml
+$ grep -n layout clients/norcal/client.toml
+(exit 1 : no line holds layout)
+

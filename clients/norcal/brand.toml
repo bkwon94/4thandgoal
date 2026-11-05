@@ -1,27 +1,63 @@
-# The brand of the NorCal client: the two radii, the two font stacks, and one dark set.
+# The brand of the NorCal client: the light and the dark set. The fonts and the radii belong to the look, not the brand (ADR 0024).
 # The schema is BRAND_SCHEMA in packages/design/site/brand/brand.ts. NorCal has no logo, so the masthead shows the site name as text.
-
-radius_card = "4px"
-radius_small = "2px"
-
-# The system font stack, so no font file loads.
-[fonts]
-body = 'system-ui, -apple-system, "Segoe UI", sans-serif'
-heading = 'system-ui, -apple-system, "Segoe UI", sans-serif'
-
-# No [light] table: one dark set, no theme button.
+# Dark is the default, and the theme button turns on light. Both sets are required.
 # The palette is red, gold, orange, and mustard over dark greys and blacks.
+
+# The light set of the look: a warm light page and white cards under a hero that stays dark in both themes.
+# NorCal gold is never text on a light surface. In light it shows only as the hero glow and as the hero accent text.
+[light]
+# Burnt red-orange: the fills with white text.
+accent = "#c2410c"
+# The hero surface.
+band = "#0a0a0a"
+page = "#f5f3ef"
+card = "#ffffff"
+# One step up from the card, such as the active dock item.
+raised = "#ecebe8"
+text = "#1c1917"
+muted = "#6b6359"
+# The lines of the grid texture of the hero.
+grid = "#181818"
+
+[light.derived]
+# The accent as text on the page and the card: a deep orange, because gold is too light on a light surface.
+accent_ink = "#9a3412"
+# Gold: the accent text of the hero.
+accent_text = "#e0a526"
+# The gold glow of the hero, 35% over transparent.
+accent_glow = { mix = "accent_text", percent = 35, over = "transparent" }
+ink_2 = "#3f3a35"
+rule = "#e2e0dc"
+bar_off = "#e2ddd3"
+# The hero roles: the hero stays dark in both themes, so they equal the hero roles of the dark set.
+on_dark = "#f5f0e6"
+on_dark_2 = "#d6d0c4"
+on_dark_muted = "#a8a29a"
+rule_dark = "#2e2e2e"
+chip_dark = "#232323"
+
 [dark]
 # Burnt red-orange: the fills with white text.
 accent = "#c2410c"
 band = "#0a0a0a"
 page = "#141414"
 card = "#232323"
+# The raised surface of the look, such as the active dock item: the value of the dark board.
+raised = "#2c2c2c"
 text = "#f5f0e6"
 muted = "#a8a29a"
+# The lines of the grid texture of the hero: the value of the dark board.
+grid = "#1d1d1d"
 
 [dark.derived]
 # Gold: the accent as text on the dark band.
 accent_text = "#e0a526"
-# Gold too: the accent as text on the page and on the pick. The accent itself is 3.6 to 1 on the page, so it carries no text.
+# Gold too: the accent as text on the page. The accent itself is 3.6 to 1 on the page, so it carries no text.
 accent_ink = "#e0a526"
+# The hero roles equal the hero roles of the light set, so the hero is the same in both themes.
+# The formula takes the light page as the hero text, so the dark set names the text of the brand.
+on_dark = "#f5f0e6"
+on_dark_2 = "#d6d0c4"
+on_dark_muted = "#a8a29a"
+rule_dark = "#2e2e2e"
+chip_dark = "#232323"

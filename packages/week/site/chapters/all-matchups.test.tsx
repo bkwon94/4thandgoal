@@ -1,88 +1,98 @@
 /**
- * Tests for all matchups. They render the week 6 JSON, read the teams and scores, and open a recap.
- * They check what a reader sees and the button state, not the class names.
+ * Tests for Every game, the game cards of the week page. They render the week 8 JSON of CPC and open a recap with a tap.
+ * They check what a reader sees and the button state.
  */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AllMatchups } from "./all-matchups";
-import { firstSentence, week6 } from "../fixtures/week-page";
+import { week8 } from "../fixtures/week-page";
 
 afterEach(() => {
   cleanup();
 });
 
-const recapText = firstSentence(week6.matchups[0].recap);
+function renderGames(managersHref: string | null = "/2026/managers/") {
+  render(<AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref={managersHref} />);
+  return screen.getByRole("region", { name: "Every game" });
+}
 
-function renderMatchups() {
-  return render(<AllMatchups matchups={week6.matchups} avatars={week6.avatars} />);
+/* The game card button that names this team. */
+function gameOf(team: string) {
+  return screen.getAllByRole("button").find((button) => button.textContent?.includes(team))!;
+}
+
+/* The recap panel that a game card button opens. */
+function panelOf(button: HTMLElement) {
+  return document.getElementById(button.getAttribute("aria-controls") ?? "")!;
 }
 
 describe("AllMatchups", () => {
-  it("shows the winner's name and score, then the other score and name", () => {
-    renderMatchups();
-    expect(screen.getByText("Lil Fridge")).toBeTruthy();
-    expect(screen.getByText("126.79")).toBeTruthy();
-    expect(screen.getByText("88.31 Brock ‘N’ Roll")).toBeTruthy();
-    expect(screen.getByText("46.08 To Infinity and Bijan")).toBeTruthy();
+  it("is the chapter Every game, with one closed card button per game, by top score", () => {
+    const chapter = renderGames();
+    expect(chapter.id).toBe("matchups");
+    expect(within(chapter).getByRole("heading", { level: 2 }).textContent).toBe("Every game");
+    const buttons = within(chapter).getAllByRole("button");
+    expect(buttons.map((button) => button.textContent?.split(/\d/)[0])).toEqual([
+      "Teehee",
+      "Maye d'force B with U",
+      "To Infinity and Bijan",
+      "All You Need Is Love",
+      "Return of T Mac",
+      "The Blue Tent",
+    ]);
+    for (const button of buttons) expect(button.getAttribute("aria-expanded")).toBe("false");
   });
 
-  it("shows one closed recap button per matchup", () => {
-    renderMatchups();
-    const buttons = screen.getAllByRole("button", { name: "Read Recap" });
-    expect(buttons.length).toBe(6);
-    expect(buttons[0].getAttribute("aria-expanded")).toBe("false");
-    expect(buttons[0].getAttribute("aria-controls")).toBeTruthy();
+  it("shows both teams and both scores on a card, as plain text in one button", () => {
+    renderGames();
+    const button = gameOf("The Blue Tent");
+    expect(button.textContent).toBe("The Blue Tent100.31London Cooking98.88");
+    expect(within(button).queryByRole("link")).toBeNull();
   });
 
-  it("keeps the recap text in the document, so find-in-page finds it", () => {
-    renderMatchups();
-    expect(screen.getByText(recapText, { exact: false })).toBeTruthy();
+  it("keeps each recap closed until a tap", () => {
+    renderGames();
+    expect(panelOf(gameOf("The Blue Tent")).hidden).toBe(true);
   });
 
-  it("opens the recap with the top scorers, then closes it", () => {
-    renderMatchups();
-    const button = screen.getAllByRole("button", { name: "Read Recap" })[0];
-    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "");
-    expect(screen.getByText(recapText, { exact: false })).toBeTruthy();
-    expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(panel?.getAttribute("aria-hidden")).toBe("true");
+  it("opens the recap of The Blue Tent and London Cooking with a brand edge and one Manager page link (AT-17)", () => {
+    renderGames();
+    const button = gameOf("The Blue Tent");
     fireEvent.click(button);
-    expect(panel?.getAttribute("aria-hidden")).toBe("false");
-    expect(button.textContent).toBe("Hide Recap");
     expect(button.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByText("Top · Lil Fridge")).toBeTruthy();
-    expect(screen.getByText("C. McCaffrey 26.2")).toBeTruthy();
-    expect(screen.getByText("B. Purdy 17.36")).toBeTruthy();
-    expect(screen.getByText(recapText, { exact: false })).toBeTruthy();
+    const panel = panelOf(button);
+    expect(panel.hidden).toBe(false);
+    expect(within(panel).getByText("Won by 1.43")).toBeTruthy();
+    const pick = week8.matchups.find((matchup) => matchup.is_pick)!;
+    expect(within(panel).getByText(pick.recap!).tagName).toBe("P");
+    const links = within(panel).getAllByRole("link");
+    expect(links).toHaveLength(1);
+    expect(links[0].textContent).toBe("Manager page of The Blue Tent");
+    expect(links[0].getAttribute("href")).toBe(`/2026/managers/${pick.sides[0].team.roster_id}/`);
+    // The open card takes the brand edge.
+    expect(button.closest("[data-open]")?.getAttribute("data-open")).toBe("true");
+  });
+
+  it("closes the recap on a second tap", () => {
+    renderGames();
+    const button = gameOf("The Blue Tent");
     fireEvent.click(button);
-    expect(button.textContent).toBe("Read Recap");
+    fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    expect(panel?.getAttribute("aria-hidden")).toBe("true");
+    expect(panelOf(button).hidden).toBe(true);
+    expect(button.closest("[data-open]")?.getAttribute("data-open")).toBe("false");
   });
 
-  it("points the matchup of the week to the top story", () => {
-    renderMatchups();
-    fireEvent.click(screen.getAllByRole("button", { name: "Read Recap" })[3]);
-    expect(screen.getByText(/This is the Matchup of the Week. Read the full story at the top./)).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Go to the top story" }).getAttribute("href")).toBe("#motw");
+  it("shows no Manager page link when the season has no managers file", () => {
+    renderGames(null);
+    const button = gameOf("The Blue Tent");
+    fireEvent.click(button);
+    expect(within(panelOf(button)).queryByRole("link")).toBeNull();
   });
 
-  it("shows a dash for a side with no top scorer", () => {
-    const [winner, loser] = week6.matchups[0].sides;
-    const matchup = { ...week6.matchups[0], sides: [winner, { ...loser, top: null }] as typeof week6.matchups[0]["sides"] };
-    render(<AllMatchups matchups={[matchup]} avatars={week6.avatars} />);
-    fireEvent.click(screen.getByRole("button", { name: "Read Recap" }));
-    expect(screen.getByText("—")).toBeTruthy();
-  });
-
-  it("links the winner and the loser names to their manager pages only when the season has the managers file", () => {
-    const { rerender } = render(
-      <AllMatchups matchups={week6.matchups} avatars={week6.avatars} managersHref="/2026/managers/" />,
-    );
-    expect(
-      ["Lil Fridge", "Brock ‘N’ Roll"].map((name) => screen.getByRole("link", { name }).getAttribute("href")),
-    ).toEqual(["/2026/managers/3/", "/2026/managers/1/"]);
-    rerender(<AllMatchups matchups={week6.matchups} avatars={week6.avatars} />);
-    expect(screen.queryByRole("link", { name: "Lil Fridge" })).toBeNull();
+  it("names each recap panel by its game, so a link or a check can open one game", () => {
+    renderGames();
+    const pick = week8.matchups.find((matchup) => matchup.is_pick)!;
+    expect(gameOf("The Blue Tent").getAttribute("aria-controls")).toBe(`recap-${pick.id}`);
   });
 });

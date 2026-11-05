@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { parse } from "smol-toml";
-import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, FONT_PATH, setsOf } from "@cpc/design/brand/brand.ts";
+import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, setsOf } from "@cpc/design/brand/brand.ts";
 
 /* The repo root, two folders above the site app. */
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -112,7 +112,7 @@ export function readCopy(root, slug) {
 /* The folders that the build owns. It empties each one first, so a route of the last client never stays behind. */
 const ROUTE_GROUP = join("src", "app", "(client)");
 const GENERATED_DIR = join("src", "generated");
-/* The logo and the font files of the client, copied from its assets/. The site serves them at /brand/. */
+/* The logo of the client, copied from its assets/. The site serves it at /brand/. */
 const BRAND_DIR = join("public", "brand");
 
 /* The logo of a client is the one file named logo in its assets/. A client with none shows its site name as text. */
@@ -201,9 +201,9 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
-/* The packages that give the home page a chapter, in the order of the page: the chapter beside the tools, then the
-   weekly reports. Each one has src/app/_routes/<package>/home.tsx. The order is fixed here and not by the package
-   list, so the order of client.toml never moves a chapter. */
+/* The packages that give the home page its parts. Each one has src/app/_routes/<package>/home.tsx, and each part
+   names its own place on the page. The order is fixed here and not by the package list, so the order of client.toml
+   never moves a part. */
 const HOME_SECTIONS = ["rankings", "week"];
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
@@ -234,11 +234,10 @@ function registryText(slug, values) {
   ].join("\n");
 }
 
-/* The menu of the client. The layout defaults to the hamburger. With no items, the menu takes the home page, then the
-   package list in its order, because Brian chose Home as the first item of a default menu. */
+/* The menu of the client. The look owns the navigation, so the menu holds only its items (ADR 0024). With no items, the
+   menu takes the home page, then the package list in its order, because Brian chose Home as the first item of a default menu. */
 function menuOf(values) {
   return {
-    layout: values.menu?.layout ?? "hamburger",
     items: values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))],
   };
 }
@@ -278,22 +277,12 @@ function copyPublished(published, publicDir) {
   }
 }
 
-/* Copy the logo and each font file of the brand from the assets/ of the client into public/brand/. The folder of an
-   earlier build goes first, so the export never holds the logo of another client. A face with no file fails, because
-   the build fetches no font from an outside host. Returns the src of the logo, or null with no logo. */
-function copyAssets(root, slug, brand, site) {
+/* Copy the logo from the assets/ of the client into public/brand/. The folder of an earlier build goes first, so the
+   export never holds the logo of another client. Returns the src of the logo, or null with no logo. */
+function copyAssets(root, slug, site) {
   const assets = join(root, "clients", slug, "assets");
   const target = join(site, BRAND_DIR);
   rmSync(target, { recursive: true, force: true });
-  for (const face of brand.fonts.faces ?? []) {
-    const file = join(assets, "fonts", face.file);
-    if (!existsSync(file)) {
-      throw new ClientBuildError(`The font face ${face.family} of clients/${slug}/brand.toml names ${file}, and the file does not exist.`);
-    }
-    // The brand CSS names each font file at FONT_PATH, so the copy goes to the same path.
-    mkdirSync(join(site, "public", FONT_PATH), { recursive: true });
-    cpSync(file, join(site, "public", FONT_PATH, face.file));
-  }
   const logo = existsSync(assets) ? readdirSync(assets).filter((name) => LOGO.test(name)).sort()[0] : undefined;
   if (logo === undefined) return null;
   mkdirSync(target, { recursive: true });
@@ -334,12 +323,9 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
     }
   }
   writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
-  const logo = copyAssets(root, slug, brand, site);
+  const logo = copyAssets(root, slug, site);
   writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy));
-  writeFile(
-    join(site, GENERATED_DIR, "brand.css"),
-    brandCss(brand, { source: `clients/${slug}/brand.toml`, faces: brand.fonts.faces ?? [] }),
-  );
+  writeFile(join(site, GENERATED_DIR, "brand.css"), brandCss(brand, { source: `clients/${slug}/brand.toml` }));
   copyPublished(published, join(site, "public"));
   writeFile(join(site, "wrangler.jsonc"), wranglerText(slug));
   return values;

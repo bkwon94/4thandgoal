@@ -1,164 +1,96 @@
 /**
- * All matchups: one row per game with both teams and scores, and a button that opens the recap panel.
- * It is the one client component of the week page, because the recap button holds open state.
+ * Every game: one card per game, by top score, with both avatars, both scores, and a share bar.
+ * A tap on a card opens its recap with a brand edge, the margin, and one link to a manager page.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import { useId, useState } from "react";
-import { Reveal } from "@cpc/design/parts/reveal";
-import { num, shortName } from "@cpc/design/format/format";
+import { useState } from "react";
+import { num } from "@cpc/design/format/format";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { DURATION, EASE_OUT, INSTANT, stagger } from "@cpc/design/lib/motion";
+import { DURATION, INSTANT, RISE, RISE_EASE } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
+import { Card } from "@cpc/design/parts/card";
 import type { AvatarMap, Matchup, MatchupSide } from "../schema/week-types";
 import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
-import { Blurb } from "@cpc/design/parts/blurb";
-import { Chapter } from "@cpc/design/parts/chapter";
-import { Label } from "@cpc/design/parts/label";
-import { TeamName } from "@cpc/design/parts/team-name";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
+import { ShareBar, shareOf } from "../parts/share-bar";
+import { WeekChapter } from "../parts/week-chapter";
 
-/* The top scorer of one side, or a dash when the side started no one. */
-function Star({ side }: { side: MatchupSide }) {
+/* One team of a card. The card is one button, so the name is plain text. A long name cuts at the end of its row. */
+function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMap; lead: boolean }) {
   return (
-    <div className="flex-1 rounded-card bg-card px-sp-3 py-sp-2">
-      <span className="block text-label leading-tight tracking-caps text-mute uppercase">{`Top · ${side.team.name}`}</span>
-      <b className="mt-sp-0 block text-body leading-tight tabular-nums">
-        {side.top ? `${shortName(side.top.name)} ${num(side.top.points)}` : "—"}
-      </b>
-    </div>
+    <span className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
+      <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
+      <span className={cn("truncate text-body leading-tight", lead ? "font-bold text-ink" : "text-ink-2")}>
+        {side.team.name}
+      </span>
+      <span className={cn("font-mono text-body tabular-nums", lead ? "font-bold text-ink" : "text-mute")}>
+        {num(side.score)}
+      </span>
+    </span>
   );
 }
 
-function Panel({ matchup }: { matchup: Matchup }) {
-  return (
-    <div className="pb-sp-3">
-      <div className="mb-sp-2 flex gap-sp-2">
-        {matchup.sides.map((side) => (
-          <Star key={side.team.roster_id} side={side} />
-        ))}
-      </div>
-      {matchup.is_pick ? (
-        <Blurb>
-          This is the Matchup of the Week. Read the full story at the top.{" "}
-          {/* An inline link cannot scale, so the link is an inline block for the press. */}
-          <a href="#motw" className="press inline-block text-accent-ink underline hover:decoration-2">
-            Go to the top story
-          </a>
-        </Blurb>
-      ) : (
-        <Blurb>{matchup.recap}</Blurb>
-      )}
-    </div>
-  );
-}
-
-function Row({
-  matchup,
-  avatars,
-  index,
-  managersHref,
-}: {
-  matchup: Matchup;
-  avatars: AvatarMap;
-  index: number;
-  managersHref: string | null;
-}) {
-  const first = index === 0;
+function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatars: AvatarMap; managersHref: string | null }) {
   const [open, setOpen] = useState(false);
   const off = useMotionOff();
-  const panelId = useId();
-  // The JSON puts the winner first. A tie has no winner, so neither side is bold.
-  const [winner, loser] = matchup.sides;
-  const bold = cn(winner.winner && "font-extrabold text-accent-ink");
-  const loserHref = managerHrefOrNull(managersHref, loser.team.roster_id);
-  // The panel stays in the DOM when closed, so find-in-page still finds the recap text.
-  // Height 0 hides it from sight. aria-hidden and inert hide it from assistive tech and the tab order.
-  const panel = (
-    // The panel animates height, an exception to the transform and opacity rule. The panel is short and opens
-    // on a tap only, and a FLIP of the rows below would move every other matchup.
-    <motion.div
-      id={panelId}
-      aria-hidden={!open}
-      inert={!open}
-      initial={false}
-      animate={open ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
-      transition={off ? INSTANT : { duration: DURATION.collapse, ease: EASE_OUT }}
-      className="overflow-hidden"
-    >
-      <Panel matchup={matchup} />
-    </motion.div>
-  );
+  // The JSON puts the winner first. A tie has no winner, and the first side still leads the card.
+  const [first, second] = matchup.sides;
+  // The id names the game, so a check of the readability floor can open the recap of one game by its control.
+  const panelId = `recap-${matchup.id}`;
+  const href = managerHrefOrNull(managersHref, first.team.roster_id);
   return (
-    // The row is the reveal box, so last:border-b-0 still finds the last row.
-    // The label is the first step of the stagger, so the first row is the second.
-    <Reveal className="border-b border-rule last:border-b-0" delay={stagger(index + 1)}>
-      {/* minmax(0,1fr) keeps both columns equal, even when one name has a long word.
-          The chapter label already gives the first row its top space.
-          From the tablet tier each half has room for the longest name and score, so the text keeps to one line.
-          The truncate style ends a name that is still too long with an ellipsis, so it cannot push the row wide. */}
-      <div
-        className={cn(
-          "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-sp-2 pb-sp-2 tabular-nums",
-          first ? "pt-0" : "pt-sp-3",
-        )}
-      >
-        <div className="flex min-w-0 items-center gap-sp-2 text-row leading-tight font-semibold hyphens-auto">
-          <Avatar src={avatarSrc(avatars, winner.team.roster_id)} />
-          <span className="min-w-0 tablet:truncate">
-            <span className={bold}>
-              <TeamName name={winner.team.name} href={managerHrefOrNull(managersHref, winner.team.roster_id)} />
-            </span> <span className={bold}>{num(winner.score)}</span>
-          </span>
-        </div>
-        <div className="flex min-w-0 items-center justify-end gap-sp-2 text-right text-row leading-tight font-semibold hyphens-auto">
-          {/* One string, so React writes one text node, as the old page did. A link splits the score from the name. */}
-          <span className="min-w-0 tablet:truncate">
-            {loserHref === null ? (
-              `${num(loser.score)} ${loser.team.name}`
-            ) : (
-              <>
-                {`${num(loser.score)} `}
-                <TeamName name={loser.team.name} href={loserHref} />
-              </>
-            )}
-          </span>
-          <Avatar src={avatarSrc(avatars, loser.team.roster_id)} />
-        </div>
-      </div>
-      {/* 44px is the smallest comfortable touch target. The color change on open is instant, so only the press animates.
-          The label is in title case, as every button label of the site is. The caps style does not change what a screen reader hears. */}
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen(!open)}
-        className={cn(
-          "press mb-sp-3 flex min-h-touch w-full cursor-pointer items-center justify-center gap-sp-2 rounded-card border-0 px-sp-3",
-          "text-meta font-bold tracking-caps uppercase [-webkit-tap-highlight-color:transparent]",
-          open ? "bg-card-band text-on-dark" : "bg-card text-accent-ink hover:bg-rule",
-        )}
-      >
-        <span>{open ? "Hide Recap" : "Read Recap"}</span>
-        {/* A turned square sits low in the line, so a small lift centers it on the text. */}
-        <span
-          aria-hidden
-          className={cn(
-            "inline-block size-chevron border-r-2 border-b-2 border-current transition-[translate,rotate] duration-200 ease-out",
-            open ? "translate-y-px -rotate-135" : "-translate-y-sp-0 rotate-45",
+    <li data-open={open} className="list-none">
+      <Card edge={open} className="overflow-hidden p-0">
+        {/* The whole card is one button of 44px or more, so the team names inside it are plain text. */}
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={() => setOpen(!open)}
+          className="press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 text-left text-inherit [-webkit-tap-highlight-color:transparent]"
+        >
+          <TeamRow side={first} avatars={avatars} lead />
+          <ShareBar share={shareOf(first.score, second.score)} tone="page" />
+          <TeamRow side={second} avatars={avatars} lead={false} />
+        </button>
+        {/* The panel stays in the DOM when closed, so the button always controls an element. Hidden keeps it from
+            sight, from a screen reader, and from the tab order. It opens in 0.3s with transform and opacity only. */}
+        <div id={panelId} hidden={!open}>
+          {open && (
+            <motion.div
+              initial={off ? false : { opacity: 0, y: `calc(${RISE} * -1)` }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={off ? INSTANT : { duration: DURATION.recap, ease: RISE_EASE }}
+              className="flex flex-col gap-sp-3 border-t border-rule px-sp-4 pt-sp-3 pb-sp-4"
+            >
+              <span className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
+                {`Won by ${num(first.score - second.score)}`}
+              </span>
+              {matchup.recap !== null && <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{matchup.recap}</p>}
+              {/* One link per recap: the manager page of the team that leads the card. It is a full tap target. */}
+              {href !== null && (
+                <a
+                  href={href}
+                  className="press inline-flex min-h-touch w-fit items-center rounded-pill border border-rule bg-raised px-sp-5 text-body font-bold text-ink no-underline"
+                >
+                  Manager page<span className="sr-only">{` of ${first.team.name}`}</span>
+                </a>
+              )}
+            </motion.div>
           )}
-        />
-      </button>
-      {panel}
-    </Reveal>
+        </div>
+      </Card>
+    </li>
   );
 }
 
-/* The label and the rows stagger in one by one, so the chapter itself has no reveal.
-   The managers href is the managers index of the season. With null the team names render as plain text.
-   The small Top label of the recap panel stays plain text: the winner and the loser names carry the links. */
+/* The top score of a game: the score of its first side, the winner. */
+const topScore = (matchup: Matchup) => Math.max(matchup.sides[0].score, matchup.sides[1].score);
+
+/* The managers href is the managers index of the season. With null an open recap has no Manager page link. */
 export function AllMatchups({
   matchups,
   avatars,
@@ -168,14 +100,15 @@ export function AllMatchups({
   avatars: AvatarMap;
   managersHref?: string | null;
 }) {
+  const games = [...matchups].sort((a, b) => topScore(b) - topScore(a));
   return (
-    <Chapter id="matchups">
-      <Reveal delay={stagger(0)}>
-        <Label heading>All Matchups</Label>
-      </Reveal>
-      {matchups.map((matchup, i) => (
-        <Row key={matchup.id} matchup={matchup} avatars={avatars} index={i} managersHref={managersHref} />
-      ))}
-    </Chapter>
+    <WeekChapter id="matchups" title="Every game" note="Tap for the recap">
+      {/* Two cards per row from the tablet tier, so the twelve teams fit in less scroll. */}
+      <ul className="m-0 grid grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-2">
+        {games.map((matchup) => (
+          <GameCard key={matchup.id} matchup={matchup} avatars={avatars} managersHref={managersHref} />
+        ))}
+      </ul>
+    </WeekChapter>
   );
 }

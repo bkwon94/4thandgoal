@@ -1,11 +1,10 @@
 /**
- * The chosen week of the power rankings page, shared by the masthead week line and the rankings table.
+ * The chosen week of the power rankings page, which the hero and the cards of the Ladder read.
  * The URL hash carries the week as "#week-5", so a link opens that week. The state is client state, so this file is a client component.
  */
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { WeekLine } from "@cpc/design/parts/week-line";
+import { useEffect, useState } from "react";
 import type { RankingsWeek } from "../schema/rankings-types";
 
 export type WeekChoice = { week: RankingsWeek; choose: (week: number) => void };
@@ -38,23 +37,4 @@ export function useWeekChoice(weeks: RankingsWeek[]): WeekChoice {
   }
 
   return { week: weeks.find((entry) => entry.week === chosen) ?? last, choose };
-}
-
-const WeekChoiceContext = createContext<WeekChoice | null>(null);
-
-/* The shared choice of the page. The masthead is a server component, so it sits inside as a child and keeps its build-time reads. */
-export function WeekChoiceProvider({ weeks, children }: { weeks: RankingsWeek[]; children: ReactNode }) {
-  const choice = useWeekChoice(weeks);
-  return <WeekChoiceContext.Provider value={choice}>{children}</WeekChoiceContext.Provider>;
-}
-
-/* The shared choice, or null outside the provider. A table outside the provider keeps a choice of its own. */
-export function useSharedWeekChoice(): WeekChoice | null {
-  return useContext(WeekChoiceContext);
-}
-
-/* The masthead week line of the chosen week. */
-export function ChosenWeekLine() {
-  const choice = useSharedWeekChoice();
-  return choice && <WeekLine label="WEEK" number={choice.week.week} />;
 }

@@ -1,0 +1,21 @@
+$ git diff -- clients/cpc/brand.toml
+diff --git a/clients/cpc/brand.toml b/clients/cpc/brand.toml
+index c7a09f01..71f24d28 100644
+--- a/clients/cpc/brand.toml
++++ b/clients/cpc/brand.toml
+@@ -87,3 +87,6 @@ rule_dark = "#444444"
+ # so the chip goes one step up. #313131 is 1.2 to 1 on the lifted `card_band` surface. On it white is 13.0 to 1, #ccc 8.1, and #999 4.6.
+ # The chip stops below #333, because #999 is only 4.4 to 1 on #333 and fails the 4.5 to 1 rule for text.
+ chip_dark = "#313131"
++
++[fonts]
++display = "Inter"
+$ CLIENT=cpc pnpm --dir apps/site build
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> node scripts/client-build.mjs
+
+client build failed: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/clients/cpc/brand.toml breaks a rule:
+- fonts: is not a known key
+ ELIFECYCLE  Command failed with exit code 1.
+exit=1
