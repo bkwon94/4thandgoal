@@ -1,0 +1,29 @@
+$ find apps/site/out -name index.html | sed "s|apps/site/out||; s|index.html$||" | sort
+/
+/_not-found/
+/2026/managers/
+/2026/managers/1/
+/2026/managers/10/
+/2026/managers/11/
+/2026/managers/12/
+/2026/managers/2/
+/2026/managers/3/
+/2026/managers/4/
+/2026/managers/5/
+/2026/managers/6/
+/2026/managers/7/
+/2026/managers/8/
+/2026/managers/9/
+/2026/week-06/
+/2026/week-07/
+/2026/week-08/
+/404/
+/analyze/
+/rankings/
+
+$ find apps/site/out -ipath "*waiver*"
+apps/site/out/2026/week-08/waiver.json
+(one data file, waiver.json, comes from the published week. No waiver page and no waiver/ folder exist.)
+
+$ curl -s -o /dev/null -w "%{http_code}" http://localhost:4173/2026/week-08/waiver/
+404

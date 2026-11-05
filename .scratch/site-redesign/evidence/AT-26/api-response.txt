@@ -1,0 +1,8 @@
+[
+  {
+    "url": "http://localhost:8080/clients/cpc/analyze",
+    "sent": "{\"season\":2026,\"asker\":6,\"sides\":[{\"roster_id\":6,\"gives\":[{\"player_id\":\"11560\",\"to\":12}]},{\"roster_id\":12,\"gives\":[{\"player_id\":\"6801\",\"to\":6}]}]}",
+    "status": 422,
+    "answer": "{\"detail\":{\"message\":\"Caleb Williams is no longer on Bo Girds.\",\"player_id\":\"11560\"}}"
+  }
+]

@@ -17,4 +17,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-35.
 - [x] CI installs Chromium. The check stays out of `check:fast`.
 - [x] A 14px blurb on a local branch fails the check, which names the page, the element, and the size.
 - [x] A new ADR, beside ADR 0016, fixes the readability floor as a rule.
-- [ ] The evidence of AT-35 is recorded in `EVIDENCE.md`.
+- [x] The evidence of AT-35 is recorded in `EVIDENCE.md`.

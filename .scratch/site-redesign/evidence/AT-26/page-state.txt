@@ -1,0 +1,1 @@
+{"boxRole":"alert","boxHTML":"<p role=\"alert\" class=\"m-0 text-body font-bold text-accent-ink\">Caleb Williams is no longer on Bo Girds.</p>","addPlayerEnabled":[true,true],"tryAgain":false}

@@ -1,0 +1,2 @@
+"WK 06 -> /2026/week-06/ current=null | WK 07 -> /2026/week-07/ current=null | WK 08 -> /2026/week-08/ current=true"
+After a tap on WK 07: http://localhost:4173/2026/week-07/ | Week 7 · Cornerstone Fantasy Football League

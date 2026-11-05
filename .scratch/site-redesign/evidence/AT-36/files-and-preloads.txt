@@ -1,0 +1,11 @@
+$ wc -c apps/site/out/_next/static/media/*.woff2
+   31340 apps/site/out/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2
+   22320 apps/site/out/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2
+   53660 total
+
+$ curl -s http://localhost:4173/2026/week-08/ | grep -o "<link[^>]*preload[^>]*font[^>]*>"
+<link rel="preload" href="/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2" as="font" crossorigin="" type="font/woff2"/>
+<link rel="preload" href="/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2" as="font" crossorigin="" type="font/woff2"/>
+
+$ curl -s http://localhost:4173/2026/week-08/ | grep -c -E "fonts.googleapis|fonts.gstatic|use.typekit"
+0

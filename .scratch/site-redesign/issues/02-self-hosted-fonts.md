@@ -15,4 +15,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-36.
 - [x] A check holds the byte budget of 56,000 in total, exactly two font files, and two font preloads on each page.
 - [x] The ban on `next/font` narrows to `next/font/google` and the outside font hosts.
 - [ ] A real build of both clients, the fallback on iOS and Android, the cache headers of the Worker, and the layout shift are measured.
-- [ ] The evidence of AT-36 is recorded in `EVIDENCE.md`.
+- [x] The evidence of AT-36 is recorded in `EVIDENCE.md`.

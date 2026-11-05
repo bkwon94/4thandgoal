@@ -1,0 +1,19 @@
+The setup of AT-21.
+Each command ran from the Spec worktree at 12486d0e on 2026-11-05.
+
+$ CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4173 make -C apps/api api
+The local API of this branch on port 8080, with the test passphrase localtest for each client.
+
+$ NEXT_PUBLIC_API_URL=http://localhost:8080 CLIENT=cpc pnpm --dir apps/site build
+$ python3 -I serve404.py 4173 apps/site/out
+serve404.py is python3 -m http.server with one change: a missing path gets 404.html and status 404, like the
+not_found_handling "404-page" of the Worker. The export calls the local API at http://localhost:8080 only.
+
+Each shot: set the viewport, open http://localhost:4173/analyze/, set the theme, store the passphrase
+(localStorage cpc.passphrase = localtest), reload, choose Bo Girds (roster 6) as Your Team and Teehee (roster 12) as Team Two.
+The theme: localStorage cpc.theme = "light" for light; no key for dark, because dark is the default.
+The teams and the rosters come from Sleeper through the local API. No answer is mocked.
+
+The recording made its own browser context, so the passphrase went in through the gate form.
+Then: open the sheet and check Tee Higgins, tap Done; open it and check Bhayshul Tuten, tap the close button;
+open it and check Tony Pollard, tap the dim page at x=187 y=60. steps.txt holds the card text after each close.
