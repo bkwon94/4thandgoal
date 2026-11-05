@@ -562,6 +562,27 @@ not, by lineup value. RB24 is the 24th running back in the league, not on the 12
 no game in the window ranks last.
 _Avoid_: positional rank, tier (alone), ranking
 
+**Season rank**:
+A player's place at his position by his total points this season, as Sleeper sorts it. It is the rank that the
+text of a grade shows, such as WR60.
+_Avoid_: overall rank, position rank (that is the measure inside the grade)
+
+**Recent rank**:
+A player's place at his position by points per game over his last 4 games. A grade shows it only beside the
+Season rank, with its label, when the two differ by a large gap.
+_Avoid_: form rank, hot rank, rank (alone)
+
+**Week line**:
+The line of a grade that says, for one side and one week, how the trade changes the players who play that week at
+each position the trade touches. It names byes, players listed Out or IR, and players who step up. It never moves
+the letter.
+_Avoid_: weekly impact, matchup line, lineup fit
+
+**Steps up**:
+A player steps up for a week when the player directly ahead of him on his NFL team's depth chart, at his
+position, is listed Out or IR for that week.
+_Avoid_: promoted, next man up, starts (alone)
+
 **The line**:
 The last position rank a starter can hold: 36 at RB and WR, 24 at QB and TE. A flex slot reads the
 line of the player's own position. K and DEF have no line.
