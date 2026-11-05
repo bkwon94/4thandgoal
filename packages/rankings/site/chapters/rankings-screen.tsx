@@ -1,9 +1,9 @@
 /**
- * The power rankings page: the masthead with the chosen week line and the table, or a short empty state with no file.
- * The route of the app reads the rankings file and the masthead values, and passes them in, so the screen reads no file.
+ * The power rankings page: the top band, the chosen week line, and the table, or a short empty state with no file.
+ * The route of the app reads the rankings file and the shell values, and passes them in, so the screen reads no file.
  */
 import type { ComponentProps } from "react";
-import { Masthead } from "@cpc/design/shell/masthead";
+import { TopBand } from "@cpc/design/shell/top-band";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
@@ -12,28 +12,28 @@ import type { Rankings } from "../schema/rankings-types";
 import { PowerRankings } from "./power-rankings";
 import { ChosenWeekLine, WeekChoiceProvider } from "./week-choice";
 
-/* The title, the brand, and the menu of the masthead, as the app builds them for every page. */
-type MastheadValues = Pick<ComponentProps<typeof Masthead>, "title" | "brand" | "menu">;
+/* The title, the brand, and the menu of the top band, as the app builds them for every page. */
+type ShellValues = Pick<ComponentProps<typeof TopBand>, "title" | "brand" | "menu">;
 
 export function RankingsScreen({
   rankings,
   avatars,
   managersHref,
-  masthead,
+  shell,
   pageHref,
 }: {
   // Null when the pipeline has not written the rankings file yet.
   rankings: Rankings | null;
   avatars: Readonly<Record<string, string>>;
   managersHref: string | null;
-  masthead: MastheadValues;
+  shell: ShellValues;
   // The href of this page, with the base path.
   pageHref: string;
 }) {
   if (!rankings || rankings.weeks.length === 0) {
     return (
       <>
-        <Masthead {...masthead} subtitle="Power Rankings" pageHref={pageHref} />
+        <TopBand {...shell} pageHref={pageHref} />
         <PageColumn>
           <Chapter>
             <Label heading>Power Rankings</Label>
@@ -44,11 +44,11 @@ export function RankingsScreen({
     );
   }
   return (
-    // The provider holds the chosen week, so the masthead week line and the table read the same week.
+    // The provider holds the chosen week, so the week line and the table read the same week.
     <WeekChoiceProvider weeks={rankings.weeks}>
-      <Masthead {...masthead} subtitle="Power Rankings" pageHref={pageHref}>
+      <TopBand {...shell} pageHref={pageHref}>
         <ChosenWeekLine />
-      </Masthead>
+      </TopBand>
       <PageColumn>
         <PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref={managersHref} />
       </PageColumn>

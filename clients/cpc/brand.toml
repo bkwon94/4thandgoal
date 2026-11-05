@@ -41,8 +41,8 @@ rule_dark = "#333333"
 chip_dark = "#262626"
 
 # The dark theme re-points the light roles to dark partners, so no component changes a class. See ADR 0007.
-# The page goes brand black, and the black card lifts one step to #262626, so it keeps its edge. The masthead and the compact bar
-# keep the band, so they sit flush with the page. The accent, the on-dark roles, and the glow do not re-point.
+# The page goes brand black, and the black card lifts one step to #262626, so it keeps its edge. The hero keeps the band,
+# so it sits flush with the page, and its rule gives its edge. The accent, the on-dark roles, and the glow do not re-point.
 # The accent is 3.1 to 1 on #141414 and 2.6 to 1 on #262626, so it never carries text on a dark surface.
 # The two dark surfaces are the page #141414 and the raised surface #262626. Each ratio below is on those two, in that order.
 [dark]

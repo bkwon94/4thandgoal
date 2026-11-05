@@ -5,11 +5,11 @@
  */
 import type { Metadata } from "next";
 import { Analyzer } from "@cpc/analyzer/form/analyzer";
-import { Masthead } from "@cpc/design/shell/masthead";
+import { TopBand } from "@cpc/design/shell/top-band";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { apiTarget, finderOn } from "@/lib/config";
 import { analyzeHref } from "@/lib/routes";
-import { mastheadProps, pageTitle } from "@/app/masthead-props";
+import { shellProps, pageTitle } from "@/app/shell-props";
 
 export const metadata: Metadata = {
   title: pageTitle(undefined, "Trade Analyzer"),
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function AnalyzePage() {
   return (
     <>
-      <Masthead {...mastheadProps()} subtitle="Trade Analyzer" pageHref={analyzeHref()} />
+      <TopBand {...shellProps()} pageHref={analyzeHref()} />
       <PageColumn>
         <Analyzer target={apiTarget} finderOn={finderOn} />
       </PageColumn>

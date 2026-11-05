@@ -3,13 +3,13 @@
  * The client build writes its route file only when the client takes managers and the latest season has a managers file.
  */
 import type { Metadata } from "next";
-import { Masthead } from "@cpc/design/shell/masthead";
+import { TopBand } from "@cpc/design/shell/top-band";
 import { ManagersIndex } from "@cpc/managers/page/managers-index";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";
 import { managersHref } from "@/lib/routes";
-import { mastheadProps, pageTitle } from "@/app/masthead-props";
+import { shellProps, pageTitle } from "@/app/shell-props";
 
 type Props = { params: Promise<{ season: string }> };
 
@@ -28,7 +28,7 @@ export default async function ManagersPage({ params }: Props) {
   const managers = loadManagers()!;
   return (
     <>
-      <Masthead {...mastheadProps()} subtitle="Managers" pageHref={managersHref(season)} />
+      <TopBand {...shellProps()} pageHref={managersHref(season)} />
       <PageColumn>
         <ManagersIndex managers={managers} avatars={latestAvatars(managers.season)} managersHref={managersHref(season)} />
       </PageColumn>

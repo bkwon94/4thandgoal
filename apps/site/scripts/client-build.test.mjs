@@ -219,12 +219,11 @@ describe("the client build", () => {
     expect(text).toContain('"season": 2026');
   });
 
-  it("writes the menu layout and the menu items of client.toml into the client values", () => {
+  it("writes the menu items of client.toml into the client values", () => {
     const repo = tempRepo();
     buildClient(repo);
     const menu = clientValuesOf(repo.site).menu;
     expect(menu).toEqual({
-      layout: "hamburger",
       items: [
         { page: "home", label: "Home" },
         { package: "week" },
@@ -235,7 +234,7 @@ describe("the client build", () => {
     });
   });
 
-  it("gives a test client with the layout bar and no items a bar with Home, then the items of the package list (AT-16)", () => {
+  it("gives a test client with a [menu] of no items Home, then the items of the package list (AT-16)", () => {
     const toml = [
       'packages = ["week", "waiver", "rankings"]',
       'timezone = "America/Los_Angeles"',
@@ -245,27 +244,38 @@ describe("the client build", () => {
       'league_id = "1"',
       "",
       "[menu]",
-      'layout = "bar"',
       "",
     ].join("\n");
-    const repo = tempRepo(toml, "bar-client");
+    const repo = tempRepo(toml, "plain-client");
     buildClient(repo);
     const values = clientValuesOf(repo.site);
     expect(values.menu).toEqual({
-      layout: "bar",
       items: [{ page: "home" }, { package: "week" }, { package: "waiver" }, { package: "rankings" }],
     });
     expect(values.usageCode).toBeNull();
   });
 
-  it("gives a client with no [menu] the hamburger, Home, and the items of the package list", () => {
+  it("gives a client with no [menu] Home and the items of the package list", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
     expect(clientValuesOf(repo.site).menu).toEqual({
-      layout: "hamburger",
       items: [{ page: "home" }, { package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
     });
+  });
+
+  it("fails on a layout key of [menu] and names the key, because the look owns the navigation (AT-13)", () => {
+    const repo = tempRepo(CPC_TOML.replace("[menu]\n", '[menu]\nlayout = "hamburger"\n'));
+    expect(() => buildClient(repo)).toThrow(ClientBuildError);
+    expect(() => buildClient(repo)).toThrow("- menu.layout: is not a known key");
+    expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "client.toml"));
+  });
+
+  it("keeps no layout key in the [menu] of a client of the repo (AT-13)", () => {
+    for (const slug of readdirSync(join(REPO_ROOT, "clients"))) {
+      const file = join(REPO_ROOT, "clients", slug, "client.toml");
+      if (existsSync(file)) expect(readFileSync(file, "utf8"), slug).not.toMatch(/^\s*layout\s*=/m);
+    }
   });
 
   it("copies only the published data of the client into public/, and drops a season of an earlier build", () => {

@@ -1,10 +1,10 @@
 /**
- * Tests for the masthead props: the menu items of client.toml become the destinations of the menu, in order.
+ * Tests for the shell props: the menu items of client.toml become the destinations of the menu, in order.
  * One test reads the real generated client values of cpc and the real published weeks.
  */
 import { describe, expect, it } from "vitest";
 import type { MenuLinks } from "@/lib/client-values";
-import { mastheadProps, menuPages, pageTitle } from "./masthead-props";
+import { shellProps, menuPages, pageTitle } from "./shell-props";
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
@@ -19,22 +19,24 @@ describe("menuPages", () => {
   it("gives one destination per item, in the order of the items", () => {
     const pages = menuPages([{ package: "analyzer" }, { page: "home" }, { package: "week" }], LINKS, "/");
     expect(pages).toEqual([
-      { label: "Trade Analyzer", href: "/analyze/" },
-      { label: "Home", href: "/" },
-      { label: "Week 7", href: "/2026/week-07/" },
+      { kind: "analyzer", label: "Trade Analyzer", short: "Trade", href: "/analyze/" },
+      { kind: "home", label: "Home", short: "Home", href: "/" },
+      { kind: "week", label: "Week 7", short: "Week 7", href: "/2026/week-07/" },
     ]);
   });
 
-  it("takes the label of an item in place of the label of the package", () => {
-    const pages = menuPages([{ page: "home", label: "Start" }, { package: "rankings", label: "Rankings" }], LINKS, "/");
-    expect(pages.map((page) => page.label)).toEqual(["Start", "Rankings"]);
+  it("takes the label of an item in place of the label of the package, in the pill bar only", () => {
+    const pages = menuPages([{ page: "home", label: "Start" }, { package: "analyzer", label: "Trades" }], LINKS, "/");
+    expect(pages.map((page) => page.label)).toEqual(["Start", "Trades"]);
+    // The dock keeps the short label of the look, so five items fit the width of a phone.
+    expect(pages.map((page) => page.short)).toEqual(["Home", "Trade"]);
   });
 
   it("lists the waiver page after the trade analyzer when the items put it there", () => {
     const pages = menuPages([{ package: "analyzer" }, { package: "waiver" }], LINKS, "/");
     expect(pages).toEqual([
-      { label: "Trade Analyzer", href: "/analyze/" },
-      { label: "Waiver Wire", href: "/2026/week-07/waiver/" },
+      { kind: "analyzer", label: "Trade Analyzer", short: "Trade", href: "/analyze/" },
+      { kind: "waiver", label: "Waiver Wire", short: "Waiver", href: "/2026/week-07/waiver/" },
     ]);
   });
 
@@ -50,24 +52,25 @@ describe("menuPages", () => {
   });
 });
 
-describe("mastheadProps of cpc", () => {
-  it("keeps the hamburger, the items, and the labels of the CPC menu", () => {
-    const { menu } = mastheadProps();
-    expect(menu.layout).toBe("hamburger");
-    expect(menu.pages.map((page) => page.label)).toEqual([
-      "Home",
-      "Week 8",
-      "Power Rankings",
-      "Managers",
-      "Trade Analyzer",
-    ]);
-    expect(menu.pastWeeks.map((page) => page.label)).toEqual(["Week 7", "Week 6"]);
+describe("shellProps of cpc", () => {
+  it("keeps the items and the labels of the CPC menu, with the short labels of the dock (AT-9, AT-10)", () => {
+    const { menu } = shellProps();
+    expect(menu.items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
+    expect(menu.items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
   });
 
-  it("takes the masthead text of copy.toml, the CPC logo, and the theme button of a two-set brand (AT-5)", () => {
-    const { title, brand } = mastheadProps();
+  it("lists every published week, newest first, for the week chip and the strip (AT-11)", () => {
+    expect(shellProps().menu.weeks).toEqual([
+      { number: 8, href: "/2026/week-08/" },
+      { number: 7, href: "/2026/week-07/" },
+      { number: 6, href: "/2026/week-06/" },
+    ]);
+  });
+
+  it("takes the masthead text of copy.toml and the CPC logo", () => {
+    const { title, brand } = shellProps();
     expect(title).toBe("Cornerstone Fantasy Football League");
-    expect(brand).toEqual({ home: "/", logo: "/brand/logo.png", themeButton: true });
+    expect(brand).toEqual({ home: "/", logo: "/brand/logo.png" });
   });
 });
 

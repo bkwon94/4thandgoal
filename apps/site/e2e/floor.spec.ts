@@ -13,11 +13,14 @@ import { serveDir } from "./serve";
 const OUT = join(process.cwd(), "out");
 const CLIENT = process.env.CLIENT ?? "cpc";
 
+/* The route of the 404 page: a path that no page has. builtRoutes lists it when the export holds 404.html. */
+const NOT_FOUND_ROUTE = "/404-floor-check/";
+
 /*
  * The pages of the full floor: all four rules, in both themes, at both widths. A page ticket of the redesign adds its
  * pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
  */
-const FULL_FLOOR_PAGES: readonly string[] = [];
+const FULL_FLOOR_PAGES: readonly string[] = [NOT_FOUND_ROUTE];
 
 /* Every client has both sets (decision 12), so the full floor checks both themes. */
 const THEMES: readonly Theme[] = ["dark", "light"];
@@ -43,7 +46,7 @@ function builtRoutes(): string[] {
     }
   };
   walk(OUT);
-  if (existsSync(join(OUT, "404.html"))) routes.push("/404-floor-check/");
+  if (existsSync(join(OUT, "404.html"))) routes.push(NOT_FOUND_ROUTE);
   return routes.sort();
 }
 

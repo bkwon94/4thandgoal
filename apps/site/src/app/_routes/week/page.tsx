@@ -3,7 +3,8 @@
  * It renders the masthead with the week line and the week sections from that JSON.
  */
 import type { Metadata } from "next";
-import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
+import { TopBand } from "@cpc/design/shell/top-band";
+import { WeekLine } from "@cpc/design/parts/week-line";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
 import { ChapterRail, type RailChapter } from "@cpc/design/parts/chapter-rail";
@@ -19,7 +20,7 @@ import { WeekFooter } from "@cpc/week/chapters/week-footer";
 import { seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
-import { mastheadProps, pageTitle, weekSubtitle } from "@/app/masthead-props";
+import { shellProps, pageTitle, weekSubtitle } from "@/app/shell-props";
 
 type Props = { params: Promise<WeekRef> };
 
@@ -65,13 +66,13 @@ export default async function WeekPage({ params }: Props) {
   const next = seasonWeeks.filter((summary) => summary.number > page.week).at(-1) ?? null;
   return (
     <>
-      <Masthead {...mastheadProps()} subtitle={weekSubtitle()} pageHref={weekHref(season, week)}>
+      <TopBand {...shellProps()} pageHref={weekHref(season, week)}>
         <WeekLine label="WEEK" number={page.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">
           {/* One string, so React writes one text node and the browser kerns the line as one run. */}
           {`${page.dates} · Published ${page.publish_date}`}
         </div>
-      </Masthead>
+      </TopBand>
       <PageColumn rail={<ChapterRail chapters={chapters} />}>
         {/* The masthead and the top story show at once. The hero plays its own motion on load.
             Each chapter below reveals once as it enters the view, as a unit or card by card. */}

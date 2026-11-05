@@ -38,15 +38,15 @@ describe("RankingsPage", () => {
     render(<RankingsPage />);
     expect(screen.getByRole("heading", { level: 2, name: "Power Rankings" })).toBeTruthy();
     expect(screen.getByText("No power rankings are published yet.")).toBeTruthy();
-    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(within(screen.getByRole("main")).queryAllByRole("listitem")).toHaveLength(0);
   });
 
   it("shows the last week of the file with the avatars of the latest week page", async () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
-    // The masthead names the week of the last entry in the file.
-    expect(screen.getByRole("banner").textContent).toContain("WEEK 6");
-    const rows = screen.getAllByRole("listitem");
+    // The week line under the top band names the week of the last entry in the file.
+    expect(document.body.textContent).toContain("WEEK 6");
+    const rows = within(screen.getByRole("main")).getAllByRole("listitem");
     expect(rows).toHaveLength(12);
     expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("/2026/week-06/avatars/5.jpg");
   });
@@ -58,15 +58,15 @@ describe("RankingsPage", () => {
     expect(within(main).getByRole("heading", { level: 2, name: "Power Rankings" })).toBeTruthy();
   });
 
-  it("moves the masthead week line with the chosen chip", async () => {
+  it("moves the week line with the chosen chip", async () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
-    const banner = screen.getByRole("banner");
+    const page = document.body;
     const chip = (week: number) =>
       within(screen.getByRole("group", { name: "Week" })).getByRole("button", { name: `Week ${week}` });
-    expect(banner.textContent).toContain("WEEK 6");
+    expect(page.textContent).toContain("WEEK 6");
     fireEvent.click(chip(1));
-    expect(banner.textContent).toContain("WEEK 1");
-    expect(banner.textContent).not.toContain("WEEK 6");
+    expect(page.textContent).toContain("WEEK 1");
+    expect(page.textContent).not.toContain("WEEK 6");
   });
 });

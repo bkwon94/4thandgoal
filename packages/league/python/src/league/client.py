@@ -64,8 +64,8 @@ class MenuItem(_Strict):
 
 
 class Menu(_Strict):
-    """The menu layout and its items. With no items, the site build puts the home page first, then the package list."""
-    layout: Literal["hamburger", "bar", "tabs"] = "hamburger"
+    """The menu items. The look of the site owns the navigation, so a client sets no layout (ADR 0024).
+    With no items, the site build puts the home page first, then the package list."""
     items: list[MenuItem] | None = None
 
 

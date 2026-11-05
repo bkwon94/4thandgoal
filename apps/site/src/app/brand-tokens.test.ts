@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { parse } from "smol-toml";
 import { describe, expect, it } from "vitest";
 import { brandCss, type BrandFile } from "@cpc/design/brand/brand";
+import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 
 const ROOT = join(process.cwd(), "..", "..");
 const BRAND = parse(readFileSync(join(ROOT, "clients", "cpc", "brand.toml"), "utf8")) as unknown as BrandFile;
@@ -113,6 +114,32 @@ describe("the fonts and the radii of the look", () => {
 
   it("come from no brand, so each client gets the same look", () => {
     expect(brandCss(BRAND, { source: "clients/cpc/brand.toml" })).not.toMatch(/--(font|radius)-/);
+  });
+});
+
+/* The text of globals.css with no comments, so a rule in a comment never counts. */
+const RULES = GLOBALS.replace(/\/\*[\s\S]*?\*\//g, "");
+
+describe("the motion of the look (AT-7, AT-8)", () => {
+  it("rises in 0.7s on the curve of the look, the same curve in the CSS and in the motion props", () => {
+    expect(DURATION.rise).toBe(0.7);
+    expect(RISE_EASE).toEqual([0.16, 1, 0.3, 1]);
+    expect(LOOK.get("--ease-rise")).toBe(`cubic-bezier(${RISE_EASE.join(", ")})`);
+  });
+
+  it("scales a tap to 0.98, and turns the tap scale off with reduced motion", () => {
+    const press = blocksAt(RULES, /@utility press/)[0];
+    expect(press).toMatch(/&:active\s*{\s*transform: scale\(0\.98\);/);
+    expect(blocksAt(press, /@media \(prefers-reduced-motion: reduce\)/)[0]).toMatch(/transform: none/);
+  });
+
+  it("sweeps the scan line of the hero once, with transform and opacity only, and hides it with reduced motion", () => {
+    const scan = blocksAt(RULES, /\.hero-scan\s*{/)[0];
+    expect(scan).toMatch(/animation: hero-scan [\d.]+s var\(--ease-rise\) [\d.]+s 1 both;/);
+    const frames = blocksAt(RULES, /@keyframes hero-scan/)[0];
+    expect([...new Set([...frames.matchAll(/([a-z-]+):/g)].map((match) => match[1]))].sort()).toEqual(["opacity", "transform"]);
+    const reduced = blocksAt(RULES, /@media \(prefers-reduced-motion: reduce\)/).join("\n");
+    expect(reduced).toMatch(/\.hero-scan\s*{\s*display: none;/);
   });
 });
 

@@ -4,7 +4,8 @@
  */
 import type { Metadata } from "next";
 import { Fragment } from "react";
-import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
+import { TopBand } from "@cpc/design/shell/top-band";
+import { WeekLine } from "@cpc/design/parts/week-line";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
@@ -12,7 +13,7 @@ import { season } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { cn } from "@cpc/design/lib/utils";
 import { homeSections, homeTools } from "@/generated/registry";
-import { mastheadProps, pageTitle } from "@/app/masthead-props";
+import { shellProps, pageTitle } from "@/app/shell-props";
 
 export const metadata: Metadata = {
   title: pageTitle(),
@@ -29,9 +30,9 @@ export default function HomePage() {
   const topCount = toolsChapter + beside.length;
   return (
     <>
-      <Masthead {...mastheadProps()} pageHref={homeHref()}>
+      <TopBand {...shellProps()} pageHref={homeHref()}>
         <WeekLine label="SEASON" number={season} />
-      </Masthead>
+      </TopBand>
       <PageColumn>
         {/* The Tools chapter holds the analyzer row and the managers row, and the Power Rankings chapter holds one tall row,
             so side by side they fill the column.

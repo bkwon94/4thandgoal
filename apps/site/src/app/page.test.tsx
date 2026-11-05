@@ -57,7 +57,9 @@ describe("HomePage", () => {
   it("puts the trade analyzer before the weeks", () => {
     render(<HomePage />);
     const analyzer = within(screen.getByRole("main")).getByRole("link", { name: /Trade Analyzer/ });
-    const week = screen.getAllByRole("link").find((item) => item.getAttribute("href") === "/2026/week-06/")!;
+    const week = within(screen.getByRole("main"))
+      .getAllByRole("link")
+      .find((item) => item.getAttribute("href") === "/2026/week-06/")!;
     expect(analyzer.compareDocumentPosition(week) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -131,10 +133,9 @@ describe("HomePage power rankings", () => {
   it("puts the chapter after the analyzer and before the weeks", async () => {
     const Home = await homeOver(fixture);
     render(<Home />);
-    // The masthead link to the home page sits in the banner, above every chapter.
-    const links = screen
+    // The shell links sit in the top band and the dock, outside the main, so the test reads the main.
+    const links = within(screen.getByRole("main"))
       .getAllByRole("link")
-      .filter((link) => !link.closest("header"))
       .map((link) => link.getAttribute("href"));
     expect(links).toEqual(["/analyze/", "/rankings/", "/2026/week-06/", "/2026/week-05/"]);
   });

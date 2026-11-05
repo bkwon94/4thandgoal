@@ -17,4 +17,4 @@
 - It reads no file, no env, and no config. `apps/site/scripts/client-build.mjs` reads `clients/$CLIENT/` and writes the CSS.
 - It holds no font, radius, spacing, type, breakpoint, or tracking token. The look owns them, so `apps/site/src/app/globals.css`
   holds them, with `move-up` and `move-down` (ADR 0024).
-- It holds no component. The masthead takes the logo and the theme button as props.
+- It holds no component. The top band takes the logo as a prop.

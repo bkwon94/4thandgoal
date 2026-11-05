@@ -234,11 +234,10 @@ function registryText(slug, values) {
   ].join("\n");
 }
 
-/* The menu of the client. The layout defaults to the hamburger. With no items, the menu takes the home page, then the
-   package list in its order, because Brian chose Home as the first item of a default menu. */
+/* The menu of the client. The look owns the navigation, so the menu holds only its items (ADR 0024). With no items, the
+   menu takes the home page, then the package list in its order, because Brian chose Home as the first item of a default menu. */
 function menuOf(values) {
   return {
-    layout: values.menu?.layout ?? "hamburger",
     items: values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))],
   };
 }

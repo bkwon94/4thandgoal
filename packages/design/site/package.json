@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The design package: the primitives, the parts, the shell with its three menu layouts, the theme, motion, format, and the usage count. It ships TSX source with no build step.",
+  "description": "The design package: the primitives, the parts, the parts of the look, the shell, the theme, motion, format, and the usage count. It ships TSX source with no build step.",
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "class-variance-authority": "^0.7.1",

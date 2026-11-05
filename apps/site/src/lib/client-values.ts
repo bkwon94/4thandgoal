@@ -5,7 +5,7 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { BrandSets } from "@cpc/design/lib/theme";
-import type { Destination, MenuLayout } from "@cpc/design/shell/menu";
+import type { Destination } from "@cpc/design/shell/nav";
 
 /* A package that a client takes or omits. league, facts, and design are in every client, so the list never names them. */
 export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer";
@@ -31,8 +31,8 @@ export type ClientValues = {
 /* One menu item: the home page or one package of the list. With no label, the item takes the label of its package. */
 export type MenuItem = { page: "home"; label?: string } | { package: PackageName; label?: string };
 
-/* The layout of the menu and its items, in the order of the menu. */
-export type ClientMenu = { layout: MenuLayout; items: MenuItem[] };
+/* The items of the menu, in the order of the menu. The look owns the navigation, so a client sets no layout (ADR 0024). */
+export type ClientMenu = { items: MenuItem[] };
 
 /* The menu link of each package of the client: its label and its href. A package with no page to link yet gives null,
    so the menu has no entry. */
