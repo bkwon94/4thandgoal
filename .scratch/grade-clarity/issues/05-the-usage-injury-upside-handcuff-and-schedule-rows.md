@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, and
 
 **Blocked by:** 04.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] Usage gives the snap share, the target share, and the air yards per target for WR and TE, and the snap share, the carry share, and the target share for RB. QB gets no usage row. No week and no route share show.
 - [x] The injury row reads in the form "Cooper is out until week 11. He was on the injury report in 5 of 8 weeks."
@@ -30,3 +30,6 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, and
 - The fairness line: a side with no step up now shows its deal row, such as "You get far more than you give.", in place of the start reason with "trade value". `deal_reason` moved from `routes.py` to `rubric.py`, so the fairness and the deal row share it. The finder cards show the same words, and their look does not change. A test checks the fairness reasons of each one-for-one trade of three roster pairs for inner words.
 - `DOCUMENT_VERSION` goes to 15. The API and site fixtures now hold the row text of a real run.
 - A real run on the saved week 8 data and the shared nflverse cache, with roster 4 sending Spears to roster 12 for Emanuel Wilson, gives the handcuff row "Spears backs up your RB, Pollard, on the Titans depth chart." and the injury row "Spears is out with no return week on file. He was on the injury report in 5 of 8 weeks." Trade A gives the usage row of AT-24 and the schedule row "Washington faces HOU (5th most points to WRs), DAL (7th), and WAS (14th) in weeks 15 to 17."
+- The merge: `fa9f160` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
+- For Brian: decision 03 says a QB gets no usage row. The code names a QB when his snap or target share moved, because the trend step reads them.
+- For Brian: one tie-break text says "WOPR". It is not an inner word of decision 03, but it is not a manager's word either.
