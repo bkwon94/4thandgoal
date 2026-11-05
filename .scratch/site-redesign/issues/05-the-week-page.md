@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-5, AT-12, AT-16, AT-1
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The chapters show in the order of the spec for week 8 of both clients.
 - [x] A tap on a game card opens its recap with a brand edge and one "Manager page" link.
