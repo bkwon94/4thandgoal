@@ -95,6 +95,9 @@ class Snapshot(BaseModel):
     roster_positions: list[str]
     players: dict[str, SnapshotPlayer]
     chart: ChartValues | None
+    # The trade values of the newest saved chart read of the STAND_IN_WEEKS weeks before, when the week has no chart.
+    # Only the superstar check reads it. The start letters never do, so with no chart every side still starts at C.
+    chart_before: ChartValues | None = None
     # Season stats from week 1 through as_of.stats_through, the player stat bound.
     # That is week N when the raw data holds week N stat lines, and week N-1 when only the history holds it.
     stats: History
@@ -360,7 +363,7 @@ def _projections_by_player(raw: RawWeek, week: int, points_key: str) -> dict[str
 
 def load_snapshot(
         raw_dir: Path, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None, *,
-        client: Client) -> Snapshot:
+        client: Client, chart_before: ChartValues | None = None) -> Snapshot:
     """The snapshot of the saved week in raw_dir. It reads only files, so it never calls the network.
 
     Without `slow`, the slow sources stay None and all of them are named as missing.
@@ -370,7 +373,7 @@ def load_snapshot(
     returns_file = returns_path(client.nfl_dir, int(raw.state.season))
     return build_snapshot(raw, history_root, chart, slow, read_fetch_time(raw_dir),
                           returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
-                          client=client)
+                          client=client, chart_before=chart_before)
 
 
 def week_snapshot(raw: RawWeek, history_root: Path, week: int, *, client: Client) -> Snapshot:
@@ -390,7 +393,8 @@ def build_snapshot(
         raw: RawWeek, history_root: Path, chart: ChartValues | None, slow: SlowSources | None = None,
         rosters_fetched: datetime | None = None, stale: list[str] | None = None,
         trade_week: int | None = None, returns: dict[str, int] | None = None,
-        now: datetime | None = None, out_for_season: set[str] | None = None, *, client: Client) -> Snapshot:
+        now: datetime | None = None, out_for_season: set[str] | None = None, *, client: Client,
+        chart_before: ChartValues | None = None) -> Snapshot:
     """The snapshot of parsed raw data. A saved week and a live fetch both build it here, so they grade the same.
 
     `trade_week` is the week N of the proposed trade. Without it, N is the raw week, as for a saved week.
@@ -399,6 +403,8 @@ def build_snapshot(
     `returns` is the hand-kept return week by player id. None means the season has no returns file.
     `out_for_season` is the set of players the same file marks `season`.
     `now` is the clock of the request. With the kickoffs of the slow sources, it tells the known games in progress.
+    `chart_before` is the trade values of the newest saved chart read of the weeks before. Only a week with no
+    chart keeps it, because only the superstar check reads it.
     `client` is the league of the raw data. The snapshot carries it, so its readers take the league sizes from it.
     """
     # A failed live stats fetch gives None. The parses then read no lines.
@@ -464,6 +470,7 @@ def build_snapshot(
         roster_positions=raw.league.roster_positions,
         players=players,
         chart=chart,
+        chart_before=chart_before if chart is None else None,
         stats=history,
         as_of=AsOf(
             chart_week=chart.week if chart is not None else None,

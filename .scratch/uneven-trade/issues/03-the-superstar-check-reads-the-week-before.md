@@ -10,7 +10,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance test AT-8.
 
 **Status:** ready-for-agent
 
-- [ ] A rubric test grades trade W with no week 9 chart and the real saved week 8 read in place, test-first.
-- [ ] The test shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player last week." Both sides start at C.
-- [ ] With no chart this week and no saved read of the weeks before, the row reads "No player it gets is a superstar."
-- [ ] `make check-fast` passes in the pipeline.
+- [x] A rubric test grades trade W with no week 9 chart and the real saved week 8 read in place, test-first.
+- [x] The test shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player last week." Both sides start at C.
+- [x] With no chart this week and no saved read of the weeks before, the row reads "No player it gets is a superstar."
+- [x] `make check-fast` passes in the pipeline.

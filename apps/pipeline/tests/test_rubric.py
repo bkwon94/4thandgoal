@@ -31,11 +31,12 @@ from analyzer.trade_facts import trade_fact_sheet
 from analyzer.tunables import SUPERSTAR_RANK
 from facts.writer import load_prompt
 from league import tunables
-from league.chart import match_chart
+from league.chart import STAND_IN_WEEKS, chart_values_before, match_chart
 from league.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from league.lineup import best_lineup, bye_covers
 from league.models import ChartRead, ExpectedGame, ExpectedPoints, week_lines
 from league.parse import parse_week
+from league.paths import chart_read
 from league.provider.sleeper import load_raw
 from league.ranks import due_back_week, lineup_value, recent_points_per_game
 from league.slow_sources import SlowSources, load_slow_sources
@@ -281,6 +282,58 @@ def test_the_word_rule_of_the_analysis_passes_on_each_superstar_reason(snap, fix
             reason = _adjuster(side, "superstar").reason
             assert _prose_failures("superstar", reason, _allowed({}, [], breakdown_text), breakdown_text, names) == []
             assert _letter_failures("superstar", reason) == []
+
+
+# The real saved read of the week 8 chart of 1QB0.5PPR4pt. Walker is 3rd at 63.0, so he is a superstar in week 8 too.
+WEEK_8_READ = Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json"
+
+
+def _no_chart_week_9(snap, raw_dir, nfl):
+    """The snapshot of week 9 with no week 9 chart, and the trade values of the newest saved read before week 9 in `nfl`.
+
+    The week 9 chart exists, so the test leaves it out. Walker takes his live Sleeper name, as in _week_9.
+    """
+    before = chart_values_before(nfl, 9, week_lines(parse_week(load_raw(raw_dir))), chart=CLIENT.chart)
+    players = {**snap.players, WALKER: snap.players[WALKER].model_copy(update={"name": "Kenneth Walker III"})}
+    return snap.model_copy(update={"week": 9, "chart": None, "chart_before": before, "players": players})
+
+
+def _saved_read(nfl, week, read):
+    path = chart_read(nfl, CLIENT.chart, week)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(read, path)
+
+
+def test_with_no_chart_this_week_the_superstar_reads_the_saved_read_of_last_week(snap, fixture_raw_dir, tmp_path):
+    # AT-8: trade W with no week 9 chart and the real saved week 8 read in place.
+    _saved_read(tmp_path, 8, WEEK_8_READ)
+    bo_girds, teehee = grade(_trade(*TRADE_W), _no_chart_week_9(snap, fixture_raw_dir, tmp_path))
+    # The start letters never read the earlier read, so with no chart both sides start at C.
+    assert (bo_girds.start_letter, teehee.start_letter) == ("C", "C")
+    assert _adjuster(teehee, "superstar").step == 1
+    assert _adjuster(teehee, "superstar").reason == "Kenneth Walker III is a superstar, a top 8 player last week."
+    assert _adjuster(bo_girds, "superstar").reason == NO_SUPERSTAR
+
+
+def test_with_no_chart_and_no_saved_read_of_the_weeks_before_no_player_is_a_superstar(snap, fixture_raw_dir,
+                                                                                         tmp_path):
+    _, teehee = grade(_trade(*TRADE_W), _no_chart_week_9(snap, fixture_raw_dir, tmp_path))
+    assert _adjuster(teehee, "superstar").step == 0
+    assert _adjuster(teehee, "superstar").reason == NO_SUPERSTAR
+    # A read older than the STAND_IN_WEEKS weeks before is no stand-in: the market moved.
+    _saved_read(tmp_path, 9 - STAND_IN_WEEKS - 1, WEEK_8_READ)
+    _, teehee = grade(_trade(*TRADE_W), _no_chart_week_9(snap, fixture_raw_dir, tmp_path))
+    assert _adjuster(teehee, "superstar").reason == NO_SUPERSTAR
+
+
+def test_the_newest_saved_read_of_the_weeks_before_stands_in(fixture_raw_dir, tmp_path):
+    lines = week_lines(parse_week(load_raw(fixture_raw_dir)))
+    _saved_read(tmp_path, 7, WEEK_8_READ)
+    _saved_read(tmp_path, 8, WEEK_8_READ)
+    _saved_read(tmp_path, 9, WEEK_9_READ)
+    # The read of the week itself never stands in for the week: the chart of the week is the snapshot chart.
+    assert chart_values_before(tmp_path, 9, lines, chart=CLIENT.chart).week == 8
+    assert chart_values_before(tmp_path, 10, lines, chart=CLIENT.chart).week == 9
 
 
 def test_the_rubric_prompt_states_the_superstar_step_in_rubric_order():
