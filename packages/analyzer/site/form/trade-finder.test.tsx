@@ -62,6 +62,15 @@ describe("TradeFinder", () => {
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
+  it("shows the sweep and Finding… while the search runs", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    find();
+    expect(await screen.findByRole("button", { name: "Finding…" })).toBeTruthy();
+    // The sweep sits with the status line. The track is aria-hidden, so the query includes hidden elements.
+    const wait = screen.getByRole("status").parentElement as HTMLElement;
+    expect(within(wait).getByRole("presentation", { hidden: true })).toBeTruthy();
+  });
+
   it("lists the eleven other teams and not the asker", () => {
     const radios = within(picker()).getAllByRole("radio");
     expect(radios).toHaveLength(11);
@@ -95,6 +104,31 @@ describe("TradeFinder", () => {
     expect(first.textContent).toContain("Wan'Dale Robinson");
     expect(first.textContent).toContain("Good for both");
     expect(first.textContent).toContain(fixture.trades[0].reason);
+  });
+
+  it("shows the finder as one card with its title, the copy, the partner row, and the button", async () => {
+    const finder = screen.getByRole("region", { name: "Find a Trade" });
+    expect(within(finder).getByText("Pick a partner. The search finds up to 3 trades good for both.")).toBeTruthy();
+    expect(within(finder).getByRole("group", { name: "Trade Partner" })).toBeTruthy();
+    expect(within(finder).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
+    fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
+    // A pick folds the list to the partner row with Change.
+    // The other rows animate out, so the test waits for them to leave.
+    await waitFor(() => expect(within(picker()).getAllByRole("radio")).toHaveLength(1));
+    expect(within(finder).getByRole("button", { name: "Change trade partner" })).toBeTruthy();
+  });
+
+  it("names each result card by its place, with the fairness pill and See the Full Result", async () => {
+    answer(200, fixture);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(cards().map((card) => within(card).getByRole("heading", { level: 3 }).textContent)).toEqual([
+      "Trade 1 of 3",
+      "Trade 2 of 3",
+      "Trade 3 of 3",
+    ]);
+    expect(within(cards()[0]).getByText("Good for both")).toBeTruthy();
+    expect(within(cards()[0]).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
   });
 
   it("opens the full result of the trade on a card", async () => {

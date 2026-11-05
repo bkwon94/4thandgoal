@@ -41,6 +41,8 @@ const slot = (side: SideTitle) => screen.getByRole("button", { name: new RegExp(
 const addPlayer = (side: SideTitle) => screen.getByRole("button", { name: `Add a player ${side} gets` }) as HTMLButtonElement;
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
+/* A result folds the form, so a test taps Edit to change the trade under it. */
+const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
 
 /* Picks a team in the team sheet that is open, and waits for the sheet to close. */
 async function chooseTeam(team: string) {
@@ -256,6 +258,7 @@ describe("TradeForm", () => {
     await pickTrade();
     fireEvent.click(submit());
     await screen.findByText("Not as is");
+    edit();
     await pickTeam("Your Team", "Punt Punks");
     expect(screen.queryByText("Not as is")).toBeNull();
   });
@@ -304,23 +307,75 @@ describe("TradeForm", () => {
     expect(busy.getAttribute("aria-busy")).toBe("true");
   });
 
+  it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade();
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
+    const fold = screen.getByRole("group", { name: "The trade" });
+    expect(fold.textContent).toContain("Ana One for Ben Two");
+    // One face for each team of the trade.
+    expect(fold.querySelectorAll("img")).toHaveLength(2);
+    expect(fold.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(fold).queryByRole("button", { name: "Edit the trade" })).toBeNull();
+  });
+
+  it("fills the hero with the verdict and the fairness block, and keeps the form folded with an Edit button", async () => {
+    answer(200, fixtureJson);
+    await pickTrade();
+    fireEvent.click(submit());
+    const verdict = await screen.findByRole("region", { name: "The Verdict" });
+    expect(within(verdict).getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" })).toBeTruthy();
+    expect(within(verdict).getByText("Not as is")).toBeTruthy();
+    expect(within(verdict).getByText("Fairness")).toBeTruthy();
+    // The verdict is the hero, so the title hero and the grading hero are gone.
+    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Grading the Trade" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
+    const fold = screen.getByRole("group", { name: "The trade" });
+    expect(fold.compareDocumentPosition(verdict) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
+    expect(verdict.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("opens the form again with Edit and keeps the result under it", async () => {
+    answer(200, fixtureJson);
+    await pickTrade();
+    fireEvent.click(submit());
+    await screen.findByText("Not as is");
+    fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
+    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
+    expect(submit().disabled).toBe(false);
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.getByRole("region", { name: "The Verdict" })).toBeTruthy();
+  });
+
   it("locks the slots, the add buttons, and the remove controls while the grade runs, and unlocks them on the result", async () => {
     let finish!: (response: Response) => void;
     fetchStub.mockReturnValueOnce(new Promise<Response>((resolve) => (finish = resolve)));
     await pickTrade();
+    // The grade folds the form out of view, so the test holds each control before the tap.
+    const controls = [slot("Your Team"), slot("Team Two"), addPlayer("Your Team"), addPlayer("Team Two")];
+    const removeAnaOne = removeButton("Ana One");
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
 
-    const controls = [slot("Your Team"), slot("Team Two"), addPlayer("Your Team"), addPlayer("Team Two")];
     expect(controls.every((c) => c.disabled)).toBe(true);
-    fireEvent.click(addPlayer("Your Team"));
+    fireEvent.click(controls[2]);
     expect(screen.queryByRole("dialog")).toBeNull();
-    expect(removeButton("Ana One").disabled).toBe(true);
-    fireEvent.click(removeButton("Ana One"));
-    expect(removeButton("Ana One")).toBeTruthy();
+    expect(removeAnaOne.disabled).toBe(true);
+    fireEvent.click(removeAnaOne);
+    expect(removeAnaOne.isConnected).toBe(true);
 
     await act(async () => finish(new Response(JSON.stringify(fixtureJson), { status: 200 })));
     await screen.findByText("Not as is");
+    edit();
     expect(controls.some((c) => c.disabled)).toBe(false);
     expect(submit().hasAttribute("aria-busy")).toBe(false);
     await pickPlayers("Team Two", "Pukancun on 3", "Ana Two");
@@ -352,6 +407,7 @@ describe("TradeForm", () => {
     await pickTrade();
     fireEvent.click(submit());
     await screen.findByText("Not as is");
+    edit();
 
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     fireEvent.click(submit());
@@ -379,6 +435,20 @@ describe("TradeForm", () => {
     fireEvent.click(submit());
     expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
+  });
+
+  it("unlocks the form and puts the message, the alert icon, and Try Again in one box above the bar", async () => {
+    answer(500);
+    await pickTrade();
+    fireEvent.click(submit());
+    const box = await screen.findByRole("group", { name: "The grade failed" });
+    expect(within(box).getByRole("alert").textContent).toBe("The API did not answer. Try again.");
+    expect(box.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(slot("Your Team").disabled).toBe(false);
+    expect(box.compareDocumentPosition(submit()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("shows the API reason on a 503 with a detail", async () => {
@@ -543,6 +613,20 @@ describe("TradeForm with three or four sides", () => {
     expect(submit().disabled).toBe(false);
   });
 
+  it("folds a trade of three teams to one line with a face for each team", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTwoTeams();
+    await addTeam("Punt Punks");
+    await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
+    await pickPlayers("Team Three", "Pukancun on 3", "Ana Two");
+    await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
+    await pickPlayers("Your Team", "Punt Punks", "Cy One");
+    fireEvent.click(submit());
+    const fold = await screen.findByRole("group", { name: "The trade" });
+    expect(fold.textContent).toContain("Ana One and Ana Two for Cy One");
+    expect(fold.querySelectorAll("img")).toHaveLength(3);
+  });
+
   it("posts every side in order with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
     await pickTwoTeams();
@@ -690,6 +774,7 @@ describe("TradeForm with the finder", () => {
       ],
     });
     // The form shows the trade of the card, so the picks match the result.
+    edit();
     expect(slot("Team Two").getAttribute("aria-label")).toContain("Lil Fridge");
     expect(within(card("Team Two")).getByRole("button", { name: "Remove Ashton Jeanty" })).toBeTruthy();
     expect(within(card("Your Team")).getByRole("button", { name: "Remove Caleb Williams" })).toBeTruthy();

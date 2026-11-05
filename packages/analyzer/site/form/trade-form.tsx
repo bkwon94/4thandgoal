@@ -7,11 +7,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
+import { CircleAlertIcon } from "lucide-react";
+import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
+import { FoldLine } from "./fold-line";
 import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
+import { Sweep } from "./sweep";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
@@ -32,7 +36,7 @@ import {
   type Sides,
   teamOf,
 } from "../lib/trade";
-import { DURATION, enterExit, SWEEP_EASE } from "@cpc/design/lib/motion";
+import { enterExit } from "@cpc/design/lib/motion";
 import { countEvent } from "@cpc/design/lib/usage";
 
 // A cold grade takes about 30 seconds and the server caches the result, so a long wait beats a retry.
@@ -79,26 +83,26 @@ type TradeToGrade = { sides: Sides; season: number };
 /* The sheet that is open, if any: the team sheet of a slot or of a new side, or the picker of one side. */
 type OpenSheet = { kind: "team"; slot: number | "new" } | { kind: "players"; side: number } | null;
 
-/* The grading status. A red bar sweeps along a grey track, so a 20-second wait reads as work in progress.
-   Only transform animates. With motion off, the track stays as a still grey line. */
-function GradingStatus() {
+/* The hero while the grade runs: the title, two pulsed bars where the verdict lands, and the sweep.
+   Each text line sits on a plate, so no grid sits under a letter. With motion off, the bars hold still. */
+function GradingHero() {
   const off = useMotionOff();
+  const pulse = off ? "" : "animate-pulse";
   return (
-    <div role="status" aria-busy="true" className="flex flex-col gap-sp-2">
-      <p className="m-0 text-lead font-bold">Grading the Trade</p>
-      <div aria-hidden="true" className="relative h-sp-1 overflow-hidden rounded-sm bg-card">
-        {!off && (
-          <motion.div
-            role="presentation"
-            className="absolute inset-y-0 left-0 w-1/3 bg-accent"
-            initial={{ x: "-100%" }}
-            animate={{ x: "300%" }}
-            transition={{ duration: DURATION.sweep, ease: SWEEP_EASE, repeat: Infinity }}
-          />
-        )}
+    <Hero label="Grading the Trade">
+      <div role="status" aria-busy="true" className="flex flex-col gap-sp-4">
+        <div className="flex items-center justify-between gap-sp-3">
+          <p className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-on-dark-2 uppercase">Grading the Trade</p>
+          <span className="plate font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">Live</span>
+        </div>
+        <div aria-hidden="true" className="flex flex-col gap-sp-3">
+          <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
+          <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
+          <Sweep track="bg-rule-dark" />
+        </div>
+        <p className="plate m-0 w-fit text-lead leading-body text-on-dark-2">This can take up to a minute early in the week.</p>
       </div>
-      <p className="m-0 text-lead text-mute">This can take up to a minute early in the week.</p>
-    </div>
+    </Hero>
   );
 }
 
@@ -122,6 +126,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
+  // Edit opens the folded form under a result, so the reader can change the trade and keep the result on the screen.
+  const [editing, setEditing] = useState(false);
   // A late answer from an old trade must not overwrite the state of a new one.
   const request = useRequest();
   // A finder card asks for the full result, so the page scrolls the result into view when the grade ends.
@@ -152,6 +158,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
+  // The form folds to one line while the grade runs and under a result, so the hero and the verdict lead the page.
+  const folded = grading || (grade.status === "done" && !editing);
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
@@ -244,6 +252,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       controller.abort();
     }, TIMEOUT_MS);
     setGrade({ status: "grading" });
+    setEditing(false);
     countEvent("analyze-grade");
     try {
       const doc = await postAnalyze(target, passphrase, body, controller.signal);
@@ -287,95 +296,107 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     sheet?.kind === "team" ? (sheet.slot === "new" ? `Pick ${SIDE_TITLES[sides.length] ?? "a Team"}` : `Pick ${SIDE_TITLES[sheet.slot]}`) : "";
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
+  /* The players a side of another team gets from Your Team. */
+  const askerGives = sides.slice(1).flatMap((_, i) => rowsOf(i + 1).filter((row) => row.from.roster_id === asker));
+
   const form = (
     <>
-      <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
-        <TeamsRow
-          slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
-          onPickSlot={(slot) => setSheet({ kind: "team", slot })}
-          onAdd={() => setSheet({ kind: "team", slot: "new" })}
-          locked={locked}
-        />
-        {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
-            side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
-        <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
-          {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
-          <AnimatePresence initial={false} mode="popLayout">
-            {sides.map((side, index) => (
-              <motion.div key={side.id} layout={!off} className="min-w-0" {...enterExit(off)}>
-                <GetCard
-                  title={SIDE_TITLES[index]}
-                  team={teamOf(teams, side.rosterId)}
-                  rows={rowsOf(index)}
-                  canAdd={side.rosterId !== null && sourcesOf(index).length > 0}
-                  onAdd={() => setSheet({ kind: "players", side: index })}
-                  onRemovePlayer={(playerId) => removeGet(index, playerId)}
-                  // Only the third and fourth sides can leave. A trade always has two sides.
-                  onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
-                  locked={locked}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-        <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
-        {grading && <GradingStatus />}
-        {grade.status === "error" && (
-          <div className="flex flex-col gap-sp-3">
-            <ErrorLine>{grade.message}</ErrorLine>
-            {grade.retry && (
-              <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
-                Try Again
-              </Button>
-            )}
+      {/* The folded form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
+      <div hidden={folded}>
+        <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+          <TeamsRow
+            slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
+            onPickSlot={(slot) => setSheet({ kind: "team", slot })}
+            onAdd={() => setSheet({ kind: "team", slot: "new" })}
+            locked={locked}
+          />
+          {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
+              side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
+          <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
+            {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
+            <AnimatePresence initial={false} mode="popLayout">
+              {sides.map((side, index) => (
+                <motion.div key={side.id} layout={!off} className="min-w-0" {...enterExit(off)}>
+                  <GetCard
+                    title={SIDE_TITLES[index]}
+                    team={teamOf(teams, side.rosterId)}
+                    rows={rowsOf(index)}
+                    canAdd={side.rosterId !== null && sourcesOf(index).length > 0}
+                    onAdd={() => setSheet({ kind: "players", side: index })}
+                    onRemovePlayer={(playerId) => removeGet(index, playerId)}
+                    // Only the third and fourth sides can leave. A trade always has two sides.
+                    onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
+                    locked={locked}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
+          {/* The error box is the last part of the form, so it sits right above the bar. */}
+          {grade.status === "error" && (
+            <div role="group" aria-label="The grade failed">
+              <Card edge className="flex flex-col gap-sp-3">
+                <div className="flex items-start gap-sp-2">
+                  <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
+                  <ErrorLine>{grade.message}</ErrorLine>
+                </div>
+                {grade.retry && (
+                  <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
+                    Try Again
+                  </Button>
+                )}
+              </Card>
+            </div>
+          )}
+        </section>
+        {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
+            The finder grades two sides, so it hides at three or four. */}
+        {/* The finder is off by default because the page felt crowded. */}
+        {finderOn && myTeam && twoSides && (
+          <div className="mt-sp-6">
+            <TradeFinder
+              key={myTeam.roster_id}
+              teams={teams}
+              target={target}
+              asker={myTeam.roster_id}
+              passphrase={passphrase}
+              onUnauthorized={onUnauthorized}
+              onRostersStale={onRostersStale}
+              onOpen={openTrade}
+              locked={grading}
+            />
           </div>
         )}
-      </section>
-      {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
-          The finder grades two sides, so it hides at three or four. */}
-      {/* The finder is off by default because the page felt crowded. */}
-      {finderOn && myTeam && twoSides && (
-        <div className="mt-sp-6">
-          <TradeFinder
-            key={myTeam.roster_id}
-            teams={teams}
-            target={target}
-            asker={myTeam.roster_id}
-            passphrase={passphrase}
-            onUnauthorized={onUnauthorized}
-            onRostersStale={onRostersStale}
-            onOpen={openTrade}
-            locked={grading}
-          />
-        </div>
-      )}
-      <TeamSheet
-        open={sheet?.kind === "team"}
-        title={teamSheetTitle}
-        teams={teams}
-        taken={taken}
-        onPick={(rosterId) => {
-          if (sheet?.kind === "team") {
-            if (sheet.slot === "new") {
-              if (sides.length < MAX_SIDES) addSide(rosterId);
-            } else pickTeam(sheet.slot, rosterId);
-          }
-          setSheet(null);
-        }}
-        onClose={() => setSheet(null)}
-      />
-      <PlayerSheet
-        // The key gives each side a fresh tab, search, and chip.
-        key={playerSide === null ? "closed" : sides[playerSide]?.id}
-        open={playerSide !== null && sides[playerSide] !== undefined}
-        title={playerSide === null ? "" : SIDE_TITLES[playerSide]}
-        sources={playerSide === null ? [] : sourcesOf(playerSide)}
-        gets={playerSide === null ? [] : (sides[playerSide]?.gets ?? [])}
-        elsewhere={playerSide === null ? new Map() : elsewhereOf(playerSide)}
-        onToggle={(get) => playerSide !== null && toggleGet(playerSide, get)}
-        onClose={() => setSheet(null)}
-      />
-      <GradeBar ready={ready} grading={grading} onGrade={() => submit()} />
+        <TeamSheet
+          open={sheet?.kind === "team"}
+          title={teamSheetTitle}
+          teams={teams}
+          taken={taken}
+          onPick={(rosterId) => {
+            if (sheet?.kind === "team") {
+              if (sheet.slot === "new") {
+                if (sides.length < MAX_SIDES) addSide(rosterId);
+              } else pickTeam(sheet.slot, rosterId);
+            }
+            setSheet(null);
+          }}
+          onClose={() => setSheet(null)}
+        />
+        <PlayerSheet
+          // The key gives each side a fresh tab, search, and chip.
+          key={playerSide === null ? "closed" : sides[playerSide]?.id}
+          open={playerSide !== null && sides[playerSide] !== undefined}
+          title={playerSide === null ? "" : SIDE_TITLES[playerSide]}
+          sources={playerSide === null ? [] : sourcesOf(playerSide)}
+          gets={playerSide === null ? [] : (sides[playerSide]?.gets ?? [])}
+          elsewhere={playerSide === null ? new Map() : elsewhereOf(playerSide)}
+          onToggle={(get) => playerSide !== null && toggleGet(playerSide, get)}
+          onClose={() => setSheet(null)}
+        />
+      </div>
+      {/* Under a folded result the bar has no trade to grade again, so it hides until Edit. */}
+      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} onGrade={() => submit()} />}
     </>
   );
 
@@ -385,5 +406,20 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </div>
   );
 
-  return children({ hero: <TitleHero />, form, result });
+  const hero = folded ? (
+    <>
+      <FoldLine
+        asker={myTeam}
+        others={sides.slice(1).flatMap((side) => teamOf(teams, side.rosterId) ?? [])}
+        gives={askerGives.map((row) => row.player.name)}
+        gets={rowsOf(0).map((row) => row.player.name)}
+        onEdit={grade.status === "done" ? () => setEditing(true) : undefined}
+      />
+      {grading && <GradingHero />}
+    </>
+  ) : (
+    <TitleHero />
+  );
+
+  return children({ hero, form, result });
 }
