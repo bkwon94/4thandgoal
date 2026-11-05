@@ -55,6 +55,6 @@ function Quiet({ children }: { children: ReactNode }) {
 
 /* The list of rows, or one quiet line when the list is empty. */
 export function PlayerRows({ empty, children }: { empty: string; children: ReactNode[] }) {
-  if (children.length === 0) return <p className="m-0 text-body text-mute">{empty}</p>;
+  if (children.length === 0) return <div className="m-0 text-body text-mute">{empty}</div>;
   return <ol className="m-0 list-none p-0 text-row leading-tight">{children}</ol>;
 }

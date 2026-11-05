@@ -66,12 +66,12 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
             {/* A plain fragment anchor jumps with scripts off. The scroll padding on html keeps the label clear of the bar.
                 No smooth scroll is set, so the jump is instant with motion on or off.
                 The mark is "location", the ARIA value for the reader's place in the page. "page" is for a link to the page in view.
-                The target height keeps each link at the WCAG 2.2 minimum, because the links stack with no space between them. */}
+                The touch height keeps each link at the tap floor of 44px, because the links stack with no space between them. */}
             <a
               href={`#${id}`}
               aria-current={current === id ? "location" : undefined}
               className={cn(
-                "flex min-h-target items-center py-sp-1 text-label leading-tight font-bold tracking-wide uppercase transition-colors",
+                "flex min-h-touch items-center py-sp-1 text-label leading-tight font-bold tracking-wide uppercase transition-colors",
                 current === id ? "text-accent-ink" : "text-mute hover-fine:text-ink",
               )}
             >

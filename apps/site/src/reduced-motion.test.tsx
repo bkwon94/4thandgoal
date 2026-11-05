@@ -198,7 +198,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63 },
+    odds: { playoff: 63, bye: 20, seed: 3 },
     odds_change: 0,
   };
 }
@@ -207,11 +207,12 @@ describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
     render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} />);
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
-    const [grade, odds] = [...numbers.querySelectorAll("dt")].map((term) => term.nextElementSibling as HTMLElement);
+    const odds = numbers.children[0].children[1] as HTMLElement;
+    const grade = screen.getByRole("button", { name: /^Grade D/ });
     expect(grade.textContent).toBe("D");
     expect(odds.textContent).toBe("63%");
     // The instant transition sets the rest state by the next frame. A real motion fails the short wait.
-    await waitFor(() => expectAtRest(within(grade).getByText("D")), { timeout: 50 });
+    await waitFor(() => expectAtRest(grade), { timeout: 50 });
     // The count never runs with motion off, so the final percent stays after a frame.
     await new Promise((done) => setTimeout(done, 50));
     expect(odds.textContent).toBe("63%");

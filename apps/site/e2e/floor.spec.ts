@@ -20,7 +20,14 @@ const NOT_FOUND_ROUTE = "/404-floor-check/";
  * The pages of the full floor: all four rules, in both themes, at both widths. A page ticket of the redesign adds its
  * pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
  */
-const FULL_FLOOR_PAGES: readonly string[] = [NOT_FOUND_ROUTE];
+const FULL_FLOOR_PAGES: readonly string[] = [
+  NOT_FOUND_ROUTE,
+  "/2026/managers/",
+  // The manager page of the longest team name of each client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
+  // Both clients build both roster ids, so each client checks both pages.
+  "/2026/managers/7/",
+  "/2026/managers/4/",
+];
 
 /* Every client has both sets (decision 12), so the full floor checks both themes. */
 const THEMES: readonly Theme[] = ["dark", "light"];

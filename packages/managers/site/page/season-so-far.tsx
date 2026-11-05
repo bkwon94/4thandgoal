@@ -11,11 +11,11 @@ import { mediansOf } from "./medians";
 import { PointsLine } from "./points-line";
 
 /* The quiet label style of the page, as the hero's season numbers use it. */
-const QUIET_LABEL = "text-label leading-tight font-semibold tracking-caps text-mute uppercase";
+const QUIET_LABEL = "text-meta leading-tight font-semibold tracking-caps text-mute uppercase";
 
 /* The bench points: the season total as the emphasis, and one quiet sentence that says what the total means. */
 function BenchPoints({ bench }: { bench: Bench | null }) {
-  if (bench === null) return <p className="m-0 text-meta text-mute">No bench data yet.</p>;
+  if (bench === null) return <div className="m-0 text-meta text-mute">No bench data yet.</div>;
   const { worst } = bench;
   return (
     <div>
@@ -24,7 +24,7 @@ function BenchPoints({ bench }: { bench: Bench | null }) {
         <span>{num(bench.total)}</span>
         <span className="text-meta font-semibold text-mute">{" points"}</span>
       </div>
-      <p className="m-0 mt-sp-1 text-meta text-mute">
+      <p className="m-0 mt-sp-1 text-lead leading-body text-mute">
         {worst
           ? `Your best lineup would have scored ${num(bench.total)} more points this season. ` +
             `Worst in week ${worst.week}: ${num(worst.points)} points, ${worst.name} sat.`
@@ -95,7 +95,8 @@ function MedianRecord({ weeks, medians }: { weeks: SeasonWeek[]; medians: number
 export function SeasonSoFar({ manager }: { manager: Manager }) {
   return (
     <Chapter reveal id="season">
-      <Label heading>Season So Far</Label>
+      {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
+      <Label heading className="text-meta">Season So Far</Label>
       <PointsLine weeks={manager.weeks} />
       {/* The space between the groups sets them apart, so the chapter reads as three groups. */}
       <div className="mt-sp-6">

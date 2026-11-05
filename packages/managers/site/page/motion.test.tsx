@@ -2,7 +2,7 @@
  * Tests for the motion of the manager page with motion on. jsdom has no matchMedia, so Framer Motion reads no reduced motion.
  * The odds count from zero once and must end at the final percent. The grade and the slot lines must end at rest.
  */
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
@@ -17,16 +17,16 @@ function managerOf(odds: Manager["odds"]): Manager {
   return { ...entry, standing: 1, rank: 2, movement: 0, odds, odds_change: odds ? 0 : null };
 }
 
-/* The number under each label of the Hero Numbers group, in order: the grade, the odds, and the power rank. */
+/* The number of each tile of the Hero Numbers group, in order: Playoff, Bye, and Seed. */
 function numbers(): HTMLElement[] {
   const group = screen.getByRole("group", { name: "Hero Numbers" });
-  return [...group.querySelectorAll("dt")].map((term) => term.nextElementSibling as HTMLElement);
+  return [...group.children].map((tile) => tile.children[1] as HTMLElement);
 }
 
 describe("Manager page motion", () => {
   it("counts the odds up once and ends at the final percent", async () => {
-    render(<ManagerHero manager={managerOf({ playoff: 63 })} avatar="avatars/1.jpg" teams={12} />);
-    const odds = numbers()[1];
+    render(<ManagerHero manager={managerOf({ playoff: 63, bye: 20, seed: 3 })} avatar="avatars/1.jpg" teams={12} />);
+    const odds = numbers()[0];
     // The count starts from zero on the next frame, so the percent first reads under the final number.
     await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), { timeout: 1000 });
     // The count runs over the next frames, so the wait passes once the count ends.
@@ -38,12 +38,12 @@ describe("Manager page motion", () => {
 
   it("shows the dash at once with no odds", () => {
     render(<ManagerHero manager={managerOf(null)} avatar="avatars/1.jpg" teams={12} />);
-    expect(numbers()[1].textContent).toBe("—");
+    expect(numbers()[0].textContent).toBe("—");
   });
 
   it("settles the grade letter at rest", async () => {
     render(<ManagerHero manager={managerOf(null)} avatar="avatars/1.jpg" teams={12} />);
-    const letter = within(numbers()[0]).getByText("D");
+    const letter = screen.getByRole("button", { name: /^Grade D/ });
     await waitFor(() => expect(letter.closest("[data-reveal]")).not.toBeNull());
     await waitFor(() => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"), { timeout: 1000 });
   });

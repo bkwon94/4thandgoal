@@ -16,7 +16,7 @@ function SlotLine({ slot, index, teams }: { slot: SlotRank; index: number; teams
   return (
     <li>
       <Reveal delay={stagger(index)} className="flex items-baseline gap-sp-2 tabular-nums">
-      <span className="w-sp-6 flex-none text-label font-semibold tracking-caps text-mute uppercase">{slot.position}</span>
+      <span className="w-sp-6 flex-none text-meta font-semibold tracking-caps text-mute uppercase">{slot.position}</span>
       <span className="text-meta text-mute">{" · "}</span>
       <span>
         <span className="text-body font-extrabold text-ink">{ordinal(slot.rank)}</span>
@@ -35,7 +35,8 @@ export function Roster({ manager, teams }: { manager: Manager; teams: number }) 
     // The id and the heading match the roster entry of MANAGER_CHAPTERS. This file does not import the list,
     // because manager-chapters imports this file and the two must not form a loop.
     <Chapter reveal id="roster">
-      <Label heading>Roster</Label>
+      {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
+      <Label heading className="text-meta">Roster</Label>
       {manager.grade ? (
         // The gap gives each line air, so the four ranks read as four groups.
         <ol className="m-0 flex list-none flex-col gap-sp-3 p-0">
@@ -44,7 +45,7 @@ export function Roster({ manager, teams }: { manager: Manager; teams: number }) 
           ))}
         </ol>
       ) : (
-        <p className="m-0 text-body text-mute">No grade yet.</p>
+        <div className="m-0 text-body text-mute">No grade yet.</div>
       )}
     </Chapter>
   );

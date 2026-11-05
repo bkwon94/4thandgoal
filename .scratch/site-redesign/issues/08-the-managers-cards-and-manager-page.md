@@ -10,8 +10,8 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Status:** ready-for-agent
 
-- [ ] The index shows 12 cards for CPC in standings order.
-- [ ] The manager page of To Infinity and Bijan shows the full name at 375 px.
-- [ ] The managers index and the manager page with the longest team name are on the full floor, and the floor passes. Every other manager page is in the fast sweep.
+- [x] The index shows 12 cards for CPC in standings order.
+- [x] The manager page of To Infinity and Bijan shows the full name at 375 px.
+- [x] The managers index and the manager page with the longest team name are on the full floor, and the floor passes. Every other manager page is in the fast sweep.
 - [ ] The local dev server runs for Brian after the build.
 - [ ] The evidence of AT-30 and AT-31 is recorded in `EVIDENCE.md`.
