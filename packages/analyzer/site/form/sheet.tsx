@@ -49,8 +49,10 @@ export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
               <XIcon aria-hidden="true" className="size-sp-5" />
             </DialogClose>
           </div>
-          {/* min-h-0 lets the list shrink and scroll inside the sheet, so the title and the footer stay in view. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-sp-3 overflow-y-auto px-sp-4 py-sp-3">{children}</div>
+          {/* min-h-0 lets the list shrink and scroll inside the sheet, so the title and the footer stay in view.
+              Each child keeps its full height and the body scrolls instead. A row with its own overflow, such as the
+              tabs that scroll sideways, has a min height of 0, so without shrink-0 it shrinks to 0 in a full sheet. */}
+          <div className="flex min-h-0 flex-1 flex-col gap-sp-3 overflow-y-auto px-sp-4 py-sp-3 *:shrink-0">{children}</div>
           {footer && <div className="border-t border-rule px-sp-4 py-sp-3">{footer}</div>}
         </DialogPopup>
       </DialogPortal>
