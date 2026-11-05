@@ -5,7 +5,7 @@ Date: 2026-11-05
 Apps: site. The site gets the shared look on every route of both clients, dark by default, with a light option. The pipeline does not change.
 Spec branch: `site-redesign`.
 Source: the map `.scratch/site-redesign/MAP.md` and decision tickets 01 to 13. ADR 0024, which supersedes ADR 0006 and part of ADR 0007. The prototypes are the boards on the Design canvas https://claude.ai/artifact/4cFaYVh4Sm9Cw68G7FEds8.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 11, in `issues/`.
 
 ## Problem Statement
 

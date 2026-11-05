@@ -30,6 +30,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `site-foundation` | site | 01 the tiers and the page column | none | |
 | `site-pages` | site | 01 the page shell | none | |
 | `site-report` | site | 01 the type scale, the measure, and the cards | none | |
+| `site-redesign` | site | 01 dark default and a light set for each client | none | |
 | `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
 | `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
 | `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
