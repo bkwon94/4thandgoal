@@ -13,7 +13,7 @@ Run these in `apps/pipeline/`. Run `make help` for the full list.
 - Install: `make install`. The root `uv.lock` holds the locked versions of the whole uv workspace.
 - Check: `make check`. The hook runs `make check-fast`.
 - Build a week: `make build CLIENT=cpc WEEK=<W>`. Each league target needs the client slug.
-- Publish a week: `make publish CLIENT=cpc WEEK=<W>`. It commits `clients/<slug>/published/<season>/` and pushes `main`.
+- Publish a week: `make publish CLIENT=cpc WEEK=<W>`. It commits `clients/<slug>/build/<season>/`, `clients/<slug>/data/<season>/`, and `clients/<slug>/published/<season>/`, then pushes `main`.
 - Local API on port 8080: `make -C ../api api`. The API is its own app in `apps/api/`.
 
 ## Pipeline

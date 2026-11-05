@@ -1,6 +1,6 @@
 """
 Publish a built week into the published data of its client, clients/<slug>/published/, in the same repo.
-It commits the build folder and the data of the client, copies the week folder and the season files, then commits the season folder only and pushes.
+It commits the season folders of the build and the data, copies the week folder and the season files, then commits the published season folder and pushes.
 """
 import logging
 import shutil
@@ -67,8 +67,12 @@ def run_publish(
     if not (site_repo / ".git").exists():
         raise PublishError(f"{site_repo} is not a git checkout.")
 
-    _git(folder, "add", "--", str(build), str(data))
-    _commit_if_staged(folder, f"Week {week} report", str(build), str(data))
+    # Why: ADR 0019 lets the publish stage only the season folders of the client. The build folder holds the season
+    # files that the next build reads, and the API image seeds from the data folder, so both go into the report commit.
+    # A season folder with no files yet has nothing to stage.
+    report = [str(path) for path in (season_dir(build, season), season_dir(data, season)) if path.exists()]
+    _git(folder, "add", "--", *report)
+    _commit_if_staged(folder, f"Week {week} report", *report)
 
     # Copy only this week: its page.json, avatars, and headshots. A built but unpublished week must
     # stay off the public site. The site is a Next.js app. It renders the pages and the home
