@@ -51,9 +51,11 @@ export function WeekChip({ weeks, week, pageHref }: WeekChipProps) {
         {weekChipLabel(week.number)}
         <ChevronDownIcon aria-hidden className="size-sp-4 group-open:rotate-180" />
       </summary>
-      {/* The strip hangs from the bottom of the top band, across its full width. The top band is sticky, so it is the box of the strip. */}
-      <div className="absolute inset-x-0 top-full border-b border-rule bg-page">
-        <nav aria-label="Weeks of the season" className="mx-auto flex max-w-band gap-sp-2 overflow-x-auto px-gutter py-sp-3">
+      {/* The strip sits at the bottom of the top band, across its full width, in the space the open band keeps for it.
+          The top band is sticky, so it is the box of the strip. The fixed height keeps the strip inside that space,
+          and a long season scrolls inside the strip. */}
+      <div className="absolute inset-x-0 bottom-0 h-strip border-t border-rule bg-page">
+        <nav aria-label="Weeks of the season" className="mx-auto flex h-full max-w-band items-center gap-sp-2 overflow-x-auto px-gutter">
           {strip.map((link) => {
             const marked = link.href === week.href;
             return (

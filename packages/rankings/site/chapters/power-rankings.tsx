@@ -6,7 +6,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
@@ -240,10 +240,25 @@ function LadderCard({
 
 /* One chip per week in the file. The chosen chip paints ink on the page color, so it is black on white in the light theme and white on black in the dark theme.
    The off chip paints the grey, which re-points one step off the page in the dark theme.
-   aria-pressed names the chosen chip, so the fill is never the only sign. */
+   aria-pressed names the chosen chip, so the fill is never the only sign.
+   The chips keep one row. A season longer than the width scrolls inside the row, so the page never scrolls sideways.
+   The 4px inset keeps the focus ring inside the row, because a box that scrolls clips what passes its edge. */
 function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: number; choose: (week: number) => void }) {
+  const row = useRef<HTMLDivElement>(null);
+
+  // The chosen week, the latest on load, can sit past the right edge of a phone. The row scrolls to show it in full.
+  // Only the row scrolls, so the page keeps its place. The row is relative, so it is the offset parent of each chip.
+  useEffect(() => {
+    const box = row.current;
+    const chip = box?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!box || !chip) return;
+    const end = chip.offsetLeft + chip.offsetWidth - box.clientWidth;
+    if (end > box.scrollLeft) box.scrollLeft = end;
+    else if (chip.offsetLeft < box.scrollLeft) box.scrollLeft = chip.offsetLeft;
+  }, [chosen]);
+
   return (
-    <div role="group" aria-label="Week" className="mb-sp-4 flex flex-wrap gap-sp-1">
+    <div ref={row} role="group" aria-label="Week" className="relative -m-sp-1 mb-sp-3 flex gap-sp-1 overflow-x-auto p-sp-1">
       {weeks.map(({ week }) => (
         <button
           key={week}
@@ -252,7 +267,7 @@ function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: n
           aria-label={`Week ${week}`}
           onClick={() => choose(week)}
           className={cn(
-            "press min-h-touch min-w-touch cursor-pointer rounded-card border-0 px-sp-3 text-row font-extrabold tabular-nums",
+            "press min-h-touch min-w-touch flex-none cursor-pointer rounded-card border-0 px-sp-3 text-row font-extrabold tabular-nums",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
             week === chosen ? "bg-ink text-page" : "bg-card text-ink",
           )}

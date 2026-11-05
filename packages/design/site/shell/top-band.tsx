@@ -1,6 +1,6 @@
 /**
  * The shell of every page: the top band with the brand mark, the pill bar, the week chip, and the theme button,
- * and the dock at the bottom of a phone. The top band stays on screen at every scroll.
+ * and the dock at the bottom of a phone and a tablet. The top band stays on screen at every scroll.
  */
 import type { ReactNode } from "react";
 import { Dock } from "./dock";
@@ -29,13 +29,16 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
   return (
     <>
       {/* Sticky, so the band stays at the top at every scroll and takes its space in the flow, and the page never jumps.
-          The band paints the page color in both themes. The hero is the one loud surface of a page. */}
-      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink">
-        {/* One row on a phone: the brand mark, the week chip, and the theme button. From the tablet tier the pill bar takes
-            a second row, because the full labels do not fit beside the brand. From the rail tier all four share one row. */}
-        <div className="mx-auto flex max-w-band flex-wrap items-center gap-x-sp-3 gap-y-sp-2 px-gutter py-sp-2 rail:flex-nowrap">
+          The band paints the page color in both themes. The hero is the one loud surface of a page.
+          While the strip of weeks is open, the band grows by the height of the strip and the strip fills that space,
+          so the page moves down and the strip covers no part of it, such as the page title. */}
+      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink has-[details[open]]:pb-strip">
+        {/* One row at every tier, so the band keeps one height at every width. On a phone and a tablet it holds the brand
+            mark, the week chip, and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
+        <div className="mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2">
           {/* A plain anchor, so the home link works with scripts off. The title names the link, so the logo is decorative.
-              On a phone the logo shows alone, and the title stays for a screen reader. A long title cuts at the end.
+              Under the rail tier the logo shows alone, so the pill bar has room for its full labels on one row. The title
+              stays for a screen reader. A long title cuts at the end.
               The link is 44px or more on each side, so the logo alone is still a full tap target. */}
           <a href={brand.home} className="flex min-h-touch min-w-touch items-center gap-sp-3 text-inherit no-underline">
             {brand.logo !== null && (
@@ -43,7 +46,7 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
             )}
             <span
               translate="no"
-              className={`truncate text-meta leading-tight font-bold tracking-wide uppercase ${brand.logo !== null ? "max-tablet:sr-only" : ""}`}
+              className={`truncate text-meta leading-tight font-bold tracking-wide uppercase ${brand.logo !== null ? "max-rail:sr-only" : ""}`}
             >
               {title}
             </span>
@@ -51,7 +54,7 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
           <PillBar
             items={menu.items}
             current={current}
-            className="order-last basis-full rail:order-none rail:flex-1 rail:basis-auto rail:justify-center"
+            className="min-w-0 flex-1 justify-center"
           />
           <div className="ml-auto flex flex-none items-center gap-sp-2">
             {week !== undefined && <WeekChip weeks={menu.weeks} week={week} pageHref={pageHref} />}

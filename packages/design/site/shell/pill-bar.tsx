@@ -1,6 +1,6 @@
 /**
- * The pill bar: the destinations of the menu with their full labels, in the top band from the tablet tier up.
- * The open destination is marked. Below the tablet tier the dock takes its place.
+ * The pill bar: the destinations of the menu with their full labels, in the top band from the desktop tier up.
+ * The open destination is marked. Below the desktop tier the dock takes its place.
  */
 import { cn } from "../lib/utils";
 import type { NavItem } from "./nav";
@@ -16,7 +16,7 @@ type PillBarProps = {
 export function PillBar({ items, current, className }: PillBarProps) {
   return (
     // A long list scrolls inside the bar, so the page never scrolls sideways.
-    <nav aria-label="Site menu" className={cn("hidden items-center gap-sp-1 overflow-x-auto tablet:flex", className)}>
+    <nav aria-label="Site menu" className={cn("hidden items-center gap-sp-1 overflow-x-auto desktop:flex", className)}>
       {items.map((item) => (
         // A plain anchor, so the static export moves with scripts off and with no client router.
         // The raised fill marks the open destination, so the mark is not color alone: the pill has a shape.

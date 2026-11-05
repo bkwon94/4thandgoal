@@ -1,6 +1,7 @@
 /**
- * The dock: the destinations of the menu as icons with short labels, fixed at the bottom of the viewport on a phone.
- * It stays on screen at every scroll. From the tablet tier up the pill bar of the top band takes its place.
+ * The dock: the destinations of the menu as icons with short labels, fixed at the bottom of the viewport on a phone and a tablet.
+ * It stays on screen at every scroll. From the desktop tier up the pill bar of the top band takes its place.
+ * The full labels of the pill bar do not fit on one row beside the brand at a tablet width, so the dock serves the tablet too.
  */
 import {
   ArrowLeftRightIcon,
@@ -35,7 +36,7 @@ export function Dock({ items, current }: DockProps) {
     // under the page (globals.css), so the dock never covers the end of the page.
     <nav
       aria-label="Bottom menu"
-      className="fixed inset-x-sp-3 bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 tablet:hidden"
+      className="fixed inset-x-sp-3 bottom-[calc(var(--spacing-sp-3)+env(safe-area-inset-bottom))] z-40 rounded-card border border-rule bg-card p-sp-1 desktop:hidden"
     >
       <ul className="m-0 grid list-none auto-cols-fr grid-flow-col gap-sp-1 p-0">
         {items.map((item) => {
