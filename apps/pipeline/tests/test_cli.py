@@ -373,7 +373,7 @@ def test_analyze_of_a_week_with_no_chart_reads_the_superstar_from_the_saved_read
     before = chart_read(tmp_path / "data" / "nfl", "1QB0.5PPR4pt", 5)
     before.parent.mkdir(parents=True)
     shutil.copy(Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json", before)
-    # Trade W: roster 6 gives Washington and Walker, roster 12 gives Higgins, Tuten, and Samuel.
+    # Trade W: roster 6 gives Washington and Walker, roster 12 gives Higgins, Tuten, and Pollard.
     code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6",
                      "--side", "6:9487,8151", "--side", "12:6801,12490,5967", "--asker", "12", "--no-claude"])
 
