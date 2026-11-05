@@ -80,8 +80,8 @@ const stackParts = ({ hero, form, result }: FormParts) => (
 /* A trade to grade: the sides and the season of the data they come from. */
 type TradeToGrade = { sides: Sides; season: number };
 
-/* The sheet that is open, if any: the team sheet of a slot or of a new side, or the picker of one side. */
-type OpenSheet = { kind: "team"; slot: number | "new" } | { kind: "players"; side: number } | null;
+/* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
+type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
 /* The hero while the grade runs: the title, two pulsed bars where the verdict lands, and the sweep.
    Each text line sits on a plate, so no grid sits under a letter. With motion off, the bars hold still. */
@@ -162,10 +162,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const folded = grading || (grade.status === "done" && !editing);
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
+  const teamSheet = teamSheetOf(sheet);
   // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
-  const taken = sides.flatMap((side, i) =>
-    side.rosterId === null || (sheet?.kind === "team" && sheet.slot === i) ? [] : [side.rosterId],
-  );
+  const taken = sides.flatMap((side, i) => (side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId]));
 
   /* A change to the trade makes the old result stale, so it clears the result and drops a late answer to the old trade. */
   function changeTrade(update: (current: Sides) => Sides) {
@@ -191,6 +190,25 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   function addSide(rosterId: number) {
     const id = nextSideId.current++;
     changeTrade((current) => [...current, { id, rosterId, gets: [] }]);
+  }
+
+  /* The team sheet that is open, if any: its title, the slot whose team it changes, and the action of a tap on a team.
+     The sheet of a slot changes the team of that side. The sheet of "+" has no slot, and a tap adds a side. */
+  function teamSheetOf(open: OpenSheet) {
+    if (open?.kind === "team") {
+      const index = open.slot;
+      return { title: `Pick ${SIDE_TITLES[index]}`, slot: index, pick: (rosterId: number) => pickTeam(index, rosterId) };
+    }
+    if (open?.kind === "add") {
+      return {
+        title: `Pick ${SIDE_TITLES[sides.length] ?? "a Team"}`,
+        slot: null,
+        pick: (rosterId: number) => {
+          if (sides.length < MAX_SIDES) addSide(rosterId);
+        },
+      };
+    }
+    return null;
   }
 
   /* A removed side takes its card out, and each player it gives leaves the other cards. */
@@ -292,8 +310,6 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     );
   }
 
-  const teamSheetTitle =
-    sheet?.kind === "team" ? (sheet.slot === "new" ? `Pick ${SIDE_TITLES[sides.length] ?? "a Team"}` : `Pick ${SIDE_TITLES[sheet.slot]}`) : "";
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
   /* The players a side of another team gets from Your Team. */
@@ -307,7 +323,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           <TeamsRow
             slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
             onPickSlot={(slot) => setSheet({ kind: "team", slot })}
-            onAdd={() => setSheet({ kind: "team", slot: "new" })}
+            onAdd={() => setSheet({ kind: "add" })}
             locked={locked}
           />
           {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
@@ -369,16 +385,12 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           </div>
         )}
         <TeamSheet
-          open={sheet?.kind === "team"}
-          title={teamSheetTitle}
+          open={teamSheet !== null}
+          title={teamSheet?.title ?? ""}
           teams={teams}
           taken={taken}
           onPick={(rosterId) => {
-            if (sheet?.kind === "team") {
-              if (sheet.slot === "new") {
-                if (sides.length < MAX_SIDES) addSide(rosterId);
-              } else pickTeam(sheet.slot, rosterId);
-            }
+            teamSheet?.pick(rosterId);
             setSheet(null);
           }}
           onClose={() => setSheet(null)}
