@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-35.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] axe with the rule `color-contrast` fails on a violation and on an `incomplete` result.
 - [x] The scan fails prose under 16px, other text under 11px, a link or button under 44px, and a sideways scroll at 390px. A link inside prose is exempt, and the check prints each exempt link.
