@@ -1,0 +1,5 @@
+$ uv run --exact --package cpc-waiver python count.py   # in the spec worktree (transaction-history)
+claims 222 won 100
+
+$ uv run --exact --package cpc-waiver python count.py   # with the history files of main (git show main:...)
+claims 162 won 77
