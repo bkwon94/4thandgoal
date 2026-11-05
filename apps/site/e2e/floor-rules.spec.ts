@@ -76,7 +76,7 @@ test("openPage sets each theme through the shipped boot script and the server gi
   page,
 }) => {
   const dir = mkdtempSync(join(tmpdir(), "floor-"));
-  writeFileSync(join(dir, "index.html"), `<html><head><script>${BOOT_SCRIPT}</script></head><body>Home</body></html>`);
+  writeFileSync(join(dir, "index.html"), `<html class="${DARK_CLASS}"><head><script>${BOOT_SCRIPT}</script></head><body>Home</body></html>`);
   writeFileSync(join(dir, "404.html"), "<html><body>Not found</body></html>");
   const server = await serveDir(dir);
   try {
