@@ -222,6 +222,39 @@ def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixtur
     assert _managers(repo).read_text(encoding="utf-8") == built
 
 
+def test_a_league_with_no_median_game_has_no_median_line_in_the_points_line(tmp_path, fixture_raw_dir,
+                                                                            fixture_history_root, offline):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo, median_game=False))
+    data = json.loads(_managers(repo).read_text(encoding="utf-8"))
+    weeks = [w for m in data["managers"] for w in m["weeks"]]
+    assert len(weeks) == 12 * 6
+    # The points line draws the median line from the median of each week, so no week holds one.
+    assert all(w["median"] is None for w in weeks)
+
+
+def test_cpc_with_its_median_game_has_a_median_line_in_the_points_line(tmp_path, fixture_raw_dir,
+                                                                       fixture_history_root, offline):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    data = json.loads(_managers(repo).read_text(encoding="utf-8"))
+    assert all(isinstance(w["median"], float) for m in data["managers"] for w in m["weeks"])
+
+
+def test_a_client_with_no_managers_package_gets_no_managers_file(tmp_path, fixture_raw_dir, fixture_history_root,
+                                                                offline):
+    repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
+    client = cpc_client(at=repo)
+    packages = [name for name in client.values.packages if name != "managers"]
+    client = client.model_copy(update={"values": client.values.model_copy(update={"packages": packages})})
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=client)
+    assert _rankings(repo).exists()
+    assert not _managers(repo).exists()
+    # The rankings command rebuilds the season files, and it skips the managers file too.
+    run_rankings(repo, 2026, 6, _fake, client=client)
+    assert not _managers(repo).exists()
+
+
 def test_a_build_loads_the_raw_week_once(tmp_path, fixture_raw_dir, fixture_history_root, offline):
     repo = _repo_with_history(tmp_path, fixture_raw_dir, fixture_history_root)
     loads = []

@@ -1,6 +1,7 @@
 """
 Tests for the rankings package through its published files: page.json and rankings.json of the week 6 fixtures.
 Each client is the CPC client with one change: the median game off, or the package list ["week"] (AT-12).
+The managers record of managers.json follows the same rule.
 """
 import json
 import re
@@ -111,3 +112,13 @@ def test_a_client_with_no_rankings_gets_no_rankings_file(build):
 
 def test_cpc_with_rankings_gets_the_rankings_file(build):
     assert (build() / "rankings.json").is_file()
+
+
+def test_a_league_with_no_median_game_counts_one_game_a_week_in_the_managers_record(build):
+    published = build(median_game=False)
+    managers = _read(published / "managers.json")["managers"]
+    assert [m["wins"] + m["losses"] for m in managers] == [WEEKS] * 12
+    # The managers record and the rankings record agree on each team.
+    rows = _read(published / "rankings.json")["weeks"][-1]["rows"]
+    assert {m["roster_id"]: (m["wins"], m["losses"]) for m in managers} == {
+        row["roster_id"]: (row["wins"], row["losses"]) for row in rows}

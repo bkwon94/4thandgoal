@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The site side of the week package: the chapters of the weekly report, the schema and the types of the week page file, the team group with its manager hrefs, and the week 6 fixture. It ships TSX source with no build step.",
+  "description": "The site side of the week package: the chapters of the weekly report, the schema and the types of the week page file, the team group, and the week 6 fixture. It ships TSX source with no build step.",
   "dependencies": {
     "@cpc/design": "workspace:*",
     "@cpc/league": "workspace:*",

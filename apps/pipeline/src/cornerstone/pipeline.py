@@ -14,9 +14,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import TypeAdapter
 
-from cornerstone.manager_season import saved_awards
-from cornerstone.managers import MIN_WEEKS as MANAGERS_MIN_WEEKS
-from cornerstone.render import render_managers, render_week
+from cornerstone.render import render_week
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -24,9 +22,6 @@ from cornerstone.sheet import (
     saved_chapter,
     write_bundle,
 )
-from cornerstone.waiver import waiver_board
-from cornerstone.waiver_price import bid_history
-from cornerstone.waiver_research import SearchCall, research_board, search_call
 from facts.chapters import RANKINGS_CHAPTER
 from facts.verifier import page_words, reserved_words, write_and_verify
 from facts.writer import ClaudeCall
@@ -77,7 +72,13 @@ from league.season_inputs import SeasonInputs
 from league.slow_sources import load_slow_sources
 from league.snapshot import Snapshot, load_returns, week_snapshot
 from league.trades import default_cutoff, trades_for_week
+from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
+from managers.render import render_managers
+from managers.season import saved_awards
 from rankings.published import render_rankings
+from waiver.board import waiver_board
+from waiver.price import bid_history
+from waiver.research import SearchCall, research_board, search_call
 from week.median import median_terms
 from week.page import download_bytes, render_page_json
 
@@ -437,12 +438,20 @@ def run_build(
             log.warning("rankings.json not written for week %d: %s", week, err)
     # The managers file reads the same saved history, so it comes right after the rankings file.
     # The snapshot, the projections ahead, and the chart load inside this try, so their failure skips only this file.
+    # A client that omits the managers package gets no managers file, so the build loads none of its inputs.
+    if not _takes_managers(client):
+        return page
     try:
         _write_managers(repo, season, week, bundle.data.teams,
                         _season_inputs(season, week, raw, history, client), client)
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
     return page
+
+
+def _takes_managers(client: Client) -> bool:
+    """True when the package list of `client` holds the managers package, so the build writes managers.json."""
+    return "managers" in client.values.packages
 
 
 def _season_history(client: Client, season: int, week: int) -> History:
@@ -505,6 +514,7 @@ def _write_managers(
     week_awards = saved_awards({n: week_dir(client.folder, season, n) / "facts.json" for n in range(1, through + 1)})
     return render_managers(
         inputs, season, teams, repo / "site", players=players, roster_slots=slots, week_awards=week_awards,
+        median_game=client.settings.median_game,
     )
 
 
@@ -651,6 +661,8 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     # The command rebuilds the season files from the saved history, so the managers file comes along.
     # A thin history only logs: the rankings file is the output of the command.
     # The raw week loads after the rankings file, so a failed load of the grade inputs leaves that file written.
+    if not _takes_managers(client):
+        return out
     inputs = _season_inputs(season, week, _raw_for_season_files(client, season, week), season_history, client)
     _write_managers(repo, season, week, bundle.data.teams, inputs, client)
     return out

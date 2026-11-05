@@ -4,12 +4,11 @@
 
 - The weekly build: fetch from the provider, parse, build the fact sheet, write, verify, render, and publish.
 - The `analyze` and `find` commands of the CLI. The `analyzer` package holds the rubric, the grade, and the finder.
-- The waiver board and the managers file. The `rankings` package holds the power rankings and the playoff odds.
+- The build of each week and the season files. The `rankings`, `managers`, and `waiver` packages hold their own rules.
 - The six layers: model, provider, load, facts, write, output. A module imports only from its own layer or a lower one.
 - The shared kernel is the league package in `packages/league/`. Every outside service enters through it.
 - The fact tokens, the writer, the verifier, and the default voice are the facts package in `packages/facts/`.
 - `LAYER_OF` in `tests/test_layers.py` gives the layer of each module. `docs/adr/0010-six-layers-import-downward-only.md` gives the reason.
-- The rule prompt of the waiver board in `prompts/`, as `RULE_PROMPTS`. The folder is not a package.
 - The terms are in `GLOSSARY.md`.
 
 ## Ports

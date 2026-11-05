@@ -5,8 +5,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Masthead } from "@cpc/design/shell/masthead";
-import { ManagerChapters, MANAGER_CHAPTERS } from "@/components/managers/manager-chapters";
-import { ManagerHero } from "@/components/managers/manager-hero";
+import { ManagerChapters, MANAGER_CHAPTERS } from "@cpc/managers/page/manager-chapters";
+import { ManagerHero } from "@cpc/managers/page/manager-hero";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { ChapterRail } from "@cpc/design/parts/chapter-rail";
 import { avatarSrc } from "@cpc/league/images";

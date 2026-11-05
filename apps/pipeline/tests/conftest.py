@@ -14,8 +14,6 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
-from cornerstone.pipeline import make_bundle
-from cornerstone.sheet import build_bundle
 from league.history import load_history
 from league.models import ChartValues, InjuryPlay, NflverseWeek
 from league.nflverse import nflverse_week
@@ -29,6 +27,14 @@ from league.trades import default_cutoff, trades_for_week
 CLIENT = cpc_client()
 
 ET = ZoneInfo("America/New_York")
+
+
+def build_bundle(*args, **kwargs):
+    """The week build of the pipeline, imported at the call. The API tests load this file, and the API env holds no
+    core package, so an import at load of the wire code, which imports the rankings package, fails there (AT-31)."""
+    from cornerstone.sheet import build_bundle as build
+
+    return build(*args, **kwargs)
 
 # The trend reason gives share percents, WOPR values, and the weeks behind them, such as "52%", "WOPR 55", and
 # "weeks 4 and 5".
@@ -201,6 +207,10 @@ def saved_repo(tmp_path, week):
 @pytest.fixture(scope="module")
 def week_8(tmp_path_factory):
     """The week 8 bundle from the saved week 8 data, with the saved week 7 odds as the odds before."""
+    # The import sits here, not at the top: the API tests load this file, and the API env holds no waiver package, which
+    # the build imports. Only the pipeline tests take this fixture.
+    from cornerstone.pipeline import make_bundle
+
     repo = saved_repo(tmp_path_factory.mktemp("repo"), 8)
     bundle, _ = make_bundle(2026, 8, news=no_news, client=cpc_client(at=repo))
     return bundle

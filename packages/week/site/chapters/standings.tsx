@@ -10,7 +10,7 @@ import { avatarSrc } from "@cpc/league/images";
 import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
-import { managerHrefOrNull } from "../parts/hrefs";
+import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { Who } from "../parts/who";
 
 /* Six teams make the playoffs, so the dashed cut line sits under the sixth row. */

@@ -5,8 +5,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { managersHref } from "../routes";
-import { managersFileSchema } from "../schemas/managers";
-import type { Manager, ManagerEntry, Managers } from "../manager-types";
+import { managersFileSchema } from "@cpc/managers/schema/managers";
+import type { Manager, ManagerEntry, Managers } from "@cpc/managers/schema/manager-types";
+import { clientValues } from "../../generated/client-values";
 import { latestSeason, loadRankings } from "./rankings-data";
 import type { RankingsRow } from "@cpc/rankings/schema/rankings-types";
 
@@ -59,8 +60,10 @@ export function loadManagers(): Managers | null {
 }
 
 /* The masthead link to the managers index of the latest season. A season with no file has no route, so no link.
+   A client that omits the managers package has no route either, even with a managers file in its published data.
    The link is a plain anchor, so the route builder puts the base path in it. */
 export function currentManagersHref(): string | null {
+  if (!clientValues.packages.includes("managers")) return null;
   const file = managersFile();
   const season = latestSeason();
   return file !== null && season !== null && existsSync(file) ? managersHref(season) : null;

@@ -1,5 +1,5 @@
 /**
- * Holds every file under src/components/ and the site side of each package to the rule of ADR 0012: a component takes data and returns markup.
+ * Holds the site side of each package, and src/components/ when it exists, to the rule of ADR 0012: a component takes data and returns markup.
  * It fails on an import of node:fs, the config module, or a lib/data loader, or a read of process.env.
  * A failure names the file and the line.
  */
@@ -20,8 +20,10 @@ function packageSiteDirs(): string[] {
     .filter((dir) => existsSync(dir));
 }
 
-/* Every source file under the component tree, tests too, because a test that reaches the config hides a prop the component lacks. */
+/* Every source file under the component tree, tests too, because a test that reaches the config hides a prop the component lacks.
+   Each component now sits in a package, so the app has no src/components/. A folder that comes back there is held to the rule too. */
 function sourceFiles(dir = COMPONENTS_DIR): string[] {
+  if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) return entry.name === "node_modules" ? [] : sourceFiles(path);
@@ -84,7 +86,6 @@ function fileOffenses(file: string): Offense[] {
 describe("the component rule", () => {
   it("finds the component tree", () => {
     // An empty list would pass with no file read.
-    expect(sourceFiles().length).toBeGreaterThan(0);
     expect(packageSiteDirs().flatMap((dir) => sourceFiles(dir)).length).toBeGreaterThan(0);
   });
 

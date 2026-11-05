@@ -5,11 +5,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Masthead, WeekLine } from "@cpc/design/shell/masthead";
-import { WarChest } from "@/components/waiver/war-chest";
+import { TeamPicker } from "@cpc/analyzer/form/team-picker";
+import { WarChest } from "@cpc/waiver/war-chest";
 import { listWaiverWeeks, loadWaiver } from "@/lib/data/waiver-data";
 import { loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { waiverHref, weekHref } from "@/lib/routes";
-import type { AvatarMap } from "@cpc/week/schema/week-types";
+import type { AvatarMap } from "@cpc/waiver/types";
 import { mastheadProps } from "@/app/masthead-props";
 
 type Props = { params: Promise<WeekRef> };
@@ -52,7 +53,8 @@ export default async function WaiverPage({ params }: Props) {
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{`Built ${BUILT.format(new Date(board.built))}`}</div>
       </Masthead>
       <main className="mx-auto max-w-page bg-page">
-        <WarChest board={board} teams={page.teams} avatars={weekAvatars(season, week, page.avatars)} />
+        {/* The War chest shows the team picker of the analyzer through its port, so the waiver package imports no other core package. */}
+        <WarChest board={board} teams={page.teams} avatars={weekAvatars(season, week, page.avatars)} TeamPicker={TeamPicker} />
       </main>
     </>
   );

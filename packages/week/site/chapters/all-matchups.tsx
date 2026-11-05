@@ -18,7 +18,7 @@ import { Blurb } from "@cpc/design/parts/blurb";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import { TeamName } from "@cpc/design/parts/team-name";
-import { managerHrefOrNull } from "../parts/hrefs";
+import { managerHrefOrNull } from "@cpc/league/hrefs";
 
 /* The top scorer of one side, or a dash when the side started no one. */
 function Star({ side }: { side: MatchupSide }) {

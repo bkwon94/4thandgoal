@@ -8,9 +8,9 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
-import { managersFileSchema } from "../schemas/managers";
+import { managersFileSchema } from "@cpc/managers/schema/managers";
 import { rankingsSchema } from "@cpc/rankings/schema/rankings";
-import { waiverBoardSchema } from "../schemas/waiver";
+import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
@@ -35,7 +35,7 @@ function shapeOffenses(schema: ZodType, file: string): Offense[] {
     what: issue.message,
     rule: "the pipeline owns the published shape, and each file under public/ matches its Zod schema",
     adr: "docs/adr/0013-the-published-shape-has-one-owner.md",
-    fix: "change the schema in src/lib/schemas/ and the pipeline's writer together, or republish the file.",
+    fix: "change the schema in packages/<package>/site/schema/ and the pipeline's writer together, or republish the file.",
   }));
 }
 

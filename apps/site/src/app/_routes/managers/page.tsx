@@ -4,7 +4,7 @@
  */
 import type { Metadata } from "next";
 import { Masthead } from "@cpc/design/shell/masthead";
-import { ManagersIndex } from "@/components/managers/managers-index";
+import { ManagersIndex } from "@cpc/managers/page/managers-index";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { loadManagers } from "@/lib/data/manager-data";
 import { latestAvatars } from "@/lib/data/rankings-data";

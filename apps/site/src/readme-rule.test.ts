@@ -1,6 +1,6 @@
 /**
  * Holds each package folder to the rule of ADR 0016: a README of under 25 lines with the headings Knows, Ports, and Does not do.
- * A package folder is each folder directly under src/components/ and src/lib/, plus src/lib/ and src/hooks/ when it exists.
+ * A package folder is each folder directly under src/components/, when it exists, and src/lib/, plus src/lib/ and src/hooks/ when it exists.
  * Each package under packages/ is a package folder too (ADR 0023), with each folder directly under its site side.
  * No tracked CLAUDE.md sits below the root, except one at the top of each app in apps/.
  */
@@ -114,7 +114,6 @@ describe("the readme rule", () => {
         "../../packages/rankings/site/chapters",
         "../../packages/week/site/chapters",
         "src/lib",
-        "src/lib/schemas",
         "../../packages/design",
         "../../packages/design/site/shell",
       ]),);

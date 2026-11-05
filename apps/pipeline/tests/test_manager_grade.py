@@ -9,7 +9,14 @@ from datetime import date
 import pytest
 from cpc import cpc_client
 
-from cornerstone.manager_grade import (
+from league.history import load_history
+from league.models import ChartValues, History, PastWeek
+from league.parse import parse_week
+from league.provider.sleeper import load_raw
+from league.season_inputs import SeasonInputs
+from league.snapshot import week_snapshot
+from managers.entries import managers
+from managers.grade import (
     GradeParts,
     SlotRank,
     _league_reads,
@@ -23,14 +30,7 @@ from cornerstone.manager_grade import (
     roster_parts,
     season_points_per_game,
 )
-from cornerstone.managers import managers
-from cornerstone.tunables import GRADE_WEIGHTS
-from league.history import load_history
-from league.models import ChartValues, History, PastWeek
-from league.parse import parse_week
-from league.provider.sleeper import load_raw
-from league.season_inputs import SeasonInputs
-from league.snapshot import week_snapshot
+from managers.tunables import GRADE_WEIGHTS
 
 CLIENT = cpc_client()
 

@@ -8,8 +8,8 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1.
 
 **Blocked by:** 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] The `managers` package holds the modules of decision 01 and writes `managers.json`.
-- [ ] A fixture test with the median off shows no median line in the points line.
-- [ ] The CPC golden diff is empty (AT-1).
+- [x] The `managers` package holds the modules of decision 01 and writes `managers.json`.
+- [x] A fixture test with the median off shows no median line in the points line.
+- [x] The CPC golden diff is empty (AT-1).

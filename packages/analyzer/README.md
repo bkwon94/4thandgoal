@@ -7,7 +7,7 @@
 - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
 - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
-- The trade form, the finder, the API client, the passphrase, the teams store, and the team pick of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
+- The trade form, the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
 - Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false.
 
 ## Ports
