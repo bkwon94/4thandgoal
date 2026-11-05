@@ -23,10 +23,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The brand schema keeps only the required `light` and `dark` sets. The fonts and the radii of the look go into the `@theme static` block of `globals.css`. `decisions/01-research-brand-schema-drops-fonts.md`.
 - The floor runs in Playwright on the static export of each client: axe for contrast, failing on `incomplete` too, and a scan for tap targets, scroll width, and text size. It runs in `build-each-client.mjs`, not in `check:fast`. `decisions/10-research-readability-floor-checks.md`.
 - The site self-hosts Space Grotesk and JetBrains Mono with `next/font/local`, as two Latin variable woff2 files of 53,660 bytes in total, both under the OFL. `decisions/02-research-web-fonts-without-speed-loss.md`.
+- The look is the blend of Instrument and Glass HUD: Space Grotesk and JetBrains Mono, brand surfaces, a loud hero with the grid, brackets, glow, and scan line, round photo frames, and a staggered rise. ADR 0024. `decisions/03-prototype-the-look.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the look? `decisions/03-prototype-the-look.md`.
 - How does a reader move across the routes? `decisions/04-prototype-the-navigation.md`.
 - What does the week page show, and in what order? `decisions/05-prototype-the-week-page.md`.
 - What does the analyzer look like in the look? `decisions/06-prototype-the-analyzer.md`.
