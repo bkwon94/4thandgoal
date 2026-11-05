@@ -6,6 +6,7 @@ import re
 import shutil
 from datetime import datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -27,11 +28,14 @@ from analyzer.rubric import (
     verdict,
 )
 from analyzer.trade_facts import trade_fact_sheet
+from analyzer.tunables import SUPERSTAR_RANK
 from facts.writer import load_prompt
 from league import tunables
+from league.chart import match_chart
 from league.history import carry_share, points_per_game, red_zone, snap_share, target_share
 from league.lineup import best_lineup, bye_covers
-from league.models import ExpectedGame, ExpectedPoints
+from league.models import ChartRead, ExpectedGame, ExpectedPoints, week_lines
+from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.ranks import due_back_week, lineup_value, recent_points_per_game
 from league.slow_sources import SlowSources, load_slow_sources
@@ -190,6 +194,103 @@ def test_a_two_for_two_gets_no_margin(snap):
                    for side in result)
 
 
+# The real read of the week 9 chart of 1QB0.5PPR4pt. Its top 8 trade values are Gibbs, Walker, Smith-Njigba, Nacua,
+# Bijan Robinson, Chase, Lamb, then McCaffrey and St. Brown tied at 54.0. Higgins at 38.5 is no superstar.
+WEEK_9_READ = Path(__file__).parent / "fixtures" / "charts" / "read-week-09.json"
+WALKER, WASHINGTON, HIGGINS = "8151", "9487", "6801"
+TRADE_W = (6, [WASHINGTON, WALKER], 12, [HIGGINS, "12490", "5967"])
+
+
+def _week_9(snap, raw_dir):
+    """The snapshot with the trade values of the week 9 chart read, matched to the league players as the CLI does.
+
+    Walker takes his live Sleeper name, which the week 6 fixture lacks.
+    """
+    read = ChartRead.model_validate_json(WEEK_9_READ.read_text(encoding="utf-8"))
+    chart = match_chart(read, week_lines(parse_week(load_raw(raw_dir))))
+    players = {**snap.players, WALKER: snap.players[WALKER].model_copy(update={"name": "Kenneth Walker III"})}
+    return snap.model_copy(update={"chart": chart, "players": players})
+
+
+NO_SUPERSTAR = "No player it gets is a superstar."
+
+
+def test_trade_w_steps_up_the_side_that_gets_a_superstar_and_not_the_side_that_gives_him(snap, fixture_raw_dir):
+    bo_girds, teehee = grade(_trade(*TRADE_W), _week_9(snap, fixture_raw_dir))
+    assert (bo_girds.start_letter, teehee.start_letter) == ("D", "B")
+    assert _adjuster(teehee, "superstar").step == 1
+    assert _adjuster(teehee, "superstar").reason == "Kenneth Walker III is a superstar, a top 8 player this week."
+    assert _adjuster(bo_girds, "superstar").step == 0
+    assert _adjuster(bo_girds, "superstar").reason == NO_SUPERSTAR
+
+
+def test_one_for_two_gives_no_superstar_step_because_the_margin_already_counts_him(snap, fixture_raw_dir):
+    # The AT-3 trade: Walker for Higgins and Tuten, at the 1.25 margin.
+    bo_girds, teehee = grade(_trade(6, [WALKER], 12, [HIGGINS, "12490"]), _week_9(snap, fixture_raw_dir))
+    assert (bo_girds.start_letter, teehee.start_letter) == ("D", "B")
+    assert _adjuster(teehee, "superstar").step == 0
+    assert _adjuster(teehee, "superstar").reason == (
+        "Kenneth Walker III is a superstar, but the one-for-many margin already counts him.")
+    assert not _adjuster(teehee, "superstar").silent
+    assert _adjuster(bo_girds, "superstar").reason == NO_SUPERSTAR
+
+
+def test_two_superstars_to_one_side_give_one_step_and_name_both(snap, fixture_raw_dir):
+    # Roster 3 gives McCaffrey and Smith-Njigba to roster 12 for Higgins and Tuten, an even count with no margin.
+    third, twelfth = grade(_trade(3, [MCCAFFREY, "9488"], 12, [HIGGINS, "12490"]), _week_9(snap, fixture_raw_dir))
+    assert _adjuster(twelfth, "superstar").step == 1
+    assert _adjuster(twelfth, "superstar").reason == (
+        "Christian McCaffrey and Jaxon Smith-Njigba are superstars, each a top 8 player this week.")
+    assert _adjuster(third, "superstar").step == 0
+
+
+def test_a_superstar_to_each_side_steps_up_both_sides(snap, fixture_raw_dir):
+    # Roster 4 gives Puka Nacua, 4th on the week 9 chart, for Bijan Robinson of roster 7, 5th.
+    fourth, seventh = grade(_trade(4, ["9493"], 7, ["9509"]), _week_9(snap, fixture_raw_dir))
+    assert _adjuster(fourth, "superstar").step == 1
+    assert _adjuster(fourth, "superstar").reason == "Bijan Robinson is a superstar, a top 8 player this week."
+    assert _adjuster(seventh, "superstar").step == 1
+    assert _adjuster(seventh, "superstar").reason == "Puka Nacua is a superstar, a top 8 player this week."
+
+
+def test_a_tie_at_rank_8_makes_every_tied_player_a_superstar(snap, fixture_raw_dir):
+    # McCaffrey and St. Brown tie at 54.0 for 8th on the week 9 chart. James Cook at 53.0 is 10th.
+    third, twelfth = grade(_trade(3, [MCCAFFREY], 12, ["7547"]), _week_9(snap, fixture_raw_dir))
+    assert _adjuster(third, "superstar").step == 1
+    assert _adjuster(twelfth, "superstar").step == 1
+    _, sixth = grade(_trade(5, ["8138"], 6, [WASHINGTON]), _week_9(snap, fixture_raw_dir))
+    assert _adjuster(sixth, "superstar").reason == NO_SUPERSTAR
+
+
+def test_a_superstar_out_for_the_season_gives_no_step(snap, fixture_raw_dir):
+    week_9 = _week_9(snap, fixture_raw_dir)
+    week_9 = week_9.model_copy(update={"out_for_season": {*week_9.out_for_season, WALKER}})
+    _, teehee = grade(_trade(*TRADE_W), week_9)
+    assert _adjuster(teehee, "superstar").step == 0
+    assert _adjuster(teehee, "superstar").reason == NO_SUPERSTAR
+
+
+def test_the_word_rule_of_the_analysis_passes_on_each_superstar_reason(snap, fixture_raw_dir):
+    week_9 = _week_9(snap, fixture_raw_dir)
+    names = [*(t.name for t in week_9.teams.values()), *(p.name for p in week_9.players.values())]
+    for trade in (_trade(*TRADE_W), _trade(6, [WALKER], 12, [HIGGINS, "12490"]),
+                  _trade(3, [MCCAFFREY, "9488"], 12, [HIGGINS, "12490"])):
+        breakdowns = grade(trade, week_9)
+        breakdown_text = _breakdown_text(breakdowns)
+        for side in breakdowns:
+            reason = _adjuster(side, "superstar").reason
+            assert _prose_failures("superstar", reason, _allowed({}, [], breakdown_text), breakdown_text, names) == []
+            assert _letter_failures("superstar", reason) == []
+
+
+def test_the_rubric_prompt_states_the_superstar_step_in_rubric_order():
+    superstar = _prompt_section("Superstar")
+    assert "top `SUPERSTAR_RANK` trade values of the week, over all positions" in superstar
+    assert "Two superstars still give one step." in superstar
+    assert "gives no superstar step" in superstar and "`CONSOLIDATION_MARGIN`" in superstar
+    assert "injury, upside, superstar, handcuff, schedule" in _prompt_section("Adjusters")
+
+
 def test_an_unlisted_player_starts_both_sides_at_c(snap):
     unlisted = next(pid for pid in snap.rosters[1] if pid not in snap.chart.values)
     result = grade(_trade(1, [unlisted], 4, [COLLINS]), snap)
@@ -323,8 +424,11 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
             # The trend reason may give share percents and the air yards per target. Any other number in it fails.
             # The roster fit reason may give the count at each position and the top N it counts in.
+            # The superstar reason may give the top N trade values it counts in, a rank and not a trade value.
             for reason in [side.reason, *(strip_trend_numbers(a.reason) if a.name == TREND
-                                          else _without_counts(a.reason) if a.name == "roster fit" else a.reason
+                                          else _without_counts(a.reason) if a.name == "roster fit"
+                                          else a.reason.replace(f"top {SUPERSTAR_RANK} ", "") if a.name == "superstar"
+                                          else a.reason
                                           for a in side.adjusters)]:
                 assert not re.search(r"\d", reason)
                 # The trade value chart never shows. The NFL depth chart is a plain source, so its name may.
@@ -1277,7 +1381,7 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
 def test_the_adjusters_show_in_rubric_order(snap):
     for side in grade(_trade(10, [SAQUON], 5, [COOK]), snap):
         assert [a.name for a in side.adjusters] == [
-            "roster fit", "standing", "trend and usage", "injury", "upside", "handcuff", "schedule"]
+            "roster fit", "standing", "trend and usage", "injury", "upside", "superstar", "handcuff", "schedule"]
 
 
 # The week 6 Josh Jacobs trade: roster 11 got Jacobs and Devaughn Vele from roster 12
@@ -2020,19 +2124,20 @@ def test_the_clamp_holds_three_steps_up_to_one(snap):
     # Three steps up from F would reach B. The clamp holds the sum at one, so the final letter is D.
     first, _ = grade(_trade(1, [IRVING], 3, [HENRY]), _with_values(snap, {IRVING: 40.0, HENRY: 20.0}))
     assert first.start_letter == "F"
-    assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0, 0]
+    assert [a.step for a in first.adjusters] == [1, 1, 1, 0, 0, 0, 0, 0]
     assert first.final_letter == "D"
 
 
 def test_the_clamp_holds_three_steps_down_to_one(snap):
     # Roster 5, a contender, gets Rice for Cook. Its best lineup loses now for a player with no return week,
-    # and Rice is out: roster fit, standing, and injury each step down. Rice at 40 for Cook at 20 starts it at A.
+    # and Rice is out: roster fit, standing, and injury each step down. Rice at 30 for Cook at 20 starts it at A.
     # Three steps down from A would reach D. The clamp holds the sum at one, so the final letter is B.
-    # Rice at 40 would be a star return bet, which the injury exempts, so no player is a star here.
+    # Rice at 30 would be a star return bet, which the injury exempts, so no player is a star here.
+    # At 30 he is 9th on the chart, so he is no superstar either.
     no_stars = snap.model_copy(update={"client": cpc_client(star_rank_by_position={})})
-    fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(no_stars, {RICE: 40.0, COOK: 20.0}))
+    fifth, _ = grade(_trade(5, [COOK], 1, [RICE]), _with_values(no_stars, {RICE: 30.0, COOK: 20.0}))
     assert fifth.start_letter == "A"
-    assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0]
+    assert [a.step for a in fifth.adjusters] == [-1, -1, 0, -1, 0, 0, 0, 0]
     assert fifth.final_letter == "B"
 
 
@@ -2247,7 +2352,7 @@ def _before_real_trade(snap, index: int):
     return snap.model_copy(update={"rosters": rosters})
 
 
-# Each row: the start letter, the seven adjuster steps, the schedule lean, and the final letter of side a, then of
+# Each row: the start letter, the eight adjuster steps, the schedule lean, and the final letter of side a, then of
 # side b, then the verdict for the asker. Worked by hand from the rubric on the week 6 snapshot with the nflverse
 # fixture and the returns file: trade values from the week 6 chart, points per game over weeks 2 to 5,
 # standings through week 5, and shares of weeks 4 and 5 against weeks 2 and 3. Trade week N is 6, so a bye in
@@ -2255,7 +2360,8 @@ def _before_real_trade(snap, index: int):
 # in the middle at 4-6. A star is in the top of his position on the chart, by star_rank_by_position. The chart holds
 # 16 RBs, so every player on it but Rhamondre Stevenson and Braelon Allen, the 13th and 14th RB, is a star. A star
 # out now and not out for the season is a star return bet: the upside steps up for him, and the injury leaves him
-# alone.
+# alone. A superstar is in the top 8 trade values of the chart over all positions: Hampton, McCaffrey, Jefferson,
+# Vele, Collins, Breece Hall, Harrison, and Kincaid. A side that gets one steps up, unless the trade is one for many.
 HAND_WORKED = [
     # Roster 7 gives Marvin Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5, a sum of 78.5.
     # Roster 8 gives Braelon Allen 1.5, Malik Nabers 6.5, Jared Goff 13.0, and Breece Hall 41.0, a sum of 62.0.
@@ -2273,8 +2379,10 @@ HAND_WORKED = [
     # Roster 8 asked and grades A: accept.
     # Roster 7 gets Breece Hall, so RB1 is a hole: he is out with no return week on file. That hole moves fit from +1
     # to 0. Sum plus one, F to D.
-    # Roster 8: Carnell Tate at WR47 takes WR2 after the trade and is a new hole, so fit is -1 and A moves to B.
-    (("F", [0, 0, 0, 0, 1, 0, 0], "against", "D"), ("A", [-1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    # Roster 8: Carnell Tate at WR47 takes WR2 after the trade and is a new hole, so fit is -1.
+    # Roster 7 gets Breece Hall and roster 8 gets Marvin Harrison, each a superstar, so each side steps up.
+    # Roster 7: sum plus two, clamped to plus one, F to D. Roster 8: sum zero, A stays A.
+    (("F", [0, 0, 0, 0, 1, 1, 0, 0], "against", "D"), ("A", [-1, 0, 0, 0, 0, 1, 0, 0], "for", "A"), "accept"),
     # The Josh Jacobs trade. Roster 11 gives Bhayshul Tuten 3.0 and Garrett Wilson 27.5, a sum of 30.5.
     # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
     # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.
@@ -2286,7 +2394,8 @@ HAND_WORKED = [
     # Roster 12: the lineup gains 5.57, fit up. Middle. Trend up. No injury step. Schedule even.
     # Sum plus two, clamped to plus one, F to D.
     # Roster 12 asked and grades D, with roster 11 at B: decline.
-    (("A", [-1, 0, -1, 0, 1, 0, 0], "even", "B"), ("F", [1, 0, 1, 0, 0, 0, 0], "even", "D"), "decline"),
+    # Roster 11 gets Vele, a superstar, so it steps up: sum zero, A stays A.
+    (("A", [-1, 0, -1, 0, 1, 1, 0, 0], "even", "A"), ("F", [1, 0, 1, 0, 0, 0, 0, 0], "even", "D"), "decline"),
     # Roster 6 gives Patrick Mahomes 15.5 and Brian Robinson 22.0, a sum of 37.5. Roster 7 gives Lamar Jackson 7.0.
     # One for two: the depth sum counts as 37.5 over 1.25, which is 30.0. Roster 6: 7.0 over 30.0 is 0.233, F.
     # Roster 7: 4.29, A. Brian Robinson at 22.0 is the highest-value player.
@@ -2301,7 +2410,7 @@ HAND_WORKED = [
     # Roster 6 gets Lamar Jackson, so QB is a hole: he is out with no return week on file. Pat Freiermuth leaves
     # the bench for FLEX2, so no cover is left for the bye of Parker Washington in week 7. That hole moves fit
     # from 0 to -1. Sum zero, F stays F.
-    (("F", [-1, 0, 0, 0, 1, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0, 0], "even", "A"), "accept"),
+    (("F", [-1, 0, 0, 0, 1, 0, 0, 0], "even", "F"), ("A", [1, 0, 0, 0, 0, 0, 0, 0], "even", "A"), "accept"),
     # Roster 4 gives Ladd McConkey 4.5 and Rhamondre Stevenson 2.5, a sum of 7.0.
     # Roster 7 gives Cam Skattebo 18.0 and Nico Collins 46.5, a sum of 64.5. Two for two, no consolidation.
     # Roster 4: 64.5 over 7.0 is 9.21, A. Roster 7: 0.109, F. Nico Collins is the highest-value player.
@@ -2312,7 +2421,8 @@ HAND_WORKED = [
     # Roster 7: the lineup loses 4.63, fit down. Middle. Trend mixed. Ladd McConkey is out with no return week, but
     # he is a star return bet, so no injury step, and upside up. Schedule against. Sum zero, F stays F.
     # Roster 7 asked and grades F: decline.
-    (("A", [1, 1, 0, 0, 0, 0, 0], "for", "A"), ("F", [-1, 0, 0, 0, 1, 0, 0], "against", "F"), "decline"),
+    # Roster 4 gets Nico Collins, a superstar, one more step up, and A stays A.
+    (("A", [1, 1, 0, 0, 0, 1, 0, 0], "for", "A"), ("F", [-1, 0, 0, 0, 1, 0, 0, 0], "against", "F"), "decline"),
     # Roster 7 gives Dalton Kincaid 31.5. Roster 12 gives Kenyon Sadiq, with no row on the chart, so both start at C.
     # Points per game pick the highest-value player: Kincaid at 6.55 against Sadiq at 5.50.
     # Roster 7: the lineup changes by minus 1.05, no loss, and it gives Kincaid, no fit step. Middle. Each player
@@ -2321,7 +2431,8 @@ HAND_WORKED = [
     # Roster 12: no lineup change, and it gets Kincaid, fit up. Middle. Trend mixed. Kincaid is Questionable,
     # which is not out. Schedule for. Sum plus one, C to B.
     # Roster 12 asked and grades B: accept.
-    (("C", [0, 0, 0, 0, 0, 0, 0], "against", "C"), ("C", [1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    # Roster 12 gets Kincaid, a superstar, so it steps up again. Sum plus two, clamped to plus one, C to B.
+    (("C", [0, 0, 0, 0, 0, 0, 0, 0], "against", "C"), ("C", [1, 0, 0, 0, 0, 1, 0, 0], "for", "B"), "accept"),
     # Roster 4 gives Omarion Hampton 68.5 and Tony Pollard 9.0, a sum of 77.5.
     # Roster 12 gives Jacory Croskey-Merritt 24.0 and David Montgomery 12.5, a sum of 36.5.
     # Roster 4: 36.5 over 77.5 is 0.471, F. Roster 12: 2.12, A. Omarion Hampton is the highest-value player.
@@ -2335,7 +2446,8 @@ HAND_WORKED = [
     # Roster 12 asked and grades A: accept.
     # Roster 4 gives Omarion Hampton and Tony Pollard, so David Montgomery takes RB2. He is out with no return week
     # on file, so RB2 is a hole. That hole moves fit from 0 to -1. Sum zero, F stays F.
-    (("F", [-1, 0, 0, 0, 1, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 0, 0], "for", "A"), "accept"),
+    # Roster 12 gets Hampton, a superstar, so it steps up again, and A stays A.
+    (("F", [-1, 0, 0, 0, 1, 0, 0, 0], "against", "F"), ("A", [1, 0, 0, 0, 0, 1, 0, 0], "for", "A"), "accept"),
 ]
 
 

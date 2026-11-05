@@ -15,6 +15,7 @@ from analyzer.adjusters import (
     Side,
     build_side,
     named,
+    one_for_many,
     trade_handcuffs,
 )
 from analyzer.tunables import (
@@ -300,7 +301,7 @@ def _margin(gives: int, gets: int) -> tuple[Decimal | None, str]:
     """
     if gives == gets:
         return None, ""
-    if min(gives, gets) == 1:
+    if one_for_many(gives, gets):
         return CONSOLIDATION_MARGIN, CONSOLIDATION_REASON
     return UNEVEN_MARGIN, UNEVEN_REASON
 

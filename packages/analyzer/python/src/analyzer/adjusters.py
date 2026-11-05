@@ -1,6 +1,6 @@
 """
-The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, upside, handcuff, schedule,
-and expected gap. It also holds what they read of one side: the best lineup before and after the trade, and the
+The adjusters of the trade analyzer rubric: roster fit, standing, trend and usage, injury, upside, superstar, handcuff,
+schedule, and expected gap. It also holds what they read of one side: the best lineup before and after the trade, and the
 handcuffs.
 """
 from __future__ import annotations
@@ -20,6 +20,7 @@ from analyzer.tunables import (
     INJURY_WEEKS,
     SCHEDULE_RANK_GAP,
     SELLER_GAP_WEEKS,
+    SUPERSTAR_RANK,
     WOPR_SWING,
 )
 from facts.names import last_name
@@ -57,8 +58,8 @@ if TYPE_CHECKING:
     # The rubric module imports this one, so the trade model is a name for the type checker only.
     from analyzer.rubric import ProposedTrade
 
-# The adjusters run in this order: roster fit, standing, trend and usage, injury, upside, handcuff, schedule, and
-# expected gap when its tunable is on.
+# The adjusters run in this order: roster fit, standing, trend and usage, injury, upside, superstar, handcuff, schedule,
+# and expected gap when its tunable is on.
 
 
 Lean = Literal["for", "against", "even"]
@@ -79,6 +80,12 @@ class Adjuster(BaseModel):
 
 # The analyze output and the analysis prompt name an adjuster's step in words.
 STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
+
+
+def one_for_many(gives: int, gets: int) -> bool:
+    """True when a side gives one player for two or more, or two or more for one. Such a trade uses the
+    CONSOLIDATION_MARGIN, which pays for the one great player, so the superstar step does not count him again."""
+    return gives != gets and min(gives, gets) == 1
 
 
 def _join(names: list[str]) -> str:
@@ -293,6 +300,7 @@ STANDING = "standing"
 TREND = "trend and usage"
 INJURY = "injury"
 UPSIDE = "upside"
+SUPERSTAR = "superstar"
 HANDCUFF = "handcuff"
 SCHEDULE = "schedule"
 EXPECTED = "expected gap"
@@ -939,6 +947,37 @@ def _upside(snapshot: Snapshot, side: Side) -> Adjuster:
                     silent=True)
 
 
+def _superstars(snapshot: Snapshot, players: list[str]) -> list[str]:
+    """The players in the top SUPERSTAR_RANK trade values of the week, over all positions. GLOSSARY.md, "Superstar".
+
+    A tie shares the better rank, so a tie at the edge makes every tied player a superstar. With no chart, or with a
+    player not on it, he is no superstar. A player out for the season is never one, because he buys the side nothing.
+    """
+    if snapshot.chart is None:
+        return []
+    values = snapshot.chart.values
+    return [pid for pid in players if pid in values and pid not in snapshot.out_for_season
+            and 1 + sum(1 for other in values.values() if other > values[pid]) <= SUPERSTAR_RANK]
+
+
+def _superstar(snapshot: Snapshot, side: Side) -> Adjuster:
+    """Superstar: a side that gets one or more superstars steps up one step. GLOSSARY.md, "Superstar".
+
+    It reads the players the side gets only, so the side that gives a superstar gets no step down: the trade values
+    already count the loss. In a one-for-many trade the CONSOLIDATION_MARGIN already pays for the great player, so the
+    step is 0 and the reason says so.
+    """
+    stars = _superstars(snapshot, side.gets)
+    if not stars:
+        return Adjuster(name=SUPERSTAR, step=0, reason="No player it gets is a superstar.", silent=True)
+    names = named(snapshot, stars, "is a superstar", "are superstars")
+    if one_for_many(len(side.gives), len(side.gets)):
+        return Adjuster(name=SUPERSTAR, step=0,
+                        reason=f"{names}, but the one-for-many margin already counts {'him' if len(stars) == 1 else 'them'}.")
+    each = "a" if len(stars) == 1 else "each a"
+    return Adjuster(name=SUPERSTAR, step=1, reason=f"{names}, {each} top {SUPERSTAR_RANK} player this week.")
+
+
 def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
     """Handcuff: a backup to the roster's own starting running back is insurance.
 
@@ -1163,7 +1202,8 @@ def _expected_gap(snapshot: Snapshot, side: Side) -> Adjuster:
 
 def rubric_adjusters(expected_on: bool) -> tuple[Callable[[Snapshot, Side], Adjuster], ...]:
     """The adjusters in rubric order. The expected gap comes last, and only when `expected_on` is True."""
-    return (_fit, _standing, _trend, _injury, _upside, _handcuff, _schedule) + ((_expected_gap,) if expected_on else ())
+    return ((_fit, _standing, _trend, _injury, _upside, _superstar, _handcuff, _schedule)
+            + ((_expected_gap,) if expected_on else ()))
 
 
 # The adjusters in rubric order. Each takes the snapshot and one side, and grade runs them in this order.

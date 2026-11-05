@@ -10,9 +10,9 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-5, AT-6, AT-7, and AT-
 
 **Status:** ready-for-agent
 
-- [ ] A rubric test grades trade W first, test-first, and shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player this week." Bo Girds' row reads "No player it gets is a superstar."
-- [ ] The tunables hold the rank as `SUPERSTAR_RANK = 8`. A tie at rank 8 makes every tied player a superstar.
-- [ ] A rubric test of the AT-3 trade shows no step, with "Kenneth Walker III is a superstar, but the one-for-many margin already counts him."
-- [ ] Rubric tests cover two superstars to one side, a superstar to each side, and a superstar out for the season.
-- [ ] The rubric prompt has a Superstar section. The word rule of the analyzer passes on the new reason text.
+- [x] A rubric test grades trade W first, test-first, and shows Teehee's row: "Kenneth Walker III is a superstar, a top 8 player this week." Bo Girds' row reads "No player it gets is a superstar."
+- [x] The tunables hold the rank as `SUPERSTAR_RANK = 8`. A tie at rank 8 makes every tied player a superstar.
+- [x] A rubric test of the AT-3 trade shows no step, with "Kenneth Walker III is a superstar, but the one-for-many margin already counts him."
+- [x] Rubric tests cover two superstars to one side, a superstar to each side, and a superstar out for the season.
+- [x] The rubric prompt has a Superstar section. The word rule of the analyzer passes on the new reason text.
 - [ ] The finder speed test passes under its 5 s bound on the Mac and in CI.

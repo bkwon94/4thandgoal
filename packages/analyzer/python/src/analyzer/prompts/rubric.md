@@ -53,8 +53,8 @@ one. A handcuff with no chart row keeps the start letter. See the handcuff secti
 
 After the start letter, each adjuster moves a side by one step at most: up, down, or not at all.
 The breakdown lists every adjuster in this order, with its step and a one-line reason: roster
-fit, standing, trend and usage, injury, handcuff, schedule, and expected gap. Expected gap runs only
-when its tunable is on. Schedule shows a lean in place of a step.
+fit, standing, trend and usage, injury, upside, superstar, handcuff, schedule, and expected gap.
+Expected gap runs only when its tunable is on. Schedule shows a lean in place of a step.
 
 ## Roster fit
 
@@ -165,6 +165,19 @@ Two or more such players are still one step down. The adjuster never fires for a
 standing adjuster credits as a return bet. When the injury report is not available, only the
 first case runs, and the reason says so. A player with no entry in the id map gets no count of
 report weeks, and the reason names him.
+
+## Superstar
+
+A superstar is a player in the top `SUPERSTAR_RANK` trade values of the week, over all positions.
+A tie at the edge makes every tied player a superstar.
+
+- A side that gets one or more superstars steps up one step. Two superstars still give one step.
+- The side that gives a superstar gets no step down. The trade values already count the loss.
+- A trade that uses `CONSOLIDATION_MARGIN` gives no superstar step. The margin already counts the
+  great player, and the reason says so.
+- A player out for the season is no superstar, because he counts as zero for the side that gets him.
+
+The reason names each superstar the side gets. It never names the source of the trade values.
 
 ## Handcuff
 

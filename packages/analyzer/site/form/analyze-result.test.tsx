@@ -257,13 +257,13 @@ describe("AnalyzeResult", () => {
   });
 
   it("shows the page name of each factor, never the code name", () => {
-    const names = ["deal", "roster fit", "standing", "trend and usage", "injury", "upside", "handcuff", "schedule", "expected gap"];
+    const names = ["deal", "roster fit", "standing", "trend and usage", "injury", "upside", "superstar", "handcuff", "schedule", "expected gap"];
     const factors = names.map((name) => ({ name, lean: "even" as const, reason: `The ${name} reason.` }));
     const sides = fixture.sides.map((side, i) => (i === 0 ? { ...side, factors } : side));
     render(<AnalyzeResult doc={{ ...fixture, sides }} />);
     const fold = sideCard("Pukancun on 3 · Your Side").querySelector("details") as HTMLElement;
     const rows = within(fold).getAllByRole("listitem");
-    const pageNames = ["The deal", "Roster", "Standing", "Usage", "Injury", "Upside", "Handcuff", "Schedule", "Expected gap"];
+    const pageNames = ["The deal", "Roster", "Standing", "Usage", "Injury", "Upside", "Superstar", "Handcuff", "Schedule", "Expected gap"];
     pageNames.forEach((pageName, i) => expect(within(rows[i]).getByText(pageName)).toBeTruthy());
     for (const name of names) expect(within(fold).queryByText(name)).toBeNull();
   });

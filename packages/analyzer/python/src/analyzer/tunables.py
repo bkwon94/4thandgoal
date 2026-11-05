@@ -31,6 +31,11 @@ CONSOLIDATION_MARGIN = Decimal("1.25")
 # beat two better players on a plain sum. It is smaller than CONSOLIDATION_MARGIN, which also pays for one great player.
 UNEVEN_MARGIN = Decimal("1.10")
 
+# Superstar: a side that gets a player in the top this many trade values of the week, over all positions, steps up.
+# GLOSSARY.md, "Superstar". A tie at the edge shares the better rank, so every tied player is a superstar.
+# 8 is the top of a 12-team league's first round, so a superstar is a player who can win a week alone.
+SUPERSTAR_RANK = 8
+
 # Roster fit and standing compare a side's best lineup before and after the trade. The season points per game
 # of each player pick the best lineup of the grade. GLOSSARY.md, "Lineup value".
 # The change in the best lineup's total points per game that counts as a gain or a loss.
