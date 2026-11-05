@@ -143,11 +143,51 @@ def test_consolidation_divides_the_depth_side_sum_by_the_margin(snap):
     assert all("one player for two or more" in side.reason for side in result)
 
 
-def test_a_three_for_two_gets_no_discount(snap):
-    # Roster 7 gives 78.5 and gets 59.0, a ratio of 0.752. Roster 12 gets a ratio of 1.331.
+# Trade W, Brian's trade of week 9. Roster 6 gives Parker Washington and Kenneth Walker III to roster 12 for
+# Tee Higgins, Bhayshul Tuten, and Tony Pollard. The trade values come from the week 9 chart of 1QB0.5PPR4pt.
+W_VALUES = {"9487": 27.5, "8151": 64.0, "6801": 38.5, "12490": 28.5, "5967": 17.5}
+UNEVEN_DISCOUNT = "counts its extra player at a discount"
+
+
+def test_trade_w_divides_the_side_with_three_players_by_the_uneven_margin(snap):
+    # Roster 12 gives 38.5 plus 28.5 plus 17.5, which is 84.5, and counts as 76.8 against 91.5.
+    result = grade(_trade(6, ["9487", "8151"], 12, ["6801", "12490", "5967"]), _with_values(snap, W_VALUES))
+    assert _letters(result) == ["D", "B"]
+    assert all(UNEVEN_DISCOUNT in side.reason for side in result)
+
+
+def test_a_three_for_two_divides_the_side_with_three_players_by_the_uneven_margin(snap):
+    # Roster 7 gives 78.5, which counts as 71.4, and gets 59.0, a ratio of 0.827. Roster 12 gets a ratio of 1.210.
+    # With no discount the letters are D for roster 7 and A for roster 12.
     result = grade(_trade(7, [HARRISON, B_ROBINSON, BIJAN], 12, [KINCAID, WILSON]), snap)
-    assert _letters(result) == ["D", "A"]
+    assert _letters(result) == ["D", "B"]
+    assert all(UNEVEN_DISCOUNT in side.reason for side in result)
     assert not any("one player for two or more" in side.reason for side in result)
+
+
+def test_a_four_for_three_divides_the_side_with_four_players_by_the_uneven_margin(snap):
+    # Roster 7 gives Harrison, Brian Robinson, Bijan Robinson, and Mahomes, 94.0, which counts as 85.5.
+    # It gets Kincaid, Garrett Wilson, and Pollard, 68.0, a ratio of 0.796. Roster 12 gets a ratio of 1.257.
+    # With no discount roster 7 gets a ratio of 0.723, an F.
+    result = grade(_trade(7, [HARRISON, B_ROBINSON, BIJAN, "4046"], 12, [KINCAID, WILSON, POLLARD]), snap)
+    assert _letters(result) == ["D", "A"]
+    assert all(UNEVEN_DISCOUNT in side.reason for side in result)
+
+
+def test_one_for_two_keeps_the_consolidation_margin_with_the_week_9_values(snap):
+    # Roster 6 gives Walker 64.0 for Higgins 38.5 and Tuten 28.5. The 67.0 counts as 53.6 at the 1.25 margin.
+    result = grade(_trade(6, ["8151"], 12, ["6801", "12490"]), _with_values(snap, W_VALUES))
+    assert _letters(result) == ["D", "B"]
+    assert all("one player for two or more" in side.reason for side in result)
+    assert not any(UNEVEN_DISCOUNT in side.reason for side in result)
+
+
+def test_a_two_for_two_gets_no_margin(snap):
+    # Trade W without Pollard. Roster 6 gets 67.0 for 91.5, a ratio of 0.732. Roster 12 gets a ratio of 1.366.
+    result = grade(_trade(6, ["9487", "8151"], 12, ["6801", "12490"]), _with_values(snap, W_VALUES))
+    assert _letters(result) == ["F", "A"]
+    assert not any(UNEVEN_DISCOUNT in side.reason or "one player for two or more" in side.reason
+                   for side in result)
 
 
 def test_an_unlisted_player_starts_both_sides_at_c(snap):
@@ -2219,7 +2259,8 @@ def _before_real_trade(snap, index: int):
 HAND_WORKED = [
     # Roster 7 gives Marvin Harrison 36.0, Brian Robinson 22.0, and Bijan Robinson 20.5, a sum of 78.5.
     # Roster 8 gives Braelon Allen 1.5, Malik Nabers 6.5, Jared Goff 13.0, and Breece Hall 41.0, a sum of 62.0.
-    # Three for four is no consolidation. Roster 7: 62.0 over 78.5 is 0.790, D. Roster 8: 1.266, A.
+    # Three for four is an uneven count: the 62.0 of roster 8 counts as 62.0 over 1.10, which is 56.4.
+    # Roster 7: 56.4 over 78.5 is 0.718, F. Roster 8: 1.393, A.
     # Breece Hall at 41.0 is the highest-value player.
     # Roster 7: Breece Hall is out with no return week, so he counts as back in week 14 at 11.7 a game. The lineup
     # changes by minus 2.18, no loss, and it gets the highest-value player, fit up. Middle, no standing step. Gets
@@ -2231,9 +2272,9 @@ HAND_WORKED = [
     # Middle. Trend mixed. Nothing out. Byes three got against four gave, for. Schedule for. Sum zero, A.
     # Roster 8 asked and grades A: accept.
     # Roster 7 gets Breece Hall, so RB1 is a hole: he is out with no return week on file. That hole moves fit from +1
-    # to 0. Sum plus one, D to C.
+    # to 0. Sum plus one, F to D.
     # Roster 8: Carnell Tate at WR47 takes WR2 after the trade and is a new hole, so fit is -1 and A moves to B.
-    (("D", [0, 0, 0, 0, 1, 0, 0], "against", "C"), ("A", [-1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
+    (("F", [0, 0, 0, 0, 1, 0, 0], "against", "D"), ("A", [-1, 0, 0, 0, 0, 0, 0], "for", "B"), "accept"),
     # The Josh Jacobs trade. Roster 11 gives Bhayshul Tuten 3.0 and Garrett Wilson 27.5, a sum of 30.5.
     # Roster 12 gives Josh Jacobs 11.5 and Devaughn Vele 55.0, a sum of 66.5. Two for two, no consolidation.
     # Roster 11: 66.5 over 30.5 is 2.18, A. Roster 12: 0.459, F. Vele is the highest-value player.

@@ -24,6 +24,7 @@ from analyzer.tunables import (
     DECLINE_AT_OR_BELOW,
     LOPSIDED_AT_OR_BELOW,
     START_LETTER_BANDS,
+    UNEVEN_MARGIN,
     WIN_WIN_AT_OR_ABOVE,
 )
 from league.ranks import lineup_value
@@ -47,6 +48,7 @@ CONSOLIDATION_REASON = (
     "The trade is one player for two or more, so the side with more players needs a margin "
     "before the sides count as even."
 )
+UNEVEN_REASON = "The side with more players counts its extra player at a discount before the sides count as even."
 NO_CHART_REASON = "The week has no trade values, so the chart gives neither side an edge."
 # The end of the reason for a trade with an unlisted player. The result document reads it to pick its deal row.
 UNLISTED_REASON_END = " no trade value, so the chart gives neither side an edge."
@@ -63,7 +65,7 @@ DEAL_REASONS = {
     "D": "You give more than you get.",
     "F": "You give far more than you get.",
 }
-# One player for two or more divides the sum of the two or more by a margin before the sides compare.
+# Any uneven count divides the sum of the side with more players by a margin before the sides compare.
 CONSOLIDATION_DEAL = ", after a discount on the side with more players."
 UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
 
@@ -276,19 +278,31 @@ def _start_letters(
         # ADR 0005: the side that gets a player out for the season buys nothing, so he counts zero in what it gets.
         # The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
         got = sum((Decimal(str(values[pid])) for pid in gets if pid not in snapshot.out_for_season), Decimal(0))
-        # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
-        # Each side reads its own gives and gets, so in a two-side trade both sides consolidate or neither does.
-        consolidation = (len(gives) == 1) != (len(gets) == 1)
-        if consolidation:
-            # The two or more players are the depth, and their sum is the one the margin divides.
-            if len(gives) > 1:
-                gave /= CONSOLIDATION_MARGIN
+        # Each side reads its own gives and gets, so in a two-side trade both sides use the same margin or neither does.
+        margin, margin_reason = _margin(len(gives), len(gets))
+        if margin is not None:
+            # The side with more players is the depth, and its sum is the one the margin divides.
+            if len(gives) > len(gets):
+                gave /= margin
             else:
-                got /= CONSOLIDATION_MARGIN
+                got /= margin
         letter = _letter(got, gave)
-        return letter, BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
+        return letter, BAND_REASONS[letter] + (" " + margin_reason if margin_reason else "")
 
     return tuple(start(side) for side in trade.sides)
+
+
+def _margin(gives: int, gets: int) -> tuple[Decimal | None, str]:
+    """The margin that divides the sum of the side with more players, and the start reason that names it.
+
+    One player for two or more uses CONSOLIDATION_MARGIN. Two or more for a larger count uses UNEVEN_MARGIN.
+    An even count uses none.
+    """
+    if gives == gets:
+        return None, ""
+    if min(gives, gets) == 1:
+        return CONSOLIDATION_MARGIN, CONSOLIDATION_REASON
+    return UNEVEN_MARGIN, UNEVEN_REASON
 
 
 def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:
@@ -398,7 +412,7 @@ def deal_reason(breakdown: Breakdown) -> str:
         return NO_CHART_NOTE
     if breakdown.reason.endswith(UNLISTED_REASON_END):
         return UNLISTED_DEAL
-    if CONSOLIDATION_REASON in breakdown.reason:
+    if CONSOLIDATION_REASON in breakdown.reason or UNEVEN_REASON in breakdown.reason:
         return DEAL_REASONS[breakdown.start_letter].removesuffix(".") + CONSOLIDATION_DEAL
     return DEAL_REASONS[breakdown.start_letter]
 

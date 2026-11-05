@@ -30,10 +30,14 @@ start at C.
 
 ## Consolidation
 
-Two good players must not beat one great player on a plain sum. When one side gives exactly one
-player and gets two or more, divide the depth side's sum by `CONSOLIDATION_MARGIN`. The depth side
-is the side that gives two or more. Both sides use the divided sum in their ratios. A trade of
-three for two, or of any two or more for two or more, gets no discount.
+Two good players must not beat one great player on a plain sum. When the two sides give an uneven
+count of players, divide the sum of the side with more players by a margin. Both sides use the
+divided sum in their ratios. The margin comes from the counts:
+
+- One player for two or more uses `CONSOLIDATION_MARGIN`.
+- Two or more for a larger count, such as three for two or four for three, uses `UNEVEN_MARGIN`.
+  The extra player counts at a discount.
+- An even count, such as two for two, uses no margin.
 
 ## Unlisted
 
