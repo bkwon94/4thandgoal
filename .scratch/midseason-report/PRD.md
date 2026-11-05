@@ -175,7 +175,7 @@ The opener is the title race: the title odds of the leaders and the record leade
 
 ### The spread rule
 
-Ticket 09 decided it. Each team gets at least one headline: the opener, a callout, an award, or an arc. No team holds more than 3 headlines. When a team is #1 in a fourth place, the callout names the next team, and the table still shows every team. The build applies the rule before the writer runs, so a blurb never names a team that the rule moved off a headline.
+Ticket 09 decided it. Each team gets at least one headline: the opener, a callout, an award, or an arc. No team holds more than 3 headlines. When a team is #1 in a fourth place, the callout names the next team, and the table still shows every team. The build applies the rule before the writer runs, so a blurb never names a team that the rule moved off a headline. Arcs and awards never move, because each is a fact about its team. Only a callout moves. Brian approved this order with the acceptance tests on 2026-11-05.
 
 ### The sim replay on the site
 
