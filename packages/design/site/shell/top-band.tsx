@@ -19,7 +19,7 @@ type TopBandProps = {
   // The href of the open page, with the base path. A static export cannot read the request path, so each page passes its own.
   // A page that is no destination, such as the 404 page, passes none, and no item is marked.
   pageHref?: string;
-  // The head of an old page, such as its week line, under the band. A page in the look starts with its hero instead.
+  // The head of a page with no hero, such as its week line, under the band. A page with a hero passes none.
   children?: ReactNode;
 };
 

@@ -28,8 +28,8 @@ type OpenState = { route: string; tap: string; scope?: string };
 const LATEST_WEEK_ROUTE = builtRoutes().filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route)).at(-1) ?? "/no-week/";
 
 /*
- * The pages and the open states of the full floor: all four rules, in both themes, at both widths. A page ticket of the
- * redesign adds its pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
+ * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
+ * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   NOT_FOUND_ROUTE,
