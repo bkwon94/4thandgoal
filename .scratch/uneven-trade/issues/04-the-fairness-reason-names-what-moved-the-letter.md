@@ -8,7 +8,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-9, AT-10, AT-11, and A
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fairness test grades trade W first, test-first, and shows "Fair." Teehee's reason is the superstar reason, then ", but ", then its roster-fit reason.
 - [x] Fairness tests cover a net below zero, no steps, and a side at A with a net above zero.
