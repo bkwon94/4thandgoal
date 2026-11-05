@@ -33,17 +33,20 @@ Do not edit it. For `CLIENT=cpc` it holds:
 ## The deploy job
 
 - The workflow is `.github/workflows/deploy-sites.yml`.
-- A push to `main` runs the check workflow first. A green check starts the deploy.
+- A push to `main` runs the workflow `Check` once. Its `workflow_run` event starts the deploy, and only a green check
+  of a push deploys.
+- The deploy builds the commit that the check saw, `github.event.workflow_run.head_sha`.
 - The job `clients` lists each folder under `clients/` with a `client.toml`. The job `deploy` runs once per slug.
 - Each deploy job builds with `CLIENT=<slug>`, runs `check:export`, and runs `wrangler deploy` with
   `cloudflare/wrangler-action@v4`.
 - The job reads the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 - A second client adds no workflow code. Its folder under `clients/` adds one deploy job.
 
-To deploy a branch before its merge, such as the spec branch `clients`, run this command:
+To deploy a branch before its merge, such as the spec branch `clients`, run this command. A dispatch runs the check on
+the ref first, and deploys only when the check passes.
 
 ```sh
-gh workflow run deploy-sites.yml --repo bkwon94/cpcfantasyfootball --ref clients -f ref=clients
+gh workflow run deploy-sites.yml --repo bkwon94/4thandgoal --ref clients -f ref=clients
 ```
 
 GitHub runs a manual dispatch only for a workflow that it knows. Before the first merge of `deploy-sites.yml` into
@@ -94,11 +97,11 @@ Brian does each step. The steps are the manual steps 1 to 4 of `.scratch/clients
 2. Make an API token with the template "Edit Cloudflare Workers". Add the secrets to the repo:
 
    ```sh
-   gh secret set CLOUDFLARE_API_TOKEN --repo bkwon94/cpcfantasyfootball
-   gh secret set CLOUDFLARE_ACCOUNT_ID --repo bkwon94/cpcfantasyfootball
+   gh secret set CLOUDFLARE_API_TOKEN --repo bkwon94/4thandgoal
+   gh secret set CLOUDFLARE_ACCOUNT_ID --repo bkwon94/4thandgoal
    ```
 
-   Check: `gh secret list --repo bkwon94/cpcfantasyfootball` lists both names.
+   Check: `gh secret list --repo bkwon94/4thandgoal` lists both names.
 3. Run the deploy job once, so the Worker exists. Then open Workers & Pages, the Worker `cpc`, Settings, Domains &
    Routes, and add the Custom Domain `cpc.4thandgoal.app`. Check: `curl -sI https://cpc.4thandgoal.app/` answers `200`.
 4. Add the Redirect Rule on the zone `cpcfantasy.com`. See the next section.

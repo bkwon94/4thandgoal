@@ -11,7 +11,7 @@ on:
     workflows: [Check]
     types: [completed]
     branches: [main]
-  # Example: gh workflow run deploy-api.yml --repo bkwon94/cpcfantasyfootball --ref main
+  # Example: gh workflow run deploy-api.yml --repo bkwon94/4thandgoal --ref main
   workflow_dispatch:
 
 # Each job only reads the repo, so the token gets no write scope.
