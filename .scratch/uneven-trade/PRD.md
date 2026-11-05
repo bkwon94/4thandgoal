@@ -5,7 +5,7 @@ Date: 2026-11-05
 Apps: both. The pipeline changes the trade grade: the start letters, a new adjuster, and the fairness reason. The site changes one line of the trade form and one line of the trade finder.
 Spec branch: `uneven-trade`.
 Source: the map `.scratch/uneven-trade/MAP.md` and decision tickets 01 to 02. The session of 2026-11-05 and the handoff `.handoff/2026-11-05-uneven-trade-discount.md`.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 05, in `issues/`.
 
 ## Problem Statement
 
