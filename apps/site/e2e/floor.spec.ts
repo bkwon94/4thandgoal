@@ -36,6 +36,7 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   // Both clients build both roster ids, so each client checks both pages.
   "/2026/managers/7/",
   "/2026/managers/4/",
+  "/analyze/",
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
