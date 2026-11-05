@@ -10,6 +10,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
+import { BarFill } from "@cpc/design/parts/bar-fill";
 import { Reveal } from "@cpc/design/parts/reveal";
 import { Rise } from "@cpc/design/parts/rise";
 import { Tile } from "@cpc/design/parts/tile";
@@ -192,11 +193,7 @@ function LadderCard({
             <span className="font-mono text-row font-bold tabular-nums">{playoffText(row.odds)}</span>
             {row.odds && (
               <span aria-hidden className="mt-sp-1 block h-sp-1 w-rankings-col overflow-hidden rounded-pill bg-raised">
-                <span
-                  data-odds-bar
-                  className="block h-full rounded-pill bg-accent"
-                  style={{ width: `${playoffFill(row.odds)}%` }}
-                />
+                <BarFill data-odds-bar pct={playoffFill(row.odds)} className="block h-full rounded-pill bg-accent" />
               </span>
             )}
           </span>

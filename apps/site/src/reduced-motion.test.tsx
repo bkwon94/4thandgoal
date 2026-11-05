@@ -170,6 +170,39 @@ describe("Reduced motion on the waiver page", () => {
   });
 });
 
+/* Every bar fill under a box shows at its width with no scale: no fill sits at 0 or grows. */
+async function expectBarsAtRest(box: HTMLElement, count: number) {
+  const fills = [...box.querySelectorAll<HTMLElement>("[data-bar-fill]")];
+  expect(fills).toHaveLength(count);
+  // The wait is far shorter than the 0.7 s growth, and a fill that grows holds a scale on its first frame.
+  await new Promise((done) => setTimeout(done, 50));
+  for (const fill of fills) {
+    expect(fill.style.transform).not.toMatch(/scale/);
+    expect(fill.style.width || fill.style.height).toMatch(/%$/);
+  }
+}
+
+describe("Reduced motion on the bars", () => {
+  it("shows every share bar and median bar of the week page at its width at once", async () => {
+    render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
+    // One share bar for the Matchup of the Week, one for each game card, and one bar for each team of the median game.
+    const bars = 1 + week6.matchups.length + (week6.median?.bars.length ?? 0);
+    await expectBarsAtRest(screen.getByRole("main"), bars);
+  });
+
+  it("shows every playoff odds bar of the power rankings at its width at once", async () => {
+    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
+    await expectBarsAtRest(container, container.querySelectorAll("[data-odds-bar]").length);
+  });
+
+  it("shows every budget bar of the war chest at its height at once", async () => {
+    const { container } = render(
+      <WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />,
+    );
+    await expectBarsAtRest(within(container).getByRole("list", { name: "Budgets" }), waiver.budgets.length);
+  });
+});
+
 describe("Reduced motion on the static pages", () => {
   it("shows every week page chapter at once", async () => {
     render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
