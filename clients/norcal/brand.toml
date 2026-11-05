@@ -52,7 +52,7 @@ grid = "#1d1d1d"
 [dark.derived]
 # Gold: the accent as text on the dark band.
 accent_text = "#e0a526"
-# Gold too: the accent as text on the page and on the pick. The accent itself is 3.6 to 1 on the page, so it carries no text.
+# Gold too: the accent as text on the page. The accent itself is 3.6 to 1 on the page, so it carries no text.
 accent_ink = "#e0a526"
 # The hero roles equal the hero roles of the light set, so the hero is the same in both themes.
 # The formula takes the light page as the hero text, so the dark set names the text of the brand.

@@ -30,9 +30,6 @@ accent_text = "#f2a59e"
 ink_2 = "#3a3a3a"
 rule = "#e0e0e0"
 bar_off = "#dddddd"
-# The fill of a picked player row in the trade analyzer: the accent 10% over the white card. Over the page #f4f4f4 the
-# muted text is only 4.50 to 1, so the wash mixes over the card. Ink text on it is 14.9 to 1, mute 4.9, and accent ink 5.0.
-pick = { mix = "accent", percent = 10, over = "card" }
 # The hero roles: the hero stays dark in both themes.
 on_dark = "#ffffff"
 on_dark_2 = "#cccccc"
@@ -57,7 +54,6 @@ grid = "#1c1c1c"
 page = "#141414"
 # The light grey sits one step between the page and the lifted `card_band` surface: the grey card, the body from the tablet tier up, and the grey chip.
 # A checked row in the team picker goes from this grey to the lifted `card_band` surface, so the grey must not equal the card.
-# A picked player row does not paint this grey or the card. It paints the red wash of the pick.
 # #1f1f1f is 1.1 to 1 on the page and 1.1 to 1 under the lifted `card_band` surface. On it white is 16.5 to 1, #ccc 10.3, #999 5.8, and light red 8.4.
 card = "#1f1f1f"
 # Body text: 18.4 to 1 on the page, 15.1 to 1 on the raised surface.
@@ -71,9 +67,6 @@ accent_text = "#f2a59e"
 on_dark = "#ffffff"
 # Red text on the page: light red is 9.3 to 1 on the page and 7.7 to 1 on the raised surface.
 accent_ink = "#f2a59e"
-# The picked player row: a dark wash of brand red on the grey, #412421. White text on it is 14.1 to 1, #999 4.9, and light red 7.1.
-# Brand red never carries text here, as the left rule of the row is only a graphic.
-pick = { mix = "accent", percent = 22, over = "card" }
 # The `card_band` surface lifts to the raised surface, 1.2 to 1 on the page. White text on it is 15.1 to 1, #ccc 9.4, #999 5.3, light red 7.7,
 # the blue arrow 4.2, and the red arrow 4.1. Each text pair passes 4.5 to 1, and each arrow passes the 3 to 1 rule for a graphic.
 card_band = "#262626"

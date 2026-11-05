@@ -13,7 +13,6 @@ export const DERIVED_ROLES = [
   "accent_text",
   "accent_ink",
   "accent_glow",
-  "pick",
   "card_band",
   "ink_2",
   "rule",
@@ -69,7 +68,6 @@ const FORMULA: Record<Exclude<DerivedRole, "on_dark">, Formula> = {
   accent_text: { role: "accent" },
   accent_ink: { role: "accent" },
   accent_glow: { mix: "accent", percent: 45, over: "transparent" },
-  pick: { mix: "accent", percent: 10, over: "page" },
   card_band: { role: "band" },
   ink_2: { mix: "text", percent: 85, over: "page" },
   rule: { mix: "text", percent: 10, over: "page" },
@@ -184,24 +182,21 @@ export function contrastRatio(a: Rgba, b: Rgba): number {
 
 /*
  * Each pair of a text role and the surface it sits on in the site. Each pair must reach 4.5 to 1 in each set (WCAG AA).
- * The page text sits on the page, the card, the raised surface, and the pick wash. The on-dark text is the hero text:
+ * The page text sits on the page, the card, and the raised surface. The on-dark text is the hero text:
  * it sits on the band, the `card_band` surface, the chip on that surface, and the accent fills.
  */
 export const TEXT_PAIRS: [text: Role, surface: Role][] = [
   ["text", "page"],
   ["text", "card"],
   ["text", "raised"],
-  ["text", "pick"],
   ["ink_2", "page"],
   ["ink_2", "card"],
   ["ink_2", "raised"],
   ["muted", "page"],
   ["muted", "card"],
   ["muted", "raised"],
-  ["muted", "pick"],
   ["accent_ink", "page"],
   ["accent_ink", "card"],
-  ["accent_ink", "pick"],
   ["on_dark", "band"],
   ["on_dark_2", "band"],
   ["on_dark_muted", "band"],

@@ -80,7 +80,6 @@ const CPC: Record<string, [string, string]> = {
   "on-dark-muted": ["#999", "#999"],
   "rule-dark": ["#333", "#444"],
   "chip-dark": ["#262626", "#313131"],
-  "pick": ["color-mix(in srgb, #b8342a 10%, #fff)", "color-mix(in srgb, #b8342a 22%, #1f1f1f)"],
   "move-up": ["#3987e5", "#3987e5"],
   "move-down": ["#e05a4f", "#e05a4f"],
 };

@@ -45,7 +45,6 @@ const css = (file: BrandFile) => brandCss(file, { source: "clients/test/brand.to
 describe("the derived roles", () => {
   it("take the formula of the design package when the brand gives no override", () => {
     const text = css(brand());
-    expect(declared(text, "@theme static", "color-pick")).toBe("color-mix(in srgb, var(--color-accent) 10%, var(--color-page))");
     expect(declared(text, "@theme static", "color-ink-2")).toBe("color-mix(in srgb, var(--color-ink) 85%, var(--color-page))");
     expect(declared(text, "@theme static", "color-accent-ink")).toBe("var(--color-accent)");
     expect(declared(text, "@theme static", "color-card-band")).toBe("var(--color-band)");
@@ -58,10 +57,10 @@ describe("the derived roles", () => {
   });
 
   it("take the override of the brand, as a hex or as a mix", () => {
-    const light: ColorSet = { ...LIGHT, derived: { rule: "#dddddd", pick: { mix: "accent", percent: 15, over: "card" } } };
+    const light: ColorSet = { ...LIGHT, derived: { rule: "#dddddd", divider: { mix: "accent", percent: 15, over: "card" } } };
     const text = css(brand({ light }));
     expect(declared(text, "@theme static", "color-rule")).toBe("#dddddd");
-    expect(declared(text, "@theme static", "color-pick")).toBe("color-mix(in srgb, var(--color-accent) 15%, var(--color-card))");
+    expect(declared(text, "@theme static", "color-divider")).toBe("color-mix(in srgb, var(--color-accent) 15%, var(--color-card))");
   });
 
   it("mix in srgb as the browser does", () => {
