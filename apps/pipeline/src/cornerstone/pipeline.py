@@ -430,13 +430,7 @@ def run_build(
         return page
     # The rankings package writes its own file, so a client that omits it gets no rankings.json.
     if "rankings" in client.values.packages:
-        try:
-            rankings = _write_rankings(season, week, bundle.data.teams, SeasonInputs(history=history),
-                                       blurbs.get(RANKINGS_CHAPTER), bundle.odds, client=client)
-            if rankings is None:
-                log.warning("history incomplete through week %d: rankings.json not written", week)
-        except (OSError, ValueError, KeyError) as err:
-            log.warning("rankings.json not written for week %d: %s", week, err)
+        _write_rankings_or_warn(season, week, bundle, blurbs.get(RANKINGS_CHAPTER), lambda: history, client)
     # The managers file reads the same saved history, so it comes right after the rankings file.
     # The snapshot, the projections ahead, and the chart load inside this try, so their failure skips only this file.
     # A client that omits the managers package gets no managers file, so the build loads none of its inputs.
@@ -493,6 +487,19 @@ def _write_rankings(
         log.info("rankings.json covers weeks 1 to %d, past the built week %d", history.week, week)
     return render_rankings(history, season, teams, build_dir(client.folder), week, blurb, odds,
                            median_game=client.settings.median_game)
+
+
+def _write_rankings_or_warn(
+    season: int, week: int, bundle: Bundle, blurb: Blurb | None, load_history: Callable[[], History], client: Client,
+) -> None:
+    """Write rankings.json from the history that `load_history` gives. A gap in the history or a failed load or write
+    only logs a warning, because the page is built by now and a season file never blocks it."""
+    try:
+        if _write_rankings(season, week, bundle.data.teams, SeasonInputs(history=load_history()), blurb, bundle.odds,
+                           client=client) is None:
+            log.warning("history incomplete through week %d: rankings.json not written", week)
+    except (OSError, ValueError, KeyError) as err:
+        log.warning("rankings.json not written for week %d: %s", week, err)
 
 
 def _write_managers(
@@ -618,14 +625,9 @@ def run_rewrite(
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     # The season file holds the rankings blurb, so a rewrite of the chapter must reach the file too.
     if chapter == RANKINGS_CHAPTER:
-        try:
-            # The rankings file reads only the history, so a rewrite loads no raw week.
-            inputs = SeasonInputs(history=_season_history(client, season, week))
-            if _write_rankings(season, week, bundle.data.teams, inputs, blurbs[chapter], bundle.odds,
-                               client=client) is None:
-                log.warning("history incomplete through week %d: rankings.json not written", week)
-        except (OSError, ValueError, KeyError) as err:
-            log.warning("rankings.json not written for week %d: %s", week, err)
+        # The rankings file reads only the history, so a rewrite loads no raw week.
+        _write_rankings_or_warn(season, week, bundle, blurbs[chapter],
+                                lambda: _season_history(client, season, week), client)
     return page
 
 
