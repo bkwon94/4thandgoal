@@ -1,6 +1,6 @@
 # Runs "make check" at the root on each push to main and on each pull request.
 # A branch with a PR runs once, because a push to a branch alone does not start it.
-# The deploy workflows keep their own build steps. The API deploy also calls this workflow.
+# The deploy workflows keep their own build steps. The API deploy and the site deploy also call this workflow.
 name: Check
 
 on:
@@ -9,6 +9,11 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      # The site deploy passes the ref it deploys, so the check runs on the same commit. Empty means the ref of the run.
+      ref:
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -20,6 +25,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       # The pnpm version comes from the packageManager field of the site package.json.
       - name: Set up pnpm

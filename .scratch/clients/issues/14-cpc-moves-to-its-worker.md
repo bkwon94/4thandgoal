@@ -12,8 +12,8 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-3, AT-4, and AT-28.
 
 **Status:** ready-for-agent
 
-- [ ] One workflow deploys each client to its Worker with `wrangler-action` on each green push to `main`.
-- [ ] The GitHub Pages deploy goes away.
+- [x] One workflow deploys each client to its Worker with `wrangler-action` on each green push to `main`.
+- [x] The GitHub Pages deploy goes away.
 - [ ] The CPC week 8 page at `cpc.4thandgoal.app` matches the screenshots from before the move (AT-3).
 - [ ] `cpcfantasy.com/2026/week-08/` answers a 301 to `cpc.4thandgoal.app/2026/week-08/` (AT-4).
 - [ ] The default API URL is `https://api.4thandgoal.app`. `api.cpcfantasy.com/teams` still lists the CPC teams (AT-28).

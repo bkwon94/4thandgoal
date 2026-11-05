@@ -14,3 +14,4 @@ apps/site/src/generated/
 apps/site/src/app/(client)/
 apps/site/public/[0-9][0-9][0-9][0-9]/
 apps/site/public/brand/
+apps/site/wrangler.jsonc

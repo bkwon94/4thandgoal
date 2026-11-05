@@ -1,5 +1,5 @@
 /**
- * Unit test of the route builders. Each row checks one builder with and without a base path.
+ * Unit test of the route builders. Each row checks one builder.
  * The app layer calls the builders to make every href.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -23,12 +23,7 @@ const builders: [string, (routes: Routes) => string, string][] = [
 ];
 
 describe("routes", () => {
-  it.each(builders)("%s builds its route with no base path", async (_name, call, route) => {
+  it.each(builders)("%s builds its route from the root", async (_name, call, route) => {
     expect(call(await import("./routes"))).toBe(route);
-  });
-
-  it.each(builders)("%s puts the base path in front of its route", async (_name, call, route) => {
-    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/site");
-    expect(call(await import("./routes"))).toBe(`/site${route}`);
   });
 });

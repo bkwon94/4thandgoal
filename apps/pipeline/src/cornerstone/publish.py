@@ -9,14 +9,15 @@ from pathlib import Path
 
 from league.paths import season_dir, site_week_dir, week_label
 
-SITE_URL = "https://cpcfantasy.com/"
+# Each client serves at its own subdomain, from the Cloudflare Worker named by its slug.
+SITE_DOMAIN = "4thandgoal.app"
 
 log = logging.getLogger(__name__)
 
 
-def site_page_url(season: int, week: int) -> str:
-    """The public URL of one week's page."""
-    return f"{SITE_URL}{season}/{week_label(week)}/"
+def site_page_url(slug: str, season: int, week: int) -> str:
+    """The public URL of one week's page of the client `slug`."""
+    return f"https://{slug}.{SITE_DOMAIN}/{season}/{week_label(week)}/"
 
 
 class PublishError(Exception):
@@ -95,4 +96,4 @@ def run_publish(
     _commit_if_staged(site_repo, f"Week {week}", published)
     if push:
         _git(site_repo, "push")
-    return site_page_url(season, week)
+    return site_page_url(slug, season, week)

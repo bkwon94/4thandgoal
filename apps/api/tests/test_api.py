@@ -1135,7 +1135,8 @@ def test_a_bad_trade_does_not_count_as_a_grade(settings, sources):
     assert bad_client.post("/analyze", json=TRADE, headers=HEADERS).status_code == 200
 
 
-@pytest.mark.parametrize("origin", ["https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000"])
+@pytest.mark.parametrize(
+    "origin", ["https://cpc.4thandgoal.app", "https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000"])
 def test_cors_allows_the_site_and_localhost(settings, sources, origin):
     response = _client(settings, sources).options("/analyze", headers={
         "Origin": origin, "Access-Control-Request-Method": "POST",
@@ -1243,7 +1244,7 @@ def test_settings_from_the_environment_need_a_passphrase_for_each_client(monkeyp
     assert settings.passphrases == {"cpc": "secret", "norcal": "other"}
     assert "secret" not in repr(settings) and "other" not in repr(settings)
     assert settings.result_cache_dir == tmp_path.resolve() / "data" / "cache" / "results"
-    assert "https://cpcfantasy.com" in settings.allowed_origins
+    assert "https://cpc.4thandgoal.app" in settings.allowed_origins
 
 
 # Every source that the refresh fetches, in the order of the refresh.

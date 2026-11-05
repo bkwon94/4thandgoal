@@ -9,8 +9,8 @@ from pathlib import Path
 
 from league.paths import results_cache_dir
 
-# The production league site and the two local dev servers of the site repo.
-DEFAULT_ORIGINS = ("https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000")
+# The CPC site at its Worker, its old host for a page that a reader still has open, and the two local dev servers.
+DEFAULT_ORIGINS = ("https://cpc.4thandgoal.app", "https://cpcfantasy.com", "http://localhost:5173", "http://localhost:3000")
 
 
 @dataclass(frozen=True)

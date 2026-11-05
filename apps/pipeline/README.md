@@ -1,7 +1,7 @@
 # Cornerstone Weekly
 
 This repo builds the weekly report site for the Cornerstone fantasy football league. The
-data comes from Sleeper. The public site is at https://cpcfantasy.com/
+data comes from Sleeper. The public site of CPC is at https://cpc.4thandgoal.app/
 
 ## Commands
 
@@ -34,7 +34,7 @@ The `Makefile` holds the common tasks. Run `make help` to list them. A weekly ru
 2. Read the week data, or the page after the site deploys.
 3. Run `cornerstone rewrite --client cpc --chapter <key>` for each chapter that needs a fix.
 4. Run `cornerstone publish --client cpc`.
-5. Share the home page link: https://cpcfantasy.com/
+5. Share the home page link: https://cpc.4thandgoal.app/
 
 ## Page data for the site
 

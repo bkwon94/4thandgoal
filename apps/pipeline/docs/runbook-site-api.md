@@ -1,12 +1,13 @@
 # Runbook: the site API on Fly.io
 
-This runbook tells you how to deploy, check, and run the Cornerstone API at `api.cpcfantasy.com`.
+This runbook tells you how to deploy, check, and run the Cornerstone API at `api.4thandgoal.app`.
+The old host `api.cpcfantasy.com` keeps its cert, so an old page that calls it still works.
 
 ## What runs where
 
 The API is one FastAPI app in one Docker image on Fly.io, app `cpcfantasy-api`, region `ewr`. One machine
 always runs, because `fly.toml` sets `min_machines_running = 1`. So no request waits for a cold start. A GitHub
-Actions cron calls `POST /refresh` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
+Actions cron calls `POST /clients/cpc/refresh` on `api.4thandgoal.app` every day at 10:00 UTC, so the slow sources and the chart are fresh before the
 managers wake. The cron never deploys. The job `deploy` deploys. See "The deploy job".
 
 The cost of the machine: one `shared-cpu-1x` machine with 1 GB costs $6.70 per month at the Fly list price for
@@ -179,6 +180,35 @@ Run each command from `apps/api`. Each step takes about one minute, except the d
 
 11. Set up the GitHub secret for the cron. See the last section.
 
+## The second hostname
+
+The API serves at `api.4thandgoal.app` and at `api.cpcfantasy.com`. The site of each client calls
+`api.4thandgoal.app`. Brian does these steps, the manual step 5 of `.scratch/clients/PRD.md`.
+
+1. Add the certificate.
+
+   ```sh
+   fly certs add api.4thandgoal.app --app cpcfantasy-api
+   ```
+
+2. Add the DNS record that the command gives, on the Cloudflare zone `4thandgoal.app`. That is a `CNAME` from `api` to
+   `cpcfantasy-api.fly.dev`, set to "DNS only". A proxied record hides the Fly challenge, and the cert stays pending.
+3. Wait until the certificate shows as issued.
+
+   ```sh
+   fly certs show api.4thandgoal.app --app cpcfantasy-api
+   ```
+
+4. Check both hosts. Each answers `{"status":"ok"}`.
+
+   ```sh
+   curl -s https://api.4thandgoal.app/health
+   curl -s https://api.cpcfantasy.com/health
+   ```
+
+`CORNERSTONE_ALLOWED_ORIGINS` in `fly.toml` lists `https://cpc.4thandgoal.app` and `https://cpcfantasy.com`. Add the
+host of each new client there, or the browser blocks its calls.
+
 ## Rotate the passphrase
 
 Each client has its own passphrase. The old paths with no client check the passphrase of `cpc`.
@@ -202,7 +232,7 @@ Use one of the two ways:
 
   ```sh
   curl --fail -s -X POST -H 'X-League-Passphrase: <the passphrase>' \
-    'https://api.cpcfantasy.com/refresh?season=2026'
+    'https://api.4thandgoal.app/clients/cpc/refresh?season=2026'
   ```
 
 The route fetches every nflverse file again, whatever its age. The cron can start late, so a file 23 hours old

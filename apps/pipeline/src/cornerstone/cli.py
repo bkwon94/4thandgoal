@@ -532,7 +532,7 @@ def main(
             )
             page = run_build(repo, season, week, call, fetch=fetch, client=client, provider=provider, writer=writer)
             print(page)
-            print(f"Site page after publish: {site_page_url(season, week)}")
+            print(f"Site page after publish: {site_page_url(client.slug, season, week)}")
             preview(page)
         elif args.command == "chart":
             return run_chart(client, season, week, writer, fetch_state)
@@ -543,10 +543,10 @@ def main(
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)
-            print(f"Site page after publish: {site_page_url(season, week)}")
+            print(f"Site page after publish: {site_page_url(client.slug, season, week)}")
             preview(page)
         else:
-            answer = input(f"Publish week {week} to GitHub Pages? [y/N] ")
+            answer = input(f"Publish week {week} of {client.slug}? [y/N] ")
             if answer not in ("y", "Y"):
                 print("Not published.")
                 return 0

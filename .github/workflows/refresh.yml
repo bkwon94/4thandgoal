@@ -1,4 +1,4 @@
-# The daily refresh of the Cornerstone API: a cron ping to POST /refresh at about 06:00 Eastern.
+# The daily refresh of the Cornerstone API: a cron ping to POST /clients/cpc/refresh at about 06:00 Eastern.
 # A stopped Fly machine cannot run a scheduler, so this ping starts it and runs the refresh. It never deploys.
 name: Daily refresh
 
@@ -27,4 +27,4 @@ jobs:
         run: |
           curl --fail --silent --show-error --max-time 300 -X POST \
             -H "X-League-Passphrase: ${PASSPHRASE}" \
-            "https://api.cpcfantasy.com/refresh?season=${CORNERSTONE_SEASON}"
+            "https://api.4thandgoal.app/clients/cpc/refresh?season=${CORNERSTONE_SEASON}"

@@ -12,7 +12,8 @@ primary_region = "ewr"
 [env]
   CORNERSTONE_REPO = "/app"
   CORNERSTONE_RESULT_CACHE_DIR = "/data/cache/results"
-  CORNERSTONE_ALLOWED_ORIGINS = "https://cpcfantasy.com"
+  # The CPC site at its Worker, and its old host for a page that a reader still has open.
+  CORNERSTONE_ALLOWED_ORIGINS = "https://cpc.4thandgoal.app,https://cpcfantasy.com"
 
 [http_service]
   internal_port = 8080

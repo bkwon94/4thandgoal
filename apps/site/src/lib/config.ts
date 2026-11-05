@@ -8,10 +8,7 @@ import type { ApiTarget } from "@cpc/analyzer/lib/api";
 import { clientValues } from "../generated/client-values";
 
 export const apiUrl =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.cpcfantasy.com";
-
-// The Pages base path. Empty because the site lives at the domain root.
-export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://api.4thandgoal.app";
 
 // The league season the teams and analyze routes read: the latest season of the client.
 export const season = clientValues.season;

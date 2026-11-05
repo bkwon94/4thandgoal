@@ -11,17 +11,20 @@ afterEach(() => {
 
 describe("config", () => {
   it("uses the defaults when the env is empty", async () => {
-    const { apiUrl, basePath } = await import("./config");
-    expect(apiUrl).toBe("https://api.cpcfantasy.com");
-    expect(basePath).toBe("");
+    const { apiUrl } = await import("./config");
+    expect(apiUrl).toBe("https://api.4thandgoal.app");
   });
 
   it("reads the env when it is set", async () => {
     vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
-    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/site");
-    const { apiUrl, basePath } = await import("./config");
+    const { apiUrl } = await import("./config");
     expect(apiUrl).toBe("http://localhost:8080");
-    expect(basePath).toBe("/site");
+  });
+
+  it("has no base path, because each client serves at the root of its own host", async () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/site");
+    const config = await import("./config");
+    expect(config).not.toHaveProperty("basePath");
   });
 
   it("takes the season, the finder, and the usage code from the cpc client.toml", async () => {

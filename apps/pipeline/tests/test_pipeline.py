@@ -730,7 +730,8 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
 
     url = run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
 
-    assert url.endswith("2026/week-06/")
+    # Each client serves at its own subdomain of 4thandgoal.app, so the URL names the host of cpc.
+    assert url == "https://cpc.4thandgoal.app/2026/week-06/"
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "clients/cpc/published/2026/week-06/page.json" in files
     assert "clients/cpc/published/2026/rankings.json" in files

@@ -285,12 +285,10 @@ describe("WeekPage week footer with a week on each side", () => {
     expect(prior.textContent).toBe("Week 5Oct 8 – Oct 12, 2026");
   });
 
-  it("gives every footer link the base path", async () => {
-    // A build can set a base path, so the test sets one before the page loads its config.
-    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/cpc");
+  it("gives every footer link a path from the root", async () => {
     await renderWeek6();
     const links = within(screen.getByRole("navigation", { name: "Weeks" })).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/cpc/2026/week-05/", "/cpc/2026/week-07/"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-05/", "/2026/week-07/"]);
   });
 
   it("shows the footer at rest with motion off", async () => {

@@ -1,6 +1,7 @@
 /**
  * The client build: it reads clients/$CLIENT/client.toml, brand.toml, and copy.toml, checks them, and writes the routes,
- * the registry, the client values, and the brand CSS. It copies only that client's published data and assets into public/.
+ * the registry, the client values, the brand CSS, and the wrangler config of the Worker. It copies only that client's
+ * published data and assets into public/.
  * The prebuild step runs it, and the fast check runs it for cpc.
  */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -270,6 +271,19 @@ function copyAssets(root, slug, brand, site) {
   return `/brand/${logo}`;
 }
 
+/* The wrangler config of the Worker of the client `slug`. The Worker name is the slug. It serves the static export in
+   out/ with no Worker script, and the 404.html of the export answers each unknown path. The config declares no route:
+   Brian adds the Custom Domain <slug>.4thandgoal.app in the Cloudflare dashboard. */
+function wranglerText(slug) {
+  const config = {
+    name: slug,
+    // A fixed date keeps the runtime of the Worker the same from deploy to deploy.
+    compatibility_date: "2026-11-01",
+    assets: { directory: "./out", not_found_handling: "404-page" },
+  };
+  return `${headerLine(slug)}\n${JSON.stringify(config, null, 2)}\n`;
+}
+
 function writeFile(file, text) {
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, text);
@@ -297,6 +311,7 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
     brandCss(brand, { source: `clients/${slug}/brand.toml`, faces: brand.fonts.faces ?? [] }),
   );
   copyPublished(published, join(site, "public"));
+  writeFile(join(site, "wrangler.jsonc"), wranglerText(slug));
   return values;
 }
 

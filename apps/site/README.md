@@ -1,7 +1,7 @@
 # Cornerstone League Weekly
 
-The Cornerstone League Weekly site, at cpcfantasy.com. This repo holds the Next.js source. The
-Python pipeline in `apps/pipeline` publishes each week's `page.json` and images into `clients/<slug>/published/`. The build
+The Cornerstone League Weekly site. Each client serves at `<slug>.4thandgoal.app`, so CPC is at `cpc.4thandgoal.app`.
+This repo holds the Next.js source. The Python pipeline in `apps/pipeline` publishes each week's `page.json` and images into `clients/<slug>/published/`. The build
 copies the published data of one client into `public/`. The site renders every page, the home page included, from that JSON.
 
 ## Install
@@ -65,8 +65,7 @@ All values are build-time. Only `src/lib/config.ts` reads them.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | `https://api.cpcfantasy.com` | Base URL of the site API. |
-| `NEXT_PUBLIC_BASE_PATH` | empty string | Pages base path. Empty because the site lives at the domain root. |
+| `NEXT_PUBLIC_API_URL` | `https://api.4thandgoal.app` | Base URL of the site API. |
 | `CLIENT` | none | The slug of the client folder under `clients/`. The build fails with no value. |
 | `CLIENT_ROOT` | the repo root | The folder that holds `clients/` and the exported schema. Set it to build a test client from a temp folder. |
 
@@ -75,11 +74,16 @@ season, which is the latest season of the client.
 
 ## Deploy
 
-A push to `main` builds the site and deploys it. The workflow is `.github/workflows/deploy.yml`.
-It installs the packages and runs `pnpm check`. That script checks the types, runs the tests, builds the export,
-and checks the export. A failed step stops the deploy.
+Each client is one Cloudflare Worker with static assets. The Worker name is the client slug. The site has no base
+path, because each client serves at the root of its own host.
 
-The Pages source is GitHub Actions. The `CNAME` file in `public/` keeps the custom domain.
+A push to `main` runs the check, then deploys each client. The workflow is `.github/workflows/deploy-sites.yml`.
+It has one job per folder under `clients/`. Each job builds the export with `CLIENT=<slug>`, runs `check:export`,
+and deploys `out/` with `cloudflare/wrangler-action`. A failed step stops the deploy of that client.
+
+The prebuild step writes `wrangler.jsonc` for `CLIENT`. Git ignores the file. It declares no route, because Brian adds
+the Custom Domain in the Cloudflare dashboard. `docs/runbook-site-host.md` holds the deploy, the dry run, the
+dashboard steps, and the Redirect Rule of `cpcfantasy.com`.
 
 The Python publish in `apps/pipeline` writes the week folder, with `page.json` and the images, into `clients/cpc/published/` and pushes to
 `main`. That push starts the deploy.
