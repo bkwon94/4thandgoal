@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, and AT
 
 **Blocked by:** 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `RECENT_RANK_GAP = 12` is in the analyzer tunables.
 - [x] Each player of `trade.sides` carries `season_rank`, and `recent_rank` when the gap holds, else null.
@@ -25,3 +25,4 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, and AT
 - The finder document carries the ranks too, because the API test holds the finder sides to the shape of the analyze sides. The swap card and the finder cards show no rank. Only the side card shows the ranks.
 - `DOCUMENT_VERSION` goes to 13.
 - The Season rank is null when the stats of the season are not complete, and the card then shows no rank line.
+- The merge: `bb8b441` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
