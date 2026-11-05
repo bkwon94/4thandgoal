@@ -38,6 +38,11 @@ FIT_THRESHOLD = Decimal("3.0")
 # 12 spots is half the line at QB and TE, and a third of it at RB and WR, so a smaller swing shows no Recent rank.
 RECENT_RANK_GAP = 12
 
+# The Week line names no step-up when the newest depth chart is more than this many hours older than the grade.
+# Decision 02 of grade-clarity: the chart is 3 to 27 hours old by design, and about 35 with a late daily run. 48 hours
+# lets one late run pass and stops a chart after a missed day.
+STEP_UP_CHART_HOURS = 48
+
 # Trend and usage compares snap and target share over the SHARE_WEEKS windows of league/tunables.py.
 # The change in mean WOPR between the two windows that counts as up or down. WOPR is 1.5 times target share plus
 # 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.

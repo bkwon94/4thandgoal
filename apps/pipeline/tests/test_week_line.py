@@ -2,7 +2,8 @@
 Tests for the Week line of each side: the count of the players who play in the trade week and the next week, the
 opponent of each player the side gets, each bye, and each player who is out. They grade real trades at the document seam.
 """
-from datetime import datetime
+import shutil
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -10,6 +11,7 @@ import pytest
 from cpc import cpc_client
 
 from analyzer.analysis import AnalysisOut, _inner_word_failures, check_response, code_only
+from analyzer.cache import cache_key
 from analyzer.routes import result_document
 from analyzer.rubric import ProposedTrade, TradeSide
 from analyzer.trade_facts import trade_fact_sheet
@@ -197,3 +199,132 @@ def test_with_no_schedule_the_week_line_says_so_and_names_no_bye_or_opponent(thu
     texts = _texts(TRADE_A, thursday.model_copy(update={"schedules": None}), 10)
     assert texts[0] == ("Week 9: WRs in the top 36 who play stay at 2. Egbuka and Samuel are listed Out. "
                         "No NFL schedule is on file, so no bye or opponent shows.")
+
+
+# The newest real depth chart, of 2026-11-03T07:02:07Z, cut to QB, RB, WR, and TE, with the id map rows of its players.
+# The test copies it over the nflverse fixture, so the rest of the slow sources stay the same.
+NEWEST_CHART = Path(__file__).parent / "fixtures" / "nflverse-2026-11-03"
+CHART_DT = datetime(2026, 11, 3, 7, 2, 7, tzinfo=ZoneInfo("UTC"))
+# A grade inside the age limit of the chart, and one more than 48 hours after its dt (AT-16).
+FRESH = datetime(2026, 11, 4, 12, 0, tzinfo=ET)
+STALE = datetime(2026, 11, 5, 8, 0, tzinfo=ZoneInfo("UTC"))
+
+# Wan'Dale Robinson of roster 2 is TEN WR2, behind Carnell Tate of roster 8, who is Out.
+# Chris Godwin Jr. of roster 8 is TB WR2, behind Emeka Egbuka of roster 10, who is Out.
+# Makai Lemon of roster 8 is PHI WR3, behind Dontayvion Wicks, who is Out and on no roster.
+ROBINSON, TATE, GODWIN, LEMON, WICKS = "8126", "13279", "4037", "13294", "9486"
+SAMUEL = "5872"
+# Roster 8 gives Tate to roster 2 for Robinson. TEN has its bye in week 9, so Robinson does not step up.
+TRADE_TEN = _trade(8, [TATE], 2, [ROBINSON])
+
+
+@pytest.fixture(scope="module")
+def newest_chart_dir(tmp_path_factory):
+    directory = tmp_path_factory.mktemp("nflverse")
+    for source in (NFLVERSE, NEWEST_CHART):
+        for path in source.iterdir():
+            shutil.copy(path, directory / path.name)
+    return directory
+
+
+def _newest(directory: Path, now: datetime | None):
+    returns_file = returns_path(CLIENT.nfl_dir, 2026)
+    slow = load_slow_sources(directory, 2026, 9, SAVED / "history")
+    return build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, slow, trade_week=9,
+                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
+                          now=now, client=CLIENT)
+
+
+@pytest.fixture(scope="module")
+def fresh(newest_chart_dir):
+    return _newest(newest_chart_dir, FRESH)
+
+
+def test_the_snapshot_holds_the_dt_of_the_newest_depth_chart(fresh):
+    assert fresh.depth_chart_dt == CHART_DT
+
+
+def test_a_player_behind_an_out_player_steps_up_in_the_trade_week(fresh):
+    texts = _texts(TRADE_TEN, fresh, 8)
+    assert texts[0] == "Week 9: WRs in the top 36 who play stay at 1. Robinson has a bye. Lemon and Godwin step up."
+    # Out counts in the trade week only, so in week 10 the player ahead plays and no one steps up.
+    assert "step" not in texts[1]
+
+
+def test_the_player_ahead_on_no_roster_counts(fresh):
+    # Wicks is on no roster, so only the full Sleeper players file holds his status.
+    assert all(WICKS not in roster for roster in fresh.rosters.values())
+    assert fresh.ahead_on_chart[LEMON].player_id == WICKS
+    assert fresh.ahead_on_chart[LEMON].injury_status == "Out"
+
+
+@pytest.mark.parametrize("now", [STALE, None])
+def test_a_chart_more_than_48_hours_old_or_a_grade_with_no_time_names_no_step_up(newest_chart_dir, now):
+    # AT-16: the grade time is more than 48 hours after the dt of the newest chart. With no grade time, the age of
+    # the chart is not known.
+    snapshot = _newest(newest_chart_dir, now)
+    texts = [text for roster_id in (8, 2) for text in _texts(TRADE_TEN, snapshot, roster_id)]
+    assert not any("step" in text for text in texts)
+
+
+def test_a_chart_exactly_48_hours_old_still_names_a_step_up(fresh):
+    snapshot = fresh.model_copy(update={"as_of": fresh.as_of.model_copy(
+        update={"graded_at": CHART_DT + timedelta(hours=48)})})
+    assert _texts(TRADE_TEN, snapshot, 8)[0].endswith(" Lemon and Godwin step up.")
+
+
+def _with_ahead_status(snapshot, player_id: str, status: str | None):
+    """The snapshot with the player ahead of `player_id` on the depth chart given a status."""
+    ahead = snapshot.ahead_on_chart[player_id].model_copy(update={"injury_status": status})
+    return snapshot.model_copy(update={"ahead_on_chart": {**snapshot.ahead_on_chart, player_id: ahead}})
+
+
+def test_a_player_ahead_on_ir_makes_a_step_up_in_both_weeks(fresh):
+    # Tate on IR is out in week 10 too, and TEN plays in week 10, so Robinson steps up then.
+    texts = _texts(TRADE_TEN, _with_ahead_status(fresh, ROBINSON, "IR"), 8)
+    assert texts[1].endswith(" Robinson steps up.")
+
+
+@pytest.mark.parametrize("status", ["Questionable", "Doubtful", None])
+def test_a_player_ahead_who_can_play_makes_no_step_up(fresh, status):
+    texts = _texts(TRADE_TEN, _with_ahead_status(fresh, LEMON, status), 8)
+    assert texts[0].endswith(" Godwin steps up.")
+
+
+def test_a_player_who_is_out_himself_does_not_step_up(fresh):
+    # Samuel of roster 10 is SF WR2 behind Mike Evans, who is Out. Samuel is Out too, so he does not step up.
+    assert fresh.ahead_on_chart[SAMUEL].name == "Mike Evans"
+    texts = _texts(TRADE_A, fresh, 10)
+    assert "Samuel" in texts[0] and "step" not in texts[0]
+
+
+def test_the_cache_key_changes_with_the_dt_of_the_chart_and_each_status_a_week_line_reads(fresh):
+    # AT-30: trade A, then a new chart dt, then a new status of Mike Evans, who is on roster 1, not in the trade.
+    # The Week line of roster 10 reads his status, because he is ahead of Samuel on the SF chart.
+    key = cache_key(TRADE_A, fresh)
+    later_chart = fresh.model_copy(update={"depth_chart_dt": CHART_DT + timedelta(hours=1)})
+    assert cache_key(TRADE_A, later_chart) != key
+    assert cache_key(TRADE_A, _with_ahead_status(fresh, SAMUEL, "IR")) != key
+    # A status of a rostered player in the trade that the Week line reads.
+    assert cache_key(TRADE_A, _with_status(fresh, NACUA, "IR")) != key
+
+
+def test_the_cache_key_changes_with_the_status_of_a_player_ahead_on_no_roster(fresh):
+    key = cache_key(TRADE_TEN, fresh)
+    assert cache_key(TRADE_TEN, _with_ahead_status(fresh, LEMON, None)) != key
+    # A status that the Week line never counts reads the same as no status, so it keeps the hit.
+    assert cache_key(TRADE_TEN, _with_ahead_status(fresh, LEMON, "Questionable")) == cache_key(
+        TRADE_TEN, _with_ahead_status(fresh, LEMON, None))
+
+
+def test_the_cache_key_changes_when_the_chart_grows_too_old(fresh):
+    # The same snapshot graded 48 hours and 49 hours after the chart: the second names no step-up.
+    at = {hours: fresh.model_copy(update={"as_of": fresh.as_of.model_copy(
+        update={"graded_at": CHART_DT + timedelta(hours=hours)})}) for hours in (47, 48, 49)}
+    assert cache_key(TRADE_TEN, at[47]) == cache_key(TRADE_TEN, at[48])
+    assert cache_key(TRADE_TEN, at[48]) != cache_key(TRADE_TEN, at[49])
+
+
+def _with_status(snapshot, player_id: str, status: str | None):
+    player = snapshot.players[player_id].model_copy(update={"injury_status": status})
+    return snapshot.model_copy(update={"players": {**snapshot.players, player_id: player}})

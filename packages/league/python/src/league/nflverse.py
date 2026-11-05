@@ -9,6 +9,7 @@ import time
 from collections.abc import Callable, Collection
 from datetime import datetime
 from pathlib import Path
+from typing import NamedTuple
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -253,8 +254,17 @@ def read_kickoffs(path: Path, season: int, week: int) -> dict[str, datetime]:
     return kickoffs
 
 
-def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
-    """The ordered gsis_ids by Sleeper team code and position, from the latest snapshot. None when no row.
+class DepthCharts(NamedTuple):
+    """The newest depth chart: the ordered gsis_ids by Sleeper team code and position, and the scrape time `dt`."""
+
+    charts: dict[str, dict[str, list[str]]]
+    # The file has no week, only the time of the scrape, so the age of the chart comes from it. Decision 02.
+    dt: datetime
+
+
+def read_depth_charts(path: Path) -> DepthCharts | None:
+    """The ordered gsis_ids by Sleeper team code and position, from the latest snapshot, with its `dt`. None when no
+    row.
 
     The file holds a snapshot of every day of the season, so only the latest is the live depth chart.
     The ids are gsis_ids, as the id map gives, so a caller joins them to Sleeper players with that map.
@@ -275,7 +285,7 @@ def read_depth_charts(path: Path) -> dict[str, dict[str, list[str]]] | None:
         ordered = charts.setdefault(SLEEPER_TEAM.get(row["team"], row["team"]), {}).setdefault(row["pos_abb"], [])
         if row["gsis_id"] not in ordered:
             ordered.append(row["gsis_id"])
-    return charts or None
+    return DepthCharts(charts=charts, dt=datetime.fromisoformat(latest)) if charts else None
 
 
 def read_id_map(path: Path) -> dict[str, str]:

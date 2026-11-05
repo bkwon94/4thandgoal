@@ -615,7 +615,9 @@ _Avoid_: weekly impact, matchup line, lineup fit
 
 **Steps up**:
 A player steps up for a week when the player directly ahead of him on his NFL team's depth chart, at his
-position, is listed Out or IR for that week.
+position, is out for that week by the out rules of the Week line. The player ahead can be on no roster. A player who
+is out himself, or whose team has a bye, does not step up. The Week line names no step-up when the newest depth chart
+is more than `STEP_UP_CHART_HOURS` older than the grade, or when the grade has no time.
 _Avoid_: promoted, next man up, starts (alone)
 
 **The line**:

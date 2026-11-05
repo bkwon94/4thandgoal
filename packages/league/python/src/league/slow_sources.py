@@ -40,6 +40,8 @@ class SlowSources(BaseModel):
     schedules: dict[str, TeamSchedule] | None = None
     # Team to position to the ordered gsis_ids. Sleeper rosters hold Sleeper ids, so `id_map` joins the two.
     depth_charts: dict[str, dict[str, list[str]]] | None = None
+    # The scrape time of the newest depth chart. The Week line names no step-up from a chart that is too old.
+    depth_chart_dt: datetime | None = None
     # Sleeper id to gsis_id.
     id_map: dict[str, str] | None = None
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
@@ -85,9 +87,10 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     depth_path = cache_path(cache_dir, DEPTH_CHARTS_URL, season)
     ffids_path = cache_path(cache_dir, FFIDS_URL, season)
     injuries_path = cache_path(cache_dir, INJURIES_URL, season)
+    depth = _read("depth_charts", read_depth_charts, depth_path) if depth_path.exists() else None
     sources = {
         "schedules": _read("schedules", read_schedules, schedules_path, season) if schedules_path.exists() else None,
-        "depth_charts": _read("depth_charts", read_depth_charts, depth_path) if depth_path.exists() else None,
+        "depth_charts": depth.charts if depth else None,
         "id_map": _read("id_map", read_id_map, ffids_path) if ffids_path.exists() else None,
         "points_allowed": _read("points_allowed", points_allowed, history_root, week - 1, points_key),
         "injuries": _read("injuries", read_injuries, injuries_path, week - 1) if injuries_path.exists() else None,
@@ -108,7 +111,8 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     kickoffs = _read("kickoffs", read_kickoffs, schedules_path, season, week) if schedules_path.exists() else None
     # The two go by the names of their files in `missing`, because the sources line names the files the grade read.
     named = {**sources, "expected_points": expected, "player_weeks": wopr}
-    return SlowSources(**sources, expected=expected, wopr=wopr, kickoffs=kickoffs,
+    return SlowSources(**sources, depth_chart_dt=depth.dt if depth else None, expected=expected, wopr=wopr,
+                       kickoffs=kickoffs,
                        missing=[name for name, source in named.items() if source is None])
 
 

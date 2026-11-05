@@ -722,7 +722,8 @@ def _graded_at(snapshot, at: datetime):
 def test_the_cache_key_tells_a_tuesday_or_wednesday_grade_from_the_rest_of_the_week(settings, sources):
     # A Week line graded on a Tuesday or a Wednesday says "listed Out last week", so a grade of Thursday must miss it.
     trade = ProposedTrade.model_validate(TRADE)
-    snapshot = _here(sources, settings).snapshot(trade.season)
+    # The age of the depth chart changes the key too, so this snapshot holds no chart time and only the day counts.
+    snapshot = _here(sources, settings).snapshot(trade.season).model_copy(update={"depth_chart_dt": None})
     tuesday, wednesday, thursday, friday = (datetime(2026, 10, day, 12, 0, tzinfo=ET) for day in (20, 21, 22, 23))
     assert cache_key(trade, _graded_at(snapshot, tuesday)) == cache_key(trade, _graded_at(snapshot, wednesday))
     assert cache_key(trade, _graded_at(snapshot, thursday)) == cache_key(trade, _graded_at(snapshot, friday))
@@ -1884,7 +1885,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_16():
+def test_the_document_version_is_17():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1896,7 +1897,8 @@ def test_the_document_version_is_16():
     # A silent row hides, and the roster and standing rows read in plain words, so a stored row must never serve.
     # The usage, injury, upside, handcuff, and schedule rows and the fairness reasons read in plain words too.
     # Each side carries its Week lines, so the shape changes.
-    assert cache_module.DOCUMENT_VERSION == 16
+    # A Week line names each player who steps up, so a stored Week line must never serve.
+    assert cache_module.DOCUMENT_VERSION == 17
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

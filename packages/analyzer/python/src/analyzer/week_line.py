@@ -1,18 +1,21 @@
 """
 The Week line of each side of a grade, for the trade week and the next week: the count of its players who play, the
-opponent of each player it gets, each bye, and each player who is out. The code writes it, and it never moves a letter.
+opponent of each player it gets, each bye, each player who is out, and each player who steps up. The code writes it,
+and it never moves a letter.
 """
+from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
 from analyzer.adjusters import _short_names
 from analyzer.rubric import ProposedTrade
+from analyzer.tunables import STEP_UP_CHART_HOURS
 from league.lineup import _above_the_line
 from league.nflverse import SKILL_POSITIONS, ScheduledGame
 from league.points_allowed import most_points_text, opponent_rank
 from league.ranks import RANKED_POSITIONS
-from league.snapshot import Snapshot
+from league.snapshot import Snapshot, SnapshotPlayer
 
 # The Sleeper statuses that keep a player out of both weeks. An NFL player on IR misses at least 4 games.
 # Decision 02 of grade-clarity. "Out" counts for the trade week only, and Questionable and Doubtful never count.
@@ -61,6 +64,9 @@ def _text(trade: ProposedTrade, snapshot: Snapshot, roster_id: int, touched: lis
     if byes:
         sentences.append(f"{_join(byes)} {'has' if len(byes) == 1 else 'have'} a bye.")
     sentences += _absence_sentences(snapshot, named, names, week)
+    steps_up = [names[pid] for pid in named if _steps_up(snapshot, pid, week)]
+    if steps_up:
+        sentences.append(f"{_join(steps_up)} {'steps' if len(steps_up) == 1 else 'step'} up.")
     if snapshot.schedules is None:
         sentences.append("No NFL schedule is on file, so no bye or opponent shows.")
     return f"Week {week}: " + " ".join(sentences)
@@ -115,22 +121,54 @@ def _opponent_sentence(snapshot: Snapshot, player_id: str, name: str, week: int)
 
 
 def _absence(snapshot: Snapshot, player_id: str, week: int) -> tuple[str, int | None] | None:
+    """Why the rostered player is out that week, as a kind and a return week, or None when he can play."""
+    return _out_reason(snapshot, snapshot.players[player_id], week)
+
+
+def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[str, int | None] | None:
     """Why the player is out that week, as a kind and a return week, or None when he can play. Decision 02.
 
     Out for the season and a return week on file after the week count in each week. IR, PUP, NA, and Sus count in
     each week too. Out counts in the trade week only. Questionable and Doubtful never count.
+    The player can be on no roster, as the player ahead on a depth chart often is.
     """
-    if player_id in snapshot.out_for_season:
+    if player.player_id in snapshot.out_for_season:
         return "season", None
-    back = snapshot.returns.get(player_id)
+    back = snapshot.returns.get(player.player_id)
     if back is not None and back > week:
         return "until", back
-    status = snapshot.players[player_id].injury_status
+    status = player.injury_status
     if status in LONG_OUT_STATUSES:
         return status, None
     if status == OUT and week == snapshot.week:
         return OUT, None
     return None
+
+
+def counted_status(status: str | None) -> str | None:
+    """The Sleeper status as the Week line reads it: an out status, or None for a status that never counts."""
+    return status if status == OUT or status in LONG_OUT_STATUSES else None
+
+
+def chart_is_fresh(snapshot: Snapshot) -> bool:
+    """True when the newest depth chart is at most STEP_UP_CHART_HOURS older than the grade. Decision 02.
+
+    With no grade time, the age of the chart is not known, so the chart is not fresh.
+    """
+    graded_at, dt = snapshot.as_of.graded_at, snapshot.depth_chart_dt
+    return graded_at is not None and dt is not None and graded_at - dt <= timedelta(hours=STEP_UP_CHART_HOURS)
+
+
+def _steps_up(snapshot: Snapshot, player_id: str, week: int) -> bool:
+    """True when the player directly ahead of him on his NFL team's depth chart is out that week. QB, RB, WR, TE.
+
+    A player who is out himself, or whose team does not play that week, does not step up. A depth chart more than
+    STEP_UP_CHART_HOURS older than the grade names no step-up.
+    """
+    ahead = snapshot.ahead_on_chart.get(player_id)
+    return (ahead is not None and snapshot.players[player_id].position in SKILL_POSITIONS and chart_is_fresh(snapshot)
+            and _plays(snapshot, player_id, week) and _absence(snapshot, player_id, week) is None
+            and _out_reason(snapshot, ahead, week) is not None)
 
 
 def last_game_status(snapshot: Snapshot) -> bool:
