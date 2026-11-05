@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "The package values of rankings. It has none yet.",
+  "description": "The package values of rankings. It has no values.",
   "properties": {},
   "title": "RankingsValues",
   "type": "object"

@@ -7,7 +7,7 @@
 - The median text in `prompts/median.md`. The writer and the verifier get it only when the league scores a median game.
 - A league with no median game has no MED facts, no median part in the impact fact, and no Median Game chapter.
 - The tunables of the week in `tunables.py`: the shootout cut, the storyline weights, the key starter rule, and the award cap.
-- Package values: none yet.
+- Package values: it has no values.
 
 ## Ports
 

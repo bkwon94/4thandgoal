@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "The package values of managers. It has none yet.",
+  "description": "The package values of managers. It has no values.",
   "properties": {},
   "title": "ManagersValues",
   "type": "object"

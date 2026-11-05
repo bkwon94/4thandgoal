@@ -7,7 +7,7 @@
 - A league with no median game has no median in any week of an entry, so the points line has no median line.
 - The tunables of the roster grade in `tunables.py`: the weights, the hole cost, the depth spares, and the letter bands.
 - The manager page, the managers index, the schema and the types of `managers.json`, and its fixture (`@cpc/managers`).
-- Package values: none yet.
+- Package values: it has no values.
 
 ## Ports
 

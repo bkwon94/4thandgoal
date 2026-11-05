@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "The package values of waiver. It has none yet.",
+  "description": "The package values of waiver. It has no values.",
   "properties": {},
   "title": "WaiverValues",
   "type": "object"

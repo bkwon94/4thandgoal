@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "The package values of week. It has none yet.",
+  "description": "The package values of week. It has no values.",
   "properties": {},
   "title": "WeekValues",
   "type": "object"

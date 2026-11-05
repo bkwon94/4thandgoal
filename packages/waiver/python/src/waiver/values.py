@@ -8,6 +8,6 @@ from league.values import PackageValues
 
 
 class WaiverValues(PackageValues):
-    """The package values of waiver. It has none yet."""
+    """The package values of waiver. It has no values."""
 
     package: ClassVar[str] = "waiver"

@@ -8,6 +8,6 @@ from league.values import PackageValues
 
 
 class WeekValues(PackageValues):
-    """The package values of week. It has none yet."""
+    """The package values of week. It has no values."""
 
     package: ClassVar[str] = "week"

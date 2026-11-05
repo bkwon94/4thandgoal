@@ -8,6 +8,6 @@ from league.values import PackageValues
 
 
 class ManagersValues(PackageValues):
-    """The package values of managers. It has none yet."""
+    """The package values of managers. It has no values."""
 
     package: ClassVar[str] = "managers"

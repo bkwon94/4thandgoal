@@ -8,6 +8,6 @@ from league.values import PackageValues
 
 
 class RankingsValues(PackageValues):
-    """The package values of rankings. It has none yet."""
+    """The package values of rankings. It has no values."""
 
     package: ClassVar[str] = "rankings"
