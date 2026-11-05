@@ -58,7 +58,7 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
       </h3>
       <SwapCard sides={sides} />
       <FairnessBlock sides={sides} fairness={trade.fairness} />
-      {trade.reason !== null && <p className="m-0 text-body text-ink-2">{trade.reason}</p>}
+      {trade.reason !== null && <p className="m-0 text-lead text-ink-2">{trade.reason}</p>}
       <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
         See the Full Result
       </Button>
@@ -72,7 +72,7 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
   return (
     <div>
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
-      {doc.empty !== null && <p className="m-0 py-sp-5 text-body font-bold">{doc.empty}</p>}
+      {doc.empty !== null && <p className="m-0 py-sp-5 text-lead font-bold">{doc.empty}</p>}
       {doc.trades.map((trade, i) => (
         <FinderCard
           key={trade.sides.flatMap((s) => s.gives.map((p) => p.player_id)).join("-")}
@@ -140,7 +140,7 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
           <h2 id="find-trade" className="m-0 text-stat leading-stat font-black uppercase">
             Find a Trade
           </h2>
-          <p className="m-0 text-body text-ink-2">Pick a partner. The search finds up to 3 trades good for both.</p>
+          <p className="m-0 text-lead text-ink-2">Pick a partner. The search finds up to 3 trades good for both.</p>
         </div>
         <TeamPicker label="Trade Partner" teams={partners} value={partner} disabledId={null} onChange={pickPartner} locked={locked || finding} />
         <Button
@@ -154,7 +154,7 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
         {finding && (
           <div className="flex flex-col gap-sp-2">
             <Sweep />
-            <p role="status" className="m-0 text-meta text-mute">
+            <p role="status" className="m-0 text-lead text-mute">
               The search tries every small swap. This can take up to a minute.
             </p>
           </div>

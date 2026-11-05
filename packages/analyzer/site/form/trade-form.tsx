@@ -92,7 +92,8 @@ function GradingHero() {
     <Hero label="Grading the Trade">
       <div role="status" aria-busy="true" className="flex flex-col gap-sp-4">
         <div className="flex items-center justify-between gap-sp-3">
-          <p className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-on-dark-2 uppercase">Grading the Trade</p>
+          {/* A label of the hero, not prose, so it is a div at the meta size. */}
+          <div className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-on-dark-2 uppercase">Grading the Trade</div>
           <span className="plate font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase">Live</span>
         </div>
         <div aria-hidden="true" className="flex flex-col gap-sp-3">

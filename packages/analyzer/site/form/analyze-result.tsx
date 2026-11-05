@@ -265,14 +265,15 @@ export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness
       {/* The line is a pill next to its label, so the finder cards and the verdict read the fairness at a glance. */}
       <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
         <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
-        <motion.p
+        {/* The pill is a short label, not prose, so it is a span at the row size. */}
+        <motion.span
           className={cn("m-0 rounded-pill border border-rule px-sp-3 py-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}
           {...rise(off, { duration: DURATION.fairness })}
         >
           {line}
-        </motion.p>
+        </motion.span>
       </div>
-      <p className="mt-0 mb-sp-3 text-meta leading-tight text-mute">{state.meaning}</p>
+      <p className="mt-0 mb-sp-3 text-lead text-mute">{state.meaning}</p>
       <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
         {/* joinSides puts the asker's side first, so the reasons take that order. A finder card sorts its sides the same way. */}
         {sides.map((side) => (
@@ -335,7 +336,7 @@ function SideRead({ side }: { side: Side }) {
       <SidePlayers side={side} />
 
       {side.bullets.length === 0 ? (
-        <p className="mt-sp-4 mb-0 text-body text-mute">The analysis is unavailable, so the rows stand alone.</p>
+        <p className="mt-sp-4 mb-0 text-lead text-mute">The analysis is unavailable, so the rows stand alone.</p>
       ) : (
         <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-body text-ink-2">
           {side.bullets.map((bullet) => (
@@ -375,11 +376,12 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   // Stats that failed to fetch leave the line stale, so the line says so.
   const staleSegments = stale.includes("stats") ? [`Week ${tradeWeek} stats not fetched`] : [];
   // The line names no chart week, because no page text names the source of the player values.
+  // The line is a list of facts, not prose, so it is a div at the meta size.
   return (
-    <p className="m-0 text-meta text-mute tabular-nums">
+    <div className="m-0 text-meta text-mute tabular-nums">
       {[...knownGamesSegments(as_of), ...staleSegments].join(" · ")}
       {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
-    </p>
+    </div>
   );
 }
 
@@ -402,10 +404,10 @@ function RostersFetched({ iso }: { iso: string }) {
   );
 }
 
-/* A week with no player values gets one meta line that says so. A document without the flag shows nothing. */
+/* A week with no player values gets one line of prose that says so. A document without the flag shows nothing. */
 export function NoChartLine({ asOf }: { asOf: AsOf }) {
   if (!asOf.no_chart || !asOf.no_chart_note) return null;
-  return <p className="m-0 pt-sp-3 text-meta text-mute">{asOf.no_chart_note}</p>;
+  return <p className="m-0 pt-sp-3 text-lead text-mute">{asOf.no_chart_note}</p>;
 }
 
 export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
