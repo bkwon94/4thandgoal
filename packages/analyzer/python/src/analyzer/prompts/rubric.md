@@ -80,19 +80,20 @@ starter out with no return week on file is a hole.
 
 A bye is not a hole, with one exception. For a middle team, a player it gets who starts after the
 trade and has his bye in the trade week is a hole. No cover cancels it. A contender or a seller
-reads no hole for a bye. With no schedules, no bye reads, and the reason says that the schedules
-are not available.
+reads no hole for a bye. With no schedules, no bye reads, and the schedule reason says that the
+schedules are not available.
 
 Depth is the count of the side's players at a position, starters and bench, at or above the line.
 Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a position rank of
 `strength_rank` or better. Depth and strength are facts for the analysis. They never move the step.
 
-- A new hole with no lineup gain is one step down. The reason names the slot, the player, and his
-  position rank. For a starter due back inside the window and no cover, it names the
-  week and says that no bench player covers him. For a starter due back after the window, it says
-  "X is due back in week W." with no cover phrase. For a starter out with no return week on file,
-  it says so and names no week. For a middle team's starter who has his bye in the trade week, it
-  names the week and says that a middle team needs the win.
+- A new hole with no lineup gain is one step down. The reason counts the side's players in the top
+  N at each position the trade touches, before and after, where N is the line. When the count does
+  not show the hole, the reason names the player. For a starter due back inside the window and no
+  cover, it names the week and says that no other player covers him. For a starter due back after
+  the window, it says "X is due back in week W." with no cover phrase. For a starter out with no
+  return week on file, it says so and names no week. For a middle team's starter who has his bye in
+  the trade week, it names the week and says that you need the win.
 - A lineup loss of `FIT_THRESHOLD` or more is one step down. With a new hole too, the step is
   still one down, and the reason names the hole.
 - A lineup gain of `FIT_THRESHOLD` or more is one step up. A gain that opens a new hole is no

@@ -282,7 +282,9 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
             assert set(side.model_dump()) == {"roster_id", "start_letter", "reason", "adjusters", "final_letter"}
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
             # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
-            for reason in [side.reason, *(strip_trend_numbers(a.reason) if a.name == TREND else a.reason
+            # The roster fit reason may give the count at each position and the top N it counts in.
+            for reason in [side.reason, *(strip_trend_numbers(a.reason) if a.name == TREND
+                                          else _without_counts(a.reason) if a.name == "roster fit" else a.reason
                                           for a in side.adjusters)]:
                 assert not re.search(r"\d", reason)
                 # The trade value chart never shows. The NFL depth chart is a plain source, so its name may.
@@ -296,11 +298,19 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
 # Roster 5, a contender: James Cook 19.10, Hubbard 17.27, and Javonte Williams 16.20 at RB and flex,
 # Denzel Boston 12.03 at the last flex spot, Michael Wilson 10.37, Woody Marks 8.32, and Metcalf 8.03 on the bench.
 SAQUON, COOK, HUBBARD, MARKS = "4866", "8138", "7594", "12474"
-# Saquon Barkley is Out with no return week, so he counts as back in week 14 at his fixture projection ahead.
-SAQUON_NOTE = ("Saquon Barkley has no return week on file, so he counts as back in week 14 "
-               "for his projection ahead of 12.6 a game.")
-# The `snap` fixture has no schedule map, so no schedule read runs and each fit reason on it says so after the step.
-NO_SCHEDULES = " The schedule sources are not available."
+
+
+def _without_counts(reason: str) -> str:
+    """The roster fit reason with each count of the players in the top N cut out."""
+    return re.sub(r"\d+ (?:QB|RB|WR|TE)s? in the top \d+(?: to \d+)?", "", reason)
+
+
+# The cause of a new hole that the counts of the roster row do not show. Its row names it in plain words.
+HOLE_CAUSES = ("has his bye", "due back", "out with no return week", "has no rank")
+
+
+def _names_a_hole(adjuster) -> bool:
+    return any(cause in adjuster.reason for cause in HOLE_CAUSES)
 
 
 def _adjuster(breakdown, name: str):
@@ -310,17 +320,13 @@ def _adjuster(breakdown, name: str):
 def test_fit_steps_up_for_a_lineup_gain_and_down_for_a_lineup_loss(snap):
     # Cook takes the RB spot of Saquon Barkley on roster 10, a gain of 6.46.
     # Roster 5 loses Cook, and Saquon Barkley takes his RB spot, a loss of 6.46.
-    # Saquon Barkley is Out with no return week, so both sides name the projection he counts for.
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
     assert _adjuster(tenth, "roster fit").step == 1
-    assert _adjuster(tenth, "roster fit").reason == (
-        "The best lineup gains after the trade." + NO_SCHEDULES + " " + SAQUON_NOTE)
+    assert _adjuster(tenth, "roster fit").reason == "You keep 3 RBs in the top 36, and your lineup scores more."
     assert _adjuster(fifth, "roster fit").step == -1
     # Saquon Barkley takes FLEX1 on roster 5. He counts as back in week 14, past the return window, so his slot is a
     # hole.
-    assert _adjuster(fifth, "roster fit").reason == (
-        "FLEX1 is a hole after the trade: Saquon Barkley is out with no return week on file." + NO_SCHEDULES + " "
-        + SAQUON_NOTE)
+    assert _adjuster(fifth, "roster fit").reason.endswith(", and Barkley is out with no return week on file.")
 
 
 # Roster 12: Tony Pollard 8.95 sits on the bench, behind Hampton 9.70. DJ Moore, Out with no return week, holds the
@@ -343,9 +349,7 @@ def test_fit_steps_up_for_the_highest_value_player_in_the_trade_with_no_lineup_l
     snap = _with_values(_saquon_back_in_week_7(snap), {SAQUON: 30.0})
     tenth, twelfth = grade(_trade(10, [SAQUON], 12, [POLLARD]), snap)
     assert _adjuster(twelfth, "roster fit").step == 1
-    assert _adjuster(twelfth, "roster fit").reason == (
-        "It gets the highest-value player in the trade, and the best lineup does not lose." + NO_SCHEDULES
-        + " Saquon Barkley is due back in week 7, so he counts for his projection ahead of 12.7 a game.")
+    assert _adjuster(twelfth, "roster fit").reason == "You keep 4 RBs in the top 36, and you get the better player."
     assert _adjuster(tenth, "roster fit").step == -1
 
 
@@ -368,14 +372,15 @@ def test_fit_holds_at_one_step_when_the_gain_is_large_and_the_side_gets_the_high
 def test_the_side_that_gets_the_depth_steps_up_only_when_every_player_it_gets_starts(snap):
     # Cook starts on roster 10, but Woody Marks at 8.32 sits on the bench, behind Egbuka at 8.50.
     # Roster 10 holds players out with no return week, and their projections ahead would change its lineup.
-    # With no projections file, every player keeps his recent points. Saquon Barkley is healthy here, so no note shows.
+    # With no projections file, every player keeps his recent points. Saquon Barkley is healthy here.
     # Judkins is healthy here too. Out with no return week, he would take a flex spot as a hole, and this test is
     # about the one-for-two rule.
     snap = _with_status(_with_status(_with_projections(snap, None), SAQUON, None), JUDKINS, None)
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK, MARKS]), snap)
     assert _adjuster(tenth, "roster fit").step == 0
     assert _adjuster(tenth, "roster fit").reason == (
-        "The best lineup gains after the trade, but not every player it gets starts." + NO_SCHEDULES)
+        "You go from 2 RBs in the top 36 to 4, and your lineup scores more, but you get more players than you can "
+        "start.")
 
 
 # Position ranks by lineup value on the week 6 fixture. The line is RB36 and WR36, QB24 and TE24.
@@ -393,8 +398,9 @@ def test_a_side_that_gives_two_backs_for_two_receivers_and_opens_an_rb2_hole_ste
     second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
     fit = _adjuster(second, "roster fit")
     assert fit.step == -1
-    assert fit.reason == ("RB1 is a hole after the trade: Zach Charbonnet is out with no return week on file. "
-                          "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES)
+    # The count shows the RB2 hole at Miller. Charbonnet is in the top 36, so the row names his cause.
+    assert fit.reason == ("You go from 3 RBs in the top 36 to 1 and go from 4 WRs in the top 36 to 6, and Charbonnet "
+                          "is out with no return week on file.")
 
 
 def _prompt_section(heading: str) -> str:
@@ -427,10 +433,11 @@ def test_the_rubric_prompt_states_the_no_cover_hole():
     assert "A bye is not a hole, with one exception." in fit
     assert "For a middle team, a player it gets who starts after the" in fit
     assert "A starter due back after the window is a hole, whatever his rank." in fit
-    assert "it names the week and says that no bench player covers him." in fit
+    assert "it names the week and says that no other player covers him." in fit
     assert 'For a starter due back after the window, it says "X is due back in week W." with no cover phrase.' in fit
     assert "For a starter out with no return week on file, it says so and names no week." in fit
-    assert "it names the week and says that a middle team needs the win." in fit
+    assert "it names the week and says that you need the win." in fit
+    assert "The reason counts the side's players in the top N at each position the trade touches" in fit
     assert tunables.RETURN_WINDOW_WEEKS == 2
 
 
@@ -462,8 +469,8 @@ def test_a_side_that_gets_a_back_who_fills_a_hole_at_rb2_and_gains_in_the_lineup
     second, _ = grade(_trade(2, [ADDISON], 12, [HAMPTON]), snap.model_copy(update={"rosters": rosters}))
     fit = _adjuster(second, "roster fit")
     assert fit.step == 1
-    assert fit.reason.startswith("The best lineup gains after the trade.")
-    assert "hole" not in fit.reason
+    assert fit.reason == ("You go from 1 RB in the top 36 to 2 and keep 4 WRs in the top 36, and your lineup scores "
+                          "more.")
 
 
 # Roster 10 starts Emeka Egbuka WR37 at WR2, a hole, and Deebo Samuel WR41 at FLEX2. Keenan Allen sits on its bench.
@@ -476,7 +483,8 @@ def test_a_side_with_the_same_hole_before_and_after_gets_no_step_for_it(snap):
     tenth, _ = grade(_trade(10, [KEENAN_ALLEN], 12, [TUTEN]), snap)
     fit = _adjuster(tenth, "roster fit")
     assert fit.step == 1
-    assert fit.reason == "The best lineup gains after the trade." + NO_SCHEDULES
+    assert fit.reason == ("You go from 3 RBs in the top 36 to 4 and keep 1 WR in the top 36, and your lineup scores "
+                          "more.")
 
 
 def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_step_up(snap):
@@ -487,9 +495,8 @@ def test_a_side_that_gets_the_highest_value_player_and_opens_a_new_hole_gets_no_
     second, _ = grade(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
     fit = _adjuster(second, "roster fit")
     assert fit.step == 0
-    assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose. "
-                          "RB1 is a hole after the trade: Zach Charbonnet is out with no return week on file. "
-                          "RB2 is a hole after the trade: Kendre Miller is RB55." + NO_SCHEDULES)
+    assert fit.reason == ("You go from 3 RBs in the top 36 to 1 and go from 4 WRs in the top 36 to 6, and you get the "
+                          "better player, but Charbonnet is out with no return week on file.")
 
 
 def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_snap):
@@ -502,8 +509,9 @@ def test_a_lineup_gain_that_opens_a_new_hole_gets_no_step_and_names_both(slow_sn
     fourth, _ = grade(_trade(4, ["11635", "7611"], 7, ["12481", COLLINS], asker=7), snap)
     fit = _adjuster(fourth, "roster fit")
     assert fit.step == 0
-    assert fit.reason.startswith(
-        "The best lineup gains after the trade. FLEX2 is a hole after the trade: Xavier Worthy is WR45.")
+    # Worthy WR45 is outside the top 36, so the count of the WRs shows the hole.
+    assert fit.reason == ("You go from 3 RBs in the top 36 to 2 and keep 3 WRs in the top 36, and your lineup scores "
+                          "more.")
 
 
 def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_down(slow_snap):
@@ -514,7 +522,7 @@ def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_d
         "Keaton Mitchell backs up the team's own starter, so he counts as insurance.")
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == -1
-    assert fit.reason == "RB2 is a hole after the trade: Keaton Mitchell is RB39."
+    assert fit.reason == "You go from 4 RBs in the top 36 to 1."
 
 
 # Roster 1 starts Davante Adams WR20 at FLEX2, with Jordyn Tyson WR44 at 7.76 next on its bench.
@@ -532,8 +540,7 @@ def test_a_flex_slot_with_a_wr_below_36_is_a_hole(snap):
     first, _ = grade(_trade(1, [ADAMS], 2, [ADDISON]), snap)
     fit = _adjuster(first, "roster fit")
     assert fit.step == -1
-    assert fit.reason.startswith("FLEX2 is a hole after the trade: Jordyn Tyson is WR44.")
-    assert "The best lineup loses" not in fit.reason
+    assert fit.reason == "You go from 4 WRs in the top 36 to 3."
 
 
 def test_a_flex_slot_with_a_te_at_20_is_not_a_hole(snap):
@@ -541,7 +548,7 @@ def test_a_flex_slot_with_a_te_at_20_is_not_a_hole(snap):
     sixth, _ = grade(_trade(6, [FREIERMUTH, M_WASHINGTON, CORUM], 4, [HUNTER_HENRY]), snap)
     fit = _adjuster(sixth, "roster fit")
     assert fit.step == 0
-    assert fit.reason == "The best lineup stays about the same." + NO_SCHEDULES
+    assert fit.reason == "You keep 2 RBs in the top 36, keep 3 WRs in the top 36 and keep 2 TEs in the top 24."
 
 
 def test_a_def_slot_never_makes_a_hole(snap):
@@ -549,8 +556,8 @@ def test_a_def_slot_never_makes_a_hole(snap):
     # Roster 2 has no defense before or after, and its DEF slot makes no hole either.
     first, second = grade(_trade(1, ["TB"], 2, [ADDISON]), snap)
     assert _adjuster(first, "roster fit").step == -1
-    assert _adjuster(first, "roster fit").reason.startswith("The best lineup loses after the trade.")
-    assert "hole" not in _adjuster(second, "roster fit").reason
+    assert _adjuster(first, "roster fit").reason == "You keep 4 WRs in the top 36, and your lineup scores less."
+    assert _adjuster(second, "roster fit").step >= 0
 
 
 def test_a_starting_slot_with_no_player_is_a_hole_and_each_new_hole_is_named(snap):
@@ -558,8 +565,7 @@ def test_a_starting_slot_with_no_player_is_a_hole_and_each_new_hole_is_named(sna
     second, _ = grade(_trade(2, [JONES, JEANTY, CHARBONNET, LOVE, MILLER], 12, ["6801"]), snap)
     fit = _adjuster(second, "roster fit")
     assert fit.step == -1
-    assert fit.reason.startswith("RB1 is a hole after the trade: no player fills it. "
-                                 "RB2 is a hole after the trade: no player fills it.")
+    assert fit.reason == "You go from 3 RBs in the top 36 to 0 and go from 4 WRs in the top 36 to 5."
 
 
 # Bye weeks from the nflverse fixture. The trade week is 6, so the return window is weeks 6 to 8.
@@ -614,18 +620,18 @@ def test_a_starter_due_back_in_week_n_plus_2_needs_cover(slow_snap):
     # The returns file has Parker Washington back in week 8. Roster 5 keeps no bench player who can cover a flex spot.
     bare = _without(_without(_without(slow_snap, 5, MICHAEL_WILSON), 5, MARKS), 5, GESICKI)
     fit = _washington_for_boston(bare.model_copy(update={"returns": {**bare.returns, P_WASHINGTON: 8}}))
-    assert fit.reason.startswith(
-        "FLEX2 is a hole after the trade: Parker Washington is due back in week 8, and no bench player covers him.")
+    assert fit.reason == ("You keep 3 WRs in the top 36, and Washington is due back in week 8, and no other player "
+                          "covers him.")
     covered = _washington_for_boston(slow_snap.model_copy(
         update={"returns": {**slow_snap.returns, P_WASHINGTON: 8}}))
-    assert "hole" not in covered.reason
+    assert not _names_a_hole(covered)
 
 
 def test_a_starter_due_back_in_week_n_plus_6_is_a_hole(slow_snap):
     # Back in week 12 is past the window, so his slot is a hole even with Michael Wilson on the bench to cover.
     snap = slow_snap.model_copy(update={"returns": {**slow_snap.returns, P_WASHINGTON: 12}})
     fit = _washington_for_boston(snap)
-    assert fit.reason.startswith("FLEX2 is a hole after the trade: Parker Washington is due back in week 12.")
+    assert fit.reason == "You keep 4 WRs in the top 36, and Washington is due back in week 12."
 
 
 # Roster 6 holds Zay Flowers WR10 of BAL and Kenneth Walker RB2 of KC, and each takes a starting slot on a roster here.
@@ -649,8 +655,8 @@ def _roster_fit_for(snap, roster_id: int, gives: str, gets: str, bye: int = 6):
 def test_a_middle_team_that_gets_a_starter_with_his_bye_in_week_n_has_a_new_hole_and_steps_down(slow_snap):
     fit = _roster_fit_for(slow_snap, 12, KINCAID, FLOWERS)
     assert fit.step == -1
-    assert fit.reason == ("WR1 is a hole after the trade: Zay Flowers has his bye in week 6, "
-                          "and a middle team needs the win.")
+    assert fit.reason == ("You go from 5 WRs in the top 36 to 6 and go from 2 TEs in the top 24 to 1, and Flowers has "
+                          "his bye in week 6, and you need the win.")
 
 
 def test_a_contender_that_gets_a_starter_with_his_bye_in_week_n_has_no_hole(slow_snap):
@@ -677,9 +683,8 @@ def test_a_middle_team_that_gets_a_bench_player_with_his_bye_in_week_n_has_no_ho
 def test_a_middle_team_whose_lineup_gains_with_a_starter_on_bye_in_week_n_steps_no_step_and_names_hole(slow_snap):
     fit = _roster_fit_for(slow_snap, 12, KINCAID, WALKER)
     assert fit.step == 0
-    assert fit.reason.startswith("The best lineup gains after the trade. ")
-    assert ("RB1 is a hole after the trade: Kenneth Walker has his bye in week 6, "
-            "and a middle team needs the win.") in fit.reason
+    assert fit.reason == ("You go from 4 RBs in the top 36 to 5 and go from 2 TEs in the top 24 to 1, and your lineup "
+                          "scores more, but Walker has his bye in week 6, and you need the win.")
 
 
 def test_a_middle_team_that_gives_a_starter_with_his_bye_in_week_n_reads_no_hole_for_him(slow_snap):
@@ -695,8 +700,9 @@ def test_with_no_schedule_map_a_middle_team_reads_no_bye_hole_and_the_reason_nam
     graded, _ = grade(_trade(12, [KINCAID], 6, [FLOWERS]),
                       _with_values(slow_snap.model_copy(update={"schedules": None}), {KINCAID: 30.0, FLOWERS: 20.0}))
     fit = _adjuster(graded, "roster fit")
-    assert "hole" not in fit.reason
-    assert "The schedule sources are not available." in fit.reason
+    assert not _names_a_hole(fit)
+    # The schedule row says the sources are missing, so the roster row stays one sentence.
+    assert _adjuster(graded, "schedule").reason == "The schedule sources are not available."
 
 
 # Roster 12 starts Bhayshul Tuten RB15 of JAX, bye week 7. Its bench backs are Omarion Hampton RB26, Tony Pollard
@@ -716,7 +722,8 @@ def test_with_no_schedule_map_no_bye_hole_reads_and_the_reason_names_the_missing
     twelfth, _ = grade(_trade(12, [POLLARD], 11, [DOWNS]), slow_snap.model_copy(update={"schedules": None}))
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == 0
-    assert fit.reason == "The best lineup stays about the same. The schedule sources are not available."
+    assert fit.reason == "You go from 4 RBs in the top 36 to 3 and keep 5 WRs in the top 36."
+    assert _adjuster(twelfth, "schedule").reason == "The schedule sources are not available."
 
 
 # The best lineup is a measure of depth inside the grade, not the lineup a manager sets, so no fact names a slot.
@@ -747,11 +754,11 @@ def test_the_fact_sheet_names_no_slot_that_a_player_takes(snap):
 # Higgins WR15, DJ Moore WR22, and Luther Burden WR32 at WR beside St. Brown and Wilson.
 def test_a_trade_that_drops_a_sides_rb_depth_from_three_to_one_gives_a_depth_fact_with_both_counts(snap):
     sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
-    assert sheet["2.depth.rb"].text == "For All You Need Is Love, RB depth above the line goes from 3 to 1."
-    assert sheet["2.depth.rb"].numbers == ["3", "1"]
-    assert sheet["2.depth.wr"].text == "For All You Need Is Love, WR depth above the line goes from 4 to 6."
-    assert sheet["12.depth.rb"].text == "For Amon-Ra Dawg Your Team, RB depth above the line goes from 4 to 6."
-    assert sheet["12.depth.wr"].text == "For Amon-Ra Dawg Your Team, WR depth above the line goes from 5 to 3."
+    assert sheet["2.depth.rb"].text == "For All You Need Is Love, the RBs in the top 36 go from 3 to 1."
+    assert sheet["2.depth.rb"].numbers == ["36", "3", "1"]
+    assert sheet["2.depth.wr"].text == "For All You Need Is Love, the WRs in the top 36 go from 4 to 6."
+    assert sheet["12.depth.rb"].text == "For Amon-Ra Dawg Your Team, the RBs in the top 36 go from 4 to 6."
+    assert sheet["12.depth.wr"].text == "For Amon-Ra Dawg Your Team, the WRs in the top 36 go from 5 to 3."
 
 
 def test_a_position_whose_depth_count_does_not_change_gets_no_depth_fact(snap):
@@ -787,10 +794,10 @@ def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6):
 def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_rank(fa_snap):
     # Roster 2 gives Jones and Jeanty, so Miller RB55 takes RB2 and Charbonnet, due back in week 14, takes RB1.
     sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), fa_snap)
-    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, RB2 is a hole after the trade: Kendre Miller is "
+    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, the trade leaves RB2 short: Kendre Miller is "
                                         "RB55. Ashton Jeanty held RB2 before the trade. The best free agent at RB is "
                                         "Tank Bigsby, RB51.")
-    assert sheet["2.hole.rb1"].text == ("For All You Need Is Love, RB1 is a hole after the trade: Zach Charbonnet is "
+    assert sheet["2.hole.rb1"].text == ("For All You Need Is Love, the trade leaves RB1 short: Zach Charbonnet is "
                                         "out with no return week on file. Aaron Jones held RB1 before the trade. The "
                                         "best free agent at RB is Tank Bigsby, RB51.")
     # The rank goes through Nums, so the analysis checker accepts "RB51" in the prose.
@@ -798,7 +805,7 @@ def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_ra
     assert sheet["2.hole.rb2"].players == ["Kendre Miller", "Ashton Jeanty", "Tank Bigsby"]
     # Roster 12 gives St. Brown and Wilson, so DJ Moore, out with no return week on file, takes WR2.
     # No free agent at WR has a rank.
-    assert sheet["12.hole.wr2"].text == ("For Amon-Ra Dawg Your Team, WR2 is a hole after the trade: DJ Moore is out "
+    assert sheet["12.hole.wr2"].text == ("For Amon-Ra Dawg Your Team, the trade leaves WR2 short: DJ Moore is out "
                                          "with no return week on file. Garrett Wilson held WR2 before the trade. No "
                                          "free agent at WR has a position rank.")
 
@@ -806,7 +813,7 @@ def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_ra
 def test_a_hole_with_no_free_agent_with_a_rank_gets_a_fact_that_says_so(snap):
     # The week 6 players file holds no free agent.
     sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
-    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, RB2 is a hole after the trade: Kendre Miller is "
+    assert sheet["2.hole.rb2"].text == ("For All You Need Is Love, the trade leaves RB2 short: Kendre Miller is "
                                         "RB55. Ashton Jeanty held RB2 before the trade. No free agent at RB has a "
                                         "position rank.")
 
@@ -815,7 +822,7 @@ def test_a_flex_hole_reads_the_position_of_the_player_who_holds_it(fa_snap):
     # Tyson WR44 takes FLEX2, as in the flex hole test of the step. The free agents at RB and TE do not count for him.
     snap = fa_snap.model_copy(update={"returns": {**fa_snap.returns, ADAMS: 6, RICE: 6}})
     sheet = trade_fact_sheet(_trade(1, [ADAMS], 2, [ADDISON]), snap)
-    assert sheet["1.hole.flex2"].text == ("For Brock ‘N’ Roll, FLEX2 is a hole after the trade: Jordyn Tyson is WR44. "
+    assert sheet["1.hole.flex2"].text == ("For Brock ‘N’ Roll, the trade leaves FLEX2 short: Jordyn Tyson is WR44. "
                                           "Davante Adams held FLEX2 before the trade. No free agent at WR has a "
                                           "position rank.")
 
@@ -826,7 +833,7 @@ def test_an_empty_flex_hole_reads_the_best_free_agent_at_every_position_the_slot
     # Waller TE9 ranks better than Bigsby RB51.
     gives = [JONES, JEANTY, CHARBONNET, LOVE, MILLER, "10213", "8126", ADDISON, "12517"]
     sheet = trade_fact_sheet(_trade(2, gives, 12, ["NE"]), fa_snap)
-    assert sheet["2.hole.flex1"].text == ("For All You Need Is Love, FLEX1 is a hole after the trade: no player fills "
+    assert sheet["2.hole.flex1"].text == ("For All You Need Is Love, the trade leaves FLEX1 short: no player fills "
                                           "it. Tre Tucker held FLEX1 before the trade. The best free agent at RB, WR, "
                                           "or TE is Darren Waller, TE9.")
     assert "2.hole.flex2" not in sheet
@@ -866,7 +873,8 @@ def test_a_team_in_the_middle_gets_no_standing_step(snap):
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), snap)
     standing = _adjuster(tenth, "standing")
     assert standing.step == 0
-    assert standing.reason == "The team is neither in a playoff spot nor out of the race."
+    assert standing.reason == ("Outside a playoff spot but still in the race, so you need points now, and this trade "
+                               "adds some.")
 
 
 def _two_wins_out(snap, roster_id: int, *, median_game: bool):
@@ -891,7 +899,7 @@ def test_a_contender_steps_up_for_a_lineup_gain_now(snap):
     third, _ = grade(_trade(3, [WICKS], 5, [COOK]), snap)
     standing = _adjuster(third, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team holds a playoff spot, and the best lineup gains now."
+    assert standing.reason == "In a playoff spot, so you need points now, and this trade adds some."
 
 
 def test_a_contender_steps_up_for_a_player_due_back_by_the_last_regular_season_week(snap):
@@ -901,7 +909,8 @@ def test_a_contender_steps_up_for_a_player_due_back_by_the_last_regular_season_w
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"projections_ahead": None}))
     standing = _adjuster(third, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+    assert standing.reason == ("In a playoff spot, so you need points by the playoffs, and Jacobs is due back before "
+                               "them.")
 
 
 def _with_bounds(snap, **bounds):
@@ -914,7 +923,8 @@ def test_the_return_bet_reads_the_completed_week_bound_and_not_the_player_stat_b
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     standing = _adjuster(third, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+    assert standing.reason == ("In a playoff spot, so you need points by the playoffs, and Jacobs is due back before "
+                               "them.")
 
 
 def test_the_lineup_value_of_a_player_due_back_reads_the_completed_week_bound_and_not_the_player_stat_bound(snap):
@@ -923,9 +933,6 @@ def test_the_lineup_value_of_a_player_due_back_reads_the_completed_week_bound_an
     snap = _with_bounds(snap.model_copy(update={"projections_ahead": {JACOBS: {7: 18.0}}}), stats_through=7)
     assert due_back_week(snap, JACOBS) == 7
     assert lineup_value(snap, JACOBS) == 18
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 18.0 a game.")
 
 
 def test_the_return_bet_of_a_known_games_week_reads_the_completed_week_bound(known_snap):
@@ -935,7 +942,8 @@ def test_the_return_bet_of_a_known_games_week_reads_the_completed_week_bound(kno
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     standing = _adjuster(third, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team holds a playoff spot, and Josh Jacobs is due back before the playoffs."
+    assert standing.reason == ("In a playoff spot, so you need points by the playoffs, and Jacobs is due back before "
+                               "them.")
 
 
 def _with_known_game(snap, player: str, **fields):
@@ -963,7 +971,7 @@ def test_a_player_due_back_in_the_trade_week_who_played_counts_for_his_recent_po
     assert lineup_value(snap, JACOBS) == recent_points_per_game(snap, JACOBS) == 21
     third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     for side in (third, eleventh):
-        assert "Josh Jacobs" not in _adjuster(side, "roster fit").reason
+        assert "Jacobs" not in _adjuster(side, "roster fit").reason
 
 
 def test_a_player_due_back_in_the_trade_week_with_no_game_yet_counts_for_his_projection_ahead(known_snap):
@@ -998,7 +1006,7 @@ def test_a_known_game_ends_the_return_bet_of_a_player_due_back_in_the_trade_week
         update={"projections_ahead": None})
     assert not _return_bet(played, JACOBS)
     third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), played)
-    assert "Josh Jacobs" not in _adjuster(third, "standing").reason
+    assert "Jacobs" not in _adjuster(third, "standing").reason
 
 
 def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_completed_week_bound(snap):
@@ -1009,16 +1017,16 @@ def test_the_player_stat_readers_read_the_player_stat_bound_and_not_the_complete
     trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
     for before, after in zip(grade(trade, snap), grade(trade, moved)):
         # The position rank reads every player in the league. A bound of 0 puts each player with no week 5 game
-        # last, so a rank in the hole sentence can move. The step and every other word must not.
+        # last, so a count of the players in the top N can move. The step and every other word must not.
         fit_after, fit_before = _adjuster(after, "roster fit"), _adjuster(before, "roster fit")
         assert fit_after.step == fit_before.step
-        assert _without_ranks(fit_after.reason) == _without_ranks(fit_before.reason)
+        assert _without_numbers(fit_after.reason) == _without_numbers(fit_before.reason)
         assert _adjuster(after, TREND) == _adjuster(before, TREND)
 
 
-def _without_ranks(reason: str) -> str:
-    """The reason with each position rank, such as "RB38", cut to its position."""
-    return re.sub(r"\b(QB|RB|WR|TE)\d+\b", r"\1", reason)
+def _without_numbers(reason: str) -> str:
+    """The reason with each number cut out, such as a count of the players in the top N, and each plural with it."""
+    return re.sub(r"\b(QB|RB|WR|TE)s\b", r"\1", re.sub(r"\d+", "", reason))
 
 
 def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap):
@@ -1187,7 +1195,7 @@ def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_retur
     standing = _adjuster(third, "standing")
     assert standing.step == -1
     assert standing.reason == (
-        "The team holds a playoff spot, but the best lineup loses now for Saquon Barkley, "
+        "In a playoff spot, so you need points now, and this trade gives some up for Barkley, "
         "who has no return week on file.")
 
 
@@ -1204,7 +1212,8 @@ def test_a_seller_steps_up_when_it_gets_the_highest_value_player_in_the_trade(sn
     fourth, _ = grade(_trade(4, [COLLINS], 3, [MCCAFFREY]), snap)
     standing = _adjuster(fourth, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team is out of the playoff race, and it gets the highest-value player in the trade."
+    assert standing.reason == (
+        "Out of the playoff race, so you want the better player for the rest of the season, and you get him.")
 
 
 def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup_gain_now(snap):
@@ -1215,8 +1224,8 @@ def test_a_seller_steps_down_when_it_gives_the_highest_value_player_for_a_lineup
     standing = _adjuster(fourth, "standing")
     assert standing.step == -1
     assert standing.reason == (
-        "The team is out of the playoff race, but it gives the highest-value player in the trade "
-        "for a lineup gain now.")
+        "Out of the playoff race, so you want the better player for the rest of the season, but you give him up for "
+        "points now.")
 
 
 def test_the_adjusters_show_in_rubric_order(snap):
@@ -1261,7 +1270,7 @@ def test_the_jacobs_trade_as_a_contender_bet_on_jacobs_back_in_week_7_gets_the_s
     eleventh, _ = grade(_trade(11, [TUTEN, WILSON], 12, [JACOBS, VELE]), snap)
     standing = _adjuster(eleventh, "standing")
     assert standing.step == 1
-    assert "Josh Jacobs is due back before the playoffs" in standing.reason
+    assert "Jacobs is due back before them" in standing.reason
 
 
 def test_the_jacobs_trade_never_steps_the_side_that_got_jacobs_down_for_standing(snap):
@@ -1289,8 +1298,8 @@ def test_a_lineup_change_below_the_fit_threshold_is_no_loss_for_the_highest_valu
     _, seventh = grade(_trade(6, [MAHOMES, B_ROBINSON], 7, [LAMAR]), snap)
     fit = _adjuster(seventh, "roster fit")
     assert fit.step == 1
-    assert fit.reason == ("It gets the highest-value player in the trade, and the best lineup does not lose."
-                          + NO_SCHEDULES)
+    assert fit.reason == ("You keep 1 QB in the top 24 and go from 2 RBs in the top 36 to 3, and you get the better "
+                          "player.")
 
 
 # Snap and target share directions through week 5, the last two weeks against the two before.
@@ -1744,7 +1753,8 @@ def test_fit_never_steps_down_because_of_a_handcuff(slow_snap):
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == 0
     assert fit.reason == (
-        "The best lineup loses after the trade, but Keaton Mitchell is a handcuff, so the loss does not count.")
+        "You keep 4 RBs in the top 36 and go from 5 WRs in the top 36 to 4, and your lineup scores less, but Mitchell "
+        "is a handcuff, so the loss does not count.")
 
 
 def test_fit_can_step_down_for_a_freed_backup(slow_snap):
@@ -2426,17 +2436,17 @@ def _with_projections(snap, projections: dict[str, dict[int, float]] | None):
     return snap.model_copy(update={"projections_ahead": projections})
 
 
-def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reason_names_it(snap):
+def test_a_side_that_gets_a_player_due_back_gains_by_his_projection_and_the_reason_names_his_return(snap):
     snap = _with_projections(snap, {JACOBS: {week: 18.0 for week in range(7, 15)}})
     third, eleventh = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
     fit = _adjuster(third, "roster fit")
     # Jacobs takes RB2 and is due back in week 7, inside the return window. Roster 3 has no bench back above the line to
     # cover him, so his slot is a new hole, and the gain and the hole cancel to no step.
     assert fit.step == 0
+    assert lineup_value(snap, JACOBS) == 18
     assert fit.reason == (
-        "The best lineup gains after the trade. RB2 is a hole after the trade: Josh Jacobs is due back in week 7, "
-        "and no bench player covers him." + NO_SCHEDULES + " Josh Jacobs is due back in week 7, so he counts for his "
-        "projection ahead of 18.0 a game.")
+        "You go from 3 RBs in the top 36 to 4 and keep 2 WRs in the top 36, and your lineup scores more, but Jacobs is "
+        "due back in week 7, and no other player covers him.")
     assert _adjuster(eleventh, "roster fit").step == -1
 
 
@@ -2447,7 +2457,7 @@ def test_a_contender_whose_lineup_gain_comes_from_a_player_due_back_names_him_an
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == (
-        "The team holds a playoff spot, and the best lineup gains after Josh Jacobs returns in week 9.")
+        "In a playoff spot, so you need points now, and this trade adds some after Jacobs returns in week 9.")
 
 
 # Shakir sits on roster 3's bench. A.J. Brown and Jonathan Taylor are on roster 11.
@@ -2463,7 +2473,7 @@ def test_a_contender_whose_lineup_gain_comes_from_two_players_due_back_names_bot
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == (
-        "The team holds a playoff spot, and the best lineup gains after Josh Jacobs and A.J. Brown return in week 10.")
+        "In a playoff spot, so you need points now, and this trade adds some after Jacobs and Brown return in week 10.")
 
 
 def test_a_contender_whose_player_due_back_sits_on_the_bench_gains_now(snap):
@@ -2473,7 +2483,7 @@ def test_a_contender_whose_player_due_back_sits_on_the_bench_gains_now(snap):
                      snap.model_copy(update={"returns": {JACOBS: 9}}))
     standing = _adjuster(third, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team holds a playoff spot, and the best lineup gains now."
+    assert standing.reason == "In a playoff spot, so you need points now, and this trade adds some."
 
 
 def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(snap):
@@ -2481,18 +2491,20 @@ def test_a_player_not_due_back_keeps_his_recent_points_whatever_his_projection(s
     # Judkins is healthy too. With no projections, he counts by his recent points and takes a flex spot. Out with no
     # return week, that slot would be a hole in one case and not the other.
     snap = _with_status(_with_status(snap, SAQUON, None), JUDKINS, None)
+    ahead = _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}})
     today = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, None))
-    projected = grade(_trade(10, [SAQUON], 5, [COOK]), _with_projections(snap, {COOK: {7: 0.0}, SAQUON: {7: 99.0}}))
-    assert projected == today
+    projected = grade(_trade(10, [SAQUON], 5, [COOK]), ahead)
+    for pid in (SAQUON, COOK):
+        assert lineup_value(ahead, pid) == lineup_value(_with_projections(snap, None), pid)
+    # The projections move the ranks of the players due back across the league, so a count in the roster row can
+    # move. The letters and the steps must not.
+    assert [b.final_letter for b in projected] == [b.final_letter for b in today]
+    assert [[a.step for a in b.adjusters] for b in projected] == [[a.step for a in b.adjusters] for b in today]
 
 
 def test_a_player_due_back_with_no_projection_row_counts_as_0(snap):
     snap = _with_projections(snap, {COOK: {7: 18.0}})
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap)
-    fit = _adjuster(third, "roster fit")
-    assert fit.reason.startswith("The best lineup stays about the same.")
-    assert fit.reason.endswith(
-        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 0.0 a game.")
+    assert lineup_value(snap, JACOBS) == 0
 
 
 def test_without_the_projections_every_grade_is_as_by_recent_points_and_the_reason_says_so(snap):
@@ -2503,34 +2515,25 @@ def test_without_the_projections_every_grade_is_as_by_recent_points_and_the_reas
     by_recent = grade(_trade(3, [WICKS], 11, [JACOBS]), healthy)
     for side, today in zip((third, eleventh), by_recent):
         assert _adjuster(side, "roster fit").step == _adjuster(today, "roster fit").step
-        assert _adjuster(side, "roster fit").reason == (
-            _adjuster(today, "roster fit").reason
-            + " The projections ahead are not available, so Josh Jacobs counts for his recent points per game.")
-    # A trade with no player due back says nothing of the projections. Saquon Barkley is healthy here.
-    for side in grade(_trade(10, [SAQUON], 5, [COOK]), _with_status(missing, SAQUON, None)):
-        assert "projections" not in _adjuster(side, "roster fit").reason
+        assert _adjuster(side, "roster fit").reason == _adjuster(today, "roster fit").reason
+    # The document lists the missing projections, so the roster row stays one sentence.
+    assert lineup_value(missing, JACOBS) == recent_points_per_game(missing, JACOBS)
 
 
 def test_the_projection_skips_the_bye_and_stops_at_the_last_regular_week(snap):
     # Week 11 is before his return, week 13 is his bye, and week 15 is after the last regular week.
     snap = _with_projections(snap, {JACOBS: {11: 99.0, 12: 16.0, 14: 20.0, 15: 99.0}})
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 12}}))
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Josh Jacobs is due back in week 12, so he counts for his projection ahead of 18.0 a game.")
+    assert lineup_value(snap.model_copy(update={"returns": {JACOBS: 12}}), JACOBS) == 18
 
 
 def test_a_return_after_the_last_regular_week_gives_0(snap):
     snap = _with_projections(snap, {JACOBS: {15: 99.0, 16: 99.0}})
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 15}}))
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Josh Jacobs is due back in week 15, so he counts for his projection ahead of 0.0 a game.")
+    assert lineup_value(snap.model_copy(update={"returns": {JACOBS: 15}}), JACOBS) == 0
 
 
 def test_a_player_due_back_in_the_trade_week_counts_for_that_week(snap):
     snap = _with_projections(snap, {JACOBS: {6: 24.0, 7: 12.0}})
-    third, _ = grade(_trade(3, [WICKS], 11, [JACOBS]), snap.model_copy(update={"returns": {JACOBS: 6}}))
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Josh Jacobs is due back in week 6, so he counts for his projection ahead of 18.0 a game.")
+    assert lineup_value(snap.model_copy(update={"returns": {JACOBS: 6}}), JACOBS) == 18
 
 
 # Saquon Barkley on roster 10 is Out and has no row in the returns file, so he counts as due back in week 14.
@@ -2541,10 +2544,8 @@ SAQUON_AHEAD = {**{week: 0.0 for week in range(6, 14)}, 14: 20.0}
 def test_a_player_out_with_no_return_week_counts_for_his_projection_ahead_from_week_14(snap):
     snap = _with_projections(snap, {SAQUON: SAQUON_AHEAD})
     assert lineup_value(snap, SAQUON) == 20
+    assert due_back_week(snap, SAQUON) == 14
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Saquon Barkley has no return week on file, so he counts as back in week 14 "
-        "for his projection ahead of 20.0 a game.")
     # The injury adjuster still docks one step for out with no near return.
     assert _adjuster(third, "injury").step == -1
     assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
@@ -2556,7 +2557,7 @@ def test_a_contender_whose_lineup_gain_comes_from_a_player_out_with_no_return_we
     standing = _adjuster(third, "standing")
     assert standing.step == 1
     assert standing.reason == (
-        "The team holds a playoff spot, and the best lineup gains from week 14, when Saquon Barkley counts as back.")
+        "In a playoff spot, so you need points now, and this trade adds some from week 14, when Barkley counts as back.")
 
 
 def test_a_player_out_with_a_return_week_counts_from_that_week(snap):
@@ -2564,9 +2565,7 @@ def test_a_player_out_with_a_return_week_counts_from_that_week(snap):
     snap = _with_projections(snap, {SAQUON: {**SAQUON_AHEAD, **{week: 16.0 for week in range(9, 14)}, 14: 40.0}})
     snap = snap.model_copy(update={"returns": {**snap.returns, SAQUON: 9}})
     assert lineup_value(snap, SAQUON) == 20
-    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "Saquon Barkley is due back in week 9, so he counts for his projection ahead of 20.0 a game.")
+    assert due_back_week(snap, SAQUON) == 9
 
 
 def test_a_questionable_player_keeps_his_recent_points_whatever_his_projection(snap):
@@ -2578,9 +2577,6 @@ def test_a_questionable_player_keeps_his_recent_points_whatever_his_projection(s
 def test_without_the_projections_a_player_out_with_no_return_week_keeps_his_recent_points(snap):
     snap = _with_projections(snap, None)
     assert lineup_value(snap, SAQUON) == recent_points_per_game(snap, SAQUON)
-    third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert _adjuster(third, "roster fit").reason.endswith(
-        "The projections ahead are not available, so Saquon Barkley counts for his recent points per game.")
 
 
 # Stefon Diggs on roster 3 scores 10.17 a game over weeks 2 to 5. Jacobs is due back in week 7 with no recent games.
@@ -2609,7 +2605,8 @@ def test_with_no_chart_a_seller_that_gets_a_player_due_back_gets_the_highest_val
     fourth, _ = grade(_trade(4, [J_WILLIAMS], 11, [JACOBS]), snap)
     standing = _adjuster(fourth, "standing")
     assert standing.step == 1
-    assert standing.reason == "The team is out of the playoff race, and it gets the highest-value player in the trade."
+    assert standing.reason == (
+        "Out of the playoff race, so you want the better player for the rest of the season, and you get him.")
 
 
 def test_with_no_chart_a_handcuff_due_back_is_never_the_highest_value_player(slow_snap):
@@ -2660,9 +2657,12 @@ def test_the_hole_reason_of_a_player_whose_known_game_is_in_progress_ends_with_t
     trade = _trade(6, [FREIERMUTH, M_WASHINGTON, CORUM], 4, [ODUNZE])
     on, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2))
     off, _ = grade(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5))
-    assert _adjuster(on, "roster fit").reason == (
-        "FLEX2 is a hole after the trade: Rome Odunze is WR61, game in progress." + NO_SCHEDULES)
-    assert _adjuster(off, "roster fit").reason == "FLEX2 is a hole after the trade: Rome Odunze is WR61." + NO_SCHEDULES
+    # The roster row counts the players in the top N, so the hole fact carries the label.
+    on_sheet = trade_fact_sheet(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2))
+    off_sheet = trade_fact_sheet(trade, _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 5))
+    assert "the trade leaves FLEX2 short: Rome Odunze is WR61, game in progress." in on_sheet["6.hole.flex2"].text
+    assert "the trade leaves FLEX2 short: Rome Odunze is WR61." in off_sheet["6.hole.flex2"].text
+    assert _adjuster(on, "roster fit") == _adjuster(off, "roster fit")
 
 
 def test_the_adjuster_steps_are_the_same_with_the_label_on_and_off(fixture_raw_dir, fixture_history_root, chart_week6):

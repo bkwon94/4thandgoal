@@ -124,11 +124,11 @@
       },
       {
         "roster_id": 12,
-        "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+        "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
       },
       {
         "roster_id": 7,
-        "reason": "The best lineup gains after the trade."
+        "reason": "You keep 4 WRs in the top 36, and your lineup scores more."
       }
     ]
   },
@@ -148,12 +148,12 @@
         {
           "name": "roster fit",
           "lean": "against",
-          "reason": "FLEX2 is a hole after the trade: Xavier Worthy is WR54."
+          "reason": "You go from 4 WRs in the top 36 to 3 and keep 2 TEs in the top 24."
         },
         {
           "name": "standing",
           "lean": "even",
-          "reason": "The team is out of the playoff race, and the trade is no bet on the future."
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, but you give him up."
         },
         {
           "name": "trend and usage",
@@ -164,11 +164,6 @@
           "name": "injury",
           "lean": "even",
           "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Marvin Harrison are not in the id map, so no report count ran for them."
-        },
-        {
-          "name": "handcuff",
-          "lean": "even",
-          "reason": "No player it gets is a handcuff."
         },
         {
           "name": "schedule",
@@ -192,12 +187,12 @@
         {
           "name": "roster fit",
           "lean": "for",
-          "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+          "reason": "You keep 5 WRs in the top 36 and go from 2 TEs in the top 24 to 1, and you get the better player."
         },
         {
           "name": "standing",
           "lean": "even",
-          "reason": "The team is neither in a playoff spot nor out of the race."
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
         },
         {
           "name": "trend and usage",
@@ -208,11 +203,6 @@
           "name": "injury",
           "lean": "even",
           "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
-        },
-        {
-          "name": "handcuff",
-          "lean": "even",
-          "reason": "No player it gets is a handcuff."
         },
         {
           "name": "schedule",
@@ -236,12 +226,12 @@
         {
           "name": "roster fit",
           "lean": "for",
-          "reason": "The best lineup gains after the trade."
+          "reason": "You keep 4 WRs in the top 36, and your lineup scores more."
         },
         {
           "name": "standing",
           "lean": "even",
-          "reason": "The team is neither in a playoff spot nor out of the race."
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
         },
         {
           "name": "trend and usage",
@@ -252,11 +242,6 @@
           "name": "injury",
           "lean": "even",
           "reason": "No player it gets is out for long or often on the injury report. Garrett Wilson is not in the id map, so no report count ran for him."
-        },
-        {
-          "name": "handcuff",
-          "lean": "even",
-          "reason": "No player it gets is a handcuff."
         },
         {
           "name": "schedule",

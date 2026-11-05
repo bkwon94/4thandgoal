@@ -393,8 +393,9 @@ def test_a_good_request_returns_the_result_document(settings, sources):
         "name": "deal", "lean": "even",
         "reason": "What you get and what you give are about even, after a discount on the side with more players.",
     }] * 2
+    # The upside and the handcuff say nothing for this trade, so their rows hide.
     names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names[1] == "roster fit" and names[-1] == "schedule" and len(names) == 8
+    assert names == ["deal", "roster fit", "standing", "trend and usage", "injury", "schedule"]
     assert doc["sides"][0]["bullets"] == BULLETS
     # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
@@ -547,7 +548,7 @@ def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, 
     assert doc["fallback"] is True
     # The code's letters and verdict stand, with no bullets. The rows still show, the deal row first.
     assert [side["bullets"] for side in doc["sides"]] == [[], []]
-    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 8 for side in doc["sides"])
+    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 6 for side in doc["sides"])
     assert doc["decision"]["differs"] is False
 
 
@@ -616,14 +617,19 @@ def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settin
     assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "against", schedule_lean]
 
 
-def test_a_graded_trade_carries_an_upside_factor_per_side(settings, sources):
+def test_a_graded_trade_with_no_upside_hides_the_upside_factor_of_each_side(settings, sources):
     doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=TRADE, headers=HEADERS).json()
+    # No player in TRADE is a star out now or has an opportunity, so the upside row says nothing and hides.
     for side in doc["sides"]:
-        upside = [f for f in side["factors"] if f["name"] == "upside"]
-        assert len(upside) == 1
-        # No player in TRADE is a star out now or has an opportunity, so the upside is even.
-        assert upside[0] == {"name": "upside", "lean": "even",
-                             "reason": "No player it gets is a star out now or has an opportunity."}
+        assert [f for f in side["factors"] if f["name"] == "upside"] == []
+
+
+def test_a_silent_row_that_moves_the_grade_still_shows(settings, sources):
+    # A row shows when it moves the grade, so a silent upside with a step up stays in the document.
+    doc = _document(settings, sources, breakdowns=lambda bs: tuple(
+        b.model_copy(update={"adjusters": [a.model_copy(update={"step": 1}) if a.name == "upside" else a
+                                           for a in b.adjusters]}) for b in bs))
+    assert all([f["lean"] for f in side["factors"] if f["name"] == "upside"] == ["for"] for side in doc["sides"])
 
 
 def test_a_result_cached_under_another_document_version_never_serves(settings, sources, monkeypatch):
@@ -1212,8 +1218,8 @@ NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name", "season_rank", "recent_rank"}
 
 
-# One hole sentence of the roster fit reason, from the slot name to the period that ends it.
-HOLE_SENTENCE = re.compile(r"\b[A-Z]+\d? is a hole after the trade: [^.]*\.")
+# One count of the roster fit reason: the players at a position in the top N, before and after.
+TOP_N_COUNT = re.compile(r"\d+ (?:QB|RB|WR|TE)s? in the top \d+(?: to \d+)?")
 
 
 def _digits_outside_ids(value, key=None):
@@ -1223,9 +1229,12 @@ def _digits_outside_ids(value, key=None):
             # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
             value = {**value, "reason": strip_trend_numbers(value["reason"])}
         if value.get("name") == ROSTER_FIT:
-            # A hole sentence names a slot, a position rank, and a week, such as "FLEX1 ... week 6". The code writes
-            # it, and this check guards Claude's prose, not the code's factor reasons. Any other number fails.
-            value = {**value, "reason": HOLE_SENTENCE.sub("", value["reason"])}
+            # The roster row counts the players in the top N, such as "3 WRs in the top 36", and can name a week. The
+            # code writes it, and this check guards Claude's prose, not the code's factor reasons.
+            value = {**value, "reason": re.sub(r"week \d+", "", TOP_N_COUNT.sub("", value["reason"]))}
+        if set(value) == {"roster_id", "reason"}:
+            # A fairness side gives the reason of its first step up, which can be the roster row with its counts.
+            value = {**value, "reason": TOP_N_COUNT.sub("", value["reason"])}
         return [found for k, item in value.items() for found in _digits_outside_ids(item, k)]
     if isinstance(value, list):
         return [found for item in value for found in _digits_outside_ids(item, key)]
@@ -1852,7 +1861,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_13():
+def test_the_document_version_is_14():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1861,7 +1870,8 @@ def test_the_document_version_is_13():
     # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
     # The bullets and the deal row take the place of the analysis and the chart block, so the shape changes.
     # Each traded player carries his Season rank and his Recent rank, so the shape changes.
-    assert cache_module.DOCUMENT_VERSION == 13
+    # A silent row hides, and the roster and standing rows read in plain words, so a stored row must never serve.
+    assert cache_module.DOCUMENT_VERSION == 14
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

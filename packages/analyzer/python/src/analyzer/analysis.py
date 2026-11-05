@@ -44,6 +44,30 @@ CHART_WORD = re.compile(r"(?<!\w)(?<!depth )charts?(?!\w)", re.IGNORECASE)
 # The document gives a decision, not letters, so no letter grade reaches the prose a manager reads.
 LETTER_GRADE = re.compile(r"\b(?:grades?|graded|grade of|an?) [A-F]\b|\b[A-F]-(?:level|grade)\b")
 LETTER_WORD = re.compile(r"\bletters?\b", re.IGNORECASE)
+# Decision 03 of grade-clarity: the inner words of the grade. A manager reads plain advice, so no bullet and no verdict
+# reason holds one. The analysis prompt lists the same words. The finder reasons do not run this check.
+INNER_WORDS = ["trade value", "highest-value", "best lineup", "the line", "hole", "win-now move", "return bet",
+               "star", "opportunity", "one step", "no step", "takes RB", "takes WR", "takes TE", "takes QB",
+               "sits on the bench"]
+# Each word matches whole and in any case, plus its plural, so "hole" never matches "whole" and "star" never matches
+# "starter". A "takes" word matches before a slot number too, as in "takes RB1". "the line" never matches "the lineup".
+
+
+def _inner_pattern(word: str) -> re.Pattern[str]:
+    if word.startswith("takes "):
+        return re.compile(rf"(?<![\w-]){re.escape(word)}", re.IGNORECASE)
+    stem = "opportunit(?:y|ies)" if word == "opportunity" else re.escape(word) + "s?"
+    return re.compile(rf"(?<![\w-]){stem}(?![\w-])", re.IGNORECASE)
+
+
+_INNER = {word: _inner_pattern(word) for word in INNER_WORDS}
+
+
+def _inner_word_failures(label: str, text: str) -> list[str]:
+    """The inner word rule on one piece of prose: no word of INNER_WORDS."""
+    return [f"{label}: the words '{word}' are not allowed" for word, pattern in _INNER.items() if pattern.search(text)]
+
+
 # A side's prose may claim upside only when the upside adjuster credits a player of that side. GLOSSARY.md, "Upside".
 UPSIDE_WORDS = re.compile(r"\b(?:upside|return bets?|opportunit(?:y|ies))\b", re.IGNORECASE)
 
@@ -280,6 +304,7 @@ def _bullet_failures(
         failures += _prose_failures(bullet_label, bullet, allowed, allowed_text, names)
         failures += _letter_failures(bullet_label, bullet)
         failures += _upside_failures(bullet_label, bullet, breakdown)
+        failures += _inner_word_failures(bullet_label, bullet)
     text = " ".join(bullets)
     trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]
     failures += [repeat_failure(f"{label} bullets", team, mentions) for team in trade_teams
@@ -319,6 +344,7 @@ def check_response(
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
                                 _allowed_text(facts, every, breakdown_text), names)
     failures += _letter_failures("verdict reason", out.verdict.reason)
+    failures += _inner_word_failures("verdict reason", out.verdict.reason)
     return failures
 
 

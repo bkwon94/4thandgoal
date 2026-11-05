@@ -223,7 +223,8 @@ describe("AnalyzeResult", () => {
   it("shows every factor in the fold with its lean and reason", () => {
     render(<AnalyzeResult doc={fixture} />);
     expect(screen.queryByText("The Reasoning")).toBeNull();
-    for (const name of ["deal", "roster fit", "standing", "trend and usage", "injury", "handcuff", "schedule"]) {
+    // The fixture has no handcuff row and no upside row, because a row that says nothing hides.
+    for (const name of ["deal", "roster fit", "standing", "trend and usage", "injury", "schedule"]) {
       expect(screen.getAllByText(name)).toHaveLength(2);
     }
     for (const side of fixture.sides) {
@@ -233,7 +234,7 @@ describe("AnalyzeResult", () => {
     }
     expect(screen.getAllByText("for")).toHaveLength(2);
     expect(screen.getAllByText("against")).toHaveLength(1);
-    expect(screen.getAllByText("even")).toHaveLength(11);
+    expect(screen.getAllByText("even")).toHaveLength(9);
   });
 
   it("shows the players each side gets in the swap card", () => {

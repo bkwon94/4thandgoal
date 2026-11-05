@@ -165,7 +165,9 @@ def _depth_fact(snapshot: Snapshot, side: Side, position: str) -> Fact | None:
         return None
     n = Nums()
     team = snapshot.teams[side.roster_id].name
-    text = f"For {team}, {position} depth above the line goes from {n(before)} to {n(after)}."
+    # The line reads as a plain rank, as the roster row says it, so the fact holds no inner word of decision 03.
+    line = snapshot.client.settings.lines[position]
+    text = f"For {team}, the {position}s in the top {n(line)} go from {n(before)} to {n(after)}."
     return fact(f"{side.roster_id}.depth.{position.lower()}", text, n, [team], [])
 
 

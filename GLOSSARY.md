@@ -506,6 +506,30 @@ than you give." It names no source. Its lean maps from the start letter: A and B
 even, D and F to against. Use "start letter" in code and "deal row" on the page.
 _Avoid_: chart lean, The Data
 
+**Silent row**:
+A factor with no step and no new fact, such as "No player it gets is a handcuff." The adjuster marks it
+silent, and the result document drops it. A row with a step always shows. A check that did not run is a
+new fact, so its row shows. Use `silent` in code.
+_Avoid_: empty row, hidden factor
+
+**Roster row**:
+The roster fit factor on the page. It counts the side's players in the top N at each position the trade
+touches, before and after, where N is the line of the position as a plain rank: "You keep 3 WRs in the
+top 36, and you get the better player." It never names a slot or the best lineup.
+_Avoid_: hole sentence (on the page)
+
+**Standing row**:
+The standing factor on the page: the race of the side, its need, and whether the trade meets it, in one
+sentence. "Out of the playoff race, so you want the better player for the rest of the season, and you
+get him."
+
+**Inner word**:
+A word of the grade's code that a manager does not use: "trade value", "highest-value", "best lineup",
+"the line", "hole", "win-now move", "return bet", "star", "opportunity", "one step", "no step", "takes RB",
+"takes WR", "takes TE", "takes QB", and "sits on the bench". No bullet, row, or verdict reason holds one.
+"The better player" replaces "the highest-value player". Decision 03 of grade-clarity.
+_Avoid_: banned word (alone)
+
 **Bullets**:
 The 2 or 3 sentences that Claude writes for one side, one claim each. The fallback has none.
 _Avoid_: analysis paragraph

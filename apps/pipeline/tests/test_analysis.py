@@ -206,9 +206,10 @@ def test_a_number_not_in_a_cited_fact_fails(trade, snap):
 
 @pytest.mark.parametrize("sentence", [
     "He tops the depth chart.",
-    "The side gets more trade value.",
+    "The whole lineup gets a starter.",
+    "He is the starter on his team, and his lineup slot is safe.",
 ])
-def test_the_depth_chart_and_trade_value_without_a_number_pass(trade, snap, sentence):
+def test_the_depth_chart_and_a_word_that_holds_an_inner_word_pass(trade, snap, sentence):
     bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
     fake = FakeClaude(_response(eleven=_side(11, bullets=bullets)))
     assert not analyze(trade, snap, call=fake).fallback
@@ -229,6 +230,48 @@ def test_a_banned_word_fails(trade, snap, sentence, word):
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
     assert f"the word '{word}' is not allowed" in fake.calls[1][1]
+
+
+# Decision 03 of grade-clarity: no bullet or verdict reason uses an inner word of the grade.
+@pytest.mark.parametrize("sentence, word", [
+    ("The side gets more trade value.", "trade value"),
+    ("Garrett Wilson is the highest-value player.", "highest-value"),
+    ("He helps the best lineup.", "best lineup"),
+    ("He sits above the line.", "the line"),
+    ("He fills a hole at receiver.", "hole"),
+    ("This is a win-now move.", "win-now move"),
+    ("Jacobs is a return bet.", "return bet"),
+    ("Wilson is a star.", "star"),
+    ("Tuten has an opportunity.", "opportunity"),
+    ("It moves one step up.", "one step"),
+    ("The schedule gives no step.", "no step"),
+    ("Tuten takes RB1 for this side.", "takes RB"),
+    ("Wilson takes WR2 for this side.", "takes WR"),
+    ("Tuten sits on the bench.", "sits on the bench"),
+])
+def test_an_inner_word_in_a_bullet_or_the_verdict_reason_fails(trade, snap, sentence, word):
+    bullets = ["Garrett Wilson scored 14.2 points per game before the trade.", sentence, "He is a starter."]
+    bad = _response(eleven=_side(11, bullets=bullets))
+    fake = FakeClaude(bad, bad)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"roster 11 bullet 2: the words '{word}' are not allowed" in fake.calls[1][1]
+
+    def bad_verdict(facts):
+        response = _response()(facts)
+        response["verdict"]["reason"] = sentence
+        return response
+    fake = FakeClaude(bad_verdict, bad_verdict)
+    assert analyze(trade, snap, call=fake).fallback
+    assert f"verdict reason: the words '{word}' are not allowed" in fake.calls[1][1]
+
+
+def test_the_analysis_prompt_lists_each_inner_word_and_drops_the_roster_fit_words(trade, snap):
+    fake = FakeClaude(_response())
+    analyze(trade, snap, call=fake)
+    system = " ".join(fake.calls[0][0].split())
+    for word in analysis.INNER_WORDS:
+        assert f'"{word}"' in system
+    assert "say position rank, the line, and hole" not in system
 
 
 def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
@@ -261,14 +304,14 @@ def test_the_points_per_game_fact_names_the_season_rank_and_the_checker_accepts_
 
 
 def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_strength_count(trade, snap):
-    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver above the line after, from 2.
+    # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver in the top 36 after, from 2.
     # Tuten RB15 and Wilson leave its RB1, RB2, WR1, and WR2 starters, and Jacobs RB16 and Vele come in.
-    text = ("WR depth above the line goes from 2 to 1. "
+    text = ("Its WRs in the top 36 go from 2 to 1. "
             "Its starters with a position rank of 24 or better go from 4 to 3.")
     fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=["11.depth.wr", "11.strength"])))
     result = analyze(trade, snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, WR depth above the line goes from 2 to 1."
+    assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, the WRs in the top 36 go from 2 to 1."
     assert facts["11.strength"] == ("For Unsolicited Dak Picks, the starters at RB1, RB2, WR1, and WR2 with a "
                                     "position rank of 24 or better go from 4 to 3.")
     assert not result.fallback
@@ -276,14 +319,14 @@ def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_stren
 
 
 def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_agent(trade, fa_snap):
-    # Vele WR40 takes WR2 of roster 11, below the line. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
+    # Vele WR40 holds WR2 of roster 11, outside the top 36. Bateman scored 37.3 points in 4 games of weeks 2 to 5,
     # 9.33 a game. 32 receivers have more lineup value, so he is WR33, the best free agent at WR.
-    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR33. "
-            "Waivers can fix the hole.")
+    text = ("The trade leaves WR2 short for this side. The best free agent at WR is Rashod Bateman, WR33. "
+            "Waivers can fix that.")
     fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=["11.hole.wr2"])))
     result = analyze(trade, fa_snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, WR2 is a hole after the trade: Devaughn Vele is WR40. "
+    assert facts["11.hole.wr2"] == ("For Unsolicited Dak Picks, the trade leaves WR2 short: Devaughn Vele is WR40. "
                                     "Garrett Wilson held WR1 before the trade. The best free agent at WR is Rashod "
                                     "Bateman, WR33.")
     assert not result.fallback
@@ -291,8 +334,8 @@ def test_the_checker_accepts_a_sentence_that_quotes_the_rank_of_the_cited_free_a
 
 
 def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
-    text = ("WR2 is a hole after the trade for this side. The best free agent at WR is Rashod Bateman, WR31. "
-            "Waivers can fix the hole.")
+    text = ("The trade leaves WR2 short for this side. The best free agent at WR is Rashod Bateman, WR31. "
+            "Waivers can fix that.")
     bad = _response(eleven=_side(11, bullets=_split(text), cited=["11.hole.wr2"]))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, fa_snap, call=fake).fallback

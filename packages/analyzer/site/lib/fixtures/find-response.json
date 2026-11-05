@@ -90,11 +90,11 @@
         "sides": [
           {
             "roster_id": 2,
-            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+            "reason": "You keep 2 QBs in the top 24, and you get the better player."
           },
           {
             "roster_id": 3,
-            "reason": "The best lineup gains after the trade."
+            "reason": "You keep 4 RBs in the top 36 and keep 3 WRs in the top 36, and your lineup scores more."
           }
         ]
       },
@@ -183,7 +183,7 @@
           },
           {
             "roster_id": 3,
-            "reason": "The best lineup gains after the trade."
+            "reason": "You keep 4 RBs in the top 36 and keep 3 WRs in the top 36, and your lineup scores more."
           }
         ]
       },
@@ -254,7 +254,7 @@
           },
           {
             "roster_id": 3,
-            "reason": "It gets the highest-value player in the trade, and the best lineup does not lose."
+            "reason": "You keep 2 QBs in the top 24, and you get the better player."
           }
         ]
       },

@@ -340,8 +340,8 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
         "  Unsolicited Dak Picks: Josh Jacobs is a star out now with a return in play.\n"
-        "  Amon-Ra Dawg Your Team: The best lineup gains after the trade. "
-        "Josh Jacobs is due back in week 7, so he counts for his projection ahead of 12.2 a game.\n")
+        "  Amon-Ra Dawg Your Team: You keep 4 RBs in the top 36 and keep 5 WRs in the top 36, and your lineup scores "
+        "more.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
     for number in ("27.5", "11.5", "55", "30.5", "66.5"):
         assert number not in out
@@ -613,7 +613,7 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
         "Fairness: Good for both\n"
         "  All You Need Is Love: The players it gets gain snap or target share, and the players it gives lose it. "
         "Young: snap share 100%, up, over weeks 3 and 4.\n"
-        "  Lil Fridge: It gets the highest-value player in the trade, and the best lineup does not lose.\n")
+        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player.\n")
     assert "\n2. " not in out
 
 

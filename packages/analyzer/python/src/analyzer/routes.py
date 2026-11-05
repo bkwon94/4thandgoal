@@ -230,8 +230,10 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "bullets": side.bullets,
             "factors": [
                 _deal_row(breakdown, snapshot),
+                # A row shows when it moves the grade or says something new, so a silent row with no step drops.
+                # The letter math still reads every step.
                 *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
-                  for adj in breakdown.adjusters),
+                  for adj in breakdown.adjusters if adj.step != 0 or not adj.silent),
             ],
         }
         for breakdown, side in zip(analysis.breakdowns, analysis.sides)
