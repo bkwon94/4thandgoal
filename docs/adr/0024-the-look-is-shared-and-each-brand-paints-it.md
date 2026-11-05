@@ -10,4 +10,4 @@ The site kept the look of the printed report: Helvetica, a black masthead, white
 - The hero surface carries the grid texture, the corner brackets, the brand glow, and a scan line on entry. Other surfaces stay plain, so the hero stays the one loud part of a page.
 - The hero stays dark in both themes. It sits on the `band` color of the brand, so the light theme has a light page and a dark hero, and the site has one hero (decision 09 of `site-redesign`).
 - Motion keeps the rule of the site: transform and opacity only, a strong ease-out, and none under reduced motion.
-- ADR 0006 is superseded. The rule "light is the default" of ADR 0007 is superseded. The `.dark` override of ADR 0007 stays until decision 12 of `site-redesign` picks how dark becomes the default.
+- ADR 0006 is superseded. The rule "light is the default" of ADR 0007 is superseded. The `.dark` override of ADR 0007 stays. The build puts the `dark` class on `<html>` for every client, and the boot script removes it for a stored light choice. So a reader with scripts off gets dark, and every `dark:` variant stays (decision 12 of `site-redesign`).
