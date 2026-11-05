@@ -130,9 +130,9 @@ def test_a_player_with_no_gsis_id_reads_in_plain_words_in_the_injury_and_handcuf
     snap = slow_snap.model_copy(update={"returns": {SAQUON: 7}})
     rows = _rows(_document(_trade(3, [WICKS], 10, [SAQUON]), snap), 3)
     assert rows["injury"].endswith("Saquon Barkley has no injury report count on file.")
-    assert rows["handcuff"].endswith(
-        "Saquon Barkley has no depth chart entry on file, so no handcuff check ran for him.")
-    assert [text for text in rows.values() if "id map" in text] == []
+    assert rows["handcuff"].endswith("Saquon Barkley has no handcuff check on file.")
+    # No row names an inner part: not the id map, and not a chart.
+    assert [text for text in rows.values() if "id map" in text or "chart" in text] == []
 
 
 # Week 6: Omarion Hampton on roster 12 holds the top value at RB, so he is a top RB. Collins is on roster 4.

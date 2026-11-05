@@ -961,8 +961,8 @@ def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.
     unmapped = _not_in_id_map(snapshot, [pid for pid in side.gets if snapshot.players[pid].position == "RB"])
     if unmapped:
-        reason += " " + named(snapshot, unmapped, "has no depth chart entry on file, so no handcuff check ran for him.",
-                               "have no depth chart entry on file, so no handcuff check ran for them.")
+        reason += " " + named(snapshot, unmapped, "has no handcuff check on file.",
+                               "have no handcuff check on file.")
     # A check that did not run is a fact the reader needs, so only a full check that finds no handcuff is silent.
     return Adjuster(name=HANDCUFF, step=0, reason=reason, silent=not parts and not unmapped)
 
