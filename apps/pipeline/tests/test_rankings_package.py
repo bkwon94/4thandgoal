@@ -40,7 +40,7 @@ def build(tmp_path, tmp_path_factory, fixture_raw_dir, fixture_history_root):
         if packages is not None:
             client = client.model_copy(update={"values": client.values.model_copy(update={"packages": packages})})
         run_build(tmp_path, 2026, WEEKS, _fake, fetch=False, **offline, client=client)
-        return tmp_path / "site" / "2026"
+        return tmp_path / "build" / "2026"
 
     return run
 

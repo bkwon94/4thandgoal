@@ -65,6 +65,12 @@ def returns_path(nfl: Path, season: int) -> Path:
     return nfl / str(season) / "returns.json"
 
 
+def build_dir(client: Path) -> Path:
+    """The build folder of the client: each page and season file the build writes. Publish copies from it.
+    Why: each client has its own folder, so the build of one client never overwrites the files of another."""
+    return client / "build"
+
+
 def season_dir(site: Path, season: int) -> Path:
     return site / str(season)
 

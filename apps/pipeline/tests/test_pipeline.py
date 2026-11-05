@@ -47,7 +47,7 @@ from league.models import (
 )
 from league.nflverse import nflverse_week
 from league.parse import parse_week
-from league.paths import history_dir, history_root, week_dir
+from league.paths import build_dir, history_dir, history_root, week_dir
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
 from rankings.power_rankings import power_rankings
@@ -107,13 +107,26 @@ def _repo(tmp_path, fixture_raw_dir):
 def test_build_from_disk_writes_everything(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     page = run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
-    assert page == repo / "site" / "2026" / "week-06" / "page.json"
+    assert page == repo / "build" / "2026" / "week-06" / "page.json"
     for f in ("facts.json", "blurbs.json", "verify.json"):
         assert (week_dir(repo, 2026, 6) / f).exists()
-    assert not (repo / "site" / "index.html").exists()
-    assert not (repo / "site" / "static").exists()
+    assert not (repo / "build" / "index.html").exists()
+    assert not (repo / "build" / "static").exists()
     sources = read_verify(week_dir(repo, 2026, 6) / "verify.json").build.sources
     assert "chart" not in sources
+
+
+def test_a_build_of_one_client_leaves_the_build_files_of_another_client_unchanged(tmp_path, fixture_raw_dir, offline):
+    # Each client builds into its own folder, so a norcal build cannot overwrite the cpc page that publish copies.
+    cpc = cpc_client(at=_repo(tmp_path / "clients" / "cpc", fixture_raw_dir))
+    norcal = cpc_client(at=_repo(tmp_path / "clients" / "norcal", fixture_raw_dir)).model_copy(update={"slug": "norcal"})
+    cpc_page = run_build(tmp_path, 2026, 6, _fake, fetch=False, **offline, client=cpc)
+    before = {path: path.read_bytes() for path in cpc_page.parent.parent.rglob("*") if path.is_file()}
+
+    norcal_page = run_build(tmp_path, 2026, 6, _fake, fetch=False, **offline, client=norcal)
+
+    assert norcal_page.is_relative_to(tmp_path / "clients" / "norcal")
+    assert {path: path.read_bytes() for path in cpc_page.parent.parent.rglob("*") if path.is_file()} == before
 
 
 def test_an_old_verify_file_with_a_chart_flag_still_reads(tmp_path):
@@ -175,7 +188,7 @@ def test_build_saves_the_week_to_history(tmp_path, fixture_raw_dir, offline):
 
 
 def _rankings(repo):
-    return repo / "site" / "2026" / "rankings.json"
+    return repo / "build" / "2026" / "rankings.json"
 
 
 def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir, fixture_history_root, offline):
@@ -192,7 +205,7 @@ def test_build_writes_the_rankings_file_after_the_page(tmp_path, fixture_raw_dir
 
 
 def _managers(repo):
-    return repo / "site" / "2026" / "managers.json"
+    return repo / "build" / "2026" / "managers.json"
 
 
 def test_build_writes_the_managers_file_after_the_rankings_file(tmp_path, fixture_raw_dir, fixture_history_root,
@@ -292,7 +305,7 @@ def test_a_thin_history_writes_no_managers_file(tmp_path, fixture_raw_dir, fixtu
     teams = parse_week(load_raw(fixture_raw_dir)).teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
     history = History(week=1, weeks=load_saved_weeks(history_root(repo, 2026), 1))
-    assert _write_managers(repo, 2026, 1, teams, SeasonInputs(history=history), cpc_client(at=repo)) is None
+    assert _write_managers(2026, 1, teams, SeasonInputs(history=history), cpc_client(at=repo)) is None
     assert not _managers(repo).exists()
     lines = [r for r in caplog.records if r.name == "cornerstone.pipeline" and "managers.json" in r.getMessage()]
     assert len(lines) == 1
@@ -331,7 +344,7 @@ def test_an_older_week_never_shrinks_the_rankings_file(tmp_path, fixture_raw_dir
     teams = read_bundle(week_dir(repo, 2026, 6) / "facts.json").data.teams
     caplog.set_level(logging.INFO, logger="cornerstone.pipeline")
     history = History(week=6, weeks=load_saved_weeks(history_root(repo, 2026), 6))
-    out = _write_rankings(repo, 2026, 5, teams, SeasonInputs(history=history), client=cpc_client(at=repo))
+    out = _write_rankings(2026, 5, teams, SeasonInputs(history=history), client=cpc_client(at=repo))
     data = json.loads(out.read_text(encoding="utf-8"))
     assert [w["week"] for w in data["weeks"]] == [1, 2, 3, 4, 5, 6]
     assert "covers weeks 1 to 6, past the built week 5" in caplog.text
@@ -536,7 +549,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
 
 
 def _waiver(repo):
-    return json.loads((repo / "site" / "2026" / "week-06" / "waiver.json").read_text())
+    return json.loads((repo / "build" / "2026" / "week-06" / "waiver.json").read_text())
 
 
 def test_build_writes_the_waiver_file_beside_the_page(tmp_path, fixture_raw_dir, offline):
@@ -558,7 +571,7 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     built = _waiver(repo)
-    (repo / "site" / "2026" / "week-06" / "waiver.json").unlink()
+    (repo / "build" / "2026" / "week-06" / "waiver.json").unlink()
 
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the waiver engine")
@@ -728,7 +741,7 @@ def test_publish_copies_site_only(tmp_path, fixture_raw_dir, fixture_history_roo
     (repo / "src" / "code.py").write_text("x = 1\n")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
 
-    url = run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
+    url = run_publish(repo, 2026, 6, "cpc", repo, site_repo=site_repo, push=False)
 
     # Each client serves at its own subdomain of 4thandgoal.app, so the URL names the host of cpc.
     assert url == "https://cpc.4thandgoal.app/2026/week-06/"
@@ -756,9 +769,9 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
     for week in (6, 7):
         shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, week) / "raw")
         run_build(repo, 2026, week, _fake, fetch=False, **offline, client=cpc_client(at=repo))
-    assert (repo / "site" / "2026" / "week-07" / "page.json").exists()
+    assert (repo / "build" / "2026" / "week-07" / "page.json").exists()
 
-    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo, site_repo=site_repo, push=False)
 
     files = _git(site_repo, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "clients/cpc/published/2026/week-06/page.json" in files
@@ -773,15 +786,15 @@ def test_publish_leaves_unpublished_weeks_out(tmp_path, fixture_raw_dir, monkeyp
 
 def test_publish_requires_built_page(tmp_path):
     with pytest.raises(PublishError, match="page.json"):
-        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", site_repo=tmp_path / "site", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path, site_repo=tmp_path / "site", push=False)
 
 
 def test_publish_requires_git_checkout(tmp_path):
-    page = tmp_path / "site" / "2026" / "week-06" / "page.json"
+    page = tmp_path / "build" / "2026" / "week-06" / "page.json"
     page.parent.mkdir(parents=True)
     page.write_text("{}")
     with pytest.raises(PublishError, match="git"):
-        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", site_repo=tmp_path / "missing", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path, site_repo=tmp_path / "missing", push=False)
 
 
 def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, offline):
@@ -790,10 +803,10 @@ def test_publish_retry_with_untracked_file_succeeds(tmp_path, fixture_raw_dir, o
     _init(site_repo)
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
-    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo, site_repo=site_repo, push=False)
     (repo / "notes.txt").write_text("untracked\n")
 
-    run_publish(repo, 2026, 6, "cpc", repo / "data", site_repo=site_repo, push=False)
+    run_publish(repo, 2026, 6, "cpc", repo, site_repo=site_repo, push=False)
 
     assert not (_git(repo, "ls-tree", "-r", "--name-only", "HEAD").count("notes.txt"))
 
@@ -807,21 +820,21 @@ def test_publish_finds_the_site_at_the_root_of_its_own_repo(tmp_path, fixture_ra
     shutil.copytree(fixture_raw_dir, week_dir(repo, 2026, 6) / "raw")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
 
-    run_publish(repo, 2026, 6, "cpc", repo / "data", push=False)
+    run_publish(repo, 2026, 6, "cpc", repo, push=False)
 
     files = _git(root, "ls-tree", "-r", "--name-only", "HEAD").splitlines()
     assert "clients/cpc/published/2026/week-06/page.json" in files
-    assert "apps/pipeline/site/2026/week-06/page.json" in files
+    assert "apps/pipeline/build/2026/week-06/page.json" in files
     subjects = _git(root, "log", "--format=%s").splitlines()
     assert subjects == ["Week 6", "Week 6 report"]
 
 
 def test_publish_outside_a_git_checkout_fails(tmp_path):
-    page = tmp_path / "site" / "2026" / "week-06" / "page.json"
+    page = tmp_path / "build" / "2026" / "week-06" / "page.json"
     page.parent.mkdir(parents=True)
     page.write_text("{}")
     with pytest.raises(PublishError, match="git checkout"):
-        run_publish(tmp_path, 2026, 6, "cpc", tmp_path / "data", push=False)
+        run_publish(tmp_path, 2026, 6, "cpc", tmp_path, push=False)
 
 
 def _fetched(repo, when):
@@ -1122,7 +1135,7 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(
     client = cpc_client(root=repo)
     shutil.copytree(fixture_raw_dir, week_dir(client.folder, 2026, 6) / "raw")
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=client)
-    page_json = repo / "site" / "2026" / "week-06" / "page.json"
+    page_json = build_dir(client.folder) / "2026" / "week-06" / "page.json"
     page_json.unlink()
     monkeypatch.chdir(repo)
 

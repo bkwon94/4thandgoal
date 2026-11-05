@@ -43,7 +43,7 @@ def build_golden(repo: Path, cache: Path) -> dict[str, Path]:
     shutil.copytree(FIXTURES / "2026" / "history", history_root(repo, 2026))
     page = run_build(repo, 2026, 6, _no_claude, fetch=False, news=no_news, fetch_bytes=lambda url: None,
                      nflverse=fixture_nflverse(cache), research=no_claims, started=STARTED, client=cpc_client(at=repo))
-    season = repo / "site" / "2026"
+    season = repo / "build" / "2026"
     return {"facts.json": week_dir(repo, 2026, 6) / "facts.json", "page.json": page,
             "rankings.json": season / "rankings.json", "managers.json": season / "managers.json"}
 

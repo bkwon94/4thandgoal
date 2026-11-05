@@ -836,7 +836,7 @@ The raw data, the history, and the facts of one week, loaded together before the
 _Avoid_: Context, week data, state
 
 **Published file**:
-One JSON file the render step writes under `apps/pipeline/site/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
+One JSON file the render step writes under the build folder `clients/<slug>/build/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
 
 ## Client language
@@ -850,6 +850,10 @@ _Avoid_: League config, tenant, customer, instance, site
 **Brand**:
 The look of one client: the color roles, the fonts, the radii, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only. It lives in `brand.toml`.
 _Avoid_: Theme, skin, style, palette
+
+**Build folder**:
+The folder `clients/<slug>/build/` of one client: each page file and season file that its build writes. Publish copies one week of it into the published data of the client.
+_Avoid_: Site folder, output folder, dist
 
 **Base role**:
 One of the six colors that a brand must set in each set: the accent, the band, the page, the card, the text, and the muted text.

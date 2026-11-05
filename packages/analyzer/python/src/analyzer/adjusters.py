@@ -19,7 +19,7 @@ from analyzer.tunables import (
     HANDCUFF_CARRY_SHARE,
     INJURY_WEEKS,
     SCHEDULE_RANK_GAP,
-    SELLER_GAP,
+    SELLER_GAP_WEEKS,
     WOPR_SWING,
 )
 from facts.names import last_name
@@ -45,6 +45,7 @@ from league.ranks import (
     projection_ahead,
 )
 from league.snapshot import Snapshot
+from league.standings_table import wins_per_week
 from league.tunables import RETURN_WINDOW_WEEKS, SHARE_WEEKS
 
 if TYPE_CHECKING:
@@ -404,8 +405,10 @@ def team_race(snapshot: Snapshot, roster_id: int) -> Literal["contender", "selle
     standing = next(s for s in snapshot.standings if s.roster_id == roster_id)
     if standing.in_playoffs:
         return "contender"
-    # games_from_cut is the team's wins minus the wins of the team in the last playoff spot.
-    if -standing.games_from_cut > SELLER_GAP:
+    # games_from_cut is the team's wins minus the wins of the team in the last playoff spot. It counts games, so the
+    # gap in weeks turns into games: two a week with the median game, else one.
+    seller_gap = SELLER_GAP_WEEKS * wins_per_week(snapshot.client.settings.median_game)
+    if -standing.games_from_cut > seller_gap:
         return "seller"
     return "middle"
 

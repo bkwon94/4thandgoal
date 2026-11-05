@@ -213,7 +213,7 @@ App: pipeline
 Stories: 11
 Given: the built 2026 week 8 of `cpc`.
 When: the agent runs the publish step for `cpc` up to the stage, with no push.
-Then: `git diff --cached --name-only` lists only paths under `clients/cpc/published/2026/`.
+Then: `git diff --cached --name-only` lists only paths under `clients/cpc/published/2026/`, `clients/cpc/data/2026/`, and `clients/cpc/build/2026/`.
 Evidence: the commands and their output.
 
 AT-27: The API serves each client by its path
@@ -331,4 +331,5 @@ Out of scope "A client that swaps one part for its own code": AT-33
 
 - 2026-11-04: AT-7, AT-15, and AT-20 name `[values.analyzer]`, not `[packages.analyzer]`. The old shape is not valid TOML. Brian chose the name.
 - 2026-11-04: AT-16 puts Home first in a menu with no `items`. Brian chose Home as the first item of the default menu.
+- 2026-11-04: AT-26 lists the data and the build folder of the season too. Brian chose this, because the API image seeds from the data.
 - 2026-11-04: AT-34 is new. Brian chose one passphrase per client. Story 43 and manual step 6 of the PRD come with it.

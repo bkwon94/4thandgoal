@@ -27,6 +27,6 @@ def test_each_readme_of_the_facts_package_has_the_three_headings_and_is_short():
 
 
 def test_the_facts_package_has_a_readme_with_the_three_headings():
-    offenses = [offense for offense in readmes._package_readme_offenses(ROOT.parents[1])
+    offenses = [offense for offense in readmes._package_readme_offenses(ROOT.parents[2])
                 if offense.path.startswith("packages/facts")]
     assert not offenses, report(offenses)

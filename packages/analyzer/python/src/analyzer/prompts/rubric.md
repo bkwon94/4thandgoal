@@ -107,8 +107,8 @@ Strength is how many of the side's RB1, RB2, WR1, and WR2 starters hold a positi
 ## Standing
 
 A contender holds one of the `playoff_spots` playoff spots by record. The standings rank by wins,
-then by points for. A seller has more than `SELLER_GAP` wins fewer than the team in the last
-playoff spot. Every other team is in the middle and gets no step.
+then by points for. A seller is more than `SELLER_GAP_WEEKS` week of results under the team in
+the last playoff spot. A week gives two results with the median game, else one. Every other team is in the middle and gets no step.
 
 - A contender gets one step up when its best lineup gains now. It also gets one step up when it
   gets a player due back by week `return_by_week`.

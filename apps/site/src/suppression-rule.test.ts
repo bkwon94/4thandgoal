@@ -10,7 +10,7 @@ import { type Offense, report } from "./rule-report";
 
 const ROOT = process.cwd();
 const TREES = ["src", "scripts"].map((dir) => join(ROOT, dir));
-const ROOT_FILES = ["next.config.ts", "vitest.config.ts", "postcss.config.mjs"].map((file) => join(ROOT, file));
+const ROOT_FILES = ["next.config.ts", "vitest.config.mts", "postcss.config.mjs"].map((file) => join(ROOT, file));
 
 /* The test builds each pattern from two parts, so this file holds no match and the test never skips its own file. */
 const TS = "@" + "ts-";
@@ -95,7 +95,7 @@ describe("the suppression rule", () => {
     const paths = siteFiles().map((file) => relative(ROOT, file));
     expect(paths).toContain("scripts/check-export.mjs");
     expect(paths).toContain("src/suppression-rule.test.ts");
-    expect(paths).toEqual(expect.arrayContaining(["next.config.ts", "vitest.config.ts", "postcss.config.mjs"]));
+    expect(paths).toEqual(expect.arrayContaining(["next.config.ts", "vitest.config.mts", "postcss.config.mjs"]));
   });
 
   it("finds no suppression comment outside the allow list", () => {

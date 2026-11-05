@@ -234,7 +234,7 @@ The design comes from decision 07.
 ### The published data and the publish
 
 - The data of each client lives in `clients/<slug>/published/<season>/week-NN/`. The CPC data moves there from `apps/site/public/<season>/`.
-- The publish exception of ADR 0019 changes: `publish` may push to `main`, and it may stage only `clients/<slug>/published/<season>/`. The root `CLAUDE.md` changes with it.
+- The publish exception of ADR 0019 changes: `publish` may push to `main`, and it may stage only `clients/<slug>/published/<season>/`, `clients/<slug>/data/<season>/`, and the build folder `clients/<slug>/build/<season>/`. The API image seeds from the data. The root `CLAUDE.md` changes with it.
 - The pipeline takes the client slug as an argument. With no slug, it fails with a plain message.
 
 ### The API

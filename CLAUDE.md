@@ -30,7 +30,7 @@ ADRs 0018 to 0021 set the flow. The spec `.scratch/one/` builds it, so its own t
 6. An agent records the evidence of each acceptance test `AT-<n>`. The agent gives no test verdict.
 7. Brian gives PASS, FAIL, or BLOCKED for each test in one PR comment. A check blocks the merge until each test has PASS (ADR 0020).
 
-The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`.
+The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`, `clients/<slug>/data/<season>/`, and `clients/<slug>/build/<season>/`.
 
 The repo plugin `cpc` takes an idea to a merged spec. Run its skills in this order. Brian approves the output of each of steps 2 to 4.
 
