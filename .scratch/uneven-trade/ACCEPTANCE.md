@@ -47,7 +47,7 @@ App: pipeline
 Stories: 6, 7, 8, 10, 12
 Given: `2026` week 9, client `cpc`, trade W.
 When: The command of AT-1 grades trade W.
-Then: Teehee's Superstar row is one step up: "Kenneth Walker III is a superstar, a top 8 trade value this week." Bo Girds' Superstar row is no step: "No player it gets is a superstar."
+Then: Teehee's Superstar row is one step up: "Kenneth Walker III is a superstar, a top 8 player this week." Bo Girds' Superstar row is no step: "No player it gets is a superstar."
 Evidence: the command and its output.
 
 AT-6: No superstar step with the 1.25 margin
@@ -71,7 +71,7 @@ App: pipeline
 Stories: 14, 15
 Given: `2026` week 9 with no week 9 chart, and the real saved read of the week 8 chart in place. The week 9 chart exists, so a rubric test removes it. We do not wait for week 10.
 When: The rubric test grades trade W.
-Then: Teehee's Superstar row reads "Kenneth Walker III is a superstar, a top 8 trade value last week." Both sides start at C.
+Then: Teehee's Superstar row reads "Kenneth Walker III is a superstar, a top 8 player last week." Both sides start at C.
 Evidence: the test name, the test command, and its output.
 
 AT-9: The fairness line of trade W
@@ -164,4 +164,4 @@ Out of scope "A down step for the side that gives a superstar": AT-5
 
 ## Revisions
 
-None yet.
+- 2026-11-05: AT-5 and AT-8 change the superstar reason from "a top 8 trade value" to "a top 8 player". The inner-word rule of grade-clarity bans "trade value" in text a manager reads. Brian chose the change after ticket 02 hit the rule.

@@ -31,7 +31,7 @@ With all four changes, Brian's trade reads:
 ```
 Fairness: Fair.
   Bo Girds: You go from 3 RBs in the top 36 to 4 and keep 3 WRs in the top 36, and your lineup scores more.
-  Teehee: Kenneth Walker III is a superstar, a top 8 trade value this week, but you go from 2 RBs in the top 36 to 1 and keep 4 WRs in the top 36.
+  Teehee: Kenneth Walker III is a superstar, a top 8 player this week, but you go from 2 RBs in the top 36 to 1 and keep 4 WRs in the top 36.
 ```
 
 Bo Girds starts at D, 76.8 against 91.5, and ends at C. Teehee starts at B, 91.5 against 76.8, and ends at B.
@@ -83,9 +83,9 @@ Bo Girds starts at D, 76.8 against 91.5, and ends at C. Teehee starts at B, 91.5
 - The step is 0 when the trade uses `CONSOLIDATION_MARGIN`. The reason then says that the margin already counts the superstar.
 - The step reads only the players a side gets. A player out for the season gets no step, as the sums count him at zero.
 - When the snapshot has no chart for the week, the check reads the newest saved chart read of the week before, within the `STAND_IN_WEEKS` weeks the chart fallback uses. The snapshot gets a field for that earlier read. The start letters do not use it, so with no chart both sides still start at C.
-- Reason text with a step: "{name} is a superstar, a top 8 trade value this week." From the week before, "this week" becomes "last week". With two superstars, the reason names both.
+- Reason text with a step: "{name} is a superstar, a top 8 player this week." From the week before, "this week" becomes "last week". With two superstars, the reason names both.
 - Reason text with no step: "No player it gets is a superstar." With the 1.25 margin: "{name} is a superstar, but the one-for-many margin already counts him."
-- The reason text never uses the word "chart". The present word rule of the analyzer checks it.
+- The reason text never uses the word "chart" and no inner word of grade-clarity, such as "trade value". The word rules of the analyzer check it.
 - The rubric prompt gets a Superstar section. The Claude call reads it, as it reads the other adjusters.
 
 ### The fairness reason

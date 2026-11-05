@@ -15,7 +15,7 @@ One spec for the trade grade. An uneven trade starts from values that discount t
 - A side that gets a top-8 chart value, a superstar, gets one step up. No step for the giver, none with the 1.25 margin, and the chart of the week before when the week has none. `decisions/01-grill-superstar-step.md`.
 - The net sum of the steps picks the fairness reason: the first up step, the first down step, both joined by "but" at a net of zero, or the deal row with no steps. `decisions/02-grill-reason-when-steps-cancel.md`.
 - While the analyzer runs, the form reads "This can take up to a minute early in the week." It names no chart. The line is in `packages/analyzer/site/form/trade-form.tsx` and `trade-finder.tsx`. Brian chose it on 2026-11-05.
-- The superstar step sits after Upside in rubric order, and its reason names the player and "a top 8 trade value". `PRD.md`, approved by Brian on 2026-11-05.
+- The superstar step sits after Upside in rubric order, and its reason names the player and "a top 8 player". The inner-word rule of grade-clarity bans "trade value" in the reason. `PRD.md`, approved by Brian on 2026-11-05.
 
 ## NOT YET SPECIFIED
 
