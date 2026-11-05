@@ -39,10 +39,11 @@ from cornerstone.pipeline import (
     run_rewrite,
 )
 from cornerstone.publish import PublishError, run_publish, site_page_url
+from cornerstone.value_models import VALUE_MODELS
 from facts.writer import analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
-from league.client import CLIENT_FILE, Client, ClientError, check_schema_file, load_client, read_client_values
+from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, load_client, read_client_values
 from league.live import live_snapshot
 from league.models import ChartValues, PlayerLine, week_lines
 from league.parse import parse_trades, parse_week
@@ -448,10 +449,10 @@ def find_root(start: Path) -> Path | None:
 
 
 def run_check_client(folder: Path) -> int:
-    """Check the client folder `folder` and the exported schema. Print OK, or each broken rule and exit 2."""
+    """Check the client folder `folder` and each exported schema. Print OK, or each broken rule and exit 2."""
     try:
-        read_client_values(folder)
-        check_schema_file()
+        read_client_values(folder, VALUE_MODELS)
+        check_schema_files(VALUE_MODELS)
     except ClientError as err:
         print(err)
         return 2
@@ -504,7 +505,7 @@ def main(
 
     def load(season: int) -> Client:
         # The one client of the run. Every command that needs a league value gets it from here.
-        return load_client(root, args.client, season, provider.fetch_settings)
+        return load_client(root, args.client, season, provider.fetch_settings, VALUE_MODELS)
 
     try:
         if args.command in ("history", "settings"):

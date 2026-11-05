@@ -8,7 +8,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildClient, ClientBuildError, clientRoot, REPO_ROOT, SCHEMA_FILE } from "./client-build.mjs";
+import { buildClient, ClientBuildError, clientRoot, REPO_ROOT, SCHEMA_FILE, valuesSchemaFile } from "./client-build.mjs";
 
 const SCRIPT = join(process.cwd(), "scripts", "client-build.mjs");
 const CPC_TOML = readFileSync(join(REPO_ROOT, "clients", "cpc", "client.toml"), "utf8");
@@ -20,14 +20,20 @@ afterEach(() => {
   for (const dir of temps.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-/* A temp repo with the exported schema, one client folder with the given client.toml and the CPC brand and copy,
+/* The packages with an exported schema of package values in the repo. */
+const VALUES_PACKAGES = readdirSync(join(REPO_ROOT, "packages")).filter((name) =>
+  existsSync(join(REPO_ROOT, valuesSchemaFile(name))),
+);
+
+/* A temp repo with the exported schemas, one client folder with the given client.toml and the CPC brand and copy,
    and an empty site app. */
 function tempRepo(toml = CPC_TOML, slug = "cpc", { brand = CPC_BRAND, copy = CPC_COPY } = {}) {
   const root = mkdtempSync(join(tmpdir(), "client-build-"));
   temps.push(root);
-  const schema = join(root, SCHEMA_FILE);
-  mkdirSync(join(schema, ".."), { recursive: true });
-  cpSync(join(REPO_ROOT, SCHEMA_FILE), schema);
+  for (const path of [SCHEMA_FILE, ...VALUES_PACKAGES.map(valuesSchemaFile)]) {
+    mkdirSync(join(root, path, ".."), { recursive: true });
+    cpSync(join(REPO_ROOT, path), join(root, path));
+  }
   mkdirSync(join(root, "clients", slug), { recursive: true });
   writeFileSync(join(root, "clients", slug, "client.toml"), toml);
   writeFileSync(join(root, "clients", slug, "brand.toml"), brand);
@@ -71,8 +77,18 @@ describe("the client build", () => {
     const repo = tempRepo(CPC_TOML.replace("finder = false", "finder = false\nfinderr = true"));
     const file = join(repo.root, "clients", "cpc", "client.toml");
     expect(() => buildClient(repo)).toThrow(ClientBuildError);
-    expect(() => buildClient(repo)).toThrow(/finderr/);
+    expect(() => buildClient(repo)).toThrow("- values.analyzer.finderr: is not a known key");
     expect(() => buildClient(repo)).toThrow(file);
+  });
+
+  it("fails on a [values] table of a package off the list and names the table", () => {
+    const repo = tempRepo(CPC_TOML.replace("[values.analyzer]", "[values.waiver]\n\n[values.analyzer]"));
+    expect(() => buildClient(repo)).toThrow("- values.waiver: names a package that is not in the package list");
+  });
+
+  it("checks a [values] table with the schema of its package", () => {
+    const repo = tempRepo(CPC_TOML.replace("finder = false", 'finder = "yes"'));
+    expect(() => buildClient(repo)).toThrow("- values.analyzer.finder: must be boolean");
   });
 
   it("fails on a menu item for an omitted package and names the item and the package", () => {
@@ -142,7 +158,12 @@ describe("the client build", () => {
     expect(withAnalyzer).toContain('import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";');
     expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];");
 
-    const omitted = tempRepo(CPC_TOML.replace(', "analyzer"]', "]").replace('  { package = "analyzer", label = "Trade Analyzer" },\n', ""));
+    // A client that omits analyzer has no [values.analyzer] table, because a table of a package off the list fails.
+    const omitted = tempRepo(
+      CPC_TOML.replace(', "analyzer"]', "]")
+        .replace('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
+        .replace("[values.analyzer]\nfinder = false\n", ""),
+    );
     buildClient(omitted);
     const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
     expect(without).not.toContain("analyzer");

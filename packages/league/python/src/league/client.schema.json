@@ -1,45 +1,5 @@
 {
   "$defs": {
-    "AnalyzerValues": {
-      "additionalProperties": false,
-      "description": "The package values of analyzer. The finder is off by default.",
-      "properties": {
-        "finder": {
-          "default": false,
-          "title": "Finder",
-          "type": "boolean"
-        }
-      },
-      "title": "AnalyzerValues",
-      "type": "object"
-    },
-    "LeagueValues": {
-      "additionalProperties": false,
-      "description": "The package values of league. The default is no chart, and then each chart value is 0.",
-      "properties": {
-        "chart": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Chart"
-        }
-      },
-      "title": "LeagueValues",
-      "type": "object"
-    },
-    "ManagersValues": {
-      "additionalProperties": false,
-      "description": "The package values of managers. It has none yet.",
-      "properties": {},
-      "title": "ManagersValues",
-      "type": "object"
-    },
     "Menu": {
       "additionalProperties": false,
       "description": "The menu layout and its items. With no items, the menu takes the home page, then the package list in its order.",
@@ -125,39 +85,6 @@
       "title": "MenuItem",
       "type": "object"
     },
-    "PackageValues": {
-      "additionalProperties": false,
-      "description": "The [values.<package>] tables. A client sets only the values that differ from the defaults.",
-      "properties": {
-        "league": {
-          "$ref": "#/$defs/LeagueValues"
-        },
-        "week": {
-          "$ref": "#/$defs/WeekValues"
-        },
-        "rankings": {
-          "$ref": "#/$defs/RankingsValues"
-        },
-        "managers": {
-          "$ref": "#/$defs/ManagersValues"
-        },
-        "waiver": {
-          "$ref": "#/$defs/WaiverValues"
-        },
-        "analyzer": {
-          "$ref": "#/$defs/AnalyzerValues"
-        }
-      },
-      "title": "PackageValues",
-      "type": "object"
-    },
-    "RankingsValues": {
-      "additionalProperties": false,
-      "description": "The package values of rankings. It has none yet.",
-      "properties": {},
-      "title": "RankingsValues",
-      "type": "object"
-    },
     "Season": {
       "additionalProperties": false,
       "description": "The provider and the league id of one season. The provider gives the league a new id each season.",
@@ -177,20 +104,6 @@
         "league_id"
       ],
       "title": "Season",
-      "type": "object"
-    },
-    "WaiverValues": {
-      "additionalProperties": false,
-      "description": "The package values of waiver. It has none yet.",
-      "properties": {},
-      "title": "WaiverValues",
-      "type": "object"
-    },
-    "WeekValues": {
-      "additionalProperties": false,
-      "description": "The package values of week. It has none yet.",
-      "properties": {},
-      "title": "WeekValues",
       "type": "object"
     }
   },
@@ -236,7 +149,11 @@
       "type": "object"
     },
     "values": {
-      "$ref": "#/$defs/PackageValues"
+      "additionalProperties": {
+        "type": "object"
+      },
+      "title": "Values",
+      "type": "object"
     },
     "menu": {
       "$ref": "#/$defs/Menu"

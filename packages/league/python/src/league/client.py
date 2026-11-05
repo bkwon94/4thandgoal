@@ -1,22 +1,35 @@
 """
-The client: the values of clients/<slug>/client.toml with their check and exported JSON Schema, and the League settings.
-The CLI and the API entry build the Client once with load_client and pass it down, so no module reads a global.
+The client: the kernel keys of clients/<slug>/client.toml, the check of each [values.<package>] table, the exported
+JSON Schemas, and the League settings. The CLI and the API entry build the Client once with load_client.
 """
+import inspect
 import json
 import tomllib
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Literal, Self
+from typing import Annotated, Any, Literal, Self, TypeVar
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, WithJsonSchema, field_validator, model_validator
 
 from league.league_settings import LeagueSettings
 from league.paths import client_dir, league_file, nfl_dir
+from league.values import LeagueValues, PackageValues
 
-# The exported schema of the model. "make schema" writes it, and a rule test fails when it is stale.
+# The exported schema of the kernel keys. "make schema" writes it, and a rule test fails when it is stale.
 CLIENT_SCHEMA = Path(__file__).parent / "client.schema.json"
+# The exported schema of the package values of one package, beside the module of its model.
+VALUES_SCHEMA = "values.schema.json"
 CLIENT_FILE = "client.toml"
+
+# The package values models that an app reads, one per package. The app builds the list, because league imports
+# no core package. A table of a package with no model in the list is left to the check of the app that reads it.
+ValueModels = Sequence[type[PackageValues]]
+V = TypeVar("V", bound=PackageValues)
+
+# The schema of the [values] tables in the kernel schema: one table per package. The site build checks each table
+# with the schema of its package, and the name of each table with the package list.
+TABLES_SCHEMA = {"type": "object", "additionalProperties": {"type": "object"}}
 
 # The packages a client chooses. league, facts, and design are in every client, so the list never names them.
 PackageName = Literal["week", "rankings", "managers", "waiver", "analyzer"]
@@ -35,42 +48,6 @@ class Season(_Strict):
     """The provider and the league id of one season. The provider gives the league a new id each season."""
     provider: Literal["sleeper"]
     league_id: str
-
-
-class LeagueValues(_Strict):
-    """The package values of league. The default is no chart, and then each chart value is 0."""
-    chart: str | None = None
-
-
-class WeekValues(_Strict):
-    """The package values of week. It has none yet."""
-
-
-class RankingsValues(_Strict):
-    """The package values of rankings. It has none yet."""
-
-
-class ManagersValues(_Strict):
-    """The package values of managers. It has none yet."""
-
-
-class WaiverValues(_Strict):
-    """The package values of waiver. It has none yet."""
-
-
-class AnalyzerValues(_Strict):
-    """The package values of analyzer. The finder is off by default."""
-    finder: bool = False
-
-
-class PackageValues(_Strict):
-    """The [values.<package>] tables. A client sets only the values that differ from the defaults."""
-    league: LeagueValues = Field(default_factory=LeagueValues)
-    week: WeekValues = Field(default_factory=WeekValues)
-    rankings: RankingsValues = Field(default_factory=RankingsValues)
-    managers: ManagersValues = Field(default_factory=ManagersValues)
-    waiver: WaiverValues = Field(default_factory=WaiverValues)
-    analyzer: AnalyzerValues = Field(default_factory=AnalyzerValues)
 
 
 class MenuItem(_Strict):
@@ -100,7 +77,10 @@ class ClientValues(_Strict):
     # The code of the usage count. With none, the site loads no count script.
     usage_code: str | None = None
     seasons: dict[int, Season] = Field(min_length=1)
-    values: PackageValues = Field(default_factory=PackageValues)
+    # The checked [values.<package>] tables by package name. from_toml_text checks each table with the model of its
+    # package and fills this key, so the kernel check never reads a table.
+    package_values: Annotated[dict[str, PackageValues], WithJsonSchema(TABLES_SCHEMA)] = Field(
+        default_factory=dict, alias="values")
     menu: Menu = Field(default_factory=Menu)
 
     @field_validator("timezone")
@@ -130,24 +110,65 @@ class ClientValues(_Strict):
     def latest_season(self) -> int:
         return max(self.seasons)
 
+    def package(self, model: type[V]) -> V:
+        """The checked package values of the package of `model`. A package off the list has none, so a KeyError."""
+        values = self.package_values[model.package]
+        assert isinstance(values, model)
+        return values
+
     @classmethod
-    def from_toml_text(cls, text: str, path: Path) -> "ClientValues":
-        """The values of the TOML text of `path`. A bad file raises ClientError with the file and each bad value."""
+    def from_toml_text(cls, text: str, path: Path, models: ValueModels) -> "ClientValues":
+        """The values of the TOML text of `path`, with each table checked by its model in `models`.
+
+        A bad file raises ClientError with the file and each bad value.
+        """
         try:
             data = tomllib.loads(text)
         except tomllib.TOMLDecodeError as err:
             raise ClientError(f"{path} is not valid TOML: {err}") from None
+        tables = data.pop("values", {})
         try:
-            return cls.model_validate(data)
+            kernel = cls.model_validate(data)
         except ValidationError as err:
             raise ClientError(f"{path} breaks a rule:\n" + "\n".join(_lines(err))) from None
+        checked, lines = _check_tables(tables, kernel.packages, models)
+        if lines:
+            raise ClientError(f"{path} breaks a rule:\n" + "\n".join(lines))
+        return kernel.model_copy(update={"package_values": checked})
 
 
-def _lines(err: ValidationError) -> list[str]:
-    """One plain line per broken rule: the key path and the reason, with no pydantic text."""
+def _check_tables(tables: Any, packages: list[PackageName], models: ValueModels) -> tuple[dict[str, PackageValues],
+                                                                                          list[str]]:
+    """The checked table of league and of each package of the list, and one plain line per broken rule.
+
+    A package with no table takes the defaults of its model. A table of a package off the list fails.
+    """
+    if not isinstance(tables, dict):
+        return {}, ["- values: is not a table"]
+    taken = ["league", *packages]
+    lines = [f"- values.{name}: names a package that is not in the package list" for name in tables if name not in taken]
+    by_name = {model.package: model for model in models}
+    checked: dict[str, PackageValues] = {}
+    for name in taken:
+        model = by_name.get(name)
+        if model is None:
+            continue
+        table = tables.get(name, {})
+        if not isinstance(table, dict):
+            lines.append(f"- values.{name}: is not a table")
+            continue
+        try:
+            checked[name] = model.model_validate(table)
+        except ValidationError as err:
+            lines.extend(_lines(err, ("values", name)))
+    return checked, lines
+
+
+def _lines(err: ValidationError, prefix: tuple[str, ...] = ()) -> list[str]:
+    """One plain line per broken rule: the key path under `prefix` and the reason, with no pydantic text."""
     out = []
     for error in err.errors():
-        where = ".".join(str(part) for part in error["loc"])
+        where = ".".join(str(part) for part in (*prefix, *error["loc"]))
         reason = error["msg"].removeprefix("Value error, ")
         if error["type"] == "extra_forbidden":
             reason = "is not a known key"
@@ -157,33 +178,56 @@ def _lines(err: ValidationError) -> list[str]:
     return out
 
 
-def read_client_values(folder: Path) -> ClientValues:
-    """The checked values of the client folder `folder`. A missing or bad file raises ClientError."""
+def read_client_values(folder: Path, models: ValueModels) -> ClientValues:
+    """The checked values of the client folder `folder`, each table by its model in `models`.
+
+    A missing or bad file raises ClientError.
+    """
     path = folder / CLIENT_FILE
     if not path.is_file():
         raise ClientError(f"No {CLIENT_FILE} for the client {folder.name} at {path}.")
-    return ClientValues.from_toml_text(path.read_text(encoding="utf-8"), path)
+    return ClientValues.from_toml_text(path.read_text(encoding="utf-8"), path, models)
 
 
-def client_schema() -> dict:
-    """The JSON Schema of the client values, as the site build reads it."""
-    return ClientValues.model_json_schema()
+# The model of an exported schema: the kernel keys, or the package values of one package.
+SchemaModel = type[ClientValues] | type[PackageValues]
 
 
-def _schema_text() -> str:
-    return json.dumps(client_schema(), indent=2) + "\n"
+def schema_file(model: SchemaModel) -> Path:
+    """The exported schema file of `model`: client.schema.json for the kernel keys, else values.schema.json beside it."""
+    if model is ClientValues:
+        return CLIENT_SCHEMA
+    return Path(inspect.getfile(model)).parent / VALUES_SCHEMA
 
 
-def write_schema_file(path: Path = CLIENT_SCHEMA) -> Path:
-    """Write the exported JSON Schema of the client values."""
-    path.write_text(_schema_text(), encoding="utf-8")
+def _package_of(model: SchemaModel) -> str:
+    return model.package if issubclass(model, PackageValues) else "league"
+
+
+def _schema_text(model: SchemaModel) -> str:
+    return json.dumps(model.model_json_schema(), indent=2) + "\n"
+
+
+def write_schema_file(model: SchemaModel, path: Path | None = None) -> Path:
+    """Write the exported JSON Schema of `model`, as the site build reads it."""
+    path = path or schema_file(model)
+    path.write_text(_schema_text(model), encoding="utf-8")
     return path
 
 
-def check_schema_file(path: Path = CLIENT_SCHEMA) -> None:
-    """Raise ClientError when the schema file at `path` differs from the model, so a stale export fails the check."""
-    if not path.is_file() or path.read_text(encoding="utf-8") != _schema_text():
-        raise ClientError(f"The schema file {path} is stale. Run make schema in packages/league/python and commit the file.")
+def check_schema_file(model: SchemaModel, path: Path | None = None) -> None:
+    """Raise ClientError when the schema file of `model` differs from the model, so a stale export fails the check."""
+    path = path or schema_file(model)
+    if not path.is_file() or path.read_text(encoding="utf-8") != _schema_text(model):
+        package = _package_of(model)
+        raise ClientError(f"The schema file {path} of {package} is stale. Run make schema in packages/{package}/python "
+                          "and commit the file.")
+
+
+def check_schema_files(models: ValueModels) -> None:
+    """Check the kernel schema and the schema of each model in `models`. The first stale file raises ClientError."""
+    for model in (ClientValues, *models):
+        check_schema_file(model)
 
 
 class Client(BaseModel):
@@ -210,7 +254,7 @@ class Client(BaseModel):
     @property
     def chart(self) -> str | None:
         """The trade value chart of the client, the package value `chart` of league. None is no chart."""
-        return self.values.values.league.chart
+        return self.values.package(LeagueValues).chart
 
     @property
     def voice_dir(self) -> Path:
@@ -233,13 +277,13 @@ class Client(BaseModel):
 SettingsFetch = Callable[[str, Path], LeagueSettings]
 
 
-def load_client(root: Path, slug: str, season: int, fetch_settings: SettingsFetch) -> Client:
-    """The client `slug` under the repo root `root`, with the League settings of `season`.
+def load_client(root: Path, slug: str, season: int, fetch_settings: SettingsFetch, models: ValueModels) -> Client:
+    """The client `slug` under the repo root `root`, with the League settings of `season`. `models` checks the tables.
 
     A missing or bad client.toml, or a season the file does not name, raises ClientError.
     """
     folder = client_dir(root, slug)
-    values = read_client_values(folder)
+    values = read_client_values(folder, models)
     if season not in values.seasons:
         raise ClientError(f"{folder / CLIENT_FILE} has no [seasons.{season}].")
     settings = fetch_settings(values.seasons[season].league_id, league_file(folder, season))

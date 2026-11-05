@@ -67,7 +67,7 @@ All values are build-time. Only `src/lib/config.ts` reads them.
 | --- | --- | --- |
 | `NEXT_PUBLIC_API_URL` | `https://api.4thandgoal.app` | Base URL of the site API. |
 | `CLIENT` | none | The slug of the client folder under `clients/`. The build fails with no value. |
-| `CLIENT_ROOT` | the repo root | The folder that holds `clients/` and the exported schema. Set it to build a test client from a temp folder. |
+| `CLIENT_ROOT` | the repo root | The folder that holds `clients/` and the exported schemas. Set it to build a test client from a temp folder. |
 
 A value that changes with the league comes from `client.toml`: the package list, the finder, the usage code, and the
 season, which is the latest season of the client.

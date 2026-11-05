@@ -29,6 +29,7 @@ from league.provider.raw import RawAheadWeek
 from league.provider.sleeper import load_raw
 from league.snapshot import load_snapshot
 from league.tunables import TEAMS_CACHE_SECONDS
+from league.values import LeagueValues
 
 ET = ZoneInfo("America/New_York")
 # The client the builds and fetches of these tests read.
@@ -105,8 +106,7 @@ def test_the_chart_read_takes_the_chart_of_the_client(live_repo, sleeper, chart_
 def test_a_client_with_no_chart_reads_no_chart_and_notes_none_stale(live_repo, sleeper, chart_week6):
     # The default of the league package is no chart, and then each chart value is 0: the chart gives no side an edge.
     cpc = cpc_client(at=live_repo)
-    values = cpc.values.model_copy(update={"values": cpc.values.values.model_copy(
-        update={"league": cpc.values.values.league.model_copy(update={"chart": None})})})
+    values = cpc.values.model_copy(update={"package_values": {**cpc.values.package_values, "league": LeagueValues()}})
     chart = ChartRecorder(chart_week6)
     snap = live_snapshot(2026, now=datetime(2026, 10, 20, 8, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network, read_chart=chart,

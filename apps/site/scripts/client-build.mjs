@@ -16,20 +16,28 @@ export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..
 /* The site app that the script writes into. A build for another root still writes the generated files here. */
 const SITE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-/* The root that holds clients/ and the exported schema: the repo, or the root that CLIENT_ROOT names. A test client
+/* The root that holds clients/ and the exported schemas: the repo, or the root that CLIENT_ROOT names. A test client
    then builds from a temp folder, and no test folder goes under clients/. */
 export function clientRoot(env) {
   return env.CLIENT_ROOT ?? REPO_ROOT;
 }
-/* The JSON Schema that the league package exports from its pydantic model. "make schema" in packages/league/python rewrites it. */
+/* The JSON Schema of the kernel keys, which the league package exports from its pydantic model. "make schema" in
+   packages/league/python rewrites it. */
 export const SCHEMA_FILE = join("packages", "league", "python", "src", "league", "client.schema.json");
+
+/* The JSON Schema of the package values of the package `name`, which the package exports from its pydantic model.
+   "make schema" in packages/<name>/python rewrites it. */
+export function valuesSchemaFile(name) {
+  return join("packages", name, "python", "src", name, "values.schema.json");
+}
 
 /* A client that the build cannot build. The message names the file and the bad value, with no stack. */
 export class ClientBuildError extends Error {}
 
-/* One plain line per broken rule: the key path and the reason, with no ajv text. The pipeline check words its lines the same way. */
-function ruleLine(error) {
-  const where = error.instancePath.split("/").filter(Boolean);
+/* One plain line per broken rule: the key path under `prefix` and the reason, with no ajv text. The pipeline check
+   words its lines the same way. */
+function ruleLine(error, prefix = []) {
+  const where = [...prefix, ...error.instancePath.split("/").filter(Boolean)];
   if (error.keyword === "additionalProperties") {
     return `- ${[...where, error.params.additionalProperty].join(".")}: is not a known key`;
   }
@@ -48,16 +56,37 @@ function readChecked(root, slug, name, schema) {
   } catch (error) {
     throw new ClientBuildError(`${file} is not valid TOML: ${error.message}`);
   }
-  const check = new Ajv({ allErrors: true }).compile(schema);
-  if (!check(values)) {
-    // An anyOf branch that fails adds a line for each branch, so the check keeps each line once.
-    const lines = [...new Set(check.errors.map(ruleLine))];
-    throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
-  }
+  const lines = schemaLines(schema, values);
+  if (lines.length > 0) throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
   return values;
 }
 
-/* The checked values of clients/<slug>/client.toml, with the schema that the pipeline exports. */
+/* One plain line per rule of `schema` that `values` breaks, each key path under `prefix`. */
+function schemaLines(schema, values, prefix = []) {
+  const check = new Ajv({ allErrors: true }).compile(schema);
+  if (check(values)) return [];
+  // An anyOf branch that fails adds a line for each branch, so the check keeps each line once.
+  return [...new Set(check.errors.map((error) => ruleLine(error, prefix)))];
+}
+
+/* One plain line per broken rule of the [values.<package>] tables. A table names league or a package of the list, and
+   the schema of its package checks it, as the model of each package does in the pipeline. */
+function tableLines(root, values) {
+  const taken = ["league", ...values.packages];
+  const lines = [];
+  for (const [name, table] of Object.entries(values.values ?? {})) {
+    if (!taken.includes(name)) {
+      lines.push(`- values.${name}: names a package that is not in the package list`);
+      continue;
+    }
+    const schema = JSON.parse(readFileSync(join(root, valuesSchemaFile(name)), "utf8"));
+    lines.push(...schemaLines(schema, table, ["values", name]));
+  }
+  return lines;
+}
+
+/* The checked values of clients/<slug>/client.toml: the kernel keys with the schema of league, and each
+   [values.<package>] table with the schema of its package. */
 export function readClient(root, slug) {
   const file = join(root, "clients", slug, "client.toml");
   const values = readChecked(root, slug, "client.toml", JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8")));
@@ -65,7 +94,8 @@ export function readClient(root, slug) {
   const omitted = (values.menu?.items ?? [])
     .filter((item) => item.package !== undefined && !values.packages.includes(item.package))
     .map((item) => `- menu.items: The menu item for ${item.package} names a package that is not in the package list.`);
-  if (omitted.length > 0) throw new ClientBuildError(`${file} breaks a rule:\n${omitted.join("\n")}`);
+  const lines = [...omitted, ...tableLines(root, values)];
+  if (lines.length > 0) throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
   return values;
 }
 

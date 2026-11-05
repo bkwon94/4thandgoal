@@ -55,11 +55,14 @@ API_TOP_LAYER = "write"
 # The map moves no file. The note goes when the import goes.
 LAYER_OF: dict[str, str] = {
     "": "model",
+    # The list of the package values models imports each core package, and only their values modules.
+    "value_models": "model",
     "league": "model",
     "league.tunables": "model",
     # model
     "league.models": "model",
     "league.client": "model",
+    "league.values": "model",
     "league.league_settings": "model",
     "league.paths": "model",
     "league.numbers": "model",
@@ -72,14 +75,19 @@ LAYER_OF: dict[str, str] = {
     "analyzer": "model",
     "analyzer.tunables": "model",
     "analyzer.errors": "model",
+    "analyzer.values": "model",
     "week": "model",
     "week.tunables": "model",
+    "week.values": "model",
     "managers": "model",
     "managers.tunables": "model",
+    "managers.values": "model",
     "waiver": "model",
     "waiver.tunables": "model",
+    "waiver.values": "model",
     "rankings": "model",
     "rankings.tunables": "model",
+    "rankings.values": "model",
     # provider
     "league.provider": "provider",
     "league.provider.base": "provider",

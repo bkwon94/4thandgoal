@@ -34,6 +34,7 @@ check: lint typecheck test ## Run lint, typecheck, and all the tests
 # The prek hook runs this target on each commit, so it must stay fast. The package tests take a few seconds.
 check-fast: lint typecheck test ## Run lint, typecheck, and the tests
 
-# The site build checks client.toml with this file, so commit it with the model change that rewrote it.
-schema: ## Rewrite the exported JSON Schema of client.toml
-	$(RUN) python -c "from league.client import write_schema_file; print(write_schema_file())"
+# The site build checks the kernel keys of client.toml and [values.league] with these two files, so commit them with
+# the model change that rewrote them.
+schema: ## Rewrite the exported JSON Schemas of the kernel keys and of the package values
+	$(RUN) python -c "from league.client import ClientValues, write_schema_file; from league.values import LeagueValues; print(write_schema_file(ClientValues)); print(write_schema_file(LeagueValues))"

@@ -28,6 +28,7 @@ from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api.settings import Settings, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
+from cornerstone_api.value_models import VALUE_MODELS
 from league.client import Client, SettingsFetch, load_client, read_client_values
 from league.paths import provider_cache_dir
 from league.provider.sleeper import SleeperProvider, fetch_settings
@@ -182,8 +183,8 @@ def load_clients(repo: Path, fetch: SettingsFetch = fetch_settings) -> list[Clie
     folders = sorted(path for path in (repo / "clients").iterdir() if path.is_dir())
     clients = []
     for folder in folders:
-        season = read_client_values(folder).latest_season
-        clients.append(load_client(repo, folder.name, season, fetch))
+        season = read_client_values(folder, VALUE_MODELS).latest_season
+        clients.append(load_client(repo, folder.name, season, fetch, VALUE_MODELS))
     return clients
 
 

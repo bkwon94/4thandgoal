@@ -9,9 +9,13 @@ from league.client import Client, read_client_values
 from league.paths import client_dir, league_file, nfl_dir
 from league.provider.raw import RawLeague
 from league.provider.sleeper import league_settings
+from league.values import LeagueValues
 
 ROOT = Path(__file__).resolve().parents[3]
 FIXTURE_LEAGUE = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw" / "league.json"
+# The tests of one package run in the env of that package, with no other core package, so the fixture checks only
+# the league table. test_rule_client checks each table of each client.toml with the full list of the pipeline.
+FIXTURE_MODELS = (LeagueValues,)
 
 
 def cpc_client(at: Path | None = None, root: Path = ROOT, **settings) -> Client:
@@ -23,7 +27,7 @@ def cpc_client(at: Path | None = None, root: Path = ROOT, **settings) -> Client:
     """
     base = league_settings(RawLeague.model_validate_json(FIXTURE_LEAGUE.read_text(encoding="utf-8")))
     folder, nfl = (client_dir(root, "cpc"), nfl_dir(root)) if at is None else (at, at / "data")
-    return Client(slug="cpc", folder=folder, nfl_dir=nfl, values=read_client_values(client_dir(ROOT, "cpc")),
+    return Client(slug="cpc", folder=folder, nfl_dir=nfl, values=read_client_values(client_dir(ROOT, "cpc"), FIXTURE_MODELS),
                   settings=base.model_copy(update=settings))
 
 
