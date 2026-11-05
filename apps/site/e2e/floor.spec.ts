@@ -158,6 +158,34 @@ for (const width of WORD_WIDTHS) {
   });
 }
 
+/* The marked link of the chapter rail. The rail shows from the rail tier, so the checks run at the laptop width. */
+const railMark = (page: Page) => page.locator('nav[aria-label="Chapters"] a[aria-current="location"]');
+
+/* The rail marks the chapter that a reader reads, not the one whose tail still sits under the top band.
+   The scroll puts the heading of Position leaders 80px under the top band, as after a scroll past Awards. */
+test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks Position leaders in view at 1280px`, async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
+  await page.evaluate(() => {
+    const leaders = document.getElementById("leaders")!;
+    const bar = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop);
+    window.scrollTo(0, window.scrollY + leaders.getBoundingClientRect().top - bar - 80);
+  });
+  await expect(railMark(page)).toHaveText("Position leaders");
+});
+
+/* A tap on each rail link jumps to its chapter and marks that link. */
+test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks each chapter after a jump at 1280px`, async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
+  const links = page.locator('nav[aria-label="Chapters"] a');
+  const labels = await links.allTextContents();
+  for (const label of labels) {
+    await links.filter({ hasText: label }).click();
+    await expect(railMark(page)).toHaveText(label);
+  }
+});
+
 for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) {
   test(`fast sweep: ${CLIENT} ${route} dark 390px`, async ({ page }) => {
     const label = `${CLIENT} ${route} dark 390px`;

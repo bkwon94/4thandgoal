@@ -10,7 +10,9 @@ import { cn } from "../lib/utils";
 export type RailChapter = { id: string; label: string };
 
 /* The band that counts as the top of the viewport, as a share of the viewport height from its top edge.
-   A chapter in the band is in view. The first such chapter in the report's order is the one nearest the top. */
+   A chapter in the band is in view. With two chapters in the band, the later one in the report's order is the one
+   the reader reads: its heading is in the band, and only the tail of the chapter before it is left there.
+   Each chapter is taller than the band, so after a jump to a chapter the next one is not in the band yet. */
 const BAND = 0.3;
 
 /* The band starts this far under the top band. A chapter that only touches its lower edge after a jump stays out. */
@@ -38,8 +40,8 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
           else band.delete(entry.target.id);
         }
         // With no chapter in the band, such as at the masthead, the last mark stays, so the rail never goes blank.
-        const first = chapters.find(({ id }) => band.has(id));
-        if (first) setCurrent(first.id);
+        const last = chapters.findLast(({ id }) => band.has(id));
+        if (last) setCurrent(last.id);
       },
       { rootMargin: bandMargin() },
     );

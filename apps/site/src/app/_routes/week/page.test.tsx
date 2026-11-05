@@ -236,13 +236,13 @@ describe("WeekPage chapter in view", () => {
     expect(currentLabels()).toEqual(["Standings"]);
   });
 
-  it("marks the chapter nearest the top when two chapters are in view", async () => {
+  it("marks the later chapter when two chapters are in view, as its heading is the one in the band (AT-18)", async () => {
     await renderWeek7();
     reportChapter("median", true);
     reportChapter("standings", true);
-    expect(currentLabels()).toEqual(["The median game"]);
-    reportChapter("median", false);
     expect(currentLabels()).toEqual(["Standings"]);
+    reportChapter("standings", false);
+    expect(currentLabels()).toEqual(["The median game"]);
   });
 });
 
