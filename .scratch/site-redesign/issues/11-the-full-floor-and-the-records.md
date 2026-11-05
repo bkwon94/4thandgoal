@@ -16,4 +16,6 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-34, AT-38, and AT-41.
 - [x] The branch changes no path under `apps/pipeline/`, `apps/api/`, or `clients/<slug>/published/`. The one exception is `apps/pipeline/tests/test_client.py`, which Brian accepted in the comment on ticket 04.
 - [x] The evidence of AT-34, AT-38, and AT-41 is recorded in `EVIDENCE.md`.
 
+## Comments
+
 - 2026-11-05: The CI check `Check` passed on PR #11 in 13 min 50 s, run https://github.com/bkwon94/4thandgoal/actions/runs/42122278427.
