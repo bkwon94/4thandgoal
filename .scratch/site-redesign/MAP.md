@@ -20,10 +20,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The redesign may change anything on the page: animations, navigation, order, components, type, shapes, and visual diagrams. Brian, 2026-11-05.
 - The redesign uses only the data that the pipeline publishes now. Brian, 2026-11-05.
 - The new term **Look** names the shared part. **Brand** keeps the colors, the logo, and the copy. Both are in `GLOSSARY.md`. Brian, 2026-11-05.
+- The brand schema keeps only the required `light` and `dark` sets. The fonts and the radii of the look go into the `@theme static` block of `globals.css`. `decisions/01-research-brand-schema-drops-fonts.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the brand schema drop the fonts and the radii? `decisions/01-research-brand-schema-drops-fonts.md`.
 - How does the site load web fonts with no loss of speed? `decisions/02-research-web-fonts-without-speed-loss.md`.
 - What is the look? `decisions/03-prototype-the-look.md`.
 - How does a reader move across the routes? `decisions/04-prototype-the-navigation.md`.
@@ -33,6 +33,7 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - What do the home page and the 404 page show? `decisions/08-prototype-home-and-404.md`.
 - What are the light sets of both brands in the look? `decisions/09-prototype-the-light-sets.md`.
 - How does the readability floor run as checks? `decisions/10-research-readability-floor-checks.md`.
+- How does dark become the default? `decisions/12-spec-dark-default-mechanism.md`.
 - The hand-off to the spec `decisions/11-spec-hand-off.md`.
 
 ## OUT OF SCOPE
