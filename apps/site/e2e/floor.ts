@@ -1,5 +1,5 @@
 /**
- * The scans of the readability floor: text size, tap targets, sideways scroll, and contrast with axe.
+ * The scans of the readability floor: text size, tap targets, sideways scroll, words split over two lines, and contrast with axe.
  * Each scan reads one loaded page and returns its failures as lines that name the element and the measure.
  */
 import { DARK_CLASS, THEME_KEY, type Theme } from "@cpc/design/lib/theme";
@@ -30,7 +30,7 @@ const LIMITS = {
  * The one function that runs in the page. Playwright sends it to the browser as source, so it cannot call a helper
  * outside itself. It holds all the scans, and each one shares the same label of an element.
  */
-type InPage = { scan: "text" | "targets" | "scroll"; limits: typeof LIMITS };
+type InPage = { scan: "text" | "targets" | "scroll" | "words"; limits: typeof LIMITS };
 
 function inPage({ scan, limits }: InPage): unknown {
   const describe = (el: Element) => {
@@ -65,6 +65,28 @@ function inPage({ scan, limits }: InPage): unknown {
     }
     const culprit = widest ? `, widest is ${describe(widest)} at ${Math.round(right)}px` : "";
     return [`the page scrolls sideways: ${root.scrollWidth}px wide in ${root.clientWidth}px${culprit}`];
+  }
+
+  if (scan === "words") {
+    // A word may wrap to the next line whole, but never split inside itself, such as "UNDERPERF" over "ORMER".
+    // A range over one word gives one box per line it sits on, so two distinct tops mean a split word.
+    // A hyphen ends a word, because a wrap after the hyphen of "5-game" is a normal break.
+    const failures: string[] = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const el = node.parentElement;
+      const text = node.textContent ?? "";
+      if (!el || !text.trim() || !visible(el)) continue;
+      for (const match of text.matchAll(/[^\s-]+-*/g)) {
+        const range = document.createRange();
+        range.setStart(node, match.index);
+        range.setEnd(node, match.index + match[0].length);
+        const tops = [...range.getClientRects()].filter((box) => box.width > 0).map((box) => Math.round(box.top));
+        const lines = new Set(tops).size;
+        if (lines > 1) failures.push(`${describe(el)}: the word "${match[0]}" breaks over ${lines} lines`);
+      }
+    }
+    return failures;
   }
 
   if (scan === "targets") {
@@ -117,6 +139,11 @@ export async function scanTargets(page: Page): Promise<TargetScan> {
 /* Fails when the page is wider than the viewport, and names the element that reaches furthest right. */
 export async function scanScroll(page: Page): Promise<string[]> {
   return (await page.evaluate<unknown, InPage>(inPage, { scan: "scroll", limits: LIMITS })) as string[];
+}
+
+/* Fails for each word that the layout splits over two lines or more. A wrap between words passes. */
+export async function scanWords(page: Page): Promise<string[]> {
+  return (await page.evaluate<unknown, InPage>(inPage, { scan: "words", limits: LIMITS })) as string[];
 }
 
 /*

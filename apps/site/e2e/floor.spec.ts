@@ -6,7 +6,7 @@ import type { Theme } from "@cpc/design/lib/theme";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { openPage, scanContrast, scanScroll, scanTargets, scanText } from "./floor";
+import { openPage, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
 import { serveDir } from "./serve";
 
 // check:floor runs in apps/site, as pnpm runs each script of the site there.
@@ -144,6 +144,18 @@ for (const entry of FULL_FLOOR_PAGES) {
       });
     }
   }
+}
+
+/* The widths of the word check: a phone, a tablet, and a laptop. The tiles of the week page change columns between them. */
+const WORD_WIDTHS = [375, 768, 1280] as const;
+
+/* No label, number, or name of the latest week splits inside a word, such as "UNDERPERF" over "ORMER", at any width. */
+for (const width of WORD_WIDTHS) {
+  test(`no split word: ${CLIENT} ${LATEST_WEEK_ROUTE} ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
+    expect(await scanWords(page), `${CLIENT} ${LATEST_WEEK_ROUTE} ${width}px splits a word`).toEqual([]);
+  });
 }
 
 for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) {
