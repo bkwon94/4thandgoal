@@ -679,7 +679,9 @@ def test_build_survives_a_failed_write_of_the_week_before(tmp_path, fixture_raw_
     finally:
         prev.chmod(0o700)
     assert page.exists()
-    assert "week 6 not saved to history" in caplog.text
+    # The log names the week that failed, so the failed write of week 5 does not read as a failure of week 6.
+    assert "week 5 not saved to history" in caplog.text
+    assert "week 6 not saved to history" not in caplog.text
 
 
 def test_rewrite_reads_the_version_1_verify_shape(tmp_path, fixture_raw_dir, offline):

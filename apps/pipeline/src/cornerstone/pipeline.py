@@ -425,11 +425,14 @@ def run_build(
     # The page is built by now, so a history problem only logs a warning.
     try:
         save_week_to_history(raw_path, history_dir(client.folder, season, week))
-        # Week 1 has no week before, so it writes nothing.
-        if week > 1:
-            save_prev_week_to_history(raw_path, history_dir(client.folder, season, week - 1))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
+    # Week 1 has no week before, so it writes nothing. The week before has its own guard, so its log names its own week.
+    if week > 1:
+        try:
+            save_prev_week_to_history(raw_path, history_dir(client.folder, season, week - 1))
+        except OSError as err:
+            log.warning("week %d not saved to history: %s", week - 1, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
     # Both season files read the one history load, so a failed load skips both files.
     try:
