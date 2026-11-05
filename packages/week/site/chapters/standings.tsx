@@ -1,53 +1,54 @@
 /**
- * The standings: the dark chapter with one row per team, the playoff cut line after the sixth row, and the note.
- * Points always show two decimals, so the column lines up in tabular figures.
+ * The standings: one row per team with its avatar, a playoff tick, the record, and the points, and a brand line under
+ * the last playoff spot. Points always show two decimals, so the column lines up in tabular figures.
  */
-import { Fragment, type ReactNode } from "react";
 import { record } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
+import { Card } from "@cpc/design/parts/card";
 import type { AvatarMap, TableRow } from "../schema/week-types";
+import { Avatar } from "@cpc/league/avatar";
 import { avatarSrc } from "@cpc/league/images";
-import { Blurb } from "@cpc/design/parts/blurb";
-import { Chapter } from "@cpc/design/parts/chapter";
-import { Label } from "@cpc/design/parts/label";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
-import { Who } from "../parts/who";
+import { WeekChapter } from "../parts/week-chapter";
 
-/* Six teams make the playoffs, so the dashed cut line sits under the sixth row. */
+/* Six teams make the playoffs, so the brand line sits under the sixth row. */
 const PLAYOFF_SPOTS = 6;
 
-/* From the tablet tier the wide column tokens and a wider gap spread the numbers across the row. */
-const GRID =
-  "grid grid-cols-[var(--spacing-standings-rank)_1fr_var(--spacing-standings-record)_var(--spacing-standings-points)] tablet:grid-cols-[var(--spacing-standings-rank-wide)_1fr_var(--spacing-standings-record-wide)_var(--spacing-standings-points-wide)] items-center gap-sp-2 tablet:gap-sp-4 border-b border-rule-dark text-row leading-tight tabular-nums";
+/* The columns of a row: the tick, the rank, the avatar, the name, the record, and the points. */
+const ROW =
+  "grid min-h-touch grid-cols-[auto_auto_auto_minmax(0,1fr)_auto_auto] items-center gap-sp-2 py-sp-1 text-inherit no-underline";
 
-/* The W-L and points columns align right, so the numbers line up on the last digit.
-   The grid draws the table, so the roles tell a screen reader it is one: a row of cells, or of column headers for the header. */
-function Line({
-  cells,
-  header,
-  className,
-}: {
-  cells: [ReactNode, ReactNode, ReactNode, ReactNode];
-  header?: boolean;
-  className?: string;
-}) {
-  const [rank, team, record, points] = cells;
-  const role = header ? "columnheader" : "cell";
-  return (
-    <div role="row" className={cn(GRID, className)}>
-      <span role={role}>{rank}</span>
-      <span role={role}>{team}</span>
-      <span role={role} className="text-right">
-        {record}
+function Row({ row, avatars, href }: { row: TableRow; avatars: AvatarMap; href: string | null }) {
+  const playoff = row.standing.rank <= PLAYOFF_SPOTS;
+  const content = (
+    <>
+      {/* The tick is a graphic. The words after the name say it for a screen reader. */}
+      <span aria-hidden="true" className={cn("h-sp-5 w-sp-1 rounded-pill", playoff ? "bg-accent" : "bg-raised")} />
+      <span className="font-mono text-meta text-mute tabular-nums">{String(row.standing.rank).padStart(2, "0")}</span>
+      <Avatar src={avatarSrc(avatars, row.team.roster_id)} />
+      <span className="truncate text-body leading-tight font-semibold">
+        {row.team.name}
+        {playoff && <span className="sr-only">, playoff spot</span>}
       </span>
-      <span role={role} className="text-right">
-        {points}
+      <span className="text-right font-mono text-body font-bold tabular-nums">
+        {record(row.standing.wins, row.standing.losses)}
       </span>
-    </div>
+      {/* num would drop the trailing zero of 698.30, so the column keeps toFixed to line up the decimals. */}
+      <span className="min-w-[7ch] text-right font-mono text-meta text-mute tabular-nums">
+        {row.standing.points_for.toFixed(2)}
+      </span>
+    </>
+  );
+  return href === null ? (
+    <div className={ROW}>{content}</div>
+  ) : (
+    <a href={href} className={cn(ROW, "press")}>
+      {content}
+    </a>
   );
 }
 
-/* The managers href is the managers index of the season. With null the team names render as plain text.
+/* The managers href is the managers index of the season. With null the rows are plain text.
    The note about the median game shows only for a league that plays one, so a league without it has no false note. */
 export function Standings({
   table,
@@ -61,48 +62,28 @@ export function Standings({
   hasMedianGame?: boolean;
 }) {
   return (
-    <Chapter dark reveal id="standings">
-      <Label dark heading>Standings</Label>
-      {/* A table holds only rows, so the cut line is a row too. Its one cell names the cut for a screen reader and shows to no one. */}
-      <div role="table" aria-label="Standings">
-        <Line
-          header
-          cells={["#", "Team", "W-L", "Pts"]}
-          // cn drops the leading of the grid when a new text size follows, so the header sets it again.
-          className="pt-0 pb-sp-2 text-label leading-tight tracking-caps text-on-dark-muted uppercase"
-        />
-        {table.map((row, i) => (
-          <Fragment key={row.team.roster_id}>
-            <Line
-              className="py-sp-1"
-              cells={[
-                row.standing.rank,
-                <Who
-                  key="team"
-                  src={avatarSrc(avatars, row.team.roster_id)}
-                  name={row.team.name}
-                  href={managerHrefOrNull(managersHref, row.team.roster_id)}
-                />,
-                record(row.standing.wins, row.standing.losses),
-                // num would drop the trailing zero of 698.30, so the column keeps toFixed to line up the decimals.
-                row.standing.points_for.toFixed(2),
-              ]}
-            />
-            {i + 1 === PLAYOFF_SPOTS && (
-              <div role="row" className={cn(GRID, "border-b-2 border-dashed border-accent p-0")}>
-                <span role="cell" className="sr-only">
-                  Playoff cut
-                </span>
-              </div>
-            )}
-          </Fragment>
-        ))}
-      </div>
+    <WeekChapter id="standings" title="Standings" note={`Playoff line after ${PLAYOFF_SPOTS}th`}>
+      <Card className="py-sp-1">
+        <ol aria-label="Standings" className="m-0 list-none p-0">
+          {table.map((row) => {
+            const cut = row.standing.rank === PLAYOFF_SPOTS;
+            return (
+              <li
+                key={row.team.roster_id}
+                data-cut={cut ? "" : undefined}
+                className={cn("border-b last:border-b-0", cut ? "border-b-2 border-accent" : "border-rule")}
+              >
+                <Row row={row} avatars={avatars} href={managerHrefOrNull(managersHref, row.team.roster_id)} />
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
       {hasMedianGame && (
-        <Blurb dark className="mt-sp-3 text-meta">
+        <div className="text-meta leading-body text-mute">
           Records include the weekly median game: every team plays its opponent and the league median each week.
-        </Blurb>
+        </div>
       )}
-    </Chapter>
+    </WeekChapter>
   );
 }

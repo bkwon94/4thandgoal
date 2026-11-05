@@ -1,50 +1,65 @@
 /**
- * The Roster chapter of a manager page: the four slot ranks of the roster grade, one line each, in the file's order.
- * Each line reads as "RB · 2nd of 12 · deep". A roster with no grade shows one quiet line.
+ * The Roster chapter of a manager page: a tile for each position slot of the roster grade, with its rank and its depth,
+ * then the rank of each of the four grade parts. A roster with no grade shows one quiet line.
  */
 import { Reveal } from "@cpc/design/parts/reveal";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
+import { Tile } from "@cpc/design/parts/tile";
 import { ordinal } from "@cpc/design/format/format";
 import { stagger } from "@cpc/design/lib/motion";
-import type { Manager, SlotRank } from "../schema/manager-types";
+import type { ManagerGrade, Manager } from "../schema/manager-types";
+import { PART_NAMES } from "./part-names";
 
-/* One line: the position as the quiet label, the rank as the one emphasis, and the depth word in the quiet color.
-   The separators sit in the quiet color, so the rank stays the one thing in ink.
-   The line enters at its place in the stagger when the chapter reveals, with the reveal timing. */
-function SlotLine({ slot, index, teams }: { slot: SlotRank; index: number; teams: number }) {
+/* A tile for each slot, in the file's order. Each tile enters at its place in the stagger when the chapter reveals.
+   A phone fits two tiles per row, so the rank and the depth never wrap. */
+function SlotTiles({ grade, teams }: { grade: ManagerGrade; teams: number }) {
   return (
-    <li>
-      <Reveal delay={stagger(index)} className="flex items-baseline gap-sp-2 tabular-nums">
-      <span className="w-sp-6 flex-none text-label font-semibold tracking-caps text-mute uppercase">{slot.position}</span>
-      <span className="text-meta text-mute">{" · "}</span>
-      <span>
-        <span className="text-body font-extrabold text-ink">{ordinal(slot.rank)}</span>
-        <span className="text-meta font-semibold text-mute">{` of ${teams}`}</span>
-      </span>
-      <span className="text-meta text-mute">{" · "}</span>
-      <span className="text-meta text-mute">{slot.depth}</span>
-      </Reveal>
-    </li>
+    <ul aria-label="Slot Ranks" className="m-0 grid list-none grid-cols-2 gap-sp-2 p-0 tablet:grid-cols-4">
+      {grade.slots.map((slot, i) => (
+        <li key={slot.position}>
+          <Reveal delay={stagger(i)} className="h-full">
+            <Tile label={slot.position} value={ordinal(slot.rank)} note={`of ${teams} · ${slot.depth}`} className="h-full" />
+          </Reveal>
+        </li>
+      ))}
+    </ul>
   );
 }
 
-/* A slot rank ranks the teams of the league, so each line reads out of the count of teams. */
+/* One line for each part of the grade: the part name in the quiet color, and the rank as the one emphasis.
+   The managers file carries no weight of a part, so the line shows the rank only. */
+function GradeParts({ grade, teams }: { grade: ManagerGrade; teams: number }) {
+  return (
+    <ol aria-label="Grade Parts" className="m-0 mt-sp-5 flex list-none flex-col p-0 tabular-nums">
+      {grade.parts.map((part) => (
+        <li key={part.key} className="flex items-baseline justify-between gap-sp-3 border-t border-rule py-sp-2 first:border-t-0">
+          <span className="text-body text-ink-2">{PART_NAMES[part.key]}</span>
+          <span className="font-mono text-body font-bold text-ink">
+            {ordinal(part.rank)}
+            <span className="text-meta font-normal text-mute">{` of ${teams}`}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/* A slot rank and a part rank rank the teams of the league, so each reads out of the count of teams. */
 export function Roster({ manager, teams }: { manager: Manager; teams: number }) {
   return (
     // The id and the heading match the roster entry of MANAGER_CHAPTERS. This file does not import the list,
     // because manager-chapters imports this file and the two must not form a loop.
     <Chapter reveal id="roster">
-      <Label heading>Roster</Label>
+      {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
+      <Label heading className="text-meta">Roster</Label>
       {manager.grade ? (
-        // The gap gives each line air, so the four ranks read as four groups.
-        <ol className="m-0 flex list-none flex-col gap-sp-3 p-0">
-          {manager.grade.slots.map((slot, i) => (
-            <SlotLine key={slot.position} slot={slot} index={i} teams={teams} />
-          ))}
-        </ol>
+        <>
+          <SlotTiles grade={manager.grade} teams={teams} />
+          <GradeParts grade={manager.grade} teams={teams} />
+        </>
       ) : (
-        <p className="m-0 text-body text-mute">No grade yet.</p>
+        <div className="m-0 text-body text-mute">No grade yet.</div>
       )}
     </Chapter>
   );

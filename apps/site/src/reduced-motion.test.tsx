@@ -176,16 +176,18 @@ describe("Reduced motion on the static pages", () => {
     // One line from each chapter, from the top story to next week. The text must be there on the first render.
     // The chapter rail repeats the chapter labels, so the queries stay inside the page column.
     const main = within(screen.getByRole("main"));
-    expect(main.getByText("Matchup of the Week")).toBeTruthy();
-    expect(main.getByText("Game Changer")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 1 }).textContent).toBe("Week 06 // Matchup of the Week");
+    expect(main.getByRole("region", { name: "The week in numbers" })).toBeTruthy();
+    expect(main.getByText("Every game")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 2, name: "Game Changer" })).toBeTruthy();
     expect(main.getByText("WR · PIT · behold the lamb")).toBeTruthy();
     expect(main.getAllByText(week6.awards[0].title).length).toBeGreaterThan(0);
-    expect(main.getByText("Position Leaders")).toBeTruthy();
+    expect(main.getByText("Position leaders")).toBeTruthy();
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
-    expect(main.getAllByRole("button", { name: /Read Recap/ })).toHaveLength(week6.matchups.length);
-    expect(main.getByText("The Median Game")).toBeTruthy();
+    expect(main.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
-    expect(main.getByText(`Next Week · Week ${week6.week + 1}`)).toBeTruthy();
+    expect(main.getByText("Next week")).toBeTruthy();
   });
 
   it("shows every home page row at once", () => {
@@ -203,7 +205,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63 },
+    odds: { playoff: 63, bye: 20, seed: 3 },
     odds_change: 0,
   };
 }
@@ -212,24 +214,25 @@ describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
     render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} />);
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
-    const [grade, odds] = [...numbers.querySelectorAll("dt")].map((term) => term.nextElementSibling as HTMLElement);
+    const odds = numbers.children[0].children[1] as HTMLElement;
+    const grade = screen.getByRole("button", { name: /^Grade D/ });
     expect(grade.textContent).toBe("D");
     expect(odds.textContent).toBe("63%");
     // The instant transition sets the rest state by the next frame. A real motion fails the short wait.
-    await waitFor(() => expectAtRest(within(grade).getByText("D")), { timeout: 50 });
+    await waitFor(() => expectAtRest(grade), { timeout: 50 });
     // The count never runs with motion off, so the final percent stays after a frame.
     await new Promise((done) => setTimeout(done, 50));
     expect(odds.textContent).toBe("63%");
   });
 
-  it("shows the four slot rank lines at rest at once", async () => {
+  it("shows the four slot tiles at rest at once", async () => {
     render(<Roster manager={managerWithOdds()} teams={12} />);
-    const lines = screen.getAllByRole("listitem");
+    const lines = within(screen.getByRole("list", { name: "Slot Ranks" })).getAllByRole("listitem");
     expect(lines.map((line) => line.textContent)).toEqual([
-      "QB · 12th of 12 · fine",
-      "RB · 9th of 12 · deep",
-      "WR · 2nd of 12 · thin",
-      "TE · 4th of 12 · deep",
+      "QB12thof 12 · fine",
+      "RB9thof 12 · deep",
+      "WR2ndof 12 · thin",
+      "TE4thof 12 · deep",
     ]);
     await waitFor(() => lines.forEach((line) => expectAtRest(line)), { timeout: 50 });
   });
