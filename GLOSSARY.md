@@ -909,7 +909,7 @@ _Avoid_: Snapshot, data file, output, artifact, feed, export
 ### The midseason report
 
 **Midseason report**:
-The one page per season that recaps the season to date for one client: arcs, steals and busts, waiver pickups, trades, luck, and the sim of the weeks left. Brian runs its build by hand for one week, and it does not rebuild each week.
+The one page per season that recaps the season to date for one client: arcs, steals and busts, waiver pickups, trades, schedule luck, and the sim of the weeks left. Brian runs its build by hand for one week, and it does not rebuild each week.
 _Avoid_: Season recap, halftime report, mid-year review
 
 **Arc**:
@@ -919,6 +919,22 @@ _Avoid_: Storyline (that is the reason a next-week game matters), narrative, sto
 **Draft value**:
 A player's points to date against his draft cost in his league's own draft: dollars in an auction, pick number in a snake. It names a steal or a bust.
 _Avoid_: Value (alone), ADP, Trade value (that is the chart worth of a player)
+
+**All-play wins**:
+The sum of a team's weekly all-play win rates, a tie counted as half. It is the number of head-to-head wins that the team's scores earned with an average schedule.
+_Avoid_: Expected wins (Expected points is a player term), projected wins
+
+**Schedule luck**:
+A team's head-to-head wins minus its All-play wins, for weeks 1 to the report week. The median game stays out. Positive is lucky. It is a team measure, not the Lucky award or the Unlucky award of a player.
+_Avoid_: Luck (alone), overachiever (a prose word only), expected gap (that is a player term)
+
+**Schedule swap**:
+A team's record with another team's schedule and its own scores. In the week that the other team played it, the team plays the other team. A median game keeps its own result, so the real schedule gives the real record.
+_Avoid_: Schedule strength, what-if record
+
+**Injury toll**:
+The starter games that a team lost to injury, by NFL week. It is a cost, not a chance.
+_Avoid_: Injury luck
 
 **Points over the line**:
 A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.

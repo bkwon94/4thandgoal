@@ -14,7 +14,7 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - A manager finds the report through a home takeover: the home hero shows the report for a time, and a home tile stays. The dock does not change. Brian, in the stage 1 grill.
 - The route is `/midseason/2026`. Brian, in the stage 1 grill.
 - The glossary terms are **Midseason report**, **Arc**, and **Draft value**. Arc is not Storyline, which stays the reason a next-week game matters. Brian, in the stage 1 grill.
-- The report has 14 chapters: the state of the league, arcs, top performers, draft steals and busts, waiver hits and misses, the trade report card, the sim, the look ahead, luck, the schedule swap, lineup choices, the record book, injury luck, and midseason awards. Prototype 09 may merge chapters. Brian, in the stage 1 grill.
+- The report has 14 chapters: the state of the league, arcs, top performers, draft steals and busts, waiver hits and misses, the trade report card, the sim, the look ahead, schedule luck, the schedule swap, lineup choices, the record book, injury toll, and midseason awards. Prototype 09 may merge chapters. Brian, in the stage 1 grill.
 - The report is a package, `midseason`, and both clients turn it on. Brian, in the stage 1 grill.
 - The writer writes all the prose from the facts, and Brian reviews the draft before the publish. Brian, in the stage 1 grill.
 - The roast has no limit on heat for football decisions. Life outside fantasy is off limits, with no profanity or slurs at a person. Each roast cites a fact. Each client has a `roast` setting. Brian, in the stage 1 grill.
@@ -27,10 +27,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The fix for the gap in the transaction history is its own spec, `transaction-history`, before the week 9 build. `decisions/12-research-transaction-history-gap.md`.
 - A pickup earns credit for starter points for its adder, with starts and swung wins. RB, WR, and TE rank by Points over the line, streamers feed a streaming king award, a miss cost 10% of the budget or more, and an outbid list shows lost bids. `decisions/03-grill-waiver-hit-and-miss.md`.
 - Each trade gets a Trade result from net Points over the line since the trade: Robbery, Clear win, Slight edge, Push, or Too soon. The record since is context, and "hurt on arrival" is a tag. Every trade shows, with the top 3 as cards. `decisions/04-grill-trade-grade-to-date.md`.
+- Schedule luck is head-to-head wins minus All-play wins, with no median game. Lines of +1.5 and -1.5 give Smoke and mirrors and Snakebit. The Schedule swap is a 12 by 12 grid with the self-meet rule, and CPC cells keep the median game. Points against and close games under 5 points are context only. The injury luck chapter is Injury toll. `decisions/06-grill-luck-and-schedule-swap.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the report measure luck, an overachiever, and the schedule swap? `decisions/06-grill-luck-and-schedule-swap.md`.
 - Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
 - What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
 - Which awards, top performers, and players to watch does the report name? `decisions/10-grill-awards-and-players.md`.
