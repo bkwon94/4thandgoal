@@ -28,7 +28,14 @@ from facts.writer import ClaudeCall
 from league.chart import match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import Client
-from league.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
+from league.history import (
+    fetch_history,
+    load_history,
+    load_saved_weeks,
+    save_prev_week_to_history,
+    save_week_to_history,
+    saved_through,
+)
 from league.models import (
     Blurb,
     BuildRecord,
@@ -418,6 +425,9 @@ def run_build(
     # The page is built by now, so a history problem only logs a warning.
     try:
         save_week_to_history(raw_path, history_dir(client.folder, season, week))
+        # Week 1 has no week before, so it writes nothing.
+        if week > 1:
+            save_prev_week_to_history(raw_path, history_dir(client.folder, season, week - 1))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
