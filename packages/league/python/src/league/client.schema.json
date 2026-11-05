@@ -58,7 +58,9 @@
                 "rankings",
                 "managers",
                 "waiver",
-                "analyzer"
+                "analyzer",
+                "sim",
+                "midseason"
               ],
               "type": "string"
             },
@@ -117,7 +119,9 @@
           "rankings",
           "managers",
           "waiver",
-          "analyzer"
+          "analyzer",
+          "sim",
+          "midseason"
         ],
         "type": "string"
       },

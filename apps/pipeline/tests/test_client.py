@@ -92,6 +92,22 @@ def test_a_menu_item_for_an_omitted_package_fails_with_the_item_and_the_package(
     assert "menu" in str(err.value)
 
 
+def test_a_client_with_midseason_and_no_sim_fails_and_names_sim(tmp_path):
+    # AT-48: the report ends on the sim, so a client that takes midseason takes sim too.
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer"]',
+                   'packages = ["week", "rankings", "managers", "analyzer", "midseason"]')
+    with pytest.raises(ClientError) as err:
+        read_client_values(folder, VALUE_MODELS)
+    assert "- The midseason package needs the sim package. Add sim to the package list." in str(err.value)
+    assert str(folder / "client.toml") in str(err.value)
+
+
+def test_a_client_with_midseason_and_sim_passes(tmp_path):
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer"]',
+                   'packages = ["week", "rankings", "managers", "analyzer", "sim", "midseason"]')
+    assert read_client_values(folder, VALUE_MODELS).packages[-2:] == ["sim", "midseason"]
+
+
 def test_a_missing_timezone_fails_with_the_key(tmp_path):
     folder = _copy(tmp_path, 'timezone = "America/New_York"\n', "")
     with pytest.raises(ClientError, match="timezone"):

@@ -1,0 +1,7 @@
+{
+  "additionalProperties": false,
+  "description": "The package values of sim. It has no values.",
+  "properties": {},
+  "title": "SimValues",
+  "type": "object"
+}

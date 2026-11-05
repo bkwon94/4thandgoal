@@ -693,6 +693,47 @@ def test_the_check_client_command_names_an_unknown_key_and_the_file(tmp_path, ca
     assert "finderr" in out and str(path) in out
 
 
+def test_the_check_client_command_names_sim_for_a_client_with_midseason_and_no_sim(tmp_path, capsys):
+    # AT-48, on a copy of the CPC file, so the real file never changes.
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    path = tmp_path / "clients" / "cpc" / "client.toml"
+    path.write_text(path.read_text(encoding="utf-8").replace('"analyzer"]', '"analyzer", "midseason"]', 1))
+    assert cli.main(["check-client", str(path.parent)]) == 2
+    out = capsys.readouterr().out
+    assert "The midseason package needs the sim package. Add sim to the package list." in out
+
+
+def test_the_midseason_command_writes_the_report_to_the_build_folder(tmp_path, monkeypatch, capsys):
+    import shutil
+
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    data = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026"
+    season = tmp_path / "clients" / "cpc" / "data" / "2026"
+    shutil.copytree(data / "history", season / "history")
+    (season / "week-08").mkdir()
+    shutil.copy(data / "week-08" / "facts.json", season / "week-08" / "facts.json")
+    monkeypatch.chdir(tmp_path)
+
+    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 0
+    out = tmp_path / "clients" / "cpc" / "build" / "2026" / "midseason.json"
+    assert str(out) in capsys.readouterr().out
+    assert json.loads(out.read_text(encoding="utf-8"))["week"] == 8
+    assert not (tmp_path / "clients" / "cpc" / "published").exists()
+
+
+def test_the_midseason_command_with_no_saved_week_exits_plainly(tmp_path, monkeypatch, capsys):
+    from cornerstone import cli
+
+    cli_root(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["midseason", "--client", "cpc", "--season", "2026", "--week", "8"]) == 2
+    assert "Run make build CLIENT=cpc WEEK=8 first." in capsys.readouterr().out
+
+
 def test_the_settings_command_prints_the_derived_sizes(tmp_path, monkeypatch, capsys):
     from cornerstone import cli
 

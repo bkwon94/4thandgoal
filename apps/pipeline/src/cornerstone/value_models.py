@@ -6,8 +6,11 @@ from analyzer.values import AnalyzerValues
 from league.client import ValueModels
 from league.values import LeagueValues
 from managers.values import ManagersValues
+from midseason.values import MidseasonValues
 from rankings.values import RankingsValues
+from sim.values import SimValues
 from waiver.values import WaiverValues
 from week.values import WeekValues
 
-VALUE_MODELS: ValueModels = (LeagueValues, WeekValues, RankingsValues, ManagersValues, WaiverValues, AnalyzerValues)
+VALUE_MODELS: ValueModels = (LeagueValues, WeekValues, RankingsValues, ManagersValues, WaiverValues, AnalyzerValues,
+                             SimValues, MidseasonValues)

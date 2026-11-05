@@ -76,6 +76,8 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.published import midseason_report, write_midseason
+from midseason.state import league_state
 from rankings.published import render_rankings
 from waiver.board import waiver_board
 from waiver.price import bid_history
@@ -669,6 +671,31 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
     inputs = _season_inputs(season, week, _raw_for_season_files(client, season, week), season_history, client)
     _write_managers(season, week, bundle.data.teams, inputs, client)
     return out
+
+
+# The plain line when the week of the report has no saved facts. The odds and the team names come from them.
+NO_WEEK_FACTS = "Week {week} has no saved facts. Run make build CLIENT={slug} WEEK={week} first."
+
+
+def run_midseason(season: int, week: int, *, client: Client) -> Path:
+    """Write midseason.json of `week` into the build folder of the season, from the saved history of weeks 1 to `week`
+    and the saved facts of `week`. It writes nothing to published/, so only the publish of the report puts it live.
+
+    The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
+    """
+    facts = week_dir(client.folder, season, week) / "facts.json"
+    if not facts.exists():
+        raise BuildStopped(NO_WEEK_FACTS.format(week=week, slug=client.slug))
+    bundle = read_bundle(facts)
+    history = History(week=week, weeks=load_saved_weeks(history_root(client.folder, season), week,
+                                                        client.settings.points_key))
+    # A gap would drop a week from each record, so the report waits for a complete history.
+    if not history.complete():
+        raise BuildStopped(HISTORY_GAP.format(week=week))
+    odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
+    names = {rid: team.name for rid, team in bundle.data.teams.items()}
+    state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+    return write_midseason(midseason_report(season, week, state), build_dir(client.folder))
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:

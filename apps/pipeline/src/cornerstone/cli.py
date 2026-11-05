@@ -1,6 +1,6 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, page-json, rankings, history, chart, analyze, and find
+It defines the build, publish, rewrite, page-json, rankings, midseason, history, chart, analyze, and find
 subcommands.
 """
 import argparse
@@ -35,6 +35,7 @@ from cornerstone.pipeline import (
     resolve_week,
     run_build,
     run_history,
+    run_midseason,
     run_page_json,
     run_rankings,
     run_rewrite,
@@ -85,6 +86,11 @@ def build_parser() -> argparse.ArgumentParser:
     rankings = sub.add_parser("rankings", parents=[named], help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
     rankings.add_argument("--season", type=int)
+
+    midseason = sub.add_parser("midseason", parents=[named],
+                               help="write the midseason report of a saved week into the build folder of the season")
+    midseason.add_argument("--week", type=int)
+    midseason.add_argument("--season", type=int)
 
     history = sub.add_parser("history", parents=[named], help="fetch and cache past weeks")
     history.add_argument("--season", type=int)
@@ -546,6 +552,8 @@ def main(
             print(run_page_json(repo, season, week, client=client))
         elif args.command == "rankings":
             print(run_rankings(repo, season, week, call, client=client))
+        elif args.command == "midseason":
+            print(run_midseason(season, week, client=client))
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)
