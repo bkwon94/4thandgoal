@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-5, AT-11, AT-12, AT-1
 
 **Blocked by:** 01, 02, 05.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Each side of the document holds `week_lines`, a list of `{week, text}` for the trade week and the next week only.
 - [x] Out counts in the trade week only. IR, PUP, NA, and Sus, out for the season, and a return week after the next week count in both weeks. Questionable and Doubtful never count.
@@ -31,3 +31,4 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-5, AT-11, AT-12, AT-1
 - For Brian: with no NFL schedule on file, every player counts as one who plays, and the line ends "No NFL schedule is on file, so no bye or opponent shows."
 - For Brian: the analysis prompt now says the Week line fact moves no letter and that a bullet or the verdict reason can name it when this week matters.
 - Steps up (ticket 07) adds its sentence in `_text` of `week_line.py`, after the absences. The status of each player that a Week line reads is not yet in the cache key; ticket 07 adds it.
+- The merge: `78677a2` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
