@@ -6,7 +6,7 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,13 @@ Each trade gets a grade on what happened after it: the points of the players sin
 
 ## Decision
 
-None yet.
+Brian decided it in the grill on 2026-11-05.
+
+- The look back is a **Trade result**, not a Grade. Grade stays the analyzer's letter for a proposed trade.
+- The measure is the net Points over the line of each side since the trade: what it got and started, minus what it gave away as the other team started those players.
+- The labels are Robbery, Clear win, Slight edge, Push, and Too soon. Too soon means fewer than 2 weeks since the trade. The spec sets the gap lines from the real spread, so CPC shows about 3 or 4 Robberies and Clear wins.
+- The record of the team since the trade shows on the card as context, such as "4-1 since". It does not count in the result.
+- "Hurt on arrival" tags a player who was out in the first week after the trade.
+- "Since" starts at the first week whose games come after the trade, per the Trade window. A flipped player counts only during his stint.
+- In a 3-team trade, each side gets its net, and the label comes from the gap between the best side and the worst side.
+- The page shows every trade: the top 3 as full cards, then the rest as a compact list.

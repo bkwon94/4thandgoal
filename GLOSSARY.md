@@ -928,6 +928,10 @@ _Avoid_: Points over replacement, VORP, value over replacement
 A win of a team that the points of one of its starters decided: the team won, and that starter scored more than the margin.
 _Avoid_: Clutch win, game winner, difference maker
 
+**Trade result**:
+The midseason report's label for one past trade, from the net Points over the line of each side since the trade: Robbery, Clear win, Slight edge, Push, or Too soon.
+_Avoid_: Grade (that is the analyzer's letter for a proposed trade), hindsight grade, trade score
+
 ## Client language
 
 The terms of the structure that both apps share: the clients, the packages, and the apps.

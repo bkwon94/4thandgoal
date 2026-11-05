@@ -26,10 +26,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The sim keeps the `odds.py` draw and adds the bracket, with CPC reseeded, plus full counts and 10,000 runs. It orders by mean wins with a seed heat map, and stores 200 sample runs and the parameters. `decisions/07-research-the-sim-model.md`.
 - The fix for the gap in the transaction history is its own spec, `transaction-history`, before the week 9 build. `decisions/12-research-transaction-history-gap.md`.
 - A pickup earns credit for starter points for its adder, with starts and swung wins. RB, WR, and TE rank by Points over the line, streamers feed a streaming king award, a miss cost 10% of the budget or more, and an outbid list shows lost bids. `decisions/03-grill-waiver-hit-and-miss.md`.
+- Each trade gets a Trade result from net Points over the line since the trade: Robbery, Clear win, Slight edge, Push, or Too soon. The record since is context, and "hurt on arrival" is a tag. Every trade shows, with the top 3 as cards. `decisions/04-grill-trade-grade-to-date.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the rubric of a trade's grade to date, and how does it relate to the analyzer's grade? `decisions/04-grill-trade-grade-to-date.md`.
 - How does the report measure luck, an overachiever, and the schedule swap? `decisions/06-grill-luck-and-schedule-swap.md`.
 - Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
 - What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
@@ -44,4 +44,5 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - A report for a season other than 2026. The build takes the season as input, but only 2026 ships.
 - An injury date finer than the NFL week. No source gives one.
 - The fix of the transaction history. It ships first as the spec `transaction-history`.
+- A comparison of the Trade result with the analyzer's Grade at the time. The rubric changed since weeks 1 to 6, so it needs a re-run of the analyzer on old trades.
 - A live sim on a server. Ticket 08 decides between replay and a live sim in the browser. A server sim is past the destination.
