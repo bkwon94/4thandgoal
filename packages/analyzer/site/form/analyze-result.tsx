@@ -1,5 +1,5 @@
 /**
- * The analyzer result from one analyze document in layout A: the decision for the asker, the fairness line, the swap card, and a card per side.
+ * The analyzer result from one analyze document, in one column: the decision for the asker, the fairness line, the swap card, and a card per side.
  * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
