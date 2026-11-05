@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-1, AT-4, AT-47, AT
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `make midseason CLIENT=cpc WEEK=8` writes `midseason.json` to the build folder of the season and nothing to `published/`.
 - [x] Points for is the sum of the weekly scores: Maye d'force B with U shows 900.65.
