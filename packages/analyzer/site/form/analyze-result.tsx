@@ -338,7 +338,7 @@ function SideRead({ side }: { side: Side }) {
       {side.bullets.length === 0 ? (
         <p className="mt-sp-4 mb-0 text-lead text-mute">The analysis is unavailable, so the rows stand alone.</p>
       ) : (
-        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-body text-ink-2">
+        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-lead text-ink-2">
           {side.bullets.map((bullet) => (
             <li key={bullet}>{bullet}</li>
           ))}
