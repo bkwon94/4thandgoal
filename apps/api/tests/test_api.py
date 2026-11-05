@@ -383,6 +383,10 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert [p["name"] for p in four["gives"]] == ["Nico Collins"]
     assert [p["name"] for p in four["gets"]] == ["Dalton Kincaid", "Garrett Wilson"]
     assert twelve["gets"][0]["headshot"] == "https://sleepercdn.com/content/nfl/players/7569.jpg"
+    # Each traded player carries his Season rank. A Recent rank 12 spots or more off it shows, else it is null.
+    # Kincaid is TE10 by total points and TE39 by points per game over the last 4 weeks, so his Recent rank shows.
+    assert [(p["season_rank"], p["recent_rank"]) for p in four["gives"] + four["gets"]] == [
+        ("WR20", None), ("TE10", "TE39"), ("WR11", None)]
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
     # The deal row comes first, in plain words that name no source. One player for two gets a discount.
     assert [side["factors"][0] for side in doc["sides"]] == [{
@@ -1204,7 +1208,8 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
                "season", "week", "games", "in_progress", "snaps", "usage", "to", "from"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
-DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name"}
+# A Season rank and a Recent rank, such as WR60, hold the rank as digits.
+DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name", "season_rank", "recent_rank"}
 
 
 # One hole sentence of the roster fit reason, from the slot name to the period that ends it.
@@ -1847,7 +1852,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_12():
+def test_the_document_version_is_13():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1855,7 +1860,8 @@ def test_the_document_version_is_12():
     # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
     # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
     # The bullets and the deal row take the place of the analysis and the chart block, so the shape changes.
-    assert cache_module.DOCUMENT_VERSION == 12
+    # Each traded player carries his Season rank and his Recent rank, so the shape changes.
+    assert cache_module.DOCUMENT_VERSION == 13
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

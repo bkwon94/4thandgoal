@@ -11,7 +11,7 @@ from cpc import cpc_client, four_week
 
 from league.paths import returns_path
 from league.provider.sleeper import load_raw
-from league.ranks import projection_ahead
+from league.ranks import projection_ahead, recent_rank
 from league.slow_sources import SlowSources, load_slow_sources
 from league.snapshot import (
     KnownGames,
@@ -497,6 +497,22 @@ def test_a_week_9_grade_ranks_cooper_wr27_by_season_points_per_game():
 def test_the_week_8_build_keeps_cooper_wr16_by_the_4_week_measure():
     snap = week_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", 8, client=CLIENT)
     assert snap.position_rank(COOPER) == 16
+
+
+def test_a_week_9_grade_gives_cooper_recent_rank_wr18_by_the_last_4_weeks_with_no_due_back_step():
+    # 39.3 points over the 3 games of weeks 5 to 8, 13.10 a game. 17 receivers score more a game in those weeks.
+    # The Recent rank has no due-back step, so it is WR18, as the research of decision 01 gives.
+    returns, out_for_season = _after_week_8(CLIENT)
+    snap = build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, trade_week=9,
+                          returns=returns, out_for_season=out_for_season, client=CLIENT)
+    assert recent_rank(snap, COOPER) == 18
+
+
+def test_a_player_with_no_game_in_the_last_4_weeks_has_no_recent_rank(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    # A.J. Brown played week 1 only, so weeks 2 to 5 hold no game of his.
+    assert recent_rank(snap, AJ_BROWN) is None
 
 
 # The grade reads the season measure. The week 6 fixture holds the saved weeks 1 to 5.

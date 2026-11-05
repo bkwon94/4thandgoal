@@ -27,6 +27,7 @@ from analyzer.rubric import (
     check_trade,
     fairness,
 )
+from analyzer.trade_facts import shown_ranks
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
@@ -103,6 +104,15 @@ def _player(snapshot: Snapshot, player_id: str) -> dict:
         "nfl_team": player.nfl_team,
         "headshot": headshot_url(player_id, is_def(player_id)),
     }
+
+
+def _traded_player(snapshot: Snapshot, player_id: str) -> dict:
+    """A traded player as a side card shows him: the player, his Season rank, and his Recent rank when the gap holds.
+
+    `recent_rank` is null when the gap does not hold, so the card shows the Recent rank only when it is present.
+    """
+    season, recent = shown_ranks(snapshot, player_id)
+    return {**_player(snapshot, player_id), "season_rank": season, "recent_rank": recent}
 
 
 @router.get("/teams")
@@ -188,7 +198,10 @@ def _factor_lean(adjuster: Adjuster) -> Lean:
 
 
 def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
-    """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets."""
+    """Each side of the trade as the site shows it: the roster, the team, and the players it gives and gets.
+
+    Each player carries his Season rank and his Recent rank, in the finder document too, so a side has one shape.
+    """
     # The analyze document and the finder document share this shape, so the site renders a side one way.
     # Each given player carries `to` and each got player carries `from`, so the site can tag a player by team.
     givers = trade.givers
@@ -196,8 +209,8 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
         {
             "roster_id": side.roster_id,
             "team": snapshot.teams[side.roster_id].name,
-            "gives": [{**_player(snapshot, player.player_id), "to": player.to} for player in side.gives],
-            "gets": [{**_player(snapshot, pid), "from": givers[pid]} for pid in trade.gets(side.roster_id)],
+            "gives": [{**_traded_player(snapshot, player.player_id), "to": player.to} for player in side.gives],
+            "gets": [{**_traded_player(snapshot, pid), "from": givers[pid]} for pid in trade.gets(side.roster_id)],
         }
         for side in trade.sides
     ]

@@ -33,6 +33,11 @@ CONSOLIDATION_MARGIN = Decimal("1.25")
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")
 
+# The ranks in the text of a grade: the Season rank always, and the Recent rank beside it only when the two differ by
+# this many spots or more. GLOSSARY.md, "Recent rank". Decision 05 of grade-clarity: one number for every position.
+# 12 spots is half the line at QB and TE, and a third of it at RB and WR, so a smaller swing shows no Recent rank.
+RECENT_RANK_GAP = 12
+
 # Trend and usage compares snap and target share over the SHARE_WEEKS windows of league/tunables.py.
 # The change in mean WOPR between the two windows that counts as up or down. WOPR is 1.5 times target share plus
 # 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.

@@ -6,6 +6,7 @@ import type { z } from "zod";
 import type * as schema from "./schemas/api";
 
 export type Player = z.infer<typeof schema.playerSchema>;
+export type TradedPlayer = z.infer<typeof schema.tradedPlayerSchema>;
 export type GivenPlayer = z.infer<typeof schema.givenPlayerSchema>;
 export type GotPlayer = z.infer<typeof schema.gotPlayerSchema>;
 export type TradeSide = z.infer<typeof schema.tradeSideSchema>;

@@ -128,6 +128,34 @@ describe("AnalyzeResult", () => {
     expect(sideCard("Pukancun on 3 · Your Side").querySelectorAll("img")).toHaveLength(3);
   });
 
+  it("shows the Season rank of each player in the side card, and the Recent rank only when it is present", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    expect(mine.getByText("Season rank WR20")).toBeTruthy();
+    expect(mine.getByText("Season rank WR11")).toBeTruthy();
+    // Kincaid is TE10 by total points and TE39 by points per game of the last 4 weeks, so his Recent rank shows.
+    expect(mine.getByText("Season rank TE10 · Recent rank TE39")).toBeTruthy();
+    expect(mine.getAllByText(/Recent rank/)).toHaveLength(1);
+    // The swap card shows no rank, so the finder cards that reuse it stay as they are.
+    expect(within(tradeChapter()).queryByText(/Season rank/)).toBeNull();
+  });
+
+  it("shows no rank line for a player with no Season rank", () => {
+    const noRanks: AnalyzeResponse = {
+      ...fixture,
+      trade: {
+        ...fixture.trade,
+        sides: fixture.trade.sides.map((side) => ({
+          ...side,
+          gives: side.gives.map(({ season_rank: _s, recent_rank: _r, ...player }) => player),
+          gets: side.gets.map((player) => ({ ...player, season_rank: null, recent_rank: null })),
+        })),
+      },
+    };
+    render(<AnalyzeResult doc={noRanks} />);
+    expect(screen.queryByText(/Season rank/)).toBeNull();
+  });
+
   it("puts the players, then the bullets, then the closed fold in each side card", () => {
     render(<AnalyzeResult doc={fixture} />);
     const card = sideCard("Pukancun on 3 · Your Side");

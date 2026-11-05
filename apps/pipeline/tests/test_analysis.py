@@ -11,11 +11,15 @@ from conftest import with_free_agents
 from cpc import cpc_client, four_week
 
 from analyzer import analysis
-from analyzer.analysis import AnalysisOut, analyze
+from analyzer.analysis import AnalysisOut, analyze, code_only
+from analyzer.routes import result_document
 from analyzer.rubric import ProposedTrade, TradeSide, grade
+from analyzer.trade_facts import trade_fact_sheet
+from analyzer.tunables import RECENT_RANK_GAP
+from league.paths import returns_path
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
-from league.snapshot import build_snapshot, load_returns, load_snapshot
+from league.snapshot import build_snapshot, load_out_for_season, load_returns, load_snapshot
 
 CLIENT = cpc_client()
 
@@ -112,7 +116,7 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
     system, user = fake.calls[0]
     facts = _facts(user)
     # Points per game and season rank, before the trade only.
-    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "season rank 7 of 90" in facts[f"{WILSON}.ppg"]
+    assert "14.2 points per game" in facts[f"{WILSON}.ppg"] and "His Season rank is WR7," in facts[f"{WILSON}.ppg"]
     assert "position rank" not in facts[f"{WILSON}.ppg"]
     assert f"{WILSON}.usage" in facts and f"{WILSON}.targets" in facts and f"{WILSON}.redzone" in facts
     # Jacobs is suspended, and the returns file has him back in week 7.
@@ -241,16 +245,17 @@ def test_a_number_in_a_breakdown_reason_is_allowed(trade, snap, monkeypatch):
     assert len(fake.calls) == 1
 
 
-def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
-    # The hand count of the RB lines in weeks 2 to 5 puts Tuten 15th. Jacobs is due back, so his projection ahead
-    # of weeks 7 to 14 puts him 16th.
+def test_the_points_per_game_fact_names_the_season_rank_and_the_checker_accepts_a_quote_of_it(trade, snap):
+    # Tuten's 59 points through week 5 put him 16th among the backs. Vele is WR23 by total points, and WR41 by points
+    # per game over weeks 2 to 5, so the gap of 18 shows his Recent rank.
     fake = FakeClaude(_response(eleven=_side(11, bullets=[
-        "Bhayshul Tuten is RB15 by points per game.", "His snap share went up.", "He moves to a new roster."],
-        cited=[f"{TUTEN}.ppg"])))
+        "Bhayshul Tuten is RB16 this season.", "Devaughn Vele has a Recent rank of WR41.", "He moves to a new roster."],
+        cited=[f"{TUTEN}.ppg", f"{VELE}.ppg"])))
     result = analyze(trade, snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert "Bhayshul Tuten is RB15 by points per game." in facts[f"{TUTEN}.ppg"]
-    assert "Josh Jacobs is RB16 by his projection ahead." in facts[f"{JACOBS}.ppg"]
+    assert "His Season rank is RB16, by total points this season." in facts[f"{TUTEN}.ppg"]
+    assert "Recent rank" not in facts[f"{TUTEN}.ppg"]
+    assert "His Recent rank is WR41, by points per game over the last 4 weeks." in facts[f"{VELE}.ppg"]
     assert not result.fallback
     assert len(fake.calls) == 1
 
@@ -258,14 +263,11 @@ def test_the_points_per_game_fact_names_the_position_rank_and_the_checker_accept
 def test_the_checker_accepts_a_sentence_that_quotes_a_cited_depth_count_or_strength_count(trade, snap):
     # Roster 11 gives Wilson WR12 and gets Vele, so it holds 1 receiver above the line after, from 2.
     # Tuten RB15 and Wilson leave its RB1, RB2, WR1, and WR2 starters, and Jacobs RB16 and Vele come in.
-    text = ("Josh Jacobs takes RB2 on this side. WR depth above the line goes from 2 to 1. "
+    text = ("WR depth above the line goes from 2 to 1. "
             "Its starters with a position rank of 24 or better go from 4 to 3.")
-    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text),
-                                             cited=[f"{JACOBS}.slot", "11.depth.wr", "11.strength"])))
+    fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=["11.depth.wr", "11.strength"])))
     result = analyze(trade, snap, call=fake)
     facts = _facts(fake.calls[0][1])
-    assert facts[f"{JACOBS}.slot"] == "Josh Jacobs takes RB2, which Bhayshul Tuten held before the trade."
-    assert facts[f"{VELE}.slot"] == "Devaughn Vele takes WR2, and George Pickens moves to WR1."
     assert facts["11.depth.wr"] == "For Unsolicited Dak Picks, WR depth above the line goes from 2 to 1."
     assert facts["11.strength"] == ("For Unsolicited Dak Picks, the starters at RB1, RB2, WR1, and WR2 with a "
                                     "position rank of 24 or better go from 4 to 3.")
@@ -299,8 +301,8 @@ def test_a_free_agent_rank_that_no_cited_hole_fact_holds_fails(trade, fa_snap):
 
 def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
     # The depth fact of roster 11 holds 2 and 1, and no breakdown reason holds 38, so a count of 38 is a new number.
-    text = "Josh Jacobs takes RB2 on this side. WR depth above the line goes from 38 to 1. He starts."
-    bad = _response(eleven=_side(11, bullets=_split(text), cited=[f"{JACOBS}.slot", "11.depth.wr"]))
+    text = "Josh Jacobs moves to this side. WR depth above the line goes from 38 to 1. He starts."
+    bad = _response(eleven=_side(11, bullets=_split(text), cited=["11.depth.wr"]))
     fake = FakeClaude(bad, bad)
     assert analyze(trade, snap, call=fake).fallback
     assert "number 38 is not in the cited facts" in fake.calls[1][1]
@@ -616,3 +618,68 @@ def test_the_prompt_asks_for_two_or_three_bullets_of_one_sentence_each(trade, sn
     system = " ".join(fake.calls[0][0].split())
     assert "Write 2 or 3 bullets for each side. Each bullet is one sentence that makes one claim." in system
     assert "three to five sentences" not in system
+
+
+# The real 2026 data after week 8, graded in week 9. Trade A: roster 10 gives Omar Cooper Jr. to roster 6 for
+# Parker Washington. Roster 10 asks.
+SAVED = CLIENT.folder / "data" / "2026"
+COOPER, WASHINGTON = "13276", "9487"
+
+
+@pytest.fixture(scope="module")
+def week_9():
+    returns_file = returns_path(CLIENT.nfl_dir, 2026)
+    return build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, trade_week=9,
+                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
+                          client=CLIENT)
+
+
+@pytest.fixture
+def trade_a():
+    return ProposedTrade(season=2026, sides=(TradeSide(roster_id=10, gives=[{"player_id": COOPER, "to": 6}]),
+                                             TradeSide(roster_id=6, gives=[{"player_id": WASHINGTON, "to": 10}])),
+                         asker=10)
+
+
+def _quote(trade, snapshot, bullets):
+    """A response with the code letters and the code verdict, and the bullets for the first side."""
+    code = code_only(trade, snapshot)
+    letters = {b.roster_id: b.final_letter for b in code.breakdowns}
+    plain = ["The trade moves a receiver.", "Both sides get a receiver back."]
+    return lambda facts: {
+        "sides": [{"roster_id": rid, "final_letter": letters[rid], "reason": None,
+                   "bullets": bullets if rid == trade.sides[0].roster_id else plain,
+                   "cited": [f"{COOPER}.ppg"]} for rid in letters],
+        "verdict": {"choice": code.verdict.choice, "reason": "The trade is close for both sides."},
+    }
+
+
+def test_each_traded_player_carries_his_season_rank_and_his_recent_rank_on_a_large_gap(trade_a, week_9):
+    document = result_document(trade_a, week_9, code_only(trade_a, week_9))
+    players = {p["player_id"]: p for side in document["trade"]["sides"] for p in side["gives"] + side["gets"]}
+    # Cooper: WR60 by total points through week 8, WR18 by points per game over weeks 5 to 8. The gap is 42.
+    assert (players[COOPER]["season_rank"], players[COOPER]["recent_rank"]) == ("WR60", "WR18")
+    # Washington: WR21 and WR19. The gap is 2, under RECENT_RANK_GAP, so no Recent rank shows.
+    assert (players[WASHINGTON]["season_rank"], players[WASHINGTON]["recent_rank"]) == ("WR21", None)
+    assert RECENT_RANK_GAP == 12
+
+
+def test_the_facts_give_the_season_rank_and_the_recent_rank_with_its_label_and_the_checks_accept_them(
+        trade_a, week_9):
+    bullets = ["Omar Cooper Jr. is WR60 this season.", "His Recent rank is WR18.", "He moves to a new roster."]
+    fake = FakeClaude(_quote(trade_a, week_9, bullets))
+    result = analyze(trade_a, week_9, call=fake)
+    facts = _facts(fake.calls[0][1])
+    assert "His Season rank is WR60, by total points this season." in facts[f"{COOPER}.ppg"]
+    assert "His Recent rank is WR18, by points per game over the last 4 weeks." in facts[f"{COOPER}.ppg"]
+    assert "His Season rank is WR21, by total points this season." in facts[f"{WASHINGTON}.ppg"]
+    assert "Recent rank" not in facts[f"{WASHINGTON}.ppg"]
+    # No Position rank number: the grade measure is WR27 for Cooper, and no fact gives it.
+    assert "27" not in facts[f"{COOPER}.ppg"] and "by points per game." not in facts[f"{COOPER}.ppg"]
+    assert not result.fallback and len(fake.calls) == 1
+
+
+def test_the_fact_sheet_has_no_slot_fact(trade_a, week_9):
+    facts = trade_fact_sheet(trade_a, week_9)
+    assert not [fid for fid in facts if fid.endswith(".slot")]
+    assert not [f.text for f in facts.values() if "sits on the bench" in f.text or " takes " in f.text]

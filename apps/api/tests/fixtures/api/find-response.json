@@ -23,6 +23,8 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR30",
+              "recent_rank": null,
               "to": 3
             },
             {
@@ -31,6 +33,8 @@
               "position": "RB",
               "nfl_team": "MIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "season_rank": "RB15",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -41,6 +45,8 @@
               "position": "RB",
               "nfl_team": "BAL",
               "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "season_rank": "RB3",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -55,6 +61,8 @@
               "position": "RB",
               "nfl_team": "BAL",
               "headshot": "https://sleepercdn.com/content/nfl/players/3198.jpg",
+              "season_rank": "RB3",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -65,6 +73,8 @@
               "position": "WR",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/10213.jpg",
+              "season_rank": "WR30",
+              "recent_rank": null,
               "from": 2
             },
             {
@@ -73,6 +83,8 @@
               "position": "RB",
               "nfl_team": "MIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/4199.jpg",
+              "season_rank": "RB15",
+              "recent_rank": null,
               "from": 2
             }
           ]
@@ -106,6 +118,8 @@
               "position": "RB",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
+              "season_rank": "RB13",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -116,6 +130,8 @@
               "position": "QB",
               "nfl_team": "CHI",
               "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "season_rank": "QB23",
+              "recent_rank": null,
               "from": 3
             },
             {
@@ -124,6 +140,8 @@
               "position": "RB",
               "nfl_team": "DEN",
               "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
+              "season_rank": "RB35",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -138,6 +156,8 @@
               "position": "QB",
               "nfl_team": "CHI",
               "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+              "season_rank": "QB23",
+              "recent_rank": null,
               "to": 2
             },
             {
@@ -146,6 +166,8 @@
               "position": "RB",
               "nfl_team": "DEN",
               "headshot": "https://sleepercdn.com/content/nfl/players/6806.jpg",
+              "season_rank": "RB35",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -156,6 +178,8 @@
               "position": "RB",
               "nfl_team": "LV",
               "headshot": "https://sleepercdn.com/content/nfl/players/12527.jpg",
+              "season_rank": "RB13",
+              "recent_rank": null,
               "from": 2
             }
           ]
@@ -189,6 +213,8 @@
               "position": "WR",
               "nfl_team": "CIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "season_rank": "WR10",
+              "recent_rank": null,
               "to": 3
             }
           ],
@@ -199,6 +225,8 @@
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "season_rank": "QB21",
+              "recent_rank": null,
               "from": 3
             },
             {
@@ -207,6 +235,8 @@
               "position": "WR",
               "nfl_team": "BUF",
               "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
+              "season_rank": "WR48",
+              "recent_rank": null,
               "from": 3
             }
           ]
@@ -221,6 +251,8 @@
               "position": "QB",
               "nfl_team": "NYG",
               "headshot": "https://sleepercdn.com/content/nfl/players/2306.jpg",
+              "season_rank": "QB21",
+              "recent_rank": null,
               "to": 2
             },
             {
@@ -229,6 +261,8 @@
               "position": "WR",
               "nfl_team": "BUF",
               "headshot": "https://sleepercdn.com/content/nfl/players/8134.jpg",
+              "season_rank": "WR48",
+              "recent_rank": null,
               "to": 2
             }
           ],
@@ -239,6 +273,8 @@
               "position": "WR",
               "nfl_team": "CIN",
               "headshot": "https://sleepercdn.com/content/nfl/players/7564.jpg",
+              "season_rank": "WR10",
+              "recent_rank": null,
               "from": 2
             }
           ]

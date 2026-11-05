@@ -139,6 +139,24 @@ def rank_table(snapshot: Snapshot) -> dict[str, list[str]]:
             for position in RANKED_POSITIONS}
 
 
+def recent_rank(snapshot: Snapshot, player_id: str) -> int | None:
+    """The player's Recent rank: his place at his position by points per game over the last LINEUP_WEEKS weeks.
+
+    GLOSSARY.md, "Recent rank". The pool is the pool of the position rank. The rank has no due-back step and no
+    out-for-season step, so it shows what the player scored, not what the grade counts him for.
+    A tie shares the better place. None for a player outside the pool or with no game in the window.
+    """
+    player = snapshot.players.get(player_id)
+    position = player.position if player is not None else None
+    if position not in RANKED_POSITIONS or not _played_weeks(snapshot, player_id, "recent"):
+        return None
+    peers = snapshot.rank_table()[position]
+    if player_id not in peers:
+        return None
+    mine = recent_points_per_game(snapshot, player_id)
+    return 1 + sum(recent_points_per_game(snapshot, pid) > mine for pid in peers)
+
+
 def _has_known_game(snapshot: Snapshot, player_id: str) -> bool:
     """True when the player has a game played in the known games of the trade week."""
     if snapshot.as_of.stats_through <= snapshot.as_of.completed_through:

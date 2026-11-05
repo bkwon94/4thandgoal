@@ -719,32 +719,12 @@ def test_with_no_schedule_map_no_bye_hole_reads_and_the_reason_names_the_missing
     assert fit.reason == "The best lineup stays about the same. The schedule sources are not available."
 
 
-# Roster 2 starts Ja'Marr Chase WR8 at WR1, Chris Olave WR14 at WR2, and Tre Tucker WR31 at FLEX1. Its DEF slot is
-# empty. St. Brown WR11 and Garrett Wilson WR12 score 15.00 each, so St. Brown takes WR2 by the player ID tie rule.
-def test_the_fact_sheet_names_the_slot_each_player_takes_and_the_player_he_pushes_out(snap):
-    sheet = trade_fact_sheet(_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), snap)
-    assert sheet[f"{ST_BROWN}.slot"].text == "Amon-Ra St. Brown takes WR2, and Chris Olave moves to FLEX2."
-    assert sheet[f"{WILSON}.slot"].text == "Garrett Wilson takes FLEX1 and pushes Tre Tucker to the bench."
-    # The slot names carry digits, so the checker accepts "WR2" and "FLEX1" in the prose.
-    assert set(sheet[f"{ST_BROWN}.slot"].numbers) >= {"2"}
-    assert set(sheet[f"{WILSON}.slot"].numbers) >= {"1"}
-
-
-def test_the_slot_fact_names_the_player_who_held_the_slot_and_leaves_in_the_trade(snap):
-    # Hampton RB26 at 9.70 takes RB2 on roster 2 over Charbonnet at 9.58. Jeanty held RB2 and goes to roster 12.
-    sheet = trade_fact_sheet(_trade(2, [JEANTY], 12, [HAMPTON]), snap)
-    assert sheet[f"{HAMPTON}.slot"].text == "Omarion Hampton takes RB2, which Ashton Jeanty held before the trade."
-
-
-def test_a_player_the_side_gets_who_starts_in_no_slot_sits_on_the_bench(snap):
-    # Jeanty at 10.98 is behind Tee Higgins at 13.60 and DJ Moore at 12.20 for the flex spots of roster 12.
-    sheet = trade_fact_sheet(_trade(2, [JEANTY], 12, [HAMPTON]), snap)
-    assert sheet[f"{JEANTY}.slot"].text == "Ashton Jeanty sits on the bench."
-
-
-def test_a_player_who_takes_an_empty_slot_says_the_slot_was_empty(snap):
-    sheet = trade_fact_sheet(_trade(2, [LOVE], 12, ["NE"]), snap)
-    assert sheet["NE.slot"].text == "New England Patriots takes DEF, which was empty before the trade."
+# The best lineup is a measure of depth inside the grade, not the lineup a manager sets, so no fact names a slot.
+def test_the_fact_sheet_names_no_slot_that_a_player_takes(snap):
+    for trade in (_trade(2, [JONES, JEANTY], 12, [ST_BROWN, WILSON]), _trade(2, [LOVE], 12, ["NE"])):
+        sheet = trade_fact_sheet(trade, snap)
+        assert not [fid for fid in sheet if fid.endswith(".slot")]
+        assert not [f.text for f in sheet.values() if "sits on the bench" in f.text or " takes " in f.text]
 
 
 # Miller is RB55 at 4.27 a game, so his RB2 slot is a hole and he never counts toward depth. A hand count of the

@@ -12,6 +12,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "season_rank": "WR20",
+            "recent_rank": null,
             "to": 12
           }
         ],
@@ -22,6 +24,8 @@
             "position": "TE",
             "nfl_team": "BUF",
             "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "season_rank": "TE10",
+            "recent_rank": "TE39",
             "from": 12
           },
           {
@@ -30,6 +34,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/11628.jpg",
+            "season_rank": "WR15",
+            "recent_rank": null,
             "from": 7
           }
         ]
@@ -44,6 +50,8 @@
             "position": "TE",
             "nfl_team": "BUF",
             "headshot": "https://sleepercdn.com/content/nfl/players/10236.jpg",
+            "season_rank": "TE10",
+            "recent_rank": "TE39",
             "to": 4
           },
           {
@@ -52,6 +60,8 @@
             "position": "WR",
             "nfl_team": "NYJ",
             "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR11",
+            "recent_rank": null,
             "to": 7
           }
         ],
@@ -62,6 +72,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/7569.jpg",
+            "season_rank": "WR20",
+            "recent_rank": null,
             "from": 4
           }
         ]
@@ -76,6 +88,8 @@
             "position": "WR",
             "nfl_team": "HOU",
             "headshot": "https://sleepercdn.com/content/nfl/players/11628.jpg",
+            "season_rank": "WR15",
+            "recent_rank": null,
             "to": 4
           }
         ],
@@ -86,6 +100,8 @@
             "position": "WR",
             "nfl_team": "NYJ",
             "headshot": "https://sleepercdn.com/content/nfl/players/8146.jpg",
+            "season_rank": "WR11",
+            "recent_rank": null,
             "from": 12
           }
         ]

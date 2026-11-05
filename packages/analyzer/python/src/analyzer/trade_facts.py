@@ -4,15 +4,17 @@ need, and the roster fit reads. Every player stat ends at the known games and ev
 Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
-from analyzer.adjusters import Side, due_back_week, hole_sentence, team_race, trade_handcuffs
+from analyzer.adjusters import Side, hole_sentence, team_race, trade_handcuffs
 from analyzer.rubric import ProposedTrade, build_sides
+from analyzer.tunables import RECENT_RANK_GAP
 from facts.tokens import Nums, fact
 from league.history import points_per_game, red_zone, season_rank, snap_share, target_share
 from league.lineup import FLEX_SLOTS, STRENGTH_SLOTS, StartingSlot, allowed_positions
 from league.models import Fact, UsageShare
 from league.numbers import plural
-from league.ranks import RANKED_POSITIONS
+from league.ranks import RANKED_POSITIONS, recent_rank
 from league.snapshot import Snapshot
+from league.tunables import LINEUP_WEEKS
 
 _RACE_TEXT = {
     "contender": "a contender in a playoff spot",
@@ -21,9 +23,24 @@ _RACE_TEXT = {
 }
 
 
+def shown_ranks(snapshot: Snapshot, pid: str) -> tuple[str | None, str | None]:
+    """The ranks the text of a grade shows for a player: his Season rank, such as WR60, and his Recent rank.
+
+    The Recent rank is None unless it differs from the Season rank by RECENT_RANK_GAP spots or more.
+    The Season rank is None when the stats of the season are not complete. GLOSSARY.md, "Season rank", "Recent rank".
+    """
+    position = snapshot.players[pid].position
+    season = season_rank(snapshot.stats, pid, snapshot.as_of.stats_through)
+    if season is None:
+        return None, None
+    recent = recent_rank(snapshot, pid)
+    shown = f"{position}{recent}" if recent is not None and abs(season[0] - recent) >= RECENT_RANK_GAP else None
+    return f"{position}{season[0]}", shown
+
+
 def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The points per game and the season rank of a traded player, through the player stat bound only, and his
-    position rank by lineup value. GLOSSARY.md, "Position rank"."""
+    """The points per game of a traded player, through the player stat bound only, his Season rank, and his Recent
+    rank when the gap holds. No Position rank number: the text shows the rank that Sleeper shows."""
     n = Nums()
     player = snapshot.players[pid]
     through = snapshot.as_of.stats_through
@@ -35,19 +52,13 @@ def _ppg_fact(snapshot: Snapshot, pid: str) -> Fact:
         text = f"{who} has no scored game before the trade."
     else:
         text = (f"{who} scored {n(profile[0])} points per game over {n(profile[1])} "
-                f"{plural(profile[1], 'game', 'games')} before the trade")
-        rank = season_rank(snapshot.stats, pid, through)
-        if rank is not None:
-            # "Position rank" is the league rank by lineup value, so this rank by season points has its own words.
-            text += f", season rank {n(rank[0])} of {n(rank[1])} by season points"
-        text += "."
-    # The position rank is a league rank by lineup value, so the analysis can say "RB15" and the reader can check it.
-    # The number goes through Nums, so the analysis checker accepts the rank in the prose.
-    rank = snapshot.position_rank(pid)
-    if rank is not None:
-        by = ("his projection ahead" if snapshot.projections_ahead is not None and due_back_week(snapshot, pid)
-              is not None else "points per game")
-        text += f" {player.name} is {player.position}{n(rank)} by {by}."
+                f"{plural(profile[1], 'game', 'games')} before the trade.")
+    # The rank strings go through Nums, so the analysis checker accepts "WR60" and "WR18" in the prose.
+    season, recent = shown_ranks(snapshot, pid)
+    if season is not None:
+        text += f" His Season rank is {n.text(season)}, by total points this season."
+    if recent is not None:
+        text += f" His Recent rank is {n.text(recent)}, by points per game over the last {n(LINEUP_WEEKS)} weeks."
     return fact(f"{pid}.ppg", text, n, [], [player.name])
 
 
@@ -147,33 +158,6 @@ def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:
     return fact(f"{rid}.need", text, n, [team], [])
 
 
-def _slot_fact(snapshot: Snapshot, side: Side, pid: str) -> Fact:
-    """The starting slot a player the side gets takes after the trade, and the player who held it before.
-
-    The holder before moves to another slot, sits on the bench, or leaves in the trade. A player in no slot sits on the
-    bench. The slot names carry digits, such as RB2, so they go through Nums and the checker accepts them in prose.
-    """
-    n = Nums()
-    name = snapshot.players[pid].name
-    taken = next((slot for slot in side.slots_after if slot.player == pid), None)
-    if taken is None:
-        return fact(f"{pid}.slot", f"{name} sits on the bench.", n, [], [name])
-    held = next(slot.player for slot in side.slots_before if slot.name == taken.name)
-    text = f"{name} takes {n.text(taken.name)}"
-    if held is None:
-        text += ", which was empty before the trade."
-    elif held in side.gives:
-        text += f", which {snapshot.players[held].name} held before the trade."
-    else:
-        # The holder can move up as well as down, as when the side gives its WR1, so a move says "moves to".
-        moved = next((slot.name for slot in side.slots_after if slot.player == held), None)
-        held_name = snapshot.players[held].name
-        text += (f" and pushes {held_name} to the bench." if moved is None
-                 else f", and {held_name} moves to {n.text(moved)}.")
-    players = [name] if held is None else [name, snapshot.players[held].name]
-    return fact(f"{pid}.slot", text, n, [], players)
-
-
 def _depth_fact(snapshot: Snapshot, side: Side, position: str) -> Fact | None:
     """The depth of a side at a position before and after the trade, or None when the count does not change."""
     before, after = side.depth(snapshot, position)
@@ -252,7 +236,7 @@ def _week_fact(snapshot: Snapshot) -> Fact:
 
 def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact]:
     """The facts of a proposed trade by ID: per traded player the points per game, rank, usage, injury, and
-    trade value, and per side the team record and race, the roster need, the slot each player it gets takes, each
+    trade value, and per side the team record and race, the roster need, each
     new hole with the best free agent at its position, the depth at each position whose count changes, and the
     strength when its count changes.
     Every player stat ends at the known games, and the record and the race end at week N-1."""
@@ -273,9 +257,9 @@ def trade_fact_sheet(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, Fact
     for side in trade.sides:
         facts.append(_team_fact(snapshot, side.roster_id))
         facts.append(_need_fact(snapshot, trade, side.roster_id))
-    # The sides come from the grade's own call, so the slot facts name the slots the roster fit step reads.
+    # The sides come from the grade's own call, so the hole facts name the slots the roster fit step reads.
+    # No fact names the slot a player takes: the best lineup is a measure of depth, not the lineup a manager sets.
     for graded in build_sides(trade, snapshot, trade_handcuffs(trade, snapshot)):
-        facts += [_slot_fact(snapshot, graded, pid) for pid in graded.gets]
         facts += [_hole_fact(snapshot, graded, slot) for slot in graded.new_holes(snapshot)]
         facts += [_depth_fact(snapshot, graded, position) for position in RANKED_POSITIONS]
         facts.append(_strength_fact(snapshot, graded))

@@ -23,11 +23,19 @@ export const teamSchema = z.object({
 
 export const teamsResponseSchema = z.object({ teams: z.array(teamSchema) });
 
+/* A traded player with his ranks. season_rank is his place at his position by total points this season, such as WR60.
+   recent_rank is his place by points per game over the last 4 weeks, and it is null unless the gap to the Season rank is large.
+   An old document lacks both, so each is optional. */
+export const tradedPlayerSchema = playerSchema.extend({
+  season_rank: z.string().nullable().optional(),
+  recent_rank: z.string().nullable().optional(),
+});
+
 /* A player a side gives. to is the roster id of the side he goes to. An old document lacks it, so it is optional. */
-export const givenPlayerSchema = playerSchema.extend({ to: z.number().optional() });
+export const givenPlayerSchema = tradedPlayerSchema.extend({ to: z.number().optional() });
 
 /* A player a side gets. from is the roster id of the side he comes from. An old document lacks it, so it is optional. */
-export const gotPlayerSchema = playerSchema.extend({ from: z.number().optional() });
+export const gotPlayerSchema = tradedPlayerSchema.extend({ from: z.number().optional() });
 
 /* One team in the trade: the players it gives and the players it gets. */
 export const tradeSideSchema = z.object({

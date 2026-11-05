@@ -577,8 +577,9 @@ text of a grade shows, such as WR60.
 _Avoid_: overall rank, position rank (that is the measure inside the grade)
 
 **Recent rank**:
-A player's place at his position by points per game over his last 4 games. A grade shows it only beside the
-Season rank, with its label, when the two differ by a large gap.
+A player's place at his position by points per game over the games he played in the last 4 weeks, with no due-back
+step. A grade shows it only beside the Season rank, with its label, when the two differ by `RECENT_RANK_GAP` spots or
+more.
 _Avoid_: form rank, hot rank, rank (alone)
 
 **Week line**:

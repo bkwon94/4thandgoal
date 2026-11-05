@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, Player, TradeSide } from "../lib/analyze-types";
+import type { AnalyzeResponse, AsOf, DecidedSide, Decision, Factor, Fairness, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
@@ -39,8 +39,18 @@ function Caps({ children, className }: { children: ReactNode; className?: string
 /* The move of a player in the swap card with three or more sides: "To" or "From", and the team. */
 type Move = { word: "To" | "From"; team: string };
 
-/* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one. */
-function PlayerChip({ player, move }: { player: Player; move?: Move }) {
+/* The ranks of a traded player: the Season rank, then the Recent rank with its label only when the document sends one. */
+function rankLine(player: TradedPlayer): string | null {
+  if (!player.season_rank) return null;
+  return player.recent_rank
+    ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}`
+    : `Season rank ${player.season_rank}`;
+}
+
+/* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one.
+   ranks shows the rank line. Only the side card passes it, so the swap card and the finder cards show no rank. */
+function PlayerChip({ player, move, ranks }: { player: TradedPlayer; move?: Move; ranks?: boolean }) {
+  const line = ranks ? rankLine(player) : null;
   return (
     <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative. */}
@@ -53,6 +63,7 @@ function PlayerChip({ player, move }: { player: Player; move?: Move }) {
       <span className="py-sp-1 text-meta text-mute">
         {player.position} · {player.nfl_team}
       </span>
+      {line && <span className="text-meta text-ink-2">{line}</span>}
       {/* A long team name wraps under the name, so the tag never clips at the phone width. */}
       {/* The word is a muted caps label and the team keeps its own case, so a team name that starts with "To" reads apart.
           The space between the two spans keeps the text "To <Team>" for a screen reader. */}
@@ -243,12 +254,12 @@ function SidePlayers({ side }: { side: Side }) {
     <div className="flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4">
       <ChipGroup label={side.mine ? "You Get" : "Gets"}>
         {side.gets.map((player) => (
-          <PlayerChip key={player.player_id} player={player} />
+          <PlayerChip key={player.player_id} player={player} ranks />
         ))}
       </ChipGroup>
       <ChipGroup label={side.mine ? "You Give" : "Gives"}>
         {side.gives.map((player) => (
-          <PlayerChip key={player.player_id} player={player} />
+          <PlayerChip key={player.player_id} player={player} ranks />
         ))}
       </ChipGroup>
     </div>
