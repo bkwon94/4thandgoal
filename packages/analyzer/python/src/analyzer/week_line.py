@@ -80,7 +80,7 @@ def _count_sentence(snapshot: Snapshot, position: str, before: list[str], after:
     def count(roster: list[str]) -> int:
         return sum(1 for pid in roster if snapshot.players[pid].position == position
                    and _above_the_line(snapshot, pid) and _plays(snapshot, pid, week)
-                   and _absence(snapshot, pid, week) is None)
+                   and _out_reason(snapshot, snapshot.players[pid], week) is None)
 
     old, new = count(before), count(after)
     who = f"{position}s in the top {snapshot.client.settings.lines[position]} who play"
@@ -111,18 +111,14 @@ def _opponent_sentence(snapshot: Snapshot, player_id: str, name: str, week: int)
     most. None for a player who does not play that week, or who is out, or a kicker or a defense."""
     position = snapshot.players[player_id].position
     game = _game(snapshot, player_id, week)
-    if game is None or position not in SKILL_POSITIONS or _absence(snapshot, player_id, week) is not None:
+    if (game is None or position not in SKILL_POSITIONS
+            or _out_reason(snapshot, snapshot.players[player_id], week) is not None):
         return None
     where = f"{game.opponent} at home" if game.home else f"at {game.opponent}"
     rank = None if snapshot.points_allowed is None else opponent_rank(snapshot.points_allowed, game.opponent, position)
     if rank is None:
         return f"{name} plays {where}."
     return f"{name} plays {where}, {most_points_text(rank, position)}."
-
-
-def _absence(snapshot: Snapshot, player_id: str, week: int) -> tuple[str, int | None] | None:
-    """Why the rostered player is out that week, as a kind and a return week, or None when he can play."""
-    return _out_reason(snapshot, snapshot.players[player_id], week)
 
 
 def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[str, int | None] | None:
@@ -171,7 +167,7 @@ def _steps_up(snapshot: Snapshot, player_id: str, week: int) -> bool:
     """
     ahead = snapshot.ahead_on_chart.get(player_id)
     return (ahead is not None and snapshot.players[player_id].position in SKILL_POSITIONS and chart_is_fresh(snapshot)
-            and _plays(snapshot, player_id, week) and _absence(snapshot, player_id, week) is None
+            and _plays(snapshot, player_id, week) and _out_reason(snapshot, snapshot.players[player_id], week) is None
             and _out_reason(snapshot, ahead, week) is not None)
 
 
@@ -198,7 +194,7 @@ def _absence_sentences(snapshot: Snapshot, players: list[str], names: dict[str, 
     """One sentence for each reason a player of the side is out that week, with the names of the players."""
     by_reason: dict[tuple[str, int | None], list[str]] = {}
     for pid in players:
-        reason = _absence(snapshot, pid, week)
+        reason = _out_reason(snapshot, snapshot.players[pid], week)
         if reason is not None:
             by_reason.setdefault(reason, []).append(names[pid])
     return [f"{_join(out)} {_absence_words(snapshot, kind, back, len(out) > 1)}."
