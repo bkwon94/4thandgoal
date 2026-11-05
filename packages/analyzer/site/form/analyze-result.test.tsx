@@ -33,9 +33,11 @@ const withAnswer = (answer: Decision["answer"]): AnalyzeResponse => ({ ...fixtur
 const ANALYSIS = "Nico Collins leads the trade in points per game.";
 /* A single letter on its own is a grade. A letter in an initial such as "A.J." is a name, so the scan skips it. */
 const LETTER = /(?<![\w.])[A-F](?![\w.])/;
-const FALLBACK_LINE = "The analysis is unavailable, so the data stands alone.";
-/* The fixture fairness reasons reuse the chart sentence, so a test that counts the chart sentence reads a document without the block. */
-const { fairness: _fixtureFairness, ...noFairness } = fixture;
+const FALLBACK_LINE = "The analysis is unavailable, so the rows stand alone.";
+const DEAL = "What you get and what you give are about even, after a discount on the side with more players.";
+const NOTE = "This week's player values are not out yet, so both sides start even.";
+/* The card of one side, found by its label. */
+const sideCard = (label: string) => screen.getByText(label).closest("section") as HTMLElement;
 /* The fixture reasons repeat breakdown text, so the fairness tests use reasons that show only once on the page. */
 const MY_REASON = "My side gets the better lineup.";
 const THEIR_REASON = "Their side moves up in the standings.";
@@ -91,7 +93,7 @@ describe("AnalyzeResult", () => {
     }
   });
 
-  it("puts your side first, then the other side, each with its analysis", () => {
+  it("puts your side first, then the other side, each with its bullets", () => {
     render(<AnalyzeResult doc={fixture} />);
     const mine = screen.getByText("Pukancun on 3 · Your Side");
     // The swap card names the team first, so the side label is the last match.
@@ -100,10 +102,64 @@ describe("AnalyzeResult", () => {
     expect(screen.getAllByText(ANALYSIS)).toHaveLength(2);
   });
 
-  it("shows the chart sentence under The data per side", () => {
-    render(<AnalyzeResult doc={noFairness} />);
-    expect(screen.getAllByText("The Data")).toHaveLength(2);
-    expect(screen.getAllByText(fixture.sides[0].chart.reason)).toHaveLength(2);
+  it("shows the bullets of each side as a list, with no The Data part", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    const items = mine.getAllByRole("listitem").filter((li) => fixture.sides[0].bullets.includes(li.textContent ?? ""));
+    expect(items.map((li) => li.textContent)).toEqual(fixture.sides[0].bullets);
+    expect(screen.queryByText("The Data")).toBeNull();
+  });
+
+  it("shows the players the side gets and gives with the headshot, the position, and the team", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const mine = within(sideCard("Pukancun on 3 · Your Side"));
+    expect(mine.getByText("You Get")).toBeTruthy();
+    expect(mine.getByText("You Give")).toBeTruthy();
+    for (const name of ["Dalton Kincaid", "Garrett Wilson", "Nico Collins"]) {
+      expect(mine.getByText(name)).toBeTruthy();
+    }
+    expect(mine.getByText("TE · BUF")).toBeTruthy();
+    expect(mine.getByText("WR · HOU")).toBeTruthy();
+    // The swap card names the team first, so the side label is the last match.
+    const other = within((screen.getAllByText("Amon-Ra Dawg Your Team").at(-1) as HTMLElement).closest("section") as HTMLElement);
+    expect(other.getByText("Gets")).toBeTruthy();
+    expect(other.getByText("Gives")).toBeTruthy();
+    // One headshot per player of the side, and the name names it.
+    expect(sideCard("Pukancun on 3 · Your Side").querySelectorAll("img")).toHaveLength(3);
+  });
+
+  it("puts the players, then the bullets, then the closed fold in each side card", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const card = sideCard("Pukancun on 3 · Your Side");
+    const player = within(card).getByText("Nico Collins");
+    const bullet = within(card).getByText(ANALYSIS);
+    const fold = card.querySelector("details") as HTMLDetailsElement;
+    expect(player.compareDocumentPosition(bullet) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(bullet.compareDocumentPosition(fold) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(fold.open).toBe(false);
+    expect(within(card).getByText(`How the grade adds up · ${fixture.sides[0].factors.length} rows`)).toBeTruthy();
+  });
+
+  it("puts the deal row first in the fold, with its mark", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const fold = sideCard("Pukancun on 3 · Your Side").querySelector("details") as HTMLElement;
+    const rows = within(fold).getAllByRole("listitem");
+    expect(rows).toHaveLength(fixture.sides[0].factors.length);
+    expect(rows[0].textContent).toContain(DEAL);
+    expect(within(rows[0]).getByText("even")).toBeTruthy();
+  });
+
+  it("says 1 row when a side has one row", () => {
+    const sides = fixture.sides.map((side) => ({ ...side, factors: side.factors.slice(0, 1) }));
+    render(<AnalyzeResult doc={{ ...fixture, sides }} />);
+    expect(screen.getAllByText("How the grade adds up · 1 row")).toHaveLength(2);
+  });
+
+  it("shows the same layout when the address has a query string", () => {
+    window.history.replaceState({}, "", "/analyze?layout=b");
+    render(<AnalyzeResult doc={fixture} />);
+    expect(sideCard("Pukancun on 3 · Your Side").querySelector("details")).toBeTruthy();
+    window.history.replaceState({}, "", "/");
   });
 
   it("shows a factor reason with a number once, under The reasoning only", () => {
@@ -119,7 +175,7 @@ describe("AnalyzeResult", () => {
     const brown = { player_id: "6801", name: "A.J. Brown", position: "WR", nfl_team: "PHI", headshot: "https://cdn.test/6801.png" };
     const tradeSides = fixture.trade.sides.map((side, i) => (i === 0 ? { ...side, gets: [...side.gets, brown] } : side));
     const { container } = render(<AnalyzeResult doc={{ ...fixture, trade: { ...fixture.trade, sides: tradeSides } }} />);
-    expect(screen.getByText("A.J. Brown")).toBeTruthy();
+    expect(within(tradeChapter()).getByText("A.J. Brown")).toBeTruthy();
     expect(container.textContent).not.toMatch(LETTER);
   });
 
@@ -136,10 +192,10 @@ describe("AnalyzeResult", () => {
     expect(screen.getByText("Decision for Your Side")).toBeTruthy();
   });
 
-  it("shows every factor under The reasoning with its lean and reason", () => {
+  it("shows every factor in the fold with its lean and reason", () => {
     render(<AnalyzeResult doc={fixture} />);
-    expect(screen.getAllByText("The Reasoning")).toHaveLength(2);
-    for (const name of ["roster fit", "standing", "trend and usage", "injury", "handcuff", "schedule"]) {
+    expect(screen.queryByText("The Reasoning")).toBeNull();
+    for (const name of ["deal", "roster fit", "standing", "trend and usage", "injury", "handcuff", "schedule"]) {
       expect(screen.getAllByText(name)).toHaveLength(2);
     }
     for (const side of fixture.sides) {
@@ -149,16 +205,17 @@ describe("AnalyzeResult", () => {
     }
     expect(screen.getAllByText("for")).toHaveLength(2);
     expect(screen.getAllByText("against")).toHaveLength(1);
-    expect(screen.getAllByText("even")).toHaveLength(9);
+    expect(screen.getAllByText("even")).toHaveLength(11);
   });
 
   it("shows the players each side gets in the swap card", () => {
     render(<AnalyzeResult doc={fixture} />);
-    expect(screen.getByText("You Get")).toBeTruthy();
-    expect(screen.getByText("Gets")).toBeTruthy();
-    expect(screen.getByText("Dalton Kincaid")).toBeTruthy();
-    expect(screen.getByText("Garrett Wilson")).toBeTruthy();
-    expect(screen.getByText("Nico Collins")).toBeTruthy();
+    const trade = within(tradeChapter());
+    expect(trade.getByText("You Get")).toBeTruthy();
+    expect(trade.getByText("Gets")).toBeTruthy();
+    expect(trade.getByText("Dalton Kincaid")).toBeTruthy();
+    expect(trade.getByText("Garrett Wilson")).toBeTruthy();
+    expect(trade.getByText("Nico Collins")).toBeTruthy();
   });
 
   it("shows the counters placeholder", () => {
@@ -175,28 +232,31 @@ describe("AnalyzeResult", () => {
       hour: "numeric",
       minute: "2-digit",
     });
-    const line = screen.getByText(/^Stats through week 5.* · Chart week 6 · rosters fetched/);
+    const line = screen.getByText(/^Stats through week 5.* · rosters fetched/);
     expect(line.textContent).toBe(
-      `Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · Chart week 6 · rosters fetched ${fetched}`,
+      `Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched ${fetched}`,
     );
+    expect(line.textContent).not.toMatch(/chart/i);
     expect(line.textContent).not.toMatch(/live|partial|current week/i);
   });
 
-  it("leaves out the chart week and the fetch time when the API sends null", () => {
+  it("leaves out the fetch time when the API sends null", () => {
     render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, chart_week: null, rosters_fetched: null } }} />);
     const line = screen.getByText(/^Stats through week 5/);
     expect(line.textContent).not.toMatch(/null|1970|Chart week|rosters fetched/);
   });
 
-  it("shows the no-chart line when the document says the week has no chart", () => {
-    const no_chart_note = "Week 8 has no trade value chart yet, so the chart gives neither side an edge.";
-    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, no_chart: true, no_chart_note } }} />);
-    expect(screen.getByText(no_chart_note)).toBeTruthy();
+  it("shows the no-values note under the decision when the document says the week has no chart", () => {
+    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, no_chart: true, no_chart_note: NOTE } }} />);
+    const note = screen.getByText(NOTE);
+    const decision = screen.getByText("Not as is");
+    expect(decision.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(note.closest("section")).toBe(decision.closest("section"));
   });
 
-  it("shows no no-chart line when the document lacks the field", () => {
+  it("shows no no-values note when the document lacks the field", () => {
     render(<AnalyzeResult doc={fixture} />);
-    expect(screen.queryByText(/no trade value chart/i)).toBeNull();
+    expect(screen.queryByText(NOTE)).toBeNull();
   });
 
   it("shows the in-progress count and each pending count as its own segment", () => {
@@ -204,28 +264,29 @@ describe("AnalyzeResult", () => {
     render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, stats_through: 7, completed_through: 6, known_games } }} />);
     const line = screen.getByText(/^Stats through week 6/);
     expect(line.textContent).toMatch(
-      /^Stats through week 6, plus 13 week 7 games, 2 in progress · Snaps pending for 9 games · Chart week 6 · /,
+      /^Stats through week 6, plus 13 week 7 games, 2 in progress · Snaps pending for 9 games · rosters fetched /,
     );
   });
 
-  it("shows the stale stats segment after the pending segments and before the chart week", () => {
+  it("shows the stale stats segment after the pending segments and before the fetch time", () => {
     const { known_games: _k, ...asOf } = fixture.as_of;
     render(<AnalyzeResult doc={{ ...fixture, as_of: { ...asOf, stats_through: 6 }, stale: ["stats"] }} />);
-    expect(screen.getByText(/^Stats through week 6 · Week 7 stats not fetched · Chart week 6 · /)).toBeTruthy();
+    expect(screen.getByText(/^Stats through week 6 · Week 7 stats not fetched · rosters fetched$/)).toBeTruthy();
   });
 
   it("shows the stats week alone when the document has no known-games block", () => {
     const { completed_through: _c, known_games: _k, ...asOf } = fixture.as_of;
     render(<AnalyzeResult doc={{ ...fixture, as_of: asOf }} />);
-    expect(screen.getByText(/^Stats through week 6 · Chart week 6/)).toBeTruthy();
+    expect(screen.getByText(/^Stats through week 6 · rosters fetched$/)).toBeTruthy();
   });
 
-  it("shows the decision, the data, and the fallback line when the analysis is null", () => {
-    const sides = fixture.sides.map((side) => ({ ...side, analysis: null }));
-    render(<AnalyzeResult doc={{ ...noFairness, sides, fallback: true }} />);
+  it("shows the decision, the rows, and the fallback line when a side has no bullets", () => {
+    const sides = fixture.sides.map((side) => ({ ...side, bullets: [] }));
+    render(<AnalyzeResult doc={{ ...fixture, sides, fallback: true }} />);
     expect(screen.getByText("Not as is")).toBeTruthy();
     expect(screen.getAllByText(FALLBACK_LINE)).toHaveLength(2);
-    expect(screen.getAllByText(fixture.sides[0].chart.reason)).toHaveLength(2);
+    expect(screen.getAllByText(DEAL)).toHaveLength(2);
+    expect(screen.getAllByText(/^How the grade adds up · /)).toHaveLength(2);
     expect(screen.queryByText(ANALYSIS)).toBeNull();
   });
 
@@ -306,12 +367,6 @@ describe("AnalyzeResult", () => {
     const mine = screen.getByText(MY_REASON);
     expect(line.compareDocumentPosition(theirs) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(theirs.compareDocumentPosition(mine) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
-  it("repeats the chart sentence as the fairness reason of a side with no step up", () => {
-    // The fairness reason reuses breakdown text by design, and the repeat is accepted: two data lines plus one reason.
-    render(<AnalyzeResult doc={fixture} />);
-    expect(screen.getAllByText(fixture.sides[0].chart.reason)).toHaveLength(3);
   });
 
   it("shows no fairness line and no reasons when the document has no fairness block", () => {
@@ -395,8 +450,7 @@ describe("AnalyzeResult", () => {
   it("renders one side read per side of the three-side fixture, in order", () => {
     render(<AnalyzeResult doc={three} />);
     expect(screen.getByText(three.decision.reason)).toBeTruthy();
-    expect(screen.getAllByText("The Data")).toHaveLength(3);
-    expect(screen.getAllByText("The Reasoning")).toHaveLength(3);
+    expect(screen.getAllByText(/^How the grade adds up · \d+ rows$/)).toHaveLength(3);
     const mine = screen.getByText("Pukancun on 3 · Your Side");
     // The swap card and the fairness reasons name each team first, so the side label is the last match.
     const middle = screen.getAllByText("Amon-Ra Dawg Your Team").at(-1) as HTMLElement;

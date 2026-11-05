@@ -48,6 +48,8 @@ CONSOLIDATION_REASON = (
     "before the sides count as even."
 )
 NO_CHART_REASON = "The week has no trade values, so the chart gives neither side an edge."
+# The end of the reason for a trade with an unlisted player. The result document reads it to pick its deal row.
+UNLISTED_REASON_END = " no trade value, so the chart gives neither side an edge."
 
 
 class TradeInputError(ValueError):
@@ -248,8 +250,7 @@ def _start_letters(
     values = _trade_values(snapshot, handcuffs)
     unlisted = unlisted_players(snapshot, trade.player_ids, handcuffs)
     if unlisted:
-        reason = (named(snapshot, unlisted, "has", "have")
-                  + " no trade value, so the chart gives neither side an edge.")
+        reason = named(snapshot, unlisted, "has", "have") + UNLISTED_REASON_END
         return _all_at_c(trade, reason)
 
     def start(side: TradeSide) -> tuple[Letter, str]:

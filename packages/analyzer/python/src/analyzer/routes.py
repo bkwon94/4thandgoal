@@ -18,7 +18,15 @@ from analyzer.errors import season_in_progress
 from analyzer.finder import NO_WIN_WIN, FinderTrade, find_win_wins
 from analyzer.finder_reasons import FinderReasons
 from analyzer.ratelimit import GradeLimiter, request_address
-from analyzer.rubric import ProposedTrade, TradeInputError, check_trade, fairness
+from analyzer.rubric import (
+    CONSOLIDATION_REASON,
+    UNLISTED_REASON_END,
+    Breakdown,
+    ProposedTrade,
+    TradeInputError,
+    check_trade,
+    fairness,
+)
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
@@ -26,7 +34,8 @@ from league.snapshot import Snapshot
 router = APIRouter()
 
 # The line the site shows when the trade week has no chart. The grade then reads the adjusters alone.
-NO_CHART_NOTE = "Week {week} has no trade value chart yet, so the chart gives neither side an edge."
+# It names no source, so a manager reads plain advice and never the inner parts of the grade.
+NO_CHART_NOTE = "This week's player values are not out yet, so both sides start even."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -134,16 +143,41 @@ def _as_of(snapshot: Snapshot) -> dict:
         # The chart site posts the new chart hours after the trade week starts. The grade runs in that window too,
         # so the document says the week has no chart, and the site shows the note with no words of its own.
         "no_chart": snapshot.chart is None,
-        "no_chart_note": NO_CHART_NOTE.format(week=snapshot.week) if snapshot.chart is None else None,
+        "no_chart_note": NO_CHART_NOTE if snapshot.chart is None else None,
     }
 
 
 # The decision a manager acts on, from the verdict choice of the rubric.
 Answer = Literal["yes", "no", "not_as_is"]
 ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_as_is"}
-# The chart lean of a side, from its start letter. No letter reaches the document.
-ChartLean = Literal["more", "even", "less"]
-CHART_LEANS: dict[str, ChartLean] = {"A": "more", "B": "more", "C": "even", "D": "less", "F": "less"}
+# The deal row of a side, from its start letter. It is the first factor, and no letter reaches the document.
+# Its words name no source of the values, so the row reads as plain advice.
+DEAL = "deal"
+DEAL_LEANS: dict[str, Lean] = {"A": "for", "B": "for", "C": "even", "D": "against", "F": "against"}
+DEAL_REASONS = {
+    "A": "You get far more than you give.",
+    "B": "You get more than you give.",
+    "C": "What you get and what you give are about even.",
+    "D": "You give more than you get.",
+    "F": "You give far more than you get.",
+}
+# One player for two or more divides the sum of the two or more by a margin before the sides compare.
+CONSOLIDATION_DEAL = ", after a discount on the side with more players."
+UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
+
+
+def _deal_row(breakdown: Breakdown, snapshot: Snapshot) -> dict:
+    """The deal row of one side: the start letter as a lean and one plain sentence."""
+    # The breakdown reason names the chart, so the row reads the case from it and writes its own words.
+    if snapshot.chart is None:
+        reason = NO_CHART_NOTE
+    elif breakdown.reason.endswith(UNLISTED_REASON_END):
+        reason = UNLISTED_DEAL
+    elif CONSOLIDATION_REASON in breakdown.reason:
+        reason = DEAL_REASONS[breakdown.start_letter].removesuffix(".") + CONSOLIDATION_DEAL
+    else:
+        reason = DEAL_REASONS[breakdown.start_letter]
+    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": reason}
 
 
 def _factor_lean(adjuster: Adjuster) -> Lean:
@@ -170,7 +204,9 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
 
 
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the analysis, chart lean, and factors per side.
+    """The result the site renders: a decision first, the fairness, then the bullets and the factors per side.
+
+    The deal row is the first factor of each side.
 
     It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
     """
@@ -178,11 +214,11 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
     sides = [
         {
             "roster_id": breakdown.roster_id,
-            "analysis": side.analysis,
-            "chart": {"lean": CHART_LEANS[breakdown.start_letter], "reason": breakdown.reason},
+            "bullets": side.bullets,
             "factors": [
-                {"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
-                for adj in breakdown.adjusters
+                _deal_row(breakdown, snapshot),
+                *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}
+                  for adj in breakdown.adjusters),
             ],
         }
         for breakdown, side in zip(analysis.breakdowns, analysis.sides)

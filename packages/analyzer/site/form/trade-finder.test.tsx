@@ -121,7 +121,7 @@ describe("TradeFinder", () => {
   it("shows the as-of line as on the analyze result", async () => {
     answer(200, fixture);
     find();
-    expect(await screen.findByText(/Stats through week 5 · Chart week 6 · rosters fetched/)).toBeTruthy();
+    expect(await screen.findByText(/^Stats through week 5 · rosters fetched$/)).toBeTruthy();
   });
 
   it("shows the wait line on a 429", async () => {

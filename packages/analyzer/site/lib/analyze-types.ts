@@ -10,7 +10,6 @@ export type GivenPlayer = z.infer<typeof schema.givenPlayerSchema>;
 export type GotPlayer = z.infer<typeof schema.gotPlayerSchema>;
 export type TradeSide = z.infer<typeof schema.tradeSideSchema>;
 export type Decision = z.infer<typeof schema.decisionSchema>;
-export type Chart = z.infer<typeof schema.chartSchema>;
 export type Factor = z.infer<typeof schema.factorSchema>;
 export type DecidedSide = z.infer<typeof schema.decidedSideSchema>;
 export type FairnessSide = z.infer<typeof schema.fairnessSideSchema>;

@@ -1,5 +1,5 @@
 /**
- * The analyzer result from one analyze document: the decision for the asker, the fairness line, the swap card, and a read per side.
+ * The analyzer result from one analyze document in layout A: the decision for the asker, the fairness line, the swap card, and a card per side.
  * The trade finder reuses SwapCard, FairnessBlock, and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
@@ -237,41 +237,66 @@ export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness
   );
 }
 
-/* The small label over a part of one side. */
-function Part({ children }: { children: ReactNode }) {
-  return <Caps className="mt-sp-4 mb-sp-2 block text-ink">{children}</Caps>;
+/* The players a side gets and gives. A phone stacks the two groups. From the tablet tier they stand next to each other. */
+function SidePlayers({ side }: { side: Side }) {
+  return (
+    <div className="flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4">
+      <ChipGroup label={side.mine ? "You Get" : "Gets"}>
+        {side.gets.map((player) => (
+          <PlayerChip key={player.player_id} player={player} />
+        ))}
+      </ChipGroup>
+      <ChipGroup label={side.mine ? "You Give" : "Gives"}>
+        {side.gives.map((player) => (
+          <PlayerChip key={player.player_id} player={player} />
+        ))}
+      </ChipGroup>
+    </div>
+  );
 }
 
+/* The summary of the fold names the count of rows, so the reader knows what opens. */
+function foldSummary(rows: number): string {
+  return `How the grade adds up · ${rows} ${rows === 1 ? "row" : "rows"}`;
+}
+
+/* One card per side: the players, then the bullets, then the rows in a closed fold. The fold keeps the card short before a tap. */
 function SideRead({ side }: { side: Side }) {
-  const analysis = side.analysis;
   return (
     <div>
       <Label>
         {side.team}
         {side.mine && " · Your Side"}
       </Label>
-      {analysis === null ? (
-        <p className="m-0 text-body text-mute">The analysis is unavailable, so the data stands alone.</p>
+      <SidePlayers side={side} />
+
+      {side.bullets.length === 0 ? (
+        <p className="mt-sp-4 mb-0 text-body text-mute">The analysis is unavailable, so the rows stand alone.</p>
       ) : (
-        <Blurb>{analysis}</Blurb>
+        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-body text-ink-2">
+          {side.bullets.map((bullet) => (
+            <li key={bullet}>{bullet}</li>
+          ))}
+        </ul>
       )}
 
-      <Part>The Data</Part>
-      <p className="m-0 text-meta leading-tight text-ink-2">{side.chart.reason}</p>
-
-      <Part>The Reasoning</Part>
-      <ul className="m-0 list-none border-y-2 border-ink p-0 text-meta leading-tight">
-        {side.factors.map((f) => (
-          <li
-            key={f.name}
-            className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
-          >
-            <Mark lean={f.lean} />
-            <Caps>{f.name}</Caps>
-            <span className="col-start-2">{f.reason}</span>
-          </li>
-        ))}
-      </ul>
+      <details className="mt-sp-4">
+        <summary className="cursor-pointer py-sp-2">
+          <Caps className="text-ink">{foldSummary(side.factors.length)}</Caps>
+        </summary>
+        <ul className="m-0 list-none border-y-2 border-ink p-0 text-meta leading-tight">
+          {side.factors.map((f) => (
+            <li
+              key={f.name}
+              className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
+            >
+              <Mark lean={f.lean} />
+              <Caps>{f.name}</Caps>
+              <span className="col-start-2">{f.reason}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
     </div>
   );
 }
@@ -283,10 +308,10 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   const tradeWeek = as_of.known_games?.week ?? as_of.stats_through + 1;
   // Stats that failed to fetch leave the line stale, so the line says so.
   const staleSegments = stale.includes("stats") ? [`Week ${tradeWeek} stats not fetched`] : [];
-  const chartSegments = as_of.chart_week !== null ? [`Chart week ${as_of.chart_week}`] : [];
+  // The line names no chart week, because no page text names the source of the player values.
   return (
     <p className="m-0 text-meta text-mute tabular-nums">
-      {[...knownGamesSegments(as_of), ...staleSegments, ...chartSegments].join(" · ")}
+      {[...knownGamesSegments(as_of), ...staleSegments].join(" · ")}
       {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
     </p>
   );
@@ -311,7 +336,7 @@ function RostersFetched({ iso }: { iso: string }) {
   );
 }
 
-/* A week with no chart gets one meta line that says so. A document without the flag shows nothing. */
+/* A week with no player values gets one meta line that says so. A document without the flag shows nothing. */
 export function NoChartLine({ asOf }: { asOf: AsOf }) {
   if (!asOf.no_chart || !asOf.no_chart_note) return null;
   return <p className="m-0 pt-sp-3 text-meta text-mute">{asOf.no_chart_note}</p>;

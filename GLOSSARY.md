@@ -498,9 +498,15 @@ _Avoid_: finder result, suggestions
 The page word for an adjuster. Use "adjuster" in code and "factor" on the page.
 _Avoid_: criterion (alone)
 
-**Chart lean**:
-More, even, or less: how the trade values lean for one side. It maps from the start letter: A and
-B to more, C to even, D and F to less. Use "start letter" in code and "chart lean" on the page.
+**Deal row**:
+The first factor of each side: the start letter as one plain sentence, such as "You get far more
+than you give." It names no source. Its lean maps from the start letter: A and B to for, C to
+even, D and F to against. Use "start letter" in code and "deal row" on the page.
+_Avoid_: chart lean, The Data
+
+**Bullets**:
+The 2 or 3 sentences that Claude writes for one side, one claim each. The fallback has none.
+_Avoid_: analysis paragraph
 
 **Factor lean**:
 For, against, or even, for one factor. It maps from the sign of the adjuster's step, or from the

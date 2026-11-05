@@ -10,13 +10,13 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Status:** ready-for-agent
 
-- [ ] Each side of the document holds `bullets`, a list of 2 or 3 strings, in place of `analysis`. The prose checks run on each bullet.
-- [ ] The chart sentence is the first factor of each side, the deal row, in plain words that name no source. No `chart` block stays.
-- [ ] `as_of.no_chart_note` reads "This week's player values are not out yet, so both sides start even." The as-of line has no "Chart week".
-- [ ] After two failed Claude calls, `fallback` is true, each side has no bullets, and the factors still show.
+- [x] Each side of the document holds `bullets`, a list of 2 or 3 strings, in place of `analysis`. The prose checks run on each bullet.
+- [x] The chart sentence is the first factor of each side, the deal row, in plain words that name no source. No `chart` block stays.
+- [x] `as_of.no_chart_note` reads "This week's player values are not out yet, so both sides start even." The as-of line has no "Chart week".
+- [x] After two failed Claude calls, `fallback` is true, each side has no bullets, and the factors still show.
 - [ ] The site renders layout A in one column at each width. The fairness line stays under the decision. The counters slot stays as now.
 - [ ] The two players of a side stack at 375 px and stand next to each other at 768 and 1280 px. The fold is closed before a tap.
-- [ ] The view reads no query string.
-- [ ] The finder prompt and the finder cards do not change.
-- [ ] `DOCUMENT_VERSION` goes up by one.
-- [ ] `make check-fast` passes at the root.
+- [x] The view reads no query string.
+- [x] The finder prompt and the finder cards do not change.
+- [x] `DOCUMENT_VERSION` goes up by one.
+- [x] `make check-fast` passes at the root.

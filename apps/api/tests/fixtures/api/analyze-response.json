@@ -91,12 +91,16 @@
   "sides": [
     {
       "roster_id": 4,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "even",
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "even",
@@ -131,12 +135,16 @@
     },
     {
       "roster_id": 12,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "even",
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "for",

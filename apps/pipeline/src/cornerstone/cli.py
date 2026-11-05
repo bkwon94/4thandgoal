@@ -294,7 +294,7 @@ def run_analyze(
 ) -> int:
     """Grade the proposed trade from the live or saved snapshot. Print the breakdowns, the verdict, and the fairness.
 
-    Without --no-claude, it also prints Claude's final letter and analysis per side, and Claude's verdict.
+    Without --no-claude, it also prints Claude's final letter and bullets per side, and Claude's verdict.
     """
     if not MIN_SIDES <= len(args.side) <= MAX_SIDES:
         print("Give --side two to four times, once for each roster.")
@@ -347,7 +347,9 @@ def run_analyze(
         final = analysis.sides[index]
         print(f"  Rubric letter: {breakdown.final_letter}")
         print(f"  Final letter: {final.final_letter}" + (f". Reason: {final.reason}" if final.reason else ""))
-        print(f"  Analysis: {final.analysis}")
+        # The fallback has no bullets, so the line says so.
+        print("  Bullets:" + "".join(f"\n    - {bullet}" for bullet in final.bullets) if final.bullets
+              else "  Bullets: none")
     print()
     if analysis is not None:
         if analysis.fallback:

@@ -38,7 +38,7 @@ from analyzer.finder import find_win_wins
 from analyzer.finder_reasons import FinderReasonsOut, check_reasons, trade_facts, write_reasons
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.routes import result_document
-from analyzer.rubric import LETTERS, NO_CHART_REASON, ProposedTrade, grade, verdict
+from analyzer.rubric import BAND_REASONS, LETTERS, ProposedTrade, grade, verdict
 from analyzer.tunables import GRADES_PER_MINUTE
 from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import Settings
@@ -107,11 +107,15 @@ def settings(repo):
     return Settings(passphrases={"cpc": PASSPHRASE}, repo=repo, result_cache_dir=repo / "results")
 
 
+# The bullets of each side in a stub analysis.
+BULLETS = ["Nico Collins leads the trade in points per game.", "His role is large."]
+
+
 class StubAnalyzer:
-    """The Claude call as a plain function: the code's grade and verdict, plus a fixed analysis text.
+    """The Claude call as a plain function: the code's grade and verdict, plus fixed bullets.
 
     `claude_letters` are the final letters Claude gives. One more than a step from the code's letter falls back,
-    so the code's letters and verdict stand and the analysis reads "Analysis unavailable".
+    so the code's letters and verdict stand and each side has no bullets.
     """
 
     def __init__(self, claude_letters=None):
@@ -130,22 +134,22 @@ class StubAnalyzer:
         code = verdict(trade, breakdowns)
         sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=letter,
                                    reason=None if letter == b.final_letter else "Claude reads it one step off.",
-                                   analysis="Nico Collins leads the trade in points per game.", cited=[])
+                                   bullets=BULLETS, cited=[])
                       for letter, b in zip(letters, breakdowns))
         return Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=code,
                         verdict_differs=False, fallback=False)
 
 
 class FakeClaude:
-    """The Claude call as a callable with no network: the code's letters, one cited fact per side, fixed text."""
+    """The Claude call as a callable with no network: the code's letters, one cited fact per side, fixed bullets."""
 
-    TEXT = "Nico Collins is the best player in the trade. His role is large. The trade changes his roster."
+    BULLETS = ("Nico Collins is the best player in the trade.", "His role is large.", "The trade changes his roster.")
 
     def __call__(self, system, user, output_model):
         fact = re.findall(r"^- (\d+\.\w+|\d+\.\w+\.\w+): ", user, re.MULTILINE)
         cited = [fid for fid in fact if not fid.endswith(".value")][:1]
         letters = re.findall(r"^Final letter: (\w)", user, re.MULTILINE)
-        sides = [{"roster_id": roster_id, "final_letter": letter, "reason": None, "analysis": self.TEXT,
+        sides = [{"roster_id": roster_id, "final_letter": letter, "reason": None, "bullets": list(self.BULLETS),
                   "cited": cited}
                  for roster_id, letter in zip((4, 12), letters)]
         return output_model.model_validate(
@@ -380,16 +384,20 @@ def test_a_good_request_returns_the_result_document(settings, sources):
     assert [p["name"] for p in four["gets"]] == ["Dalton Kincaid", "Garrett Wilson"]
     assert twelve["gets"][0]["headshot"] == "https://sleepercdn.com/content/nfl/players/7569.jpg"
     assert [side["roster_id"] for side in doc["sides"]] == [4, 12]
-    assert [side["chart"]["lean"] for side in doc["sides"]] == ["even", "even"]
+    # The deal row comes first, in plain words that name no source. One player for two gets a discount.
+    assert [side["factors"][0] for side in doc["sides"]] == [{
+        "name": "deal", "lean": "even",
+        "reason": "What you get and what you give are about even, after a discount on the side with more players.",
+    }] * 2
     names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names[0] == "roster fit" and names[-1] == "schedule" and len(names) == 7
-    assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
+    assert names[1] == "roster fit" and names[-1] == "schedule" and len(names) == 8
+    assert doc["sides"][0]["bullets"] == BULLETS
     # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
                                "reason": "The other side does better, so ask for more.", "differs": False}
     # The document leads with the decision, and no letter or step reaches it.
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
-    assert list(doc["sides"][0]) == ["roster_id", "analysis", "chart", "factors"]
+    assert list(doc["sides"][0]) == ["roster_id", "bullets", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
     # The fetch on Monday holds the week 6 stat lines, so the player stats read the 14 known games of week 6.
     # The fixture player file has week 6 rows for 6 of those games, so the usage of 8 games is pending.
@@ -511,12 +519,12 @@ def test_a_week_with_no_chart_grades_from_the_adjusters_and_says_so(settings, fi
     assert response.status_code == 200
     doc = response.json()
     assert analyzer.calls == 1
+    note = "This week's player values are not out yet, so both sides start even."
     for side in doc["sides"]:
-        assert side["chart"] == {"lean": "even", "reason": NO_CHART_REASON}
+        assert side["factors"][0] == {"name": "deal", "lean": "even", "reason": note}
     assert doc["as_of"]["chart_week"] is None
     assert doc["as_of"]["no_chart"] is True
-    assert doc["as_of"]["no_chart_note"] == (
-        "Week 6 has no trade value chart yet, so the chart gives neither side an edge.")
+    assert doc["as_of"]["no_chart_note"] == note
     assert "chart" in doc["missing"]
 
 
@@ -533,8 +541,9 @@ def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, 
     analyzer = StubAnalyzer(claude_letters=["A", "C"])
     doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
     assert doc["fallback"] is True
-    # The code's letters and verdict stand, with no analysis.
-    assert [side["analysis"] for side in doc["sides"]] == ["Analysis unavailable"] * 2
+    # The code's letters and verdict stand, with no bullets. The rows still show, the deal row first.
+    assert [side["bullets"] for side in doc["sides"]] == [[], []]
+    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 8 for side in doc["sides"])
     assert doc["decision"]["differs"] is False
 
 
@@ -542,7 +551,7 @@ def test_a_claude_letter_one_step_off_stands(settings, sources):
     doc = _client(settings, sources, StubAnalyzer(claude_letters=["B", "C"])).post(
         "/analyze", json=TRADE, headers=HEADERS).json()
     assert doc["fallback"] is False
-    assert doc["sides"][0]["analysis"] == "Nico Collins leads the trade in points per game."
+    assert doc["sides"][0]["bullets"] == BULLETS
 
 
 def _document(settings, sources, breakdowns=None, choice=None):
@@ -553,7 +562,7 @@ def _document(settings, sources, breakdowns=None, choice=None):
     code = verdict(trade, breakdowns)
     stands = code if choice is None else code.model_copy(update={"choice": choice})
     sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
-                               analysis="Nico Collins leads the trade in points per game.", cited=[])
+                               bullets=BULLETS, cited=[])
                   for b in breakdowns)
     analysis = Analysis(breakdowns=breakdowns, code_verdict=code, sides=sides, verdict=stands,
                         verdict_differs=stands.choice != code.choice, fallback=False)
@@ -568,13 +577,18 @@ def test_the_answer_maps_from_the_verdict_choice(settings, sources, choice, answ
     assert doc["decision"]["differs"] is (choice != "counter")
 
 
-@pytest.mark.parametrize("letter, lean", [("A", "more"), ("B", "more"), ("C", "even"), ("D", "less"), ("F", "less")])
-def test_the_chart_lean_maps_from_the_start_letter(settings, sources, letter, lean):
-    doc = _document(settings, sources,
-                    breakdowns=lambda bs: tuple(b.model_copy(update={"start_letter": letter}) for b in bs))
-    assert [side["chart"]["lean"] for side in doc["sides"]] == [lean, lean]
-    # The chart reason is the band reason as the code wrote it.
-    assert doc["sides"][0]["chart"]["reason"].startswith("The trade value it gets and the trade value it gives")
+@pytest.mark.parametrize("letter, lean, reason", [
+    ("A", "for", "You get far more than you give."),
+    ("B", "for", "You get more than you give."),
+    ("C", "even", "What you get and what you give are about even."),
+    ("D", "against", "You give more than you get."),
+    ("F", "against", "You give far more than you get."),
+])
+def test_the_deal_row_maps_from_the_start_letter_in_plain_words(settings, sources, letter, lean, reason):
+    doc = _document(settings, sources, breakdowns=lambda bs: tuple(
+        b.model_copy(update={"start_letter": letter, "reason": BAND_REASONS[letter]}) for b in bs))
+    assert [side["factors"][0] for side in doc["sides"]] == [{"name": "deal", "lean": lean, "reason": reason}] * 2
+    assert "chart" not in doc["sides"][0]
 
 
 def _steps(steps, schedule_lean):
@@ -592,7 +606,7 @@ def _steps(steps, schedule_lean):
 @pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
 def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
     doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, -1], schedule_lean))
-    factors = doc["sides"][0]["factors"]
+    factors = doc["sides"][0]["factors"][1:]
     assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "upside",
                                             "handcuff", "schedule"]
     assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "against", schedule_lean]
@@ -862,10 +876,9 @@ def test_a_trade_with_an_unlisted_player_leans_even_with_no_letter(settings, sou
     trade = {**TRADE, "sides": _sides(["7569"], [unlisted])}
     doc = _client(settings, sources, StubAnalyzer()).post("/analyze", json=trade, headers=HEADERS).json()
     for side in doc["sides"]:
-        assert side["chart"]["lean"] == "even"
-        assert "no trade value, so the chart gives neither side an edge." in side["chart"]["reason"]
-        assert not re.search(r"\b[A-F]\b", side["chart"]["reason"])
-        assert "letter" not in side["chart"]["reason"].lower()
+        assert side["factors"][0] == {
+            "name": "deal", "lean": "even",
+            "reason": "Not every player in the trade has a value this week, so both sides start even."}
 
 
 def test_the_fixture_document_names_no_letter():
@@ -880,7 +893,7 @@ def test_the_real_analyzer_with_a_fake_claude_gives_the_document_with_its_text(s
     analyzer = functools.partial(analyze, call=FakeClaude())
     doc = _client(settings, sources, analyzer).post("/analyze", json=TRADE, headers=HEADERS).json()
     assert doc["fallback"] is False
-    assert [side["analysis"] for side in doc["sides"]] == [FakeClaude.TEXT] * 2
+    assert [side["bullets"] for side in doc["sides"]] == [list(FakeClaude.BULLETS)] * 2
 
 
 def _at(fixture_raw_dir, chart, fetched):
@@ -1434,8 +1447,7 @@ def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_ra
     doc = response.json()
     assert doc["trades"] == []
     assert doc["as_of"]["no_chart"] is True
-    assert doc["as_of"]["no_chart_note"] == (
-        "Week 6 has no trade value chart yet, so the chart gives neither side an edge.")
+    assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet, so both sides start even."
     assert fake.calls == []
 
 
@@ -1832,14 +1844,15 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_11():
+def test_the_document_version_is_12():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
     # The as-of block says when the week has no chart, so a document stored before that must never serve.
     # A bye is no longer a hole, so a grade stored under the old hole rule must never serve.
     # A grade of three or four sides and the zero rule for a player out for the season change the shape and the rules.
-    assert cache_module.DOCUMENT_VERSION == 11
+    # The bullets and the deal row take the place of the analysis and the chart block, so the shape changes.
+    assert cache_module.DOCUMENT_VERSION == 12
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per
