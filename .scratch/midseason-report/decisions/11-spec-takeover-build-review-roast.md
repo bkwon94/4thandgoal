@@ -6,7 +6,7 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -23,4 +23,4 @@ The ticket 09 data run on 2026-11-05 added these items for the spec:
 
 ## Decision
 
-None yet.
+Brian approved the spec on 2026-11-05. `PRD.md` records each choice under Implementation Decisions: the packages `sim` and `midseason` with the app as the wire, the build and publish commands, the review file, the takeover through the report week plus 1, the `roast` steps `off`, `warm`, and `hot`, the trade lines 90, 60, and 10, the MVP exception, the list counts, a random first run, and the fallback for a missing injury row.

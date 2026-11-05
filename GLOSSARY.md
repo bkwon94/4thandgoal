@@ -952,6 +952,30 @@ _Avoid_: sell high, fluke
 The free agent with the highest projection for the rest of the regular season.
 _Avoid_: Top pickups (that is the waiver bucket of the pool), sleeper
 
+**Opener**:
+The top of the midseason report: the title race, with the title odds of the leaders and of the record leader.
+_Avoid_: Hero (that is the top of a manager page), cover, banner
+
+**Act**:
+One of the three parts of the midseason report, each opened by a dark title page: How we got here, The moves, and What comes next.
+_Avoid_: Section, part
+
+**Spread rule**:
+Each team gets at least one and at most three headlines in the midseason report: the opener, a callout, an award, or an arc.
+_Avoid_: Fairness rule, balance
+
+**Takeover**:
+The weeks when the home page shows the midseason report in place of its usual top, through the report week plus 1.
+_Avoid_: Banner, promo
+
+**Report tile**:
+The home tile with one big fact and a link to the midseason report. It stays after the takeover ends.
+_Avoid_: Card, teaser
+
+**Sim run**:
+One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
+_Avoid_: Simulation, sample, scenario
+
 **Points over the line**:
 A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.
 _Avoid_: Points over replacement, VORP, value over replacement
