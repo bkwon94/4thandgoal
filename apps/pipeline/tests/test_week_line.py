@@ -74,11 +74,11 @@ def test_trade_a_gives_the_count_the_opponent_the_byes_and_the_outs_of_each_week
     # Worked from the saved week 8 data and the 2026 schedule. Roster 10 has Nacua (WR2) and Cooper (WR27) in the top
     # 36 by the grade's Position rank, and gets Washington (WR20) for Cooper. Egbuka (TB) and Samuel (SF) are listed
     # Out. PIT, the team of Bernard, has its bye in week 9, and TB has its bye in week 10. JAX plays at BAL, 9th in
-    # points allowed to WRs, then at TEN, 1st. Out counts in week 9 only, so Egbuka names only his bye in week 10.
+    # points allowed to WRs, then at TEN, the most. Out counts in week 9 only, so Egbuka names only his bye in week 10.
     assert _texts(TRADE_A, thursday, 10) == [
         ("Week 9: WRs in the top 36 who play stay at 2. Washington plays at BAL, 9th most points to WRs. "
          "Bernard has a bye. Egbuka and Samuel are listed Out."),
-        ("Week 10: WRs in the top 36 who play stay at 2. Washington plays at TEN, 1st most points to WRs. "
+        ("Week 10: WRs in the top 36 who play stay at 2. Washington plays at TEN, the most points to WRs. "
          "Egbuka has a bye."),
     ]
 
@@ -186,7 +186,7 @@ def test_the_prose_checks_accept_the_numbers_and_the_names_of_the_week_line(thur
     out = AnalysisOut.model_validate({
         "sides": [{"roster_id": b.roster_id, "final_letter": b.final_letter, "reason": None,
                    "bullets": bullets[b.roster_id], "cited": [f"{b.roster_id}.week_line"]} for b in breakdowns],
-        "verdict": {"choice": "accept", "reason": "Washington plays at TEN in week 10, 1st most points to WRs."}})
+        "verdict": {"choice": "accept", "reason": "Washington plays at TEN in week 10, the most points to WRs."}})
     assert check_response(out, thursday, breakdowns, facts) == []
 
 

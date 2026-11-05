@@ -71,6 +71,7 @@ def opponent_rank(allowed: dict[str, dict[str, PositionAllowed]], opponent: str,
 def most_points_text(rank: int, position: str) -> str:
     """The rank of a defense at a position in a manager's words, such as "3rd most points to WRs".
 
-    Rank 1 gives up the most. The schedule row and the Week line of the grade both name an opponent this way.
+    Rank 1 gives up the most, so it reads "the most points to WRs", never "1st most".
+    The schedule row and the Week line of the grade both name an opponent this way.
     """
-    return f"{ordinal(rank)} most points to {position}s"
+    return f"{'the' if rank == 1 else ordinal(rank)} most points to {position}s"
