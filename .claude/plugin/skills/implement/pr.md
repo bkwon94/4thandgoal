@@ -52,7 +52,15 @@ AT-2:
 The check `verdict` reads your latest comment that holds the line `Test verdicts`. It passes when every test has PASS. Then run `cpc:review <PR number>` for a FAIL, a BLOCKED, or a review comment.
 ````
 
-**Stop rule of stage 4.** If the push or `gh pr create` fails, stop. Tell Brian the command and its error.
+## The full check
+
+The CI check `Check` runs `make check` on the PR. It is the one full check of the Spec branch.
+
+1. Wait for it: `gh pr checks <PR number> --watch`.
+2. If it fails, read the log with `gh run view <run id> --log-failed`. Fix the cause on the Spec branch in its own commit, then push.
+3. Wait for the check again.
+
+**Stop rule of stage 4.** If the push or `gh pr create` fails, stop. Tell Brian the command and its error. If the check `Check` fails two times, stop. Tell Brian the failed test and the commit that broke it.
 
 ## A second start
 

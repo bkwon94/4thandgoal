@@ -25,7 +25,7 @@ The agent never writes a Test verdict. Only Brian gives PASS, FAIL, or BLOCKED (
    - Each PR comment with no marker that is later than the last round comment of the agent. In the first round, each PR comment with no marker counts.
 2. Judge the latest Test verdicts comment with the verdict script, as [`github.md`](github.md#the-test-verdicts) shows. Each test with FAIL or BLOCKED needs an action.
 3. Act on each item with the table below.
-4. Run `make check BASE=main` in the worktree. If it fails, fix it before the push. If you cannot fix it, stop and tell Brian.
+4. Run `make check-fast BASE=main` in the worktree. If it fails, fix it before the push. If you cannot fix it, stop and tell Brian. The CI check `Check` on the PR runs the full check after the push.
 5. Push with a plain `git push`. Never force-push, never squash, and never use `--no-verify`.
 6. Reply to each comment, as [`github.md`](github.md#replies) shows. End each reply with the agent marker.
 7. Post one round comment: the line `Feedback round <n>`, then one line for each action, then the agent marker. Give Brian the same list in the session.
