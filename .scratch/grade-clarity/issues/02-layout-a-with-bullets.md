@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** None. It can start now.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Each side of the document holds `bullets`, a list of 2 or 3 strings, in place of `analysis`. The prose checks run on each bullet.
 - [x] The chart sentence is the first factor of each side, the deal row, in plain words that name no source. No `chart` block stays.
@@ -20,3 +20,11 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [x] The finder prompt and the finder cards do not change.
 - [x] `DOCUMENT_VERSION` goes up by one.
 - [x] `make check-fast` passes at the root.
+
+## Comments
+
+- The merge: `2f17042` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
+- Two boxes stay open: one column at each width, and the players stack at 375 px. jsdom cannot measure a width. The screenshots of the evidence stage prove them.
+- The finder shares the as-of line, so its line also loses "Chart week", and its no-values note has the new text. The finder prompt and the finder cards do not change.
+- Brian checks the deal row text for a trade of one player for two: "after a discount on the side with more players".
+- `GLOSSARY.md`: "Deal row" replaces "Chart lean", and "Bullets" is new.
