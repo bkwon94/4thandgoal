@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { Reveal } from "./reveal";
 import { cn } from "../lib/utils";
 
-/* A dark chapter sits on the brand black. Its label and blurb take the dark prop for their on-dark colors.
+/* A chapter with the dark prop sits on the `card_band` surface. Its label and blurb take the dark prop for their on-dark colors.
    A chapter with reveal fades and rises in once as a unit, when it enters the view. A chapter with its own
    card stagger or hero motion leaves reveal off, so no element sits inside two reveals.
    On every page, from the tablet tier up, a chapter is a card on the grey body.
