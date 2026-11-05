@@ -22,6 +22,9 @@ const NOT_FOUND_ROUTE = "/404-floor-check/";
  */
 type OpenState = { route: string; tap: string };
 
+/* The route of the latest week: the last week page of the export, as the routes sort by season and then by week. */
+const LATEST_WEEK_ROUTE = builtRoutes().filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route)).at(-1) ?? "/no-week/";
+
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths. A page ticket of the
  * redesign adds its pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
@@ -31,6 +34,9 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   "/rankings/",
   // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
   { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
+  LATEST_WEEK_ROUTE,
+  // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
+  { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
