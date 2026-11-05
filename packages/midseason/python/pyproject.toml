@@ -9,6 +9,8 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    # The publish check catches a failed Claude call of the verifier as a refusal, so the package names the error.
+    "anthropic>=1.15.0",
     "cpc-facts",
     "cpc-league",
     "pydantic>=2.14.1",

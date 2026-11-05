@@ -76,8 +76,11 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
+from midseason.review import review_text, write_review
 from midseason.state import league_state
+from midseason.values import MidseasonValues
 from rankings.published import render_rankings
 from waiver.board import waiver_board
 from waiver.price import bid_history
@@ -677,11 +680,21 @@ def run_rankings(repo: Path, season: int, week: int, call: ClaudeCall, *, client
 NO_WEEK_FACTS = "Week {week} has no saved facts. Run make build CLIENT={slug} WEEK={week} first."
 
 
-def run_midseason(season: int, week: int, *, client: Client) -> Path:
-    """Write midseason.json of `week` into the build folder of the season, from the saved history of weeks 1 to `week`
-    and the saved facts of `week`. It writes nothing to published/, so only the publish of the report puts it live.
+def midseason_values(client: Client) -> MidseasonValues:
+    """The midseason values of the client. A client off the package gets the defaults, so Brian can build a draft
+    before the site takes the package."""
+    if "midseason" in client.values.packages:
+        return client.values.package(MidseasonValues)
+    return MidseasonValues()
+
+
+def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -> Path:
+    """Write the draft of the midseason report of `week` into the build folder of the season: midseason.json, the
+    saved facts of its prose, and the review file. It reads the saved history of weeks 1 to `week` and the saved facts
+    of `week`. It writes nothing to published/, so only the publish of the report puts it live.
 
     The app wires the odds into the report: the playoff odds of the saved week go in through the port of midseason.
+    Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
     """
     facts = week_dir(client.folder, season, week) / "facts.json"
     if not facts.exists():
@@ -695,7 +708,15 @@ def run_midseason(season: int, week: int, *, client: Client) -> Path:
     odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
     names = {rid: team.name for rid, team in bundle.data.teams.items()}
     state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
-    return write_midseason(midseason_report(season, week, state), build_dir(client.folder))
+    roast = midseason_values(client).roast
+    sheet = prose_sheet(week, state, roast)
+    blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
+    season_build = build_dir(client.folder) / str(season)
+    write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
+    command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
+    review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
+    log.info("review file: %s", review)
+    return write_midseason(midseason_report(season, week, state, blurbs), build_dir(client.folder))
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:

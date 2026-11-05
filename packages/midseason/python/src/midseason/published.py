@@ -3,12 +3,15 @@ The shape of midseason.json and its writer: the week of the report, the takeover
 chapters. The pipeline owns the shape (ADR 0011), and the site side of the package reads it with its own schema.
 """
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel
 
 from league.files import write_bytes_atomic
+from league.models import Blurb
+from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
@@ -23,6 +26,10 @@ class StateChapter(BaseModel):
     key: Literal["state"] = "state"
     title: str = "The state of the league"
     facts: LeagueState
+    # The blurb of the writer. Brian may edit its sentences in the draft before the publish.
+    blurb: Blurb | None = None
+    # The roast blurb. None when the roast setting of the client is off.
+    roast: Blurb | None = None
 
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
@@ -48,14 +55,26 @@ class MidseasonReport(BaseModel):
     acts: list[Act]
 
 
-def midseason_report(season: int, week: int, state: LeagueState) -> MidseasonReport:
-    """The report of `week` from the facts of each chapter. Act I holds the state of the league."""
+def midseason_report(season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb]) -> MidseasonReport:
+    """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
+    of the league."""
+    state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
     return MidseasonReport(
         season=season,
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[StateChapter(facts=state)])],
+        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])],
     )
+
+
+def report_blurbs(report: MidseasonReport) -> list[Blurb]:
+    """Every blurb of the report in page order: each chapter's blurb, then its roast."""
+    return [blurb for act in report.acts for chapter in act.chapters
+            for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
+
+
+def read_midseason(season_build: Path) -> MidseasonReport:
+    return MidseasonReport.model_validate_json((season_build / MIDSEASON_FILE).read_text(encoding="utf-8"))
 
 
 def write_midseason(report: MidseasonReport, build: Path) -> Path:

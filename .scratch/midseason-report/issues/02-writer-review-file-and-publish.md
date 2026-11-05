@@ -10,8 +10,8 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-39, AT-40, AT-41, 
 
 **Status:** ready-for-agent
 
-- [ ] The review file shows each blurb with its prose block, its facts, and the verifier result.
-- [ ] Each roast blurb cites at least one fact.
-- [ ] With `roast = "off"` the draft has no roast lines.
-- [ ] An edited blurb with an uncited number makes `make midseason-publish CLIENT=cpc WEEK=8` refuse and name the blurb.
-- [ ] A clean publish commits `midseason.json` and `sim.json` in `clients/cpc/published/2026/` and no other path.
+- [x] The review file shows each blurb with its prose block, its facts, and the verifier result.
+- [x] Each roast blurb cites at least one fact.
+- [x] With `roast = "off"` the draft has no roast lines.
+- [x] An edited blurb with an uncited number makes `make midseason-publish CLIENT=cpc WEEK=8` refuse and name the blurb.
+- [x] A clean publish commits `midseason.json` and `sim.json` in `clients/cpc/published/2026/` and no other path.

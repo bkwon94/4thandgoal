@@ -1,7 +1,18 @@
 {
   "additionalProperties": false,
-  "description": "The package values of midseason. It has no values.",
-  "properties": {},
+  "description": "The package values of midseason: the heat of the roast. \"off\" drops the roast lines, \"warm\" softens each\nroast, and \"hot\" has no limit on heat for football decisions.",
+  "properties": {
+    "roast": {
+      "default": "hot",
+      "enum": [
+        "off",
+        "warm",
+        "hot"
+      ],
+      "title": "Roast",
+      "type": "string"
+    }
+  },
   "title": "MidseasonValues",
   "type": "object"
 }

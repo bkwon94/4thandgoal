@@ -172,11 +172,13 @@ LAYER_OF: dict[str, str] = {
     "analyzer.finder_reasons": "write",
     "analyzer.routes": "write",
     "waiver.research": "write",
+    "midseason.prose": "write",
     # output
     "waiver.render": "output",
     "render": "output",
     "rankings.published": "output",
     "midseason.published": "output",
+    "midseason.review": "output",
     "week.page": "output",
     "managers.render": "output",
     "publish": "output",
