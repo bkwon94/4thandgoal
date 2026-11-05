@@ -984,7 +984,8 @@ def _superstar(snapshot: Snapshot, side: Side) -> Adjuster:
                         reason=f"{names}, but the one-for-many margin already counts {'him' if len(stars) == 1 else 'them'}.")
     each = "a" if len(stars) == 1 else "each a"
     # With no chart this week, the rank comes from the chart of the weeks before, so the reason names that source.
-    when = "this week" if snapshot.chart is not None else "last week"
+    # After an outage a chart of an earlier week stands in as the chart, so its week decides the word too.
+    when = "this week" if snapshot.chart is not None and snapshot.chart.week == snapshot.week else "last week"
     return Adjuster(name=SUPERSTAR, step=1, reason=f"{names}, {each} top {SUPERSTAR_RANK} player {when}.")
 
 

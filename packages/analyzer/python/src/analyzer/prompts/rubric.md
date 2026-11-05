@@ -179,6 +179,8 @@ A tie at the edge makes every tied player a superstar.
 - A player out for the season is no superstar, because he counts as zero for the side that gets him.
 - A week with no trade values reads the newest saved trade values of the weeks before. The start letters
   never read them, so both sides still start at C. The reason then says "last week", not "this week".
+- After an outage the chart of an earlier week can stand in for the week. The reason then says
+  "last week" too.
 
 The reason names each superstar the side gets. It never names the source of the trade values.
 

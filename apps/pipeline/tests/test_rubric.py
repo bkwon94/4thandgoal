@@ -205,12 +205,12 @@ TRADE_W = (6, [WASHINGTON, WALKER], 12, [HIGGINS, "12490", "5967"])
 def _week_9(snap, raw_dir):
     """The snapshot with the trade values of the week 9 chart read, matched to the league players as the CLI does.
 
-    Walker takes his live Sleeper name, which the week 6 fixture lacks.
+    Walker takes his live Sleeper name, which the week 6 fixture lacks. The trade week is 9, the week of the chart.
     """
     read = ChartRead.model_validate_json(WEEK_9_READ.read_text(encoding="utf-8"))
     chart = match_chart(read, week_lines(parse_week(load_raw(raw_dir))))
     players = {**snap.players, WALKER: snap.players[WALKER].model_copy(update={"name": "Kenneth Walker III"})}
-    return snap.model_copy(update={"chart": chart, "players": players})
+    return snap.model_copy(update={"week": 9, "chart": chart, "players": players})
 
 
 NO_SUPERSTAR = "No player it gets is a superstar."
@@ -307,6 +307,14 @@ def test_with_no_chart_this_week_the_superstar_reads_the_saved_read_of_last_week
     assert _adjuster(teehee, "superstar").step == 1
     assert _adjuster(teehee, "superstar").reason == "Kenneth Walker III is a superstar, a top 8 player last week."
     assert _adjuster(bo_girds, "superstar").reason == NO_SUPERSTAR
+
+
+def test_a_stand_in_chart_of_an_earlier_week_gives_the_superstar_reason_last_week(snap, fixture_raw_dir):
+    # After an outage the cached week 9 chart stands in for week 10, so the chart week is 9 and the trade week is 10.
+    week_10 = _week_9(snap, fixture_raw_dir).model_copy(update={"week": 10})
+    assert week_10.chart.week == 9
+    _, teehee = grade(_trade(*TRADE_W), week_10)
+    assert _adjuster(teehee, "superstar").reason == "Kenneth Walker III is a superstar, a top 8 player last week."
 
 
 def test_a_one_for_two_with_no_chart_this_week_steps_up_the_superstar_from_last_week(snap, fixture_raw_dir, tmp_path):
