@@ -25,6 +25,7 @@ from analyzer.rubric import (
     TradeSide,
     fairness,
     grade,
+    reason_names,
     verdict,
 )
 from cornerstone.pipeline import (
@@ -52,7 +53,7 @@ from league.provider.base import Provider
 from league.provider.raw import RawState, RawWeek
 from league.provider.sleeper import SleeperProvider, fetch_state, load_raw
 from league.slow_sources import load_slow_sources
-from league.snapshot import Snapshot, load_snapshot
+from league.snapshot import Snapshot, load_snapshot, saved_chart_before
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -228,11 +229,13 @@ def _saved_snapshot(args: argparse.Namespace, client: Client) -> Snapshot | None
     else:
         # A client with no chart reads no saved chart read either: each of its chart values is 0.
         chart = _saved_chart_values(client.nfl_dir, args.week, raw, client.chart) if client.chart is not None else None
+    # With no chart of the week, the superstar check reads the newest saved read of the weeks before.
+    before = saved_chart_before(client, args.week, raw, chart)
     history = history_root(client.folder, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), args.season, args.week, history,
                              raw.league.scoring_settings, client.settings.points_key)
-    return load_snapshot(raw_path, history, chart, slow, client=client)
+    return load_snapshot(raw_path, history, chart, slow, client=client, chart_before=before)
 
 
 def _live_snapshot(
@@ -359,7 +362,7 @@ def run_analyze(
     print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}{flag}")
     # The fairness reads the letters that stand: Claude's when the call ran, the rubric's without it.
     letters = analysis.standing_letters if analysis is not None else tuple(b.final_letter for b in result)
-    for line in _fairness_lines(snapshot, fairness(letters, result)):
+    for line in _fairness_lines(snapshot, fairness(letters, result, names=reason_names(snapshot))):
         print(line)
     return 0
 

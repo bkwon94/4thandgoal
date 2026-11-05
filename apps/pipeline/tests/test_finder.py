@@ -15,7 +15,7 @@ from cpc import cpc_client, four_week
 from analyzer.adjusters import Adjuster, due_back_week
 from analyzer.finder import FinderTrade, candidates, find_win_wins, rank
 from analyzer.finder_reasons import trade_facts
-from analyzer.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade
+from analyzer.rubric import Breakdown, Fairness, FairnessSide, ProposedTrade, TradeSide, fairness, grade, reason_names
 from league.provider.sleeper import load_raw
 from league.ranks import recent_points_per_game
 from league.slow_sources import load_slow_sources
@@ -81,7 +81,8 @@ def _win_wins(asker, partner, snap) -> list[FinderTrade]:
     found = []
     for trade in candidates(asker, partner, snap):
         breakdowns = grade(trade, snap)
-        result = fairness((breakdowns[0].final_letter, breakdowns[1].final_letter), breakdowns)
+        result = fairness((breakdowns[0].final_letter, breakdowns[1].final_letter), breakdowns,
+                          names=reason_names(snap))
         if result.state == "win_win":
             found.append(FinderTrade(trade=trade, breakdowns=breakdowns, fairness=result))
     return rank(found)

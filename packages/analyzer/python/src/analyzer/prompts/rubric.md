@@ -30,10 +30,14 @@ start at C.
 
 ## Consolidation
 
-Two good players must not beat one great player on a plain sum. When one side gives exactly one
-player and gets two or more, divide the depth side's sum by `CONSOLIDATION_MARGIN`. The depth side
-is the side that gives two or more. Both sides use the divided sum in their ratios. A trade of
-three for two, or of any two or more for two or more, gets no discount.
+Two good players must not beat one great player on a plain sum. When the two sides give an uneven
+count of players, divide the sum of the side with more players by a margin. Both sides use the
+divided sum in their ratios. The margin comes from the counts:
+
+- One player for two or more uses the one-for-many margin, `CONSOLIDATION_MARGIN`.
+- Two or more for a larger count, such as three for two or four for three, uses the uneven margin,
+  `UNEVEN_MARGIN`. The extra player counts at a discount.
+- An even count, such as two for two, uses no margin.
 
 ## Unlisted
 
@@ -49,8 +53,8 @@ one. A handcuff with no chart row keeps the start letter. See the handcuff secti
 
 After the start letter, each adjuster moves a side by one step at most: up, down, or not at all.
 The breakdown lists every adjuster in this order, with its step and a one-line reason: roster
-fit, standing, trend and usage, injury, handcuff, schedule, and expected gap. Expected gap runs only
-when its tunable is on. Schedule shows a lean in place of a step.
+fit, standing, trend and usage, injury, upside, superstar, handcuff, schedule, and expected gap.
+Expected gap runs only when its tunable is on. Schedule shows a lean in place of a step.
 
 ## Roster fit
 
@@ -162,6 +166,24 @@ standing adjuster credits as a return bet. When the injury report is not availab
 first case runs, and the reason says so. A player with no entry in the id map gets no count of
 report weeks, and the reason names him.
 
+## Superstar
+
+A superstar is a player in the top `SUPERSTAR_RANK` trade values of the week, over all positions.
+A tie at the edge makes every tied player a superstar.
+
+- A side that gets one or more superstars steps up one step. Two superstars still give one step.
+- The side that gives a superstar gets no step down. The trade values already count the loss.
+- A trade that uses the one-for-many margin, `CONSOLIDATION_MARGIN`, gives no superstar step. The
+  margin already counts the great player, and the reason says so. The uneven margin does not stop
+  the step.
+- A player out for the season is no superstar, because he counts as zero for the side that gets him.
+- A week with no trade values reads the newest saved trade values of the weeks before. The start letters
+  never read them, so both sides still start at C. The reason then says "last week", not "this week".
+- After an outage the chart of an earlier week can stand in for the week. The reason then says
+  "last week" too.
+
+The reason names each superstar the side gets. It never names the source of the trade values.
+
 ## Handcuff
 
 A handcuff is a running back the side gets who is second or lower on his NFL team's depth chart,
@@ -232,8 +254,14 @@ side and gives one of three states.
   more. At equal letters, the side with the lower start letter gives more.
 - Any other pair of letters: fair.
 
-Each side gets one reason: the reason of its first adjuster with a step up, in rubric order. A
-side with no step up gets the reason of its start letter.
+Each side gets one reason, from the net sum of its adjuster steps before the clamp. "First" means
+first in rubric order.
+
+- A net above zero: the reason of its first adjuster with a step up.
+- A net below zero: the reason of its first adjuster with a step down.
+- A net of zero with steps: the first step up, then ", but ", then the first step down. The step
+  down starts in lower case, unless its first word is a name.
+- No step: the reason of its start letter.
 
 ## What the breakdown never holds
 

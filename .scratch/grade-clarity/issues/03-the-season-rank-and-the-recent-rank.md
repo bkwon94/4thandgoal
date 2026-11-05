@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, and AT
 
 **Blocked by:** 02.
 
-**Status:** in-review
+**Status:** done
 
 - [x] `RECENT_RANK_GAP = 12` is in the analyzer tunables.
 - [x] Each player of `trade.sides` carries `season_rank`, and `recent_rank` when the gap holds, else null.

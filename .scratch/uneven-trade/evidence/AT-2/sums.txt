@@ -1,0 +1,19 @@
+The trade values come from data/nfl/cache/charts/1QB0.5PPR4pt/week-09.json, read on 2026-11-05.
+  Drake London: 35.0 (row 23 of the week 9 chart dated 2026-11-03)
+  Garrett Wilson: 23.0 (row 38 of the week 9 chart dated 2026-11-03)
+  Luther Burden: 22.0 (row 40 of the week 9 chart dated 2026-11-03)
+  Michael Wilson: 19.5 (row 48 of the week 9 chart dated 2026-11-03)
+  D.J. Moore: 17.5 (row 53 of the week 9 chart dated 2026-11-03)
+  Sam LaPorta: 11.5 (row 71 of the week 9 chart dated 2026-11-03)
+  Denzel Boston: 11.5 (row 76 of the week 9 chart dated 2026-11-03)
+
+Trade: Teehee (roster 12) gives Garrett Wilson (8146), Luther Burden III (12519), DJ Moore (4983), and Sam LaPorta (10859) to London Cooking (roster 5).
+London Cooking gives Drake London (8112), Michael Wilson (10232), and Denzel Boston (13346) to Teehee. Teehee asks.
+
+The side with 4 players (Teehee gives): 23.0 + 22.0 + 17.5 + 11.5 = 74.0
+The side with 3 players (London Cooking gives): 35.0 + 19.5 + 11.5 = 66.0
+The sum of the side with 4 players divided by the uneven margin: 74.0 / 1.10 = 67.27
+
+Teehee ratio: got / gave = 66.0 / 67.27 = 0.9811. The band of C is 0.90 to below 1.10. Start letter C.
+London Cooking ratio: got / gave = 67.27 / 66.0 = 1.0193. The band of C is 0.90 to below 1.10. Start letter C.
+With no margin, London Cooking would read 74.0 / 66.0 = 1.1212, which is the band of B.

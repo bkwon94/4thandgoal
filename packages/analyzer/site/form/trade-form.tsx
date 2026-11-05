@@ -153,7 +153,7 @@ function GradingStatus() {
           />
         )}
       </div>
-      <p className="m-0 text-meta text-mute">This can take up to a minute on a new chart week.</p>
+      <p className="m-0 text-meta text-mute">This can take up to a minute early in the week.</p>
     </div>
   );
 }

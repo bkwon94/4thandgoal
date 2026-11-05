@@ -1,0 +1,13 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v "tests/test_rubric.py::test_with_no_chart_this_week_the_superstar_reads_the_saved_read_of_last_week"
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/apps/pipeline
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_rubric.py::test_with_no_chart_this_week_the_superstar_reads_the_saved_read_of_last_week PASSED [100%]
+
+============================== 1 passed in 0.22s ===============================
+[exit 0]

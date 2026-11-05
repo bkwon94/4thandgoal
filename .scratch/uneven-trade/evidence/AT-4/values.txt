@@ -1,0 +1,10 @@
+The trade values come from data/nfl/cache/charts/1QB0.5PPR4pt/week-09.json, read on 2026-11-05.
+  Kenneth Walker: 64.0 (row 2 of the week 9 chart dated 2026-11-03)
+  Tee Higgins: 38.5 (row 20 of the week 9 chart dated 2026-11-03)
+  Bhayshul Tuten: 28.5 (row 28 of the week 9 chart dated 2026-11-03)
+  Parker Washington: 27.5 (row 32 of the week 9 chart dated 2026-11-03)
+
+Bo Girds gives: Washington 27.5 + Walker 64.0 = 91.5. Bo Girds gets: Higgins 38.5 + Tuten 28.5 = 67.0.
+The count is 2 for 2, so no margin divides a sum.
+Bo Girds ratio: got / gave = 67.0 / 91.5 = 0.7322. Below 0.75 is F.
+Teehee ratio: got / gave = 91.5 / 67.0 = 1.3657. The band of A is 1.25 and above.

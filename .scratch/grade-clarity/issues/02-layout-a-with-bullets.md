@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** None. It can start now.
 
-**Status:** in-review
+**Status:** done
 
 - [x] Each side of the document holds `bullets`, a list of 2 or 3 strings, in place of `analysis`. The prose checks run on each bullet.
 - [x] The chart sentence is the first factor of each side, the deal row, in plain words that name no source. No `chart` block stays.

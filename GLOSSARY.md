@@ -581,8 +581,11 @@ A traded player with no row on the chart week's chart. He gets no trade value, s
 no start letter and the rubric grades from the adjusters alone.
 
 **Consolidation**:
-A trade of two or more players for one. The depth side's values must sum to a margin above the one
-player before the sides count as even.
+A trade where one side gets more players than the other. A margin divides the sum of the side with more players
+before the sides count as even. Two margins exist:
+
+- The one-for-many margin, `CONSOLIDATION_MARGIN`, is 1.25. It is for one player for two or more.
+- The uneven margin, `UNEVEN_MARGIN`, is 1.10. It is for any other uneven count, such as three for two.
 
 **Handcuff**:
 The backup to a roster's own starting running back. Insurance, never a player with no stats. A backup who
@@ -851,6 +854,12 @@ _Avoid_: potential, ceiling, buy low
 A player with a chart value in the top of his position on the league's chart, such as the top 6 QB. `star_rank_by_position`
 in the client sets the count per position. A position not in it has no stars.
 _Avoid_: stud, elite, top guy
+
+**Superstar**:
+A player in the top 8 trade values of the week, over all positions. `SUPERSTAR_RANK` sets the count. Not every
+star is a superstar. A superstar is not always a star: the Star rank of a position can be below 8, such as the top 6
+QB. A week with no chart reads the newest saved chart of the two weeks before, and the reason then says "last week".
+_Avoid_: stud, elite
 
 **Star return bet**:
 A star who is out now and is not out for the season. His return week may be missing. The injury adjuster does not count him against the side that gets him.

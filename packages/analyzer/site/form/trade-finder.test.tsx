@@ -55,6 +55,13 @@ afterEach(() => {
 });
 
 describe("TradeFinder", () => {
+  it("shows the wait text while the search runs, with no chart named", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    find();
+    expect(await screen.findByText("The search tries every small swap. This can take up to a minute early in the week.")).toBeTruthy();
+    expect(screen.queryByText(/chart/i)).toBeNull();
+  });
+
   it("lists the eleven other teams and not the asker", () => {
     const radios = within(picker()).getAllByRole("radio");
     expect(radios).toHaveLength(11);

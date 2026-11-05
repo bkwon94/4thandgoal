@@ -1,0 +1,13 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v "tests/test_rubric.py::test_a_net_below_zero_gives_the_first_step_down_in_rubric_order"
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/apps/pipeline
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_rubric.py::test_a_net_below_zero_gives_the_first_step_down_in_rubric_order PASSED [100%]
+
+============================== 1 passed in 0.04s ===============================
+[exit 0]

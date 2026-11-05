@@ -176,6 +176,7 @@ const FACTOR_NAME: Record<string, string> = {
   "trend and usage": "Usage",
   injury: "Injury",
   upside: "Upside",
+  superstar: "Superstar",
   handcuff: "Handcuff",
   schedule: "Schedule",
   "expected gap": "Expected gap",

@@ -1,0 +1,13 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v "tests/test_rubric.py::test_a_side_at_a_with_a_net_above_zero_keeps_a_and_gives_its_step_up"
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/apps/pipeline
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_rubric.py::test_a_side_at_a_with_a_net_above_zero_keeps_a_and_gives_its_step_up PASSED [100%]
+
+============================== 1 passed in 0.03s ===============================
+[exit 0]

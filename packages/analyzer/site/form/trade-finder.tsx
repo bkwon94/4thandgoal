@@ -143,7 +143,7 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
       </Button>
       {finding && (
         <p role="status" className="m-0 text-meta text-mute">
-          The search tries every small swap. This can take up to a minute on a new chart week.
+          The search tries every small swap. This can take up to a minute early in the week.
         </p>
       )}
       {find.status === "error" && (

@@ -167,7 +167,7 @@ def test_the_week_line_is_never_a_factor_and_moves_no_letter(thursday):
     names = {factor["name"] for side in document["sides"] for factor in side["factors"]}
     assert not any("week" in name for name in names)
     assert [a.name for a in with_lines.breakdowns[0].adjusters] == [
-        "roster fit", "standing", "trend and usage", "injury", "upside", "handcuff", "schedule"]
+        "roster fit", "standing", "trend and usage", "injury", "upside", "superstar", "handcuff", "schedule"]
 
 
 def test_the_fact_sheet_holds_one_week_line_fact_per_side_with_the_text_of_its_two_lines(thursday):

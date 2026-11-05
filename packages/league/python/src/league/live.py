@@ -36,7 +36,7 @@ from league.paths import history_root, history_week_dir, nflverse_cache_dir, ret
 from league.provider.raw import RawAheadWeek, RawWeek
 from league.provider.sleeper import fetch_past_week, fetch_projections_ahead
 from league.slow_sources import load_slow_sources
-from league.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns
+from league.snapshot import Snapshot, build_snapshot, load_out_for_season, load_returns, saved_chart_before
 from league.trades import default_cutoff
 from league.tunables import FAST_SOURCES_MAX_AGE_SECONDS, TEAMS_CACHE_SECONDS
 
@@ -244,14 +244,16 @@ def _build_live(
     """The snapshot of the raw Sleeper data, with the slow sources and the returns read from the disk.
 
     `now` is the clock of the request, so the snapshot can tell the known games in progress.
+    With no chart of the trade week, the superstar check reads the newest saved chart read of the weeks before.
     """
     root = history_root(client.folder, season)
     slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, trade_week, root, raw.league.scoring_settings,
                              client.settings.points_key)
     returns = load_returns(returns_path(client.nfl_dir, season))
     out_for_season = load_out_for_season(returns_path(client.nfl_dir, season))
+    before = saved_chart_before(client, trade_week, raw, chart)
     return build_snapshot(raw, root, chart, slow, fetched, stale, trade_week=trade_week, returns=returns, now=now,
-                          out_for_season=out_for_season, client=client)
+                          out_for_season=out_for_season, client=client, chart_before=before)
 
 
 def live_snapshot(
