@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-9 and AT-32.
 
 **Blocked by:** None. It can start now.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `league` package gives the season measure next to the 4-week measure. The due-back step and the out-for-season step still apply to both.
 - [ ] A real `2026` week 9 grade reads Cooper (`13276`) as WR26 at the Position rank.

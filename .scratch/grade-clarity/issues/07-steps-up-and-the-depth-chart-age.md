@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-15, AT-16, and AT-30.
 
 **Blocked by:** 06.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The rule reads the full Sleeper players file, so a player ahead on no roster counts.
 - [x] The depth chart reader gives back the newest `dt` with the charts.

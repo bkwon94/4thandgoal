@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-5, AT-11, AT-12, AT-1
 
 **Blocked by:** 01, 02, 05.
 
-**Status:** in-review
+**Status:** done
 
 - [x] Each side of the document holds `week_lines`, a list of `{week, text}` for the trade week and the next week only.
 - [x] Out counts in the trade week only. IR, PUP, NA, and Sus, out for the season, and a return week after the next week count in both weeks. Questionable and Doubtful never count.

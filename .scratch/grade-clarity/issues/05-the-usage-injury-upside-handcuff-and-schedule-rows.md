@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, and
 
 **Blocked by:** 04.
 
-**Status:** in-review
+**Status:** done
 
 - [ ] Usage gives the snap share, the target share, and the air yards per target for WR and TE, and the snap share, the carry share, and the target share for RB. QB gets no usage row. No week and no route share show.
 - [x] The injury row reads in the form "Cooper is out until week 11. He was on the injury report in 5 of 8 weeks."

@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-19, AT-20, AT-22, AT-
 
 **Blocked by:** 01, 02, 03.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A row that says nothing, such as "No player it gets is a handcuff", is not in the document.
 - [x] No row says "one step up", "one step down", or "no step".
