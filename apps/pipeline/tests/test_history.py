@@ -16,6 +16,7 @@ from league.history import (
     player_trend,
     points_per_game,
     red_zone,
+    save_prev_week_to_history,
     season_rank,
     share_direction,
     snap_share,
@@ -251,3 +252,38 @@ def test_the_stat_line_points_of_a_past_week_read_its_points_key():
 def test_the_saved_weeks_take_the_points_key_of_the_league(fixture_history_root):
     weeks = load_saved_weeks(fixture_history_root, 5, points_key="pts_ppr")
     assert {past.points_key for past in weeks.values()} == {"pts_ppr"}
+
+
+def _week_pair(tmp_path, short, full):
+    """A raw directory of week 8 with a transactions_prev.json, and a history of week 7 with a short file."""
+    raw = tmp_path / "week-08" / "raw"
+    raw.mkdir(parents=True)
+    if full is not None:
+        (raw / "transactions_prev.json").write_text(json.dumps(full))
+    prev = history_week_dir(tmp_path / "history", 7)
+    if short is not None:
+        prev.mkdir(parents=True)
+        (prev / "transactions.json").write_text(json.dumps(short))
+    return raw, prev
+
+
+def test_the_full_week_before_replaces_the_short_history_file(tmp_path):
+    full = [{"transaction_id": str(n)} for n in range(5)]
+    raw, prev = _week_pair(tmp_path, full[:2], full)
+    save_prev_week_to_history(raw, prev)
+    assert json.loads((prev / "transactions.json").read_text()) == full
+    assert not (prev / "transactions.json").is_symlink()
+    assert list(prev.glob("*.tmp")) == []
+
+
+def test_no_prev_file_leaves_the_history_as_it_is(tmp_path):
+    raw, prev = _week_pair(tmp_path, [{"transaction_id": "1"}], None)
+    before = (prev / "transactions.json").read_bytes()
+    save_prev_week_to_history(raw, prev)
+    assert (prev / "transactions.json").read_bytes() == before
+
+
+def test_no_history_week_creates_nothing(tmp_path):
+    raw, prev = _week_pair(tmp_path, None, [{"transaction_id": "1"}])
+    save_prev_week_to_history(raw, prev)
+    assert not prev.exists()
