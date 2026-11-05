@@ -10,7 +10,7 @@ Map: `.scratch/site-redesign/MAP.md`.
 
 ## Question
 
-When every other ticket is done, `cpc:to-spec` writes `PRD.md` from the map and the tickets. It renames the four broken glossary terms: Masthead, Black chapter, Chapter, and Page. It also lists the ideas that need new data as a later pipeline spec.
+When every other ticket is done, `cpc:to-spec` writes `PRD.md` from the map and the tickets. It renames the four broken glossary terms: Masthead, Black chapter, Chapter, and Page. It also rewrites Menu, Menu button, and Compact bar for the dock of decision 04. It also lists the ideas that need new data as a later pipeline spec.
 
 ## Decision
 

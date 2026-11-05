@@ -19,6 +19,14 @@ _Avoid_: Drawer, nav, hamburger, navigation
 The control in the masthead that opens and closes the menu.
 _Avoid_: Hamburger, toggle, burger
 
+**Dock**:
+The bar of destinations that floats at the bottom of the viewport on a phone and stays on screen at every scroll.
+_Avoid_: Tab bar, bottom nav, footer
+
+**Week chip**:
+The control in the top band that shows the current week and opens the strip of the weeks of the season.
+_Avoid_: Week picker, week dropdown, week selector
+
 **Page column**:
 The centered column that holds every page's content.
 _Avoid_: Container, wrapper, main column

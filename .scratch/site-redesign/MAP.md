@@ -24,10 +24,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The floor runs in Playwright on the static export of each client: axe for contrast, failing on `incomplete` too, and a scan for tap targets, scroll width, and text size. It runs in `build-each-client.mjs`, not in `check:fast`. `decisions/10-research-readability-floor-checks.md`.
 - The site self-hosts Space Grotesk and JetBrains Mono with `next/font/local`, as two Latin variable woff2 files of 53,660 bytes in total, both under the OFL. `decisions/02-research-web-fonts-without-speed-loss.md`.
 - The look is the blend of Instrument and Glass HUD: Space Grotesk and JetBrains Mono, brand surfaces, a loud hero with the grid, brackets, glow, and scan line, round photo frames, and a staggered rise. ADR 0024. `decisions/03-prototype-the-look.md`.
+- The phone uses a dock at the bottom and a week chip in the top band. The desktop uses a pill bar and, on the week page, the chapter rail. The `layout` key of the client menu goes away. `decisions/04-prototype-the-navigation.md`.
 
 ## NOT YET SPECIFIED
 
-- How does a reader move across the routes? `decisions/04-prototype-the-navigation.md`.
 - What does the week page show, and in what order? `decisions/05-prototype-the-week-page.md`.
 - What does the analyzer look like in the look? `decisions/06-prototype-the-analyzer.md`.
 - What do the managers, rankings, and waiver pages look like? `decisions/07-prototype-managers-rankings-waiver.md`.
