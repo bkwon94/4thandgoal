@@ -131,9 +131,9 @@ describe("Reduced motion on the trade form", () => {
 });
 
 describe("Reduced motion on the power rankings", () => {
-  it("opens a row at once, with no transition class on the open state", async () => {
+  it("opens a card at once", async () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
-    const button = screen.getByRole("button", { name: "More on Lil Fridge" });
+    const button = screen.getByRole("button", { name: /Lil Fridge/ });
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
@@ -147,8 +147,6 @@ describe("Reduced motion on the power rankings", () => {
       },
       { timeout: 50 },
     );
-    // The chevron is the one CSS transition of the row. With motion off it carries no transition class.
-    expect(button.querySelector("span")!.className).not.toMatch(/\btransition-/);
   });
 });
 

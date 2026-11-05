@@ -127,7 +127,7 @@ describe("HomePage power rankings", () => {
     const top = Array.from(link.querySelectorAll("li")).map((item) => item.textContent);
     expect(top).toEqual(["1London Cooking", "2Lil Fridge", "3Bo Girds"]);
     // London Cooking moved up four places, the largest movement in the fixture week.
-    expect(link.textContent).toContain("Biggest mover: ▲Up4 London Cooking");
+    expect(link.textContent).toContain("Biggest mover: Up4 London Cooking");
   });
 
   it("puts the chapter after the analyzer and before the weeks", async () => {
