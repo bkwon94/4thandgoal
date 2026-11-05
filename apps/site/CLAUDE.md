@@ -13,7 +13,9 @@ Run these in `apps/site/`.
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
 - Test: `pnpm test`. The tests read the generated files, so run `pnpm check:fast` or a build first.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
-- Check all: `pnpm check`. It runs the fast check, then the build and `check:export` of each client under `clients/`. CI runs it on every push.
+- Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page.
+- Test the rules of the floor: `pnpm test:floor`. It needs Chromium once: `pnpm exec playwright install chromium`.
+- Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. CI runs it on every push.
 - Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.
 
 ## Rules
