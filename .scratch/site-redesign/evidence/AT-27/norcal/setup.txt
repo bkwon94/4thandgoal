@@ -1,0 +1,22 @@
+The setup of the NorCal site tests with the live API. Each command ran from the worktree site-redesign-ev-norcal,
+a detached checkout of 12486d0e, on 2026-11-05. Port 8080 belonged to the CPC agent, so this API ran on port 8090.
+
+$ cd apps/api && env CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4174 CORNERSTONE_PASSPHRASE_CPC=localtest \
+    CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_REPO=<worktree root> \
+    uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 8090
+The command of "make -C apps/api api", with the port 8090 in place of 8080 and the origin of the NorCal server.
+
+$ NEXT_PUBLIC_API_URL=http://localhost:8090 CLIENT=norcal pnpm --dir apps/site build
+$ python3 -m http.server 4174 --directory apps/site/out
+The export calls the local API, so the passphrase localtest opens the form. The teams come from Sleeper through the local API.
+
+The browser: agent-browser 0.25.4 with AGENT_BROWSER_SESSION=norcal. The screen recordings of AT-1, AT-3, and AT-7 use
+Playwright 1.64.1 of the repo (@playwright/test, Chromium), because "agent-browser record" saved a 1280 px video at any viewport.
+
+AT-27, client norcal: clients/norcal/client.toml has finder = true under [values.analyzer].
+1. Open http://localhost:4174/analyze/ at 375 px. Type localtest in the passphrase sheet and tap Continue.
+2. Tap "Pick Your Team" and choose Mitseeker5000. The "Find a Trade" card shows under the form.
+3. Choose Bo Girds as the trade partner, then tap "Find a Trade". The result showed after about 15 s.
+4. Take the full-page screenshot. Then tap the theme button, or set the viewport to 768 or 1280 px, and take the next one.
+   The page did not reload, so all six screenshots show the result of one POST to the find route.
+The API log of the NorCal calls is in api-log.txt.

@@ -1,6 +1,6 @@
 /**
- * Builds the static export of each client folder under clients/, then checks that export. The full check runs it.
- * A change to a shared part then cannot break a second client unseen. It stops at the first failed build.
+ * Builds the static export of each client folder under clients/, then checks that export and its readability floor.
+ * The full check runs it. A change to a shared part then cannot break a second client unseen. It stops at the first failure.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
@@ -13,7 +13,8 @@ const slugs = readdirSync(clientsDir)
   .sort();
 
 for (const slug of slugs) {
-  for (const script of ["build", "check:export"]) {
+  // The floor runs while out/ holds this client, because the next build replaces out/.
+  for (const script of ["build", "check:export", "check:floor"]) {
     console.log(`==> site ${script}: ${slug}`);
     const run = spawnSync("pnpm", [script], { stdio: "inherit", env: { ...process.env, CLIENT: slug } });
     if (run.status !== 0) {

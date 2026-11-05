@@ -1,0 +1,40 @@
+$ git diff -- clients/cpc/brand.toml
+diff --git a/clients/cpc/brand.toml b/clients/cpc/brand.toml
+index c7a09f01..5540f744 100644
+--- a/clients/cpc/brand.toml
++++ b/clients/cpc/brand.toml
+@@ -42,48 +42,3 @@ chip_dark = "#262626"
+ # so it sits flush with the page, and its rule gives its edge. The accent, the on-dark roles, and the glow do not re-point.
+ # The accent is 3.1 to 1 on #141414 and 2.6 to 1 on #262626, so it never carries text on a dark surface.
+ # The two dark surfaces are the page #141414 and the raised surface #262626. Each ratio below is on those two, in that order.
+-[dark]
+-# The accent never re-points (ADR 0007).
+-accent = "#b8342a"
+-band = "#141414"
+-# The raised surface of the look, such as the active dock item: the value of the dark board.
+-raised = "#262626"
+-# The lines of the grid texture of the hero, as in the light set.
+-grid = "#1c1c1c"
+-# The page. White text on it is 18.4 to 1.
+-page = "#141414"
+-# The light grey sits one step between the page and the lifted `card_band` surface: the grey card, the body from the tablet tier up, and the grey chip.
+-# A checked row in the team picker goes from this grey to the lifted `card_band` surface, so the grey must not equal the card.
+-# #1f1f1f is 1.1 to 1 on the page and 1.1 to 1 under the lifted `card_band` surface. On it white is 16.5 to 1, #ccc 10.3, #999 5.8, and light red 8.4.
+-card = "#1f1f1f"
+-# Body text: 18.4 to 1 on the page, 15.1 to 1 on the raised surface.
+-text = "#ffffff"
+-# Muted text: 6.5 to 1 on the page, 5.3 to 1 on the raised surface.
+-muted = "#999999"
+-
+-[dark.derived]
+-accent_text = "#f2a59e"
+-# The hero text. The formula takes the light page, #f4f4f4, so the dark set names white.
+$ CLIENT=cpc pnpm --dir apps/site build
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> node scripts/client-build.mjs
+
+client build failed: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/clients/cpc/brand.toml breaks a rule:
+- dark: is required
+ ELIFECYCLE  Command failed with exit code 1.
+exit=1

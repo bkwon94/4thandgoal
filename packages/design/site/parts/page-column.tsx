@@ -5,8 +5,7 @@
 import type { ReactNode } from "react";
 
 /* One shell serves every page, because four copies of the same grid and main classes drift apart.
-   From the tablet tier a three-track grid keeps the page column in the middle track, so it lines up with the masthead
-   and the compact bar. The rail sits in the left margin track. On a phone the column fills the width, so no grid.
+   From the tablet tier a three-track grid keeps the page column in the middle track, so it lines up under the top band. The rail sits in the left margin track. On a phone the column fills the width, so no grid.
    From the tablet tier up the main turns clear and spaces the chapters, so each chapter reads as a card on the grey body.
    The main sets its full width. A grid item with auto margins shrinks to its content, and a short page would get a thin column. */
 export function PageColumn({ rail, children }: { rail?: ReactNode; children: ReactNode }) {

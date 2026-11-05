@@ -62,15 +62,21 @@ function expectAtRest(element: HTMLElement) {
   }
 }
 
-/* Opens a picker with a click on its trigger and picks one item. Base UI commits a mouse pick only for a press that starts on the item. */
-async function choose(trigger: HTMLElement, name: string) {
-  fireEvent.click(trigger);
-  const list = await screen.findByRole("listbox");
-  const option = within(list).getByRole("option", { name: new RegExp(name) });
-  fireEvent.pointerDown(option, { pointerType: "mouse" });
-  fireEvent.click(option);
-  if (screen.queryByRole("listbox")) fireEvent.keyDown(list, { key: "Escape" });
-  await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+/* Opens the team sheet of a slot or of "+" with a click, and taps one team. */
+async function pickTeam(button: string | RegExp, team: string) {
+  fireEvent.click(screen.getByRole("button", { name: button }));
+  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+}
+
+/* Opens the picker of a side, checks one player on the tab of the source team, and taps Done. */
+async function pickPlayer(side: string, from: string, name: string) {
+  fireEvent.click(screen.getByRole("button", { name: `Add a player ${side} gets` }));
+  const open = within(await screen.findByRole("dialog"));
+  fireEvent.click(open.getByRole("tab", { name: from }));
+  fireEvent.click(open.getByRole("checkbox", { name: new RegExp(name) }));
+  fireEvent.click(open.getByRole("button", { name: /^Done/ }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
 afterEach(cleanup);
@@ -91,19 +97,21 @@ describe("Reduced motion", () => {
     expect(screen.getByText("Fair")).toBeTruthy();
   });
 
-  it("shows the picked team in the trigger at once", async () => {
+  it("shows the picked team on its card at once", async () => {
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    expect(screen.getByRole("combobox", { name: "Your Team" }).textContent).toContain("Pukancun on 3");
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    const card = screen.getByRole("region", { name: "Your Team gets" });
+    expect(within(card).getByText("Pukancun on 3")).toBeTruthy();
+    expectAtRest(card);
   });
 
   it("shows no sweep while the grade runs", async () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
-    await choose(screen.getByRole("combobox", { name: "Pukancun on 3 Gives" }), "Ana One");
-    await choose(screen.getByRole("combobox", { name: "Blitz Bakers Gives" }), "Ben One");
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
+    await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
     const status = screen.getByRole("status");
     expect(status.getAttribute("aria-busy")).toBe("true");
@@ -115,25 +123,24 @@ describe("Reduced motion", () => {
 describe("Reduced motion on the trade form", () => {
   it("adds a side and a picked row at rest, and removes a side at once", async () => {
     render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
-    await choose(screen.getByRole("combobox", { name: "Your Team" }), "Pukancun on 3");
-    await choose(screen.getByRole("combobox", { name: "Team Two" }), "Blitz Bakers");
-    fireEvent.click(screen.getByRole("button", { name: "Add a Team" }));
-    expectAtRest(screen.getByRole("group", { name: "Team Three" }));
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    await pickTeam("Add a team", "Punt Punks");
+    expectAtRest(screen.getByRole("region", { name: "Team Three gets" }));
 
-    await choose(screen.getByRole("combobox", { name: "Team Three" }), "Punt Punks");
-    await choose(screen.getByRole("combobox", { name: "Punt Punks Gives" }), "Cy One");
-    expectAtRest(within(screen.getByRole("list", { name: "Players Punt Punks Gives" })).getByRole("listitem"));
+    await pickPlayer("Team Three", "Pukancun on 3", "Ana One");
+    expectAtRest(within(screen.getByRole("list", { name: "Players Team Three gets" })).getByRole("listitem"));
 
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
     // The exit takes the instant transition, so the side leaves by the next frame. A real exit fails the short wait.
-    await waitFor(() => expect(screen.queryByRole("group", { name: "Team Three" })).toBeNull(), { timeout: 50 });
+    await waitFor(() => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull(), { timeout: 50 });
   });
 });
 
 describe("Reduced motion on the power rankings", () => {
-  it("opens a row at once, with no transition class on the open state", async () => {
+  it("opens a card at once", async () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
-    const button = screen.getByRole("button", { name: "More on Lil Fridge" });
+    const button = screen.getByRole("button", { name: /Lil Fridge/ });
     fireEvent.click(button);
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
@@ -147,8 +154,6 @@ describe("Reduced motion on the power rankings", () => {
       },
       { timeout: 50 },
     );
-    // The chevron is the one CSS transition of the row. With motion off it carries no transition class.
-    expect(button.querySelector("span")!.className).not.toMatch(/\btransition-/);
   });
 });
 
@@ -165,22 +170,57 @@ describe("Reduced motion on the waiver page", () => {
   });
 });
 
+/* Every bar fill under a box shows at its width with no scale: no fill sits at 0 or grows. */
+async function expectBarsAtRest(box: HTMLElement, count: number) {
+  const fills = [...box.querySelectorAll<HTMLElement>("[data-bar-fill]")];
+  expect(fills).toHaveLength(count);
+  // The wait is far shorter than the 0.7 s growth, and a fill that grows holds a scale on its first frame.
+  await new Promise((done) => setTimeout(done, 50));
+  for (const fill of fills) {
+    expect(fill.style.transform).not.toMatch(/scale/);
+    expect(fill.style.width || fill.style.height).toMatch(/%$/);
+  }
+}
+
+describe("Reduced motion on the bars", () => {
+  it("shows every share bar and median bar of the week page at its width at once", async () => {
+    render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
+    // One share bar for the Matchup of the Week, one for each game card, and one bar for each team of the median game.
+    const bars = 1 + week6.matchups.length + (week6.median?.bars.length ?? 0);
+    await expectBarsAtRest(screen.getByRole("main"), bars);
+  });
+
+  it("shows every playoff odds bar of the power rankings at its width at once", async () => {
+    const { container } = render(<PowerRankings weeks={rankings.weeks} avatars={week6.avatars} />);
+    await expectBarsAtRest(container, container.querySelectorAll("[data-odds-bar]").length);
+  });
+
+  it("shows every budget bar of the war chest at its height at once", async () => {
+    const { container } = render(
+      <WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />,
+    );
+    await expectBarsAtRest(within(container).getByRole("list", { name: "Budgets" }), waiver.budgets.length);
+  });
+});
+
 describe("Reduced motion on the static pages", () => {
   it("shows every week page chapter at once", async () => {
     render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
     // One line from each chapter, from the top story to next week. The text must be there on the first render.
     // The chapter rail repeats the chapter labels, so the queries stay inside the page column.
     const main = within(screen.getByRole("main"));
-    expect(main.getByText("Matchup of the Week")).toBeTruthy();
-    expect(main.getByText("Game Changer")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 1 }).textContent).toBe("Week 06 // Matchup of the Week");
+    expect(main.getByRole("region", { name: "The week in numbers" })).toBeTruthy();
+    expect(main.getByText("Every game")).toBeTruthy();
+    expect(main.getByRole("heading", { level: 2, name: "Game Changer" })).toBeTruthy();
     expect(main.getByText("WR · PIT · behold the lamb")).toBeTruthy();
     expect(main.getAllByText(week6.awards[0].title).length).toBeGreaterThan(0);
-    expect(main.getByText("Position Leaders")).toBeTruthy();
+    expect(main.getByText("Position leaders")).toBeTruthy();
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
-    expect(main.getAllByRole("button", { name: /Read Recap/ })).toHaveLength(week6.matchups.length);
-    expect(main.getByText("The Median Game")).toBeTruthy();
+    expect(main.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
-    expect(main.getByText(`Next Week · Week ${week6.week + 1}`)).toBeTruthy();
+    expect(main.getByText("Next week")).toBeTruthy();
   });
 
   it("shows every home page row at once", () => {
@@ -198,7 +238,7 @@ function managerWithOdds(): Manager {
     standing: 1,
     rank: 2,
     movement: 0,
-    odds: { playoff: 63 },
+    odds: { playoff: 63, bye: 20, seed: 3 },
     odds_change: 0,
   };
 }
@@ -207,24 +247,25 @@ describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
     render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} />);
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
-    const [grade, odds] = [...numbers.querySelectorAll("dt")].map((term) => term.nextElementSibling as HTMLElement);
+    const odds = numbers.children[0].children[1] as HTMLElement;
+    const grade = screen.getByRole("button", { name: /^Grade D/ });
     expect(grade.textContent).toBe("D");
     expect(odds.textContent).toBe("63%");
     // The instant transition sets the rest state by the next frame. A real motion fails the short wait.
-    await waitFor(() => expectAtRest(within(grade).getByText("D")), { timeout: 50 });
+    await waitFor(() => expectAtRest(grade), { timeout: 50 });
     // The count never runs with motion off, so the final percent stays after a frame.
     await new Promise((done) => setTimeout(done, 50));
     expect(odds.textContent).toBe("63%");
   });
 
-  it("shows the four slot rank lines at rest at once", async () => {
+  it("shows the four slot tiles at rest at once", async () => {
     render(<Roster manager={managerWithOdds()} teams={12} />);
-    const lines = screen.getAllByRole("listitem");
+    const lines = within(screen.getByRole("list", { name: "Slot Ranks" })).getAllByRole("listitem");
     expect(lines.map((line) => line.textContent)).toEqual([
-      "QB · 12th of 12 · fine",
-      "RB · 9th of 12 · deep",
-      "WR · 2nd of 12 · thin",
-      "TE · 4th of 12 · deep",
+      "QB12thof 12 · fine",
+      "RB9thof 12 · deep",
+      "WR2ndof 12 · thin",
+      "TE4thof 12 · deep",
     ]);
     await waitFor(() => lines.forEach((line) => expectAtRest(line)), { timeout: 50 });
   });

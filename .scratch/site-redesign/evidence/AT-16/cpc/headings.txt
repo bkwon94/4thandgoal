@@ -1,0 +1,11 @@
+AT-16 on the CPC week 8 page /2026/week-08/. Built from feef43b4.
+A broken word is a word in main whose letters sit on more than one line box.
+375 light: broken words: none
+375: role=tab count 0; order: Week 08 // Matchup of the Week | Every game | Game Changer | Awards | Position leaders | Trades | The median game | Standings | Next week | PreviousWeek 7Oct 22 – Oct 26, 2026
+375 dark: broken words: none
+768 light: broken words: none
+768: role=tab count 0; order: Week 08 // Matchup of the Week | Every game | Game Changer | Awards | Position leaders | Trades | The median game | Standings | Next week | PreviousWeek 7Oct 22 – Oct 26, 2026
+768 dark: broken words: none
+1280 light: broken words: "5-game" in <span> of #next-week
+1280: role=tab count 0; order: Week 08 // Matchup of the Week | Every game | Game Changer | Awards | Position leaders | Trades | The median game | Standings | Next week | PreviousWeek 7Oct 22 – Oct 26, 2026
+1280 dark: broken words: "5-game" in <span> of #next-week

@@ -1,0 +1,33 @@
+$ git diff --stat main...site-redesign -- apps/pipeline/ apps/api/ clients/cpc/published/ clients/norcal/published/
+ apps/pipeline/tests/test_client.py | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+$ git rev-parse --short main site-redesign $(git merge-base main site-redesign)
+82703bc2
+12486d0e
+82703bc2
+
+$ git diff main...site-redesign -- apps/pipeline/
+diff --git a/apps/pipeline/tests/test_client.py b/apps/pipeline/tests/test_client.py
+index 9a210cbd..5a6d7b19 100644
+--- a/apps/pipeline/tests/test_client.py
++++ b/apps/pipeline/tests/test_client.py
+@@ -46,7 +46,6 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
+     assert values.seasons[2026].league_id == "1386167364424318976"
+     assert values.package(AnalyzerValues).finder is False
+     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
+-    assert values.menu.layout == "hamburger"
+     assert [item.package or item.page for item in values.menu.items] == [
+         "home", "week", "rankings", "managers", "analyzer"]
+ 
+@@ -104,8 +103,8 @@ def test_an_unknown_timezone_fails_with_the_value(tmp_path):
+         read_client_values(folder, VALUE_MODELS)
+ 
+ 
+-def test_a_bad_layout_fails_with_the_value(tmp_path):
+-    folder = _copy(tmp_path, 'layout = "hamburger"', 'layout = "drawer"')
++def test_a_menu_layout_fails_because_the_look_owns_the_navigation(tmp_path):
++    folder = _copy(tmp_path, "[menu]\n", '[menu]\nlayout = "hamburger"\n')
+     with pytest.raises(ClientError, match="layout"):
+         read_client_values(folder, VALUE_MODELS)
+ 

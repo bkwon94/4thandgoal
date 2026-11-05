@@ -1,0 +1,4 @@
+$ jq length clients/cpc/data/2026/history/week-06/transactions.json && diff <(jq -r '.[].transaction_id' clients/cpc/data/2026/history/week-06/transactions.json | sort) <(curl -s https://api.sleeper.app/v1/league/1386167364424318976/transactions/6 | jq -r '.[].transaction_id' | sort) && echo 'diff: no lines'
+83
+live rows: 83
+diff: no lines

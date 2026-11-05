@@ -4,7 +4,7 @@ The brand is a black card on a white page, and the site paints it with one set o
 
 ## Consequences
 
-- Light is the default, because the light theme is the report look of ADR 0006. The export ships no theme class. A stored choice is the only way to the dark theme; the site does not follow the system setting.
+- Light is the default, because the light theme is the report look of ADR 0006. The export ships no theme class. A stored choice is the only way to the dark theme; the site does not follow the system setting. Superseded by ADR 0024: dark is the default for every client.
 - Red never re-points, because white text sits on red fills. Red text on the page uses `red-ink`, which is red in light and light red in dark, since brand red on black is 3.1 to 1 and fails for text.
 - The black card paints with `card-blk`, not `blk`, so the card can lift while the masthead stays black.
 - Images from the pipeline keep their own matte in both themes. A matte mismatch is a pipeline fix.

@@ -1,0 +1,2 @@
+$ diff AT-23/body-main.json.txt AT-23/body-site-redesign.json.txt
+exit=0

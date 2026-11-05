@@ -7,10 +7,10 @@ and the site build all read the same file. The client folder holds values and no
 ```
 clients/cpc/
   client.toml   the league, the provider per season, the package list, the values, the menu
-  brand.toml    the color roles, the fonts, and the radii of the brand
+  brand.toml    the color roles of the brand, a light set and a dark set (ADR 0024)
   copy.toml     the site name, the masthead text, the tagline
   prompts/      the voice of the writer for this league
-  assets/       the logo, the favicon, the fonts
+  assets/       the logo and the favicon
   data/         the history and the raw weeks of the league, by season, with the league file of each season
   published/    the published files, by season and week
 ```

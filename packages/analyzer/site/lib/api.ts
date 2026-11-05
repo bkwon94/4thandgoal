@@ -48,7 +48,7 @@ async function errorDetail(response: Response): Promise<string | undefined> {
 }
 
 /* A body that fails its schema is a 502 with the path of each bad field.
-   The fault is upstream, and a retry cannot fix a wrong shape, so toErrorLine offers no retry for it.
+   The fault is upstream, so toErrorLine gives it a line of its own.
    The client throws it here, so a component never gets a wrong shape. */
 function parseBody<S extends ZodType>(schema: S, body: unknown, route: string): z.output<S> {
   const result = schema.safeParse(body);
@@ -84,24 +84,24 @@ export function retryText(seconds?: number): string {
   return `Too many requests. ${seconds ? waitText(seconds) : "Try again soon."}`;
 }
 
-/* What the reader sees for a failed call, and whether a retry button shows. */
-export type ErrorView = { message: string; retry: boolean };
+/* What the reader sees for a failed call. Each error box shows Try Again under it. */
+export type ErrorView = { message: string };
 
 /* Maps a failed call to what the reader sees. The trade form and the finder share it, so the same failure reads the same on both.
-   A timeout and an unknown failure offer a retry. The caller words the timeout line, because it names the work that ran long. */
+   The caller words the timeout line, because it names the work that ran long. */
 export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: string): ErrorView {
-  if (timedOut) return { message: timeoutMessage, retry: true };
+  if (timedOut) return { message: timeoutMessage };
   if (error instanceof ApiError) {
-    if (error.status === 422) return { message: error.message, retry: false };
-    // A wrong body is a fault of the API, so a retry cannot fix it.
-    if (error.status === 502) return { message: "The API sent an answer the site cannot read.", retry: false };
-    if (error.status === 429) return { message: retryText(error.retryAfter), retry: false };
+    if (error.status === 422) return { message: error.message };
+    // A wrong body is a fault of the API, so the line does not show the paths of the bad fields.
+    if (error.status === 502) return { message: "The API sent an answer the site cannot read." };
+    if (error.status === 429) return { message: retryText(error.retryAfter) };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
-      return { message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes.", retry: true };
+      return { message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes." };
     }
   }
-  return { message: "The API did not answer. Try again.", retry: true };
+  return { message: "The API did not answer. Try again." };
 }
 
 export async function fetchTeams(target: ApiTarget, passphrase: string): Promise<Team[]> {
