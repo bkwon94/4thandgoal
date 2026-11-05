@@ -1,0 +1,29 @@
+$ cat apps/api/tests/test_import_waiver.py
+"""A test line that imports waiver, which the API does not list as a dependency (AT-31)."""
+import waiver  # noqa: F401
+
+
+def test_waiver_imports():
+    assert waiver
+$ uv run --directory apps/api --exact --package cpc-api pytest -q tests/test_import_waiver.py
+Uninstalled 1 package in 0.75ms
+Installed 9 packages in 7ms
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_import_waiver.py _________________
+ImportError while importing test module '/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/api/tests/test_import_waiver.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/brian.kwon/.pyenv/versions/3.11.10/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_import_waiver.py:2: in <module>
+    import waiver  # noqa: F401
+    ^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'waiver'
+=========================== short test summary info ============================
+ERROR tests/test_import_waiver.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.09s
+exit code: 2
+$ rm apps/api/tests/test_import_waiver.py

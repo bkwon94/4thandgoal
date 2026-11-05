@@ -1,0 +1,4 @@
+$ env -u CLIENT make -C apps/pipeline build WEEK=8
+Set CLIENT, the client slug. Example: make build CLIENT=cpc WEEK=8
+make: *** [need-client] Error 1
+exit code: 2

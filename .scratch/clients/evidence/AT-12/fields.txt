@@ -1,0 +1,22 @@
+$ jq -r '.table[] | [.standing.rank, .team.name, .standing.wins, .standing.losses, (.standing.wins + .standing.losses)] | @tsv' clients/norcal/build/2026/week-08/page.json
+1	Mitseeker5000	6	2	8
+2	puurdygood	5	3	8
+3	kaiedmonds	5	3	8
+4	Hock Tua 💦	5	3	8
+5	Davlionman	5	3	8
+6	Breece Mode	4	4	8
+7	BobBuckstein	4	4	8
+8	Skol Daddy 	3	5	8
+9	Bo Girds	3	5	8
+10	VarsityBlue2	3	5	8
+11	The Mean Machine	3	5	8
+12	The Dart Side	2	6	8
+$ jq '[.table[] | .standing.wins + .standing.losses] | unique' clients/norcal/build/2026/week-08/page.json clients/norcal/published/2026/week-08/page.json
+[8]
+[8]
+$ jq '.table|length' clients/norcal/build/2026/week-08/page.json
+12
+$ jq -c '[.weeks[-1].standings[]? // empty]' clients/norcal/published/2026/rankings.json | head
+["schema_version","season","weeks"]
+$ jq -c '.weeks[-1] | {week, sums: [.rows[] | .wins + .losses] | unique, count: (.rows|length)}' clients/norcal/published/2026/rankings.json
+{"week":8,"sums":[8],"count":12}

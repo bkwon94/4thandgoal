@@ -1,0 +1,23 @@
+$ curl -sI 'https://cpcfantasy.com/2026/week-08/'
+HTTP/2 301 
+date: Thu, 05 Nov 2026 02:40:32 GMT
+content-type: text/html; charset=UTF-8
+location: https://cpc.4thandgoal.app/2026/week-08/
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=wUQEojZQAIzHkPEm57i8ba0jU6VBm6PKwZFSDBS1wnHQTzwsuzpSb0NqqE%2BSMudHVpLB5cn%2BbOa6vDPXZ6e%2FUgIaUiIQVihMtdfa7aIjAzsTf48FztoajTO%2BRvtURIYwIQ%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a5587e8abfd45180-PHL
+
+
+
+$ curl -sI 'https://cpcfantasy.com/analyze/?x=1'
+HTTP/2 301 
+date: Thu, 05 Nov 2026 02:40:32 GMT
+content-type: text/html; charset=UTF-8
+location: https://cpc.4thandgoal.app/analyze/?x=1
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=WH0I%2BRWDHmnFQ2pD2qlTjw81JWkdwFgxQMMg%2FLTzzBDouBLnZxwbRI5nZyD3olnc6UhyQQ%2BbRUTyqCk2d0khVBwfXn4eijq8E3iOUb37yhEJr4KOCqzXPofOAUBWl6YdPg%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a5587e8b3f9857d1-PHL
+
+

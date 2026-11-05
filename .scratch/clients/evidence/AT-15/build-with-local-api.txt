@@ -1,0 +1,5 @@
+$ CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:18080 pnpm --dir apps/site build
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+exit code: 0

@@ -1,0 +1,16 @@
+$ python3 cmp.py   # pillow: per-pixel difference of before/<w>-<t>.png and local/<w>-<t>.png
+375-light: before 375x6255, local 375x6255; over the shared 375x6255 area: 0 pixels differ, box of the change None
+375-dark: before 375x6255, local 375x6255; over the shared 375x6255 area: 0 pixels differ, box of the change None
+768-light: before 768x5806, local 768x5806; over the shared 768x5806 area: 0 pixels differ, box of the change None
+768-dark: before 768x5806, local 768x5806; over the shared 768x5806 area: 0 pixels differ, box of the change None
+1280-light: before 1280x6034, local 1280x6034; over the shared 1280x6034 area: 0 pixels differ, box of the change None
+1280-dark: before 1280x6034, local 1280x6034; over the shared 1280x6034 area: 0 pixels differ, box of the change None
+
+$ python3 cmp2.py before live   # the same per-pixel difference, before against live
+375-light: before 375x6255, live 375x6255; 7512 pixels differ over the shared area; box (16, 2897, 359, 5829)
+375-dark: before 375x6255, live 375x6255; 7511 pixels differ over the shared area; box (16, 2897, 359, 5829)
+768-light: before 768x5806, live 768x5806; 7511 pixels differ over the shared area; box (80, 2680, 688, 5438)
+768-dark: before 768x5806, live 768x5806; 7512 pixels differ over the shared area; box (80, 2680, 688, 5438)
+1280-light: before 1280x6034, live 1280x6034; 7509 pixels differ over the shared area; box (296, 2882, 984, 5650)
+1280-dark: before 1280x6034, live 1280x6034; 7509 pixels differ over the shared area; box (296, 2882, 984, 5650)
+$ md5 of each avatar file of clients/cpc/published/2026/week-08/avatars against https://cpc.4thandgoal.app/2026/week-08/avatars/: no file differs

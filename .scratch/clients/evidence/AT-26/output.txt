@@ -1,0 +1,14 @@
+$ git clone --no-hardlinks --branch clients <Spec worktree> <temp clone>
+$ uv run --directory apps/pipeline --exact --package cornerstone python stage_only.py <temp clone>   # run_publish with push=False; each commit replaced by a print of the stage
+--- the commit point 'Week 8 report': git diff --cached --name-only
+--- the commit point 'Week 8': git diff --cached --name-only
+clients/cpc/published/2026/week-08/page.json
+run_publish returned https://cpc.4thandgoal.app/2026/week-08/
+exit code: 0
+$ git -C <temp clone> diff --cached --name-only
+clients/cpc/published/2026/week-08/page.json
+$ git -C <temp clone> log --oneline -1
+c5634be Merge branch 'refs/heads/clients-r2' into clients
+$ git -C <temp clone> status --short
+M  clients/cpc/published/2026/week-08/page.json
+(<temp clone> is /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/publish-clone)

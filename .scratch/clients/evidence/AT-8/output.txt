@@ -1,0 +1,2 @@
+$ grep -rnE '[a-z]-(red|blk|gry|wht)\b|--color-(red|blk|gry|wht)\b' apps/site packages/*/site --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=out --exclude-dir=public
+exit code: 1

@@ -1,0 +1,24 @@
+$ cd apps/api && CORNERSTONE_PASSPHRASE_CPC=cpc-local CORNERSTONE_PASSPHRASE_NORCAL=norcal-local CORNERSTONE_REPO=<Spec worktree> uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 18083   # in the background
+$ GET http://127.0.0.1:18083/clients/norcal/teams?season=2026 with the header X-League-Passphrase: cpc-local   (python urllib.request; the line below is the status code)
+401
+$ GET http://127.0.0.1:18083/clients/norcal/teams?season=2026 with the header X-League-Passphrase: norcal-local   (python urllib.request; the line below is the status code)
+200
+$ GET http://127.0.0.1:18083/clients/cpc/teams?season=2026 with the header X-League-Passphrase: norcal-local   (python urllib.request; the line below is the status code)
+401
+$ GET http://127.0.0.1:18083/clients/cpc/teams?season=2026 with the header X-League-Passphrase: cpc-local   (python urllib.request; the line below is the status code)
+200
+--- the log of the API run
+INFO:     Started server process [16283]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18083 (Press CTRL+C to quit)
+INFO:     127.0.0.1:57283 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57284 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57285 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57309 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57310 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16283]
+

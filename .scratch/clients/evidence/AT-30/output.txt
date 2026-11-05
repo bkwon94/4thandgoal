@@ -1,0 +1,21 @@
+$ diff clients/norcal/client.toml <temp copy>/clients/norcal/client.toml
+4d3
+< timezone = "America/New_York"
+$ cd apps/api && CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_REPO=<temp copy> uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --port 18081 2>&1 | tail -15
+    return [load_client(repo, folder.name, None, fetch, VALUE_MODELS) for folder in folders]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/api/src/cornerstone_api/app.py", line 185, in <listcomp>
+    return [load_client(repo, folder.name, None, fetch, VALUE_MODELS) for folder in folders]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/league/python/src/league/client.py", line 281, in load_client
+    values = read_client_values(folder, models)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/league/python/src/league/client.py", line 182, in read_client_values
+    return ClientValues.from_toml_text(path.read_text(encoding="utf-8"), path, models)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/packages/league/python/src/league/client.py", line 126, in from_toml_text
+    raise ClientError(f"{path} breaks a rule:\n" + "\n".join(_lines(err))) from None
+league.client.ClientError: /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at30/clients/norcal/client.toml breaks a rule:
+- timezone: is required
+exit code: 1
+(<temp copy> is /private/tmp/claude-503/-Users-brian-kwon-repos-cpcfantasyfootball/be092a97-e9b8-4f39-bc73-07131a8dd26d/scratchpad/root-at30: clients/ with no published or build folders, and data/nfl)

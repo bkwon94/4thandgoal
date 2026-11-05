@@ -1,0 +1,3 @@
+$ docker run -d --name cpc-api-evidence -e CORNERSTONE_PASSPHRASE_CPC=localtest -e CORNERSTONE_PASSPHRASE_NORCAL=localtest -e ANTHROPIC_API_KEY=unused -e CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4173 -p 18080:8080 cpcfantasy-api
+5e96fd205d49b981b6b1974014f34f6de9e83011810fa08a85ac7cc8d481d0fa
+exit code: 0

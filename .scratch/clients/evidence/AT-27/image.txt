@@ -1,0 +1,27 @@
+$ make -C apps/api image
+#20 DONE 0.4s
+
+#21 [stage-0 16/20] COPY clients/ ./clients/
+#21 DONE 0.2s
+
+#22 [stage-0 17/20] COPY data/nfl/ ./seed/data/nfl/
+#22 DONE 0.0s
+
+#23 [stage-0 18/20] RUN ln -s /data /app/data && for folder in /app/clients/*/; do         slug="$(basename "$folder")";         mkdir -p "/app/seed/data/clients/$slug";         if [ -d "$folder/data" ]; then mv "$folder/data" "/app/seed/data/clients/$slug/data";         else mkdir -p "/app/seed/data/clients/$slug/data"; fi;         ln -s "/data/clients/$slug/data" "$folder/data";     done
+#23 DONE 0.2s
+
+#24 [stage-0 19/20] COPY apps/api/deploy/entrypoint.sh /usr/local/bin/entrypoint.sh
+#24 DONE 0.0s
+
+#25 [stage-0 20/20] RUN chmod +x /usr/local/bin/entrypoint.sh
+#25 DONE 0.1s
+
+#26 exporting to image
+#26 exporting layers
+#26 exporting layers 0.6s done
+#26 writing image sha256:d7b2e1e9770314699bc90a62449d77481360926d3b49b40fcd42ec38910a33d7 done
+#26 naming to docker.io/library/cpcfantasy-api done
+#26 DONE 0.6s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/rkmy3nfpluhyam1ap43x8rsj3
+exit code: 0

@@ -1,0 +1,20 @@
+$ jq -c '[.leaders[].position]' clients/norcal/build/2026/week-08/page.json
+["QB","RB","WR","TE"]
+$ jq -c '[.leaders[].position]' clients/norcal/published/2026/week-08/page.json
+["QB","RB","WR","TE"]
+$ jq -c '[.. | objects | .position? // empty] | unique' clients/norcal/build/2026/week-08/page.json
+["QB","RB","TE","WR"]
+$ grep -c '"DEF"' clients/norcal/build/2026/week-08/page.json
+0
+$ grep -c '"DEF"' clients/norcal/published/2026/week-08/page.json
+0
+$ grep -c '"DEF"' clients/norcal/published/2026/week-08/waiver.json
+0
+$ grep -c '"DEF"' clients/norcal/published/2026/rankings.json
+0
+$ grep -c '"DEF"' clients/norcal/published/2026/managers.json
+0
+$ jq -c '[.. | objects | .position? // empty] | unique' clients/norcal/published/2026/week-08/waiver.json
+["QB","RB","TE","WR"]
+$ jq -c '.roster_positions' clients/norcal/data/2026/week-08/raw/league.json
+["QB","RB","RB","WR","WR","TE","FLEX","FLEX","FLEX","BN","BN","BN","BN","BN","BN"]

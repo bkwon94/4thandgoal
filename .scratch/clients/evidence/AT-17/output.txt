@@ -1,0 +1,109 @@
+$ pnpm --dir apps/site exec vitest run scripts/brand-contrast.test.mjs --reporter=verbose --silent=false
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+
+stdout | scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of cpc at 4.5 or more
+cpc light: text on page 17.40
+cpc light: text on card 14.73
+cpc light: text on pick 14.94
+cpc light: ink_2 on page 12.63
+cpc light: ink_2 on card 10.69
+cpc light: muted on page 5.74
+cpc light: muted on card 4.86
+cpc light: muted on pick 4.93
+cpc light: accent_ink on page 5.89
+cpc light: accent_ink on pick 5.06
+cpc light: on_dark on band 18.42
+cpc light: on_dark_2 on band 11.47
+cpc light: on_dark_muted on band 6.47
+cpc light: accent_text on band 9.34
+cpc light: on_dark on card_band 18.42
+cpc light: on_dark_2 on card_band 11.47
+cpc light: on_dark_muted on card_band 6.47
+cpc light: accent_text on card_band 9.34
+cpc light: on_dark on chip_dark 15.13
+cpc light: on_dark_2 on chip_dark 9.42
+cpc light: on_dark_muted on chip_dark 5.31
+cpc light: on_dark on accent 5.89
+cpc dark: text on page 18.42
+cpc dark: text on card 16.48
+cpc dark: text on pick 14.07
+cpc dark: ink_2 on page 11.47
+cpc dark: ink_2 on card 10.26
+cpc dark: muted on page 6.47
+cpc dark: muted on card 5.79
+cpc dark: muted on pick 4.94
+cpc dark: accent_ink on page 9.34
+cpc dark: accent_ink on pick 7.14
+cpc dark: on_dark on band 18.42
+cpc dark: on_dark_2 on band 11.47
+cpc dark: on_dark_muted on band 6.47
+cpc dark: accent_text on band 9.34
+cpc dark: on_dark on card_band 15.13
+cpc dark: on_dark_2 on card_band 9.42
+cpc dark: on_dark_muted on card_band 5.31
+cpc dark: accent_text on card_band 7.68
+cpc dark: on_dark on chip_dark 13.01
+cpc dark: on_dark_2 on chip_dark 8.10
+cpc dark: on_dark_muted on chip_dark 4.57
+cpc dark: on_dark on accent 5.89
+
+stdout | scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of norcal at 4.5 or more
+norcal dark: text on page 16.22
+norcal dark: text on card 13.84
+norcal dark: text on pick 15.10
+norcal dark: ink_2 on page 11.86
+norcal dark: ink_2 on card 10.12
+norcal dark: muted on page 7.28
+norcal dark: muted on card 6.21
+norcal dark: muted on pick 6.78
+norcal dark: accent_ink on page 8.40
+norcal dark: accent_ink on pick 7.82
+norcal dark: on_dark on band 17.43
+norcal dark: on_dark_2 on band 11.15
+norcal dark: on_dark_muted on band 6.55
+norcal dark: accent_text on band 9.03
+norcal dark: on_dark on card_band 17.43
+norcal dark: on_dark_2 on card_band 11.15
+norcal dark: on_dark_muted on card_band 6.55
+norcal dark: accent_text on card_band 9.03
+norcal dark: on_dark on chip_dark 14.17
+norcal dark: on_dark_2 on chip_dark 9.06
+norcal dark: on_dark_muted on chip_dark 5.32
+norcal dark: on_dark on accent 4.56
+
+ ✓ scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > finds the brand of cpc 1ms
+ ✓ scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of cpc at 4.5 or more 86ms
+ ✓ scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of norcal at 4.5 or more 42ms
+stdout | scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of a dark brand with one set at 4.5 or more
+dark dark: text on page 17.19
+dark dark: text on card 15.53
+dark dark: text on pick 16.03
+dark dark: ink_2 on page 12.49
+dark dark: ink_2 on card 11.28
+dark dark: muted on page 8.30
+dark dark: muted on card 7.50
+dark dark: muted on pick 7.74
+dark dark: accent_ink on page 9.14
+dark dark: accent_ink on pick 8.53
+dark dark: on_dark on band 17.19
+dark dark: on_dark_2 on band 11.12
+dark dark: on_dark_muted on band 6.63
+dark dark: accent_text on band 9.14
+dark dark: on_dark on card_band 17.19
+dark dark: on_dark_2 on card_band 11.12
+dark dark: on_dark_muted on card_band 6.63
+dark dark: accent_text on card_band 9.14
+dark dark: on_dark on chip_dark 13.54
+dark dark: on_dark_2 on chip_dark 8.76
+dark dark: on_dark_muted on chip_dark 5.22
+dark dark: on_dark on accent 5.53
+
+ ✓ scripts/brand-contrast.test.mjs > the contrast of each text pair of each brand (AT-17) > lists each text pair of a dark brand with one set at 4.5 or more 27ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  21:46:24
+   Duration  304ms (tests 76%, import 19%, transform 4%, worker 1%)
+
+exit code: 0

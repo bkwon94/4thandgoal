@@ -1,0 +1,57 @@
+$ docker logs cpc-api-evidence
+entrypoint: first boot, so the tracked data goes onto the volume
+INFO:     Started server process [16]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     192.168.65.1:30213 - "GET /health HTTP/1.1" 200 OK
+The read of week-09.png failed (Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011Cgizg6FFFok1GFwminfWz'})
+The read of week-09.png failed (Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011CgizgHrz9DHngcoJRr7XF'})
+INFO:     192.168.65.1:24669 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:47207 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:34417 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:37640 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:59585 - "GET /teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     192.168.65.1:26376 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:23907 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:53465 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     192.168.65.1:62366 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     192.168.65.1:27102 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:65060 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:56598 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:42687 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:41632 - "GET /teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:64858 - "GET /teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:45873 - "GET /teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:18947 - "GET /teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:23344 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:46308 - "GET /teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:60551 - "GET /teams?season=2026 HTTP/1.1" 401 Unauthorized
+INFO:     192.168.65.1:57402 - "OPTIONS /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:57402 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:64460 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:64460 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:38487 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:38487 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:36355 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:36355 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:29720 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:29720 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:30693 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:30693 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:31869 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:31869 - "GET /clients/norcal/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:22787 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:22787 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:22787 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:47018 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:47018 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:30468 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:30468 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:30468 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:39106 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:39106 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:60909 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     192.168.65.1:60909 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+$ docker rm -f cpc-api-evidence
+cpc-api-evidence

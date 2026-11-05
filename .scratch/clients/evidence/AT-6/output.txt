@@ -1,0 +1,48 @@
+$ CLIENT=cpc pnpm --dir apps/site build
+(full output in build.txt; exit code 0)
+
+$ (cd apps/site/out && find . -name "*.html" | sort)
+./_not-found/index.html
+./2026/managers/1/index.html
+./2026/managers/10/index.html
+./2026/managers/11/index.html
+./2026/managers/12/index.html
+./2026/managers/2/index.html
+./2026/managers/3/index.html
+./2026/managers/4/index.html
+./2026/managers/5/index.html
+./2026/managers/6/index.html
+./2026/managers/7/index.html
+./2026/managers/8/index.html
+./2026/managers/9/index.html
+./2026/managers/index.html
+./2026/week-06/index.html
+./2026/week-07/index.html
+./2026/week-08/index.html
+./404.html
+./404/index.html
+./analyze/index.html
+./index.html
+./rankings/index.html
+
+$ find apps/site/out -type d -name waiver
+exit code: 0
+$ grep -rl --include='*.js' 'War chest' apps/site/out
+exit code: 1
+$ grep -rl --include='*.js' 'WarChest' apps/site/out
+exit code: 1
+$ grep -rl --include='*.js' 'DriftField' apps/site/out
+exit code: 1
+$ grep -rl --include='*.js' 'TeamPick' apps/site/out
+exit code: 1
+$ grep -rl --include='*.js' 'drift-field' apps/site/out
+exit code: 1
+$ grep -rl --include='*.js' 'waiver.json' apps/site/out
+exit code: 1
+$ CLIENT=cpc pnpm --dir apps/site check:export
+
+> cpcfantasyfootball-site@0.1.0 check:export /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> node scripts/check-export.mjs
+
+check:export passed: 129 files are byte-identical; 3 week pages hold every team name; the client cpc omits waiver, and the export holds none of it; the pages show "Cornerstone Fantasy Football League", the theme button, and no finder.
+exit code: 0

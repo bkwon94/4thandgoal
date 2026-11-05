@@ -1,0 +1,3 @@
+$ make -C apps/pipeline page-json CLIENT=norcal WEEK=8   # see AT-11/output.txt, exit code 0
+$ jq -c '.pick.sides[1].top | {player_id, name, position, projection}' clients/norcal/build/2026/week-08/page.json
+{"player_id":"6801","name":"Tee Higgins","position":"WR","projection":15.97}

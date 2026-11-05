@@ -1,0 +1,141 @@
+$ git status --short -- clients/cpc   # after the rebuild
+exit code: 0
+$ diff -r --brief <(old published week-08 at 003c70c) clients/cpc/build/2026/week-08   # the old files come from: git archive 003c70c apps/site/public/2026/week-08
+Files apps/site/public/2026/week-08/page.json and clients/cpc/build/2026/week-08/page.json differ
+$ diff <(jq -S . OLD/page.json) <(jq -S . clients/cpc/build/2026/week-08/page.json)   # OLD = apps/site/public/2026/week-08 at 003c70c
+273d272
+<             "is_brian": false,
+301d299
+<             "is_brian": false,
+336d333
+<             "is_brian": false,
+364d360
+<             "is_brian": false,
+399d394
+<             "is_brian": false,
+427d421
+<             "is_brian": false,
+462d455
+<             "is_brian": false,
+490d482
+<             "is_brian": false,
+525d516
+<             "is_brian": false,
+553d543
+<             "is_brian": false,
+588d577
+<             "is_brian": false,
+616d604
+<             "is_brian": true,
+647d634
+<         "is_brian": false,
+663d649
+<           "is_brian": false,
+678d663
+<           "is_brian": false,
+693d677
+<           "is_brian": false,
+708d691
+<           "is_brian": false,
+723d705
+<           "is_brian": false,
+738d719
+<           "is_brian": false,
+753d733
+<           "is_brian": false,
+768d747
+<           "is_brian": false,
+783d761
+<           "is_brian": true,
+798d775
+<           "is_brian": false,
+813d789
+<           "is_brian": false,
+828d803
+<           "is_brian": false,
+842d816
+<         "is_brian": false,
+1258d1231
+<         "is_brian": false,
+1282d1254
+<         "is_brian": false,
+1304d1275
+<         "is_brian": false,
+1315d1285
+<         "is_brian": false,
+1337d1306
+<         "is_brian": false,
+1367d1335
+<         "is_brian": false,
+1389d1356
+<         "is_brian": false,
+1407d1373
+<         "is_brian": false,
+1422d1387
+<         "is_brian": false,
+1433d1397
+<         "is_brian": false,
+1448d1411
+<         "is_brian": true,
+1466d1428
+<         "is_brian": false,
+1486d1447
+<           "is_brian": false,
+1514d1474
+<           "is_brian": false,
+1558d1517
+<         "is_brian": false,
+1581d1539
+<         "is_brian": false,
+1604d1561
+<         "is_brian": true,
+1627d1583
+<         "is_brian": false,
+1650d1605
+<         "is_brian": false,
+1673d1627
+<         "is_brian": false,
+1696d1649
+<         "is_brian": false,
+1719d1671
+<         "is_brian": false,
+1742d1693
+<         "is_brian": false,
+1765d1715
+<         "is_brian": false,
+1788d1737
+<         "is_brian": false,
+1811d1759
+<         "is_brian": false,
+1824d1771
+<       "is_brian": false,
+1834d1780
+<       "is_brian": false,
+1844d1789
+<       "is_brian": false,
+1854d1798
+<       "is_brian": false,
+1864d1807
+<       "is_brian": false,
+1874d1816
+<       "is_brian": false,
+1884d1825
+<       "is_brian": false,
+1894d1834
+<       "is_brian": false,
+1904d1843
+<       "is_brian": true,
+1914d1852
+<       "is_brian": false,
+1924d1861
+<       "is_brian": false,
+1934d1870
+<       "is_brian": false,
+1960d1895
+<             "is_brian": false,
+1983d1917
+<             "is_brian": false,
+$ diff <(jq -S "walk(if type==\"object\" then del(.is_brian) else . end)" OLD/page.json) <(jq -S . clients/cpc/build/2026/week-08/page.json)
+exit code: 0
+$ diff -r --brief OLD clients/cpc/published/2026/week-08
+exit code: 0

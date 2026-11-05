@@ -1,0 +1,5 @@
+$ make -C apps/pipeline page-json CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone page-json --client cpc --season 2026 --week 8
+Installed 8 packages in 12ms
+/Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/clients/cpc/build/2026/week-08/page.json
+exit code: 0

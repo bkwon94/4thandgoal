@@ -1,0 +1,13 @@
+$ make -C apps/pipeline page-json CLIENT=norcal WEEK=8   # output in output.txt, exit code 0
+$ jq -c 'keys' clients/norcal/build/2026/week-08/page.json
+["avatars","awards","blurbs","dates","game_changer","headshots","leaders","matchups","median","motw","next","pick","publish_date","schema_version","season","summary","table","teams","trades","week"]
+$ jq -c '.median' clients/norcal/build/2026/week-08/page.json
+null
+$ jq -c 'keys' clients/norcal/published/2026/week-08/page.json
+["avatars","awards","blurbs","dates","game_changer","headshots","leaders","matchups","median","motw","next","pick","publish_date","schema_version","season","summary","table","teams","trades","week"]
+$ jq -c '.median' clients/norcal/published/2026/week-08/page.json
+null
+$ grep -ci "median" clients/norcal/build/2026/week-08/page.json
+1
+$ jq -S 'del(.avatars, .headshots) | walk(if type=="object" and has("headshot") then del(.headshot) else . end)' on the rebuild and the published file, then diff
+exit code: 0

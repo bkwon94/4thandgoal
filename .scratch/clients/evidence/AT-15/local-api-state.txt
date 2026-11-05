@@ -1,0 +1,6 @@
+375-light: find region=2 class="dark"
+375-dark: find region=2 class="dark"
+768-light: find region=2 class="dark"
+768-dark: find region=2 class="dark"
+1280-light: find region=2 class="dark"
+1280-dark: find region=2 class="dark"

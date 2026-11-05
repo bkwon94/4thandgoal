@@ -1,0 +1,175 @@
+(The evidence folder of this pass moved out of the worktree for this run, because an untracked file outside apps/ and packages/ selects every member. The diff below is the only change.)
+$ git diff --stat
+ packages/waiver/python/src/waiver/price.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git status --short
+ M packages/waiver/python/src/waiver/price.py
+$ python3 -B scripts/changed_apps.py HEAD
+site pipeline api waiver
+$ make check-fast BASE=HEAD
+==> scripts: check-fast
+......................................
+----------------------------------------------------------------------
+Ran 38 tests in 0.393s
+
+OK
+==> site: check-fast
+
+> cpcfantasyfootball-site@0.1.0 check:fast /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test
+
+
+> cpcfantasyfootball-site@0.1.0 typecheck /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+
+> cpcfantasyfootball-site@0.1.0 test /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+> vitest run
+
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/clients/apps/site
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  63 passed (63)
+      Tests  663 passed (663)
+   Start at  21:50:16
+   Duration  17.77s (tests 46%, environment 36%, import 16%, transform 2%)
+
+Environment  jsdom was created 63 times · 44.80s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+==> pipeline: check-fast
+uv run --exact --package cornerstone ruff check src tests
+Uninstalled 3 packages in 14ms
+Installed 3 packages in 6ms
+All checks passed!
+uv run --exact --package cornerstone pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cornerstone pytest -q tests/test_layers.py tests/test_rule_client.py tests/test_rule_ports.py tests/test_rule_publish.py tests/test_rule_readmes.py tests/test_rule_suppressions.py tests/test_rule_tracker.py
+...............................................                          [100%]
+47 passed in 2.00s
+==> api: check-fast
+uv run --exact --package cpc-api ruff check src tests
+Uninstalled 3 packages in 2ms
+Installed 3 packages in 5ms
+All checks passed!
+uv run --exact --package cpc-api pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-api pytest -q tests/test_rule_api.py
+.....                                                                    [100%]
+5 passed in 0.04s
+==> packages/waiver: check-fast
+uv run --exact --package cpc-waiver ruff check src tests
+Uninstalled 9 packages in 25ms
+Installed 1 package in 2ms
+All checks passed!
+uv run --exact --package cpc-waiver pyright
+0 errors, 0 warnings, 0 informations
+uv run --exact --package cpc-waiver pytest -q
+...............................................................          [100%]
+63 passed, 1 deselected in 3.79s
+exit code: 0
+$ git restore packages/waiver/python/src/waiver/price.py

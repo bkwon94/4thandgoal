@@ -1,0 +1,19 @@
+$ make -C apps/pipeline settings CLIENT=cpc
+uv run --exact --package cornerstone cornerstone settings --client cpc --season 2026
+League settings of cpc for 2026:
+  team_count: 12
+  playoff_spots: 6
+  bye_count: 2
+  last_regular_week: 14
+  last_season_week: 17
+  return_by_week: 14
+  lines: {'QB': 24, 'RB': 36, 'WR': 36, 'TE': 24}
+  strength_rank: 24
+  star_rank_by_position: {'QB': 6, 'RB': 12, 'WR': 12, 'TE': 6}
+  grade_spare_rank: {'QB': 12, 'RB': 24, 'WR': 24, 'TE': 12}
+  grade_strong_rank: 3
+  grade_soft_rank: 10
+  reception_points: 0.5
+  points_key: pts_half_ppr
+  median_game: True
+  roster_slots: ('QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'FLEX', 'DEF')
