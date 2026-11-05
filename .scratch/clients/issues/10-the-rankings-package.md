@@ -8,7 +8,7 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-1 and AT-12.
 
 **Blocked by:** 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `rankings` package holds the modules of decision 01 and writes `rankings.json`.
 - [x] Its chapter comes through the chapter port.
