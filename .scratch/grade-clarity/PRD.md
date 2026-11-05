@@ -5,7 +5,7 @@ Date: 2026-11-04
 Apps: both. The pipeline packages `league` and `analyzer` change the rank measure, the facts, the prompt, the checks, and the result document. The API serves the new document. The site renders the new result view of layout A.
 Spec branch: `grade-clarity`.
 Source: the map `.scratch/grade-clarity/MAP.md` and decision tickets 01 to 05. ADR 0003, ADR 0004, ADR 0009.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 07, in `issues/`.
 
 ## Problem Statement
 
