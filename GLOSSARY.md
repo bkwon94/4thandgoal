@@ -430,7 +430,9 @@ The best set of starters of one roster: which starting slot takes which player, 
 _Avoid_: Starters (alone), depth, best ball
 
 **Lineup value**:
-The points per game a player counts for in a side's best lineup: his recent points per game, or his projection ahead when he is due back.
+The points per game a player counts for in a side's best lineup, or his projection ahead when he is due back.
+Inside the grade, the points per game are his season points per game, over the games he played. The weekly
+report reads his points per game over the last 4 weeks. A player out for the season counts for 0.
 _Avoid_: value (alone), worth
 
 **Due back**:
@@ -559,7 +561,8 @@ K, K over DEF.
 **Position rank**:
 A player's place at his position among every player with a stat line in the known games, rostered or
 not, by lineup value. RB24 is the 24th running back in the league, not on the 12 rosters. A player with
-no game in the window ranks last.
+no game in the window ranks last. Inside the grade, the window is the season, so the rank sorts by season points
+per game. The weekly report keeps the window of the last 4 weeks.
 _Avoid_: positional rank, tier (alone), ranking
 
 **Season rank**:

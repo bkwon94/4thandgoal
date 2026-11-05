@@ -27,8 +27,8 @@ START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "
 # A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
 
-# Roster fit and standing compare a side's best lineup before and after the trade. LINEUP_WEEKS of
-# league/tunables.py picks the best lineup.
+# Roster fit and standing compare a side's best lineup before and after the trade. The season points per game
+# of each player pick the best lineup of the grade. GLOSSARY.md, "Lineup value".
 # The change in the best lineup's total points per game that counts as a gain or a loss.
 # The value is a first guess, and the commissioner tunes it.
 FIT_THRESHOLD = Decimal("3.0")

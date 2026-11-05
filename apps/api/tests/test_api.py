@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 from conftest import strip_trend_numbers
-from cpc import FIXTURE_LEAGUE, cli_root, cpc_client
+from cpc import FIXTURE_LEAGUE, cli_root, cpc_client, four_week
 from fastapi.testclient import TestClient
 
 from analyzer.adjusters import ROSTER_FIT, TREND
@@ -1560,8 +1560,11 @@ def test_a_reason_that_fails_once_and_passes_on_the_retry_stands(settings, find_
 
 @pytest.fixture
 def found(settings, find_sources):
-    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3."""
-    snapshot = _here(find_sources, settings).snapshot(2026)
+    """The week 6 snapshot with the extra chart rows, and the three trades the finder finds for rosters 2 and 3.
+
+    The find fixture is a run with the 4-week measure, so the snapshot takes it and the finder finds the same trades.
+    """
+    snapshot = four_week(_here(find_sources, settings).snapshot(2026))
     return snapshot, find_win_wins(2, 3, snapshot)
 
 

@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from conftest import strip_trend_numbers, with_carries, with_free_agents
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 
 from analyzer import RULE_PROMPTS, rubric
 from analyzer.adjusters import TREND, _byes_left, _return_bet, _wopr, rubric_adjusters, team_race
@@ -50,7 +50,7 @@ HARRISON, B_ROBINSON, BIJAN = "11628", "8154", "9509"
 
 @pytest.fixture
 def snap(fixture_raw_dir, fixture_history_root, chart_week6):
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    return four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
 
 
 def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=None):
@@ -61,8 +61,8 @@ def _known_games_snap(raw_dir, history_root, chart, edit=None, slow=None, now=No
     raw = load_raw(raw_dir)
     if edit is not None:
         edit(raw)
-    return build_snapshot(raw, history_root, chart, slow, trade_week=6,
-                          returns=load_returns(history_root.parent / "returns.json"), now=now, client=CLIENT)
+    return four_week(build_snapshot(raw, history_root, chart, slow, trade_week=6,
+                          returns=load_returns(history_root.parent / "returns.json"), now=now, client=CLIENT))
 
 
 @pytest.fixture
@@ -77,7 +77,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
+    return four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT))
 
 
 def _trade(*sides, asker: int | None = None) -> ProposedTrade:
@@ -800,8 +800,8 @@ def test_a_trade_that_drops_the_top_24_starter_count_from_four_to_three_gives_a_
 def fa_snap(fixture_raw_dir, fixture_history_root, chart_week6):
     """The week 6 snapshot with the hand-set free agents of conftest. Bigsby RB51 is the best free agent at RB and
     Darren Waller TE9 the best at TE. No free agent at QB or WR has a position rank."""
-    return build_snapshot(with_free_agents(load_raw(fixture_raw_dir)), fixture_history_root, chart_week6,
-                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT)
+    return four_week(build_snapshot(with_free_agents(load_raw(fixture_raw_dir)), fixture_history_root, chart_week6,
+                          returns=load_returns(fixture_history_root.parent / "returns.json"), client=CLIENT))
 
 
 def test_the_hole_fact_names_the_cause_and_the_best_free_agent_at_rb_with_his_rank(fa_snap):

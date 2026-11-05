@@ -20,7 +20,7 @@ from league.paths import returns_path
 from league.points_allowed import PositionAllowed
 from league.provider.raw import RawStatLine, RawWeek
 from league.provider.sleeper import load_raw, read_fetch_time
-from league.ranks import RANKED_POSITIONS, in_pool, lineup_value, rank_table
+from league.ranks import RANKED_POSITIONS, RankMeasure, in_pool, lineup_value, rank_table
 from league.slow_sources import SlowSources
 from league.standings_table import standings
 from league.tunables import IN_PROGRESS_MINUTES
@@ -134,6 +134,9 @@ class Snapshot(BaseModel):
     # pool reads. The hole fact names the best of them, and `players` holds rostered players only, so each one
     # carries his name here. Empty when the raw data has no free agent.
     free_agents: dict[str, list[SnapshotPlayer]] = {}
+    # The points per game that the lineup value and the position rank read. The grade reads "season".
+    # week_snapshot gives "recent", so the weekly report keeps the 4-week measure.
+    rank_measure: RankMeasure = "season"
     # The player ids per position in position rank order, and the rank of each player, built on the first read.
     # GLOSSARY.md, "Position rank".
     _rank_table: dict[str, list[str]] | None = PrivateAttr(default=None)
@@ -341,8 +344,10 @@ def week_snapshot(raw: RawWeek, history_root: Path, week: int, *, client: Client
     """
     # The Returns file is shared NFL data, so the client gives its folder.
     returns_file = returns_path(client.nfl_dir, int(raw.state.season))
-    return build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
-                          out_for_season=load_out_for_season(returns_file), client=client)
+    snapshot = build_snapshot(raw, history_root, None, trade_week=week + 1, returns=load_returns(returns_file),
+                              out_for_season=load_out_for_season(returns_file), client=client)
+    # The weekly report keeps the 4-week measure of its position ranks. Only the grade reads the season measure.
+    return snapshot.model_copy(update={"rank_measure": "recent"})
 
 
 def build_snapshot(

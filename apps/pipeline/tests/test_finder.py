@@ -9,7 +9,7 @@ from math import comb
 
 import pytest
 from conftest import with_carries
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 
 from analyzer.adjusters import Adjuster, due_back_week
 from analyzer.finder import FinderTrade, candidates, find_win_wins, rank
@@ -28,7 +28,7 @@ def slow_snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflver
     cache = tmp_path / "nflverse"
     shutil.copytree(fixture_nflverse_dir, cache)
     slow = load_slow_sources(cache, 2026, 6, fixture_history_root)
-    return load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT)
+    return four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, slow, client=CLIENT))
 
 
 # The fixture chart cannot serve the count tests. It lists 25 players, mostly stars, so every trade of listed

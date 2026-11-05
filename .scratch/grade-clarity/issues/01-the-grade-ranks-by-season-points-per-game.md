@@ -10,9 +10,9 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-9 and AT-32.
 
 **Status:** ready-for-agent
 
-- [ ] The `league` package gives the season measure next to the 4-week measure. The due-back step and the out-for-season step still apply to both.
+- [x] The `league` package gives the season measure next to the 4-week measure. The due-back step and the out-for-season step still apply to both.
 - [ ] A real `2026` week 9 grade reads Cooper (`13276`) as WR26 at the Position rank.
 - [ ] `make -C apps/pipeline build WEEK=8` gives the same Position ranks in `page.json` on this branch and on `main`.
-- [ ] The manager grade gives the same ranks as on `main`.
-- [ ] `GLOSSARY.md` says that "Lineup value" and "Position rank" read season points per game inside the grade.
-- [ ] `make check-fast` passes at the root.
+- [x] The manager grade gives the same ranks as on `main`.
+- [x] `GLOSSARY.md` says that "Lineup value" and "Position rank" read season points per game inside the grade.
+- [x] `make check-fast` passes at the root.

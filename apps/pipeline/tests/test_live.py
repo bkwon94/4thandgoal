@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 from fakes import FixtureProvider
 
 from league.history import save_week_to_history
@@ -210,10 +210,11 @@ def test_the_live_snapshot_and_the_saved_snapshot_give_the_same_position_ranks_f
         raw.stats = []
         return raw, FETCHED
 
-    live = live_snapshot(2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
-                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    # The hand count reads the 4-week measure, so both paths take it.
+    live = four_week(live_snapshot(2026, now=datetime(2026, 10, 15, 12, 0, tzinfo=ET), fetch_sleeper=before_kickoff,
+                                   fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                                   read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo)))
+    saved = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     assert (live.week, live.as_of.stats_through) == (saved.week, saved.as_of.stats_through) == (6, 5)
     pool = {pid for past in saved.stats.weeks.values() for pid in past.positions} | set(saved.players)
     live_ranks = {pid: live.position_rank(pid) for pid in pool}
@@ -226,10 +227,11 @@ def test_a_known_game_of_week_n_moves_a_live_position_rank_and_weeks_1_to_n_minu
         live_repo, sleeper, fixture_raw_dir, fixture_history_root, chart_week6):
     # On Monday night the week 6 stat lines are known games. The saved week 6 never counts its own games.
     shutil.copy(fixture_history_root.parent / "returns.json", live_repo / "data" / "2026" / "returns.json")
-    live = live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
-                         fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
-                         read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo))
-    saved = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    # The hand count reads the 4-week measure, so both paths take it.
+    live = four_week(live_snapshot(2026, now=datetime(2026, 10, 19, 21, 0, tzinfo=ET), fetch_sleeper=sleeper,
+                                   fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
+                                   read_chart=ChartRecorder(chart_week6), client=cpc_client(at=live_repo)))
+    saved = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     assert (live.as_of.stats_through, saved.as_of.stats_through) == (6, 5)
     assert all(live.stats.weeks[week] == saved.stats.weeks[week] for week in range(1, 6))
     # With the known games cut away, the live table is the saved table, so only week 6 moves a rank.

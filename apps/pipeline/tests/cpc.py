@@ -9,6 +9,7 @@ from league.client import Client, read_client_values
 from league.paths import client_dir, league_file, nfl_dir
 from league.provider.raw import RawLeague
 from league.provider.sleeper import league_settings
+from league.snapshot import Snapshot
 from league.values import LeagueValues
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -41,3 +42,12 @@ def cli_root(root: Path) -> Path:
     shutil.copy(FIXTURE_LEAGUE, league_file(folder, 2026))
     (nfl_dir(root) / "2026").mkdir(parents=True, exist_ok=True)
     return root
+
+
+def four_week(snapshot: Snapshot) -> Snapshot:
+    """The snapshot with the 4-week rank measure of the weekly report in place of the season measure of the grade.
+
+    The hand counts of many week 6 fixture tests read the points per game of weeks 2 to 5. Those tests check a rule
+    that holds for both measures, such as a hole or the due-back step, so they keep their counts this way.
+    """
+    return snapshot.model_copy(update={"rank_measure": "recent"})

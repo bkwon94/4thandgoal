@@ -4,14 +4,23 @@ They build it from the recorded week 6 data and the week 6 trade values, with no
 """
 import shutil
 from datetime import datetime, timedelta
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
-from cpc import cpc_client
+from cpc import cpc_client, four_week
 
 from league.paths import returns_path
 from league.provider.sleeper import load_raw
+from league.ranks import projection_ahead
 from league.slow_sources import SlowSources, load_slow_sources
-from league.snapshot import KnownGames, build_snapshot, load_snapshot, week_snapshot
+from league.snapshot import (
+    KnownGames,
+    build_snapshot,
+    load_out_for_season,
+    load_returns,
+    load_snapshot,
+    week_snapshot,
+)
 
 CLIENT = cpc_client()
 
@@ -338,14 +347,15 @@ def test_a_missing_player_file_is_a_missing_source_and_not_a_pending_count(
     assert "player_weeks" in snap.missing
 
 
-# The week 6 rank pool reads the saved weeks 1 to 5. Lineup value reads weeks 2 to 5, LINEUP_WEEKS of them.
+# The week 6 rank pool reads the saved weeks 1 to 5. These tests take the 4-week measure, so lineup value reads
+# weeks 2 to 5, LINEUP_WEEKS of them.
 # The ranks below come from a hand count of the RB lines in the saved history, not from the code.
 TUTEN, JACOBS, FREE_AGENT_RB = "12490", "5850", "9226"
 NO_GAME_RBS = ("12476", "8205")
 
 
 def test_week_6_ranks_tuten_rb15_by_lineup_value(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # Tuten scored 12.475 points per game in 4 games of weeks 2 to 5, which the ranks show as 12.47. 14 backs have more.
     # The 14, by points per game of weeks 2 to 5. "ahead" marks a back out now who counts for his projection ahead.
     # Jahmyr Gibbs 27.28, Kenneth Walker 23.83, Bijan Robinson 21.22, Kyren Williams 20.45, James Cook 19.10, Jaylen
@@ -362,7 +372,7 @@ def test_a_player_with_no_game_in_the_window_ranks_after_every_player_with_a_gam
 
 
 def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # Jacobs has no game in weeks 2 to 5, so his recent points would rank him last. The returns file has him
     # back in week 7, and his projections of weeks 7 to 14 give 12.21 per game.
     assert snap.returns[JACOBS] == 7
@@ -370,7 +380,7 @@ def test_a_rostered_player_due_back_ranks_by_his_projection_ahead(fixture_raw_di
 
 
 def test_a_free_agent_with_a_stat_line_ranks_in_the_pool(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # The back is on no roster. He scored 12.5 points in 2 games, 6.25 per game, so 45 backs rank above him.
     assert all(FREE_AGENT_RB not in players for players in snap.rosters.values())
     assert snap.position_rank(FREE_AGENT_RB) == 46
@@ -386,7 +396,7 @@ def test_k_def_and_a_player_with_no_stat_line_and_no_roster_spot_have_no_rank(
 
 
 def test_a_copy_of_the_snapshot_ranks_from_its_own_data(fixture_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     assert snap.position_rank(JACOBS) == 16
     # With no projections file every player keeps his recent points. 6 backs then have no game in weeks 2 to 5,
     # so they hold ranks 72 to 77 in player id order. Jacobs is the third of them.
@@ -410,7 +420,7 @@ ACHANE, RODRIGUEZ, BIGSBY, PERINE, GAINWELL, NO_LINE_BACK = "9226", "10219", "92
 
 def test_the_week_6_snapshot_lists_the_free_agents_the_waiver_pool_reads_at_rb(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # Bigsby is Active, Perine is Inactive and out as a stash, and the back with no stat line is Active too.
     # The list is in player id order.
     assert [p.player_id for p in snap.free_agents["RB"]] == [PERINE, NO_LINE_BACK, BIGSBY]
@@ -421,7 +431,7 @@ def test_the_week_6_snapshot_lists_the_free_agents_the_waiver_pool_reads_at_rb(
 
 
 def test_a_named_inactive_free_agent_is_not_in_the_free_agents(free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # Achane is Inactive with no out tag. He still has a position rank, because his stat line is in the rank pool.
     assert ACHANE not in {p.player_id for p in snap.free_agents["RB"]}
     assert snap.position_rank(ACHANE) == 46
@@ -429,13 +439,13 @@ def test_a_named_inactive_free_agent_is_not_in_the_free_agents(free_agent_raw_di
 
 def test_a_free_agent_on_injured_reserve_with_no_out_tag_and_one_with_no_team_are_not_in_the_free_agents(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     assert {RODRIGUEZ, GAINWELL}.isdisjoint(p.player_id for p in snap.free_agents["RB"])
 
 
 def test_the_best_free_agent_is_the_one_with_the_best_position_rank(
         free_agent_raw_dir, fixture_history_root, chart_week6):
-    snap = load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    snap = four_week(load_snapshot(free_agent_raw_dir, fixture_history_root, chart_week6, client=CLIENT))
     # Bigsby scored 15.3 points in 3 games of weeks 2 to 5, 5.10 a game. Perine scored 20.1 in 4, 5.03 a game.
     # 50 backs have more lineup value than Bigsby, so he is RB51. The back with no stat line has no rank.
     player, rank = snap.best_free_agent(["RB"])
@@ -460,3 +470,61 @@ def test_a_week_snapshot_with_no_returns_file_has_no_returns_and_nobody_out_for_
     snap = week_snapshot(load_raw(fixture_raw_dir), root, 6, client=cpc_client(at=tmp_path))
     assert snap.returns == {} and "returns" in snap.missing
     assert snap.out_for_season == set()
+
+
+# The real 2026 data after week 8. Omar Cooper Jr. played weeks 1, 6, 7, and 8: 3.5, 19.3, 20.0, and 0.0 points.
+# Decision 01 of grade-clarity: the grade ranks him by 42.8 points over 4 games, 10.70 a game.
+# The research put that at WR26 with no due-back step. The due-back step stays, and A.J. Brown is out now with a
+# projection ahead of 10.77 a game, so Cooper is WR27.
+# The weekly build keeps the 4-week measure: 39.3 points over the 3 games of weeks 5 to 8, 13.10 a game. The research
+# put that at WR18. The due-back step ranks some receivers out now by their projection ahead, so he is WR16.
+SAVED = cpc_client().folder / "data" / "2026"
+COOPER = "13276"
+
+
+def _after_week_8(client):
+    returns_file = returns_path(client.nfl_dir, 2026)
+    return load_returns(returns_file), load_out_for_season(returns_file)
+
+
+def test_a_week_9_grade_ranks_cooper_wr27_by_season_points_per_game():
+    returns, out_for_season = _after_week_8(CLIENT)
+    snap = build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, trade_week=9,
+                          returns=returns, out_for_season=out_for_season, client=CLIENT)
+    assert snap.position_rank(COOPER) == 27
+
+
+def test_the_week_8_build_keeps_cooper_wr16_by_the_4_week_measure():
+    snap = week_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", 8, client=CLIENT)
+    assert snap.position_rank(COOPER) == 16
+
+
+# The grade reads the season measure. The week 6 fixture holds the saved weeks 1 to 5.
+AJ_BROWN = "5859"
+
+
+def test_a_player_whose_only_game_is_in_week_1_ranks_by_it_in_the_grade(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    # A.J. Brown scored 4.1 points in week 1 and played no game in weeks 2 to 5. 76 of the 90 receivers have more.
+    assert snap.rank_measure == "season"
+    assert snap.lineup_value(AJ_BROWN) == Decimal("4.1")
+    assert snap.position_rank(AJ_BROWN) == 77
+    # The 4-week measure has no game of his, so he ranks with the receivers who have no game, at the end.
+    assert four_week(snap).position_rank(AJ_BROWN) == 89
+
+
+def test_a_player_due_back_ranks_by_his_projection_ahead_in_the_grade(
+        fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    # Jacobs has no game this season. The returns file has him back in week 7, and his projections of weeks 7 to 14
+    # give 12.21 per game, so 16 backs rank above him.
+    assert snap.lineup_value(JACOBS) == projection_ahead(snap, JACOBS)
+    assert round(snap.lineup_value(JACOBS), 2) == Decimal("12.21")
+    assert snap.position_rank(JACOBS) == 17
+
+
+def test_a_player_out_for_the_season_counts_for_0_in_the_grade(fixture_raw_dir, fixture_history_root, chart_week6):
+    snap = load_snapshot(fixture_raw_dir, fixture_history_root, chart_week6, client=CLIENT)
+    assert snap.lineup_value(TUTEN) > 0
+    assert snap.model_copy(update={"out_for_season": {TUTEN}}).lineup_value(TUTEN) == 0
