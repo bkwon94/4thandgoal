@@ -205,3 +205,19 @@ for (const width of [375, 768, 1280]) {
     expect(strip!.y + strip!.height).toBeLessThanOrEqual(title!.y);
   });
 }
+
+/* The week chips of the Ladder stay on one row at a phone width. A long season scrolls inside the row, not the page,
+   and the chosen week shows in full. */
+test(`the week chips of the Ladder of ${CLIENT} stay on one row at 375px`, async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}/rankings/`, "dark");
+  const group = page.getByRole("group", { name: "Week" });
+  const chips = await group.getByRole("button").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top));
+  expect(chips.length).toBeGreaterThan(1);
+  expect(new Set(chips).size).toBe(1);
+  const chosen = await group.locator('button[aria-pressed="true"]').boundingBox();
+  const box = await group.boundingBox();
+  expect(chosen!.x).toBeGreaterThanOrEqual(box!.x);
+  expect(chosen!.x + chosen!.width).toBeLessThanOrEqual(box!.x + box!.width);
+  expect(await scanScroll(page)).toEqual([]);
+});
