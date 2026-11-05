@@ -18,9 +18,12 @@ clients/cpc/
 The shared NFL data sits at the root `data/nfl/`, outside each client: the caches, which git ignores, and the
 Returns file at `data/nfl/<season>/returns.json`. A return week is the same in each league, so no client owns it.
 
-Each client builds its own site at its own URL. A build with no client name fails, so no default
-client exists. The site build copies only the published files of its client. The API is one deploy
-for each client, with the client in the path.
+Each client builds its own site at its own URL. A site build with no client name fails, so no site
+build has a default client. The site build copies only the published files of its client.
+
+One API deploy serves all clients, with the client in the path, such as `/clients/<slug>/teams`. The
+old paths with no client answer as `cpc`, so an old page that calls `api.cpcfantasy.com` still works.
+`cpc` is the one default client, and only for those old paths.
 
 `client.toml` replaces the League config. A client chooses at two levels: the packages in its list,
 and the values that each package names in its README. A client does not choose a part.
