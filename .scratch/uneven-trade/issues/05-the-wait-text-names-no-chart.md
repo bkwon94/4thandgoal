@@ -10,7 +10,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-13 and AT-14.
 
 **Status:** ready-for-agent
 
-- [ ] The test of the trade form checks the new wait text, test-first.
-- [ ] A test of the finder checks its new wait text.
-- [ ] No text a manager reads in the form or the finder names a chart.
-- [ ] `pnpm check:fast` passes in the site.
+- [x] The test of the trade form checks the new wait text, test-first.
+- [x] A test of the finder checks its new wait text.
+- [x] No text a manager reads in the form or the finder names a chart.
+- [x] `pnpm check:fast` passes in the site.
