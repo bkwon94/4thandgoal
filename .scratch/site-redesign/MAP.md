@@ -21,6 +21,7 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The redesign uses only the data that the pipeline publishes now. Brian, 2026-11-05.
 - The new term **Look** names the shared part. **Brand** keeps the colors, the logo, and the copy. Both are in `GLOSSARY.md`. Brian, 2026-11-05.
 - The brand schema keeps only the required `light` and `dark` sets. The fonts and the radii of the look go into the `@theme static` block of `globals.css`. `decisions/01-research-brand-schema-drops-fonts.md`.
+- The floor runs in Playwright on the static export of each client: axe for contrast, failing on `incomplete` too, and a scan for tap targets, scroll width, and text size. It runs in `build-each-client.mjs`, not in `check:fast`. `decisions/10-research-readability-floor-checks.md`.
 
 ## NOT YET SPECIFIED
 
@@ -32,7 +33,7 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - What do the managers, rankings, and waiver pages look like? `decisions/07-prototype-managers-rankings-waiver.md`.
 - What do the home page and the 404 page show? `decisions/08-prototype-home-and-404.md`.
 - What are the light sets of both brands in the look? `decisions/09-prototype-the-light-sets.md`.
-- How does the readability floor run as checks? `decisions/10-research-readability-floor-checks.md`.
+- Where are the edges of the readability floor? `decisions/13-grill-readability-floor-edges.md`.
 - How does dark become the default? `decisions/12-spec-dark-default-mechanism.md`.
 - The hand-off to the spec `decisions/11-spec-hand-off.md`.
 
