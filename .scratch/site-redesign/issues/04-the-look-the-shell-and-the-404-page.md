@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-7, AT-8, AT-9, AT-10,
 
 **Blocked by:** 01, 02, 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The dock stays at the bottom at every scroll on a phone, with Home, Week N, Rankings, Managers, and Trade. Each label is 11px or more.
 - [x] The top band stays on screen at every scroll on a desktop, with the pill bar of full labels. The current destination is marked.
