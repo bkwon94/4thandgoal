@@ -328,3 +328,33 @@ def test_the_cache_key_changes_when_the_chart_grows_too_old(fresh):
 def _with_status(snapshot, player_id: str, status: str | None):
     player = snapshot.players[player_id].model_copy(update={"injury_status": status})
     return snapshot.model_copy(update={"players": {**snapshot.players, player_id: player}})
+
+
+# Week 6: Josh Jacobs on roster 11 is NA. Roster 11 gives Keaton Mitchell to roster 7 for Brian Robinson, so the trade
+# touches RB and the Week line of roster 11 reads Jacobs.
+JACOBS, MITCHELL, B_ROBINSON = "5850", "9511", "8154"
+TRADE_RB = _trade(11, [MITCHELL], 7, [B_ROBINSON])
+
+
+def _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, back: int | None):
+    """The snapshot of a game day in week 6, where Jacobs has a week 6 game, with his returns row set to `back`."""
+    returns = {pid: week for pid, week in load_returns(fixture_history_root.parent / "returns.json").items()
+               if pid != JACOBS}
+    if back is not None:
+        returns[JACOBS] = back
+    snap = build_snapshot(load_raw(fixture_raw_dir), fixture_history_root, chart_week6, trade_week=6, returns=returns,
+                          client=CLIENT)
+    assert snap.as_of.stats_through == 6 and snap.players[JACOBS].injury_status == "NA"
+    week_6 = snap.stats.weeks[6]
+    week_6 = week_6.model_copy(update={"stats": {**week_6.stats, JACOBS: {**week_6.stats[JACOBS], "gp": 1.0}}})
+    return snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": {**snap.stats.weeks, 6: week_6}})})
+
+
+def test_a_player_back_in_a_known_game_of_the_trade_week_is_not_out(fixture_raw_dir, fixture_history_root,
+                                                                     chart_week6):
+    # A returns row of week 6 and a week 6 game: he is back, as due_back_week reads it, though his tag still says NA.
+    back = _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, 6)
+    assert all("Jacobs" not in text for text in _texts(TRADE_RB, back, 11))
+    # With no returns row, his week 6 game is the game he was hurt in, so he stays out in both weeks.
+    hurt = _jacobs_played_in_week_6(fixture_raw_dir, fixture_history_root, chart_week6, None)
+    assert all("Jacobs is not active." in text for text in _texts(TRADE_RB, hurt, 11))

@@ -14,7 +14,7 @@ from analyzer.tunables import STEP_UP_CHART_HOURS
 from league.lineup import _above_the_line
 from league.nflverse import SKILL_POSITIONS, ScheduledGame
 from league.points_allowed import most_points_text, opponent_rank
-from league.ranks import RANKED_POSITIONS
+from league.ranks import RANKED_POSITIONS, _back_in_a_known_game
 from league.snapshot import Snapshot, SnapshotPlayer
 
 # The Sleeper statuses that keep a player out of both weeks. An NFL player on IR misses at least 4 games.
@@ -131,9 +131,13 @@ def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[
     Out for the season and a return week on file after the week count in each week. IR, PUP, NA, and Sus count in
     each week too. Out counts in the trade week only. Questionable and Doubtful never count.
     The player can be on no roster, as the player ahead on a depth chart often is.
+    A player with a returns row by the trade week who played in its known games is back, as `due_back_week` reads
+    him, though his status can still say out.
     """
     if player.player_id in snapshot.out_for_season:
         return "season", None
+    if _back_in_a_known_game(snapshot, player.player_id):
+        return None
     back = snapshot.returns.get(player.player_id)
     if back is not None and back > week:
         return "until", back
