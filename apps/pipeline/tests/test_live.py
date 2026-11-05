@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pytest
+from conftest import save_chart_read
 from cpc import cpc_client, four_week
 from fakes import FixtureProvider
 
@@ -590,13 +591,9 @@ def test_the_rosters_snapshot_fetches_no_projections_ahead(live_repo, sleeper_no
 
 
 def test_a_week_with_no_chart_keeps_the_saved_read_of_the_week_before_for_the_superstar_check(live_repo, sleeper):
-    from league.paths import chart_read
-
     client = cpc_client(at=live_repo)
     # The trade week is 6. The real week 8 read stands in as the saved read of week 5, the week before.
-    before = chart_read(client.nfl_dir, client.chart, 5)
-    before.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json", before)
+    save_chart_read(client.nfl_dir, 5, Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json")
     snap = live_snapshot(2026, now=datetime(2026, 10, 19, 12, 0, tzinfo=ET), fetch_sleeper=sleeper,
                          fetch_history_week=_no_history_fetch, fetch_nflverse=_no_network,
                          read_chart=lambda nfl, start, week, lines, **_: None, client=client)

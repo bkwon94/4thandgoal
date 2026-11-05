@@ -12,9 +12,10 @@ from pathlib import Path
 
 from pydantic import BaseModel, PrivateAttr
 
+from league.chart import chart_values_before
 from league.client import Client
 from league.history import load_saved_weeks, snap_share, target_share
-from league.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare
+from league.models import ChartValues, ExpectedPoints, History, Standing, Team, UsageShare, week_lines
 from league.nflverse import TeamSchedule, gsis_id
 from league.parse import parse_past_week, parse_week, player_name
 from league.paths import returns_path
@@ -359,6 +360,17 @@ def _projections_by_player(raw: RawWeek, week: int, points_key: str) -> dict[str
         for pid, points in entry.projections.items():
             by_player.setdefault(pid, {})[entry.week] = float(points)
     return by_player
+
+
+def saved_chart_before(client: Client, week: int, raw: RawWeek, chart: ChartValues | None) -> ChartValues | None:
+    """The trade values of the newest saved chart read of the weeks before `week`, for the superstar check.
+
+    Only a week with no chart reads them, and a client with no chart reads none. A saved week and a live fetch both
+    call it, so they grade the same.
+    """
+    if chart is not None or client.chart is None:
+        return None
+    return chart_values_before(client.nfl_dir, week, week_lines(parse_week(raw)), chart=client.chart)
 
 
 def load_snapshot(

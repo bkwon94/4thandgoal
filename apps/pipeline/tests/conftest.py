@@ -18,7 +18,7 @@ from league.history import load_history
 from league.models import ChartValues, InjuryPlay, NflverseWeek
 from league.nflverse import nflverse_week
 from league.parse import parse_trades, parse_week
-from league.paths import history_root, week_dir
+from league.paths import chart_read, history_root, week_dir
 from league.provider.raw import RawWeek
 from league.provider.sleeper import load_raw
 from league.snapshot import week_snapshot
@@ -38,6 +38,13 @@ def build_bundle(*args, **kwargs):
 
 # The trend reason gives share percents and the air yards per target, such as "52%" and "6.1 air yards per target".
 _TREND_NUMBERS = re.compile(r"\b\d+%|\b\d+\.\d air yards per target")
+
+
+def save_chart_read(nfl: Path, week: int, read: Path) -> None:
+    """Save the chart read file `read` as the saved read of `week` for the chart of the client, under `nfl`."""
+    path = chart_read(nfl, CLIENT.chart, week)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(read, path)
 
 
 def strip_trend_numbers(reason: str) -> str:

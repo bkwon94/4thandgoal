@@ -41,7 +41,7 @@ from cornerstone.pipeline import (
 from cornerstone.publish import PublishError, run_publish, site_page_url
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import analyzer_call, claude_call, parse_call
-from league.chart import chart_values, chart_values_before, check_chart, claude_reader, match_chart, saved_chart_read
+from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import CLIENT_FILE, Client, ClientError, check_schema_files, load_client, read_client_values
 from league.live import live_snapshot
@@ -52,7 +52,7 @@ from league.provider.base import Provider
 from league.provider.raw import RawState, RawWeek
 from league.provider.sleeper import SleeperProvider, fetch_state, load_raw
 from league.slow_sources import load_slow_sources
-from league.snapshot import Snapshot, load_snapshot
+from league.snapshot import Snapshot, load_snapshot, saved_chart_before
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -229,8 +229,7 @@ def _saved_snapshot(args: argparse.Namespace, client: Client) -> Snapshot | None
         # A client with no chart reads no saved chart read either: each of its chart values is 0.
         chart = _saved_chart_values(client.nfl_dir, args.week, raw, client.chart) if client.chart is not None else None
     # With no chart of the week, the superstar check reads the newest saved read of the weeks before.
-    before = (chart_values_before(client.nfl_dir, args.week, week_lines(parse_week(raw)), chart=client.chart)
-              if chart is None and client.chart is not None else None)
+    before = saved_chart_before(client, args.week, raw, chart)
     history = history_root(client.folder, args.season)
     # A saved week never fetches. A cache that the build did not fill gives missing sources.
     slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), args.season, args.week, history,

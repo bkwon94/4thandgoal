@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from conftest import save_chart_read
 from cpc import cli_root
 
 
@@ -363,16 +364,11 @@ def test_analyze_names_a_player_not_on_the_giving_roster(
 
 def test_analyze_of_a_week_with_no_chart_reads_the_superstar_from_the_saved_read_before(
         tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
-    import shutil
-
     from cornerstone import cli
-    from league.paths import chart_read
 
     _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
     # Week 6 has no saved read. The real week 8 read stands in as the saved read of week 5, the week before.
-    before = chart_read(tmp_path / "data" / "nfl", "1QB0.5PPR4pt", 5)
-    before.parent.mkdir(parents=True)
-    shutil.copy(Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json", before)
+    save_chart_read(tmp_path / "data" / "nfl", 5, Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json")
     # Trade W: roster 6 gives Washington and Walker, roster 12 gives Higgins, Tuten, and Pollard.
     code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6",
                      "--side", "6:9487,8151", "--side", "12:6801,12490,5967", "--asker", "12", "--no-claude"])
