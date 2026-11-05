@@ -1,9 +1,9 @@
 /**
  * Tests for the power rankings page. Each test builds a temp public/ folder, with or without the rankings file.
- * They read what a reader sees: the empty state, or the last week of the file with the week page avatars.
+ * They read what a reader sees: the empty state, or the Ladder of the last week of the file with the week page avatars.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -13,6 +13,8 @@ import fixture from "@cpc/rankings/fixtures/rankings.json";
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  // A chip click sets the hash, so a test must not leak its week into the next test.
+  window.history.replaceState(null, "", "/");
 });
 
 /* A temp public/ folder with the week 6 page, and the rankings file when one is given. */
@@ -21,7 +23,8 @@ async function pageOver(rankings?: unknown) {
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),
-    weekPageJson({ avatars: { "5": "avatars/5.jpg" } }),
+    // Lil Fridge (roster 3) is rank 2 of week 6, so it heads the first card of the ladder.
+    weekPageJson({ avatars: { "3": "avatars/3.jpg" } }),
   );
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
@@ -41,24 +44,24 @@ describe("RankingsPage", () => {
     expect(within(screen.getByRole("main")).queryAllByRole("listitem")).toHaveLength(0);
   });
 
-  it("shows the last week of the file with the avatars of the latest week page", async () => {
-    const RankingsPage = await pageOver(fixture);
-    render(<RankingsPage />);
-    // The week line under the top band names the week of the last entry in the file.
-    expect(document.body.textContent).toContain("WEEK 6");
-    const rows = within(screen.getByRole("main")).getAllByRole("listitem");
-    expect(rows).toHaveLength(12);
-    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("/2026/week-06/avatars/5.jpg");
-  });
-
-  it("labels the table with a level-two heading that reads Power Rankings", async () => {
+  it("shows the Ladder of the last week of the file with the avatars of the latest week page", async () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
     const main = screen.getByRole("main");
-    expect(within(main).getByRole("heading", { level: 2, name: "Power Rankings" })).toBeTruthy();
+    expect(within(main).getByRole("heading", { level: 1 }).textContent).toBe("WEEK 6 // POWER RANKINGS");
+    // London Cooking sits in the hero, so the first card is the team at rank 2.
+    const cards = within(main).getAllByRole("listitem");
+    expect(cards).toHaveLength(11);
+    expect(cards[0].querySelector("img")?.getAttribute("src")).toBe("/2026/week-06/avatars/3.jpg");
   });
 
-  it("moves the week line with the chosen chip", async () => {
+  it("drops the week line under the top band, because the hero names the week", async () => {
+    const RankingsPage = await pageOver(fixture);
+    render(<RankingsPage />);
+    expect(document.body.textContent?.match(/WEEK 6/g)).toHaveLength(1);
+  });
+
+  it("moves the hero week with the chosen chip", async () => {
     const RankingsPage = await pageOver(fixture);
     render(<RankingsPage />);
     const page = document.body;
@@ -68,5 +71,19 @@ describe("RankingsPage", () => {
     fireEvent.click(chip(1));
     expect(page.textContent).toContain("WEEK 1");
     expect(page.textContent).not.toContain("WEEK 6");
+  });
+
+  it("shows All You Need Is Love at 01, 11-5, up 4, in the hero of CPC week 8", async () => {
+    // The published rankings file of CPC, as the build copies it into public/.
+    const cpc = JSON.parse(readFileSync(join(__dirname, "../../../../../../clients/cpc/published/2026/rankings.json"), "utf8"));
+    const RankingsPage = await pageOver(cpc);
+    render(<RankingsPage />);
+    const hero = within(screen.getByRole("region", { name: "Rank 1" }));
+    expect(hero.getByRole("heading", { level: 1 }).textContent).toBe("WEEK 8 // POWER RANKINGS");
+    expect(hero.getByText("01")).toBeTruthy();
+    expect(hero.getByRole("heading", { level: 2, name: "All You Need Is Love" })).toBeTruthy();
+    expect(hero.getByText("11-5")).toBeTruthy();
+    expect(hero.getByText("Up").parentElement?.textContent).toBe("Up4");
+    for (const label of ["Playoff", "Bye", "Seed"]) expect(hero.getByText(label)).toBeTruthy();
   });
 });

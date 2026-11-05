@@ -10,8 +10,8 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-28 and AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] CPC week 8 shows All You Need Is Love at "01", 11-5, up 4.
-- [ ] Each card is a link-sized target of 44px or more.
-- [ ] The rankings page and its open card are on the full floor, and the floor passes.
+- [x] CPC week 8 shows All You Need Is Love at "01", 11-5, up 4.
+- [x] Each card is a link-sized target of 44px or more.
+- [x] The rankings page and its open card are on the full floor, and the floor passes.
 - [ ] The local dev server runs for Brian after the build.
 - [ ] The evidence of AT-28 and AT-29 is recorded in `EVIDENCE.md`.
