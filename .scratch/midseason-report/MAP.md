@@ -28,10 +28,11 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - A pickup earns credit for starter points for its adder, with starts and swung wins. RB, WR, and TE rank by Points over the line, streamers feed a streaming king award, a miss cost 10% of the budget or more, and an outbid list shows lost bids. `decisions/03-grill-waiver-hit-and-miss.md`.
 - Each trade gets a Trade result from net Points over the line since the trade: Robbery, Clear win, Slight edge, Push, or Too soon. The record since is context, and "hurt on arrival" is a tag. Every trade shows, with the top 3 as cards. `decisions/04-grill-trade-grade-to-date.md`.
 - Schedule luck is head-to-head wins minus All-play wins, with no median game. Lines of +1.5 and -1.5 give Smoke and mirrors and Snakebit. The Schedule swap is a 12 by 12 grid with the self-meet rule, and CPC cells keep the median game. Points against and close games under 5 points are context only. The injury luck chapter is Injury toll. `decisions/06-grill-luck-and-schedule-swap.md`.
+- The sim is a replay of one stored run per press, beside the odds of all runs. No reader picks. It plays the regular season, freezes the final standings, then plays the bracket by round to a champion, with a clear split. `decisions/08-prototype-the-sim-interaction.md`.
 
 ## NOT YET SPECIFIED
 
-- Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
+- How does the replay move: the move to the playoffs, the bracket, each winner, and the champion? `decisions/13-prototype-the-replay-motion.md`.
 - What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
 - Which awards, top performers, and players to watch does the report name? `decisions/10-grill-awards-and-players.md`.
 - How long does the takeover last, what is the build command, how does the review run, and what scale has the `roast` setting? `decisions/11-spec-takeover-build-review-roast.md`.
@@ -45,4 +46,4 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - An injury date finer than the NFL week. No source gives one.
 - The fix of the transaction history. It ships first as the spec `transaction-history`.
 - A comparison of the Trade result with the analyzer's Grade at the time. The rubric changed since weeks 1 to 6, so it needs a re-run of the analyzer on old trades.
-- A live sim on a server. Ticket 08 decides between replay and a live sim in the browser. A server sim is past the destination.
+- A live sim, on a server or in the browser. Ticket 08 chose a replay, because Brian found a pick for a game confusing.
