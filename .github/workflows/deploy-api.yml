@@ -1,46 +1,95 @@
 # Deploys the Cornerstone API to Fly.
-# It runs on a push to main that changes the API, the pipeline, a package it imports, the values of a client, the root uv
-# files, or this workflow, and only after the check passes.
-# The deploy calls the check workflow as a job it needs. That is simpler than a workflow_run trigger,
-# which has no path filter and needs extra steps to find the pushed commit.
+# It runs after a green check of a push to main that changes the API, the pipeline, a package it imports, the values of
+# a client, the root uv files, or this workflow. A manual dispatch on main checks and deploys with no path gate.
+# The check workflow runs once for each push to main, and this workflow starts from its workflow_run event.
+# workflow_run has no path filter, so the job changes diffs the pushed commit against its parent.
 name: Deploy API
 
 on:
-  push:
+  workflow_run:
+    # The name of check.yml.
+    workflows: [Check]
+    types: [completed]
     branches: [main]
-    paths:
-      - "apps/api/**"
-      - "apps/pipeline/**"
-      - "packages/league/python/**"
-      - "packages/facts/python/**"
-      - "packages/analyzer/python/**"
-      - "clients/*/client.toml"
-      - "clients/*/prompts/**"
-      - "pyproject.toml"
-      - "uv.lock"
-      - ".github/workflows/deploy-api.yml"
+  # Example: gh workflow run deploy-api.yml --repo bkwon94/cpcfantasyfootball --ref main
+  workflow_dispatch:
 
 # Each job only reads the repo, so the token gets no write scope.
 permissions:
   contents: read
 
 jobs:
+  # A dispatch deploys a commit that no check saw, so it runs the check first. A workflow_run already has a green check.
+  # The deploy runs from main only, so a dispatch from another branch runs nothing.
   check:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/check.yml
+    with:
+      ref: ${{ github.sha }}
+
+  # The path gate of a workflow_run. It runs only for a green check of a push, the old push trigger of this workflow.
+  changes:
+    if: >-
+      github.event_name == 'workflow_run'
+      && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      api: ${{ steps.diff.outputs.api }}
+    steps:
+      # The parent commit must be present for the diff, so the fetch takes two commits.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+      # A squash merge puts one commit on main, so the diff against the parent holds the whole change.
+      # The weekly publish pushes two commits, and neither touches a path of this list.
+      # The glob magic gives each pattern the meaning of a GitHub path filter: "*" stops at "/", and "**" does not.
+      - name: Find a change to a path of the API
+        id: diff
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if git diff --quiet "${HEAD_SHA}^" "${HEAD_SHA}" -- \
+            ':(glob)apps/api/**' \
+            ':(glob)apps/pipeline/**' \
+            ':(glob)packages/league/python/**' \
+            ':(glob)packages/facts/python/**' \
+            ':(glob)packages/analyzer/python/**' \
+            ':(glob)clients/*/client.toml' \
+            ':(glob)clients/*/prompts/**' \
+            'pyproject.toml' \
+            'uv.lock' \
+            '.github/workflows/deploy-api.yml'; then
+            echo "api=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "api=true" >> "$GITHUB_OUTPUT"
+          fi
 
   # A green check is the approval, so no environment gate holds the deploy.
   deploy:
-    needs: check
+    needs: [check, changes]
+    # Each event skips one of the two jobs it needs, so !cancelled() lets this job run, and the rest picks the gate.
+    if: >-
+      !cancelled() && (
+        (github.event_name == 'workflow_dispatch' && needs.check.result == 'success')
+        || (github.event_name == 'workflow_run' && needs.changes.outputs.api == 'true')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Two deploys of one app at once can conflict, so a second deploy waits for the first.
+    # The group sits on the job and not on the workflow, so a run that deploys nothing never cancels a waiting deploy.
     concurrency:
       group: fly-deploy
       cancel-in-progress: false
     # fly.toml and the Dockerfile sit in apps/api. The build context is the repo root, because the API is a member
     # of the root uv workspace, so the step runs at the root and passes each path as a flag.
     steps:
-      - uses: actions/checkout@v4
+      # A workflow_run starts on the latest commit of main, so the checkout names the commit that the check saw.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: superfly/flyctl-actions/setup-flyctl@v1
       # --remote-only builds the image on a Fly builder, so the runner needs no Docker.
       - name: Deploy the API
