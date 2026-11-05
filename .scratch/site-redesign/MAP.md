@@ -27,10 +27,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - The phone uses a dock at the bottom and a week chip in the top band. The desktop uses a pill bar and, on the week page, the chapter rail. The `layout` key of the client menu goes away. `decisions/04-prototype-the-navigation.md`.
 - The week page goes: the hero, four numbers, every game with tap recaps, Game Changer, Awards, Position leaders, Trades, the median game, Standings, Next week, and the footer. No tabs. `decisions/05-prototype-the-week-page.md`.
 - The analyzer is one scroll, the Stack. Each card says what a team gets, and each player shows its source team, so there is no send-to control. A teams row adds up to 4 teams. The verdict fills the hero, and the finder sits under the form. `decisions/06-prototype-the-analyzer.md`.
+- Rankings uses the Ladder: a hero for rank 1, then a card for each team that opens its part ranks. Managers uses Cards: a card with the grade box on the index, and the grade as the hero number on the manager page, with a W or L chip for each week. `decisions/07-prototype-managers-rankings-waiver.md`.
 
 ## NOT YET SPECIFIED
 
-- What do the managers, rankings, and waiver pages look like? `decisions/07-prototype-managers-rankings-waiver.md`.
 - What do the home page and the 404 page show? `decisions/08-prototype-home-and-404.md`.
 - What are the light sets of both brands in the look? `decisions/09-prototype-the-light-sets.md`.
 - Where are the edges of the readability floor? `decisions/13-grill-readability-floor-edges.md`.
@@ -42,6 +42,7 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - New data from the pipeline. It touches a second app, the published schema, and a republish of every week. Each idea that needs new data goes on the list below, for a later pipeline spec.
 - A test of the reaction with other managers. Brian's verdict is the proof, so the merge does not wait on other people.
 - Timed tasks, such as "find your score in 5 seconds". Somebody must run each task by hand.
+- The waiver page. No client takes the `waiver` package, so no client builds the page and Brian cannot judge it on screenshots. A later spec restyles it when a client turns it on.
 
 ### Ideas that need new data
 
