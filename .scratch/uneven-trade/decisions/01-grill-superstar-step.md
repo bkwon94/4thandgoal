@@ -6,7 +6,7 @@ Map: `.scratch/uneven-trade/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -23,4 +23,14 @@ The spec needs these four answers:
 
 ## Decision
 
-None yet.
+Brian decided it in a grill on 2026-11-05.
+
+1. A superstar is a player in the top 8 chart values of the week, over all positions. `SUPERSTAR_RANK = 8` in `tunables.py` sets it. A fixed rank works the same in every chart format. A fixed value such as 55 does not.
+2. A side that gets a superstar gets one step up. Two superstars to one side still give one step.
+3. The side that gives a superstar gets no step. Each adjuster reads only what a side gets, and the chart ratio already charges the giver.
+4. The step applies in an even count and with the 1.10 margin. It does not apply with the 1.25 margin of one for many, because that margin already pays for the star.
+5. Each side that gets a superstar gets the step, so one trade can give the step to both sides.
+6. With no chart in the week, the check reads the chart of the week before.
+7. Superstar is a new glossary term beside Star. Star is a rank inside one position. Superstar is a rank over all positions.
+
+The spec sets the place of the step in the adjuster order and its reason text. The place matters, because the fairness reason shows the first up step.
