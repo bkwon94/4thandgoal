@@ -906,8 +906,12 @@ One league and its site, over every season. A client has one provider per season
 _Avoid_: League config, tenant, customer, instance, site
 
 **Brand**:
-The look of one client: the color roles, the fonts, the radii, the logo, and the copy. A brand gives a light set and a dark set of colors, or one set only. It lives in `brand.toml`.
-_Avoid_: Theme, skin, style, palette
+The identity of one client: the color roles, the logo, and the copy. A brand gives a light set and a dark set of colors. It paints the look. It lives in `brand.toml`.
+_Avoid_: Theme, skin, style, palette, look
+
+**Look**:
+The fonts, the radii, the layout, the components, and the motion that every client shares. Each brand paints the look with its colors.
+_Avoid_: Design system, shell, report look, style, skin
 
 **Build folder**:
 The folder `clients/<slug>/build/` of one client: each page file and season file that its build writes. Publish copies one week of it into the published data of the client.
