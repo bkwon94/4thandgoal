@@ -100,7 +100,7 @@ function GradingHero() {
           <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
           <Sweep track="bg-rule-dark" />
         </div>
-        <p className="plate m-0 w-fit text-lead leading-body text-on-dark-2">This can take up to a minute early in the week.</p>
+        <p className="plate m-0 w-fit text-lead leading-body text-on-dark-2">This can take up to a minute.</p>
       </div>
     </Hero>
   );

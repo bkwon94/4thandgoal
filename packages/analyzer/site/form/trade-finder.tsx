@@ -155,7 +155,7 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
           <div className="flex flex-col gap-sp-2">
             <Sweep />
             <p role="status" className="m-0 text-meta text-mute">
-              The search tries every small swap. This can take up to a minute early in the week.
+              The search tries every small swap. This can take up to a minute.
             </p>
           </div>
         )}

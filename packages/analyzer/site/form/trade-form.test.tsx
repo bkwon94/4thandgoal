@@ -300,7 +300,7 @@ describe("TradeForm", () => {
     await pickTrade();
     fireEvent.click(submit());
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
-    expect(screen.getByText("This can take up to a minute early in the week.")).toBeTruthy();
+    expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
     const busy = screen.getByRole("button", { name: "Grading…" }) as HTMLButtonElement;
     expect(busy.disabled).toBe(true);
