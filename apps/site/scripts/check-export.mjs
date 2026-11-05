@@ -1,13 +1,12 @@
 /**
  * Checks that out/ holds a byte-identical copy of every file under public/, that each week page holds its text, that
- * each package the client omits is absent, and that the pages show the copy, the theme button, and the finder of the
- * client, and that each page preloads the two font files of the look from its own origin, under their byte budget.
- * Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
+ * each package the client omits is absent, that each page opens dark, and that the pages show the copy, the theme button,
+ * and the finder of the client, and that each page preloads the two font files of the look from its own origin, under
+ * their byte budget. Run it after pnpm build with the same CLIENT. It exits 1 on a mismatch.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ClientBuildError, clientRoot, readBrand, readClient, readCopy } from "./client-build.mjs";
-import { setsOf } from "@cpc/design/brand/brand.ts";
+import { ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
 import { FONT_CAPS, FONT_TOTAL } from "../src/app/fonts/budget.ts";
 
 function filesUnder(dir) {
@@ -89,16 +88,17 @@ for (const name of omitted) {
   const code = exported.find((file) => /\.(js|html)$/.test(file) && readFileSync(file, "utf8").includes(text));
   if (code) fail(`${code} holds the ${name} text "${text}", but the client ${process.env.CLIENT} omits ${name}`);
 }
-// The marks of the client values: the masthead text of copy.toml on the home page, the theme button only for a brand
-// with two sets, and the finder flag of the analyzer page. The flag sits in the page data of the static HTML, because
+// The marks of the client values: the masthead text of copy.toml on the home page, the dark class on <html> of each
+// page and the theme button, because each brand gives both sets and dark is the default (ADR 0024), and the finder
+// flag of the analyzer page. The flag sits in the page data of the static HTML, because
 // the finder shows only after a reader picks two teams.
 const copy = readCopy(clientRoot(process.env), process.env.CLIENT);
 const home = readFileSync(join("out", "index.html"), "utf8");
 if (!home.includes(escapeHtml(copy.masthead))) fail(`out/index.html does not show the masthead text "${copy.masthead}"`);
-const themeButton = setsOf(readBrand(clientRoot(process.env), process.env.CLIENT)).length === 2;
-const themed = exported.find((file) => file.endsWith(".html") && readFileSync(file, "utf8").includes("Switch to"));
-if (themeButton && !themed) fail("no page shows the theme button, but the brand has two sets");
-if (!themeButton && themed) fail(`${themed} shows a theme button, but the brand has one set`);
+const htmlPages = exported.filter((file) => file.endsWith(".html"));
+const light = htmlPages.find((file) => !/<html[^>]*\sclass="(?:[^"]*\s)?dark(?:\s[^"]*)?"/.test(readFileSync(file, "utf8")));
+if (light) fail(`${light} has no dark class on <html>, so it does not open dark`);
+if (!htmlPages.some((file) => readFileSync(file, "utf8").includes("Switch to"))) fail("no page shows the theme button");
 let finder = "no analyzer";
 if (values.packages.includes("analyzer")) {
   const finderOn = values.values?.analyzer?.finder ?? false;
@@ -138,6 +138,6 @@ for (const file of exported.filter((name) => name.endsWith(".html") || name.ends
 console.log(
   `check:export passed: ${sources.length} files are byte-identical; ${pages.length} week pages hold every team name; ` +
     `the client ${process.env.CLIENT} omits ${omitted.join(", ") || "no checked package"}, and the export holds none of it; ` +
-    `the pages show "${copy.masthead}", ${themeButton ? "the" : "no"} theme button, and ${finder}; ` +
+    `${htmlPages.length} pages open dark; the pages show "${copy.masthead}", the theme button, and ${finder}; ` +
     `each page but the 404 page preloads the ${fontFiles.length} font files of ${fontBytes} bytes from its own origin.`,
 );

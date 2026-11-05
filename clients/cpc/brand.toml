@@ -1,47 +1,43 @@
-# The brand of the CPC client: the two radii, the two font stacks, and the light and the dark set.
-# The schema is BRAND_SCHEMA in packages/design/site/brand/brand.ts. The light set is the report look and the default (ADR 0007).
+# The brand of the CPC client: the light and the dark set. The fonts and the radii belong to the look, not the brand (ADR 0024).
+# The schema is BRAND_SCHEMA in packages/design/site/brand/brand.ts. Dark is the default, and the theme button turns on light.
+# Both sets are required.
 
-# Small for tags and bars, card for every grey card.
-radius_card = "8px"
-radius_small = "3px"
-
-# The site uses the system Helvetica, so no font file loads.
-[fonts]
-body = '"Helvetica Neue", Arial, sans-serif'
-heading = '"Helvetica Neue", Arial, sans-serif'
-
-# The six base roles are required in each set.
+# The light set of the look: a light page and white cards under a hero that stays dark in both themes.
+# The base roles are required in each set.
 [light]
 accent = "#b8342a"
+# The hero surface.
 band = "#141414"
-page = "#ffffff"
-card = "#ececec"
-text = "#1a1a1a"
+page = "#f4f4f4"
+card = "#ffffff"
+# One step up from the card, such as the active dock item.
+raised = "#ebebeb"
+text = "#141414"
 muted = "#666666"
+# The lines of the grid texture of the hero.
+grid = "#1c1c1c"
 
-# CPC overrides each derived role where the formula does not give its value today, so the CPC look stays exact.
+# CPC overrides each derived role where the formula does not give the value of the look.
 # The roles with no line here take the formula of the design package:
-# - accent_ink, the accent text on the page, is the accent. The accent text and the accent fills take different roles because
-#   they sit on different grounds. The accent on white is 5.9 to 1, so the light set keeps it. On black it is only 3.1 to 1,
-#   so the dark set re-points the role to light red. White text sits on the accent fills, so the fills keep the accent.
-# - accent_glow, the red glow behind a hero cutout on a black card, is the accent 45% over transparent.
-# - pick, the fill of a picked player row in the trade analyzer, is the accent 10% over the page: a light wash, so a pick
-#   reads as red without red text on red. Ink text on it is 14.9 to 1, mute 4.9, and the accent 5.1.
-# - card_band, the paint of the black card, is the band. It has its own role because the dark set lifts the card while
-#   the masthead stays black. See ADR 0007.
-# - on_dark is the page of the light set.
+# - accent_glow, the red glow of the hero, is the accent 45% over transparent.
+# - card_band, the paint of the black card, is the band.
+# - divider, the thin rule between two columns, is the text 20% over the page.
 [light.derived]
-# The accent text on a dark band.
+# The accent as text on the page and the card. The accent fills keep #b8342a, because white text sits on them.
+accent_ink = "#a52e25"
+# The accent text of the hero.
 accent_text = "#f2a59e"
-ink_2 = "#333333"
-rule = "#e3e3e3"
-bar_off = "#cfcfcf"
-# The thin rule between two columns.
-divider = "#cfcfcf"
+ink_2 = "#3a3a3a"
+rule = "#e0e0e0"
+bar_off = "#dddddd"
+# The fill of a picked player row in the trade analyzer: the accent 10% over the white card. Over the page #f4f4f4 the
+# muted text is only 4.50 to 1, so the wash mixes over the card. Ink text on it is 14.9 to 1, mute 4.9, and accent ink 5.0.
+pick = { mix = "accent", percent = 10, over = "card" }
+# The hero roles: the hero stays dark in both themes.
+on_dark = "#ffffff"
 on_dark_2 = "#cccccc"
 on_dark_muted = "#999999"
 rule_dark = "#333333"
-# The raised surface on the black card: a tab that is off and a box of the waiver sheet. It is one step up from the card, so it reads as a layer.
 chip_dark = "#262626"
 
 # The dark theme re-points the light roles to dark partners, so no component changes a class. See ADR 0007.
@@ -53,6 +49,10 @@ chip_dark = "#262626"
 # The accent never re-points (ADR 0007).
 accent = "#b8342a"
 band = "#141414"
+# The raised surface of the look, such as the active dock item: the value of the dark board.
+raised = "#262626"
+# The lines of the grid texture of the hero, as in the light set.
+grid = "#1c1c1c"
 # The page. White text on it is 18.4 to 1.
 page = "#141414"
 # The light grey sits one step between the page and the lifted black card: the grey card, the body from the tablet tier up, and the grey chip.
@@ -67,6 +67,8 @@ muted = "#999999"
 
 [dark.derived]
 accent_text = "#f2a59e"
+# The hero text. The formula takes the light page, #f4f4f4, so the dark set names white.
+on_dark = "#ffffff"
 # Red text on the page: light red is 9.3 to 1 on the page and 7.7 to 1 on the raised surface.
 accent_ink = "#f2a59e"
 # The picked player row: a dark wash of brand red on the grey, #412421. White text on it is 14.1 to 1, #999 4.9, and light red 7.1.

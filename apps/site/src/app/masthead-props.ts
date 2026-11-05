@@ -41,7 +41,7 @@ export function mastheadProps(): { title: string; brand: Brand; menu: SiteMenu }
     : [];
   return {
     title: clientValues.copy.masthead,
-    brand: { home, logo: logoSrc(clientValues.brand.logo), themeButton: paintOf(clientValues.brand.sets).themeButton },
+    brand: { home, logo: logoSrc(clientValues.brand.logo), themeButton: paintOf().themeButton },
     menu: {
       layout: clientValues.menu.layout,
       pages: menuPages(clientValues.menu.items, menuLinks, home),
