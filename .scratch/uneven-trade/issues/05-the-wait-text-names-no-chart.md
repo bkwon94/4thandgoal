@@ -8,7 +8,7 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-13 and AT-14.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The test of the trade form checks the new wait text, test-first.
 - [x] A test of the finder checks its new wait text.
