@@ -249,12 +249,18 @@ def _team_total(past: PastWeek, player_id: str, stat: str) -> float:
         return 0.0
     # The finder reads a team total for many players of many trades, so the totals of each stat build once per week.
     # Each team sums its players in the order of nfl_teams from an int 0, as sum() does, so each total is the same.
-    totals = past._team_totals.get(stat)
+    # The cache holds the stats and the teams it read, so a model_copy of the week with other stats starts afresh.
+    cached = past._team_totals
+    if cached is None or cached[0] is not past.stats or cached[1] is not past.nfl_teams:
+        cached = (past.stats, past.nfl_teams, {})
+        past._team_totals = cached
+    by_stat = cached[2]
+    totals = by_stat.get(stat)
     if totals is None:
         totals = {}
         for pid, nfl_team in past.nfl_teams.items():
             totals[nfl_team] = totals.get(nfl_team, 0) + past.stats.get(pid, {}).get(stat, 0.0)
-        past._team_totals[stat] = totals
+        by_stat[stat] = totals
     return totals[team]
 
 

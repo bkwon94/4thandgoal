@@ -145,8 +145,9 @@ class PastWeek(BaseModel):
     points_key: str = DEFAULT_POINTS_KEY
     # The total of one stat for each NFL team, keyed by stat, built on the first read by history._team_total. The
     # usage row reads a team total for each player of each graded trade, and the stats of a past week never change
-    # after the parse, so one pass over the week per stat serves every read.
-    _team_totals: dict[str, dict[str, float]] = PrivateAttr(default_factory=dict)
+    # after the parse, so one pass over the week per stat serves every read. model_copy copies this private value,
+    # so it holds the stats and the nfl_teams it read, and a copy with other stats or teams builds its own totals.
+    _team_totals: tuple[dict, dict, dict[str, dict[str, float]]] | None = PrivateAttr(default=None)
 
 
 class UsageShare(BaseModel):
