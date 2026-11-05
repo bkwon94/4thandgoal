@@ -906,6 +906,20 @@ _Avoid_: Context, week data, state
 One JSON file the render step writes under the build folder `clients/<slug>/build/` and publish copies into `clients/<slug>/published/`: a week page, a waiver board, the rankings, the managers file. The pipeline owns its shape, and the site reads it with one loader.
 _Avoid_: Snapshot, data file, output, artifact, feed, export
 
+### The midseason report
+
+**Midseason report**:
+The one page per season that recaps the season to date for one client: arcs, steals and busts, waiver pickups, trades, luck, and the sim of the weeks left. Brian runs its build by hand for one week, and it does not rebuild each week.
+_Avoid_: Season recap, halftime report, mid-year review
+
+**Arc**:
+The shape of one team's season to date, found from the data, from a fixed set such as a turnaround or a collapse. An arc is about a team's season. A Storyline is about one next-week game.
+_Avoid_: Storyline (that is the reason a next-week game matters), narrative, story
+
+**Draft value**:
+A player's points to date against his draft cost in his league's own draft: dollars in an auction, pick number in a snake. It names a steal or a bust.
+_Avoid_: Value (alone), ADP, Trade value (that is the chart worth of a player)
+
 ## Client language
 
 The terms of the structure that both apps share: the clients, the packages, and the apps.
