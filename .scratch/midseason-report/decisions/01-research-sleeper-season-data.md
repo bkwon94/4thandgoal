@@ -6,7 +6,7 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -21,4 +21,9 @@ Find out, for both leagues: the fields of a pick, the keeper flag if any, a trad
 
 ## Decision
 
-None yet.
+Sleeper gives all the data of the report except an injury date. The notes are `decisions/01-research-sleeper-season-data.notes.md`. Decided by the research, checked by the orchestrator against the live API.
+
+- Draft: each pick carries `roster_id`. The CPC auction price is `metadata.amount`, and `round` has no meaning there. Neither league has keepers. No 2026 trade moved a draft pick.
+- FAAB: each `waiver` row carries `settings.waiver_bid`. CPC has 110 won and 135 failed claims in weeks 1 to 8, and NorCal has 51 won and 55 failed. A lost bid pairs with the winning claim on `status_updated`, so the report can name who bid and lost.
+- The stored history is incomplete. For example, CPC week 8 holds 15 of 42 rows. So the report fetches `/league/{id}/transactions/{week}` again for each week.
+- Injuries: the report reads the nflverse weekly injury status, not `injuries.json`. The finest step is the NFL week, so "hurt right after the trade" means "out in the first week after the trade".

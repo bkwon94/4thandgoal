@@ -20,14 +20,14 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The roast has no limit on heat for football decisions. Life outside fantasy is off limits, with no profanity or slurs at a person. Each roast cites a fact. Each client has a `roast` setting. Brian, in the stage 1 grill.
 - No outside ADP source. Draft value reads each league's own draft: dollars in the CPC auction, pick number in the NorCal snake. Brian, in the stage 1 grill.
 - The site tickets wait for the merge of `site-redesign` into `main`. The pipeline tickets do not wait. The flow, ADR 0019.
+- Sleeper gives the draft, the FAAB bids, and the lost bids. The report fetches each week's transactions again, because the history is incomplete. Injuries come from nflverse, by week. `decisions/01-research-sleeper-season-data.md`.
+- Eight arcs. Start and now windows of 4 weeks, with 65% and 35% lines. The full record for window arcs, and head to head only for streaks. At most 2 per team. `decisions/05-grill-the-arcs.md`.
 
 ## NOT YET SPECIFIED
 
-- What does Sleeper give for draft picks, keepers, FAAB bids, and injury dates across weeks 1 to 8? `decisions/01-research-sleeper-season-data.md`.
 - What is the Draft value rule for a steal and a bust, in an auction and in a snake? `decisions/02-grill-draft-value-rule.md`.
 - How does the report score a waiver hit and a waiver miss? `decisions/03-grill-waiver-hit-and-miss.md`.
 - What is the rubric of a trade's grade to date, and how does it relate to the analyzer's grade? `decisions/04-grill-trade-grade-to-date.md`.
-- Which arcs exist, and what are their thresholds? `decisions/05-grill-the-arcs.md`.
 - How does the report measure luck, an overachiever, and the schedule swap? `decisions/06-grill-luck-and-schedule-swap.md`.
 - Which sim model runs the rest of the season, and which inputs does it read? `decisions/07-research-the-sim-model.md`.
 - Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
@@ -41,4 +41,5 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - A dock item for the report. The dock has five fixed items, and the takeover and the tile are enough.
 - An outside ADP source. Each league's own draft is the baseline.
 - A report for a season other than 2026. The build takes the season as input, but only 2026 ships.
+- An injury date finer than the NFL week. No source gives one.
 - A live sim on a server. Ticket 08 decides between replay and a live sim in the browser. A server sim is past the destination.
