@@ -2275,17 +2275,55 @@ def test_at_equal_letters_and_equal_starts_the_first_side_gives_more():
     assert result.gives_more == 4
 
 
-def test_the_reason_of_a_side_is_its_first_adjuster_with_a_step_up_in_rubric_order():
-    # Standing steps down before trend steps up, and injury steps up after trend.
+def test_a_net_above_zero_gives_the_first_step_up_in_rubric_order():
+    # Standing steps down before trend steps up, and injury steps up after trend, so the net of side 4 is +1.
     result = _fairness_for(_sided(4, "B", start="C", steps=(0, -1, 1, 1)), _sided(12, "B", start="C", steps=(1,)))
     assert [(side.roster_id, side.reason) for side in result.sides] == [
         (4, "Side 4 trend and usage."), (12, "Side 12 roster fit.")]
 
 
-def test_a_side_with_no_step_up_gets_the_deal_row_of_its_start_letter():
-    result = _fairness_for(_sided(4, "D", start="C", steps=(0, -1)), _sided(12, "C", steps=(1, -1)))
+def test_a_net_below_zero_gives_the_first_step_down_in_rubric_order():
+    # Roster fit steps up, then standing and injury step down, so the net of side 4 is -1.
+    result = _fairness_for(_sided(4, "D", start="C", steps=(1, -1, 0, -1)), _sided(12, "C", steps=(0, -1)))
+    assert [side.reason for side in result.sides] == ["Side 4 standing.", "Side 12 standing."]
+
+
+def test_a_net_of_zero_with_steps_gives_the_first_step_up_but_the_first_step_down():
+    # "Side" is no plain first word, so the step down keeps its capital. The next test reads the lower case.
+    result = _fairness_for(_sided(4, "C", steps=(0, -1, 1)), _sided(12, "C"))
+    assert result.sides[0].reason == "Side 4 trend and usage, but Side 4 standing."
+
+
+def _cancelled(down: str) -> Breakdown:
+    """A side at C with a superstar step up and a roster fit step down, whose net is zero."""
+    return Breakdown(roster_id=4, start_letter="C", reason="Side 4 start.", final_letter="C", adjusters=[
+        Adjuster(name="roster fit", step=-1, reason=down),
+        Adjuster(name="superstar", step=1, reason="Kenneth Walker III is a superstar, a top 8 player this week.")])
+
+
+@pytest.mark.parametrize("down, joined", [
+    ("You go from 2 RBs in the top 36 to 1.", "you go from 2 RBs in the top 36 to 1."),
+    ("The trade leaves RB2 short: no player fills it.", "the trade leaves RB2 short: no player fills it."),
+    ("In a playoff spot, so you need points now.", "in a playoff spot, so you need points now."),
+    ("Walker is out for the season.", "Walker is out for the season."),
+    ("Ja'Marr Chase is out for the season.", "Ja'Marr Chase is out for the season."),
+])
+def test_the_step_down_after_but_starts_in_lower_case_unless_its_first_word_is_a_name(down, joined):
+    result = _fairness_for(_cancelled(down), _sided(12, "C"))
+    assert result.sides[0].reason == "Kenneth Walker III is a superstar, a top 8 player this week, but " + joined
+
+
+def test_a_side_with_no_step_gets_the_deal_row_of_its_start_letter():
+    result = _fairness_for(_sided(4, "C"), _sided(12, "D", start="D", steps=(0, 0, 0)))
     assert [side.reason for side in result.sides] == [
-        "What you get and what you give are about even.", "Side 12 roster fit."]
+        "What you get and what you give are about even.", "You give more than you get."]
+
+
+def test_a_side_at_a_with_a_net_above_zero_keeps_a_and_gives_its_step_up():
+    # The clamp holds the letter at A, but the step up still names what the side gains.
+    result = _fairness_for(_sided(4, "A", start="A", steps=(1,)), _sided(12, "B"))
+    assert result.state == "win_win"
+    assert result.sides[0].reason == "Side 4 roster fit."
 
 
 def test_the_sides_come_in_the_order_of_the_inputs():

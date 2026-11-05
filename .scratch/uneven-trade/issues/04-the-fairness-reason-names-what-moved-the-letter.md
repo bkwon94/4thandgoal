@@ -10,8 +10,8 @@ Spec: `.scratch/uneven-trade/PRD.md`. Acceptance tests AT-9, AT-10, AT-11, and A
 
 **Status:** ready-for-agent
 
-- [ ] A fairness test grades trade W first, test-first, and shows "Fair." Teehee's reason is the superstar reason, then ", but ", then its roster-fit reason.
-- [ ] Fairness tests cover a net below zero, no steps, and a side at A with a net above zero.
-- [ ] The down reason in a joined reason starts in lower case, unless its first word is a name.
-- [ ] The fairness state and the side that gives more do not change for any present fairness test.
-- [ ] The `analyze` target gives the fairness line of AT-9 for trade W.
+- [x] A fairness test grades trade W first, test-first, and shows "Fair." Teehee's reason is the superstar reason, then ", but ", then its roster-fit reason.
+- [x] Fairness tests cover a net below zero, no steps, and a side at A with a net above zero.
+- [x] The down reason in a joined reason starts in lower case, unless its first word is a name.
+- [x] The fairness state and the side that gives more do not change for any present fairness test.
+- [x] The `analyze` target gives the fairness line of AT-9 for trade W.

@@ -418,11 +418,35 @@ def deal_reason(breakdown: Breakdown) -> str:
     return DEAL_REASONS[breakdown.start_letter]
 
 
-def _gain_reason(breakdown: Breakdown) -> str:
-    """The reason of the first adjuster with a step up, in rubric order, else the deal row of the side."""
-    # A step up is what a side gains past the trade values, so it is the reason the side would take the trade.
+# The plain first words of the adjuster reasons. Any other first word starts a name, which keeps its capital.
+PLAIN_FIRST_WORDS = {"You", "The", "In", "Out", "Outside", "No"}
+
+
+def _joined(down: str) -> str:
+    """The down reason as it reads after ", but ": a lower-case first letter, unless its first word is a name."""
+    if down.split(" ", 1)[0] in PLAIN_FIRST_WORDS:
+        return down[0].lower() + down[1:]
+    return down
+
+
+def _side_reason(breakdown: Breakdown) -> str:
+    """The reason that names what moved the letter of a side, from the net sum of its steps before the clamp.
+
+    A net above zero gives the first step up, in rubric order, and a net below zero gives the first step down.
+    A net of zero with steps gives the first step up, then ", but ", then the first step down. No step gives the deal row.
+    """
     # The fairness line shows it to a manager, so it reads the plain deal row, not the start reason of the prompt.
-    return next((a.reason for a in breakdown.adjusters if a.step > 0), deal_reason(breakdown))
+    up = next((a.reason for a in breakdown.adjusters if a.step > 0), None)
+    down = next((a.reason for a in breakdown.adjusters if a.step < 0), None)
+    net = sum(a.step for a in breakdown.adjusters)
+    if net > 0:
+        return up or deal_reason(breakdown)
+    if net < 0:
+        return down or deal_reason(breakdown)
+    if up and down:
+        # The step up and the step down cancel, so the reason names both, or "Fair" would sit next to a lone gain.
+        return up.removesuffix(".") + ", but " + _joined(down)
+    return deal_reason(breakdown)
 
 
 def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> Fairness:
@@ -438,4 +462,4 @@ def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> 
     else:
         state, gives_more = "fair", None
     return Fairness(state=state, gives_more=gives_more,
-                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_gain_reason(b)) for _, b in sides))
+                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_side_reason(b)) for _, b in sides))

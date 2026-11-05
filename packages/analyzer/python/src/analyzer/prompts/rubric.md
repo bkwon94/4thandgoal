@@ -249,8 +249,14 @@ side and gives one of three states.
   more. At equal letters, the side with the lower start letter gives more.
 - Any other pair of letters: fair.
 
-Each side gets one reason: the reason of its first adjuster with a step up, in rubric order. A
-side with no step up gets the reason of its start letter.
+Each side gets one reason, from the net sum of its adjuster steps before the clamp. "First" means
+first in rubric order.
+
+- A net above zero: the reason of its first adjuster with a step up.
+- A net below zero: the reason of its first adjuster with a step down.
+- A net of zero with steps: the first step up, then ", but ", then the first step down. The step
+  down starts in lower case, unless its first word is a name.
+- No step: the reason of its start letter.
 
 ## What the breakdown never holds
 

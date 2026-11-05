@@ -335,11 +335,13 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     assert "  Final letter: A\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     # The fairness line follows the verdict, then one reason per side in the order of the sides.
-    # Jacobs is a top RB out now, so the upside step up gives the reason of Unsolicited Dak Picks.
+    # Jacobs is a top RB out now, so upside steps Unsolicited Dak Picks up. Roster fit steps it down for the same
+    # absence, so the net is zero and its reason names both steps.
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
-        "  Unsolicited Dak Picks: Jacobs is a top RB, due back in week 7.\n"
+        "  Unsolicited Dak Picks: Jacobs is a top RB, due back in week 7, but you keep 3 RBs in the top 36 and keep 2 "
+        "WRs in the top 36, and Jacobs is due back in week 7, and no other player covers him.\n"
         "  Amon-Ra Dawg Your Team: You keep 4 RBs in the top 36 and keep 5 WRs in the top 36, and your lineup scores "
         "more.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
@@ -612,7 +614,8 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
         "   Lil Fridge gives: Bryce Young\n"
         "Fairness: Good for both\n"
         "  All You Need Is Love: Young plays 100% of the snaps (up).\n"
-        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player.\n")
+        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player, but Young plays 100% of the snaps "
+        "(up).\n")
     assert "\n2. " not in out
 
 
