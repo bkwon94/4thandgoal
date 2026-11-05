@@ -20,4 +20,5 @@
 - It takes no layout from a client. The look owns the navigation (ADR 0024).
 - It sets no theme before the first paint. The root layout inlines the boot script from `site/lib/theme.ts`.
 - It holds no chapter and no hero. Each page folder holds its chapters, and the hero lives in `site/parts/`.
+- It holds no primitive. The primitives live in `site/ui/`, and the strip of weeks is a native `details` element.
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).
