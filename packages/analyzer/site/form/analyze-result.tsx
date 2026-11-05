@@ -167,6 +167,20 @@ const MARKS = {
   even: { symbol: "–", color: "text-mute" },
 } as const;
 
+/* The page name of each factor. The document keeps the code name of the adjuster, and this map is the one place
+   that turns it into the word a manager reads. A name not in the map shows as sent. */
+const FACTOR_NAME: Record<string, string> = {
+  deal: "The deal",
+  "roster fit": "Roster",
+  standing: "Standing",
+  "trend and usage": "Usage",
+  injury: "Injury",
+  upside: "Upside",
+  handcuff: "Handcuff",
+  schedule: "Schedule",
+  "expected gap": "Expected gap",
+};
+
 function Mark({ lean }: { lean: Factor["lean"] }) {
   const mark = MARKS[lean];
   return (
@@ -319,7 +333,7 @@ function SideRead({ side }: { side: Side }) {
               className="grid grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)] gap-x-sp-1 border-b border-rule px-sp-1 py-sp-2 text-ink-2 last:border-b-0"
             >
               <Mark lean={f.lean} />
-              <Caps>{f.name}</Caps>
+              <Caps>{FACTOR_NAME[f.name] ?? f.name}</Caps>
               <span className="col-start-2">{f.reason}</span>
             </li>
           ))}

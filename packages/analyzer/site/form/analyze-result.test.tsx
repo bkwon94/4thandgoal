@@ -243,7 +243,7 @@ describe("AnalyzeResult", () => {
     render(<AnalyzeResult doc={fixture} />);
     expect(screen.queryByText("The Reasoning")).toBeNull();
     // The fixture has no handcuff row and no upside row, because a row that says nothing hides.
-    for (const name of ["deal", "roster fit", "standing", "trend and usage", "injury", "schedule"]) {
+    for (const name of ["The deal", "Roster", "Standing", "Usage", "Injury", "Schedule"]) {
       expect(screen.getAllByText(name)).toHaveLength(2);
     }
     for (const side of fixture.sides) {
@@ -254,6 +254,18 @@ describe("AnalyzeResult", () => {
     expect(screen.getAllByText("for")).toHaveLength(2);
     expect(screen.getAllByText("against")).toHaveLength(1);
     expect(screen.getAllByText("even")).toHaveLength(9);
+  });
+
+  it("shows the page name of each factor, never the code name", () => {
+    const names = ["deal", "roster fit", "standing", "trend and usage", "injury", "upside", "handcuff", "schedule", "expected gap"];
+    const factors = names.map((name) => ({ name, lean: "even" as const, reason: `The ${name} reason.` }));
+    const sides = fixture.sides.map((side, i) => (i === 0 ? { ...side, factors } : side));
+    render(<AnalyzeResult doc={{ ...fixture, sides }} />);
+    const fold = sideCard("Pukancun on 3 · Your Side").querySelector("details") as HTMLElement;
+    const rows = within(fold).getAllByRole("listitem");
+    const pageNames = ["The deal", "Roster", "Standing", "Usage", "Injury", "Upside", "Handcuff", "Schedule", "Expected gap"];
+    pageNames.forEach((pageName, i) => expect(within(rows[i]).getByText(pageName)).toBeTruthy());
+    for (const name of names) expect(within(fold).queryByText(name)).toBeNull();
   });
 
   it("shows the players each side gets in the swap card", () => {
