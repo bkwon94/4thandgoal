@@ -15,3 +15,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-30 and AT-31.
 - [x] The managers index and the manager page with the longest team name are on the full floor, and the floor passes. Every other manager page is in the fast sweep.
 - [ ] The local dev server runs for Brian after the build.
 - [ ] The evidence of AT-30 and AT-31 is recorded in `EVIDENCE.md`.
+
+## Comments
+
+- 2026-11-05: Brian chose ranks only for story 76. Roster shows the rank of each grade part and no weight, because the managers file has no weight field. A later pipeline spec can publish the weights.
