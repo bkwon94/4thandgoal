@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The index shows 12 cards for CPC in standings order.
 - [x] The manager page of To Infinity and Bijan shows the full name at 375 px.
