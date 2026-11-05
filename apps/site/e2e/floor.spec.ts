@@ -5,7 +5,7 @@
  */
 import type { Theme } from "@cpc/design/lib/theme";
 import { expect, test, type Page } from "@playwright/test";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { openPage, scanContrast, scanScroll, scanTargets, scanText } from "./floor";
 import { serveDir } from "./serve";
@@ -28,8 +28,27 @@ type OpenState = { route: string; tap: string; scope?: string };
 /* The route of the latest week: the last week page of the export, as the routes sort by season and then by week. */
 const LATEST_WEEK_ROUTE = builtRoutes().filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route)).at(-1) ?? "/no-week/";
 
+/* The season of the latest week, from its route. The managers index and the manager pages sit under it. */
+const SEASON = LATEST_WEEK_ROUTE.split("/")[1];
+
+/*
+ * The manager page of the longest team name of the client, from the managers file of the export: the page where a long
+ * name most likely breaks the floor. A tie goes to the lowest roster id, so the choice is the same at each run.
+ * The name counts in code points, so an emoji counts as one character.
+ */
+function longestNameRoute(): string {
+  const path = join(OUT, SEASON, "managers.json");
+  if (!existsSync(path)) return "/no-managers-file/";
+  const { managers } = JSON.parse(readFileSync(path, "utf8")) as { managers: { roster_id: number; team: { name: string } }[] };
+  const length = (name: string) => [...name].length;
+  const [longest] = [...managers].sort((a, b) => length(b.team.name) - length(a.team.name) || a.roster_id - b.roster_id);
+  return `/${SEASON}/managers/${longest.roster_id}/`;
+}
+
 /*
  * The pages and the open states of the full floor: all four rules, in both themes, at both widths.
+ * The spec names 7 pages and 3 open states per client. The closed home page is one of the 7 pages, and the open strip
+ * of weeks is a tap on that same page.
  * A page not in the list, such as a past week, gets the fast sweep only, so it still has the text floor.
  */
 const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
@@ -37,12 +56,10 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   "/rankings/",
   // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
   { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
-  "/2026/managers/",
-  // The manager page of the longest team name of each client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
+  `/${SEASON}/managers/`,
+  // The manager page of the longest team name of the client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
   // In cpc, rosters 7, 9, and 11 tie at 21 characters, and roster 7 stands for the three.
-  // Both clients build both roster ids, so each client checks both pages.
-  "/2026/managers/7/",
-  "/2026/managers/4/",
+  longestNameRoute(),
   "/analyze/",
   LATEST_WEEK_ROUTE,
   // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
@@ -107,6 +124,15 @@ test("each page of the full floor is a built page", () => {
 
 /* No client takes the waiver package, so no client builds a waiver page, even where the week publishes a waiver file.
    The URL of the waiver page of the latest week then gives the 404 page, as the Worker does. */
+/* The spec of the floor names 7 pages and 3 open states per client: home, the latest week, rankings, the managers index,
+   the manager page with the longest team name, the empty analyzer, and 404, then an open recap, card, and strip. */
+test("the full floor holds the 7 pages and the 3 open states of the spec", () => {
+  const pages = FULL_FLOOR_PAGES.filter((entry) => typeof entry === "string");
+  expect(new Set(pages).size).toBe(pages.length);
+  expect(pages.length).toBe(7);
+  expect(FULL_FLOOR_PAGES.length - pages.length).toBe(3);
+});
+
 test("no waiver page is built, and its URL shows the 404 page", async ({ page }) => {
   expect(routes.filter((route) => route.includes("waiver"))).toEqual([]);
   const response = await page.goto(`${server.url}${LATEST_WEEK_ROUTE}waiver/`);
@@ -139,6 +165,8 @@ for (const entry of FULL_FLOOR_PAGES) {
         }
         const failures = await textFloor(page, label, started);
         const targets = await scanTargets(page);
+        // Each exempt link prints, so a reader of the log sees each link that the tap floor skips. A page with none says so.
+        if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
         failures.push(...targets.failures, ...(await scanContrast(page, typeof entry === "string" ? undefined : entry.scope)));
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
