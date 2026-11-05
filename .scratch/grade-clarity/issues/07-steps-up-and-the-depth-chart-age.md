@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-15, AT-16, and AT-30.
 
 **Blocked by:** 06.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The rule reads the full Sleeper players file, so a player ahead on no roster counts.
 - [x] The depth chart reader gives back the newest `dt` with the charts.
@@ -29,3 +29,4 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-15, AT-16, and AT-30.
 - For Brian: a player who is out himself, or whose team has a bye that week, does not step up. The PRD does not say this.
 - For Brian: a grade with no grade time, such as a saved week, names no step-up, because the age of the chart is not known. The live path and the API always give the time.
 - For Brian: an API test of ticket 06 on the Tuesday flag now holds no chart time, because the age of the chart also changes the key.
+- The merge: `3ed6622` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
