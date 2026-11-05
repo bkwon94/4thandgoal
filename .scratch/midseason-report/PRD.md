@@ -5,7 +5,7 @@ Date: 2026-11-05
 Apps: both. The pipeline computes the facts of each chapter, runs the sim, writes the prose, and publishes two season files. The site renders the report at `/midseason/2026`, the sim replay inside it, the home takeover, and the home tile.
 Spec branch: `midseason-report`.
 Source: the map `.scratch/midseason-report/MAP.md` and decision tickets 01 to 13. ADRs 0010, 0011, 0013, 0015, 0022, and 0023.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 14, in `issues/`.
 
 ## Problem Statement
 

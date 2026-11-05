@@ -1,0 +1,15 @@
+# 14: The takeover, the report tile, and the menu
+
+Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-44, AT-45, and AT-46.
+
+**App:** site
+
+**What to build:** The home page shows the takeover, with the opener and a link, while the latest published week is at or before the report week plus 1. After that, the home page shows the report tile with one big fact. The dock and the menu do not change. This ticket waits for the merge of `site-redesign` into `main`, because it uses the redesign's parts and look.
+
+**Blocked by:** 11.
+
+**Status:** ready-for-agent
+
+- [ ] With week 8 or week 9 published, the home page shows the takeover.
+- [ ] With week 10 published, the home page shows the report tile.
+- [ ] The dock and the menu have the same items as before.
