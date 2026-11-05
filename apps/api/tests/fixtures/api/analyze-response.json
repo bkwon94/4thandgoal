@@ -107,6 +107,16 @@
         "Nico Collins leads the trade in points per game.",
         "His role is large."
       ],
+      "week_lines": [
+        {
+          "week": 6,
+          "text": "Week 6: WRs in the top 36 who play stay at 2. TEs in the top 24 who play go from 1 to 2. Kincaid plays at LV, 13th most points to TEs. Wilson plays at NE, 17th most points to WRs. Williams has a bye. Warren is listed Out."
+        },
+        {
+          "week": 7,
+          "text": "Week 7: WRs in the top 36 who play stay at 3. TEs in the top 24 who play stay at 2. Wilson plays MIA at home, 31st most points to WRs. Kincaid has a bye."
+        }
+      ],
       "factors": [
         {
           "name": "deal",
@@ -145,6 +155,16 @@
       "bullets": [
         "Nico Collins leads the trade in points per game.",
         "His role is large."
+      ],
+      "week_lines": [
+        {
+          "week": 6,
+          "text": "Week 6: WRs in the top 36 who play stay at 2. TEs in the top 24 who play go from 1 to 0. Collins plays at JAX, 8th most points to WRs. LaPorta, Higgins and St. Brown have a bye. Moore is listed Out."
+        },
+        {
+          "week": 7,
+          "text": "Week 7: WRs in the top 36 who play stay at 4. TEs in the top 24 who play stay at 1. Collins plays NYG at home, 13th most points to WRs. Moore has a bye."
+        }
       ],
       "factors": [
         {

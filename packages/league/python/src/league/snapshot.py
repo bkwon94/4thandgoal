@@ -71,6 +71,9 @@ class AsOf(BaseModel):
     rosters_fetched: datetime | None
     # None for a saved week, a failed week N fetch, or a raw week that is not the trade week.
     known_games: KnownGames | None = None
+    # The time of the grade, the clock of the request. None for a saved week with no clock.
+    # The Week line reads it: on a Tuesday or a Wednesday, a status of Out is the one of the last game.
+    graded_at: datetime | None = None
 
 
 class Snapshot(BaseModel):
@@ -435,6 +438,7 @@ def build_snapshot(
             completed_through=completed_through,
             rosters_fetched=rosters_fetched,
             known_games=known_games,
+            graded_at=now,
         ),
         schedules=slow.schedules if slow else None,
         depth_charts=slow.depth_charts if slow else None,

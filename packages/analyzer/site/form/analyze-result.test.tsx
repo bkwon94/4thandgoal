@@ -168,6 +168,25 @@ describe("AnalyzeResult", () => {
     expect(within(card).getByText(`How the grade adds up · ${fixture.sides[0].factors.length} rows`)).toBeTruthy();
   });
 
+  it("shows the box This week and next with the two Week lines between the bullets and the fold", () => {
+    render(<AnalyzeResult doc={fixture} />);
+    const card = sideCard("Pukancun on 3 · Your Side");
+    const bullet = within(card).getByText(ANALYSIS);
+    const box = within(card).getByRole("region", { name: "This week and next" });
+    const fold = card.querySelector("details") as HTMLDetailsElement;
+    expect(within(box).getAllByRole("listitem").map((li) => li.textContent)).toEqual(
+      fixture.sides[0].week_lines.map((line) => line.text),
+    );
+    expect(bullet.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(box.compareDocumentPosition(fold) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(box.closest("details")).toBeNull();
+  });
+
+  it("shows the box This week and next on every side of a three-side trade", () => {
+    render(<AnalyzeResult doc={three} />);
+    expect(screen.getAllByRole("region", { name: "This week and next" })).toHaveLength(three.sides.length);
+  });
+
   it("puts the deal row first in the fold, with its mark", () => {
     render(<AnalyzeResult doc={fixture} />);
     const fold = sideCard("Pukancun on 3 · Your Side").querySelector("details") as HTMLElement;

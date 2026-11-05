@@ -28,6 +28,7 @@ from analyzer.rubric import (
     fairness,
 )
 from analyzer.trade_facts import shown_ranks
+from analyzer.week_line import week_lines
 from league.client import Client
 from league.player_ids import headshot_url, is_def
 from league.snapshot import Snapshot
@@ -195,17 +196,20 @@ def _echoed_sides(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
 
 
 def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis) -> dict:
-    """The result the site renders: a decision first, the fairness, then the bullets and the factors per side.
+    """The result the site renders: a decision first, the fairness, then the bullets, the Week lines, and the factors
+    per side.
 
-    The deal row is the first factor of each side.
+    The deal row is the first factor of each side. The Week lines are never a factor, because they move no letter.
 
     It holds no letter, no step, and never a trade value, sum, or ratio. A manager acts on a decision, not a letter.
     """
     echoed = _echoed_sides(trade, snapshot)
+    lines = week_lines(trade, snapshot)
     sides = [
         {
             "roster_id": breakdown.roster_id,
             "bullets": side.bullets,
+            "week_lines": [line.model_dump() for line in lines[breakdown.roster_id]],
             "factors": [
                 _deal_row(breakdown),
                 # A row shows when it moves the grade or says something new, so a silent row with no step drops.

@@ -271,7 +271,22 @@ function foldSummary(rows: number): string {
   return `How the grade adds up · ${rows} ${rows === 1 ? "row" : "rows"}`;
 }
 
-/* One card per side: the players, then the bullets, then the rows in a closed fold. The fold keeps the card short before a tap. */
+/* The box of the Week lines: one line for the trade week and one for the next week. It shows before a tap, because a contender reads it first. */
+function WeekLines({ side }: { side: Side }) {
+  return (
+    // A region, not a section, because each section of the view is one chapter.
+    <div role="region" aria-label="This week and next" className="mt-sp-4 border border-rule px-sp-3 py-sp-2">
+      <Caps className="text-ink">This week and next</Caps>
+      <ul className="mt-sp-2 mb-0 flex max-w-measure list-none flex-col gap-sp-1 p-0 text-meta text-ink-2">
+        {side.week_lines.map((line) => (
+          <li key={line.week}>{line.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* One card per side: the players, then the bullets, then the Week lines, then the rows in a closed fold. The fold keeps the card short before a tap. */
 function SideRead({ side }: { side: Side }) {
   return (
     <div>
@@ -290,6 +305,8 @@ function SideRead({ side }: { side: Side }) {
           ))}
         </ul>
       )}
+
+      <WeekLines side={side} />
 
       <details className="mt-sp-4">
         <summary className="cursor-pointer py-sp-2">

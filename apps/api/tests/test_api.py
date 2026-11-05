@@ -402,7 +402,7 @@ def test_a_good_request_returns_the_result_document(settings, sources):
                                "reason": "The other side does better, so ask for more.", "differs": False}
     # The document leads with the decision, and no letter or step reaches it.
     assert list(doc)[:4] == ["trade", "decision", "fairness", "sides"]
-    assert list(doc["sides"][0]) == ["roster_id", "bullets", "factors"]
+    assert list(doc["sides"][0]) == ["roster_id", "bullets", "week_lines", "factors"]
     assert list(doc["sides"][0]["factors"][0]) == ["name", "lean", "reason"]
     # The fetch on Monday holds the week 6 stat lines, so the player stats read the 14 known games of week 6.
     # The fixture player file has week 6 rows for 6 of those games, so the usage of 8 games is pending.
@@ -713,6 +713,20 @@ def test_the_cache_key_changes_with_a_rostered_return_week(settings, sources):
     assert cache_key(trade, _with_week_rows(snapshot, {rostered: 9}, {})) != key
     assert finder_cache_key(2026, 4, 12, _with_week_rows(snapshot, {rostered: 8}, {})) != finder_cache_key(
         2026, 4, 12, _with_week_rows(snapshot, {rostered: 9}, {}))
+
+
+def _graded_at(snapshot, at: datetime):
+    return snapshot.model_copy(update={"as_of": snapshot.as_of.model_copy(update={"graded_at": at})})
+
+
+def test_the_cache_key_tells_a_tuesday_or_wednesday_grade_from_the_rest_of_the_week(settings, sources):
+    # A Week line graded on a Tuesday or a Wednesday says "listed Out last week", so a grade of Thursday must miss it.
+    trade = ProposedTrade.model_validate(TRADE)
+    snapshot = _here(sources, settings).snapshot(trade.season)
+    tuesday, wednesday, thursday, friday = (datetime(2026, 10, day, 12, 0, tzinfo=ET) for day in (20, 21, 22, 23))
+    assert cache_key(trade, _graded_at(snapshot, tuesday)) == cache_key(trade, _graded_at(snapshot, wednesday))
+    assert cache_key(trade, _graded_at(snapshot, thursday)) == cache_key(trade, _graded_at(snapshot, friday))
+    assert cache_key(trade, _graded_at(snapshot, tuesday)) != cache_key(trade, _graded_at(snapshot, thursday))
 
 
 def test_the_cache_key_changes_with_a_team_in_progress(settings, sources):
@@ -1238,6 +1252,9 @@ def _digits_outside_ids(value, key=None):
             # The roster row counts the players in the top N, such as "3 WRs in the top 36", and can name a week. The
             # code writes it, and this check guards Claude's prose, not the code's factor reasons.
             value = {**value, "reason": re.sub(r"week \d+", "", TOP_N_COUNT.sub("", value["reason"]))}
+        if set(value) == {"week", "text"}:
+            # The code writes the Week line with its weeks, its counts, its top N, and the rank of each opponent.
+            value = {"week": value["week"]}
         if set(value) == {"roster_id", "reason"}:
             # A fairness side gives the reason of its first step up, which can be the roster row with its counts.
             value = {**value, "reason": TOP_N_COUNT.sub("", value["reason"])}
@@ -1867,7 +1884,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_15():
+def test_the_document_version_is_16():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1878,7 +1895,8 @@ def test_the_document_version_is_15():
     # Each traded player carries his Season rank and his Recent rank, so the shape changes.
     # A silent row hides, and the roster and standing rows read in plain words, so a stored row must never serve.
     # The usage, injury, upside, handcuff, and schedule rows and the fairness reasons read in plain words too.
-    assert cache_module.DOCUMENT_VERSION == 15
+    # Each side carries its Week lines, so the shape changes.
+    assert cache_module.DOCUMENT_VERSION == 16
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

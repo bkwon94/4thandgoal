@@ -60,10 +60,17 @@ export const factorSchema = z.object({
   reason: z.string(),
 });
 
-/* The read of one side: 2 or 3 bullets, each one sentence, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
+/* The Week line of one side for one week, written by the code: the count of the players who play, the opponent, each bye, and each player who is out. It moves no letter. */
+export const weekLineSchema = z.object({
+  week: z.number(),
+  text: z.string(),
+});
+
+/* The read of one side: 2 or 3 bullets, each one sentence, the Week lines of the trade week and the next week, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
 export const decidedSideSchema = z.object({
   roster_id: z.number(),
   bullets: z.array(z.string()),
+  week_lines: z.array(weekLineSchema),
   factors: z.array(factorSchema),
 });
 

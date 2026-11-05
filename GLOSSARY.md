@@ -608,8 +608,9 @@ _Avoid_: form rank, hot rank, rank (alone)
 
 **Week line**:
 The line of a grade that says, for one side and one week, how the trade changes the players who play that week at
-each position the trade touches. It names byes, players listed Out or IR, and players who step up. It never moves
-the letter.
+each position the trade touches. It names byes, players listed Out or IR, players who step up, and the opponent of
+each player the side gets with its rank at his position. The code writes it for the trade week and the next week. It
+never moves the letter.
 _Avoid_: weekly impact, matchup line, lineup fit
 
 **Steps up**:

@@ -12,6 +12,7 @@ from typing import NamedTuple
 
 from analyzer.adjusters import due_back_week
 from analyzer.rubric import ProposedTrade
+from analyzer.week_line import last_game_status
 from league.snapshot import Snapshot
 
 # The stat fields the grade reads from a week N line, past the points key of the League settings of the client.
@@ -24,7 +25,7 @@ STAT_FIELDS = ("gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 15
+DOCUMENT_VERSION = 16
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
@@ -45,6 +46,8 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
+        # On a Tuesday and a Wednesday the Week line says "listed Out last week", so a grade of another day misses it.
+        "last_game_status": last_game_status(snapshot),
         "content": _content_hash(snapshot, roster_ids),
     }
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()

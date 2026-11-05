@@ -32,7 +32,9 @@ Then give a verdict for the side that asked, with one reason.
 1. Write 2 or 3 bullets for each side. Each bullet is one sentence that makes one claim. Each
    bullet ends with a period.
 2. Pick what matters most for that side: the roster fit, the need, the standing, the trend and
-   usage, the schedule, the upside, and the injury status and history.
+   usage, the schedule, the upside, and the injury status and history. The Week line fact of a
+   side counts its players who play in the trade week and the next week. It moves no letter. Name
+   it when this week matters, such as for a side in a playoff spot. The verdict reason can name it too.
 3. Put the IDs of the facts you use in `cited`. Never put an ID in a bullet.
 4. Use only numbers that appear in the facts you cite or in the breakdown, except trade values;
    never write a trade value, a sum, or a ratio. Never compute a new number or a difference.

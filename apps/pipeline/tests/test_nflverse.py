@@ -15,6 +15,7 @@ from league.nflverse import (
     DEPTH_CHARTS_URL,
     PBP_URL,
     SCHEDULES_URL,
+    ScheduledGame,
     download,
     gsis_id,
     http_get,
@@ -244,6 +245,16 @@ def test_read_schedules_gives_the_bye_week_and_the_playoff_opponents(fixture_nfl
     assert schedules["SF"].bye_week == 8
     assert schedules["SF"].playoff_opponents == {15: "LAC", 16: "KC", 17: "PHI"}
     assert schedules["BAL"].bye_week == 13
+
+
+def test_read_schedules_gives_the_opponent_and_the_home_team_of_each_week(fixture_nflverse_dir):
+    # JAX plays at BAL in week 9 and at TEN in week 10. NYJ plays BUF at home in week 10.
+    schedules = read_schedules(fixture_nflverse_dir / "games.csv", 2026)
+    assert schedules["JAX"].games[9] == ScheduledGame(opponent="BAL", home=False)
+    assert schedules["JAX"].games[10] == ScheduledGame(opponent="TEN", home=False)
+    assert schedules["NYJ"].games[10] == ScheduledGame(opponent="BUF", home=True)
+    # A bye week has no game.
+    assert 7 not in schedules["JAX"].games
 
 
 def test_read_schedules_names_the_rams_as_sleeper_does(fixture_nflverse_dir):
