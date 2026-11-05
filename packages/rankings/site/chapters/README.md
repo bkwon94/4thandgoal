@@ -1,11 +1,12 @@
-# packages/rankings/site/chapters: the power rankings page, the table, and the top three
+# packages/rankings/site/chapters: the power rankings page, the Ladder, and the top three
 
 ## Knows
 
-- The power rankings table: one row per team for the chosen week, in rank order, and a chip per week.
-- Each row: the rank, the movement, the team, the record, the playoff odds, and the four component ranks.
-- The chosen week, which the masthead week line and the table share. The URL hash carries it, such as `#week-5`.
-- `RankingsScreen`, the whole page with its masthead or its empty state, and `TopThree`, the row of the home chapter.
+- The Ladder of the chosen week: the hero for the team at rank 1, a chip per week, one card for each other team, and the note on the four parts.
+- The hero: "01", the team, the record, the movement, the tiles Playoff, Bye, and Seed, and the blurb.
+- Each card: the rank, the avatar, the team, the record with the movement, and the playoff odds with a short bar. A tap opens the four part ranks, the blurb, and a link to the manager page.
+- The chosen week, which the hero and the cards share. The URL hash carries it, such as `#week-5`.
+- `RankingsScreen`, the whole page with its top band or its empty state, and `TopThree`, the row of the home chapter.
 
 ## Ports
 
