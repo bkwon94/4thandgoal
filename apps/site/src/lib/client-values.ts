@@ -38,13 +38,16 @@ export type ClientMenu = { items: MenuItem[] };
    so the menu has no entry. */
 export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
 
-/* The row of a package in the Tools chapter of the home page. The first row of the chapter has no top space. */
-export type HomeTool = ComponentType<{ first: boolean }>;
+/* The tile of a package in the Tools chapter of the home page. A package with no page to link yet renders null. */
+export type HomeTool = ComponentType;
 
-/* One chapter that a package gives the home page: a chapter beside the Tools chapter, or a chapter under the two.
-   The page gives each chapter its stagger step. */
-export type HomeSection = { place: "beside" | "below"; chapter: (step: number) => ReactNode };
+/* The place of a home part on the page (decision 08). The top sits under the intro, the middle sits above the Tools
+   chapter, and the bottom sits under it. */
+export type HomePlace = "top" | "middle" | "bottom";
 
-/* The home chapter of each package of the client, in the order of the page. A package with no data to show gives null,
-   so the page shows no empty chapter. The registry of the client build lists only the packages of the client. */
-export type HomeSections = (() => HomeSection | null)[];
+/* One part that a package gives the home page, such as the hero or the Power Rankings chapter. */
+export type HomeSection = { place: HomePlace; part: ReactNode };
+
+/* The home parts of each package of the client, in the order of the page. A package with no data to show gives no
+   part, so the page shows no empty chapter. The registry of the client build lists only the packages of the client. */
+export type HomeSections = (() => HomeSection[])[];

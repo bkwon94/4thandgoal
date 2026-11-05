@@ -6,7 +6,8 @@
 - The hero: "01", the team, the record, the movement, the tiles Playoff, Bye, and Seed, and the blurb.
 - Each card: the rank, the avatar, the team, the record with the movement, and the playoff odds with a short bar. A tap opens the four part ranks, the blurb, and a link to the manager page.
 - The chosen week, which the hero and the cards share. The URL hash carries it, such as `#week-5`.
-- `RankingsScreen`, the whole page with its top band or its empty state, and `TopThree`, the row of the home chapter.
+- `RankingsScreen`, the whole page with its top band or its empty state.
+- `TopThree`, the card of the home chapter: the top three, each with the rank, the avatar, the record with the movement, and the playoff odds, then a link to all teams.
 
 ## Ports
 

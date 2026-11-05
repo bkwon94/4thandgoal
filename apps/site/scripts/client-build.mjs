@@ -201,9 +201,9 @@ function routeText(slug, route) {
   return `${lines.join("\n")}\n`;
 }
 
-/* The packages that give the home page a chapter, in the order of the page: the chapter beside the tools, then the
-   weekly reports. Each one has src/app/_routes/<package>/home.tsx. The order is fixed here and not by the package
-   list, so the order of client.toml never moves a chapter. */
+/* The packages that give the home page its parts. Each one has src/app/_routes/<package>/home.tsx, and each part
+   names its own place on the page. The order is fixed here and not by the package list, so the order of client.toml
+   never moves a part. */
 const HOME_SECTIONS = ["rankings", "week"];
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from

@@ -7,6 +7,7 @@
 - Every game, with the recap of each game behind a tap, the Game Changer, the awards, and the position leaders.
 - The trades, the median game, the standings, and next week with its byes.
 - The week footer, with a link to the prior week and the next week.
+- The hero of the home page: the matchup of the latest week with its margin, both teams, the first sentence of the blurb, and a "Read Week N" button.
 
 ## Ports
 

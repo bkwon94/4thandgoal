@@ -43,6 +43,7 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   LATEST_WEEK_ROUTE,
   // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },
+  "/",
 ];
 
 const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
