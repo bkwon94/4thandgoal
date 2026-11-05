@@ -21,7 +21,7 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - No outside ADP source. Draft value reads each league's own draft: dollars in the CPC auction, pick number in the NorCal snake. Brian, in the stage 1 grill.
 - The site tickets wait for the merge of `site-redesign` into `main`. The pipeline tickets do not wait. The flow, ADR 0019.
 - Sleeper gives the draft, the FAAB bids, and the lost bids. The report fetches each week's transactions again, because the history is incomplete. Injuries come from nflverse, by week. `decisions/01-research-sleeper-season-data.md`.
-- Eight arcs. Start and now windows of 4 weeks, with 65% and 35% lines. The full record for window arcs, and head to head only for streaks. At most 2 per team. `decisions/05-grill-the-arcs.md`.
+- Eight arcs. Start and now windows of 4 weeks, with 60% and 40% lines. The full record for window arcs, and head to head only for streaks. At most 2 per team. `decisions/05-grill-the-arcs.md`.
 - Draft value compares within the position: the cost rank against the points rank on total points. Busts have a hurt or just-bad tag. Starter ranges, top 5 each, and the drafter owns the label. `decisions/02-grill-draft-value-rule.md`.
 - The sim keeps the `odds.py` draw and adds the bracket, with CPC reseeded, plus full counts and 10,000 runs. It orders by mean wins with a seed heat map, and stores 200 sample runs and the parameters. `decisions/07-research-the-sim-model.md`.
 - The fix for the gap in the transaction history is its own spec, `transaction-history`, before the week 9 build. `decisions/12-research-transaction-history-gap.md`.
