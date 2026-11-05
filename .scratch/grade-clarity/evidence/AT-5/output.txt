@@ -1,0 +1,136 @@
+$ make -C apps/pipeline analyze CLIENT=cpc SIDES=4:11620@12 12:8146@7 7:11783@4 ASKER=4
+# run at 2026-11-05T08:39:00Z
+uv run --exact --package cornerstone cornerstone analyze --client cpc --season 2026 --side 4:11620@12 --side 12:8146@7 --side 7:11783@4 --asker 4 --no-claude
+Week 9 of 2026. Chart week 9. Stats through week 8. Rosters fetched 2026-11-05T03:39-05:00.
+Known games of week 9: 0 read, 0 in progress.
+Sources: schedules, depth charts, points allowed, injuries, expected points, player weeks.
+
+NFC Least (asked)
+  Gives: Rome Odunze to Teehee
+  Gets: Ryan Flournoy from To Infinity and Bijan
+  Start letter: C
+  Reason: Ryan Flournoy has no trade value, so the chart gives neither side an edge.
+  Roster fit: no step. You keep 3 WRs in the top 36.
+  Standing: no step. Out of the playoff race, so you want the better player for the rest of the season, and no player in the trade is clearly better.
+  Trend and usage: one step up. Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target; Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: against. Flournoy has his bye in week 14 and faces LAR (28th most points to WRs), JAX (6th), and NYG (15th) in weeks 15 to 17.
+  Final letter: B
+
+Teehee
+  Gives: Garrett Wilson to To Infinity and Bijan
+  Gets: Rome Odunze from NFC Least
+  Start letter: C
+  Reason: Ryan Flournoy has no trade value, so the chart gives neither side an edge.
+  Roster fit: no step. You go from 4 WRs in the top 36 to 3.
+  Standing: no step. Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same.
+  Trend and usage: one step up. Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target; Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: for. Odunze faces BUF (3rd most points to WRs), GB (12th), and DET (4th) in weeks 15 to 17.
+  Final letter: B
+
+To Infinity and Bijan
+  Gives: Ryan Flournoy to NFC Least
+  Gets: Garrett Wilson from Teehee
+  Start letter: C
+  Reason: Ryan Flournoy has no trade value, so the chart gives neither side an edge.
+  Roster fit: one step up. You go from 1 WR in the top 36 to 2, and your lineup scores more.
+  Standing: no step. Outside a playoff spot but still in the race, so you need points now, and this trade adds some.
+  Trend and usage: one step down. Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target; Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target.
+  Injury: no step. No player it gets is out for long or often on the injury report.
+  Upside: no step. No player it gets is a top player out now or gets more work.
+  Handcuff: no step. No player it gets is a handcuff.
+  Schedule: even. Wilson has his bye in week 13 and faces ARI (10th most points to WRs), NE (11th), and MIN (29th) in weeks 15 to 17.
+  Final letter: C
+
+Verdict for NFC Least: accept. The trade favors the asking side.
+Fairness: Fair
+  NFC Least: Flournoy plays 78% of the snaps (up), sees 15% of the targets, and averages 10.1 air yards per target; Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target.
+  Teehee: Odunze plays 95% of the snaps, sees 17% of the targets, and averages 11.0 air yards per target; Wilson plays 83% of the snaps (down), sees 25% of the targets, and averages 6.3 air yards per target.
+  To Infinity and Bijan: You go from 1 WR in the top 36 to 2, and your lineup scores more.
+
+
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @three.request.json
+# run at 2026-11-05T08:39:21Z, with the Claude call. Full document: evidence/AT-5/three.document.json
+# per side: bullets, weeks of week_lines, factor names
+[
+  {
+    "roster_id": 4,
+    "bullets": [
+      "Flournoy's snap share rose to 78 percent, while Odunze's held flat.",
+      "Flournoy scored 7.7 points per game, slightly ahead of 7.4 for Odunze.",
+      "Flournoy's playoff schedule is tougher, with LAR ranked 28th in points allowed to WRs."
+    ],
+    "week_lines": [
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play stay at 3. Flournoy plays at IND, 24th most points to WRs."
+      },
+      {
+        "week": 10,
+        "text": "Week 10: WRs in the top 36 who play stay at 2. Flournoy plays SF at home, 21st most points to WRs. Smith has a bye."
+      }
+    ],
+    "factors": [
+      "deal",
+      "roster fit",
+      "standing",
+      "trend and usage",
+      "schedule"
+    ]
+  },
+  {
+    "roster_id": 12,
+    "bullets": [
+      "Wilson scored 11.5 points per game, against 7.4 for Odunze.",
+      "They drop from 4 WRs in the top 36 to 3.",
+      "Odunze and Burden both have a bye in week 10."
+    ],
+    "week_lines": [
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play go from 4 to 3. Odunze plays TB at home, 26th most points to WRs."
+      },
+      {
+        "week": 10,
+        "text": "Week 10: WRs in the top 36 who play go from 3 to 2. Burden and Odunze have a bye."
+      }
+    ],
+    "factors": [
+      "deal",
+      "roster fit",
+      "standing",
+      "trend and usage",
+      "schedule"
+    ]
+  },
+  {
+    "roster_id": 7,
+    "bullets": [
+      "Wilson scored 11.5 points per game, against 7.7 for Flournoy.",
+      "They go from 1 WR in the top 36 to 2, and the lineup scores more.",
+      "Wilson's snap share fell to 83 percent, a usage trend worth watching."
+    ],
+    "week_lines": [
+      {
+        "week": 9,
+        "text": "Week 9: WRs in the top 36 who play go from 1 to 2. Wilson plays at KC, 31st most points to WRs."
+      },
+      {
+        "week": 10,
+        "text": "Week 10: WRs in the top 36 who play go from 1 to 2. Wilson plays BUF at home, 3rd most points to WRs."
+      }
+    ],
+    "factors": [
+      "deal",
+      "roster fit",
+      "standing",
+      "trend and usage",
+      "schedule"
+    ]
+  }
+]

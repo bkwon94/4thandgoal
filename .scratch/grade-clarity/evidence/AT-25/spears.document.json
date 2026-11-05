@@ -1,0 +1,194 @@
+{
+  "trade": {
+    "asker": 4,
+    "sides": [
+      {
+        "roster_id": 4,
+        "team": "NFC Least",
+        "gives": [
+          {
+            "player_id": "9508",
+            "name": "Tyjae Spears",
+            "position": "RB",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9508.jpg",
+            "season_rank": "RB67",
+            "recent_rank": null,
+            "to": 12
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "7567",
+            "name": "Kenny Gainwell",
+            "position": "RB",
+            "nfl_team": "TB",
+            "headshot": "https://sleepercdn.com/content/nfl/players/7567.jpg",
+            "season_rank": "RB36",
+            "recent_rank": null,
+            "from": 12
+          }
+        ]
+      },
+      {
+        "roster_id": 12,
+        "team": "Teehee",
+        "gives": [
+          {
+            "player_id": "7567",
+            "name": "Kenny Gainwell",
+            "position": "RB",
+            "nfl_team": "TB",
+            "headshot": "https://sleepercdn.com/content/nfl/players/7567.jpg",
+            "season_rank": "RB36",
+            "recent_rank": null,
+            "to": 4
+          }
+        ],
+        "gets": [
+          {
+            "player_id": "9508",
+            "name": "Tyjae Spears",
+            "position": "RB",
+            "nfl_team": "TEN",
+            "headshot": "https://sleepercdn.com/content/nfl/players/9508.jpg",
+            "season_rank": "RB67",
+            "recent_rank": null,
+            "from": 4
+          }
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "for_roster": 4,
+    "answer": "yes",
+    "reason": "The trade favors the asking side.",
+    "differs": false
+  },
+  "fairness": {
+    "state": "lopsided",
+    "gives_more": 12,
+    "sides": [
+      {
+        "roster_id": 4,
+        "reason": "You keep 2 RBs in the top 36, and you get the better player."
+      },
+      {
+        "roster_id": 12,
+        "reason": "Not every player in the trade has a value this week, so both sides start even."
+      }
+    ]
+  },
+  "sides": [
+    {
+      "roster_id": 4,
+      "bullets": [],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: RBs in the top 36 who play stay at 1. Gainwell plays at CHI, 30th most points to RBs. Jacory Croskey-Merritt is on IR. Montgomery is listed Out."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: RBs in the top 36 who play stay at 2. Barkley and Gainwell have a bye. Jacory Croskey-Merritt is on IR."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "Not every player in the trade has a value this week, so both sides start even."
+        },
+        {
+          "name": "roster fit",
+          "lean": "for",
+          "reason": "You keep 2 RBs in the top 36, and you get the better player."
+        },
+        {
+          "name": "standing",
+          "lean": "for",
+          "reason": "Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "for",
+          "reason": "Gainwell plays 40% of the snaps (up), takes 37% of the carries, and sees 7% of the targets; Tyjae Spears is a handcuff, so his use does not count."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "Gainwell faces NO (the most points to RBs), ATL (6th), and LAR (25th) in weeks 15 to 17."
+        }
+      ]
+    },
+    {
+      "roster_id": 12,
+      "bullets": [],
+      "week_lines": [
+        {
+          "week": 9,
+          "text": "Week 9: RBs in the top 36 who play stay at 1. Pollard and Spears have a bye. Spears is listed Out."
+        },
+        {
+          "week": 10,
+          "text": "Week 10: RBs in the top 36 who play stay at 2. Spears plays JAX at home, 32nd most points to RBs."
+        }
+      ],
+      "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "Not every player in the trade has a value this week, so both sides start even."
+        },
+        {
+          "name": "roster fit",
+          "lean": "even",
+          "reason": "You keep 2 RBs in the top 36."
+        },
+        {
+          "name": "standing",
+          "lean": "even",
+          "reason": "Outside a playoff spot but still in the race, so you need points now, and this trade keeps your points about the same."
+        },
+        {
+          "name": "trend and usage",
+          "lean": "against",
+          "reason": "Gainwell plays 40% of the snaps (up), takes 37% of the carries, and sees 7% of the targets; Tyjae Spears is a handcuff, so his use does not count."
+        },
+        {
+          "name": "injury",
+          "lean": "against",
+          "reason": "Spears is out with no return week on file. He was on the injury report in 5 of 8 weeks."
+        },
+        {
+          "name": "handcuff",
+          "lean": "even",
+          "reason": "Spears backs up your RB, Pollard, on the Titans depth chart."
+        },
+        {
+          "name": "schedule",
+          "lean": "even",
+          "reason": "Spears faces IND (7th most points to RBs), LV (5th), and PIT (24th) in weeks 15 to 17."
+        }
+      ]
+    }
+  ],
+  "as_of": {
+    "chart_week": 9,
+    "stats_through": 8,
+    "completed_through": 8,
+    "rosters_fetched": "2026-11-05T03:38:17.470281-05:00",
+    "known_games": {
+      "week": 9,
+      "games": 0,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": true,
+  "missing": [],
+  "stale": []
+}

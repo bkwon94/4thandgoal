@@ -1,0 +1,33 @@
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+grade time (as_of.graded_at): 2026-11-05T03:38:17.393116-05:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: 1:36:44.393116
+chart_is_fresh: True
+last_game_status (Tue or Wed): False
+trade week: 9, stats_through: 8, chart_week: 9
+
+Fact ids:
+  trade.week
+  13276.ppg
+  13276.usage
+  13276.targets
+  13276.redzone
+  13276.injury
+  13276.value
+  9487.ppg
+  9487.usage
+  9487.targets
+  9487.redzone
+  9487.injury
+  9487.value
+  10.team
+  10.need
+  6.team
+  6.need
+  10.week_line
+  6.week_line
+  10.strength
+
+Week line facts:
+  10.week_line: Week 9: WRs in the top 36 who play stay at 4. Washington plays at BAL, 9th most points to WRs. Bernard has a bye. Week 10: WRs in the top 36 who play stay at 3. Washington plays at TEN, the most points to WRs. Egbuka has a bye.
+  6.week_line: Week 9: WRs in the top 36 who play stay at 3. Cooper plays at KC, 31st most points to WRs. Week 10: WRs in the top 36 who play stay at 3. Cooper plays BUF at home, 3rd most points to WRs.

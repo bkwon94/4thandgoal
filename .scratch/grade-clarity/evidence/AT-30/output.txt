@@ -1,0 +1,12 @@
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+grade time (as_of.graded_at): 2026-11-05T03:38:17.393116-05:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: 1:36:44.393116
+chart_is_fresh: True
+last_game_status (Tue or Wed): False
+trade week: 9, stats_through: 8, chart_week: 9
+
+1. key of trade A on the live snapshot: 4ba5a7b99b1955d2f3456e43018a0b71a73eeb02b9a977a770c5af1f55793306
+2. depth_chart_dt 2026-11-05T07:01:33+00:00 -> 2026-11-05T08:01:33+00:00: 1969622d07586a906f060937d3a72fe6fa347afefb19db7d70e8c009b84c4f0f
+3. then 13274 Germie Bernard (roster 10 WR) injury_status None -> Out: 8dd0c870d66dcd0150116ef2874f9add0ff6f682cf32b987ea74bc55f508b076
+key 1 != key 2: True; key 2 != key 3: True; key 1 != key 3: True

@@ -1,0 +1,41 @@
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+grade time (as_of.graded_at): 2026-11-05T03:38:17.393116-05:00
+depth_chart_dt: 2026-11-05T07:01:33+00:00
+age of the chart at the grade time: 1:36:44.393116
+chart_is_fresh: True
+last_game_status (Tue or Wed): False
+trade week: 9, stats_through: 8, chart_week: 9
+
+finder trades of asker 10 and partner 6: 1
+t1: roster 10 gives ['Keenan Allen', 'Deebo Samuel Sr.']; roster 6 gives ['Blake Corum']
+
+Fact sheet of finder trade t1:
+  t1.trade.week: The trade is in week 9 of the 2026 season. Every stat runs through week 8.
+  t1.1479.ppg: Keenan Allen (WR, IND) scored 8.1 points per game over 7 games before the trade. His Season rank is WR39, by total points this season.
+  t1.1479.usage: Keenan Allen's snap share was 52 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+  t1.1479.targets: Keenan Allen's target share was 20 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+  t1.1479.redzone: Keenan Allen had 4 red-zone targets and 0 red-zone carries this season before the trade.
+  t1.1479.injury: Keenan Allen has no injury status now. He was on the NFL injury report in 2 weeks this season before the trade.
+  t1.1479.value: Keenan Allen's trade value is 6 in the week of the trade.
+  t1.5872.ppg: Deebo Samuel Sr. (WR, SF) scored 10.3 points per game over 5 games before the trade. His Season rank is WR47, by total points this season. His Recent rank is WR122, by points per game over the last 4 weeks.
+  t1.5872.usage: Deebo Samuel Sr.'s snap share was 56 percent over the last 2 weeks before the trade, down from the 2 weeks before that.
+  t1.5872.targets: Deebo Samuel Sr.'s target share was 16 percent over the last 2 weeks before the trade, up from the 2 weeks before that.
+  t1.5872.redzone: Deebo Samuel Sr. had 5 red-zone targets and 0 red-zone carries this season before the trade.
+  t1.5872.injury: Deebo Samuel Sr. is listed Questionable now, with no return week on file. He was on the NFL injury report in 2 weeks this season before the trade.
+  t1.5872.value: Deebo Samuel Sr.'s trade value is 8 in the week of the trade.
+  t1.11586.ppg: Blake Corum (RB, LAR) scored 9.6 points per game over 8 games before the trade. His Season rank is RB19, by total points this season.
+  t1.11586.usage: Blake Corum's snap share was 39 percent over the last 2 weeks before the trade, up from the 2 weeks before that.
+  t1.11586.targets: Blake Corum's target share was 4 percent over the last 2 weeks before the trade, flat from the 2 weeks before that.
+  t1.11586.redzone: Blake Corum had 2 red-zone targets and 9 red-zone carries this season before the trade.
+  t1.11586.injury: Blake Corum has no injury status now.
+  t1.11586.value: Blake Corum's trade value is 11 in the week of the trade.
+  t1.10.team: behold the lamb was 6-10, 11th of 12, before the trade: a seller out of the playoff race.
+  t1.10.need: behold the lamb has 7 RB and 4 WR after the trade and 0 open roster spots.
+  t1.6.team: Bo Girds was 9-7, 3rd of 12, before the trade: a contender in a playoff spot.
+  t1.6.need: Bo Girds has 4 RB and 7 WR after the trade and 0 open roster spots.
+  t1.10.week_line: Week 9: RBs in the top 36 who play go from 2 to 3. WRs in the top 36 who play go from 4 to 3. Corum plays at WAS, 27th most points to RBs. Bernard and Dowdle have a bye. Brooks is on IR. Week 10: RBs in the top 36 who play go from 1 to 2. WRs in the top 36 who play go from 3 to 2. Corum plays at ARI, 19th most points to RBs. Egbuka, Monangai and Mitchell have a bye. Brooks is on IR.
+  t1.6.week_line: Week 9: RBs in the top 36 who play go from 3 to 2. WRs in the top 36 who play go from 3 to 4. Allen plays DAL at home, 7th most points to WRs. Samuel plays LV at home, 8th most points to WRs. Week 10: RBs in the top 36 who play go from 3 to 2. WRs in the top 36 who play go from 3 to 4. Allen plays MIA at home, 30th most points to WRs. Samuel plays at DAL, 7th most points to WRs.
+  t1.10.depth.rb: For behold the lamb, the RBs in the top 36 go from 2 to 3.
+  t1.10.depth.wr: For behold the lamb, the WRs in the top 36 go from 4 to 3.
+  t1.6.depth.rb: For Bo Girds, the RBs in the top 36 go from 3 to 2.
+  t1.6.depth.wr: For Bo Girds, the WRs in the top 36 go from 3 to 4.

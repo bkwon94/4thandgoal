@@ -1,0 +1,30 @@
+$ curl -s -X POST localhost:8080/clients/cpc/analyze -H 'X-League-Passphrase: localtest' -H 'Content-Type: application/json' --data @tradeA.req.json
+# request body: {"season": 2026, "asker": 10, "sides": [{"roster_id": 10, "gives": [{"player_id": "13276", "to": 6}]}, {"roster_id": 6, "gives": [{"player_id": "9487", "to": 10}]}]}
+# run at 2026-11-05T08:35:20Z (Thursday 2026-11-05, US Eastern 03:35), local API of grade-clarity 099b004, with the Claude call
+# full document: evidence/AT-1/tradeA.document.json
+
+# season_rank and recent_rank of each traded player:
+[
+  {
+    "player_id": "13276",
+    "name": "Omar Cooper Jr.",
+    "position": "WR",
+    "nfl_team": "NYJ",
+    "season_rank": "WR60",
+    "recent_rank": "WR18"
+  },
+  {
+    "player_id": "9487",
+    "name": "Parker Washington",
+    "position": "WR",
+    "nfl_team": "JAX",
+    "season_rank": "WR21",
+    "recent_rank": null
+  }
+]
+
+$ uv run --exact --package cpc-api python evidence/scripts/probe.py <repo> <out> now
+# the raw Recent rank before the gap rule, from the same live data:
+13276 Omar Cooper Jr.: shown_ranks=('WR60', 'WR18') raw recent_rank=18 recent_ppg=13.10 season_ppg=10.70
+9487 Parker Washington: shown_ranks=('WR21', None) raw recent_rank=19 recent_ppg=12.97 season_ppg=11.57
+# Washington: season 21, raw recent 19, gap 2, so recent_rank is null.
