@@ -8,7 +8,7 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-19, AT-20, AT-22, AT-
 
 **Blocked by:** 01, 02, 03.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A row that says nothing, such as "No player it gets is a handcuff", is not in the document.
 - [x] No row says "one step up", "one step down", or "no step".
@@ -31,3 +31,5 @@ Spec: `.scratch/grade-clarity/PRD.md`. Acceptance tests AT-19, AT-20, AT-22, AT-
 - The depth fact now reads "the WRs in the top 36 go from 2 to 1", and the hole fact reads "the trade leaves WR2 short:". Their old words "above the line" and "is a hole" would lead Claude to an inner word that the check rejects.
 - Open for Brian: the fairness line shows the reason of the first step up of a side, else the start letter reason, such as "It gets far more trade value than it gives.", or an upside reason with "star". The fairness line is not a bullet, a row, or a verdict reason, so this ticket leaves it. It now shows the roster row text in a finder card too, in the voice "you".
 - `DOCUMENT_VERSION` goes to 14, because a stored document holds the old row text and the silent rows.
+- The merge: `aa97207` into `grade-clarity` on 2026-11-05. `make check BASE=main` passed.
+- Open: the fairness line can still show a reason with an inner word. Ticket 05 takes it.
