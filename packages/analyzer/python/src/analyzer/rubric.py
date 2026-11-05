@@ -2,6 +2,7 @@
 The trade analyzer rubric in code: the proposed trade, its input check, each side's grade, the verdict, and fairness.
 The grade gives each side a start letter, runs the adjusters in ADJUSTERS, and clamps their sum into a final letter.
 """
+from collections.abc import Collection
 from decimal import Decimal
 from typing import Literal
 
@@ -15,6 +16,7 @@ from analyzer.adjusters import (
     Side,
     build_side,
     named,
+    one_for_many,
     trade_handcuffs,
 )
 from analyzer.tunables import (
@@ -24,8 +26,10 @@ from analyzer.tunables import (
     DECLINE_AT_OR_BELOW,
     LOPSIDED_AT_OR_BELOW,
     START_LETTER_BANDS,
+    UNEVEN_MARGIN,
     WIN_WIN_AT_OR_ABOVE,
 )
+from facts.names import last_name
 from league.ranks import lineup_value
 from league.snapshot import Snapshot
 
@@ -47,6 +51,7 @@ CONSOLIDATION_REASON = (
     "The trade is one player for two or more, so the side with more players needs a margin "
     "before the sides count as even."
 )
+UNEVEN_REASON = "The side with more players counts its extra player at a discount before the sides count as even."
 NO_CHART_REASON = "The week has no trade values, so the chart gives neither side an edge."
 # The end of the reason for a trade with an unlisted player. The result document reads it to pick its deal row.
 UNLISTED_REASON_END = " no trade value, so the chart gives neither side an edge."
@@ -63,7 +68,8 @@ DEAL_REASONS = {
     "D": "You give more than you get.",
     "F": "You give far more than you get.",
 }
-# One player for two or more divides the sum of the two or more by a margin before the sides compare.
+# Any uneven count divides the sum of the side with more players by the one-for-many margin or the uneven margin
+# before the sides compare.
 CONSOLIDATION_DEAL = ", after a discount on the side with more players."
 UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
 
@@ -276,19 +282,32 @@ def _start_letters(
         # ADR 0005: the side that gets a player out for the season buys nothing, so he counts zero in what it gets.
         # The side that gives him still gives his full chart value, so the fairness reads lopsided on its own.
         got = sum((Decimal(str(values[pid])) for pid in gets if pid not in snapshot.out_for_season), Decimal(0))
-        # Only one player for two or more is a consolidation. A three-for-two trade gets no discount.
-        # Each side reads its own gives and gets, so in a two-side trade both sides consolidate or neither does.
-        consolidation = (len(gives) == 1) != (len(gets) == 1)
-        if consolidation:
-            # The two or more players are the depth, and their sum is the one the margin divides.
-            if len(gives) > 1:
-                gave /= CONSOLIDATION_MARGIN
+        # Each side reads its own gives and gets, so in a two-side trade both sides use the same margin or neither does.
+        margin, margin_reason = _margin(len(gives), len(gets))
+        if margin is not None:
+            # The side with more players is the depth, and its sum is the one the margin divides.
+            if len(gives) > len(gets):
+                gave /= margin
             else:
-                got /= CONSOLIDATION_MARGIN
+                got /= margin
         letter = _letter(got, gave)
-        return letter, BAND_REASONS[letter] + (" " + CONSOLIDATION_REASON if consolidation else "")
+        return letter, BAND_REASONS[letter] + (" " + margin_reason if margin_reason else "")
 
     return tuple(start(side) for side in trade.sides)
+
+
+def _margin(gives: int, gets: int) -> tuple[Decimal | None, str]:
+    """The margin that divides the sum of the side with more players, and the start reason that names it.
+
+    One player for two or more uses the one-for-many margin, CONSOLIDATION_MARGIN. Two or more for a larger count
+    uses the uneven margin, UNEVEN_MARGIN.
+    An even count uses none.
+    """
+    if gives == gets:
+        return None, ""
+    if one_for_many(gives, gets):
+        return CONSOLIDATION_MARGIN, CONSOLIDATION_REASON
+    return UNEVEN_MARGIN, UNEVEN_REASON
 
 
 def _highest_value_player(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) -> str | None:
@@ -323,7 +342,10 @@ def build_sides(trade: ProposedTrade, snapshot: Snapshot, handcuffs: list[str]) 
     The grade and the trade fact sheet both read the sides here, so the facts name the same slots the grade reads.
     """
     top = _highest_value_player(trade, snapshot, handcuffs)
-    return tuple(build_side(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id), top, handcuffs)
+    # The start letters apply a margin only when every player in the trade has a trade value this week.
+    margin_applies = snapshot.chart is not None and not unlisted_players(snapshot, trade.player_ids, handcuffs)
+    return tuple(build_side(snapshot, side.roster_id, side.player_ids, trade.gets(side.roster_id), top, handcuffs,
+                            margin_applies)
                  for side in trade.sides)
 
 
@@ -398,20 +420,51 @@ def deal_reason(breakdown: Breakdown) -> str:
         return NO_CHART_NOTE
     if breakdown.reason.endswith(UNLISTED_REASON_END):
         return UNLISTED_DEAL
-    if CONSOLIDATION_REASON in breakdown.reason:
+    if CONSOLIDATION_REASON in breakdown.reason or UNEVEN_REASON in breakdown.reason:
         return DEAL_REASONS[breakdown.start_letter].removesuffix(".") + CONSOLIDATION_DEAL
     return DEAL_REASONS[breakdown.start_letter]
 
 
-def _gain_reason(breakdown: Breakdown) -> str:
-    """The reason of the first adjuster with a step up, in rubric order, else the deal row of the side."""
-    # A step up is what a side gains past the trade values, so it is the reason the side would take the trade.
+def reason_names(snapshot: Snapshot) -> frozenset[str]:
+    """The names an adjuster reason can start with: the full name and the last name of each player on the rosters."""
+    full = [player.name for player in snapshot.players.values()]
+    return frozenset(full) | {last for last in map(last_name, full) if last}
+
+
+def _joined(down: str, names: Collection[str]) -> str:
+    """The down reason as it reads after ", but ": a lower-case first letter, unless it starts with a name."""
+    # A list of plain first words misses each new reason, so the rule reads the names. A name ends at a non-letter,
+    # so "Walker" keeps "Walker's" but not "Walkers".
+    if any(down.startswith(name) and not down[len(name):len(name) + 1].isalpha() for name in names):
+        return down
+    return down[0].lower() + down[1:]
+
+
+def _side_reason(breakdown: Breakdown, names: Collection[str]) -> str:
+    """The reason that names what moved the letter of a side, from the net sum of its steps before the clamp.
+
+    A net above zero gives the first step up, in rubric order, and a net below zero gives the first step down.
+    A net of zero with steps gives the first step up, then ", but ", then the first step down. No step gives the deal row.
+    """
     # The fairness line shows it to a manager, so it reads the plain deal row, not the start reason of the prompt.
-    return next((a.reason for a in breakdown.adjusters if a.step > 0), deal_reason(breakdown))
+    up = next((a.reason for a in breakdown.adjusters if a.step > 0), None)
+    down = next((a.reason for a in breakdown.adjusters if a.step < 0), None)
+    net = sum(a.step for a in breakdown.adjusters)
+    if net > 0:
+        return up or deal_reason(breakdown)
+    if net < 0:
+        return down or deal_reason(breakdown)
+    if up and down:
+        # The step up and the step down cancel, so the reason names both, or "Fair" would sit next to a lone gain.
+        return up.removesuffix(".") + ", but " + _joined(down, names)
+    return deal_reason(breakdown)
 
 
-def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> Fairness:
-    """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call."""
+def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...], *, names: Collection[str]) -> Fairness:
+    """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call.
+
+    `names` are the names that keep their capital after ", but ". Pass reason_names of the snapshot of the grade.
+    """
     sides = list(zip(letters, breakdowns))
     if all(_at_or_above(letter, WIN_WIN_AT_OR_ABOVE) for letter, _ in sides):
         state, gives_more = "win_win", None
@@ -423,4 +476,4 @@ def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> 
     else:
         state, gives_more = "fair", None
     return Fairness(state=state, gives_more=gives_more,
-                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_gain_reason(b)) for _, b in sides))
+                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_side_reason(b, names)) for _, b in sides))

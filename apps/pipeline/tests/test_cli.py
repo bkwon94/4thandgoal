@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from conftest import save_chart_read
 from cpc import cli_root
 
 
@@ -330,16 +331,18 @@ def test_analyze_prints_the_full_breakdown_and_the_verdict_for_the_josh_jacobs_t
     out = capsys.readouterr().out
     assert code == 0
     assert "Week 6 of 2026. Chart week 6. Stats through week 5." in out
-    # Each side ends with the schedule lean and the final letter, after the six adjusters with steps.
+    # Each side ends with the schedule lean and the final letter, after the seven adjusters with steps.
     assert out.count("  Schedule: even. ") == 2
-    assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
+    assert "  Final letter: A\n" in out and "  Final letter: D\n" in out
     assert out.index("Handcuff: ") < out.index("Schedule: ") < out.index("Final letter: ")
     # The fairness line follows the verdict, then one reason per side in the order of the sides.
-    # Jacobs is a top RB out now, so the upside step up gives the reason of Unsolicited Dak Picks.
+    # Jacobs is a top RB out now, so upside steps Unsolicited Dak Picks up. Roster fit steps it down for the same
+    # absence, so the net is zero and its reason names both steps.
     assert out.endswith(
         "\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
         "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n"
-        "  Unsolicited Dak Picks: Jacobs is a top RB, due back in week 7.\n"
+        "  Unsolicited Dak Picks: Jacobs is a top RB, due back in week 7, but you keep 3 RBs in the top 36 and keep 2 "
+        "WRs in the top 36, and Jacobs is due back in week 7, and no other player covers him.\n"
         "  Amon-Ra Dawg Your Team: You keep 4 RBs in the top 36 and keep 5 WRs in the top 36, and your lineup scores "
         "more.\n")
     # The trade values 3.0, 27.5, 11.5, and 55.0, their sums, and the ratios never print.
@@ -357,6 +360,23 @@ def test_analyze_names_a_player_not_on_the_giving_roster(
 
     assert code == 2
     assert "Christian McCaffrey is no longer on Pukancun on 3." in capsys.readouterr().out
+
+
+def test_analyze_of_a_week_with_no_chart_reads_the_superstar_from_the_saved_read_before(
+        tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
+    from cornerstone import cli
+
+    _analyze_repo(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch)
+    # Week 6 has no saved read. The real week 8 read stands in as the saved read of week 5, the week before.
+    save_chart_read(tmp_path / "data" / "nfl", 5, Path(__file__).parent / "fixtures" / "charts" / "read-week-08.json")
+    # Trade W: roster 6 gives Washington and Walker, roster 12 gives Higgins, Tuten, and Pollard.
+    code = cli.main(["analyze", "--client", "cpc", "--season", "2026", "--week", "6",
+                     "--side", "6:9487,8151", "--side", "12:6801,12490,5967", "--asker", "12", "--no-claude"])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert out.count("Start letter: C") == 2
+    assert "is a superstar, a top 8 player last week." in out
 
 
 def test_analyze_needs_two_to_four_sides(tmp_path, fixture_raw_dir, fixture_history_root, monkeypatch, capsys):
@@ -528,7 +548,7 @@ def test_analyze_with_claude_prints_the_bullets_the_letters_and_the_verdict(
     side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
             "bullets": ["Garrett Wilson scored 14.2 points per game before the trade.", "He moves.", "He starts."]}
     writer = FakeWriter([AnalysisOut.model_validate({
-        "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
+        "sides": [{**side, "roster_id": 11, "final_letter": "B", "reason": "Jacobs has not played."},
                   {**side, "roster_id": 12}],
         "verdict": {"choice": "counter", "reason": "Ask for one more starter."},
     })])
@@ -541,14 +561,14 @@ def test_analyze_with_claude_prints_the_bullets_the_letters_and_the_verdict(
     assert [(c.output_model, c.cache_ttl, c.effort) for c in writer.calls] == [
         (AnalysisOut, ANALYZER_CACHE_TTL, ANALYZER_EFFORT)]
     # The breakdown's letter is the rubric's. The final letter is Claude's, with its reason when it differs.
-    assert "  Rubric letter: B\n" in out and "  Rubric letter: D\n" in out
-    assert "  Final letter: C. Reason: Jacobs has not played.\n" in out
+    assert "  Rubric letter: A\n" in out and "  Rubric letter: D\n" in out
+    assert "  Final letter: B. Reason: Jacobs has not played.\n" in out
     assert "  Final letter: D\n" in out
     assert out.count("  Bullets:\n    - Garrett Wilson scored 14.2 points per game before the trade.\n"
                      "    - He moves.\n    - He starts.\n") == 2
-    assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: C")
+    assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: B")
             < out.index("Bullets:"))
-    # The fairness reads Claude's letters, C and D, so the trade is still lopsided.
+    # The fairness reads Claude's letters, B and D, so the trade is still lopsided.
     assert ("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
             "(differs from the rubric's default)\nFairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
 
@@ -565,7 +585,7 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     assert code == 0
     assert len(fake_writer.calls) == 2
     assert out.count("  Bullets: none\n") == 2
-    assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
+    assert "  Final letter: A\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert ("\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"
             "Fairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
@@ -612,7 +632,8 @@ def test_find_prints_each_win_win_with_its_sides_and_the_fairness(
         "   Lil Fridge gives: Bryce Young\n"
         "Fairness: Good for both\n"
         "  All You Need Is Love: Young plays 100% of the snaps (up).\n"
-        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player.\n")
+        "  Lil Fridge: You keep 3 QBs in the top 24, and you get the better player, but Young plays 100% of the snaps "
+        "(up).\n")
     assert "\n2. " not in out
 
 

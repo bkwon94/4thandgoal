@@ -84,8 +84,9 @@ class FakeClaude:
         return AnalysisOut.model_validate(self.responses[len(self.calls) - 1](_facts(user)))
 
 
-# The code's final letters for the Jacobs trade: roster 11 grades B and roster 12 grades D.
-JACOBS_CODE_LETTERS = {11: "B", 12: "D"}
+# The code's final letters for the Jacobs trade: roster 11 grades A and roster 12 grades D.
+# Roster 11 gets Vele, a superstar on the week 6 chart, so its superstar step holds it at A.
+JACOBS_CODE_LETTERS = {11: "A", 12: "D"}
 
 
 def _split(text):
@@ -129,7 +130,7 @@ def test_the_fact_sheet_holds_the_grade_inputs_of_the_traded_players_with_ids(tr
         f"{pid}.value" for pid in (TUTEN, WILSON, JACOBS, VELE))
     # The call reads the rubric, the breakdown of both sides, and the code's default verdict.
     assert "# Rubric" in system and "# Analysis rules" in system
-    assert "Final letter: B" in user and "Final letter: D" in user and "Roster fit: one step down." in user
+    assert "Final letter: A" in user and "Final letter: D" in user and "Roster fit: one step down." in user
     assert "Code's default verdict for Amon-Ra Dawg Your Team: decline." in user
 
 
@@ -138,35 +139,35 @@ def test_a_good_response_passes_through(trade, snap):
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 1
     assert not result.fallback
-    assert [s.final_letter for s in result.sides] == ["B", "D"]
+    assert [s.final_letter for s in result.sides] == ["A", "D"]
     assert result.sides[0].bullets[0] == "Garrett Wilson scored 14.2 points per game before the trade."
     assert result.sides[0].cited == [f"{WILSON}.ppg", f"{WILSON}.targets"]
     assert result.verdict.choice == "decline" and result.verdict.reason == "The trade is fair for both sides."
     assert not result.verdict_differs
-    assert [b.final_letter for b in result.breakdowns] == ["B", "D"]
+    assert [b.final_letter for b in result.breakdowns] == ["A", "D"]
     assert result.code_verdict.choice == "decline"
 
 
 def test_a_letter_one_step_off_passes_with_its_reason(trade, snap):
-    eleven = _side(11, letter="C", reason="Jacobs has no scored game before the trade.")
+    eleven = _side(11, letter="B", reason="Jacobs has no scored game before the trade.")
     result = analyze(trade, snap, call=FakeClaude(_response(eleven=eleven)))
     assert not result.fallback
-    assert result.sides[0].final_letter == "C"
+    assert result.sides[0].final_letter == "B"
     assert result.sides[0].reason == "Jacobs has no scored game before the trade."
     # The side whose letter stays at the code's letter has no reason.
     assert result.sides[1].final_letter == "D" and result.sides[1].reason is None
 
 
 def test_a_letter_two_steps_off_retries_then_falls_back_to_the_code(trade, snap):
-    far = _response(eleven=_side(11, letter="D", reason="Wilson is a strong receiver."))
+    far = _response(eleven=_side(11, letter="C", reason="Wilson is a strong receiver."))
     fake = FakeClaude(far, far)
     result = analyze(trade, snap, call=fake)
     assert len(fake.calls) == 2
     # The retry tells Claude what failed.
     assert "Feedback from the last attempt:" in fake.calls[1][1]
-    assert "final letter D is 2 steps from the code's B" in fake.calls[1][1]
+    assert "final letter C is 2 steps from the code's A" in fake.calls[1][1]
     assert result.fallback
-    assert [s.final_letter for s in result.sides] == ["B", "D"]
+    assert [s.final_letter for s in result.sides] == ["A", "D"]
     # The fallback gives no bullets, so the page shows the rows alone.
     assert [s.bullets for s in result.sides] == [[], []]
     assert result.verdict == result.code_verdict and not result.verdict_differs

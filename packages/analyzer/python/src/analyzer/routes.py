@@ -26,6 +26,7 @@ from analyzer.rubric import (
     check_trade,
     deal_reason,
     fairness,
+    reason_names,
 )
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
@@ -222,7 +223,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
     ]
     # The fairness reads the letters that stand after the Claude call, the same letters the verdict that stands
     # comes with. The document drops the letters, so this function builds the block and a stored document cannot.
-    fairness_result = fairness(analysis.standing_letters, analysis.breakdowns)
+    fairness_result = fairness(analysis.standing_letters, analysis.breakdowns, names=reason_names(snapshot))
     return {
         "trade": {"asker": trade.asker, "sides": echoed},
         "decision": {

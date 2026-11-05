@@ -1,0 +1,13 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v "tests/test_rubric.py::test_a_side_with_no_step_gets_the_deal_row_of_its_start_letter"
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/uneven-trade/apps/pipeline
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_rubric.py::test_a_side_with_no_step_gets_the_deal_row_of_its_start_letter PASSED [100%]
+
+============================== 1 passed in 0.03s ===============================
+[exit 0]

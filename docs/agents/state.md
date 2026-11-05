@@ -33,6 +33,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
 | `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
 | `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
+| `uneven-trade` | both | 01 the uneven margin | none | |
 | `waiver` | site | 01 the route behind the flag | pipeline 01 the week file | |
 | `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
 | `week-8-fixes` | pipeline | 07 the-readmes-name-the-module-an-agent-needs | | |

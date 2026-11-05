@@ -3,6 +3,7 @@ Tests for the rows of the result document: a silent row hides, each row reads in
 fairness reason holds an inner word. They grade real trades on the week 6 and the week 9 snapshots at the result document seam.
 """
 import shutil
+from pathlib import Path
 
 import pytest
 from conftest import with_carries
@@ -12,6 +13,9 @@ from analyzer.analysis import INNER_WORDS, _inner_word_failures, code_only
 from analyzer.routes import result_document
 from analyzer.rubric import ProposedTrade, TradeSide
 from analyzer.tunables import EXPECTED_ADJUSTER_ON
+from league.chart import match_chart
+from league.models import ChartRead, week_lines
+from league.parse import parse_week
 from league.paths import returns_path
 from league.provider.sleeper import load_raw
 from league.slow_sources import load_slow_sources
@@ -254,18 +258,50 @@ def test_no_row_holds_an_inner_word_on_the_week_9_trades(week_9):
 
 @pytest.mark.parametrize("first, second", [(7, 11), (1, 4), (3, 12)])
 def test_no_fairness_reason_holds_an_inner_word_on_the_week_6_trades(slow_snap, first, second):
-    # The fairness line shows the first step up of a side, else its deal row, so it reads the same plain words.
+    # The fairness line shows the rows of the steps of a side, else its deal row, so it reads the same plain words.
     texts = [side["reason"] for trade in _one_for_one_trades(slow_snap, first, second)
              for side in _document(trade, slow_snap)["fairness"]["sides"]]
     assert texts
     assert [(text, failure) for text in texts if (failure := _inner_word_failures("fairness", text))] == []
 
 
-def test_a_fairness_reason_with_no_step_up_is_the_deal_row(slow_snap):
+def test_a_fairness_reason_is_one_row_or_a_step_up_row_but_a_step_down_row(slow_snap):
+    # Saquon for Cook: one side gets a roster fit step up and a trend step down, so its reason joins the two rows.
     document = _document(_trade(10, [SAQUON], 5, [COOK]), slow_snap)
+    joined = 0
     for side in document["fairness"]["sides"]:
-        rows = _rows(document, side["roster_id"])
-        assert side["reason"] in rows.values()
+        rows = _rows(document, side["roster_id"]).values()
+        pairs = {up.removesuffix(".") + ", but " + down for up in rows for down in rows if up != down}
+        assert side["reason"] in rows or side["reason"] in pairs
+        joined += side["reason"] in pairs
+    assert joined == 1
+
+
+WEEK_9_READ = Path(__file__).parent / "fixtures" / "charts" / "read-week-09.json"
+# Trade W, Brian's trade of week 9: Bo Girds, roster 6, gives Washington and Walker to Teehee, roster 12, for
+# Tee Higgins, Bhayshul Tuten, and Tony Pollard.
+WALKER = "8151"
+TRADE_W = ((6, [WASHINGTON, WALKER]), (12, ["6801", "12490", "5967"]))
+
+
+@pytest.fixture(scope="module")
+def week_9_chart(week_9):
+    """The week 9 snapshot with the trade values of the week 9 chart read, matched as the CLI does."""
+    read = ChartRead.model_validate_json(WEEK_9_READ.read_text(encoding="utf-8"))
+    chart = match_chart(read, week_lines(parse_week(load_raw(SAVED / "week-08" / "raw"))))
+    return week_9.model_copy(update={"chart": chart})
+
+
+def test_trade_w_is_fair_and_teehee_names_the_superstar_then_the_roster_loss(week_9_chart):
+    # Teehee gets one step up for Walker and one step down for roster fit. The net is zero, so its reason names both.
+    (bo_girds, bo_gives), (teehee, teehee_gives) = TRADE_W
+    document = _document(_trade(bo_girds, bo_gives, teehee, teehee_gives), week_9_chart)
+    fit = _rows(document, teehee)["roster fit"]
+    assert fit.startswith("You go from 4 RBs in the top 36 to 3")
+    assert (document["fairness"]["state"], document["fairness"]["gives_more"]) == ("fair", None)
+    assert [side["reason"] for side in document["fairness"]["sides"]] == [
+        _rows(document, bo_girds)["roster fit"],
+        "Kenneth Walker III is a superstar, a top 8 player this week, but " + fit[0].lower() + fit[1:]]
 
 
 def test_the_check_reads_each_inner_word_of_decision_03():

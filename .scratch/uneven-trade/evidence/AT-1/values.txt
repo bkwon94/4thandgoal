@@ -1,0 +1,12 @@
+The trade values come from data/nfl/cache/charts/1QB0.5PPR4pt/week-09.json, read on 2026-11-05.
+  Kenneth Walker: 64.0 (row 2 of the week 9 chart dated 2026-11-03)
+  Tee Higgins: 38.5 (row 20 of the week 9 chart dated 2026-11-03)
+  Bhayshul Tuten: 28.5 (row 28 of the week 9 chart dated 2026-11-03)
+  Parker Washington: 27.5 (row 32 of the week 9 chart dated 2026-11-03)
+  Tony Pollard: 17.5 (row 52 of the week 9 chart dated 2026-11-03)
+
+Bo Girds gives: Washington 27.5 + Walker 64.0 = 91.5
+Bo Girds gets: Higgins 38.5 + Tuten 28.5 + Pollard 17.5 = 84.5
+The side with 3 players is Teehee. Its sum divided by the uneven margin: 84.5 / 1.10 = 76.82
+Bo Girds ratio: got / gave = 76.82 / 91.5 = 0.8395. The band of D is 0.75 to below 0.90.
+Teehee ratio: got / gave = 91.5 / 76.82 = 1.1911. The band of B is 1.10 to below 1.25.

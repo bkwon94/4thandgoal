@@ -393,9 +393,10 @@ def test_a_good_request_returns_the_result_document(settings, sources):
         "name": "deal", "lean": "even",
         "reason": "What you get and what you give are about even, after a discount on the side with more players.",
     }] * 2
-    # The upside and the handcuff say nothing for this trade, so their rows hide.
+    # The upside and the handcuff say nothing for this trade, so their rows hide. Roster 4 gets Kincaid, a superstar,
+    # and the superstar row says that the one-for-many margin already counts him, so it shows.
     names = [f["name"] for f in doc["sides"][0]["factors"]]
-    assert names == ["deal", "roster fit", "standing", "trend and usage", "injury", "schedule"]
+    assert names == ["deal", "roster fit", "standing", "trend and usage", "injury", "superstar", "schedule"]
     assert doc["sides"][0]["bullets"] == BULLETS
     # Roster 12 gets the highest-value player in the trade and keeps its step up, so the other side does better.
     assert doc["decision"] == {"for_roster": 4, "answer": "not_as_is",
@@ -475,7 +476,10 @@ def test_a_three_side_request_grades_with_every_side_in_the_order_of_the_request
     assert [(p["player_id"], p["to"]) for p in twelve["gives"]] == [("10236", 4), ("8146", 7)]
     assert [(p["player_id"], p["from"]) for p in seven["gets"]] == [("8146", 12)]
     assert doc["decision"]["for_roster"] == 4
-    assert all(len(side["factors"]) == len(doc["sides"][0]["factors"]) for side in doc["sides"])
+    # Roster 4 gets two superstars and roster 7 gets none, so only the superstar row differs between the sides.
+    names = [[f["name"] for f in side["factors"] if f["name"] != "superstar"] for side in doc["sides"]]
+    assert all(side == names[0] for side in names)
+    assert [any(f["name"] == "superstar" for f in side["factors"]) for side in doc["sides"]] == [True, True, False]
 
 
 def test_the_same_gives_with_other_destinations_is_another_cache_key(settings, sources):
@@ -548,7 +552,7 @@ def test_a_claude_letter_two_steps_off_falls_back_to_the_code_letters(settings, 
     assert doc["fallback"] is True
     # The code's letters and verdict stand, with no bullets. The rows still show, the deal row first.
     assert [side["bullets"] for side in doc["sides"]] == [[], []]
-    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 6 for side in doc["sides"])
+    assert all(side["factors"][0]["name"] == "deal" and len(side["factors"]) == 7 for side in doc["sides"])
     assert doc["decision"]["differs"] is False
 
 
@@ -597,12 +601,12 @@ def test_the_deal_row_maps_from_the_start_letter_in_plain_words(settings, source
 
 
 def _steps(steps, schedule_lean):
-    """Breakdowns with the steps of the first six adjusters of each side and the lean of the schedule set."""
+    """Breakdowns with the steps of the first seven adjusters of each side and the lean of the schedule set."""
     def rework(breakdowns):
         reworked = []
         for b in breakdowns:
-            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:6], steps)]
-            adjusters.append(b.adjusters[6].model_copy(update={"lean": schedule_lean}))
+            adjusters = [a.model_copy(update={"step": step}) for a, step in zip(b.adjusters[:7], steps)]
+            adjusters.append(b.adjusters[7].model_copy(update={"lean": schedule_lean}))
             reworked.append(b.model_copy(update={"adjusters": adjusters}))
         return tuple(reworked)
     return rework
@@ -610,11 +614,11 @@ def _steps(steps, schedule_lean):
 
 @pytest.mark.parametrize("schedule_lean", ["for", "against", "even"])
 def test_a_factor_lean_maps_from_the_step_and_the_schedule_keeps_its_lean(settings, sources, schedule_lean):
-    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, -1], schedule_lean))
+    doc = _document(settings, sources, breakdowns=_steps([1, -1, 0, 1, 1, 1, -1], schedule_lean))
     factors = doc["sides"][0]["factors"][1:]
     assert [f["name"] for f in factors] == ["roster fit", "standing", "trend and usage", "injury", "upside",
-                                            "handcuff", "schedule"]
-    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "against", schedule_lean]
+                                            "superstar", "handcuff", "schedule"]
+    assert [f["lean"] for f in factors] == ["for", "against", "even", "for", "for", "for", "against", schedule_lean]
 
 
 def test_a_graded_trade_with_no_upside_hides_the_upside_factor_of_each_side(settings, sources):

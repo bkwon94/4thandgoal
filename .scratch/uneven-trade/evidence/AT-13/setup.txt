@@ -1,0 +1,31 @@
+The setup of the site tests AT-13 and AT-14. Each command ran from the Spec worktree at d3f9449e on 2026-11-05.
+
+$ CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4173 make -C apps/api api
+The local API of this branch on port 8080, with the test passphrase localtest for each client.
+
+$ NEXT_PUBLIC_API_URL=http://localhost:8080 CLIENT=cpc pnpm --dir apps/site build
+$ python3 -m http.server 4173 --directory apps/site/out
+The export calls the local API, so the passphrase localtest opens the form. The teams come from Sleeper through the local API.
+
+$ agent-browser network route "**/clients/cpc/analyze*"
+The route holds the POST to the analyze route with no answer, so the wait text stays on screen.
+
+Each screenshot: set the viewport, open http://localhost:4173/analyze/, set the theme, reload, fill trade W
+(Bo Girds gives Kenneth Walker III and Parker Washington; Teehee gives Tee Higgins, Bhayshul Tuten, and Tony Pollard),
+tap "Grade the Trade", wait 1500 ms, then take the full-page screenshot.
+Before each screenshot, the page text held "This can take up to a minute early in the week." once.
+
+AT-14, client cpc: the same build. clients/cpc/client.toml has finder = false under [values.analyzer].
+Each screenshot: open the page, set the theme, choose Bo Girds (roster 6) as Your Team and Teehee as Team Two.
+The page text held no "Find a Trade" and no "The search tries every small swap".
+
+AT-14, client norcal, a second record: clients/norcal/client.toml has finder = true.
+$ NEXT_PUBLIC_API_URL=http://localhost:8080 CLIENT=norcal pnpm --dir apps/site build
+$ agent-browser network route "**/clients/norcal/find*"
+Each screenshot: choose Mitseeker5000 (norcal roster 6) as Your Team, choose Bo Girds as the trade partner,
+tap "Find a Trade", wait 1500 ms, then take the full-page screenshot.
+The norcal brand has one dark set and no theme button, so the light and the dark screenshots both show the dark theme.
+The first 1280-dark screenshot showed "Too many requests. Try again in 25 seconds." because the route let one call
+through to the rate limit. A retake after 60 s showed the wait text, and it replaced the first file.
+The route held most calls but not all: the API log shows 5 POSTs to the cpc analyze route and 4 POSTs to the norcal
+find route. Each screenshot was taken while the page showed the wait text.
