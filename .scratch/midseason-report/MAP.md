@@ -22,14 +22,15 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The site tickets wait for the merge of `site-redesign` into `main`. The pipeline tickets do not wait. The flow, ADR 0019.
 - Sleeper gives the draft, the FAAB bids, and the lost bids. The report fetches each week's transactions again, because the history is incomplete. Injuries come from nflverse, by week. `decisions/01-research-sleeper-season-data.md`.
 - Eight arcs. Start and now windows of 4 weeks, with 65% and 35% lines. The full record for window arcs, and head to head only for streaks. At most 2 per team. `decisions/05-grill-the-arcs.md`.
+- Draft value compares within the position: the cost rank against the points rank on total points. Busts have a hurt or just-bad tag. Starter ranges, top 5 each, and the drafter owns the label. `decisions/02-grill-draft-value-rule.md`.
+- The sim keeps the `odds.py` draw and adds the bracket, with CPC reseeded, plus full counts and 10,000 runs. It orders by mean wins with a seed heat map, and stores 200 sample runs and the parameters. `decisions/07-research-the-sim-model.md`.
+- The fix for the gap in the transaction history is its own spec, `transaction-history`, before the week 9 build. `decisions/12-research-transaction-history-gap.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the Draft value rule for a steal and a bust, in an auction and in a snake? `decisions/02-grill-draft-value-rule.md`.
 - How does the report score a waiver hit and a waiver miss? `decisions/03-grill-waiver-hit-and-miss.md`.
 - What is the rubric of a trade's grade to date, and how does it relate to the analyzer's grade? `decisions/04-grill-trade-grade-to-date.md`.
 - How does the report measure luck, an overachiever, and the schedule swap? `decisions/06-grill-luck-and-schedule-swap.md`.
-- Which sim model runs the rest of the season, and which inputs does it read? `decisions/07-research-the-sim-model.md`.
 - Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
 - What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
 - Which awards, top performers, and players to watch does the report name? `decisions/10-grill-awards-and-players.md`.
@@ -42,4 +43,5 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - An outside ADP source. Each league's own draft is the baseline.
 - A report for a season other than 2026. The build takes the season as input, but only 2026 ships.
 - An injury date finer than the NFL week. No source gives one.
+- The fix of the transaction history. It ships first as the spec `transaction-history`.
 - A live sim on a server. Ticket 08 decides between replay and a live sim in the browser. A server sim is past the destination.

@@ -6,7 +6,7 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,11 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 ## Decision
 
-None yet.
+The research decided it, and Brian gave the bracket fact on 2026-11-05. The notes are `decisions/07-research-the-sim-model.notes.md`.
+
+- The sim keeps the draw of `odds.py`: a level per team shrunk to the league mean, a normal weekly score, and the pull toward the projected best lineup. It already reads the projections ahead, the byes, the rosters, and the injury return weeks.
+- The sim adds the playoff bracket for weeks 15 to 17 and full counts: the title, each seed, the bye, and each final record. CPC reseeds after round 1, as Brian confirmed. NorCal has a fixed bracket.
+- The projected totals extend past week 14 to the playoff weeks.
+- The report runs 10,000 runs per client. A run takes under 1 second per client.
+- No single final table is "most likely". The page orders the teams by mean final wins and shows a heat map of team against seed.
+- The build stores a sample of about 200 runs and the model parameters, under 5 KB. So ticket 08 can choose a replay or a live sim in the browser.
