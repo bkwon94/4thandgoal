@@ -271,6 +271,30 @@ def air_yards_share(history: History, player_id: str, through: int) -> UsageShar
     )
 
 
+def recent_carry_share(history: History, player_id: str, through: int) -> UsageShare | None:
+    """The share of the carries of his NFL team that the player took, over the window of the snap and target shares.
+
+    The usage row reads it beside them. The handcuff test reads `carry_share`, over its own count of games.
+    """
+    return _usage_share(
+        history, player_id, through,
+        numerator=lambda past: past.stats[player_id].get("rush_att", 0.0),
+        denominator=lambda past: _team_total(past, player_id, "rush_att"),
+    )
+
+
+def air_yards_per_target(history: History, player_id: str, through: int) -> float | None:
+    """The air yards per target of the player over the weeks of his target share. None with no target in them."""
+    share = target_share(history, player_id, through)
+    if share is None:
+        return None
+    lines = [history.weeks[week].stats[player_id] for week in share.weeks_used]
+    targets = sum(line.get("rec_tgt", 0.0) for line in lines)
+    if targets == 0:
+        return None
+    return sum(line.get("rec_air_yd", 0.0) for line in lines) / targets
+
+
 def carry_share(history: History, player_id: str, through: int) -> float | None:
     """The exact percent of his NFL team's carries that the player took in his last HANDCUFF_CARRY_GAMES played
     games. It is not rounded, so a gate can compare it.

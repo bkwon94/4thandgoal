@@ -120,7 +120,7 @@
     "sides": [
       {
         "roster_id": 4,
-        "reason": "It gets more trade value than it gives. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+        "reason": "You get more than you give, after a discount on the side with more players."
       },
       {
         "roster_id": 12,
@@ -128,7 +128,7 @@
       },
       {
         "roster_id": 7,
-        "reason": "You keep 4 WRs in the top 36, and your lineup scores more."
+        "reason": "You go from 1 WR in the top 36 to 2, and your lineup scores more."
       }
     ]
   },
@@ -148,7 +148,7 @@
         {
           "name": "roster fit",
           "lean": "against",
-          "reason": "You go from 4 WRs in the top 36 to 3 and keep 2 TEs in the top 24."
+          "reason": "You go from 3 WRs in the top 36 to 2 and go from 2 TEs in the top 24 to 3, and your lineup scores less."
         },
         {
           "name": "standing",
@@ -158,17 +158,17 @@
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways. Kincaid: snap share 71%, up, target share 26%, up, over weeks 5 and 6. Harrison: snap share 43%, down, over weeks 4 and 6. Collins: target share 21%, down, over weeks 5 and 6."
+          "reason": "Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Harrison plays 43% of the snaps (down), sees 13% of the targets, and averages 5.8 air yards per target; Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Marvin Harrison are not in the id map, so no report count ran for them."
+          "reason": "Dalton Kincaid and Marvin Harrison are not in the id map, so no report count ran for them."
         },
         {
           "name": "schedule",
           "lean": "against",
-          "reason": "The players it gets have more byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans against this side."
+          "reason": "Kincaid faces CHI (27th most points to TEs), DEN (11th), and MIA (3rd) in weeks 15 to 17. Harrison has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
         }
       ]
     },
@@ -197,17 +197,17 @@
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways. Collins: target share 21%, down, over weeks 5 and 6. Kincaid: snap share 71%, up, target share 26%, up, over weeks 5 and 6. Wilson: target share 35%, down, over weeks 5 and 6."
+          "reason": "Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target; Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
+          "reason": "Nico Collins is not in the id map, so no report count ran for him."
         },
         {
           "name": "schedule",
           "lean": "for",
-          "reason": "The players it gets have fewer byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans for this side."
+          "reason": "Collins has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
         }
       ]
     },
@@ -226,7 +226,7 @@
         {
           "name": "roster fit",
           "lean": "for",
-          "reason": "You keep 4 WRs in the top 36, and your lineup scores more."
+          "reason": "You go from 1 WR in the top 36 to 2, and your lineup scores more."
         },
         {
           "name": "standing",
@@ -236,17 +236,17 @@
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways. Wilson: target share 35%, down, over weeks 5 and 6. Harrison: snap share 43%, down, over weeks 4 and 6."
+          "reason": "Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target; Harrison plays 43% of the snaps (down), sees 13% of the targets, and averages 5.8 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Garrett Wilson is not in the id map, so no report count ran for him."
+          "reason": "Garrett Wilson is not in the id map, so no report count ran for him."
         },
         {
           "name": "schedule",
           "lean": "even",
-          "reason": "The players it gets and the players it gives have the same count of byes left, and the playoff opponents are about as hard on both sides. The schedule is even."
+          "reason": "Wilson has his bye in week 13 and faces ARI (2nd most points to WRs), NE (17th), and MIN (16th) in weeks 15 to 17."
         }
       ]
     }

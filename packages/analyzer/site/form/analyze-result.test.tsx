@@ -314,7 +314,8 @@ describe("AnalyzeResult", () => {
     render(<AnalyzeResult doc={{ ...fixture, sides, fallback: true }} />);
     expect(screen.getByText("Not as is")).toBeTruthy();
     expect(screen.getAllByText(FALLBACK_LINE)).toHaveLength(2);
-    expect(screen.getAllByText(DEAL)).toHaveLength(2);
+    // The deal row shows in each fold, and the fairness line of roster 4, with no step up, shows it once more.
+    expect(screen.getAllByText(DEAL)).toHaveLength(3);
     expect(screen.getAllByText(/^How the grade adds up · /)).toHaveLength(2);
     expect(screen.queryByText(ANALYSIS)).toBeNull();
   });

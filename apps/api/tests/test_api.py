@@ -22,7 +22,7 @@ from conftest import strip_trend_numbers
 from cpc import FIXTURE_LEAGUE, cli_root, cpc_client, four_week
 from fastapi.testclient import TestClient
 
-from analyzer.adjusters import ROSTER_FIT, TREND
+from analyzer.adjusters import INJURY, ROSTER_FIT, SCHEDULE, TREND
 from analyzer.analysis import (
     Analysis,
     SideAnalysis,
@@ -1220,14 +1220,20 @@ DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name",
 
 # One count of the roster fit reason: the players at a position in the top N, before and after.
 TOP_N_COUNT = re.compile(r"\d+ (?:QB|RB|WR|TE)s? in the top \d+(?: to \d+)?")
+# The weeks and the ranks of the schedule row and the injury row, such as "week 13", "weeks 15 to 17", "3rd", and
+# "5 of 8 weeks".
+WEEKS_AND_RANKS = re.compile(r"\bweeks? \d+(?: to \d+)?|\b\d+(?:st|nd|rd|th)\b|\b\d+ of \d+ weeks")
 
 
 def _digits_outside_ids(value, key=None):
     """The numbers and the strings with digits under any key that may not hold them."""
     if isinstance(value, dict):
         if value.get("name") == TREND:
-            # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
+            # The trend reason may give share percents and the air yards per target. Any other number in it fails.
             value = {**value, "reason": strip_trend_numbers(value["reason"])}
+        if value.get("name") in (SCHEDULE, INJURY):
+            # The code writes the weeks of a bye, a return, and the injury report, and the rank of each opponent.
+            value = {**value, "reason": WEEKS_AND_RANKS.sub("", value["reason"])}
         if value.get("name") == ROSTER_FIT:
             # The roster row counts the players in the top N, such as "3 WRs in the top 36", and can name a week. The
             # code writes it, and this check guards Claude's prose, not the code's factor reasons.
@@ -1696,7 +1702,7 @@ def test_the_find_fixture_names_no_letter_and_no_number_outside_ids():
     found = [text for text in _strings(fixture)
              if re.search(r"\b[A-F]\b", text) or re.search(r"\bletters?\b", text, re.IGNORECASE)]
     assert found == []
-    # The fairness reasons reuse the breakdown reasons, so a trend reason may give its share percents and weeks.
+    # The fairness reasons reuse the breakdown reasons, so a trend reason may give its share percents and air yards.
     for item in fixture["trades"]:
         for side in item["fairness"]["sides"]:
             side["reason"] = strip_trend_numbers(side["reason"])
@@ -1861,7 +1867,7 @@ def test_the_cache_key_changes_with_a_week_n_wopr_row_of_a_rostered_player(setti
     assert _both_keys(trade, other) == _both_keys(trade, before)
 
 
-def test_the_document_version_is_14():
+def test_the_document_version_is_15():
     import analyzer.cache as cache_module
 
     # The position rank enters the facts, so a document stored before it must never serve.
@@ -1871,7 +1877,8 @@ def test_the_document_version_is_14():
     # The bullets and the deal row take the place of the analysis and the chart block, so the shape changes.
     # Each traded player carries his Season rank and his Recent rank, so the shape changes.
     # A silent row hides, and the roster and standing rows read in plain words, so a stored row must never serve.
-    assert cache_module.DOCUMENT_VERSION == 14
+    # The usage, injury, upside, handcuff, and schedule rows and the fairness reasons read in plain words too.
+    assert cache_module.DOCUMENT_VERSION == 15
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

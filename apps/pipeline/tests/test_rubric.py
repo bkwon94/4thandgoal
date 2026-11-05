@@ -281,7 +281,7 @@ def test_the_breakdown_holds_no_trade_value_sum_ratio_or_chart_name(snap):
         for side in grade(trade, snap):
             assert set(side.model_dump()) == {"roster_id", "start_letter", "reason", "adjusters", "final_letter"}
             # A digit in a reason could be a trade value or a lineup total, so no reason holds one.
-            # The trend reason may give share percents and the weeks behind them. Any other number in it fails.
+            # The trend reason may give share percents and the air yards per target. Any other number in it fails.
             # The roster fit reason may give the count at each position and the top N it counts in.
             for reason in [side.reason, *(strip_trend_numbers(a.reason) if a.name == TREND
                                           else _without_counts(a.reason) if a.name == "roster fit" else a.reason
@@ -518,8 +518,7 @@ def test_a_side_that_gives_its_starter_for_his_handcuff_and_opens_a_hole_steps_d
     # Roster 12 gives Tuten, Emanuel Wilson, and Pollard for Mitchell, who backs up Hampton at LAC.
     # Hampton RB26 moves up to RB1 and Mitchell RB39 takes RB2. The handcuff blocks the loss, never the hole.
     twelfth, _ = grade(_trade(12, [TUTEN, E_WILSON, POLLARD], 11, [MITCHELL]), _lac_snap(slow_snap))
-    assert _adjuster(twelfth, "handcuff").reason == (
-        "Keaton Mitchell backs up the team's own starter, so he counts as insurance.")
+    assert _adjuster(twelfth, "handcuff").reason == "Mitchell backs up your RB, Hampton, on the Chargers depth chart."
     fit = _adjuster(twelfth, "roster fit")
     assert fit.step == -1
     assert fit.reason == "You go from 4 RBs in the top 36 to 1."
@@ -1037,9 +1036,10 @@ def test_the_player_stat_readers_of_a_known_games_week_read_its_games(known_snap
     assert recent_points_per_game(at_week_5, MCCAFFREY) == Decimal("17.625")
     trade = _trade(4, [COLLINS, CROSKEY], 3, [MCCAFFREY])
     assert grade(trade, known_snap) != grade(trade, at_week_5)
-    # The share readers take the same bound, so the trend reason names week 6 and the fact sheet says so too.
+    # The share readers take the same bound, so the shares read week 6 and the fact sheet says so too.
+    assert snap_share(known_snap.stats, ODUNZE, 6).weeks_used == [5, 6]
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
-    assert "over weeks 5 and 6" in _adjuster(first, TREND).reason
+    assert f"Odunze plays {snap_share(known_snap.stats, ODUNZE, 6).percent}% of the snaps" in _adjuster(first, TREND).reason
     sheet = trade_fact_sheet(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
     # On a game day the record ends a week before the player stats, so the fact names both bounds.
     assert ("Player stats run through the known games of week 6. The record runs through week 5."
@@ -1104,10 +1104,12 @@ def test_a_player_with_no_known_game_keeps_his_points_per_game_and_no_zero_game(
     assert points_per_game(known.stats, MCCAFFREY, 6) == points_per_game(snap.stats, MCCAFFREY, 5)
 
 
-def test_trend_reads_the_known_game_shares_and_names_its_week(known_snap):
+def test_trend_reads_the_known_game_shares_and_names_no_week(known_snap, snap):
+    # Odunze plays 93% of the snaps in weeks 4 and 5, and 97% in weeks 5 and 6 with the known game.
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), known_snap)
     trend = _adjuster(first, TREND)
-    assert "over weeks 5 and 6" in trend.reason
+    assert "Odunze plays 97% of the snaps (up)" in trend.reason
+    assert "week" not in trend.reason
 
 
 # Malik Nabers on roster 8 gains snap share and target share over weeks 5 and 6.
@@ -1143,12 +1145,14 @@ def test_a_known_game_with_no_snap_count_leaves_the_snap_share_at_the_games_befo
     assert red_zone(pending.stats, NABERS, 6) == red_zone(known_snap.stats, NABERS, 6)
 
 
-def test_the_trend_reason_names_the_weeks_of_each_share_when_the_snaps_are_pending(
+def test_the_trend_reason_gives_each_share_of_its_own_weeks_when_the_snaps_are_pending(
         fixture_raw_dir, fixture_history_root, chart_week6):
     pending = _known_games_snap(fixture_raw_dir, fixture_history_root, chart_week6, _no_snaps_in_the_game_of(NABERS))
     eighth, _ = grade(_trade(8, [NABERS], 1, [WATSON]), pending)
-    assert re.search(r"Nabers: snap share \d+% \(weeks 4 and 5\), up, target share \d+% \(weeks 5 and 6\), up\.",
-                     _adjuster(eighth, TREND).reason)
+    snap, target = snap_share(pending.stats, NABERS, 6), target_share(pending.stats, NABERS, 6)
+    assert (snap.weeks_used, target.weeks_used) == ([4, 5], [5, 6])
+    assert (f"Nabers plays {snap.percent}% of the snaps (up), sees {target.percent}% of the targets (up)"
+            in _adjuster(eighth, TREND).reason)
 
 
 def test_a_known_game_with_snap_counts_moves_the_snap_share(snap, known_snap):
@@ -1174,7 +1178,7 @@ EVANS, W_ROBINSON = "2216", "8126"
 
 
 def test_the_trend_step_reads_a_week_n_wopr_row_when_the_file_has_it_and_ends_a_week_before_without_it(known_snap):
-    # Evans gains 15 points of WOPR in both windows, so the step holds and only the weeks in the reason move.
+    # Evans gains 15 points of WOPR in both windows, so the step holds and only the weeks of the window move.
     with_row = known_snap.model_copy(update={"wopr": {EVANS: {3: 40, 4: 40, 5: 55, 6: 55},
                                                       W_ROBINSON: {week: 50 for week in range(1, 7)}}})
     without_row = known_snap.model_copy(update={"wopr": {EVANS: {2: 40, 3: 40, 4: 55, 5: 55},
@@ -1183,8 +1187,10 @@ def test_the_trend_step_reads_a_week_n_wopr_row_when_the_file_has_it_and_ends_a_
     _, second_with = grade(trade, with_row)
     _, second_without = grade(trade, without_row)
     assert _adjuster(second_with, TREND).step == _adjuster(second_without, TREND).step == 1
-    assert "Evans: WOPR 55, up, over weeks 5 and 6." in _adjuster(second_with, TREND).reason
-    assert "Evans: WOPR 55, up, over weeks 4 and 5." in _adjuster(second_without, TREND).reason
+    assert (_wopr(with_row, EVANS).weeks_used, _wopr(with_row, EVANS).value) == ([5, 6], 55)
+    assert (_wopr(without_row, EVANS).weeks_used, _wopr(without_row, EVANS).value) == ([4, 5], 55)
+    assert _adjuster(second_with, TREND).reason.endswith("the receivers you get gain WOPR, a mix of target share and "
+                                                         "air yards share.")
 
 
 def test_a_contender_steps_down_for_a_lineup_loss_now_for_a_player_with_no_return_week(snap):
@@ -1311,15 +1317,14 @@ ODUNZE, WATSON, RICE = "11620", "8167", "10229"
 def test_trend_steps_up_for_the_side_that_gets_the_rising_player_and_down_for_the_other(snap):
     first, fourth = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
     assert _adjuster(first, "trend and usage").step == 1
+    # The players it gets come first. The mark shows the step, so the row names no direction of the side.
     assert _adjuster(first, "trend and usage").reason == (
-        "The players it gets gain snap or target share, and the players it gives lose it. "
-        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5. "
-        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5.")
+        "Odunze plays 93% of the snaps (up), sees 25% of the targets (up), and averages 6.1 air yards per target; "
+        "Watson plays 74% of the snaps (down), sees 25% of the targets (down), and averages 14.0 air yards per target.")
     assert _adjuster(fourth, "trend and usage").step == -1
     assert _adjuster(fourth, "trend and usage").reason == (
-        "The players it gets lose snap or target share, and the players it gives gain it. "
-        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5. "
-        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5.")
+        "Watson plays 74% of the snaps (down), sees 25% of the targets (down), and averages 14.0 air yards per target; "
+        "Odunze plays 93% of the snaps (up), sees 25% of the targets (up), and averages 6.1 air yards per target.")
 
 
 def test_trend_gives_no_step_when_the_shares_point_both_ways(snap):
@@ -1328,10 +1333,9 @@ def test_trend_gives_no_step_when_the_shares_point_both_ways(snap):
     assert _adjuster(fourth, "trend and usage").step == 0
     # Rice played no game in week 5, so his shares cover weeks 3 and 4.
     assert _adjuster(fourth, "trend and usage").reason == (
-        "The snap and target shares point both ways. "
-        "Watson: snap share 74%, down, target share 25%, down, over weeks 4 and 5. "
-        "Rice: snap share 41%, down, target share 31%, up, over weeks 3 and 4. "
-        "Odunze: snap share 93%, up, target share 25%, up, over weeks 4 and 5.")
+        "Watson plays 74% of the snaps (down), sees 25% of the targets (down), and averages 14.0 air yards per target; "
+        "Rice plays 41% of the snaps (down), sees 31% of the targets (up), and averages 3.7 air yards per target; "
+        "Odunze plays 93% of the snaps (up), sees 25% of the targets (up), and averages 6.1 air yards per target.")
 
 
 # Roster 2 gives Ja'Marr Chase and Jeremiyah Love, each down in both shares through week 5.
@@ -1343,15 +1347,15 @@ def test_trend_reason_gives_the_moved_shares_of_each_player_in_the_chase_trade(s
     _, sixth = grade(_trade(2, [CHASE, LOVE], 6, [M_WASHINGTON]), snap)
     trend = _adjuster(sixth, "trend and usage")
     assert trend.step == -1
-    # Washington's snap share is flat, so his sentence names only the target share.
+    # Love is an RB, so his clause gives the carry share and no air yards. Washington's snap share is flat, so it has
+    # no mark.
     assert trend.reason == (
-        "The players it gets lose snap or target share, and the players it gives gain it. "
-        "Chase: snap share 52%, down, target share 19%, down, over weeks 4 and 5. "
-        "Love: snap share 47%, down, target share 3%, down, over weeks 4 and 5. "
-        "Washington: target share 65%, up, over weeks 4 and 5.")
+        "Chase plays 52% of the snaps (down), sees 19% of the targets (down), and averages 5.8 air yards per target; "
+        "Love plays 47% of the snaps (down), takes 70% of the carries, and sees 3% of the targets (down); "
+        "Washington plays 83% of the snaps, sees 65% of the targets (up), and averages 5.3 air yards per target.")
 
 
-def test_trend_reason_gives_the_weeks_after_each_share_when_the_two_shares_have_different_weeks(snap):
+def test_trend_reason_gives_each_share_of_its_own_weeks_and_names_no_week(snap):
     # With no team snaps in week 5, Chase's snap share covers weeks 3 and 4, and his target share weeks 4 and 5.
     week5 = snap.stats.weeks[5]
     stats = {**week5.stats, CHASE: {**week5.stats[CHASE], "tm_off_snp": 0.0}}
@@ -1359,18 +1363,17 @@ def test_trend_reason_gives_the_weeks_after_each_share_when_the_two_shares_have_
     snap = snap.model_copy(update={"stats": snap.stats.model_copy(update={"weeks": weeks})})
     _, sixth = grade(_trade(2, [CHASE], 6, [M_WASHINGTON]), snap)
     assert _adjuster(sixth, "trend and usage").reason == (
-        "The players it gets lose snap or target share, and the players it gives gain it. "
-        "Chase: snap share 54% (weeks 3 and 4), down, target share 19% (weeks 4 and 5), down. "
-        "Washington: target share 65%, up, over weeks 4 and 5.")
+        "Chase plays 54% of the snaps (down), sees 19% of the targets (down), and averages 5.8 air yards per target; "
+        "Washington plays 83% of the snaps, sees 65% of the targets (up), and averages 5.3 air yards per target.")
 
 
-def test_trend_reason_gives_no_sentence_to_a_player_with_flat_shares(snap):
-    # Harvey's shares are flat, so only Watson and Odunze get a sentence.
+def test_trend_reason_gives_a_clause_with_no_mark_to_a_player_with_flat_shares(snap):
+    # Harvey's shares are flat, so his clause has the numbers and no mark.
     _, fourth = grade(_trade(1, [WATSON, HARVEY], 4, [ODUNZE]), snap)
     reason = _adjuster(fourth, "trend and usage").reason
-    assert "Watson: snap share 74%, down" in reason
-    assert "Odunze: snap share 93%, up" in reason
-    assert "Harvey" not in reason
+    assert "Watson plays 74% of the snaps (down)" in reason
+    assert "Odunze plays 93% of the snaps (up)" in reason
+    assert "Harvey plays 41% of the snaps, takes 22% of the carries, and sees 31% of the targets;" in reason
 
 
 # Both shares are flat through week 5 for RJ Harvey on roster 1, with 3 red-zone touches,
@@ -1382,7 +1385,9 @@ def test_red_zone_use_breaks_the_tie_when_every_share_is_flat(snap):
     first, ninth = grade(_trade(1, [HARVEY], 9, [KAMARA]), snap)
     assert _adjuster(first, "trend and usage").step == 1
     assert _adjuster(first, "trend and usage").reason == (
-        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+        "Kamara plays 34% of the snaps, takes 36% of the carries, and sees 16% of the targets; "
+        "Harvey plays 41% of the snaps, takes 22% of the carries, and sees 31% of the targets; "
+        "the shares are flat, and the players you get have more red-zone use.")
     assert _adjuster(ninth, "trend and usage").step == -1
 
 
@@ -1404,11 +1409,12 @@ def test_wopr_up_breaks_a_flat_trend_before_red_zone_use(snap):
     fourth, fifth = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
     assert _adjuster(fifth, "trend and usage").step == 1
     assert _adjuster(fifth, "trend and usage").reason == (
-        "The snap and target shares are flat. The players it gets gain WOPR, and the players it gives lose it. "
-        "Williams: WOPR 55, up, over weeks 4 and 5.")
+        "Williams plays 94% of the snaps, sees 18% of the targets, and averages 10.8 air yards per target; "
+        "Wilson plays 88% of the snaps, sees 33% of the targets, and averages 4.8 air yards per target; "
+        "the shares are flat, and the receivers you get gain WOPR, a mix of target share and air yards share.")
     assert _adjuster(fourth, "trend and usage").step == -1
-    assert _adjuster(fourth, "trend and usage").reason.startswith(
-        "The snap and target shares are flat. The players it gets lose WOPR, and the players it gives gain it.")
+    assert _adjuster(fourth, "trend and usage").reason.endswith(
+        "the shares are flat, and the receivers you give gain WOPR, a mix of target share and air yards share.")
 
 
 def test_a_flat_wopr_falls_through_to_red_zone_use(snap):
@@ -1416,8 +1422,8 @@ def test_a_flat_wopr_falls_through_to_red_zone_use(snap):
     snap = _with_wopr(snap, {J_WILLIAMS: [40, 40, 47, 47], M_WILSON: [50] * 4})
     fourth, _ = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
     assert _adjuster(fourth, "trend and usage").step == 1
-    assert _adjuster(fourth, "trend and usage").reason == (
-        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+    assert _adjuster(fourth, "trend and usage").reason.endswith(
+        "the shares are flat, and the players you get have more red-zone use.")
 
 
 def test_a_wopr_that_points_both_ways_falls_through_to_red_zone_use(snap):
@@ -1425,8 +1431,8 @@ def test_a_wopr_that_points_both_ways_falls_through_to_red_zone_use(snap):
     snap = _with_wopr(snap, {J_WILLIAMS: [40, 40, 55, 55], M_WILSON: [40, 40, 55, 55]})
     fourth, fifth = grade(_trade(4, [J_WILLIAMS], 5, [M_WILSON]), snap)
     assert _adjuster(fourth, "trend and usage").step == 1
-    assert _adjuster(fourth, "trend and usage").reason == (
-        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+    assert _adjuster(fourth, "trend and usage").reason.endswith(
+        "the shares are flat, and the players you get have more red-zone use.")
     assert _adjuster(fifth, "trend and usage").step == -1
 
 
@@ -1454,15 +1460,15 @@ def test_a_running_backs_wopr_never_decides(snap):
     snap = _with_wopr(snap, {HARVEY: [10] * 4, KAMARA: [10, 10, 30, 30]})
     first, _ = grade(_trade(1, [HARVEY], 9, [KAMARA]), snap)
     assert _adjuster(first, "trend and usage").step == 1
-    assert _adjuster(first, "trend and usage").reason == (
-        "The snap and target shares are flat, and the players it gets have more red-zone use.")
+    assert _adjuster(first, "trend and usage").reason.endswith(
+        "the shares are flat, and the players you get have more red-zone use.")
 
 
 def test_injury_steps_down_for_a_player_out_now_with_no_near_return(snap):
     # Saquon Barkley is Out and has no row in the returns file. Wicks is Questionable, which is not out.
     third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "injury").step == -1
-    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+    assert _adjuster(third, "injury").reason == "Barkley is out with no return week on file."
     assert _adjuster(tenth, "injury").step == 0
 
 
@@ -1507,7 +1513,7 @@ def test_injury_steps_down_at_the_count_of_report_weeks_and_never_counts_the_tra
     assert _adjuster(third, "injury").step == 0
     third, _ = grade(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3, 4]))
     assert _adjuster(third, "injury").step == -1
-    assert _adjuster(third, "injury").reason == "Chris Olave was on the injury report in many weeks this season."
+    assert _adjuster(third, "injury").reason == "Olave was on the injury report in 3 of 5 weeks."
 
 
 def test_the_injury_report_of_a_known_games_week_ends_at_the_completed_week(known_snap):
@@ -1557,14 +1563,14 @@ def test_injury_steps_down_for_a_player_out_for_the_season(snap):
     snap = _out_for_season(_with_status(snap, SAQUON, None), SAQUON)
     third, tenth = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     assert _adjuster(third, "injury").step == -1
-    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+    assert _adjuster(third, "injury").reason == "Barkley is out for the season."
     assert _adjuster(tenth, "injury").step == 0
 
 
 def test_injury_names_the_season_mark_before_the_no_near_return_check(snap):
     # Saquon Barkley is Out with no returns row, so he is out with no near return too. The season reason wins.
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), _out_for_season(snap, SAQUON))
-    assert _adjuster(third, "injury").reason == "Saquon Barkley is out for the season."
+    assert _adjuster(third, "injury").reason == "Barkley is out for the season."
 
 
 def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
@@ -1573,7 +1579,8 @@ def test_a_player_on_ir_with_no_season_mark_is_not_out_for_the_season(snap):
     assert SAQUON not in snap.out_for_season
     assert due_back_week(snap, SAQUON) == CLIENT.settings.return_by_week
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+    # The rule counts him back by the return-by week, but no week is on file, so the row names none.
+    assert _adjuster(third, "injury").reason == "Barkley is out with no return week on file."
 
 
 def test_a_player_out_for_the_season_is_never_due_back_or_a_return_bet(snap):
@@ -1592,7 +1599,7 @@ def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_retu
     # In the middle of the standings, roster 11 gets no return bet credit, so the injury counts.
     eleventh, _ = grade(trade, snap)
     assert _adjuster(eleventh, "injury").step == -1
-    assert _adjuster(eleventh, "injury").reason == "Josh Jacobs is out with no near return."
+    assert _adjuster(eleventh, "injury").reason == "Jacobs is out until week 10."
     # As a contender, the standing step credits Jacobs as a return bet, so the injury does not count.
     eleventh, _ = grade(trade, _as_contender(snap, 11))
     assert _adjuster(eleventh, "standing").step == 1
@@ -1603,14 +1610,14 @@ def test_injury_never_fires_for_a_player_the_standing_adjuster_credits_as_a_retu
 # Rome Odunze on roster 4 and Luther Burden on roster 12 are CHI receivers. Odunze is up in snap and target share.
 # Brock Purdy on roster 1 is the only SF quarterback. His snap share is up, and his target share is flat.
 STAR, BURDEN, PURDY, BURROW = "12507", "12519", "8183", "6770"
-NO_UPSIDE = "No player it gets is a star out now or has an opportunity."
+NO_UPSIDE = "No player it gets is a top player out now or gets more work."
 
 
 def test_a_side_that_gets_a_star_out_now_with_no_return_week_steps_up_and_the_injury_leaves_him_alone(snap):
     # Hampton is Out with no row in the returns file, so he would be out with no near return.
     fourth, twelfth = grade(_trade(4, [COLLINS], 12, [STAR]), _with_status(snap, STAR, "Out"))
     assert _adjuster(fourth, "upside").step == 1
-    assert _adjuster(fourth, "upside").reason == "Omarion Hampton is a star out now with a return in play."
+    assert _adjuster(fourth, "upside").reason == "Hampton is a top RB, out now with no return week on file."
     assert _adjuster(fourth, "injury").step == 0
     # Roster 12 gives the star return bet, and the upside reads the players a side gets only.
     assert _adjuster(twelfth, "upside").step == 0
@@ -1629,7 +1636,7 @@ def test_a_side_that_gets_a_star_out_for_the_season_gets_no_upside(snap):
     fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
     assert _adjuster(fourth, "upside").step == 0
     assert _adjuster(fourth, "upside").reason == NO_UPSIDE
-    assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out for the season."
+    assert _adjuster(fourth, "injury").reason == "Hampton is out for the season."
 
 
 def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
@@ -1639,7 +1646,7 @@ def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
     fourth, _ = grade(_trade(4, [COLLINS], 12, [STAR]), snap)
     assert CLIENT.settings.star_rank_by_position["RB"] == 12
     assert _adjuster(fourth, "upside").step == 0
-    assert _adjuster(fourth, "injury").reason == "Omarion Hampton is out with no near return."
+    assert _adjuster(fourth, "injury").reason == "Hampton is out with no return week on file."
 
 
 def test_a_qb_4th_at_his_position_and_47th_on_the_chart_is_a_star_return_bet(snap):
@@ -1653,17 +1660,17 @@ def test_a_qb_4th_at_his_position_and_47th_on_the_chart_is_a_star_return_bet(sna
     # On the week 6 snapshot roster 6 holds Lamar Jackson, so roster 7 gets him back for Mahomes.
     seventh, _ = grade(_trade(7, [MAHOMES], 6, [LAMAR]), snap)
     assert _adjuster(seventh, "upside").step == 1
-    assert _adjuster(seventh, "upside").reason == "Lamar Jackson is a star out now with a return in play."
+    assert _adjuster(seventh, "upside").reason == "Jackson is a top QB, out now with no return week on file."
 
 
 @pytest.mark.parametrize("mark, out", [
     (lambda snap: _out_for_season(snap, BURDEN), "out for the season"),
-    (lambda snap: _with_status(snap, BURDEN, "Out"), "out with no near return"),
+    (lambda snap: _with_status(snap, BURDEN, "Out"), "out"),
 ])
 def test_a_side_that_gets_a_player_whose_teammate_is_out_and_whose_use_points_up_steps_up(snap, mark, out):
     first, fourth = grade(_trade(1, [WATSON], 4, [ODUNZE]), mark(snap))
     assert _adjuster(first, "upside").step == 1
-    assert _adjuster(first, "upside").reason == f"Rome Odunze gains snap share with Luther Burden {out}."
+    assert _adjuster(first, "upside").reason == f"Odunze gets more work while Burden is {out}."
     assert _adjuster(fourth, "upside").step == 0
 
 
@@ -1712,7 +1719,7 @@ def test_a_handcuff_with_a_chart_row_counts_as_zero_in_the_sums(slow_snap):
     assert _letters([twelfth, eleventh]) == ["F", "A"]
     handcuff = _adjuster(twelfth, "handcuff")
     assert handcuff.step == 0
-    assert handcuff.reason == "Keaton Mitchell backs up the team's own starter, so he counts as insurance."
+    assert handcuff.reason == "Mitchell backs up your RB, Hampton, on the Chargers depth chart."
     # The id map fixture lacks Pollard, so the reason of roster 11 also names him.
     assert _adjuster(eleventh, "handcuff").reason.startswith("No player it gets is a handcuff.")
 
@@ -1724,8 +1731,8 @@ def test_a_freed_backup_with_a_chart_row_counts_in_the_sums(slow_snap):
     twelfth, eleventh = grade(_trade(12, [POLLARD], 11, [MITCHELL]), snap)
     assert _letters([twelfth, eleventh]) == ["B", "C"]
     assert _adjuster(twelfth, "handcuff").reason == (
-        "Keaton Mitchell backs up the team's own starter but takes 26% of the carries, "
-        "so he counts as a running back.")
+        "Mitchell backs up your RB, Hampton, on the Chargers depth chart, but he takes 26% of the carries, "
+        "so he is no handcuff.")
 
 
 def test_a_handcuff_with_no_chart_row_keeps_the_start_letter(slow_snap):
@@ -1796,8 +1803,8 @@ def test_a_backup_at_38_percent_of_the_carries_is_no_handcuff(slow_snap):
     assert rubric.trade_handcuffs(trade, snap) == []
     seventh, _ = grade(trade, snap)
     assert _adjuster(seventh, "handcuff").reason == (
-        "TreVeyon Henderson backs up the team's own starter but takes 38% of the carries, "
-        "so he counts as a running back.")
+        "Henderson backs up your RB, Stevenson, on the Patriots depth chart, but he takes 38% of the carries, "
+        "so he is no handcuff.")
     # His falling snap share counts now, so the trend steps roster 7 down as for any running back.
     trend = _adjuster(seventh, "trend and usage")
     assert trend.step == -1
@@ -1810,7 +1817,7 @@ def test_a_backup_at_15_percent_of_the_carries_is_a_handcuff(slow_snap):
     assert rubric.trade_handcuffs(trade, snap) == [HENDERSON]
     seventh, _ = grade(trade, snap)
     assert _adjuster(seventh, "handcuff").reason == (
-        "TreVeyon Henderson backs up the team's own starter, so he counts as insurance.")
+        "Henderson backs up your RB, Stevenson, on the Patriots depth chart.")
 
 
 def test_the_gate_compares_the_exact_share_and_the_reason_rounds_it(slow_snap):
@@ -1824,8 +1831,8 @@ def test_the_gate_compares_the_exact_share_and_the_reason_rounds_it(slow_snap):
     assert rubric.trade_handcuffs(trade, over) == []
     seventh, _ = grade(trade, over)
     assert _adjuster(seventh, "handcuff").reason == (
-        "TreVeyon Henderson backs up the team's own starter but takes 26% of the carries, "
-        "so he counts as a running back.")
+        "Henderson backs up your RB, Stevenson, on the Patriots depth chart, but he takes 26% of the carries, "
+        "so he is no handcuff.")
 
 
 def test_a_backup_with_1_played_game_or_no_carry_data_keeps_the_depth_chart_answer(slow_snap):
@@ -1860,8 +1867,8 @@ def test_a_known_game_can_lift_a_backup_over_the_carry_gate(fixture_raw_dir, fix
     assert rubric.trade_handcuffs(trade, breakout) == []
     seventh, _ = grade(trade, breakout)
     assert _adjuster(seventh, "handcuff").reason == (
-        "TreVeyon Henderson backs up the team's own starter but takes 27% of the carries, "
-        "so he counts as a running back.")
+        "Henderson backs up your RB, Stevenson, on the Patriots depth chart, but he takes 27% of the carries, "
+        "so he is no handcuff.")
 
 
 def test_trend_never_steps_down_because_of_a_handcuff(snap, slow_snap):
@@ -1917,14 +1924,13 @@ def test_schedule_leans_for_the_side_that_gets_softer_playoff_opponents_and_agai
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), slow_snap)
     for_tenth, against_fifth = _adjuster(tenth, "schedule"), _adjuster(fifth, "schedule")
     assert (for_tenth.step, for_tenth.lean) == (0, "for")
-    assert for_tenth.reason == (
-        "The players it gets and the players it gives have the same count of byes left, "
-        "and the players it gets face softer playoff opponents at their positions. The schedule leans for this side.")
+    # The mark shows the lean, and the row names the opponents of the player each side gets.
+    assert for_tenth.reason == "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17."
     assert (against_fifth.step, against_fifth.lean) == (0, "against")
     assert against_fifth.reason == (
-        "The players it gets and the players it gives have the same count of byes left, "
-        "and the players it gets face harder playoff opponents at their positions. "
-        "The schedule leans against this side.")
+        "Barkley has his bye in week 10 and faces SEA (18th most points to RBs), HOU (28th), and SF (15th) "
+        "in weeks 15 to 17.")
+    assert "leans" not in for_tenth.reason + against_fifth.reason
 
 
 def _with_bye(snap, team: str, week: int):
@@ -1939,9 +1945,8 @@ def test_schedule_is_even_when_the_byes_and_the_playoff_opponents_conflict(slow_
     tenth, _ = grade(_trade(10, [SAQUON], 5, [COOK]), _with_bye(slow_snap, "PHI", 5))
     schedule = _adjuster(tenth, "schedule")
     assert (schedule.step, schedule.lean) == (0, "even")
-    assert schedule.reason == (
-        "The players it gets have more byes left than the players it gives, "
-        "and the players it gets face softer playoff opponents at their positions. The schedule is even.")
+    # The BUF bye in week 7 is the week after the trade week, so the Week line names it and this row does not.
+    assert schedule.reason == "Cook faces CHI (25th most points to RBs), DEN (7th), and MIA (6th) in weeks 15 to 17."
 
 
 def test_schedule_leans_on_the_byes_alone_when_the_playoff_opponents_are_even(slow_snap):
@@ -1951,9 +1956,8 @@ def test_schedule_leans_on_the_byes_alone_when_the_playoff_opponents_are_even(sl
     schedules["BUF"] = schedules["PHI"].model_copy(update={"bye_week": 5})
     tenth, fifth = grade(_trade(10, [SAQUON], 5, [COOK]), slow_snap.model_copy(update={"schedules": schedules}))
     assert (_adjuster(tenth, "schedule").lean, _adjuster(fifth, "schedule").lean) == ("for", "against")
-    assert _adjuster(tenth, "schedule").reason.startswith(
-        "The players it gets have fewer byes left than the players it gives, "
-        "and the playoff opponents are about as hard on both sides.")
+    assert _adjuster(tenth, "schedule").reason == (
+        "Cook faces SEA (18th most points to RBs), HOU (28th), and SF (15th) in weeks 15 to 17.")
 
 
 def test_a_kicker_does_not_count_in_the_byes_left(slow_snap):
@@ -2133,9 +2137,10 @@ def test_the_reason_of_a_side_is_its_first_adjuster_with_a_step_up_in_rubric_ord
         (4, "Side 4 trend and usage."), (12, "Side 12 roster fit.")]
 
 
-def test_a_side_with_no_step_up_gets_the_reason_of_its_start_letter():
+def test_a_side_with_no_step_up_gets_the_deal_row_of_its_start_letter():
     result = _fairness_for(_sided(4, "D", start="C", steps=(0, -1)), _sided(12, "C", steps=(1, -1)))
-    assert [side.reason for side in result.sides] == ["Side 4 start.", "Side 12 roster fit."]
+    assert [side.reason for side in result.sides] == [
+        "What you get and what you give are about even.", "Side 12 roster fit."]
 
 
 def test_the_sides_come_in_the_order_of_the_inputs():
@@ -2548,7 +2553,7 @@ def test_a_player_out_with_no_return_week_counts_for_his_projection_ahead_from_w
     third, _ = grade(_trade(3, [WICKS], 10, [SAQUON]), snap)
     # The injury adjuster still docks one step for out with no near return.
     assert _adjuster(third, "injury").step == -1
-    assert _adjuster(third, "injury").reason == "Saquon Barkley is out with no near return."
+    assert _adjuster(third, "injury").reason == "Barkley is out with no return week on file."
 
 
 def test_a_contender_whose_lineup_gain_comes_from_a_player_out_with_no_return_week_says_he_counts_as_back(snap):
@@ -2636,8 +2641,10 @@ def test_the_trend_reason_of_a_player_whose_known_game_is_in_progress_ends_with_
     snap = _chi_atl_snap(fixture_raw_dir, fixture_history_root, chart_week6, 2)
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
     trend = _adjuster(first, TREND)
-    assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in trend.reason
-    assert "Watson: snap share 85%, up, over weeks 5 and 6." in trend.reason
+    assert ("Odunze plays 97% of the snaps (up), sees 19% of the targets, and averages 4.8 air yards per target, "
+            "game in progress;") in trend.reason
+    assert trend.reason.endswith("Watson plays 85% of the snaps (up), sees 26% of the targets, and averages 10.7 air "
+                                 "yards per target.")
 
 
 def test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team(
@@ -2648,7 +2655,7 @@ def test_the_label_reads_the_team_on_the_week_n_stat_row_before_the_sleeper_team
     snap = snap.model_copy(update={"players": {**snap.players, ODUNZE: moved}})
     assert snap.stats.weeks[6].nfl_teams[ODUNZE] == "CHI"
     first, _ = grade(_trade(1, [WATSON], 4, [ODUNZE]), snap)
-    assert "Odunze: snap share 97%, up, over weeks 5 and 6, game in progress." in _adjuster(first, TREND).reason
+    assert "air yards per target, game in progress;" in _adjuster(first, TREND).reason
 
 
 def test_the_hole_reason_of_a_player_whose_known_game_is_in_progress_ends_with_the_label(
@@ -2698,7 +2705,7 @@ def test_the_prose_checks_of_the_analysis_pass_on_a_reason_with_the_label(
     allowed = _allowed({}, [], breakdown_text)
     trend = _adjuster(breakdowns[0], TREND).reason
     # The analysis can echo the label as a phrase joined by a comma.
-    prose = "Rome Odunze's snap share of 97% is up over weeks 5 and 6, game in progress."
+    prose = "Rome Odunze plays 97% of the snaps, game in progress."
     for text in (trend, prose):
         assert _prose_failures("roster 1 analysis", text, allowed, breakdown_text, names) == []
         assert _letter_failures("roster 1 analysis", text) == []

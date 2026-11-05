@@ -66,6 +66,7 @@ LAYER_OF: dict[str, str] = {
     "league.league_settings": "model",
     "league.paths": "model",
     "league.numbers": "model",
+    "league.nfl_teams": "model",
     "league.player_ids": "model",
     "league.trades": "model",
     "facts": "model",

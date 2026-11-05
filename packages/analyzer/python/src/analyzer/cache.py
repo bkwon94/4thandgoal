@@ -24,7 +24,7 @@ STAT_FIELDS = ("gp", "off_snp", "tm_off_snp", "rec_tgt", "rec_rz_tgt", "rush_rz_
 # A bump is the right move for a shape change: the stored document holds no letter, so no code can add a new
 # block to it later, and only a new key keeps a document in the old shape from a hit.
 # A change to a grade rule bumps it too, so a grade stored under the old rule never serves.
-DOCUMENT_VERSION = 14
+DOCUMENT_VERSION = 15
 
 
 def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:

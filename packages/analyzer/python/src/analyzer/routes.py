@@ -19,12 +19,12 @@ from analyzer.finder import NO_WIN_WIN, FinderTrade, find_win_wins
 from analyzer.finder_reasons import FinderReasons
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.rubric import (
-    CONSOLIDATION_REASON,
-    UNLISTED_REASON_END,
+    NO_CHART_NOTE,
     Breakdown,
     ProposedTrade,
     TradeInputError,
     check_trade,
+    deal_reason,
     fairness,
 )
 from analyzer.trade_facts import shown_ranks
@@ -34,9 +34,6 @@ from league.snapshot import Snapshot
 
 router = APIRouter()
 
-# The line the site shows when the trade week has no chart. The grade then reads the adjusters alone.
-# It names no source, so a manager reads plain advice and never the inner parts of the grade.
-NO_CHART_NOTE = "This week's player values are not out yet, so both sides start even."
 # One 429 body for each full window.
 GRADE_LIMIT_DETAIL = {
     "minute": "Too many grades this minute. Try again later.",
@@ -164,30 +161,11 @@ ANSWERS: dict[str, Answer] = {"accept": "yes", "decline": "no", "counter": "not_
 # Its words name no source of the values, so the row reads as plain advice.
 DEAL = "deal"
 DEAL_LEANS: dict[str, Lean] = {"A": "for", "B": "for", "C": "even", "D": "against", "F": "against"}
-DEAL_REASONS = {
-    "A": "You get far more than you give.",
-    "B": "You get more than you give.",
-    "C": "What you get and what you give are about even.",
-    "D": "You give more than you get.",
-    "F": "You give far more than you get.",
-}
-# One player for two or more divides the sum of the two or more by a margin before the sides compare.
-CONSOLIDATION_DEAL = ", after a discount on the side with more players."
-UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
 
 
-def _deal_row(breakdown: Breakdown, snapshot: Snapshot) -> dict:
+def _deal_row(breakdown: Breakdown) -> dict:
     """The deal row of one side: the start letter as a lean and one plain sentence."""
-    # The breakdown reason names the chart, so the row reads the case from it and writes its own words.
-    if snapshot.chart is None:
-        reason = NO_CHART_NOTE
-    elif breakdown.reason.endswith(UNLISTED_REASON_END):
-        reason = UNLISTED_DEAL
-    elif CONSOLIDATION_REASON in breakdown.reason:
-        reason = DEAL_REASONS[breakdown.start_letter].removesuffix(".") + CONSOLIDATION_DEAL
-    else:
-        reason = DEAL_REASONS[breakdown.start_letter]
-    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": reason}
+    return {"name": DEAL, "lean": DEAL_LEANS[breakdown.start_letter], "reason": deal_reason(breakdown)}
 
 
 def _factor_lean(adjuster: Adjuster) -> Lean:
@@ -229,7 +207,7 @@ def result_document(trade: ProposedTrade, snapshot: Snapshot, analysis: Analysis
             "roster_id": breakdown.roster_id,
             "bullets": side.bullets,
             "factors": [
-                _deal_row(breakdown, snapshot),
+                _deal_row(breakdown),
                 # A row shows when it moves the grade or says something new, so a silent row with no step drops.
                 # The letter math still reads every step.
                 *({"name": adj.name, "lean": _factor_lean(adj), "reason": adj.reason}

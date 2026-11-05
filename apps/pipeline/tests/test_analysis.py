@@ -352,13 +352,13 @@ def test_a_count_that_no_cited_depth_fact_holds_fails(trade, snap):
 
 
 def test_a_share_percent_from_the_trend_reason_is_allowed(trade, snap):
-    # The trend reason of roster 11 gives Tuten's snap share of 64% over weeks 4 and 5. No cited fact holds 64.
+    # The trend reason of roster 11 gives Tuten's snap share of 64%. No cited fact holds 64.
     text = ("Garrett Wilson scored 14.2 points per game before the trade. "
-            "Bhayshul Tuten took 64% of the snaps over weeks 4 and 5. He starts.")
+            "Bhayshul Tuten took 64% of the snaps in his last games. He starts.")
     fake = FakeClaude(_response(eleven=_side(11, bullets=_split(text), cited=[f"{WILSON}.ppg"])))
     result = analyze(trade, snap, call=fake)
     trend = next(a for a in result.breakdowns[0].adjusters if a.name == "trend and usage")
-    assert "Tuten: snap share 64%, up, over weeks 4 and 5." in trend.reason
+    assert "Tuten plays 64% of the snaps (up)" in trend.reason
     assert "64" not in _facts(fake.calls[0][1])[f"{WILSON}.ppg"]
     assert not result.fallback
     assert len(fake.calls) == 1

@@ -92,7 +92,7 @@
     "sides": [
       {
         "roster_id": 4,
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
+        "reason": "What you get and what you give are about even, after a discount on the side with more players."
       },
       {
         "roster_id": 12,
@@ -126,17 +126,17 @@
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways."
+          "reason": "Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target; Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Dalton Kincaid and Garrett Wilson are not in the id map, so no report count ran for them."
+          "reason": "Dalton Kincaid and Garrett Wilson are not in the id map, so no report count ran for them."
         },
         {
           "name": "schedule",
           "lean": "against",
-          "reason": "The players it gets have more byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans against this side."
+          "reason": "Kincaid faces CHI (27th most points to TEs), DEN (11th), and MIA (3rd) in weeks 15 to 17. Wilson has his bye in week 13 and faces ARI (2nd most points to WRs), NE (17th), and MIN (16th) in weeks 15 to 17."
         }
       ]
     },
@@ -165,17 +165,17 @@
         {
           "name": "trend and usage",
           "lean": "even",
-          "reason": "The snap and target shares point both ways."
+          "reason": "Collins plays 72% of the snaps, sees 21% of the targets (down), and averages 8.0 air yards per target; Kincaid plays 71% of the snaps (up), sees 26% of the targets (up), and averages 0.4 air yards per target; Wilson plays 95% of the snaps, sees 35% of the targets (down), and averages 4.8 air yards per target."
         },
         {
           "name": "injury",
           "lean": "even",
-          "reason": "No player it gets is out for long or often on the injury report. Nico Collins is not in the id map, so no report count ran for him."
+          "reason": "Nico Collins is not in the id map, so no report count ran for him."
         },
         {
           "name": "schedule",
           "lean": "for",
-          "reason": "The players it gets have fewer byes left than the players it gives, and the playoff opponents are about as hard on both sides. The schedule leans for this side."
+          "reason": "Collins has his bye in week 8 and faces JAX (8th most points to WRs), PHI (4th), and GB (18th) in weeks 15 to 17."
         }
       ]
     }
