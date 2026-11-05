@@ -12,7 +12,7 @@ The band at the top of every page with the brand mark, the week chip, and the th
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of the destinations of a client. It shows as the dock on a phone and as the pill bar on a desktop.
+The list of the destinations of a client. It shows as the dock on a phone and a tablet, and as the pill bar on a desktop.
 _Avoid_: Drawer, nav, hamburger, navigation
 
 **Pill bar**:
@@ -20,7 +20,7 @@ The row of destinations with full labels in the top band of a desktop.
 _Avoid_: Tab bar, nav bar, link row
 
 **Dock**:
-The bar of destinations that floats at the bottom of the viewport on a phone and stays on screen at every scroll.
+The bar of destinations that floats at the bottom of the viewport on a phone and a tablet, and stays on screen at every scroll.
 _Avoid_: Tab bar, bottom nav, footer
 
 **Week chip**:

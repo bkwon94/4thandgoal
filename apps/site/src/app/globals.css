@@ -351,23 +351,16 @@
       --text-headline: 46px;
     }
     }
-  /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below on a phone, a second row
-     of the pill bar from the tablet tier, and one row again from the rail tier. The padding keeps a focused element or
-     an anchor target clear of it. */
+  /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below at every tier.
+     The padding keeps a focused element or an anchor target clear of it. */
   html {
     @apply font-sans;
     scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
-    @variant tablet {
-      scroll-padding-top: calc(2 * var(--spacing-touch) + 3 * var(--spacing-sp-2));
     }
-    @variant rail {
-      scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
-    }
-    }
-  /* The dock is fixed over the bottom of a phone, so the body keeps its space free under the page. */
+  /* The dock is fixed over the bottom of a phone and a tablet, so the body keeps its space free under the page. */
   body {
     padding-bottom: calc(var(--spacing-dock-space) + env(safe-area-inset-bottom));
-    @variant tablet {
+    @variant desktop {
       padding-bottom: 0;
     }
     }

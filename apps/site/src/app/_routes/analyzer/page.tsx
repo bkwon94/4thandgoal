@@ -19,7 +19,7 @@ export default function AnalyzePage() {
     <>
       <TopBand {...shellProps()} pageHref={analyzeHref()} />
       {/* The bottom space is the 44px bar and the step above it, so the end of the page scrolls clear of the bar. */}
-      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-[calc(var(--spacing-touch)+var(--spacing-sp-6))] tablet:pb-[calc(var(--spacing-touch)+var(--spacing-sp-6)+var(--spacing-sp-4))]">
+      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-[calc(var(--spacing-touch)+var(--spacing-sp-6))] desktop:pb-[calc(var(--spacing-touch)+var(--spacing-sp-6)+var(--spacing-sp-4))]">
         <Analyzer target={apiTarget} finderOn={finderOn} />
       </main>
     </>
