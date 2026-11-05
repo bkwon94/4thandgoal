@@ -22,9 +22,20 @@ function topLine(side: MatchupSide): string | null {
 }
 
 /* One team of the matchup: the avatar, the name with the top player under it, and the score.
-   Each line of text sits on a plate, so the grid and the glow never sit under a letter. */
-function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMap; lead: boolean }) {
-  const top = topLine(side);
+   Each line of text sits on a plate, so the grid and the glow never sit under a letter.
+   The home hero passes withTop false, because it shows the matchup in one look and not its players. */
+export function TeamRow({
+  side,
+  avatars,
+  lead,
+  withTop = true,
+}: {
+  side: MatchupSide;
+  avatars: AvatarMap;
+  lead: boolean;
+  withTop?: boolean;
+}) {
+  const top = withTop ? topLine(side) : null;
   return (
     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
       <Avatar src={avatarSrc(avatars, side.team.roster_id)} />

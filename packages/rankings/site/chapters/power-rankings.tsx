@@ -86,6 +86,11 @@ function playoffText(odds: Odds | undefined): ReactNode {
   return `${odds.playoff}%`;
 }
 
+/* The playoff odds as a component, so a server part such as the top three of the home page can render them. */
+export function PlayoffOdds({ odds }: { odds: Odds | undefined }) {
+  return <>{playoffText(odds)}</>;
+}
+
 /* The part of the bar that the playoff odds fill: all of it for a clinched team, none of it for a team that is out. */
 function playoffFill(odds: Odds): number {
   if (odds.status === "in") return 100;
@@ -94,7 +99,7 @@ function playoffFill(odds: Odds): number {
 }
 
 /* The record and the movement on one line, as "9-3 · ▲4". */
-function RecordLine({ row }: { row: RankingsRow }) {
+export function RecordLine({ row }: { row: RankingsRow }) {
   return (
     <>
       <span>{record(row.wins, row.losses)}</span>
