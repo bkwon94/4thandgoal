@@ -16,6 +16,7 @@ from analyzer.rubric import (
     TradeSide,
     fairness,
     grade,
+    reason_names,
     unlisted_players,
 )
 from analyzer.tunables import FINDER_TOP
@@ -129,10 +130,11 @@ def find_win_wins(asker: int, partner: int, snapshot: Snapshot) -> list[FinderTr
     An empty list when there is none.
     """
     found = []
+    names = reason_names(snapshot)
     for trade in candidates(asker, partner, snapshot):
         breakdowns = grade(trade, snapshot)
         # No Claude call runs here, so the letters that stand are the rubric's final letters.
-        result = fairness((breakdowns[0].final_letter, breakdowns[1].final_letter), breakdowns)
+        result = fairness((breakdowns[0].final_letter, breakdowns[1].final_letter), breakdowns, names=names)
         if result.state == "win_win":
             found.append(FinderTrade(trade=trade, breakdowns=breakdowns, fairness=result))
     return _no_shared_player(rank(found))

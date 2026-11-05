@@ -25,6 +25,7 @@ from analyzer.rubric import (
     TradeSide,
     fairness,
     grade,
+    reason_names,
     verdict,
 )
 from cornerstone.pipeline import (
@@ -361,7 +362,7 @@ def run_analyze(
     print(f"Verdict for {snapshot.teams[trade.asker].name}: {choice.choice}. {choice.reason}{flag}")
     # The fairness reads the letters that stand: Claude's when the call ran, the rubric's without it.
     letters = analysis.standing_letters if analysis is not None else tuple(b.final_letter for b in result)
-    for line in _fairness_lines(snapshot, fairness(letters, result)):
+    for line in _fairness_lines(snapshot, fairness(letters, result, names=reason_names(snapshot))):
         print(line)
     return 0
 

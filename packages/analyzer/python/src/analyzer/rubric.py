@@ -2,6 +2,7 @@
 The trade analyzer rubric in code: the proposed trade, its input check, each side's grade, the verdict, and fairness.
 The grade gives each side a start letter, runs the adjusters in ADJUSTERS, and clamps their sum into a final letter.
 """
+from collections.abc import Collection
 from decimal import Decimal
 from typing import Literal
 
@@ -28,6 +29,7 @@ from analyzer.tunables import (
     UNEVEN_MARGIN,
     WIN_WIN_AT_OR_ABOVE,
 )
+from facts.names import last_name
 from league.ranks import lineup_value
 from league.snapshot import Snapshot
 
@@ -423,18 +425,22 @@ def deal_reason(breakdown: Breakdown) -> str:
     return DEAL_REASONS[breakdown.start_letter]
 
 
-# The plain first words of the adjuster reasons. Any other first word starts a name, which keeps its capital.
-PLAIN_FIRST_WORDS = {"You", "The", "In", "Out", "Outside", "No"}
+def reason_names(snapshot: Snapshot) -> frozenset[str]:
+    """The names an adjuster reason can start with: the full name and the last name of each player on the rosters."""
+    full = [player.name for player in snapshot.players.values()]
+    return frozenset(full) | {last for last in map(last_name, full) if last}
 
 
-def _joined(down: str) -> str:
-    """The down reason as it reads after ", but ": a lower-case first letter, unless its first word is a name."""
-    if down.split(" ", 1)[0] in PLAIN_FIRST_WORDS:
-        return down[0].lower() + down[1:]
-    return down
+def _joined(down: str, names: Collection[str]) -> str:
+    """The down reason as it reads after ", but ": a lower-case first letter, unless it starts with a name."""
+    # A list of plain first words misses each new reason, so the rule reads the names. A name ends at a non-letter,
+    # so "Walker" keeps "Walker's" but not "Walkers".
+    if any(down.startswith(name) and not down[len(name):len(name) + 1].isalpha() for name in names):
+        return down
+    return down[0].lower() + down[1:]
 
 
-def _side_reason(breakdown: Breakdown) -> str:
+def _side_reason(breakdown: Breakdown, names: Collection[str]) -> str:
     """The reason that names what moved the letter of a side, from the net sum of its steps before the clamp.
 
     A net above zero gives the first step up, in rubric order, and a net below zero gives the first step down.
@@ -450,12 +456,15 @@ def _side_reason(breakdown: Breakdown) -> str:
         return down or deal_reason(breakdown)
     if up and down:
         # The step up and the step down cancel, so the reason names both, or "Fair" would sit next to a lone gain.
-        return up.removesuffix(".") + ", but " + _joined(down)
+        return up.removesuffix(".") + ", but " + _joined(down, names)
     return deal_reason(breakdown)
 
 
-def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> Fairness:
-    """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call."""
+def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...], *, names: Collection[str]) -> Fairness:
+    """Both inputs come in the order of the trade's sides. The letters are the ones that stand after the Claude call.
+
+    `names` are the names that keep their capital after ", but ". Pass reason_names of the snapshot of the grade.
+    """
     sides = list(zip(letters, breakdowns))
     if all(_at_or_above(letter, WIN_WIN_AT_OR_ABOVE) for letter, _ in sides):
         state, gives_more = "win_win", None
@@ -467,4 +476,4 @@ def fairness(letters: tuple[Letter, ...], breakdowns: tuple[Breakdown, ...]) -> 
     else:
         state, gives_more = "fair", None
     return Fairness(state=state, gives_more=gives_more,
-                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_side_reason(b)) for _, b in sides))
+                    sides=tuple(FairnessSide(roster_id=b.roster_id, reason=_side_reason(b, names)) for _, b in sides))

@@ -25,6 +25,7 @@ from analyzer.rubric import (
     Verdict,
     fairness,
     grade,
+    reason_names,
     verdict,
 )
 from analyzer.trade_facts import trade_fact_sheet
@@ -466,7 +467,7 @@ def test_a_player_out_for_the_season_and_off_the_chart_counts_zero_and_is_never_
     result = grade(_trade(4, [CROSKEY], 12, [KINCAID], 7, [HARRISON]), snap)
     assert _letters(result) == ["A", "F", "D"]
     assert not any("no trade value" in side.reason for side in result)
-    trade_fairness = fairness(tuple(side.final_letter for side in result), result)
+    trade_fairness = fairness(tuple(side.final_letter for side in result), result, names=reason_names(snap))
     assert (trade_fairness.state, trade_fairness.gives_more) == ("lopsided", 12)
 
 
@@ -2294,10 +2295,13 @@ def _sided(roster_id: int, final: str, start: str | None = None, steps: tuple[in
                      adjusters=adjusters, final_letter=final)
 
 
-def _fairness_for(first: Breakdown, second: Breakdown, letters: tuple[str, str] | None = None):
-    """The fairness of a trade between roster 4 and roster 12. The letters default to the breakdowns' final letters."""
+def _fairness_for(first: Breakdown, second: Breakdown, letters: tuple[str, str] | None = None, names=()):
+    """The fairness of a trade between roster 4 and roster 12. The letters default to the breakdowns' final letters.
+
+    `names` are the names that keep their capital after ", but ". By default no first word keeps it.
+    """
     letters = letters or (first.final_letter, second.final_letter)
-    return fairness(letters, (first, second))
+    return fairness(letters, (first, second), names=names)
 
 
 @pytest.mark.parametrize("first, second", [("B", "B"), ("A", "B"), ("B", "A")])
@@ -2345,9 +2349,9 @@ def test_a_net_below_zero_gives_the_first_step_down_in_rubric_order():
 
 
 def test_a_net_of_zero_with_steps_gives_the_first_step_up_but_the_first_step_down():
-    # "Side" is no plain first word, so the step down keeps its capital. The next test reads the lower case.
+    # "Side" is no name, so the step down starts in lower case. The next test reads the names.
     result = _fairness_for(_sided(4, "C", steps=(0, -1, 1)), _sided(12, "C"))
-    assert result.sides[0].reason == "Side 4 trend and usage, but Side 4 standing."
+    assert result.sides[0].reason == "Side 4 trend and usage, but side 4 standing."
 
 
 def _cancelled(down: str) -> Breakdown:
@@ -2361,11 +2365,13 @@ def _cancelled(down: str) -> Breakdown:
     ("You go from 2 RBs in the top 36 to 1.", "you go from 2 RBs in the top 36 to 1."),
     ("The trade leaves RB2 short: no player fills it.", "the trade leaves RB2 short: no player fills it."),
     ("In a playoff spot, so you need points now.", "in a playoff spot, so you need points now."),
+    ("Your lineup scores less.", "your lineup scores less."),
     ("Walker is out for the season.", "Walker is out for the season."),
     ("Ja'Marr Chase is out for the season.", "Ja'Marr Chase is out for the season."),
 ])
-def test_the_step_down_after_but_starts_in_lower_case_unless_its_first_word_is_a_name(down, joined):
-    result = _fairness_for(_cancelled(down), _sided(12, "C"))
+def test_the_step_down_after_but_starts_in_lower_case_unless_its_first_word_is_a_name(snap, down, joined):
+    # The names come from the rosters of the week 6 snapshot, which hold Walker and Ja'Marr Chase.
+    result = _fairness_for(_cancelled(down), _sided(12, "C"), names=reason_names(snap))
     assert result.sides[0].reason == "Kenneth Walker III is a superstar, a top 8 player this week, but " + joined
 
 
@@ -2383,7 +2389,7 @@ def test_a_side_at_a_with_a_net_above_zero_keeps_a_and_gives_its_step_up():
 
 
 def test_the_sides_come_in_the_order_of_the_inputs():
-    result = fairness(("C", "C"), (_sided(12, "C"), _sided(4, "C")))
+    result = fairness(("C", "C"), (_sided(12, "C"), _sided(4, "C")), names=())
     assert [side.roster_id for side in result.sides] == [12, 4]
 
 
@@ -2401,16 +2407,16 @@ def test_fairness_reads_the_letters_it_gets_and_not_the_breakdown_final_letters(
 ])
 def test_a_three_side_fairness_runs_the_same_rule_over_every_side(letters, state, gives_more):
     breakdowns = tuple(_sided(roster_id, letter) for roster_id, letter in zip((4, 12, 7), letters))
-    result = fairness(letters, breakdowns)
+    result = fairness(letters, breakdowns, names=())
     assert (result.state, result.gives_more) == (state, gives_more)
     assert [side.roster_id for side in result.sides] == [4, 12, 7]
 
 
 def test_in_a_three_side_fairness_the_lower_start_letter_then_the_first_side_gives_more():
     by_start = (_sided(4, "D", start="C", steps=(-1,)), _sided(12, "D", start="F", steps=(1,)), _sided(7, "D"))
-    assert fairness(("D", "D", "D"), by_start).gives_more == 12
+    assert fairness(("D", "D", "D"), by_start, names=()).gives_more == 12
     full_tie = (_sided(4, "B"), _sided(12, "F"), _sided(7, "F"))
-    assert fairness(("B", "F", "F"), full_tie).gives_more == 12
+    assert fairness(("B", "F", "F"), full_tie, names=()).gives_more == 12
 
 
 def test_a_three_side_verdict_is_for_the_asker_against_the_best_other_side():
