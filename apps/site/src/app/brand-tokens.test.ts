@@ -97,9 +97,9 @@ const LOOK = declarations(blocksAt(GLOBALS.replace(/\/\*[\s\S]*?\*\//g, ""), /@t
 
 describe("the fonts and the radii of the look", () => {
   it("set Space Grotesk for text and headings and JetBrains Mono for numbers, from the font variables of the root layout", () => {
-    expect(LOOK.get("--font-sans")).toBe("var(--font-space-grotesk), Arial, sans-serif");
+    expect(LOOK.get("--font-sans")).toBe("var(--font-space-grotesk)");
     expect(LOOK.get("--font-heading")).toBe("var(--font-sans)");
-    expect(LOOK.get("--font-mono")).toBe('var(--font-jetbrains-mono), Menlo, "Courier New", monospace');
+    expect(LOOK.get("--font-mono")).toBe("var(--font-jetbrains-mono)");
   });
 
   it("set 24px for the hero, 20px for a card, 18px for a tile, and a full pill for a button and a bar", () => {
@@ -135,9 +135,19 @@ describe("the source of the site (AT-8)", () => {
   });
 });
 
+/* The site self-hosts its fonts with next/font/local. next/font/google fetches from Google at each build, so it is banned
+   with the outside font hosts and any remote url of a stylesheet. */
+const OUTSIDE_FONT = /next\/font\/google|fonts\.googleapis|fonts\.gstatic|use\.typekit|url\(\s*["']?(https?:)?\/\//;
+
 describe("the fonts of the site", () => {
-  it("load from no outside host: no next/font, no font service, and no remote url in a stylesheet", () => {
-    const pattern = /next\/font|fonts\.googleapis|fonts\.gstatic|use\.typekit|url\(\s*["']?(https?:)?\/\//;
+  it("ban next/font/google and the outside hosts, but not next/font/local", () => {
+    expect(OUTSIDE_FONT.test('import { Inter } from "next/font/google";')).toBe(true);
+    expect(OUTSIDE_FONT.test('src: url("https://fonts.example.com/a.woff2")')).toBe(true);
+    expect(OUTSIDE_FONT.test('import localFont from "next/font/local";')).toBe(false);
+  });
+
+  it("load from no outside host: no next/font/google, no font service, and no remote url in a stylesheet", () => {
+    const pattern = OUTSIDE_FONT;
     const dirs = [join(process.cwd(), "src"), join(ROOT, "packages", "design", "site")];
     const hits = dirs
       .flatMap((dir) => sourceFiles(dir))

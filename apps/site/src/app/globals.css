@@ -46,10 +46,10 @@
 
     /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
        <html> from src/app/fonts/fonts.ts. Space Grotesk sets text and headings. JetBrains Mono sets numbers, scores,
-       and small uppercase labels. */
-    --font-sans: var(--font-space-grotesk), Arial, sans-serif;
+       and small uppercase labels. Each variable already holds its fallback faces. */
+    --font-sans: var(--font-space-grotesk);
     --font-heading: var(--font-sans);
-    --font-mono: var(--font-jetbrains-mono), Menlo, "Courier New", monospace;
+    --font-mono: var(--font-jetbrains-mono);
 
     /* The radii of the look: the hero, a card, a tile, and a full pill for a button and a bar.
        rounded-sm paints the tags and the bars, so it takes the pill. */
