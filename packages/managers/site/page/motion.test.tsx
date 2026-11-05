@@ -1,8 +1,8 @@
 /**
  * Tests for the motion of the manager page with motion on. jsdom has no matchMedia, so Framer Motion reads no reduced motion.
- * The odds count from zero once and must end at the final percent. The grade and the slot lines must end at rest.
+ * The odds count from zero once and must end at the final percent. The grade and the slot tiles must end at rest.
  */
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
@@ -48,9 +48,9 @@ describe("Manager page motion", () => {
     await waitFor(() => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"), { timeout: 1000 });
   });
 
-  it("enters the four slot rank lines, each in its own reveal", async () => {
+  it("enters the four slot tiles, each in its own reveal", async () => {
     render(<Roster manager={managerOf(null)} teams={12} />);
-    const lines = screen.getAllByRole("listitem");
+    const lines = within(screen.getByRole("list", { name: "Slot Ranks" })).getAllByRole("listitem");
     expect(lines).toHaveLength(4);
     for (const line of lines) expect(line.querySelector("[data-reveal]")).not.toBeNull();
     await waitFor(

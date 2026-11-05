@@ -218,14 +218,14 @@ describe("Reduced motion on the manager page", () => {
     expect(odds.textContent).toBe("63%");
   });
 
-  it("shows the four slot rank lines at rest at once", async () => {
+  it("shows the four slot tiles at rest at once", async () => {
     render(<Roster manager={managerWithOdds()} teams={12} />);
-    const lines = screen.getAllByRole("listitem");
+    const lines = within(screen.getByRole("list", { name: "Slot Ranks" })).getAllByRole("listitem");
     expect(lines.map((line) => line.textContent)).toEqual([
-      "QB · 12th of 12 · fine",
-      "RB · 9th of 12 · deep",
-      "WR · 2nd of 12 · thin",
-      "TE · 4th of 12 · deep",
+      "QB12thof 12 · fine",
+      "RB9thof 12 · deep",
+      "WR2ndof 12 · thin",
+      "TE4thof 12 · deep",
     ]);
     await waitFor(() => lines.forEach((line) => expectAtRest(line)), { timeout: 50 });
   });

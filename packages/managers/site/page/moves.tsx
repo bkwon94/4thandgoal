@@ -5,6 +5,7 @@
 import { Fragment } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
+import { Tile } from "@cpc/design/parts/tile";
 import { managerHrefOrNull } from "@cpc/league/hrefs";
 import type { Manager, ManagerEntry, ManagerPlayer, MoveAdd, MoveTrade, MoveWeek } from "../schema/manager-types";
 import { cn } from "@cpc/design/lib/utils";
@@ -117,24 +118,14 @@ function Week({ week, first, managers, managersHref }: { week: MoveWeek; first: 
   );
 }
 
-/* The three season totals in one row. The count is the emphasis, and a zero count takes the quiet color. */
+/* The three season totals, a tile each, in one row. A zero is a count too, so it shows as a plain 0. */
 function Totals({ adds, drops, trades }: { adds: number; drops: number; trades: number }) {
-  const totals: [string, number][] = [
-    ["Adds", adds],
-    ["Drops", drops],
-    ["Trades", trades],
-  ];
   return (
-    <dl role="group" aria-label="Move Totals" className="m-0 mb-sp-6 grid grid-cols-3 gap-sp-3">
-      {totals.map(([label, count]) => (
-        <div key={label} className="flex flex-col">
-          <dt className={QUIET_LABEL}>{label}</dt>
-          <dd className={cn("m-0 mt-sp-1 text-stat leading-tight font-extrabold tabular-nums", count === 0 ? "text-mute" : "text-ink")}>
-            {count}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <div role="group" aria-label="Move Totals" className="mb-sp-6 grid grid-cols-3 gap-sp-2">
+      <Tile label="Adds" value={adds} />
+      <Tile label="Drops" value={drops} />
+      <Tile label="Trades" value={trades} />
+    </div>
   );
 }
 

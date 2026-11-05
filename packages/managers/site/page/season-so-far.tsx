@@ -1,16 +1,16 @@
 /**
- * The Season So Far chapter of a manager page: the points line, the bench points, and the four season stats.
- * The three groups stack with air between them. Each line has one quiet label and one emphasis.
+ * The Season So Far chapter of a manager page: the points line against the dashed median line, the season tiles, and the bench points.
+ * The three groups stack with air between them. A filled dot of the line marks a win.
  */
-import type { ReactNode } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
+import { Tile } from "@cpc/design/parts/tile";
 import { num } from "@cpc/design/format/format";
 import type { Bench, Manager, SeasonWeek } from "../schema/manager-types";
 import { mediansOf } from "./medians";
 import { PointsLine } from "./points-line";
 
-/* The quiet label style of the page, as the hero's season numbers use it. */
+/* The quiet label style of the bench points. */
 const QUIET_LABEL = "text-meta leading-tight font-semibold tracking-caps text-mute uppercase";
 
 /* The bench points: the season total as the emphasis, and one quiet sentence that says what the total means. */
@@ -34,61 +34,25 @@ function BenchPoints({ bench }: { bench: Bench | null }) {
   );
 }
 
-/* The run of one result at the end of the season, such as "W3" or "L2". A week with no result ends the run,
-   so a last week with no result gives no run and the dash. */
-function streakOf(weeks: SeasonWeek[]): string {
-  const last = weeks.at(-1)?.won ?? null;
-  if (last === null) return "—";
-  let run = 0;
-  for (let i = weeks.length - 1; i >= 0 && weeks[i].won === last; i--) run++;
-  return `${last ? "W" : "L"}${run}`;
+/* The week of the most points. A tie goes to the earlier week. */
+function highOf(weeks: SeasonWeek[]): SeasonWeek {
+  return weeks.reduce((peak, week) => (week.points > peak.points ? week : peak));
 }
 
-/* The week of the most points, or of the fewest. A tie goes to the earlier week. */
-function peakOf(weeks: SeasonWeek[], better: (a: number, b: number) => boolean): SeasonWeek {
-  return weeks.reduce((peak, week) => (better(week.points, peak.points) ? week : peak));
-}
-
-/* One stat: one quiet label over it, the number as the one emphasis, and at most one quiet line under it. */
-function Stat({ label, children, context }: { label: string; children: ReactNode; context?: string }) {
-  return (
-    <div className="min-w-0">
-      <dt className={QUIET_LABEL}>{label}</dt>
-      <dd className="m-0 mt-sp-2 text-score leading-none font-extrabold text-ink tabular-nums">{children}</dd>
-      {context && <dd className="m-0 mt-sp-1 text-meta text-mute">{context}</dd>}
-    </div>
-  );
-}
-
-/* The four season stats from the points per week. A week above the median is a win against it, and any other week a loss.
-   A league with no median game has no record against the median, so it shows three stats. */
-function SeasonNumbers({ weeks }: { weeks: SeasonWeek[] }) {
+/* The three season tiles: the points for, the record against the median, and the high week.
+   A week above the median is a win against it, and any other week a loss.
+   A league with no median game has no record against the median, so it shows two tiles. */
+function SeasonNumbers({ pointsFor, weeks }: { pointsFor: number; weeks: SeasonWeek[] }) {
   if (weeks.length === 0) return null;
-  const high = peakOf(weeks, (a, b) => a > b);
-  const low = peakOf(weeks, (a, b) => a < b);
+  const high = highOf(weeks);
   const medians = mediansOf(weeks);
+  const above = medians ? weeks.filter((week, i) => week.points > medians[i]).length : 0;
   return (
-    // A phone fits two stats per row whole. Four per row breaks the long labels mid-word, which reads as a defect.
-    <dl role="group" aria-label="Season Numbers" className="m-0 grid grid-cols-2 gap-x-sp-2 gap-y-sp-4 tablet:grid-cols-4">
-      <Stat label="Season High" context={`week ${high.week}`}>
-        {num(high.points)}
-      </Stat>
-      <Stat label="Season Low" context={`week ${low.week}`}>
-        {num(low.points)}
-      </Stat>
-      <Stat label="Streak">{streakOf(weeks)}</Stat>
-      {medians && <MedianRecord weeks={weeks} medians={medians} />}
-    </dl>
-  );
-}
-
-/* The record against the median: a week above the median is a win against it. */
-function MedianRecord({ weeks, medians }: { weeks: SeasonWeek[]; medians: number[] }) {
-  const above = weeks.filter((week, i) => week.points > medians[i]).length;
-  return (
-    <Stat label="Against The Median" context="wins above the median">
-      {`${above}-${weeks.length - above}`}
-    </Stat>
+    <div role="group" aria-label="Season Numbers" className="grid grid-cols-2 gap-sp-2 tablet:grid-cols-3">
+      <Tile label="Points For" value={num(pointsFor)} />
+      {medians && <Tile label="Vs Median" value={`${above}-${weeks.length - above}`} />}
+      <Tile label="High Week" value={num(high.points)} note={`week ${high.week}`} />
+    </div>
   );
 }
 
@@ -100,10 +64,10 @@ export function SeasonSoFar({ manager }: { manager: Manager }) {
       <PointsLine weeks={manager.weeks} />
       {/* The space between the groups sets them apart, so the chapter reads as three groups. */}
       <div className="mt-sp-6">
-        <BenchPoints bench={manager.bench} />
+        <SeasonNumbers pointsFor={manager.points_for} weeks={manager.weeks} />
       </div>
       <div className="mt-sp-6">
-        <SeasonNumbers weeks={manager.weeks} />
+        <BenchPoints bench={manager.bench} />
       </div>
     </Chapter>
   );

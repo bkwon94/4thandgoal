@@ -1,7 +1,7 @@
 /**
  * Tests for the manager page route. Each test builds a temp public/ folder with a week page, the managers file, and the rankings file.
  * They read the static params and what a reader sees: the back link, the hero with the grade, the tiles, and the chips, then the chapters.
- * The Roster chapter reads the slot ranks of the grade, one line each.
+ * The Roster chapter reads a tile for each slot rank of the grade, then the ranks of the grade parts.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
@@ -167,14 +167,28 @@ describe("ManagerPage", () => {
     ]);
   });
 
-  it("lists the four slot ranks in the Roster chapter, one line each, in the file's order", async () => {
+  it("shows a tile for each position slot in the Roster chapter, with its rank and its depth, in the file's order", async () => {
     await renderManager("9", { rankings: rankingsFixture });
-    const roster = screen.getByRole("heading", { level: 2, name: "Roster" }).closest("section")!;
-    expect(within(roster).getAllByRole("listitem").map((line) => line.textContent)).toEqual([
-      "QB · 1st of 12 · fine",
-      "RB · 2nd of 12 · thin",
-      "WR · 12th of 12 · fine",
-      "TE · 3rd of 12 · fine",
+    const slots = screen.getByRole("list", { name: "Slot Ranks" });
+    // The lines of a tile are the boxes with no box inside: the label, the number, and the note.
+    const linesOf = (item: HTMLElement) =>
+      [...item.querySelectorAll("div")].filter((box) => box.children.length === 0).map((line) => line.textContent);
+    expect(within(slots).getAllByRole("listitem").map(linesOf)).toEqual([
+      ["QB", "1st", "of 12 · fine"],
+      ["RB", "2nd", "of 12 · thin"],
+      ["WR", "12th", "of 12 · fine"],
+      ["TE", "3rd", "of 12 · fine"],
+    ]);
+  });
+
+  it("lists the four grade parts with their ranks under the slot tiles", async () => {
+    await renderManager("9", { rankings: rankingsFixture });
+    const parts = screen.getByRole("list", { name: "Grade Parts" });
+    expect(within(parts).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Projection Ahead9th of 12",
+      "Season Production12th of 12",
+      "Trade Value3rd of 12",
+      "Depth And Holes6th of 12",
     ]);
   });
 
@@ -185,7 +199,7 @@ describe("ManagerPage", () => {
     expect(within(hero).queryByRole("button")).toBeNull();
     expect(within(hero).getByLabelText("No grade").textContent).toBe("—");
     const roster = screen.getByRole("heading", { level: 2, name: "Roster" }).closest("section")!;
-    expect(within(roster).queryAllByRole("listitem")).toHaveLength(0);
+    expect(within(roster).queryAllByRole("list")).toHaveLength(0);
     expect(within(roster).getByText("No grade yet.")).toBeTruthy();
   });
 
@@ -194,7 +208,7 @@ describe("ManagerPage", () => {
     await renderManager("5", { rankings: rankingsFixture });
     const moves = screen.getByRole("heading", { name: "Moves" }).closest("section")!;
     const totals = within(moves).getByRole("group", { name: "Move Totals" });
-    expect([...totals.querySelectorAll("dd")].map((count) => count.textContent)).toEqual(["2", "1", "1"]);
+    expect([...totals.children].map((tile) => tile.children[1].textContent)).toEqual(["2", "1", "1"]);
     const weeks = within(moves).getAllByRole("group", { name: /^Week / });
     expect(weeks.map((group) => group.getAttribute("aria-label"))).toEqual([
       "Week 6",
@@ -208,7 +222,7 @@ describe("ManagerPage", () => {
     expect(within(moves).getAllByText("No moves.")).toHaveLength(4);
   });
 
-  it("shows the season so far: the dots, the bench line, and the four season stats", async () => {
+  it("shows the season so far: the dots, the bench line, and the three season tiles", async () => {
     // Maye d'force B with U won weeks 1, 2, 5, and 6, and beat the median in weeks 1, 5, and 6.
     await renderManager("9", { rankings: rankingsFixture });
     const line = screen.getByRole("img", { name: "Points per week against the league median" });
@@ -216,8 +230,8 @@ describe("ManagerPage", () => {
     expect(line.querySelectorAll('[data-result="win"]')).toHaveLength(4);
     expect(screen.getByText(/Worst in week 4: 13\.68 points, Drake Maye sat\.$/)).toBeTruthy();
     const stats = screen.getByRole("group", { name: "Season Numbers" });
-    const numbers = [...stats.querySelectorAll("dt")].map((term) => term.nextElementSibling?.textContent);
-    expect(numbers).toEqual(["158.96", "87.93", "W2", "3-3"]);
+    const numbers = [...stats.children].map((tile) => tile.children[1].textContent);
+    expect(numbers).toEqual(["698.3", "3-3", "158.96"]);
   });
 
   it("lists the best adds and the top performers in order", async () => {

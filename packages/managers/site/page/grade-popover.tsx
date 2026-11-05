@@ -8,17 +8,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@cpc/design/ui/popover";
 import { ordinal } from "@cpc/design/format/format";
-import type { GradePart, ManagerGrade } from "../schema/manager-types";
+import type { ManagerGrade } from "../schema/manager-types";
+import { PART_NAMES } from "./part-names";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT } from "@cpc/design/lib/motion";
-
-/* The name of each part of the grade, keyed by the key in the file. A new part is one more line here. */
-const PART_NAMES: Record<GradePart["key"], string> = {
-  projection: "Projection Ahead",
-  production: "Season Production",
-  trade_value: "Trade Value",
-  depth: "Depth And Holes",
-};
 
 /* The scale the popover starts from. It matches the Past Weeks popover, so the popover grows out of the letter and does not pop. */
 const POPOVER_SCALE = 0.95;
