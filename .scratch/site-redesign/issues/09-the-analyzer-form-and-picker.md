@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-19, AT-20, AT-21, AT-
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The empty analyzer shows two teams, "2 of 4", and the bar turned off.
 - [x] The sheet closes with Done, the close button, and a tap on the dim page, and keeps the picks.
