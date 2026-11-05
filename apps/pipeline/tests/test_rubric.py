@@ -299,6 +299,7 @@ def _no_chart_week_9(snap, raw_dir, nfl):
 
 
 def _saved_read(nfl, week, read):
+    """Save the chart read file `read` as the saved read of `week` for the chart of the client, under `nfl`."""
     path = chart_read(nfl, CLIENT.chart, week)
     path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(read, path)
