@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The brand schema keeps only the `light` and the `dark` sets, both required. A `[fonts]` key, a radius key, or a missing set fails the build and names the key or the set.
 - [x] `brand.toml` of CPC and of NorCal hold the light set of the spec table, with the new roles `raised` and `grid` in both sets.
