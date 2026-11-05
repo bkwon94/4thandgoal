@@ -43,11 +43,13 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
       >
         <DialogHeader>
           <DialogTitle className="text-stat leading-stat font-black uppercase">League Passphrase</DialogTitle>
-          <DialogDescription className="text-body text-mute">The league passphrase. Ask a league member.</DialogDescription>
+          {/* One short line: axe reads the page under the dialog for each line of text, and two lines over different parts
+              of the page leave the contrast as incomplete, which fails the readability floor. */}
+          <DialogDescription className="text-lead text-mute">Ask a league member for it.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-sp-3">
           {error && <ErrorLine>{error}</ErrorLine>}
-          <Label htmlFor="passphrase" className="text-label font-bold tracking-wide uppercase">
+          <Label htmlFor="passphrase" className="min-h-touch text-meta font-bold tracking-wide uppercase">
             Passphrase
           </Label>
           <Input

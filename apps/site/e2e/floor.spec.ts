@@ -34,6 +34,12 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   "/rankings/",
   // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
   { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
+  "/2026/managers/",
+  // The manager page of the longest team name of each client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
+  // Both clients build both roster ids, so each client checks both pages.
+  "/2026/managers/7/",
+  "/2026/managers/4/",
+  "/analyze/",
   LATEST_WEEK_ROUTE,
   // The open recap of game 3 of the latest week. Each game card button controls the recap panel of its game.
   { route: LATEST_WEEK_ROUTE, tap: 'button[aria-controls="recap-3"]' },

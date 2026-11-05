@@ -41,14 +41,15 @@ describe("BestAdds", () => {
     ]);
   });
 
-  it("shows a headshot from the Sleeper CDN for each add", () => {
+  it("shows each add in a round photo frame: a Sleeper headshot for a player, the initials for a defense", () => {
     render(<BestAdds manager={manager} />);
-    const images = within(screen.getByRole("list")).getAllByRole("presentation");
-    expect(images.map((img) => img.getAttribute("src"))).toEqual([
-      "https://sleepercdn.com/content/nfl/players/5022.jpg",
-      "https://sleepercdn.com/content/nfl/players/CLE.jpg",
-      "https://sleepercdn.com/content/nfl/players/JAX.jpg",
-    ]);
+    const rows = within(screen.getByRole("list")).getAllByRole("listitem");
+    // The name sits next to the frame, so the frame is decorative.
+    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/5022.jpg");
+    // The CDN has no headshot of a defense, so its frame shows the initials of the team.
+    expect(rows[1].querySelector("img")).toBeNull();
+    expect(rows[1].querySelector("[aria-hidden]")?.textContent).toBe("CB");
+    expect(rows[2].querySelector("[aria-hidden]")?.textContent).toBe("JJ");
   });
 
   it("leaves the position out of the line when the position is null", () => {
