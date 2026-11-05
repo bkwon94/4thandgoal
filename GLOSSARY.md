@@ -920,6 +920,14 @@ _Avoid_: Storyline (that is the reason a next-week game matters), narrative, sto
 A player's points to date against his draft cost in his league's own draft: dollars in an auction, pick number in a snake. It names a steal or a bust.
 _Avoid_: Value (alone), ADP, Trade value (that is the chart worth of a player)
 
+**Points over the line**:
+A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.
+_Avoid_: Points over replacement, VORP, value over replacement
+
+**Swung win**:
+A win of a team that the points of one of its starters decided: the team won, and that starter scored more than the margin.
+_Avoid_: Clutch win, game winner, difference maker
+
 ## Client language
 
 The terms of the structure that both apps share: the clients, the packages, and the apps.

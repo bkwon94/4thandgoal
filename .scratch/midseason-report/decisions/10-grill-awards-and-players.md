@@ -12,6 +12,8 @@ Map: `.scratch/midseason-report/MAP.md`.
 
 The report names top performers across all teams, midseason awards, and players to watch for the second half. The spec needs: the list of awards and the fact behind each one, the rule of a top performer, for example by position or overall, and the rule of a player to watch. The roast rules of the map apply to each award.
 
+Brian added on 2026-11-05: the report also shows the top 10 at each position, not only the top performers overall. The grill decides the positions, the measure, and the look.
+
 ## Decision
 
 None yet.

@@ -25,10 +25,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - Draft value compares within the position: the cost rank against the points rank on total points. Busts have a hurt or just-bad tag. Starter ranges, top 5 each, and the drafter owns the label. `decisions/02-grill-draft-value-rule.md`.
 - The sim keeps the `odds.py` draw and adds the bracket, with CPC reseeded, plus full counts and 10,000 runs. It orders by mean wins with a seed heat map, and stores 200 sample runs and the parameters. `decisions/07-research-the-sim-model.md`.
 - The fix for the gap in the transaction history is its own spec, `transaction-history`, before the week 9 build. `decisions/12-research-transaction-history-gap.md`.
+- A pickup earns credit for starter points for its adder, with starts and swung wins. RB, WR, and TE rank by Points over the line, streamers feed a streaming king award, a miss cost 10% of the budget or more, and an outbid list shows lost bids. `decisions/03-grill-waiver-hit-and-miss.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the report score a waiver hit and a waiver miss? `decisions/03-grill-waiver-hit-and-miss.md`.
 - What is the rubric of a trade's grade to date, and how does it relate to the analyzer's grade? `decisions/04-grill-trade-grade-to-date.md`.
 - How does the report measure luck, an overachiever, and the schedule swap? `decisions/06-grill-luck-and-schedule-swap.md`.
 - Does the sim replay prebuilt runs, or does the reader pick winners live? `decisions/08-prototype-the-sim-interaction.md`.
