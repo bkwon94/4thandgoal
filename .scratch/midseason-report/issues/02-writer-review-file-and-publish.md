@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-39, AT-40, AT-41, 
 
 **Blocked by:** 01.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The review file shows each blurb with its prose block, its facts, and the verifier result.
 - [x] Each roast blurb cites at least one fact.
