@@ -10,10 +10,13 @@ Spec: `.scratch/clients/PRD.md`. Acceptance tests AT-3, AT-4, and AT-28.
 
 **Needs Brian:** manual steps 1, 2, 4, and 5 of the spec, and step 3 for `cpc.4thandgoal.app`. `cpc:implement` stops here and gives Brian the dashboard page, each value, and the check.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] One workflow deploys each client to its Worker with `wrangler-action` on each green push to `main`.
 - [x] The GitHub Pages deploy goes away.
 - [ ] The CPC week 8 page at `cpc.4thandgoal.app` matches the screenshots from before the move (AT-3).
 - [ ] `cpcfantasy.com/2026/week-08/` answers a 301 to `cpc.4thandgoal.app/2026/week-08/` (AT-4).
 - [ ] The default API URL is `https://api.4thandgoal.app`. `api.cpcfantasy.com/teams` still lists the CPC teams (AT-28).
+
+## Comments
+- 2026-11-04: The code part merged into `clients`. The boxes of AT-3, AT-4, and AT-28 need the live deploy and manual steps 3 and 4. The evidence stage records them.
