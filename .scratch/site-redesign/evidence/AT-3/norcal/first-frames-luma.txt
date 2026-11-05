@@ -1,0 +1,2 @@
+$ yavg.sh load-light-375.webm 12   # ffmpeg signalstats: mean luma 0-255 of the first 12 frames
+YAVG=127.109 YAVG=127.038 YAVG=126.908 YAVG=126.753 YAVG=126.648 YAVG=127.275 YAVG=127.724 YAVG=129.131 YAVG=129.778 YAVG=130.038 YAVG=129.928 YAVG=130.029 

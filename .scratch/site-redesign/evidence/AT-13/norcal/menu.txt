@@ -1,0 +1,4 @@
+$ /usr/bin/grep -n "^\[menu\]" -A5 clients/norcal/client.toml
+(exit 1 : clients/norcal/client.toml has no [menu] table)
+$ /usr/bin/grep -n "layout" clients/norcal/client.toml
+(exit 1)

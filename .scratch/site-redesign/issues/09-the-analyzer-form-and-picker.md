@@ -15,5 +15,5 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-19, AT-20, AT-21, AT-
 - [x] A third and a fourth team can join and leave.
 - [x] The body of `POST /analyze` has the same shape as on `main` for the same trade.
 - [x] The empty analyzer is on the full floor, and the floor passes.
-- [ ] The local dev server runs for Brian after the build.
-- [ ] The evidence of AT-19, AT-20, AT-21, AT-22, and AT-23 is recorded in `EVIDENCE.md`.
+- [x] The local dev server runs for Brian after the build.
+- [x] The evidence of AT-19, AT-20, AT-21, AT-22, and AT-23 is recorded in `EVIDENCE.md`.

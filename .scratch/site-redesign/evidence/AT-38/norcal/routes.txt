@@ -1,0 +1,49 @@
+Built routes of the NorCal export (apps/site/out), from the build at 12486d0e:
+$ find apps/site/out -name "*.html" | sort
+/_not-found/index.html
+/2026/managers/1/index.html
+/2026/managers/10/index.html
+/2026/managers/11/index.html
+/2026/managers/12/index.html
+/2026/managers/2/index.html
+/2026/managers/3/index.html
+/2026/managers/4/index.html
+/2026/managers/5/index.html
+/2026/managers/6/index.html
+/2026/managers/7/index.html
+/2026/managers/8/index.html
+/2026/managers/9/index.html
+/2026/managers/index.html
+/2026/week-08/index.html
+/404.html
+/404/index.html
+/analyze/index.html
+/index.html
+/rankings/index.html
+
+The route table of the build:
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[season]/[week]
+│ └ ● /2026/week-08
+├   /[season]/managers
+│ └ ● /2026/managers
+├   /[season]/managers/[roster]
+│ ├ ● /2026/managers/6
+│ ├ ● /2026/managers/1
+│ ├ ● /2026/managers/9
+│ └ ● [+9 more paths]
+├ ○ /analyze
+└ ○ /rankings
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+$ find apps/site/out -ipath "*waiver*"
+apps/site/out/2026/week-08/waiver.json
+(one match: the data file waiver.json of the published week. No waiver HTML page and no waiver route.)
+
+$ curl -s -o /dev/null -w "%{http_code}" http://localhost:4174/2026/week-08/waiver/
+404

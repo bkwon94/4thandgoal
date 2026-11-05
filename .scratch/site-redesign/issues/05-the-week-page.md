@@ -17,5 +17,5 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-5, AT-12, AT-16, AT-1
 - [x] The hero stays dark in light.
 - [x] The chapter port still lets a package give a chapter.
 - [x] The latest week and its open recap are on the full floor, and the floor passes. Every other week is in the fast sweep.
-- [ ] The local dev server runs for Brian after the build.
-- [ ] The evidence of AT-5, AT-12, AT-16, AT-17, AT-18, and AT-33 is recorded in `EVIDENCE.md`.
+- [x] The local dev server runs for Brian after the build.
+- [x] The evidence of AT-5, AT-12, AT-16, AT-17, AT-18, and AT-33 is recorded in `EVIDENCE.md`.

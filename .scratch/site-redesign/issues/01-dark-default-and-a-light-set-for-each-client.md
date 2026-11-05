@@ -17,4 +17,4 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [x] The fonts and the radii of the look sit in the global CSS, and `rounded-card`, `rounded-sm`, and `font-heading` keep their names.
 - [x] Each check of the 19 checks in `decisions/01-research-brand-schema-drops-fonts.notes.md` is changed or replaced.
 - [x] ADR 0022 no longer puts the fonts in `brand.toml`.
-- [ ] The evidence of AT-1, AT-2, AT-3, AT-4, AT-37, and AT-39 is recorded in `EVIDENCE.md`.
+- [x] The evidence of AT-1, AT-2, AT-3, AT-4, AT-37, and AT-39 is recorded in `EVIDENCE.md`.

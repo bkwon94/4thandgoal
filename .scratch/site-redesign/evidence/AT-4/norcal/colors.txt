@@ -1,0 +1,14 @@
+== 375 px, before the tap
+"{\"html\":\"dark\",\"key\":null,\"button\":\"Switch to light theme\",\"pageBg\":\"rgb(20, 20, 20)\",\"toolCardBg\":\"rgb(35, 35, 35)\",\"allTeamsLinkColor\":\"rgb(224, 165, 38)\"}"
+== 375 px, after the tap
+"{\"html\":\"(no dark class)\",\"key\":\"light\",\"button\":\"Switch to dark theme\",\"pageBg\":\"rgb(245, 243, 239)\",\"toolCardBg\":\"rgb(255, 255, 255)\",\"allTeamsLinkColor\":\"rgb(154, 52, 18)\"}"
+== 768 px, before the tap
+"{\"html\":\"dark\",\"key\":null,\"button\":\"Switch to light theme\",\"pageBg\":\"rgb(35, 35, 35)\",\"toolCardBg\":\"rgb(35, 35, 35)\",\"allTeamsLinkColor\":\"rgb(224, 165, 38)\"}"
+== 768 px, after the tap
+"{\"html\":\"(no dark class)\",\"key\":\"light\",\"button\":\"Switch to dark theme\",\"pageBg\":\"rgb(255, 255, 255)\",\"toolCardBg\":\"rgb(255, 255, 255)\",\"allTeamsLinkColor\":\"rgb(154, 52, 18)\"}"
+== 1280 px, before the tap
+"{\"html\":\"dark\",\"key\":null,\"button\":\"Switch to light theme\",\"pageBg\":\"rgb(35, 35, 35)\",\"toolCardBg\":\"rgb(35, 35, 35)\",\"allTeamsLinkColor\":\"rgb(224, 165, 38)\"}"
+== 1280 px, after the tap
+"{\"html\":\"(no dark class)\",\"key\":\"light\",\"button\":\"Switch to dark theme\",\"pageBg\":\"rgb(255, 255, 255)\",\"toolCardBg\":\"rgb(255, 255, 255)\",\"allTeamsLinkColor\":\"rgb(154, 52, 18)\"}"
+== 1280 px, after the tap: the visible background at the page margin (x 20, y 400) and at the hero (x 640, y 300)
+"20,400 DIV.bg-page rgb(245, 243, 239) | 640,300 SECTION.relative rgb(10, 10, 10)"

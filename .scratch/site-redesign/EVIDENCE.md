@@ -5,7 +5,19 @@ Built from: `12486d0e`, on 2026-11-05. The agent gives no Test verdict. Brian gi
 
 ## Setup
 
-Two agents recorded this evidence. This file holds the CPC half and the tests with no client. The NorCal files come from the second agent.
+Two agents recorded this evidence, one for each client. The tests with no client are in the CPC half.
+A test of both clients keeps its CPC files under `cpc/` and its NorCal files under `norcal/`.
+
+The NorCal half:
+
+- Built from: `12486d0e`, on 2026-11-05, with `NEXT_PUBLIC_API_URL=http://localhost:8090 CLIENT=norcal pnpm --dir apps/site build`.
+- The export ran on port 4174 and the local API on port 8090. See `evidence/AT-27/norcal/setup.txt`.
+- The instrument is `agent-browser` 0.25.4. The recordings use Playwright 1.64.1 of the repo, because `agent-browser record` saved a 1280 px video at any viewport.
+- Light screenshots set `cpc.theme` to `"light"`. Dark screenshots set it to `"dark"`. With no key, the site opens in dark.
+- Each full-page screenshot ran a scroll pass first, so that each chapter shows. The fixed dock and the fixed analyzer bar show at the viewport height in a full-page screenshot, over the content under them.
+- The agent gives no Test verdict. Brian gives one for each test.
+
+The CPC half:
 
 1. The CPC export: `NEXT_PUBLIC_API_URL=http://localhost:8080 CLIENT=cpc pnpm --dir apps/site build`.
 2. The local API: `CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4173 make -C apps/api api`, on port 8080.
@@ -18,49 +30,50 @@ Two agents recorded this evidence. This file holds the CPC half and the tests wi
 
 App: site
 Then: `<html>` has the class `dark` in the first paint, and the page shows the dark set with no light flash.
-Files: `evidence/AT-1/cpc/375-dark.png`, `evidence/AT-1/cpc/first-load.webm`, `evidence/AT-1/cpc/served-html.txt`
-Observation: The served HTML of the home page has `class="dark ..."` on `<html>`, and the boot script removes it only for a stored "light". The 375 px shot shows the dark set, and the 34 frames of the recording have a mean luma of 17.9 to 35.0 out of 255: blank black frames before the first paint, then the dark page, with no light frame.
+Files: `evidence/AT-1/cpc/375-dark.png`, `evidence/AT-1/cpc/first-load.webm`, `evidence/AT-1/cpc/served-html.txt`, `evidence/AT-1/norcal/served-html.txt`, `evidence/AT-1/norcal/375-dark.png`, `evidence/AT-1/norcal/first-load-375.webm`, `evidence/AT-1/norcal/first-frames-luma.txt`
+Observation: CPC: The served HTML of the home page has `class="dark ..."` on `<html>`, and the boot script removes it only for a stored "light". The 375 px shot shows the dark set, and the 34 frames of the recording have a mean luma of 17.9 to 35.0 out of 255: blank black frames before the first paint, then the dark page, with no light frame. NorCal: The served HTML of the NorCal home page has `<html lang="en" class="dark ...">`, and a fresh browser with no `cpc.theme` key shows the dark set at 375 px. The first 12 frames of the recording have a mean luma of 33 to 42 of 255, with no light frame.
 
 ## AT-2: Dark with scripts off
 
 App: site
 Then: The page shows the dark set, and every chapter shows at rest.
-Files: `evidence/AT-2/cpc/375-dark.png`
-Observation: With scripts off (`--blink-settings=scriptEnabled=false`, and `window.__next_f` is undefined), `<html>` keeps the `dark` class. The full 375 px shot shows the dark set and every chapter from the hero to the Previous Week 7 link at rest.
+Files: `evidence/AT-2/cpc/375-dark.png`, `evidence/AT-2/norcal/375-dark.png`
+Observation: CPC: With scripts off (`--blink-settings=scriptEnabled=false`, and `window.__next_f` is undefined), `<html>` keeps the `dark` class. The full 375 px shot shows the dark set and every chapter from the hero to the Previous Week 7 link at rest. NorCal: With scripts off (`--blink-settings=scriptEnabled=false`, and `self.__next_f` undefined), the NorCal week 8 page shows the dark set, and every chapter from the hero to Next week shows at rest. The top band shows no theme button with scripts off.
 
 ## AT-3: A stored light choice opens in light
 
 App: site
 Then: The page opens in light with no dark flash, and `<html>` has no `dark` class.
-Files: `evidence/AT-3/cpc/375-light.png`, `evidence/AT-3/cpc/load.webm`, `evidence/AT-3/cpc/state.txt`
-Observation: With `cpc.theme` set to "light", `<html>` has no `dark` class and the 375 px shot shows the light page and cards under the dark hero. In the recording, the first 4 frames are blank black frames before the first paint, and the next frame is already the light page (mean luma 137 or more); no dark page frame shows.
+Files: `evidence/AT-3/cpc/375-light.png`, `evidence/AT-3/cpc/load.webm`, `evidence/AT-3/cpc/state.txt`, `evidence/AT-3/norcal/375-light.png`, `evidence/AT-3/norcal/load-light-375.webm`, `evidence/AT-3/norcal/first-frames-luma.txt`
+Observation: CPC: With `cpc.theme` set to "light", `<html>` has no `dark` class and the 375 px shot shows the light page and cards under the dark hero. In the recording, the first 4 frames are blank black frames before the first paint, and the next frame is already the light page (mean luma 137 or more); no dark page frame shows. NorCal: With `cpc.theme` set to `"light"` before the load, `<html>` has no `dark` class, and the home page opens with the light page and the dark hero. The first 12 frames have a mean luma of 127 to 130 of 255, with no dark frame.
 
 ## AT-4: NorCal has a light theme and the theme button
 
 App: site
 Then: The page goes light, with the NorCal light set of the spec: page `#f5f3ef`, white cards, and accent text `#9a3412`.
-Files: see the NorCal entry
+Files: `evidence/AT-4/norcal/375-before.png`, `evidence/AT-4/norcal/375-after.png`, `evidence/AT-4/norcal/768-before.png`, `evidence/AT-4/norcal/768-after.png`, `evidence/AT-4/norcal/1280-before.png`, `evidence/AT-4/norcal/1280-after.png`, `evidence/AT-4/norcal/colors.txt`
+Observation: NorCal: A tap on the theme button in the top band turns the NorCal home page light at each width. After the tap, the computed page is `rgb(245, 243, 239)` (`#f5f3ef`), the cards are `rgb(255, 255, 255)`, and the accent text of "ALL 12 TEAMS" is `rgb(154, 52, 18)` (`#9a3412`).
 
 ## AT-5: The hero stays dark in light
 
 App: site
 Then: The hero sits on the `band` color with the grid, the brackets, and the glow. The page and the cards are light. NorCal gold shows only in the hero.
-Files: `evidence/AT-5/cpc/375-light.png`, `evidence/AT-5/cpc/768-light.png`, `evidence/AT-5/cpc/1280-light.png`
-Observation: At 375, 768, and 1280 px in light, the hero sits on the dark band with the grid, the corner brackets, and the red glow, and the page and the four tiles are light. This is the CPC half; NorCal gold is in the NorCal entry.
+Files: `evidence/AT-5/cpc/375-light.png`, `evidence/AT-5/cpc/768-light.png`, `evidence/AT-5/cpc/1280-light.png`, `evidence/AT-5/norcal/375-light.png`, `evidence/AT-5/norcal/768-light.png`, `evidence/AT-5/norcal/1280-light.png`
+Observation: CPC: At 375, 768, and 1280 px in light, the hero sits on the dark band with the grid, the corner brackets, and the red glow, and the page and the four tiles are light. This is the CPC half; NorCal gold is in the NorCal entry. NorCal: In light, the week 8 hero sits on a black band with the grid, the corner brackets, and a gold glow, and the page and the cards around it are light. Gold text shows only in the hero, as "CLOSEST FINISH · MARGIN".
 
 ## AT-6: The brand of each client
 
 App: site
 Then: CPC shows its red, its logo, and its copy. NorCal shows its gold and orange, its logo, and its copy. Both use Space Grotesk and JetBrains Mono.
-Files: `evidence/AT-6/cpc/375-light.png`, `evidence/AT-6/cpc/375-dark.png`, `evidence/AT-6/cpc/768-light.png`, `evidence/AT-6/cpc/768-dark.png`, `evidence/AT-6/cpc/1280-light.png`, `evidence/AT-6/cpc/1280-dark.png`, `evidence/AT-6/cpc/fonts.txt`
-Observation: The home page shows the CPC red buttons and accents, the CPC logo, and the CPC copy "Cornerstone Fantasy Football League" in both themes. `fonts.txt` shows the heading in `spaceGrotesk`, the big number in `jetbrainsMono`, and both fonts loaded. These six files are copies of the AT-14 shots.
+Files: `evidence/AT-6/cpc/375-light.png`, `evidence/AT-6/cpc/375-dark.png`, `evidence/AT-6/cpc/768-light.png`, `evidence/AT-6/cpc/768-dark.png`, `evidence/AT-6/cpc/1280-light.png`, `evidence/AT-6/cpc/1280-dark.png`, `evidence/AT-6/cpc/fonts.txt`, `evidence/AT-6/norcal/375-light.png`, `evidence/AT-6/norcal/375-dark.png`, `evidence/AT-6/norcal/768-light.png`, `evidence/AT-6/norcal/768-dark.png`, `evidence/AT-6/norcal/1280-light.png`, `evidence/AT-6/norcal/1280-dark.png`, `evidence/AT-6/norcal/fonts.txt`
+Observation: CPC: The home page shows the CPC red buttons and accents, the CPC logo, and the CPC copy "Cornerstone Fantasy Football League" in both themes. `fonts.txt` shows the heading in `spaceGrotesk`, the big number in `jetbrainsMono`, and both fonts loaded. These six files are copies of the AT-14 shots. NorCal: The NorCal home page shows gold accent text and orange buttons, with the copy "NorCal Apex 6" and "2026 // League Weekly". The masthead shows the site name as text and no logo, because `clients/norcal/brand.toml` says NorCal has no logo. The loaded fonts are `spaceGrotesk` and `jetbrainsMono`.
 
 ## AT-7: The hero and the motion
 
 App: site
 Then: The hero shows a scan line once. The content under it rises in a stagger, and the share bars grow once.
-Files: `evidence/AT-7/cpc/animations.txt`, `evidence/AT-7/cpc/load-1280.webm`, `evidence/AT-7/cpc/load-375.webm`
-Observation: `animations.txt` lists 5 running animations after the load, with the `hero-scan` animation first. The recording frames show the hero content and the tiles fade and rise in over about 0.3 s after the first paint; the scan line and the bar growth are too small to read in the frames at this size.
+Files: `evidence/AT-7/cpc/animations.txt`, `evidence/AT-7/cpc/load-1280.webm`, `evidence/AT-7/cpc/load-375.webm`, `evidence/AT-7/norcal/load-375-dark.webm`, `evidence/AT-7/norcal/load-1280-dark.webm`
+Observation: CPC: `animations.txt` lists 5 running animations after the load, with the `hero-scan` animation first. The recording frames show the hero content and the tiles fade and rise in over about 0.3 s after the first paint; the scan line and the bar growth are too small to read in the frames at this size. NorCal: In both recordings, the first frame shows a light line at the top edge of the empty hero, then the hero content fades and rises in over about 0.5 s, and the share bar under the two teams of the hero shows. The game cards with their share bars sit under the first screen, so the recordings do not show their growth.
 
 ## AT-8: Reduced motion
 
@@ -73,15 +86,15 @@ Observation: With reduced motion on, `animations.txt` lists 0 running animations
 
 App: site
 Then: The dock stays at the bottom with Home, Week 8, Rankings, Managers, and Trade, each with an icon and a label. Week 8 is marked.
-Files: `evidence/AT-9/cpc/375-light-end.png`, `evidence/AT-9/cpc/375-light-top.png`, `evidence/AT-9/cpc/375-dark-end.png`, `evidence/AT-9/cpc/375-dark-top.png`, `evidence/AT-9/cpc/dock.txt`
-Observation: At 375 px the dock stays at the bottom both at the top and at the end of the week 8 page, with Home, Week 8, Rankings, Managers, and Trade, each with an icon and a label. Week 8 has `aria-current="page"` and a raised tile with a red mark in both themes.
+Files: `evidence/AT-9/cpc/375-light-end.png`, `evidence/AT-9/cpc/375-light-top.png`, `evidence/AT-9/cpc/375-dark-end.png`, `evidence/AT-9/cpc/375-dark-top.png`, `evidence/AT-9/cpc/dock.txt`, `evidence/AT-9/norcal/375-light-top.png`, `evidence/AT-9/norcal/375-light-end.png`, `evidence/AT-9/norcal/375-dark-top.png`, `evidence/AT-9/norcal/375-dark-end.png`
+Observation: CPC: At 375 px the dock stays at the bottom both at the top and at the end of the week 8 page, with Home, Week 8, Rankings, Managers, and Trade, each with an icon and a label. Week 8 has `aria-current="page"` and a raised tile with a red mark in both themes. NorCal: At 375 px, the dock stays at the bottom at the top and at the end of the week 8 page, in both themes. It shows Home, Week 8, Rankings, Managers, and Trade, each with an icon and a label, and Week 8 is marked.
 
 ## AT-10: The pill bar on a desktop
 
 App: site
 Then: The top band shows the brand mark, the pill bar with full labels, the week chip, and the theme button. Rankings is marked, and the top band stays on screen.
-Files: `evidence/AT-10/cpc/768-light-scrolled.png`, `evidence/AT-10/cpc/768-light-top.png`, `evidence/AT-10/cpc/768-dark-scrolled.png`, `evidence/AT-10/cpc/768-dark-top.png`, `evidence/AT-10/cpc/1280-light-scrolled.png`, `evidence/AT-10/cpc/1280-light-top.png`, `evidence/AT-10/cpc/1280-dark-scrolled.png`, `evidence/AT-10/cpc/1280-dark-top.png`, `evidence/AT-10/cpc/state.txt`
-Observation: At 768 and 1280 px the top band shows the logo, the pill bar with full labels, the WK 08 chip, and the theme button, and Power Rankings is the marked pill. After a scroll of 898 px the band stays at the top (`position: sticky`, top 0). At 768 px the pill bar sits on a second row under the brand row.
+Files: `evidence/AT-10/cpc/768-light-scrolled.png`, `evidence/AT-10/cpc/768-light-top.png`, `evidence/AT-10/cpc/768-dark-scrolled.png`, `evidence/AT-10/cpc/768-dark-top.png`, `evidence/AT-10/cpc/1280-light-scrolled.png`, `evidence/AT-10/cpc/1280-light-top.png`, `evidence/AT-10/cpc/1280-dark-scrolled.png`, `evidence/AT-10/cpc/1280-dark-top.png`, `evidence/AT-10/cpc/state.txt`, `evidence/AT-10/norcal/768-light-top.png`, `evidence/AT-10/norcal/768-light-scrolled.png`, `evidence/AT-10/norcal/768-dark-top.png`, `evidence/AT-10/norcal/768-dark-scrolled.png`, `evidence/AT-10/norcal/1280-light-top.png`, `evidence/AT-10/norcal/1280-light-scrolled.png`, `evidence/AT-10/norcal/1280-dark-top.png`, `evidence/AT-10/norcal/1280-dark-scrolled.png`
+Observation: CPC: At 768 and 1280 px the top band shows the logo, the pill bar with full labels, the WK 08 chip, and the theme button, and Power Rankings is the marked pill. After a scroll of 898 px the band stays at the top (`position: sticky`, top 0). At 768 px the pill bar sits on a second row under the brand row. NorCal: The top band shows "NORCAL APEX 6", the pill bar with the full labels, the "WK 08" chip, and the theme button, and "Power Rankings" is marked. After the scroll to the end of the rankings page, the top band stays on screen. At 768 px the pill bar sits in a second row under the brand mark and the chip.
 
 ## AT-11: The week chip and the strip of weeks
 
@@ -94,15 +107,15 @@ Observation: A tap on WK 08 opens a strip with WK 06, WK 07, and WK 08, and WK 0
 
 App: site
 Then: The chapter rail on the left marks Standings.
-Files: `evidence/AT-12/cpc/1280-light.png`, `evidence/AT-12/cpc/1280-dark.png`, `evidence/AT-12/cpc/marked.txt`
-Observation: At 1280 px with Standings at the top of the view, the chapter rail on the left marks STANDINGS in red in both themes, and `marked.txt` shows `aria-current="location"` on Standings.
+Files: `evidence/AT-12/cpc/1280-light.png`, `evidence/AT-12/cpc/1280-dark.png`, `evidence/AT-12/cpc/marked.txt`, `evidence/AT-12/norcal/1280-light.png`, `evidence/AT-12/norcal/1280-dark.png`
+Observation: CPC: At 1280 px with Standings at the top of the view, the chapter rail on the left marks STANDINGS in red in both themes, and `marked.txt` shows `aria-current="location"` on Standings. NorCal: At 1280 px with Standings at the top of the screen, the chapter rail on the left marks "STANDINGS" in the accent color, in both themes.
 
 ## AT-13: The client menu has no layout key
 
 App: site
 Then: Neither file has a `layout` key in `[menu]`, and a `layout` key fails the build with a message that names it.
-Files: `evidence/AT-13/build-with-layout.txt`, `evidence/AT-13/menu-tables.txt`
-Observation: Neither `client.toml` has a `layout` key: CPC lists its `[menu]` items only, and NorCal has no `[menu]` table. With `layout = "hamburger"` added by hand to CPC, the build fails with `menu.layout: is not a known key` and exit 1.
+Files: `evidence/AT-13/build-with-layout.txt`, `evidence/AT-13/menu-tables.txt`, `evidence/AT-13/norcal/menu.txt`, `evidence/AT-13/norcal/build-with-layout.txt`
+Observation: CPC: Neither `client.toml` has a `layout` key: CPC lists its `[menu]` items only, and NorCal has no `[menu]` table. With `layout = "hamburger"` added by hand to CPC, the build fails with `menu.layout: is not a known key` and exit 1. NorCal: `clients/norcal/client.toml` has no `[menu]` table and no `layout` key. A temp copy of the NorCal client with `[menu]` and `layout = "tabs"` added fails the client build with "menu.layout: is not a known key", and no file of the repo changed.
 
 ## AT-14: The home page order
 
@@ -115,14 +128,15 @@ Observation: The full pages show, in order: the intro, the hero with "1.43" as t
 
 App: site
 Then: The hero shows "10.62" as the big number. Power Rankings is led by Mitseeker5000. One weekly report row shows, for week 8.
-Files: see the NorCal entry
+Files: `evidence/AT-15/norcal/375-light.png`, `evidence/AT-15/norcal/375-dark.png`, `evidence/AT-15/norcal/768-light.png`, `evidence/AT-15/norcal/768-dark.png`, `evidence/AT-15/norcal/1280-light.png`, `evidence/AT-15/norcal/1280-dark.png`
+Observation: NorCal: The hero shows "10.62" as the big number, with kaiedmonds 132.38 over The Mean Machine 121.76. Power Rankings is led by Mitseeker5000, and Weekly Reports shows one row, for week 8. These files are copies of the AT-6 screenshots.
 
 ## AT-16: The week page order
 
 App: site
 Then: The page shows one scroll with no tabs, in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, the median game, Standings, Next week, and the footer.
-Files: `evidence/AT-16/cpc/375-light.png`, `evidence/AT-16/cpc/375-dark.png`, `evidence/AT-16/cpc/768-light.png`, `evidence/AT-16/cpc/768-dark.png`, `evidence/AT-16/cpc/1280-light.png`, `evidence/AT-16/cpc/1280-dark.png`, `evidence/AT-16/cpc/headings.txt`
-Observation: The full pages show one scroll with no tab (`[role=tab]` count 0), in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, The median game, Standings, Next week, and the Previous Week 7 link. At 375 px some tile labels break inside a word: "PROJECT/ED", "+20.4/4", "UNDERPERF/ORMER", "OVERACHIE/VER", and "BENCHWARM/ER"; at 1280 px the award labels also break ("UNDERPER/FORMER").
+Files: `evidence/AT-16/cpc/375-light.png`, `evidence/AT-16/cpc/375-dark.png`, `evidence/AT-16/cpc/768-light.png`, `evidence/AT-16/cpc/768-dark.png`, `evidence/AT-16/cpc/1280-light.png`, `evidence/AT-16/cpc/1280-dark.png`, `evidence/AT-16/cpc/headings.txt`, `evidence/AT-16/norcal/375-light.png`, `evidence/AT-16/norcal/375-dark.png`, `evidence/AT-16/norcal/768-light.png`, `evidence/AT-16/norcal/768-dark.png`, `evidence/AT-16/norcal/1280-light.png`, `evidence/AT-16/norcal/1280-dark.png`
+Observation: CPC: The full pages show one scroll with no tab (`[role=tab]` count 0), in order: the hero, the four numbers, every game, Game Changer with Joe Burrow at 42.48, Awards, Position leaders, Trades, The median game, Standings, Next week, and the Previous Week 7 link. At 375 px some tile labels break inside a word: "PROJECT/ED", "+20.4/4", "UNDERPERF/ORMER", "OVERACHIE/VER", and "BENCHWARM/ER"; at 1280 px the award labels also break ("UNDERPER/FORMER"). NorCal: The NorCal week 8 page is one scroll with no tabs: the hero, the four numbers, every game, Game Changer with D'Andre Swift at 27.9, Awards, Position leaders, Trades, Standings, and Next week. The page has no median game chapter and no `<footer>` element. At 375 and 768 px some Awards labels break inside a word, such as "UNDERPERF / ORMER" and "BENCHWARM / ER".
 
 ## AT-17: A recap opens on a tap
 
@@ -142,8 +156,8 @@ Observation: After a tap on WR, the chip shows as selected, and the chapter list
 
 App: site
 Then: The page shows "Trade Analyzer", "Who gets what?", the teams row with Your Team, Team Two, and a "+" slot with "2 of 4", two empty cards, the line on what each team needs, and the "Grade the Trade" bar turned off on the dock.
-Files: `evidence/AT-19/cpc/375-light.png`, `evidence/AT-19/cpc/375-dark.png`, `evidence/AT-19/cpc/768-light.png`, `evidence/AT-19/cpc/768-dark.png`, `evidence/AT-19/cpc/1280-light.png`, `evidence/AT-19/cpc/1280-dark.png`, `evidence/AT-19/cpc/state.txt`
-Observation: The empty analyzer shows "Trade Analyzer", "Who gets what?", the teams row with Your Team, Team Two, and a "+" slot with "2 of 4", two empty cards, the line "Each team gives and gets at least one player.", and the "Grade the Trade" bar turned off (`disabled`). The shots were taken after the passphrase gate; on a first visit the gate covers the page.
+Files: `evidence/AT-19/cpc/375-light.png`, `evidence/AT-19/cpc/375-dark.png`, `evidence/AT-19/cpc/768-light.png`, `evidence/AT-19/cpc/768-dark.png`, `evidence/AT-19/cpc/1280-light.png`, `evidence/AT-19/cpc/1280-dark.png`, `evidence/AT-19/cpc/state.txt`, `evidence/AT-19/norcal/375-light.png`, `evidence/AT-19/norcal/375-dark.png`, `evidence/AT-19/norcal/768-light.png`, `evidence/AT-19/norcal/768-dark.png`, `evidence/AT-19/norcal/1280-light.png`, `evidence/AT-19/norcal/1280-dark.png`, `evidence/AT-19/norcal/setup.txt`
+Observation: CPC: The empty analyzer shows "Trade Analyzer", "Who gets what?", the teams row with Your Team, Team Two, and a "+" slot with "2 of 4", two empty cards, the line "Each team gives and gets at least one player.", and the "Grade the Trade" bar turned off (`disabled`). The shots were taken after the passphrase gate; on a first visit the gate covers the page. NorCal: After the passphrase, the empty NorCal analyzer shows "Trade Analyzer", "Who gets what?", the teams row with Your Team, Team Two, a "+" slot, and "2 of 4", two empty cards, and "Each team gives and gets at least one player." The "Grade the Trade" bar is turned off above the dock.
 
 ## AT-20: The picker
 
@@ -198,15 +212,15 @@ Observation: The real API answered 422 `Caleb Williams is no longer on Bo Girds.
 
 App: site
 Then: Only NorCal shows the "Find a Trade" card under the form. Its result shows up to three cards, each with the swap, the Fairness pill, the reasons, and "See the Full Result".
-Files: `evidence/AT-27/setup.txt`, `evidence/AT-27/cpc/375-light.png`, `evidence/AT-27/cpc/375-dark.png`, `evidence/AT-27/cpc/768-light.png`, `evidence/AT-27/cpc/768-dark.png`, `evidence/AT-27/cpc/1280-light.png`, `evidence/AT-27/cpc/1280-dark.png`, `evidence/AT-27/cpc/page-text.txt`
-Observation: The CPC analyzer has no "Find a Trade" card at any width or theme, and the page text holds no "Find a Trade". This is the CPC half; the NorCal finder is in the NorCal entry.
+Files: `evidence/AT-27/setup.txt`, `evidence/AT-27/cpc/375-light.png`, `evidence/AT-27/cpc/375-dark.png`, `evidence/AT-27/cpc/768-light.png`, `evidence/AT-27/cpc/768-dark.png`, `evidence/AT-27/cpc/1280-light.png`, `evidence/AT-27/cpc/1280-dark.png`, `evidence/AT-27/cpc/page-text.txt`, `evidence/AT-27/norcal/375-light-result.png`, `evidence/AT-27/norcal/375-dark-result.png`, `evidence/AT-27/norcal/768-light-result.png`, `evidence/AT-27/norcal/768-dark-result.png`, `evidence/AT-27/norcal/1280-light-result.png`, `evidence/AT-27/norcal/1280-dark-result.png`, `evidence/AT-27/norcal/result-text.txt`, `evidence/AT-27/norcal/api-log.txt`, `evidence/AT-27/norcal/setup.txt`
+Observation: CPC: The CPC analyzer has no "Find a Trade" card at any width or theme, and the page text holds no "Find a Trade". This is the CPC half; the NorCal finder is in the NorCal entry. NorCal: On NorCal the "Find a Trade" card shows under the form after Your Team is chosen. The result of one live `POST /clients/norcal/find` shows 2 cards, each with the swap, the Fairness pill "Good for both", the reasons of each side, and "See the Full Result". The CPC analyzer page belongs to the CPC half.
 
 ## AT-28: The rankings Ladder
 
 App: site
 Then: The hero shows "01", All You Need Is Love, 11-5, up 4, and the tiles Playoff, Bye, and Seed. Under it come the week chips, one card for each other team, and the note on the four parts.
-Files: `evidence/AT-28/cpc/375-light.png`, `evidence/AT-28/cpc/375-dark.png`, `evidence/AT-28/cpc/768-light.png`, `evidence/AT-28/cpc/768-dark.png`, `evidence/AT-28/cpc/1280-light.png`, `evidence/AT-28/cpc/1280-dark.png`
-Observation: The hero shows "01", All You Need Is Love, "11-5", up 4, and the tiles Playoff 81%, Bye 33%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the 11 other teams, and the note on the four parts. At 375 px the week chip 8 wraps to a second row.
+Files: `evidence/AT-28/cpc/375-light.png`, `evidence/AT-28/cpc/375-dark.png`, `evidence/AT-28/cpc/768-light.png`, `evidence/AT-28/cpc/768-dark.png`, `evidence/AT-28/cpc/1280-light.png`, `evidence/AT-28/cpc/1280-dark.png`, `evidence/AT-28/norcal/375-light.png`, `evidence/AT-28/norcal/375-dark.png`, `evidence/AT-28/norcal/768-light.png`, `evidence/AT-28/norcal/768-dark.png`, `evidence/AT-28/norcal/1280-light.png`, `evidence/AT-28/norcal/1280-dark.png`
+Observation: CPC: The hero shows "01", All You Need Is Love, "11-5", up 4, and the tiles Playoff 81%, Bye 33%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the 11 other teams, and the note on the four parts. At 375 px the week chip 8 wraps to a second row. NorCal: The NorCal rankings hero shows "01", Mitseeker5000, "6-2 · –", and the tiles Playoff 97%, Bye 73%, and Seed 1. Under it come the week chips 1 to 8, one card for each of the other 11 teams, and the note on the four parts.
 
 ## AT-29: A ranking card opens
 
@@ -226,21 +240,22 @@ Observation: The index shows 12 cards in standings order from All You Need Is Lo
 
 App: site
 Then: The page shows the back link, the hero with the grade letter as the big number and a W or L chip for each week, then Season So Far, Roster, Best Adds, Top Performers, and Moves. The name does not cut off.
-Files: `evidence/AT-31/cpc/375-light.png`, `evidence/AT-31/cpc/375-dark.png`, `evidence/AT-31/cpc/768-light.png`, `evidence/AT-31/cpc/768-dark.png`, `evidence/AT-31/cpc/1280-light.png`, `evidence/AT-31/cpc/1280-dark.png`, `evidence/AT-31/cpc/structure.txt`
-Observation: The page shows the back link "← All Managers", the hero with the grade "D" as the big letter and a W or L chip for weeks 1 to 8, then Season So Far, Roster, Best Adds, Top Performers, and Moves. The name wraps to two lines at 375 px and is not cut (`scrollWidth` is not more than `clientWidth`).
+Files: `evidence/AT-31/cpc/375-light.png`, `evidence/AT-31/cpc/375-dark.png`, `evidence/AT-31/cpc/768-light.png`, `evidence/AT-31/cpc/768-dark.png`, `evidence/AT-31/cpc/1280-light.png`, `evidence/AT-31/cpc/1280-dark.png`, `evidence/AT-31/cpc/structure.txt`, `evidence/AT-31/norcal/375-light.png`, `evidence/AT-31/norcal/375-dark.png`, `evidence/AT-31/norcal/768-light.png`, `evidence/AT-31/norcal/768-dark.png`, `evidence/AT-31/norcal/1280-light.png`, `evidence/AT-31/norcal/1280-dark.png`
+Observation: CPC: The page shows the back link "← All Managers", the hero with the grade "D" as the big letter and a W or L chip for weeks 1 to 8, then Season So Far, Roster, Best Adds, Top Performers, and Moves. The name wraps to two lines at 375 px and is not cut (`scrollWidth` is not more than `clientWidth`). NorCal: The page of The Mean Machine shows the "All Managers" back link, the hero with the grade "D" as the big letter and a W or L chip for weeks 1 to 8, then Season So Far, Roster, Best Adds, Top Performers, and Moves. The name wraps to two lines at 375 px and does not cut off.
 
 ## AT-32: The 404 page
 
 App: site
 Then: The page shows the hero with "ERROR // PAGE NOT FOUND", a big "404", the line of the spec, and the buttons "Go to Week 8" and "Go Home".
-Files: `evidence/AT-32/cpc/375-light.png`, `evidence/AT-32/cpc/375-dark.png`, `evidence/AT-32/cpc/768-light.png`, `evidence/AT-32/cpc/768-dark.png`, `evidence/AT-32/cpc/1280-light.png`, `evidence/AT-32/cpc/1280-dark.png`, `evidence/AT-32/cpc/text.txt`
-Observation: The URL `/2026/week-99/` returns status 404 with `404.html` from the local server, and the page shows the hero with "ERROR // PAGE NOT FOUND", a big "404", the line "This page does not exist. The link may be old, or the week is not out yet.", and the buttons "Go to Week 8" and "Go Home". Each file shows the missing URL, not `/404.html`.
+Files: `evidence/AT-32/cpc/375-light.png`, `evidence/AT-32/cpc/375-dark.png`, `evidence/AT-32/cpc/768-light.png`, `evidence/AT-32/cpc/768-dark.png`, `evidence/AT-32/cpc/1280-light.png`, `evidence/AT-32/cpc/1280-dark.png`, `evidence/AT-32/cpc/text.txt`, `evidence/AT-32/norcal/375-light.png`, `evidence/AT-32/norcal/375-dark.png`, `evidence/AT-32/norcal/768-light.png`, `evidence/AT-32/norcal/768-dark.png`, `evidence/AT-32/norcal/1280-light.png`, `evidence/AT-32/norcal/1280-dark.png`
+Observation: CPC: The URL `/2026/week-99/` returns status 404 with `404.html` from the local server, and the page shows the hero with "ERROR // PAGE NOT FOUND", a big "404", the line "This page does not exist. The link may be old, or the week is not out yet.", and the buttons "Go to Week 8" and "Go Home". Each file shows the missing URL, not `/404.html`. NorCal: The NorCal 404 page shows the hero with "ERROR // PAGE NOT FOUND", a big "404", "This page does not exist. The link may be old, or the week is not out yet.", and the buttons "Go to Week 8" and "Go Home". The files show `/404.html`, because `python3 -m http.server` answers `/2026/week-99/` with its own 404 text and does not serve `404.html`.
 
 ## AT-33: Photos and the fallback
 
 App: site
 Then: Each team row shows its Sleeper avatar. Each headshot sits in a round frame, cropped at the shoulders. A player with no headshot shows the initials in the frame.
-Files: see the NorCal entry
+Files: `evidence/AT-33/norcal/375-light-hero.png`, `evidence/AT-33/norcal/375-dark-hero.png`, `evidence/AT-33/norcal/375-light-awards.png`, `evidence/AT-33/norcal/375-dark-awards.png`, `evidence/AT-33/norcal/375-light-position-leaders.png`, `evidence/AT-33/norcal/375-dark-position-leaders.png`
+Observation: NorCal: Each team row shows its Sleeper avatar, and VarsityBlue2 shows a plain light circle. Each headshot in Awards and Position leaders sits in a round frame, cropped at the shoulders. The one player with initials is Chuba Hubbard, "CH" in the hero; Awards and the QB, RB, WR, and TE chips of Position leaders show no initials.
 
 ## AT-34: The readability floor passes in CI
 
@@ -274,8 +289,8 @@ Observation: Each of the three builds fails with exit 1 and names the cause: `fo
 
 App: site
 Then: No client builds a waiver page, and the URL shows the 404 page.
-Files: `evidence/AT-38/cpc/375-dark.png`, `evidence/AT-38/cpc/routes.txt`
-Observation: The CPC export has no waiver route: the only waiver file is the data file `2026/week-08/waiver.json`. The URL `/2026/week-08/waiver/` returns status 404 and the shot shows the 404 page.
+Files: `evidence/AT-38/cpc/375-dark.png`, `evidence/AT-38/cpc/routes.txt`, `evidence/AT-38/norcal/routes.txt`, `evidence/AT-38/norcal/375-url.png`
+Observation: CPC: The CPC export has no waiver route: the only waiver file is the data file `2026/week-08/waiver.json`. The URL `/2026/week-08/waiver/` returns status 404 and the shot shows the 404 page. NorCal: The NorCal export holds no waiver route and no waiver HTML page; `out/2026/week-08/` holds only the data file `waiver.json`. The server answers `/2026/week-08/waiver/` with 404, and the screenshot shows the plain 404 text of `python3 -m http.server`, not the 404 page of the site.
 
 ## AT-39: The theme does not follow the system setting
 
