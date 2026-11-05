@@ -2,6 +2,7 @@
 
 Spec: `.scratch/clients/PRD.md`. Acceptance tests: `.scratch/clients/ACCEPTANCE.md`.
 Built from: `c5634be`, on 2026-11-04. The agent gives no Test verdict. Brian gives one for each test.
+AT-12 was taken again from `cb700b4`, after the fix of the median note.
 
 Notes on the method:
 
@@ -94,8 +95,8 @@ Observation: `make -C apps/pipeline page-json CLIENT=norcal WEEK=8` exited 0. In
 
 App: both
 Then: the wins and the losses of each team add up to 8.
-Files: `evidence/AT-12/fields.txt`, `evidence/AT-12/local/375-light.png`, `evidence/AT-12/local/375-dark.png`, `evidence/AT-12/local/768-light.png`, `evidence/AT-12/local/768-dark.png`, `evidence/AT-12/local/1280-light.png`, `evidence/AT-12/local/1280-dark.png`
-Observation: In the rebuilt and the published `page.json`, each of the 12 teams has wins plus losses of 8, from Mitseeker5000 at 6-2 to The Dart Side at 2-6. The last week of `rankings.json` gives the same sums. The standings shots show the same 12 records. Under the table, each shot shows the note "Records include the weekly median game: every team plays its opponent and the league median each week."
+Files: `evidence/AT-12/fields.txt`, `evidence/AT-12/local/375-light.png`, `evidence/AT-12/local/375-dark.png`, `evidence/AT-12/local/768-light.png`, `evidence/AT-12/local/768-dark.png`, `evidence/AT-12/local/1280-light.png`, `evidence/AT-12/local/1280-dark.png`, `evidence/AT-12/live/375-light.png`, `evidence/AT-12/live/375-dark.png`, `evidence/AT-12/live/768-light.png`, `evidence/AT-12/live/768-dark.png`, `evidence/AT-12/live/1280-light.png`, `evidence/AT-12/live/1280-dark.png`
+Observation: In the rebuilt and the published `page.json`, each of the 12 teams has wins plus losses of 8, from Mitseeker5000 at 6-2 to The Dart Side at 2-6. The last week of `rankings.json` gives the same sums. The `local` shots come from a build of the head of `clients`, which holds fix commit `cb700b4`. The `live` shots come from `https://norcal.4thandgoal.app/2026/week-08/`. All shots show the same 12 records. Under the table, no shot has the note "Records include the weekly median game". The text of both pages also lacks the word "median". NorCal has one dark set and no theme button, so the light and dark shots of each width are identical. Each live shot has the same pixels as its local shot.
 
 ## AT-13: NorCal has no DEF
 
