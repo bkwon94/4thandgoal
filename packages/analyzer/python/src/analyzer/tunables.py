@@ -24,11 +24,13 @@ BAND_D = Decimal("0.75")
 # The bands from the top down. A ratio below the last bound starts at F.
 START_LETTER_BANDS: tuple[tuple[Decimal, str], ...] = ((BAND_A, "A"), (BAND_B, "B"), (BAND_C, "C"), (BAND_D, "D"))
 
+# The one-for-many margin. GLOSSARY.md, "Consolidation".
 # A side that gives one player for two or more, or two or more for one, divides the sum of the two or more by this.
 CONSOLIDATION_MARGIN = Decimal("1.25")
+# The uneven margin. GLOSSARY.md, "Consolidation".
 # Any other uneven count, two or more for a larger count such as 3-for-2 or 4-for-3, divides the sum of the side with
 # more players by this. The extra player fills a roster spot, so he counts at a discount, and a pile of depth does not
-# beat two better players on a plain sum. It is smaller than CONSOLIDATION_MARGIN, which also pays for one great player.
+# beat two better players on a plain sum. It is smaller than the one-for-many margin, which also pays for one great player.
 UNEVEN_MARGIN = Decimal("1.10")
 
 # Superstar: a side that gets a player in the top this many trade values of the week, over all positions, steps up.

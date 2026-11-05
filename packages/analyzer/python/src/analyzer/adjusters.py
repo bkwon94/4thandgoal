@@ -84,7 +84,8 @@ STEP_WORDS = {1: "one step up", 0: "no step", -1: "one step down"}
 
 def one_for_many(gives: int, gets: int) -> bool:
     """True when a side gives one player for two or more, or two or more for one. Such a trade uses the
-    CONSOLIDATION_MARGIN, which pays for the one great player, so the superstar step does not count him again."""
+    one-for-many margin, CONSOLIDATION_MARGIN, which pays for the one great player, so the superstar step does not
+    count him again."""
     return gives != gets and min(gives, gets) == 1
 
 
@@ -966,7 +967,7 @@ def _superstar(snapshot: Snapshot, side: Side) -> Adjuster:
     """Superstar: a side that gets one or more superstars steps up one step. GLOSSARY.md, "Superstar".
 
     It reads the players the side gets only, so the side that gives a superstar gets no step down: the trade values
-    already count the loss. In a one-for-many trade the CONSOLIDATION_MARGIN already pays for the great player, so the
+    already count the loss. In a one-for-many trade the one-for-many margin already pays for the great player, so the
     step is 0 and the reason says so.
     """
     stars = _superstars(snapshot, side.gets)

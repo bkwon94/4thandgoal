@@ -34,9 +34,9 @@ Two good players must not beat one great player on a plain sum. When the two sid
 count of players, divide the sum of the side with more players by a margin. Both sides use the
 divided sum in their ratios. The margin comes from the counts:
 
-- One player for two or more uses `CONSOLIDATION_MARGIN`.
-- Two or more for a larger count, such as three for two or four for three, uses `UNEVEN_MARGIN`.
-  The extra player counts at a discount.
+- One player for two or more uses the one-for-many margin, `CONSOLIDATION_MARGIN`.
+- Two or more for a larger count, such as three for two or four for three, uses the uneven margin,
+  `UNEVEN_MARGIN`. The extra player counts at a discount.
 - An even count, such as two for two, uses no margin.
 
 ## Unlisted
@@ -173,8 +173,9 @@ A tie at the edge makes every tied player a superstar.
 
 - A side that gets one or more superstars steps up one step. Two superstars still give one step.
 - The side that gives a superstar gets no step down. The trade values already count the loss.
-- A trade that uses `CONSOLIDATION_MARGIN` gives no superstar step. The margin already counts the
-  great player, and the reason says so.
+- A trade that uses the one-for-many margin, `CONSOLIDATION_MARGIN`, gives no superstar step. The
+  margin already counts the great player, and the reason says so. The uneven margin does not stop
+  the step.
 - A player out for the season is no superstar, because he counts as zero for the side that gets him.
 - A week with no trade values reads the newest saved trade values of the weeks before. The start letters
   never read them, so both sides still start at C. The reason then says "last week", not "this week".

@@ -66,7 +66,8 @@ DEAL_REASONS = {
     "D": "You give more than you get.",
     "F": "You give far more than you get.",
 }
-# Any uneven count divides the sum of the side with more players by a margin before the sides compare.
+# Any uneven count divides the sum of the side with more players by the one-for-many margin or the uneven margin
+# before the sides compare.
 CONSOLIDATION_DEAL = ", after a discount on the side with more players."
 UNLISTED_DEAL = "Not every player in the trade has a value this week, so both sides start even."
 
@@ -296,7 +297,8 @@ def _start_letters(
 def _margin(gives: int, gets: int) -> tuple[Decimal | None, str]:
     """The margin that divides the sum of the side with more players, and the start reason that names it.
 
-    One player for two or more uses CONSOLIDATION_MARGIN. Two or more for a larger count uses UNEVEN_MARGIN.
+    One player for two or more uses the one-for-many margin, CONSOLIDATION_MARGIN. Two or more for a larger count
+    uses the uneven margin, UNEVEN_MARGIN.
     An even count uses none.
     """
     if gives == gets:
