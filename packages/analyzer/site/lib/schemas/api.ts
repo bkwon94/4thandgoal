@@ -45,24 +45,17 @@ export const decisionSchema = z.object({
   differs: z.boolean(),
 });
 
-/* What the trade value chart says: the side gets more value than it gives, about even, or less. */
-export const chartSchema = z.object({
-  lean: z.enum(["more", "even", "less"]),
-  reason: z.string(),
-});
-
-/* One factor leans for the side, against it, or neither way. */
+/* One factor leans for the side, against it, or neither way. The first factor of a side is the deal row. */
 export const factorSchema = z.object({
   name: z.string(),
   lean: z.enum(["for", "against", "even"]),
   reason: z.string(),
 });
 
-/* The read of one side. analysis is null when the writer call failed, so the data stands alone. */
+/* The read of one side: 2 or 3 bullets, each one sentence, and the factors. bullets is empty when the writer call failed, so the rows stand alone. */
 export const decidedSideSchema = z.object({
   roster_id: z.number(),
-  analysis: z.string().nullable(),
-  chart: chartSchema,
+  bullets: z.array(z.string()),
   factors: z.array(factorSchema),
 });
 
@@ -94,7 +87,7 @@ export const knownGamesSchema = z.object({
 });
 
 export const asOfSchema = z.object({
-  // Null when the week has no trade value chart yet.
+  // Null when the week has no trade value chart yet. The page never shows it.
   chart_week: z.number().nullable(),
   stats_through: z.number(),
   // A document can lack both fields, so each is optional.
@@ -119,7 +112,7 @@ export const analyzeResponseSchema = z.object({
   fairness: fairnessSchema.optional(),
   sides: z.array(decidedSideSchema),
   as_of: asOfSchema,
-  // True when the writer call failed, so the analysis text is not real.
+  // True when the writer call failed, so no side has bullets.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),

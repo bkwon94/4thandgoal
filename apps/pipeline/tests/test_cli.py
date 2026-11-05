@@ -517,7 +517,7 @@ JACOBS_ARGS = ["analyze", "--client", "cpc", "--season", "2026", "--week", "6", 
                "--side", "11:12490,8146", "--side", "12:5850,11834", "--asker", "12"]
 
 
-def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
+def test_analyze_with_claude_prints_the_bullets_the_letters_and_the_verdict(
         tmp_path, fixture_raw_dir, fixture_history_root, fixture_nflverse_dir, monkeypatch, capsys):
     from fakes import FakeWriter
 
@@ -526,7 +526,7 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     from facts.writer import ANALYZER_CACHE_TTL, ANALYZER_EFFORT
 
     side = {"final_letter": "D", "reason": None, "cited": ["8146.ppg"],
-            "analysis": "Garrett Wilson scored 14.2 points per game before the trade. He moves. He starts."}
+            "bullets": ["Garrett Wilson scored 14.2 points per game before the trade.", "He moves.", "He starts."]}
     writer = FakeWriter([AnalysisOut.model_validate({
         "sides": [{**side, "roster_id": 11, "final_letter": "C", "reason": "Jacobs has not played."},
                   {**side, "roster_id": 12}],
@@ -544,9 +544,10 @@ def test_analyze_with_claude_prints_the_analysis_the_letters_and_the_verdict(
     assert "  Rubric letter: B\n" in out and "  Rubric letter: D\n" in out
     assert "  Final letter: C. Reason: Jacobs has not played.\n" in out
     assert "  Final letter: D\n" in out
-    assert out.count("  Analysis: Garrett Wilson scored 14.2 points per game before the trade.") == 2
+    assert out.count("  Bullets:\n    - Garrett Wilson scored 14.2 points per game before the trade.\n"
+                     "    - He moves.\n    - He starts.\n") == 2
     assert (out.index("Schedule: ") < out.index("Rubric letter: ") < out.index("Final letter: C")
-            < out.index("Analysis: "))
+            < out.index("Bullets:"))
     # The fairness reads Claude's letters, C and D, so the trade is still lopsided.
     assert ("\nVerdict for Amon-Ra Dawg Your Team: counter. Ask for one more starter. "
             "(differs from the rubric's default)\nFairness: Lopsided: Amon-Ra Dawg Your Team gives more.\n") in out
@@ -563,7 +564,7 @@ def test_analyze_with_claude_says_when_the_call_fell_back(
     out = capsys.readouterr().out
     assert code == 0
     assert len(fake_writer.calls) == 2
-    assert out.count("  Analysis: Analysis unavailable\n") == 2
+    assert out.count("  Bullets: none\n") == 2
     assert "  Final letter: B\n" in out and "  Final letter: D\n" in out
     assert "The Claude call failed twice, so the rubric's letters and verdict stand." in out
     assert ("\nVerdict for Amon-Ra Dawg Your Team: decline. The trade costs the asking side too much.\n"

@@ -1,6 +1,6 @@
 """
 The Claude call of the trade analyzer: the prompt, the call, and its checks, on the fact sheet of a proposed trade.
-A response that fails a check retries once, then the code's letters and verdict stand with no analysis.
+A response that fails a check retries once, then the code's letters and verdict stand with no bullets.
 """
 import logging
 import re
@@ -29,8 +29,8 @@ from league.snapshot import Snapshot
 log = logging.getLogger(__name__)
 
 PROMPT_FILES = ("rubric.md", "analysis.md")
-UNAVAILABLE = "Analysis unavailable"
-MIN_SENTENCES, MAX_SENTENCES = 3, 5
+# A manager reads 2 or 3 short bullets for each side in seconds, where a paragraph takes minutes.
+MIN_BULLETS, MAX_BULLETS = 2, 3
 # User story 29: no chart value, chart name, or tier in the prose. The chart comes from the
 # Peaked in High Skool site, so every form of its name is banned. A ratio word states a ratio of
 # trade values. "value" stays allowed because the breakdown reasons say "trade value"; the number
@@ -49,7 +49,7 @@ UPSIDE_WORDS = re.compile(r"\b(?:upside|return bets?|opportunit(?:y|ies))\b", re
 
 
 class SideAnalysis(BaseModel):
-    """One side: the final letter, the reason when it differs from the code's, the analysis, and its fact IDs.
+    """One side: the final letter, the reason when it differs from the code's, the bullets, and their fact IDs.
 
     It is both what Claude gives for a side and the final word on that side, so the fields are the same.
     """
@@ -57,7 +57,8 @@ class SideAnalysis(BaseModel):
     roster_id: int
     final_letter: Letter
     reason: str | None
-    analysis: str
+    # Each bullet is one sentence that makes one claim. The fallback has none.
+    bullets: list[str]
     cited: list[str]
 
 
@@ -79,7 +80,7 @@ class AnalysisOut(BaseModel):
 
 
 class Analysis(BaseModel):
-    """The breakdowns and the code verdict, with the final letters, the analysis per side,
+    """The breakdowns and the code verdict, with the final letters, the bullets per side,
     and the verdict that stands."""
 
     # In the order of the trade's sides, one per side, two to four in all.
@@ -223,9 +224,9 @@ def trade_prose_failures(
     owner: str, kind: str, text: str, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...],
     facts: dict[str, Fact], cited: list[str], sentences: tuple[int, int],
 ) -> list[str]:
-    """The prose rules of the analysis on one piece of prose about a trade, such as a side's analysis.
+    """The prose rules of the analysis on one piece of prose about a trade, such as a finder reason.
 
-    `owner` names who wrote it, such as "roster 2", and `kind` names the prose, such as "analysis". The
+    `owner` names who wrote it, such as "roster 2", and `kind` names the prose, such as "reason". The
     sentence count must be in the `sentences` range. The prose cites at least one fact, every number comes
     from a cited fact or the breakdown, and each team in the trade appears at most once.
     """
@@ -252,6 +253,40 @@ def trade_prose_failures(
     return failures
 
 
+def _bullet_failures(
+    label: str, bullets: list[str], snapshot: Snapshot, breakdowns: tuple[Breakdown, ...], breakdown: Breakdown,
+    facts: dict[str, Fact], cited: list[str],
+) -> list[str]:
+    """The prose rules of the analysis on the bullets of one side, with each rule of one piece of prose on each bullet.
+
+    The side has 2 or 3 bullets of one sentence each. The bullets together cite at least one fact and name each team
+    in the trade at most once, because they are one read of the side.
+    """
+    failures = []
+    if not MIN_BULLETS <= len(bullets) <= MAX_BULLETS:
+        failures.append(f"{label}: it has {len(bullets)} bullets; the range is {MIN_BULLETS} to {MAX_BULLETS}")
+    failures += [f"{label}: fact ID {fid} is not in the facts" for fid in cited if fid not in facts]
+    if not cited:
+        failures.append(f"{label}: the bullets cite no fact")
+    names = _names_of_everyone(snapshot)
+    known = [fid for fid in cited if fid in facts]
+    breakdown_text = _breakdown_text(breakdowns)
+    allowed, allowed_text = _allowed(facts, known, breakdown_text), _allowed_text(facts, known, breakdown_text)
+    for number, bullet in enumerate(bullets, start=1):
+        bullet_label = f"{label} bullet {number}"
+        count = _sentences(remove_names(bullet, names))
+        if count != 1:
+            failures.append(f"{label}: bullet {number} has {count} sentences; it needs exactly 1")
+        failures += _prose_failures(bullet_label, bullet, allowed, allowed_text, names)
+        failures += _letter_failures(bullet_label, bullet)
+        failures += _upside_failures(bullet_label, bullet, breakdown)
+    text = " ".join(bullets)
+    trade_teams = [snapshot.teams[b.roster_id].name for b in breakdowns]
+    failures += [repeat_failure(f"{label} bullets", team, mentions) for team in trade_teams
+                 if (mentions := team_mentions(team, text)) > 1]
+    return failures
+
+
 def check_response(
     out: AnalysisOut, snapshot: Snapshot, breakdowns: tuple[Breakdown, ...], facts: dict[str, Fact],
 ) -> list[str]:
@@ -273,15 +308,13 @@ def check_response(
                             f"{breakdown.final_letter}; one step is the most")
         if steps == 1 and not (side.reason or "").strip():
             failures.append(f"{label}: the final letter differs from the code's, so it needs a reason")
-        failures += trade_prose_failures(label, "analysis", side.analysis, snapshot, breakdowns, facts, side.cited,
-                                         (MIN_SENTENCES, MAX_SENTENCES))
-        failures += _upside_failures(f"{label} analysis", side.analysis, breakdown)
+        failures += _bullet_failures(label, side.bullets, snapshot, breakdowns, breakdown, facts, side.cited)
         if side.reason:
             cited = [fid for fid in side.cited if fid in facts]
             failures += _prose_failures(f"{label} reason", side.reason, _allowed(facts, cited, breakdown_text),
                                         _allowed_text(facts, cited, breakdown_text), names)
             failures += _upside_failures(f"{label} reason", side.reason, breakdown)
-    # The verdict reason cites no fact of its own, so any fact the analyses cite may back its numbers.
+    # The verdict reason cites no fact of its own, so any fact the bullets cite may back its numbers.
     every = [fid for s in out.sides for fid in s.cited if fid in facts]
     failures += _prose_failures("verdict reason", out.verdict.reason, _allowed(facts, every, breakdown_text),
                                 _allowed_text(facts, every, breakdown_text), names)
@@ -302,9 +335,9 @@ def _accepted(out: AnalysisOut, breakdowns: tuple[Breakdown, ...], code_verdict:
 
 
 def _fallback(breakdowns: tuple[Breakdown, ...], code_verdict: Verdict) -> Analysis:
-    """The code's letters and verdict with "Analysis unavailable" per side. The shape lives here once."""
+    """The code's letters and verdict with no bullets per side. The shape lives here once."""
     sides = tuple(SideAnalysis(roster_id=b.roster_id, final_letter=b.final_letter, reason=None,
-                               analysis=UNAVAILABLE, cited=[]) for b in breakdowns)
+                               bullets=[], cited=[]) for b in breakdowns)
     return Analysis(breakdowns=breakdowns, code_verdict=code_verdict, sides=sides, verdict=code_verdict,
                     verdict_differs=False, fallback=True)
 
@@ -316,10 +349,10 @@ def code_only(trade: ProposedTrade, snapshot: Snapshot) -> Analysis:
 
 
 def analyze(trade: ProposedTrade, snapshot: Snapshot, call: ClaudeCall = analyzer_call) -> Analysis:
-    """Grade the trade, then ask Claude for the final letters, the analysis, and the verdict.
+    """Grade the trade, then ask Claude for the final letters, the bullets, and the verdict.
 
     A failed check retries once with the failures as feedback. A second failure keeps the code's letters
-    and verdict, with "Analysis unavailable" per side. It raises TradeInputError on a bad trade.
+    and verdict, with no bullets per side. It raises TradeInputError on a bad trade.
     """
     breakdowns = grade(trade, snapshot)
     code_verdict = verdict(trade, breakdowns)

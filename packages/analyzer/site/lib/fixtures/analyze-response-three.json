@@ -119,12 +119,16 @@
   "sides": [
     {
       "roster_id": 4,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "more",
-        "reason": "It gets more trade value than it gives. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "for",
+          "reason": "You get more than you give, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "against",
@@ -159,12 +163,16 @@
     },
     {
       "roster_id": 12,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "even",
-        "reason": "The trade value it gets and the trade value it gives are about even. The trade is one player for two or more, so the side with more players needs a margin before the sides count as even."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "even",
+          "reason": "What you get and what you give are about even, after a discount on the side with more players."
+        },
         {
           "name": "roster fit",
           "lean": "for",
@@ -199,12 +207,16 @@
     },
     {
       "roster_id": 7,
-      "analysis": "Nico Collins leads the trade in points per game.",
-      "chart": {
-        "lean": "less",
-        "reason": "It gives more trade value than it gets."
-      },
+      "bullets": [
+        "Nico Collins leads the trade in points per game.",
+        "His role is large."
+      ],
       "factors": [
+        {
+          "name": "deal",
+          "lean": "against",
+          "reason": "You give more than you get."
+        },
         {
           "name": "roster fit",
           "lean": "for",
