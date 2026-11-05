@@ -87,7 +87,11 @@ grade. A document whose Claude call fell back is not stored, so the next request
 ## The deploy job
 
 - The job `deploy` in the root `.github/workflows/deploy-api.yml` deploys after each push to `main` that changes `apps/api`, `apps/pipeline`, or the root uv files, and passes the check.
-- To read the job, open the Actions tab, then the "Pipeline check" run of the push. The `deploy` log ends with the
+- A push to `main` runs the workflow `Check` once. Its `workflow_run` event starts `Deploy API`. The job `changes`
+  diffs the pushed commit against its parent, and the job `deploy` runs only when a path of the list changed.
+- To deploy `main` by hand with no path gate, run `gh workflow run deploy-api.yml --repo bkwon94/4thandgoal --ref main`.
+  The dispatch runs the check first. A dispatch from another branch deploys nothing.
+- To read the job, open the Actions tab, then the "Deploy API" run of the push. The `deploy` log ends with the
   image and the machine state.
 - Use `make deploy` in `apps/api` from a clean `main` when the job fails for a Fly or GitHub reason, or when the secret
   `FLY_API_TOKEN` is absent.
@@ -295,7 +299,7 @@ The cron reads the passphrase of `cpc` from the repository secret `CORNERSTONE_P
 1. Run this command. It asks for the value, so the value stays out of the shell history.
 
    ```sh
-   gh secret set CORNERSTONE_PASSPHRASE_CPC --repo bkwon94/cpcfantasyfootball
+   gh secret set CORNERSTONE_PASSPHRASE_CPC --repo bkwon94/4thandgoal
    ```
 
 2. Merge the branch into `main`. GitHub runs a schedule only from the default branch.
@@ -305,7 +309,7 @@ The season is the workflow variable `CORNERSTONE_SEASON`, with `2026` as the def
 of a new season, change the default in the file, or set the repository variable:
 
 ```sh
-gh variable set CORNERSTONE_SEASON --body 2027 --repo bkwon94/cpcfantasyfootball
+gh variable set CORNERSTONE_SEASON --body 2027 --repo bkwon94/4thandgoal
 ```
 
 In the off-season, the refresh route answers `422` and the daily job fails until the season variable changes.

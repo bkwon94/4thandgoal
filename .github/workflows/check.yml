@@ -1,6 +1,7 @@
 # Runs "make check" at the root on each push to main and on each pull request.
 # A branch with a PR runs once, because a push to a branch alone does not start it.
-# The deploy workflows keep their own build steps. The API deploy and the site deploy also call this workflow.
+# The deploy workflows keep their own build steps. Each deploy starts from the workflow_run event of this workflow,
+# so a push to main runs the check once. A manual dispatch of a deploy calls this workflow for the ref it deploys.
 name: Check
 
 on:
@@ -10,7 +11,7 @@ on:
   workflow_dispatch:
   workflow_call:
     inputs:
-      # The site deploy passes the ref it deploys, so the check runs on the same commit. Empty means the ref of the run.
+      # A deploy by hand passes the ref it deploys, so the check runs on the same commit. Empty means the ref of the run.
       ref:
         type: string
         default: ""
@@ -24,26 +25,27 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
 
       # The pnpm version comes from the packageManager field of the site package.json.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           package_json_file: apps/site/package.json
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
       # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+      # setup-uv publishes no major tag from v8 on, so the step names the full release.
       - name: Set up uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.3.3
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock

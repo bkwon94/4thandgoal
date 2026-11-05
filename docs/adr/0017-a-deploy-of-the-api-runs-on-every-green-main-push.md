@@ -6,12 +6,14 @@ pipeline and has a green check.
 
 ## The decision
 
-- The check gates the deploy. The job `deploy` needs the job `check`, so a red check stops it.
+- The check gates the deploy. The workflow starts from the `workflow_run` event of the workflow `Check`, and the
+  job `deploy` runs only when that check is green. A push to `main` runs the check once.
 - No human approves the deploy. The job has no environment gate. A green check is the approval.
-- The deploy runs only for a pipeline change. The workflow has a path filter on `apps/pipeline/**` and on its own
-  file. A push that changes only the site or the records does not deploy the same image again.
-- The deploy runs from `main` only. The job runs only on a push event to `refs/heads/main`. A push to a
-  branch or a run by hand runs the check and no deploy.
+- The deploy runs only for a pipeline change. A `workflow_run` event has no path filter, so the job `changes`
+  diffs the pushed commit against its parent. A push that changes only the site or the records does not deploy
+  the same image again.
+- The deploy runs from `main` only. A `workflow_run` deploys only for a check of a push to `main`. A run by hand
+  deploys only from `main`, runs the check first, and has no path gate. A push to a branch deploys nothing.
 - Two deploys never overlap. The job holds the concurrency group `fly-deploy`, so a second deploy waits.
 - The job runs `flyctl deploy --remote-only`. A Fly builder builds the image, so the runner needs no Docker.
 - `make deploy` stays as the fallback from the shell. It still checks for `main` and a clean tree.

@@ -1,9 +1,13 @@
 # Builds the static export of each client under clients/ and deploys it to the Cloudflare Worker of that client.
-# It runs on a push to main after the check passes, and on a manual dispatch for a ref, such as a spec branch.
+# It runs after a green check of a push to main, and on a manual dispatch for a ref, such as a spec branch.
+# The check workflow runs once for each push to main, and this workflow starts from its workflow_run event.
 name: Deploy sites
 
 on:
-  push:
+  workflow_run:
+    # The name of check.yml.
+    workflows: [Check]
+    types: [completed]
     branches: [main]
   # A spec branch can deploy before its merge, so the evidence of a live acceptance test comes from the live host.
   # Example: gh workflow run deploy-sites.yml --ref clients -f ref=clients
@@ -20,24 +24,34 @@ permissions:
   contents: read
 
 env:
-  # A push deploys the pushed commit. A dispatch deploys the ref of its input.
-  DEPLOY_REF: ${{ inputs.ref || github.sha }}
+  # A workflow_run deploys the commit that the check saw. A dispatch deploys the ref of its input.
+  DEPLOY_REF: ${{ github.event.workflow_run.head_sha || inputs.ref }}
 
 jobs:
-  # The deploy calls the check workflow as a job it needs, the way the API deploy does. A green check is the approval.
+  # A dispatch deploys a ref that no check saw, so it runs the check first. A workflow_run already has a green check.
   check:
+    if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/check.yml
     with:
-      ref: ${{ inputs.ref || github.sha }}
+      ref: ${{ inputs.ref }}
 
   # One slug for each folder under clients/ with a client.toml, so a second client adds no workflow code.
   clients:
     needs: check
+    # A workflow_run skips the job check, so !cancelled() lets this job run, and the rest picks the gate of each event.
+    # A green check is the approval. A workflow_run deploys only for a green check of a push.
+    if: >-
+      !cancelled() && (
+        (github.event_name == 'workflow_dispatch' && needs.check.result == 'success')
+        || (github.event_name == 'workflow_run'
+            && github.event.workflow_run.conclusion == 'success'
+            && github.event.workflow_run.event == 'push')
+      )
     runs-on: ubuntu-latest
     outputs:
       slugs: ${{ steps.list.outputs.slugs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.DEPLOY_REF }}
       - name: List the clients
@@ -48,6 +62,8 @@ jobs:
 
   deploy:
     needs: clients
+    # A skipped job check would skip this job too, so the condition names only the result of the job clients.
+    if: ${{ !cancelled() && needs.clients.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -56,6 +72,7 @@ jobs:
       matrix:
         slug: ${{ fromJSON(needs.clients.outputs.slugs) }}
     # Two deploys of one Worker at once can conflict, so a second deploy waits for the first.
+    # The group sits on the job and not on the workflow, so a run that deploys nothing never cancels a waiting deploy.
     concurrency:
       group: site-deploy-${{ matrix.slug }}
       cancel-in-progress: false
@@ -67,18 +84,18 @@ jobs:
       CLIENT: ${{ matrix.slug }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.DEPLOY_REF }}
 
       # The pnpm version comes from the packageManager field of the site package.json.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           package_json_file: apps/site/package.json
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
