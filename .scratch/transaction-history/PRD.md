@@ -5,7 +5,7 @@ Date: 2026-11-05
 Apps: pipeline. Each weekly build writes the full transactions of the week before into the history, and CPC weeks 6 and 7 get a backfill. The site does not change.
 Spec branch: `transaction-history`.
 Source: the session of 2026-11-05, and decision ticket 12 of the midseason report, with its notes `.scratch/midseason-report/decisions/12-research-transaction-history-gap.notes.md` on the spec branch `midseason-report`.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 02, in `issues/`.
 
 ## Problem Statement
 

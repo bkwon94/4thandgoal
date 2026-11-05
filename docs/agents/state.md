@@ -31,6 +31,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `site-report` | site | 01 the type scale, the measure, and the cards | none | |
 | `site-speed` | site | 01 the teams prefetch and the skeleton | none | |
 | `tone` | pipeline | 09 leftovers-after-the-second-rewrite | | |
+| `transaction-history` | pipeline | 01 each build writes the full week before into the history | none | |
 | `trade-grade-v3` | pipeline | 05 rebuild-week-6 | | Brian's review and the publish of week 6 |
 | `waiver` | site | 01 the route behind the flag | pipeline 01 the week file | |
 | `waiver` | pipeline | 09 usage-floor-for-ranked-buckets | | |
