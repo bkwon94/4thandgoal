@@ -191,3 +191,17 @@ for (const width of [768, 1024, 1280]) {
     expect([...targets.failures, ...(await scanScroll(page))]).toEqual([]);
   });
 }
+
+/* The open strip of weeks takes its own space under the top band, so it covers no part of the page, such as the page title. */
+for (const width of [375, 768, 1280]) {
+  test(`the open strip of weeks of ${CLIENT} covers no page title at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}/`, "dark");
+    await page.locator("header details > summary").click();
+    const strip = await page.getByRole("navigation", { name: "Weeks of the season" }).boundingBox();
+    const title = await page.locator("h1").first().boundingBox();
+    expect(strip).not.toBeNull();
+    expect(title).not.toBeNull();
+    expect(strip!.y + strip!.height).toBeLessThanOrEqual(title!.y);
+  });
+}

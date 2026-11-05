@@ -29,8 +29,10 @@ export function TopBand({ title, brand, menu, pageHref, children }: TopBandProps
   return (
     <>
       {/* Sticky, so the band stays at the top at every scroll and takes its space in the flow, and the page never jumps.
-          The band paints the page color in both themes. The hero is the one loud surface of a page. */}
-      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink">
+          The band paints the page color in both themes. The hero is the one loud surface of a page.
+          While the strip of weeks is open, the band grows by the height of the strip and the strip fills that space,
+          so the page moves down and the strip covers no part of it, such as the page title. */}
+      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink has-[details[open]]:pb-strip">
         {/* One row at every tier, so the band keeps one height at every width. On a phone and a tablet it holds the brand
             mark, the week chip, and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
         <div className="mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2">
