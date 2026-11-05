@@ -30,10 +30,10 @@ Every route of the site, in both clients, shows the look: dark by default, with 
 - Rankings uses the Ladder: a hero for rank 1, then a card for each team that opens its part ranks. Managers uses Cards: a card with the grade box on the index, and the grade as the hero number on the manager page, with a W or L chip for each week. `decisions/07-prototype-managers-rankings-waiver.md`.
 - The home page is the Front page: the Matchup of the Week of the latest week as the hero, then its four numbers, the top three of the rankings, the tools, and the weekly reports. The 404 page is a hero with a big "404" and two buttons, to the latest week and home. `decisions/08-prototype-home-and-404.md`.
 - The light sets give a light page and white cards, but the hero stays dark on the `band` color in both themes. CPC accent text in light is `#a52e25`, NorCal `#9a3412`; NorCal gold shows only in the hero. `decisions/09-prototype-the-light-sets.md`.
+- The readability floor: prose 16px and other text 11px, the AA contrast split on the page with 4.5 to 1 in the tokens, links in prose exempt from 44px, and a full floor on 7 pages and 3 open states plus a fast sweep of the rest. `decisions/13-grill-readability-floor-edges.md`.
 
 ## NOT YET SPECIFIED
 
-- Where are the edges of the readability floor? `decisions/13-grill-readability-floor-edges.md`.
 - How does dark become the default? `decisions/12-spec-dark-default-mechanism.md`.
 - The hand-off to the spec `decisions/11-spec-hand-off.md`.
 

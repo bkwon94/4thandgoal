@@ -921,6 +921,14 @@ _Avoid_: Theme, skin, style, palette, look
 The fonts, the radii, the layout, the components, and the motion that every client shares. Each brand paints the look with its colors.
 _Avoid_: Design system, shell, report look, style, skin
 
+**Readability floor**:
+The four rules that each page of the site meets in each client, each theme, and each width: the text size, the contrast, the tap targets, and no sideways scroll.
+_Avoid_: Floor (alone), a11y checks, quality bar
+
+**Prose**:
+Text that is a sentence, such as a blurb, a recap, or an error line. The readability floor holds prose to a larger size than other text.
+_Avoid_: Body text, copy, paragraph
+
 **Build folder**:
 The folder `clients/<slug>/build/` of one client: each page file and season file that its build writes. Publish copies one week of it into the published data of the client.
 _Avoid_: Site folder, output folder, dist
