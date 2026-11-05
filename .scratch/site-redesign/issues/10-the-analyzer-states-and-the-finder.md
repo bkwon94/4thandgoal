@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, AT-
 
 **Blocked by:** 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] Each state shows against the live API, in both themes, at 375, 768, and 1280 px.
 - [x] The result text, the error lines, and "Suggested Counters · No counters yet." match `main` for the same trade.
