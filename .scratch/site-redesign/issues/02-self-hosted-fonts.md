@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-36.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Both fonts load with `next/font/local`, `display: "swap"`, and `preload: true`. JetBrains Mono has a Menlo or Courier New fallback face.
 - [x] Each font has its `OFL.txt` beside it.
