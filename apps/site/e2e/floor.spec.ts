@@ -17,13 +17,25 @@ const CLIENT = process.env.CLIENT ?? "cpc";
 const NOT_FOUND_ROUTE = "/404-floor-check/";
 
 /*
- * The pages of the full floor: all four rules, in both themes, at both widths. A page ticket of the redesign adds its
- * pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
+ * An open state of a page: the page after one tap on the element that the CSS selector names, such as an open card.
+ * The floor taps it after the load, and the run has reduced motion, so the open part is at rest at once.
  */
-const FULL_FLOOR_PAGES: readonly string[] = [
+type OpenState = { route: string; tap: string };
+
+/*
+ * The pages and the open states of the full floor: all four rules, in both themes, at both widths. A page ticket of the
+ * redesign adds its pages here as it ships them. A page not in the list gets the fast sweep only, so an old page still has the text floor.
+ */
+const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   NOT_FOUND_ROUTE,
+  "/rankings/",
+  // The card at rank 2 is the first card of the Ladder, because rank 1 sits in the hero.
+  { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]" },
   "/analyze/",
 ];
+
+const routeOf = (entry: string | OpenState) => (typeof entry === "string" ? entry : entry.route);
+const fullFloorRoutes = FULL_FLOOR_PAGES.map(routeOf);
 
 /* Every client has both sets (decision 12), so the full floor checks both themes. */
 const THEMES: readonly Theme[] = ["dark", "light"];
@@ -70,19 +82,27 @@ async function textFloor(page: Page, label: string, started: number): Promise<st
 }
 
 const routes = builtRoutes();
-const unknown = FULL_FLOOR_PAGES.filter((route) => !routes.includes(route));
+const unknown = fullFloorRoutes.filter((route) => !routes.includes(route));
 test("each page of the full floor is a built page", () => {
   expect(unknown, `FULL_FLOOR_PAGES names a page that ${CLIENT} does not build`).toEqual([]);
 });
 
-for (const route of FULL_FLOOR_PAGES) {
+for (const entry of FULL_FLOOR_PAGES) {
+  const route = routeOf(entry);
+  const state = typeof entry === "string" ? "" : ` tap ${entry.tap}`;
   for (const theme of THEMES) {
     for (const size of [PHONE, DESKTOP]) {
-      test(`full floor: ${CLIENT} ${route} ${theme} ${size.width}px`, async ({ page }) => {
-        const label = `${CLIENT} ${route} ${theme} ${size.width}px`;
+      test(`full floor: ${CLIENT} ${route}${state} ${theme} ${size.width}px`, async ({ page }) => {
+        const label = `${CLIENT} ${route}${state} ${theme} ${size.width}px`;
         const started = Date.now();
         await page.setViewportSize(size);
         await openPage(page, `${server.url}${route}`, theme);
+        if (typeof entry !== "string") {
+          const control = page.locator(entry.tap);
+          await control.click();
+          // A tap that opens nothing fails here, so the floor never checks a closed state by mistake.
+          await expect(control).toHaveAttribute("aria-expanded", "true");
+        }
         const failures = await textFloor(page, label, started);
         const targets = await scanTargets(page);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
@@ -93,7 +113,7 @@ for (const route of FULL_FLOOR_PAGES) {
   }
 }
 
-for (const route of routes.filter((route) => !FULL_FLOOR_PAGES.includes(route))) {
+for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) {
   test(`fast sweep: ${CLIENT} ${route} dark 390px`, async ({ page }) => {
     const label = `${CLIENT} ${route} dark 390px`;
     const started = Date.now();

@@ -1,5 +1,5 @@
 /**
- * The power rankings page: the top band, the chosen week line, and the table, or a short empty state with no file.
+ * The power rankings page: the top band and the Ladder, or a short empty state with no file.
  * The route of the app reads the rankings file and the shell values, and passes them in, so the screen reads no file.
  */
 import type { ComponentProps } from "react";
@@ -10,7 +10,6 @@ import { Chapter } from "@cpc/design/parts/chapter";
 import { Label } from "@cpc/design/parts/label";
 import type { Rankings } from "../schema/rankings-types";
 import { PowerRankings } from "./power-rankings";
-import { ChosenWeekLine, WeekChoiceProvider } from "./week-choice";
 
 /* The title, the brand, and the menu of the top band, as the app builds them for every page. */
 type ShellValues = Pick<ComponentProps<typeof TopBand>, "title" | "brand" | "menu">;
@@ -43,15 +42,13 @@ export function RankingsScreen({
       </>
     );
   }
+  // The hero of the Ladder names the chosen week, so the top band holds no week line.
   return (
-    // The provider holds the chosen week, so the week line and the table read the same week.
-    <WeekChoiceProvider weeks={rankings.weeks}>
-      <TopBand {...shell} pageHref={pageHref}>
-        <ChosenWeekLine />
-      </TopBand>
+    <>
+      <TopBand {...shell} pageHref={pageHref} />
       <PageColumn>
         <PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref={managersHref} />
       </PageColumn>
-    </WeekChoiceProvider>
+    </>
   );
 }

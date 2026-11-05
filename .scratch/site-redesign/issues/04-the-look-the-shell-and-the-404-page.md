@@ -18,3 +18,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-7, AT-8, AT-9, AT-10,
 - [x] The 404 page shows the hero, "404", and the buttons "Go to Week N" and "Go Home". It is on the full floor, and the floor passes.
 - [ ] The local dev server runs for Brian after the build.
 - [ ] The evidence of AT-7, AT-8, AT-9, AT-10, AT-11, AT-13, and AT-32 is recorded in `EVIDENCE.md`.
+
+## Comments
+
+- 2026-11-05: Brian accepts the change to `apps/pipeline/tests/test_client.py` under AT-41. The `layout` key left the shared client model, so two tests that read it changed. No pipeline code changed.
