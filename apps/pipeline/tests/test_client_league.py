@@ -7,6 +7,7 @@ from cpc import cpc_client
 from pydantic import ValidationError
 
 from facts.chapters import RANKINGS_CHAPTER
+from league.client import ClientError
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.standings_table import standings
@@ -16,7 +17,8 @@ from week.sheet.base import sentence_range
 def test_the_league_id_comes_from_the_season():
     client = cpc_client()
     assert client.league_id(2026) == "1386167364424318976"
-    with pytest.raises(ValueError, match="2031"):
+    # A bad season raises the one error type of the client, as load_client does.
+    with pytest.raises(ClientError, match="2031"):
         client.league_id(2031)
 
 

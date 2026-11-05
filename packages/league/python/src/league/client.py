@@ -257,7 +257,7 @@ class Client(BaseModel):
     def league_id(self, season: int) -> str:
         """The provider league id of `season`. A season with no id stops the fetch with a plain message."""
         if season not in self.values.seasons:
-            raise ValueError(f"No league id for season {season}. Add [seasons.{season}] to {self.folder / CLIENT_FILE}.")
+            raise ClientError(f"No league id for season {season}. Add [seasons.{season}] to {self.folder / CLIENT_FILE}.")
         return self.values.seasons[season].league_id
 
     @property
@@ -270,13 +270,17 @@ class Client(BaseModel):
 SettingsFetch = Callable[[str, Path], LeagueSettings]
 
 
-def load_client(root: Path, slug: str, season: int, fetch_settings: SettingsFetch, models: ValueModels) -> Client:
+def load_client(root: Path, slug: str, season: int | None, fetch_settings: SettingsFetch,
+                models: ValueModels) -> Client:
     """The client `slug` under the repo root `root`, with the League settings of `season`. `models` checks the tables.
 
+    A season of None takes the latest season of client.toml, so a caller reads the file one time.
     A missing or bad client.toml, or a season the file does not name, raises ClientError.
     """
     folder = client_dir(root, slug)
     values = read_client_values(folder, models)
+    if season is None:
+        season = values.latest_season
     if season not in values.seasons:
         raise ClientError(f"{folder / CLIENT_FILE} has no [seasons.{season}].")
     settings = fetch_settings(values.seasons[season].league_id, league_file(folder, season))
