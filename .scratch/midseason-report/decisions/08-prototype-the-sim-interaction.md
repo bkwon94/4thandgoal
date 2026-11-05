@@ -25,7 +25,7 @@ Brian decided it on 2026-11-05, after three variants on real CPC week 8 data: a 
 What the prototype also showed:
 
 - The Python model with the bracket matches the published week 8 playoff odds within about 1 point.
-- The CPC title race is wide open: six teams at 13% to 17%. The team with the most mean wins has 9.7% title odds, because of the projections of weeks 15 to 17.
+- The CPC title race is wide open: six teams at 13% to 17%. A later run for ticket 09 gave five teams at 13.4% to 16.7%, so the count depends on the run. The team with the most mean wins has 9.7% title odds, because of the projections of weeks 15 to 17.
 - The week 8 `bracket.json` of CPC agrees with the reseed: seed 1 meets the lowest seed left.
 - `projected_totals` must run to week 17 for the playoff draw. The NFL schedule cache `games.csv` is gitignored, so a build in a fresh worktree needs it.
 

@@ -32,10 +32,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - The replay moves like a sports broadcast: a lower third each week, a red PLAYOFFS wipe, a bracket that draws in, winners that slide along the lines, and a full champion card. About 20 seconds, with a skip and a reduced-motion version. `decisions/13-prototype-the-replay-motion.md`.
 - The sim is a module that plugs in anywhere, not a part of the report alone. Its engine and its replay part do not depend on the `midseason` package, so a weekly page or a standalone sim page can use it later. The spec sets the package boundary. Brian, on 2026-11-05.
 - The top performers chapter is the Position top 10: QB, RB, WR, TE, and DEF in CPC, by total league points, every NFL player, one position at a time. Seven awards from one fact each: MVP, Streaming king, Bench crime, Heartbreak, Beatdown, Most active, and Set and forget. Players to watch: Due to rise, Due to fall, and Grab him now. `decisions/10-grill-awards-and-players.md`.
+- The report is three acts with a chapter rail, and its hero is the title race. Schedule luck merges with the swap, and the record book with the awards. The sim is the finale. A spread rule gives each team 1 to 3 headlines. `decisions/09-prototype-the-chapters.md`.
 
 ## NOT YET SPECIFIED
 
-- What are the order, the look, and the merges of the chapters? `decisions/09-prototype-the-chapters.md`.
 - How long does the takeover last, what is the build command, how does the review run, and what scale has the `roast` setting? `decisions/11-spec-takeover-build-review-roast.md`.
 
 ## OUT OF SCOPE
