@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
+import { addPlayer, chooseTeam, pickPlayers, pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 import { TradeForm } from "./trade-form";
 
 // The finder flag is a prop from the page, so each render passes the flag the test sets.
@@ -33,42 +34,17 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
 }
 
-type SideTitle = "Your Team" | "Team Two" | "Team Three" | "Team Four";
 /* The card of a side, named by its heading. */
 const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
-/* The slot of a side in the teams row. Its name says the team once picked. */
-const slot = (side: SideTitle) => screen.getByRole("button", { name: new RegExp(`^(Pick ${side}|${side}: )`) }) as HTMLButtonElement;
-const addPlayer = (side: SideTitle) => screen.getByRole("button", { name: `Add a player ${side} gets` }) as HTMLButtonElement;
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
 /* A result folds the form, so a test taps Edit to change the trade under it. */
 const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
 
-/* Picks a team in the team sheet that is open, and waits for the sheet to close. */
-async function chooseTeam(team: string) {
-  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-}
-
-async function pickTeam(side: SideTitle, team: string) {
-  fireEvent.click(slot(side));
-  await chooseTeam(team);
-}
-
 /* Adds a side with a team through "+". */
 async function addTeam(team: string) {
   fireEvent.click(screen.getByRole("button", { name: "Add a team" }));
   await chooseTeam(team);
-}
-
-/* Opens the picker of a side, checks each player on the tab of the source team, and taps Done. */
-async function pickPlayers(side: SideTitle, from: string, ...names: string[]) {
-  fireEvent.click(addPlayer(side));
-  const open = await screen.findByRole("dialog");
-  fireEvent.click(within(open).getByRole("tab", { name: from }));
-  for (const name of names) fireEvent.click(within(open).getByRole("checkbox", { name: new RegExp(name) }));
-  fireEvent.click(within(open).getByRole("button", { name: /^Done/ }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
 const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
@@ -79,13 +55,8 @@ const rowsOf = (side: SideTitle) =>
     .queryAllByRole("listitem")
     .map((item) => item.textContent);
 
-/* Picks my team and the other team, then one player for each card: the main trade of p1 for p4. */
-async function pickTrade() {
-  await pickTeam("Your Team", "Pukancun on 3");
-  await pickTeam("Team Two", "Blitz Bakers");
-  await pickPlayers("Your Team", "Blitz Bakers", "Ben Two");
-  await pickPlayers("Team Two", "Pukancun on 3", "Ana One");
-}
+/* The main trade of p1 for p4: my team gets Ben Two, and the other team gets Ana One. */
+const TRADE = { mine: "Pukancun on 3", other: "Blitz Bakers", mineGets: "Ben Two", otherGets: "Ana One" };
 
 beforeEach(() => {
   fetchStub.mockReset();
@@ -246,7 +217,7 @@ describe("TradeForm", () => {
   });
 
   it("drops the players a side gives when its team changes, and keeps the players it gets", async () => {
-    await pickTrade();
+    await pickTrade(TRADE);
     await pickTeam("Team Two", "Punt Punks");
     expect(submit().disabled).toBe(true);
     await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull());
@@ -255,7 +226,7 @@ describe("TradeForm", () => {
 
   it("clears the result when a side's team changes", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     edit();
@@ -265,7 +236,7 @@ describe("TradeForm", () => {
 
   it("posts the asker first, with the destination of each player, as main does", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
 
@@ -288,7 +259,7 @@ describe("TradeForm", () => {
     const count = vi.fn();
     window.goatcounter = { count };
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     expect(count).toHaveBeenCalledWith({ path: "analyze-grade", event: true });
@@ -297,7 +268,7 @@ describe("TradeForm", () => {
 
   it("shows the loading line while the grade runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
     expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
@@ -309,7 +280,7 @@ describe("TradeForm", () => {
 
   it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
@@ -325,7 +296,7 @@ describe("TradeForm", () => {
 
   it("fills the hero with the verdict and the fairness block, and keeps the form folded with an Edit button", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     const verdict = await screen.findByRole("region", { name: "The Verdict" });
     expect(within(verdict).getByRole("heading", { level: 2, name: "Decision for Pukancun on 3" })).toBeTruthy();
@@ -344,7 +315,7 @@ describe("TradeForm", () => {
 
   it("opens the form again with Edit and keeps the result under it", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
@@ -359,7 +330,7 @@ describe("TradeForm", () => {
   it("locks the slots, the add buttons, and the remove controls while the grade runs, and unlocks them on the result", async () => {
     let finish!: (response: Response) => void;
     fetchStub.mockReturnValueOnce(new Promise<Response>((resolve) => (finish = resolve)));
-    await pickTrade();
+    await pickTrade(TRADE);
     // The grade folds the form out of view, so the test holds each control before the tap.
     const controls = [slot("Your Team"), slot("Team Two"), addPlayer("Your Team"), addPlayer("Team Two")];
     const removeAnaOne = removeButton("Ana One");
@@ -384,7 +355,7 @@ describe("TradeForm", () => {
 
   it("unlocks the form after a 422, so a tap fixes the trade", async () => {
     answer(422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Player p1 is not on the giving roster.");
     expect(removeButton("Ana One").disabled).toBe(false);
@@ -395,7 +366,7 @@ describe("TradeForm", () => {
 
   it("unlocks the form after a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Too many requests. Try again in 12 seconds.");
     await pickPlayers("Team Two", "Pukancun on 3", "Ana Two");
@@ -404,7 +375,7 @@ describe("TradeForm", () => {
 
   it("clears the old result when a new submit starts", async () => {
     answer(200, fixtureJson);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Not as is");
     edit();
@@ -417,21 +388,21 @@ describe("TradeForm", () => {
 
   it("shows the API message on a 422", async () => {
     answer(422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Player p1 is not on the giving roster.")).toBeTruthy();
   });
 
   it("shows the wait time on a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("Too many requests. Try again in 12 seconds.")).toBeTruthy();
   });
 
   it("shows the down line and a retry button on a 503 with no detail", async () => {
     answer(503);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
@@ -439,7 +410,7 @@ describe("TradeForm", () => {
 
   it("unlocks the form and puts the message, the alert icon, and Try Again in one box above the bar", async () => {
     answer(500);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     const box = await screen.findByRole("group", { name: "The grade failed" });
     expect(within(box).getByRole("alert").textContent).toBe("The API did not answer. Try again.");
@@ -453,21 +424,21 @@ describe("TradeForm", () => {
 
   it("shows the API reason on a 503 with a detail", async () => {
     answer(503, { detail: "The trade value chart is not ready." });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The trade value chart is not ready.")).toBeTruthy();
   });
 
   it("asks for the passphrase again on a 401", async () => {
     answer(401, { detail: "bad passphrase" });
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1));
   });
 
   it("shows a retry button on another failure, and the button posts again", async () => {
     answer(500);
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     expect(await screen.findByText("The API did not answer. Try again.")).toBeTruthy();
 
@@ -478,7 +449,7 @@ describe("TradeForm", () => {
   });
 
   it("aborts after 60 seconds, shows the timeout line, and the retry posts again", async () => {
-    await pickTrade();
+    await pickTrade(TRADE);
     // Only the timeout is fake. A fake clock for frames would leave Framer Motion on a stale time, so a later exit would stall.
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     fetchStub.mockImplementationOnce(
@@ -507,7 +478,7 @@ describe("TradeForm", () => {
           signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
         }),
     );
-    await pickTrade();
+    await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
 

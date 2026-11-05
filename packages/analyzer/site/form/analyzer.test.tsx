@@ -6,6 +6,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiTarget } from "../lib/fixtures/api";
 import { Analyzer } from "./analyzer";
+import { pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 
 const TEAMS = {
   teams: [
@@ -50,10 +51,6 @@ const ROSTERS = [
 
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 
-type SideTitle = "Your Team" | "Team Two";
-/* The slot of a side in the teams row. Its name says the team once picked. */
-const slot = (side: SideTitle) => screen.getByRole("button", { name: new RegExp(`^(Pick ${side}|${side}: )`) }) as HTMLButtonElement;
-
 /* The teams arrive when the slots turn on. */
 async function formReady() {
   await waitFor(() => expect(slot("Your Team").disabled).toBe(false));
@@ -69,29 +66,8 @@ async function teamNames(side: SideTitle) {
   return names;
 }
 
-async function pickTeam(side: SideTitle, team: string) {
-  fireEvent.click(slot(side));
-  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-}
-
-/* Opens the picker of a side, checks the first player of the list that matches, and taps Done. */
-async function pickPlayer(side: SideTitle, ...names: string[]) {
-  fireEvent.click(screen.getByRole("button", { name: `Add a player ${side} gets` }));
-  const open = within(await screen.findByRole("dialog"));
-  const name = names.find((n) => open.queryByRole("checkbox", { name: new RegExp(n) }))!;
-  fireEvent.click(open.getByRole("checkbox", { name: new RegExp(name) }));
-  fireEvent.click(open.getByRole("button", { name: /^Done/ }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-}
-
-/* Picks both teams, then Ben One for my side and Ana One or Ana Two for the other side. */
-async function pickTrade() {
-  await pickTeam("Your Team", "Gridiron Ghosts");
-  await pickTeam("Team Two", "Blitz Bakers");
-  await pickPlayer("Your Team", "Ben One");
-  await pickPlayer("Team Two", "Ana One", "Ana Two");
-}
+/* Both teams of ROSTERS, with Ben One for my side and Ana Two for the other side. */
+const TRADE = { mine: "Gridiron Ghosts", other: "Blitz Bakers", mineGets: "Ben One", otherGets: "Ana Two" };
 
 beforeEach(() => {
   localStorage.clear();
@@ -262,7 +238,8 @@ describe("Analyzer", () => {
     render(<Analyzer target={apiTarget} finderOn={false} />);
     await formReady();
 
-    await pickTrade();
+    // The stored roster still has Ana One, so the other side gets her.
+    await pickTrade({ ...TRADE, otherGets: "Ana One" });
     expect(screen.getByRole("button", { name: "Remove Ana One" })).toBeTruthy();
     expect(submit().disabled).toBe(false);
 
@@ -282,7 +259,7 @@ describe("Analyzer", () => {
     await formReady();
     expect(sessionStorage.getItem(STORE_KEY)).not.toBeNull();
 
-    await pickTrade();
+    await pickTrade(TRADE);
     answer(422, { detail: { message: "Ana Two is not on that roster.", player_id: "p2" } });
     const release = answerLater({ teams: ROSTERS });
     fireEvent.click(submit());
