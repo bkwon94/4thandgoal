@@ -8,7 +8,7 @@ Spec: `.scratch/site-redesign/PRD.md`. Acceptance tests AT-34, AT-38, and AT-41.
 
 **Blocked by:** 05, 06, 07, 08, 09, 10
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The floor passes in CI for both clients, with its time in the log.
 - [x] `GLOSSARY.md` holds the term changes of the spec: Top band, Menu, Sheet, Chapter, Page, Hero, Shell, and Pill bar. Masthead, Menu button, Compact bar, and Black chapter are gone.
