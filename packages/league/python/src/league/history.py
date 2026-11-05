@@ -247,10 +247,15 @@ def _team_total(past: PastWeek, player_id: str, stat: str) -> float:
     team = past.nfl_teams.get(player_id)
     if team is None:
         return 0.0
-    return sum(
-        past.stats.get(pid, {}).get(stat, 0.0)
-        for pid, nfl_team in past.nfl_teams.items() if nfl_team == team
-    )
+    # The finder reads a team total for many players of many trades, so the totals of each stat build once per week.
+    # Each team sums its players in the order of nfl_teams from an int 0, as sum() does, so each total is the same.
+    totals = past._team_totals.get(stat)
+    if totals is None:
+        totals = {}
+        for pid, nfl_team in past.nfl_teams.items():
+            totals[nfl_team] = totals.get(nfl_team, 0) + past.stats.get(pid, {}).get(stat, 0.0)
+        past._team_totals[stat] = totals
+    return totals[team]
 
 
 def target_share(history: History, player_id: str, through: int) -> UsageShare | None:
