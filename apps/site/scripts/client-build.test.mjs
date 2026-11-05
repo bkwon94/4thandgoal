@@ -292,10 +292,12 @@ describe("the client build", () => {
     buildClient(repo);
     const css = readFileSync(join(repo.site, "src", "generated", "brand.css"), "utf8");
     const theme = css.slice(css.indexOf("@theme static {"), css.indexOf(".dark {"));
-    expect(theme).toContain("--color-page: #ffffff;");
-    expect(theme).toContain("--color-ink: #1a1a1a;");
-    expect(theme).toContain("--radius-card: 8px;");
+    expect(theme).toContain("--color-page: #f4f4f4;");
+    expect(theme).toContain("--color-ink: #141414;");
     expect(css.slice(css.indexOf(".dark {"))).toContain("--color-page: #141414;");
+    // The fonts and the radii belong to the look in globals.css, so the brand CSS writes none.
+    expect(css).not.toMatch(/--(font|radius)-/);
+    expect(css).not.toContain("@font-face");
   });
 
   it("fails on a brand with a missing base role and names the role and the file", () => {
@@ -333,15 +335,13 @@ describe("the client build", () => {
     });
   });
 
-  it("gives a brand with one dark set the dark set first and no .dark block (AT-10)", () => {
-    const dark = CPC_BRAND.slice(CPC_BRAND.indexOf("[dark]"));
-    const brand = CPC_BRAND.slice(0, CPC_BRAND.indexOf("[light]")) + dark;
-    const repo = tempRepo(CPC_TOML, "cpc", { brand });
-    buildClient(repo);
-    expect(clientValuesOf(repo.site).brand.sets).toEqual(["dark"]);
-    const css = readFileSync(join(repo.site, "src", "generated", "brand.css"), "utf8");
-    expect(css).toContain("--color-page: #141414;");
-    expect(css).not.toContain(".dark {");
+  it.each(["light", "dark"])("fails on a brand with no %s set and names the set and the file (AT-37)", (set) => {
+    const start = CPC_BRAND.indexOf(`[${set}]`);
+    const end = set === "light" ? CPC_BRAND.indexOf("[dark]") : CPC_BRAND.length;
+    const repo = tempRepo(CPC_TOML, "cpc", { brand: CPC_BRAND.slice(0, start) + CPC_BRAND.slice(end) });
+    expect(() => buildClient(repo)).toThrow(ClientBuildError);
+    expect(() => buildClient(repo)).toThrow(new RegExp(`- ${set}: is required`));
+    expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "brand.toml"));
   });
 
   it("copies the logo of assets/ into the site and names its src, and gives null with no logo", () => {
@@ -358,22 +358,15 @@ describe("the client build", () => {
     expect(existsSync(join(repo.site, "public", "brand", "logo.png"))).toBe(false);
   });
 
-  it("copies each font file of assets/fonts/ into the site and writes its @font-face", () => {
-    const face = '\n[[fonts.faces]]\nfamily = "Inter"\nfile = "Inter-Bold.woff2"\nweight = "700"\n';
-    const brand = CPC_BRAND.replace("[light]\n", `${face}\n[light]\n`);
-    const repo = tempRepo(CPC_TOML, "cpc", { brand });
-    mkdirSync(join(repo.root, "clients", "cpc", "assets", "fonts"), { recursive: true });
-    writeFileSync(join(repo.root, "clients", "cpc", "assets", "fonts", "Inter-Bold.woff2"), "font");
-    buildClient(repo);
-    expect(readFileSync(join(repo.site, "public", "brand", "fonts", "Inter-Bold.woff2"), "utf8")).toBe("font");
-    const css = readFileSync(join(repo.site, "src", "generated", "brand.css"), "utf8");
-    expect(css).toContain('src: url("/brand/fonts/Inter-Bold.woff2") format("woff2");');
-  });
-
-  it("fails on a font face with no file in assets/fonts/ and names the file", () => {
-    const face = '\n[[fonts.faces]]\nfamily = "Inter"\nfile = "Inter-Bold.woff2"\n';
-    const repo = tempRepo(CPC_TOML, "cpc", { brand: CPC_BRAND.replace("[light]\n", `${face}\n[light]\n`) });
-    expect(() => buildClient(repo)).toThrow(/Inter-Bold\.woff2/);
+  it.each([
+    ["a [fonts] table", '[fonts]\nbody = "Inter, sans-serif"\n\n', "fonts"],
+    ["a card radius", 'radius_card = "8px"\n\n', "radius_card"],
+    ["a small radius", 'radius_small = "3px"\n\n', "radius_small"],
+  ])("fails on a brand with %s and names the key and the file (AT-37)", (_, stale, key) => {
+    const repo = tempRepo(CPC_TOML, "cpc", { brand: CPC_BRAND.replace("[light]\n", `${stale}[light]\n`) });
+    expect(() => buildClient(repo)).toThrow(ClientBuildError);
+    expect(() => buildClient(repo)).toThrow(new RegExp(`- ${key}: is not a known key`));
+    expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "brand.toml"));
   });
 
   it("fails on a copy.toml with no site name and names the key", () => {

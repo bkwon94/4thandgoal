@@ -3,8 +3,9 @@
  * The client build checks the files with the schemas and writes the CSS. The contrast test reads the colors of each set.
  */
 
-/* The six roles that each set must give. */
-export const BASE_ROLES = ["accent", "band", "page", "card", "text", "muted"] as const;
+/* The roles that each set must give. `raised` is the surface one step up from the card, such as the active dock item.
+   `grid` is the line color of the grid texture of the hero. */
+export const BASE_ROLES = ["accent", "band", "page", "card", "raised", "text", "muted", "grid"] as const;
 export type BaseRole = (typeof BASE_ROLES)[number];
 
 /* The roles that derive from the base roles. A brand can override each one under [light.derived] or [dark.derived]. */
@@ -27,7 +28,7 @@ export const DERIVED_ROLES = [
 export type DerivedRole = (typeof DERIVED_ROLES)[number];
 export type Role = BaseRole | DerivedRole;
 
-/* The two sets of a brand. A brand gives one of them or both. */
+/* The two sets of a brand. A brand gives both. */
 export const SETS = ["light", "dark"] as const;
 export type SetName = (typeof SETS)[number];
 
@@ -42,17 +43,9 @@ export type Formula = Hex | { role: Role } | Mix;
 
 export type ColorSet = Record<BaseRole, Hex> & { derived?: Partial<Record<DerivedRole, Hex | Mix>> };
 
-/* One font file of assets/fonts/. The build copies it into the site and writes its @font-face. */
-export type FontFace = { family: string; file: string; weight?: string; style?: "normal" | "italic" };
-
-/* The values of brand.toml, after the check. */
-export type BrandFile = {
-  radius_card: string;
-  radius_small: string;
-  fonts: { body: string; heading: string; faces?: FontFace[] };
-  light?: ColorSet;
-  dark?: ColorSet;
-};
+/* The values of brand.toml, after the check: the light and the dark set. The fonts and the radii belong to the look,
+   in the global CSS of the site, so no brand sets them (ADR 0024). */
+export type BrandFile = { light: ColorSet; dark: ColorSet };
 
 /* The values of copy.toml, after the check. */
 export type CopyFile = { site_name: string; masthead: string; tagline: string };
@@ -63,8 +56,10 @@ const TOKEN: Record<Role, string> = {
   band: "band",
   page: "page",
   card: "card",
+  raised: "raised",
   text: "ink",
   muted: "mute",
+  grid: "grid",
   ...(Object.fromEntries(DERIVED_ROLES.map((role) => [role, role.replaceAll("_", "-")])) as Record<DerivedRole, string>),
 };
 
@@ -86,12 +81,13 @@ const FORMULA: Record<Exclude<DerivedRole, "on_dark">, Formula> = {
   chip_dark: { mix: "on_dark", percent: 10, over: "band" },
 };
 
-/* The text that sits on a dark band in both themes. It is the page of the light set, else the text of the one dark set. */
+/* The text that sits on a dark band in both themes: the page of the light set, for a brand with no override. */
 function onDark(brand: BrandFile): Formula {
-  return brand.light ? brand.light.page : { role: "text" };
+  return brand.light.page;
 }
 
-/* The sets of the brand, in paint order. The first set paints first. A two-set brand paints light first (ADR 0007). */
+/* The sets of the brand, in paint order. The light set paints first in @theme, and the dark set paints under .dark,
+   so each dark: variant of a component stays (ADR 0007). The dark class on <html> makes dark the default. */
 export function setsOf(brand: BrandFile): SetName[] {
   return SETS.filter((name) => brand[name] !== undefined);
 }
@@ -99,7 +95,6 @@ export function setsOf(brand: BrandFile): SetName[] {
 /* The formula of each role of one set: each base role is its own hex, and each derived role takes its override or its formula. */
 export function formulasOf(brand: BrandFile, name: SetName): Record<Role, Formula> {
   const set = brand[name];
-  if (!set) throw new Error(`The brand has no ${name} set.`);
   const formulas = {} as Record<Role, Formula>;
   for (const role of BASE_ROLES) formulas[role] = set[role];
   for (const role of DERIVED_ROLES) {
@@ -124,44 +119,22 @@ function colorLines(brand: BrandFile, name: SetName): string[] {
   return [...BASE_ROLES, ...DERIVED_ROLES].map((role) => `    --color-${TOKEN[role]}: ${cssValue(formulas[role])};`);
 }
 
-const FONT_FORMAT: Record<string, string> = { woff2: "woff2", woff: "woff", ttf: "truetype", otf: "opentype" };
-
-/* The URL path in the site of a font file. The client build copies each file of assets/fonts/ there. */
-export const FONT_PATH = "/brand/fonts/";
-
-function fontFaceText(face: FontFace): string {
-  const format = FONT_FORMAT[face.file.split(".").pop() ?? ""] ?? "woff2";
-  return [
-    "@font-face {",
-    `    font-family: ${JSON.stringify(face.family)};`,
-    `    src: url("${FONT_PATH}${face.file}") format("${format}");`,
-    `    font-weight: ${face.weight ?? "400"};`,
-    `    font-style: ${face.style ?? "normal"};`,
-    // The text shows in the fallback font at once, so a slow font file never hides the page.
-    "    font-display: swap;",
-    "}",
-  ].join("\n");
-}
-
 /*
- * The brand CSS of the site. Its @theme block gives the first set, the fonts, and the radii, so Tailwind makes a utility
- * for each role. A two-set brand adds a .dark block with the dark set, which the theme button turns on (ADR 0007).
+ * The brand CSS of the site. Its @theme block gives the light set, so Tailwind makes a utility for each role.
+ * Its .dark block gives the dark set, which the dark class on <html> turns on (ADR 0007).
  * Each set names every role, so a set never reads a value of the other set.
  */
-export function brandCss(brand: BrandFile, { source, faces }: { source: string; faces: FontFace[] }): string {
+export function brandCss(brand: BrandFile, { source }: { source: string }): string {
   const [first, second] = setsOf(brand);
-  const lines = [`/* GENERATED by apps/site/scripts/client-build.mjs from ${source}. Do not edit. */`];
-  for (const face of faces) lines.push(fontFaceText(face));
-  lines.push(
+  const lines = [
+    `/* GENERATED by apps/site/scripts/client-build.mjs from ${source}. Do not edit. */`,
     "@theme static {",
     ...colorLines(brand, first),
-    `    --font-sans: ${brand.fonts.body};`,
-    `    --font-heading: ${brand.fonts.heading};`,
-    `    --radius-sm: ${brand.radius_small};`,
-    `    --radius-card: ${brand.radius_card};`,
     "}",
-  );
-  if (second) lines.push(".dark {", ...colorLines(brand, second), "}");
+    ".dark {",
+    ...colorLines(brand, second),
+    "}",
+  ];
   return `${lines.join("\n")}\n`;
 }
 
@@ -211,19 +184,23 @@ export function contrastRatio(a: Rgba, b: Rgba): number {
 
 /*
  * Each pair of a text role and the surface it sits on in the site. Each pair must reach 4.5 to 1 in each set (WCAG AA).
- * The page text sits on the page, the card, and the pick wash. The on-dark text sits on the band, the black card,
- * the chip of the black card, and the accent fills.
+ * The page text sits on the page, the card, the raised surface, and the pick wash. The on-dark text is the hero text:
+ * it sits on the band, the black card, the chip of the black card, and the accent fills.
  */
 export const TEXT_PAIRS: [text: Role, surface: Role][] = [
   ["text", "page"],
   ["text", "card"],
+  ["text", "raised"],
   ["text", "pick"],
   ["ink_2", "page"],
   ["ink_2", "card"],
+  ["ink_2", "raised"],
   ["muted", "page"],
   ["muted", "card"],
+  ["muted", "raised"],
   ["muted", "pick"],
   ["accent_ink", "page"],
+  ["accent_ink", "card"],
   ["accent_ink", "pick"],
   ["on_dark", "band"],
   ["on_dark_2", "band"],
@@ -270,43 +247,15 @@ const COLOR_SET = {
     },
   },
 };
-const CSS_TEXT = { type: "string", minLength: 1, pattern: "^[^;{}]*$" };
-
-/* The JSON Schema of brand.toml. A missing base role, an unknown role, or an unknown key fails. A brand gives one set or both. */
+/* The JSON Schema of brand.toml. Each brand gives both sets. A missing set, a missing base role, an unknown role,
+   or an unknown key fails, so a stale [fonts] table or radius key fails the build. */
 export const BRAND_SCHEMA = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "brand.toml",
   type: "object",
   additionalProperties: false,
-  required: ["radius_card", "radius_small", "fonts"],
-  anyOf: [{ required: ["light"] }, { required: ["dark"] }],
+  required: ["light", "dark"],
   properties: {
-    radius_card: CSS_TEXT,
-    radius_small: CSS_TEXT,
-    fonts: {
-      type: "object",
-      additionalProperties: false,
-      required: ["body", "heading"],
-      properties: {
-        body: CSS_TEXT,
-        heading: CSS_TEXT,
-        faces: {
-          type: "array",
-          items: {
-            type: "object",
-            additionalProperties: false,
-            required: ["family", "file"],
-            properties: {
-              family: { type: "string", minLength: 1, pattern: '^[^"]*$' },
-              // A file name in assets/fonts/, with no folder, so a face never points outside the client.
-              file: { type: "string", pattern: "^[A-Za-z0-9._-]+\\.(woff2|woff|ttf|otf)$" },
-              weight: { type: "string", pattern: "^[0-9]{3}( [0-9]{3})?$" },
-              style: { enum: ["normal", "italic"] },
-            },
-          },
-        },
-      },
-    },
     light: COLOR_SET,
     dark: COLOR_SET,
   },

@@ -1,11 +1,11 @@
 /**
  * Tailwind entry, the design tokens, and the shadcn theme variables for the app routes. The brand of the client adds
- * the color roles, the fonts, and the radii. Pages in public/ do not load this file. Every other hex color and pixel size lives here.
+ * the color roles. The fonts and the radii belong to the look, so they live here (ADR 0024). Pages in public/ do not load this file. Every other hex color and pixel size lives here.
  */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* The brand of the client: the color roles of each set, the fonts, and the radii. The client build writes it. */
+/* The brand of the client: the color roles of each set. The client build writes it. */
 @import "../generated/brand.css";
 /* Tailwind scans the app only. The site side of each package holds its own class names, so each one is a source too.
    A glob over packages/ finds no file, so each package takes its own line. */
@@ -33,7 +33,7 @@
 /* The brand tokens, ported from the source stylesheet. Static keeps every token on :root,
    so the shadcn variables below can point at any token, even one without a utility. */
 @theme static {
-    /* The color roles, the fonts, and the radii come from the brand of the client. The client build writes them
+    /* The color roles come from the brand of the client. The client build writes them
        into src/generated/brand.css from clients/$CLIENT/brand.toml, and the import at the top adds them.
        The stylesheet calls the grey text "muted". The token is "mute", because shadcn owns "muted". */
 
@@ -43,6 +43,21 @@
        The arrow shape and the screen reader text also carry the direction, so the color is never the only sign. */
     --color-move-up: #3987e5;
     --color-move-down: #e05a4f;
+
+    /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
+       <html> from src/app/fonts/fonts.ts. Space Grotesk sets text and headings. JetBrains Mono sets numbers, scores,
+       and small uppercase labels. */
+    --font-sans: var(--font-space-grotesk), Arial, sans-serif;
+    --font-heading: var(--font-sans);
+    --font-mono: var(--font-jetbrains-mono), Menlo, "Courier New", monospace;
+
+    /* The radii of the look: the hero, a card, a tile, and a full pill for a button and a bar.
+       rounded-sm paints the tags and the bars, so it takes the pill. */
+    --radius-hero: 24px;
+    --radius-card: 20px;
+    --radius-tile: 18px;
+    --radius-pill: 9999px;
+    --radius-sm: var(--radius-pill);
 
     /* Spacing scale. Every padding, margin, and gap comes from this list. */
     --spacing-sp-0: 2px;
@@ -255,11 +270,12 @@
     --sidebar-border: var(--color-rule);
     --sidebar-ring: var(--color-accent);
 
-    /* The light theme is the report look and the default. The .dark block below holds the dark theme. See ADR 0007. */
+    /* The light set paints here. The .dark block below holds the dark theme, which is the default. See ADR 0007 and ADR 0024. */
     color-scheme: light;
 }
 /* The dark theme: the .dark class on <html> turns it on, and src/generated/brand.css re-points each color role in its own
-   .dark block, so no component changes a class. See ADR 0007. A brand with one dark set puts the class on <html> at build time. */
+   .dark block, so no component changes a class. See ADR 0007. The build puts the class on <html> for every client, so dark is
+   the default, and the boot script removes it for a stored light choice (ADR 0024). */
 .dark {
     /* The shadcn button paints in --primary, the masthead black, which equals the dark page and the dialog. The button then has no edge,
        so the dark theme inverts it: a white button with page-black text, 18.4 to 1. */
