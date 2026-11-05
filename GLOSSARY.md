@@ -120,6 +120,14 @@ _Avoid_: Studs, stars, leaders
 The four numbers under the points line: the season high, the season low, the streak, and the record against the median.
 _Avoid_: Stats row, shelf, summary
 
+**Ladder**:
+The layout of the rankings page: a hero for the team at rank 1 and one card for each other team.
+_Avoid_: Rankings table, leaderboard, list
+
+**Stack**:
+The layout of the analyzer page: one scroll with the teams row and one card for each team of the trade.
+_Avoid_: Trade form layout, wizard, steps
+
 ### The code
 
 **Part**:
