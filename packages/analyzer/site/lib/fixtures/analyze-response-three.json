@@ -173,7 +173,7 @@
         {
           "name": "injury",
           "lean": "even",
-          "reason": "Dalton Kincaid and Marvin Harrison are not in the id map, so no report count ran for them."
+          "reason": "Dalton Kincaid and Marvin Harrison have no injury report count on file."
         },
         {
           "name": "schedule",
@@ -222,7 +222,7 @@
         {
           "name": "injury",
           "lean": "even",
-          "reason": "Nico Collins is not in the id map, so no report count ran for him."
+          "reason": "Nico Collins has no injury report count on file."
         },
         {
           "name": "schedule",
@@ -271,7 +271,7 @@
         {
           "name": "injury",
           "lean": "even",
-          "reason": "Garrett Wilson is not in the id map, so no report count ran for him."
+          "reason": "Garrett Wilson has no injury report count on file."
         },
         {
           "name": "schedule",

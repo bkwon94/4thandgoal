@@ -1897,9 +1897,9 @@ def test_a_player_not_in_the_id_map_gets_no_report_count_and_no_handcuff_check(s
     twelfth, _ = grade(_trade(12, [POLLARD], 11, [MITCHELL]), slow_snap)
     injury, handcuff = _adjuster(twelfth, "injury"), _adjuster(twelfth, "handcuff")
     assert injury.step == 0
-    assert injury.reason.endswith("Keaton Mitchell is not in the id map, so no report count ran for him.")
+    assert injury.reason.endswith("Keaton Mitchell has no injury report count on file.")
     assert handcuff.step == 0
-    assert handcuff.reason.endswith("Keaton Mitchell is not in the id map, so no handcuff check ran for him.")
+    assert handcuff.reason.endswith("Keaton Mitchell has no depth chart entry on file, so no handcuff check ran for him.")
 
 
 def test_trend_leaves_out_a_player_who_is_due_back(snap):

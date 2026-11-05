@@ -851,8 +851,8 @@ def _injury(snapshot: Snapshot, side: Side) -> Adjuster:
     if not _has_injury_report(snapshot):
         notes.append("The injury report is not available, so no count of report weeks ran.")
     elif unmapped := _not_in_id_map(snapshot, side.gets):
-        notes.append(named(snapshot, unmapped, "is not in the id map, so no report count ran for him.",
-                           "are not in the id map, so no report count ran for them."))
+        notes.append(named(snapshot, unmapped, "has no injury report count on file.",
+                           "have no injury report count on file."))
     reason = " ".join([*out_now, *notes]) or "No player it gets is out for long or often on the injury report."
     # A count that did not run is a fact the reader needs, so only a full count that finds nothing is silent.
     return Adjuster(name=INJURY, step=0, reason=reason, silent=not out_now and not notes)
@@ -961,8 +961,8 @@ def _handcuff(snapshot: Snapshot, side: Side) -> Adjuster:
     # Only a running back can be a handcuff, so only a running back with no gsis_id misses a check.
     unmapped = _not_in_id_map(snapshot, [pid for pid in side.gets if snapshot.players[pid].position == "RB"])
     if unmapped:
-        reason += " " + named(snapshot, unmapped, "is not in the id map, so no handcuff check ran for him.",
-                               "are not in the id map, so no handcuff check ran for them.")
+        reason += " " + named(snapshot, unmapped, "has no depth chart entry on file, so no handcuff check ran for him.",
+                               "have no depth chart entry on file, so no handcuff check ran for them.")
     # A check that did not run is a fact the reader needs, so only a full check that finds no handcuff is silent.
     return Adjuster(name=HANDCUFF, step=0, reason=reason, silent=not parts and not unmapped)
 

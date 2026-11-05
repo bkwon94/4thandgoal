@@ -1898,7 +1898,8 @@ def test_the_document_version_is_17():
     # The usage, injury, upside, handcuff, and schedule rows and the fairness reasons read in plain words too.
     # Each side carries its Week lines, so the shape changes.
     # A Week line names each player who steps up, so a stored Week line must never serve.
-    assert cache_module.DOCUMENT_VERSION == 17
+    # The injury and handcuff rows name no id map, so a stored row must never serve.
+    assert cache_module.DOCUMENT_VERSION == 18
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

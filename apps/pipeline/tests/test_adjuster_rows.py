@@ -121,7 +121,18 @@ def test_the_injury_row_names_a_near_return_week_with_no_step(slow_snap):
     # The id map fixture lacks Barkley, so the row also says that no count of report weeks ran for him.
     snap = slow_snap.model_copy(update={"returns": {SAQUON: 7}})
     assert _rows(_document(_trade(3, [WICKS], 10, [SAQUON]), snap), 3)["injury"] == (
-        "Barkley is out until week 7. Saquon Barkley is not in the id map, so no report count ran for him.")
+        "Barkley is out until week 7. Saquon Barkley has no injury report count on file.")
+
+
+def test_a_player_with_no_gsis_id_reads_in_plain_words_in_the_injury_and_handcuff_rows(slow_snap):
+    # The id map fixture lacks Barkley, so no report count and no handcuff check ran for him.
+    # A near return keeps the injury row at no step, so the row adds the note of the count.
+    snap = slow_snap.model_copy(update={"returns": {SAQUON: 7}})
+    rows = _rows(_document(_trade(3, [WICKS], 10, [SAQUON]), snap), 3)
+    assert rows["injury"].endswith("Saquon Barkley has no injury report count on file.")
+    assert rows["handcuff"].endswith(
+        "Saquon Barkley has no depth chart entry on file, so no handcuff check ran for him.")
+    assert [text for text in rows.values() if "id map" in text] == []
 
 
 # Week 6: Omarion Hampton on roster 12 holds the top value at RB, so he is a top RB. Collins is on roster 4.
