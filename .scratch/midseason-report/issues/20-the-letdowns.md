@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance test AT-65.
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `midseason.json` of CPC week 8 lists Bijan Robinson as a letdown: $81, price rank 1, RB3, last top 17 week 4.
 - [x] No player is both a bust and a letdown.

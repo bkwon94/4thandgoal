@@ -1,0 +1,1 @@
+{ "route": "/midseason/2026/", "steps": [{ "shot": "opener" }, { "click": "a[href=\"#sim\"]:has-text(\"See the sim\")" }, { "wait": 1500 }, { "shot": "after" }, { "url": true }] }
