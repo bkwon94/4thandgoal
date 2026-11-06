@@ -21,8 +21,8 @@ def moves(tmp_path_factory) -> dict[str, dict]:
     return {chapter["key"]: chapter for chapter in act["chapters"]}
 
 
-def test_act_two_holds_the_draft_then_the_waivers_then_the_trades(moves):
-    assert list(moves) == ["draft", "waivers", "trades"]
+def test_act_two_holds_the_draft_waivers_trades_lineup_and_records(moves):
+    assert list(moves) == ["draft", "waivers", "trades", "lineup", "records"]
 
 
 def test_the_top_hit_is_ollie_gordon_ii_at_40_dollars_to_unsolicited_dak_picks(moves):
