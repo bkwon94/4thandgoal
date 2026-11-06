@@ -9,10 +9,10 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from facts.verifier import page_words, verify_blurb, write_and_verify
+from facts.verifier import code_check, page_words, verify_blurb, write_and_verify
 from facts.writer import CHECK_ERRORS, ClaudeCall
 from league.files import write_bytes_atomic
-from league.models import Blurb, Chapter, Fact, FactSheet, VerifyResult
+from league.models import Blurb, Chapter, Fact, FactSheet, Sentence, VerifyResult
 from midseason.state import LeagueState
 from midseason.values import Roast
 
@@ -38,6 +38,11 @@ ROAST_STEPS: dict[Roast, str] = {
 ROAST_OFF = "Roast: off. Write no roast and no joke at a manager's expense. State the facts plainly."
 # The week fact lets a blurb name the report week and the week after it, as the verifier allows on a weekly page.
 WEEK_FACT = "W.week"
+# The last sentence of a template blurb. A reaction has no digit and no name, so it gives the blurb its sentence with no
+# number and makes no claim.
+TEMPLATE_REACTION = "The second half starts now."
+# The ID prefix of a callout fact of the spread rule.
+CALLOUT_PREFIX = "CO."
 
 
 class ProseDraft(BaseModel):
@@ -132,19 +137,47 @@ def prose_terms(key: str, roast: Roast) -> list[str]:
     return [notes]
 
 
+def template_prose(
+    chapter: Chapter, sheet: FactSheet, used_words: Collection[str], *, prompts_dir: Path,
+) -> Blurb:
+    """The template blurb of a failed prose block: fact texts as sentences, then the template reaction, in the
+    sentence range of the block. It takes a fact only when the blurb with it still passes the code check, so the
+    publish passes the template as it passes a written blurb.
+    """
+    reaction = Sentence(text=TEMPLATE_REACTION, fact_ids=[])
+    # The template grows one fact at a time, so its check opens the sentence range. The last blurb fills the range.
+    open_range = chapter.model_copy(update={"min_sentences": 1})
+    chosen: list[Sentence] = []
+    for fid in chapter.fact_ids:
+        if len(chosen) + 1 >= chapter.min_sentences:
+            break
+        # The week fact is no headline, and a callout fact is a note to the writer, not prose.
+        if fid == WEEK_FACT or fid.startswith(CALLOUT_PREFIX):
+            continue
+        trial = [*chosen, Sentence(text=sheet.facts[fid].text, fact_ids=[fid])]
+        blurb = Blurb(chapter=chapter.key, sentences=[*trial, reaction], attempt=0, fallback=True)
+        if not code_check(blurb, open_range, sheet, used_words, prompts_dir=prompts_dir):
+            chosen = trial
+    return Blurb(chapter=chapter.key, sentences=[*chosen, reaction], attempt=0, fallback=True)
+
+
 def write_prose(
     sheet: FactSheet, roast: Roast, call: ClaudeCall, *, prompts_dir: Path,
 ) -> tuple[dict[str, Blurb], dict[str, list[VerifyResult]]]:
     """The blurb of each prose block and the verifier results of each attempt, by the key of the prose block.
 
-    A blurb that fails twice is the template blurb of facts, so the build never stops on the writer.
+    A blurb that fails twice is the template blurb of its block, so the build never stops on the writer.
     """
     blurbs: dict[str, Blurb] = {}
     results: dict[str, list[VerifyResult]] = {}
     used: set[str] = set()
     for chapter in sheet.chapters:
-        blurbs[chapter.key], results[chapter.key] = write_and_verify(
+        blurb, results[chapter.key] = write_and_verify(
             chapter, sheet, call, used, prompts_dir=prompts_dir, terms=prose_terms(chapter.key, roast))
+        # The template of facts is one sentence, too short for a prose block, so the block gets its own template.
+        if blurb.fallback:
+            blurb = template_prose(chapter, sheet, used, prompts_dir=prompts_dir)
+        blurbs[chapter.key] = blurb
         used |= page_words(blurbs[chapter.key], chapter)
     return blurbs, results
 

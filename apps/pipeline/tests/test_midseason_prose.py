@@ -1,6 +1,6 @@
 """
-Tests for the prose blocks of the midseason report on the real saved CPC facts of week 8: the roast heat and the facts
-text that the writer copies. Each one runs the code check of facts.
+Tests for the prose blocks of the midseason report on the real saved CPC facts of week 8: the roast heat, the facts
+text that the writer copies, and the template blurb of a failed block. Each one runs the code check of facts.
 """
 from functools import partial
 from pathlib import Path
@@ -11,10 +11,11 @@ from fakes import FakeWriter
 from test_midseason import CPC_PROVIDER, copy_cpc_week_8
 
 from cornerstone.pipeline import run_midseason
-from facts.verifier import code_check
+from facts.verifier import code_check, page_words
 from facts.writer import build_writer_prompt, claude_call
 from league.models import Blurb, Sentence
 from midseason.prose import ProseDraft, prose_terms, read_draft_facts
+from midseason.published import read_midseason, report_blurbs
 
 
 @pytest.fixture(scope="module")
@@ -67,6 +68,24 @@ def test_the_hot_roast_holds_two_example_roasts_and_the_warm_roast_none():
     assert hot.count("Example roast") == 2 and "Example roast" not in warm
     assert "Never roast life outside fantasy" in hot and "Never roast life outside fantasy" in warm
 
+
+def test_the_template_blurb_of_each_failed_block_passes_the_code_check_of_the_publish(built):
+    # K-4. The writer fails each call, so each block holds its template. The publish rechecks each one in page order.
+    draft, out, voice = built
+    chapters = {chapter.key: chapter for chapter in draft.sheet.chapters}
+    blurbs = report_blurbs(read_midseason(out.parent))
+    assert len(blurbs) == 26 and all(blurb.fallback for blurb in blurbs)
+    # A callout fact is a note to the writer, not prose, so no template reads it.
+    assert not any(fid.startswith("CO.") for blurb in blurbs for sentence in blurb.sentences for fid in sentence.fact_ids)
+    failures: dict[str, list[str]] = {}
+    used: set[str] = set()
+    for blurb in blurbs:
+        chapter = chapters[blurb.chapter]
+        found = code_check(blurb, chapter, draft.sheet, used, prompts_dir=voice)
+        if found:
+            failures[blurb.chapter] = found
+        used |= page_words(blurb, chapter)
+    assert failures == {}, "\n".join(f"{k}: {v}" for k, v in failures.items())
 
 
 def test_each_fact_passes_the_code_check_as_a_sentence_that_cites_it(built):
