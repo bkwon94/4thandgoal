@@ -100,7 +100,14 @@ from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_pr
 from midseason.published import midseason_report, write_midseason
 from midseason.records import record_book, records_facts
 from midseason.review import review_text, write_review
-from midseason.spread import Headline, arc_and_award_headlines, callout_facts, report_callouts, spread_rule
+from midseason.spread import (
+    Headline,
+    arc_and_award_headlines,
+    callout_facts,
+    report_callouts,
+    spread_rule,
+    spread_warnings,
+)
 from midseason.state import league_state
 from midseason.top10 import top10_facts
 from midseason.trades import trade_facts, trade_prose_facts
@@ -815,7 +822,8 @@ def run_midseason(
                           lineups=lineups, state=state)
     # The spread rule runs before the writer, so the fact sheet names the holder of each callout before a blurb.
     callouts = report_callouts(luck, chapters.injuries, draft, waivers, trades, lineups)
-    headlines = spread_rule(arc_and_award_headlines(arcs, records), callouts, [team.roster_id for team in state.teams])
+    teams = [team.roster_id for team in state.teams]
+    headlines = spread_rule(arc_and_award_headlines(arcs, records), callouts, teams)
     luck = with_swap_callouts(luck, most_better=_held(headlines, "luck.most_better"),
                               biggest_miss=_held(headlines, "luck.biggest_miss"))
     roast = midseason_values(client).roast
@@ -835,7 +843,8 @@ def run_midseason(
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
-    review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
+    review = write_review(review_text(season, week, roast, sheet, blurbs, results, command,
+                                      warnings=spread_warnings(headlines, teams, names)), season_build)
     log.info("review file: %s", review)
     report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, injuries=chapters.injuries,
                               top10=chapters.top10, draft=draft, waivers=waivers, trades=trades, lineups=lineups,

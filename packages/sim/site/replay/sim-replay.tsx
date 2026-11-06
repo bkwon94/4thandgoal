@@ -1,6 +1,6 @@
 /**
  * The sim replay: each press of "Sim the season" plays one stored run of the sim in the Broadcast motion, from week 9
- * to a champion, beside the odds of all runs. It reads only the sim file; the reader never picks the winner of a game.
+ * to a champion, above the odds of all runs. It reads only the sim file; the reader never picks the winner of a game.
  */
 "use client";
 
@@ -184,12 +184,14 @@ export function SimReplay({
           </button>
         )}
       </div>
-      <div className="grid gap-sp-3 desktop:grid-cols-[minmax(0,1fr)_22rem] desktop:items-start">
+      {/* The stage takes the full width of the column at every width, and the odds sit below it. Beside the odds on a
+          laptop, the stage had room for one letter of each team name. */}
+      <div className="flex flex-col gap-sp-3">
         <section
           aria-label="The replay"
           // The stage keeps a fixed least height, so the page does not jump when the table becomes the bracket. The rounds
-          // stack on a phone and beside the odds on a desktop, so the stage is taller there than on a tablet.
-          className="relative flex min-h-[46rem] tablet:min-h-[40rem] desktop:min-h-[46rem] flex-col gap-sp-4 overflow-hidden rounded-card border border-rule-dark bg-band p-sp-4 text-on-dark"
+          // stack on a phone, so the stage is taller there than from a tablet up.
+          className="relative flex min-h-[46rem] tablet:min-h-[40rem] flex-col gap-sp-4 overflow-hidden rounded-card border border-rule-dark bg-band p-sp-4 text-on-dark"
         >
           <WeekStrip regular={regular} playoffs={sim.bracket_weeks} current={season && beat ? weekAt(season, beat) : null} />
           <p role="status" className="sr-only">

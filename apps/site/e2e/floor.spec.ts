@@ -329,6 +329,46 @@ for (const theme of THEMES) {
   }
 }
 
+/* The home page in the takeover: the opener of the report in place of the usual top, through the takeover end week.
+   Only a client with a report shows it, and after the end week the home page shows the tile, so the check skips both. */
+for (const theme of THEMES) {
+  for (const width of REPORT_WIDTHS) {
+    test(`midseason takeover: ${CLIENT} / ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      const label = `${CLIENT} / takeover ${theme} ${width}px`;
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}/`, theme);
+      const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report` });
+      test.skip((await takeover.count()) === 0, `${CLIENT} is past the takeover end week`);
+      const failures = await textFloor(page, label, Date.now());
+      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      expect(failures, `${label} breaks the readability floor`).toEqual([]);
+    });
+  }
+}
+
+/* The 12 columns of the schedule swap fit the column of the report on a laptop. On a phone the grid scrolls inside its
+   own box, and the team column stays in place. */
+for (const width of REPORT_WIDTHS) {
+  test(`midseason swap grid: ${CLIENT} ${MIDSEASON_ROUTE} fits or keeps the team column, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const table = page.getByRole("table", { name: "Schedule swap" });
+    const box = table.locator("..");
+    const scroll = await box.evaluate((el) => ({ wide: el.scrollWidth, shown: el.clientWidth }));
+    if (width >= 1024) {
+      expect(scroll.wide, `the swap grid runs past its box at ${width}px`).toBeLessThanOrEqual(scroll.shown);
+      return;
+    }
+    const firstRow = table.locator("tbody tr").first().locator("th");
+    const before = (await firstRow.boundingBox())!;
+    await box.evaluate((el) => el.scrollTo({ left: el.scrollWidth }));
+    const after = (await firstRow.boundingBox())!;
+    expect(after.x).toBeCloseTo(before.x, 0);
+  });
+}
+
 /* AT-11: Position top 10 opens on RB and shows one position. */
 test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);
@@ -340,10 +380,11 @@ test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, asyn
   await expect(chapter.getByRole("list", { name: "RB top 10" })).toBeVisible();
 });
 
-/* AT-33: the odds of all runs sit beside the replay on a desktop and below it on a phone. A report with no sim file
-   has no replay, so the check skips it too. */
+/* AT-33: the odds of all runs sit below the replay at every width, and the stage takes the full width of the column.
+   Beside the odds on a laptop, the stage had room for one letter of each team name. A report with no sim file has no
+   replay, so the check skips it too. */
 for (const width of REPORT_WIDTHS) {
-  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} beside the replay on a desktop, below it on a phone, ${width}px`, async ({ page }) => {
+  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} below the replay at full width, ${width}px`, async ({ page }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -351,12 +392,41 @@ for (const width of REPORT_WIDTHS) {
     test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
     const box = (await stage.boundingBox())!;
     const odds = (await page.getByRole("table", { name: /^The odds of all/ }).boundingBox())!;
-    if (width >= 1024) {
-      expect(odds.x).toBeGreaterThanOrEqual(box.x + box.width);
-      expect(odds.y).toBeLessThan(box.y + box.height);
-    } else {
-      expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
-    }
+    expect(odds.y).toBeGreaterThanOrEqual(box.y + box.height);
+    const column = (await stage.evaluate((el) => el.parentElement!.getBoundingClientRect().width))!;
+    expect(box.width).toBeCloseTo(column, 0);
+  });
+}
+
+/* The text boxes of the bracket that a chip or a cut must never hide: each team name and each score. */
+const bracketText = (page: Page) => page.locator('ol[aria-label="Bracket"] [data-team-name], ol[aria-label="Bracket"] [data-score]');
+
+/* Each team name of the bracket shows in full at each width of the report, and the seed chip that waits at the edge of
+   a decided card covers no name or score. */
+for (const width of REPORT_WIDTHS) {
+  test(`sim bracket: ${CLIENT} ${MIDSEASON_ROUTE} shows full team names and no chip on a card, ${width}px`, async ({ page }) => {
+    test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+    await page.setViewportSize({ width, height: 900 });
+    await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+    const stage = page.getByRole("region", { name: "The replay" });
+    test.skip((await stage.count()) === 0, `${CLIENT} publishes no sim file`);
+    await page.getByRole("button", { name: "Sim the season" }).click();
+    // Mid-run, after the results of round 1: the winner chips wait at the edge of their cards.
+    await expect(stage.getByRole("status")).toHaveText("Round 1 results", { timeout: 30_000 });
+    const chips = await stage.locator("[data-departed]").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    expect(chips.length).toBeGreaterThan(0);
+    const texts = await bracketText(page).evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    const overlaps = chips.flatMap((chip) =>
+      texts.filter((text) => chip.left < text.right && text.left < chip.right && chip.top < text.bottom && text.top < chip.bottom),
+    );
+    expect(overlaps, `a waiting chip covers a name or a score at ${width}px`).toEqual([]);
+    // At rest, after a skip and a close of the champion card, every name of every round shows in full.
+    await page.getByRole("button", { name: "Skip to the end" }).click();
+    await stage.getByRole("button", { name: "See the bracket" }).click();
+    const cut = await stage
+      .locator("[data-team-name]")
+      .evaluateAll((els) => els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent));
+    expect(cut, `the bracket cuts a team name at ${width}px`).toEqual([]);
   });
 }
 
@@ -373,4 +443,9 @@ test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the cham
   const card = stage.getByRole("dialog", { name: "Champion of this run" });
   await expect(card).toContainText(/Wins the title in [\d.]+% of all [\d,]+ runs/);
   expect(await scanScroll(page)).toEqual([]);
+  // The trophy sits centered over the avatar of the champion.
+  const trophy = (await card.locator("[data-trophy]").boundingBox())!;
+  const avatar = (await card.locator("[data-avatar]").boundingBox())!;
+  expect(trophy.x + trophy.width / 2).toBeCloseTo(avatar.x + avatar.width / 2, 0);
+  expect(trophy.y + trophy.height).toBeLessThanOrEqual(avatar.y + 1);
 });

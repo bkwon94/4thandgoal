@@ -24,6 +24,7 @@ from test_rule_publish import _outside_offenses
 
 from cornerstone.pipeline import run_midseason
 from cornerstone.publish import PublishError, run_midseason_publish
+from cornerstone.value_models import VALUE_MODELS
 from league.models import Verdict, VerifyOut
 from league.paths import build_dir
 
@@ -43,7 +44,7 @@ def _drafted_repo(tmp_path: Path, monkeypatch):
     root = tmp_path / "one"
     pipeline = root / "apps" / "pipeline"
     pipeline.mkdir(parents=True)
-    client = cpc_client(at=root / "clients" / "cpc")
+    client = cpc_client(at=root / "clients" / "cpc", models=VALUE_MODELS)
     copy_cpc_week_8(client)
     run_midseason(2026, 8, _clean_call(), client=client, provider=CPC_PROVIDER)
     _git(root, "init", "-b", "main")

@@ -3,34 +3,19 @@
  * and the real midseason fixture of CPC week 8, then reads the part that the home page gets for the latest week.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { weekPageJson } from "@/fixtures/week-page-json";
+import { afterEach, describe, expect, it } from "vitest";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
-
-const roots: string[] = [];
+import { publicOver, removePublics } from "./temp-public";
 
 afterEach(() => {
   cleanup();
-  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.restoreAllMocks();
+  removePublics();
 });
 
-/* A temp public/ folder with the week pages up to `latest`, and the midseason file of 2026 when one is given. */
+/* The home part over a temp public/ folder with the week pages up to `latest`, and the midseason file of 2026 when
+   one is given. */
 async function homeOver(latest: number, report?: unknown) {
-  const root = mkdtempSync(join(tmpdir(), "midseason-home-"));
-  roots.push(root);
-  for (let week = 6; week <= latest; week++) {
-    const folder = join(root, "public", "2026", `week-${String(week).padStart(2, "0")}`);
-    mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, avatars: {} }));
-  }
-  if (report !== undefined) writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
+  publicOver({ latest, report });
   return (await import("./home")).homeSection;
 }
 

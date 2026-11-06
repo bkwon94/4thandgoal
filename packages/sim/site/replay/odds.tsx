@@ -1,5 +1,5 @@
 /**
- * The odds of all runs beside the replay: the playoff, bye, and title odds of each team over every run of the sim, in
+ * The odds of all runs below the replay: the playoff, bye, and title odds of each team over every run of the sim, in
  * the order of mean wins, with a column for the seed of the run on the stage. One run is never the forecast.
  */
 import { thousands } from "@cpc/design/format/format";
