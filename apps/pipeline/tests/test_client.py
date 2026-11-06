@@ -48,7 +48,7 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.package(AnalyzerValues).finder is False
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
     assert [item.package or item.page for item in values.menu.items] == [
-        "home", "week", "rankings", "managers", "analyzer"]
+        "home", "week", "rankings", "midseason", "managers", "analyzer"]
 
 
 def test_a_client_with_no_chart_value_has_no_chart(tmp_path):
