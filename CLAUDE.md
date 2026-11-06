@@ -28,7 +28,7 @@ ADRs 0018 to 0021 and ADR 0026 set the flow. ADR 0026 supersedes ADR 0020. The s
 4. A ticket merges into its spec branch with `git merge --no-edit`, after the check passes.
 5. One pull request goes from the spec branch to `main`, as a squash merge.
 6. An agent records the evidence of each acceptance test `AT-<n>`. The agent gives no test verdict.
-7. A fresh subagent, the Judge, gives PASS or FAIL for each test in `VERDICTS.md`. A check blocks the merge until each test has PASS. A FAIL from Brian in a PR comment overrides the Judge (ADR 0026).
+7. A fresh subagent, the Judge, gives PASS, FAIL, or BLOCKED for each test in `VERDICTS.md`. A check blocks the merge until each test has PASS. A FAIL from Brian in a PR comment overrides the Judge (ADR 0026).
 
 The weekly `publish` is the one exception. It may push to `main`, and it may stage only `clients/<slug>/published/<season>/`, `clients/<slug>/data/<season>/`, and `clients/<slug>/build/<season>/`.
 

@@ -18,6 +18,7 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import NamedTuple
 
 ADR = "docs/adr/0026-the-judge-gives-the-test-verdicts.md"
 RULE = "every acceptance test has a PASS Test verdict from the Judge and no FAIL from Brian"
@@ -117,7 +118,7 @@ def verdict_lines(text: str | None) -> list[tuple[int, re.Match]] | None:
     return [(number, match) for number, line in numbered if (match := VERDICT_LINE.match(line))]
 
 
-def judge(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTANCE.md",
+def check_verdicts(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTANCE.md",
           verdicts_path: str = "VERDICTS.md") -> Result:
     """Check the lines of VERDICTS.md. It fails if a live test has no line, a line is not PASS, or a line names no
     live test."""
@@ -127,7 +128,7 @@ def judge(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTA
     if lines is None:
         result.offenses.append(Offense(
             verdicts_path, 0, "verdict/no-verdicts", "No VERDICTS.md of the Judge holds the line `Test verdicts`.",
-            "run the Judge. It writes the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL` per test.",
+            "run the Judge. It writes the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL|BLOCKED` per test.",
         ))
         return result
 
@@ -171,6 +172,12 @@ def blob_sha(data: bytes) -> str:
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
 
 
+class NamedSha(NamedTuple):
+    """The first line of VERDICTS.md that names a file, and the blob SHA on that line."""
+    line: int
+    sha: str
+
+
 def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: str = "VERDICTS.md") -> list[Offense]:
     """An offense for each file whose blob SHA at the PR head is not the SHA that VERDICTS.md names.
 
@@ -180,7 +187,7 @@ def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: 
     for number, line in enumerate(verdicts.splitlines(), start=1):
         match = SHA_LINE.match(line)
         if match:
-            named.setdefault(match.group(1), (number, match.group(2)))
+            named.setdefault(match.group(1), NamedSha(number, match.group(2)))
     offenses = []
     fix = "record the evidence again, and run a fresh Judge on each test."
     for name, rule_id in READ_FILES.items():
@@ -188,11 +195,11 @@ def stale_files(verdicts: str, head_shas: dict[str, str | None], verdicts_path: 
         if name not in named:
             offenses.append(Offense(verdicts_path, 0, rule_id, f"VERDICTS.md names no blob SHA of {name}.", fix))
         elif head is None:
-            offenses.append(Offense(verdicts_path, named[name][0], rule_id, f"The PR head has no {name}.", fix))
-        elif head != named[name][1]:
+            offenses.append(Offense(verdicts_path, named[name].line, rule_id, f"The PR head has no {name}.", fix))
+        elif head != named[name].sha:
             offenses.append(Offense(
-                verdicts_path, named[name][0], rule_id,
-                f"{name} is stale: it changed after the Judge read it ({named[name][1][:7]} to {head[:7]}).", fix,
+                verdicts_path, named[name].line, rule_id,
+                f"{name} is stale: it changed after the Judge read it ({named[name].sha[:7]} to {head[:7]}).", fix,
             ))
     return offenses
 
@@ -228,16 +235,21 @@ def latest_verdict_comment(comments: list[dict], owner: str) -> dict | None:
     return picked
 
 
+def _is_file(path: str | None) -> bool:
+    """Whether the path is set and names a file."""
+    return bool(path) and Path(path).is_file()
+
+
 def _read(path: str | None) -> str | None:
     """The text of a file, or None if the PR has no such file."""
-    return Path(path).read_text() if path and Path(path).is_file() else None
+    return Path(path).read_text() if _is_file(path) else None
 
 
 def _head_sha(given: str | None, path: str | None) -> str | None:
     """The given blob SHA, or the SHA of the local file. An empty SHA or no file means the PR has no such file."""
     if given is not None:
         return given or None
-    return blob_sha(Path(path).read_bytes()) if path and Path(path).is_file() else None
+    return blob_sha(Path(path).read_bytes()) if _is_file(path) else None
 
 
 def main(argv: list[str]) -> int:
@@ -258,7 +270,7 @@ def main(argv: list[str]) -> int:
 
     acceptance = Path(args.acceptance).read_text()
     verdicts = _read(args.verdicts)
-    result = judge(acceptance, verdicts, acceptance_path=args.acceptance, verdicts_path=args.verdicts)
+    result = check_verdicts(acceptance, verdicts, acceptance_path=args.acceptance, verdicts_path=args.verdicts)
     if verdicts is not None:
         head_shas = {
             "ACCEPTANCE.md": _head_sha(args.acceptance_sha, args.acceptance),
