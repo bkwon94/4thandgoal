@@ -59,6 +59,27 @@ def test_a_team_with_no_headline_takes_the_callout_where_it_ranks_best_from_a_te
     assert moved_off(headlines, callouts) == {"draft": {2}}
 
 
+def test_a_team_with_no_headline_takes_a_callout_from_a_holder_with_1_that_takes_another_callout():
+    fixed = [_arc(1, "collapse"), _arc(1, "snakebit")]
+    callouts = [Callout(key="draft.steal", chapter="draft", ranking=[2, 3]),
+                Callout(key="waivers.hit", chapter="waivers", ranking=[1, 2])]
+    headlines = spread_rule(fixed, callouts, [1, 2, 3])
+    # Team 3 ranks only for the steal, and team 2 holds only the steal. Team 2 takes the waiver hit from team 1, which
+    # keeps its 2 arcs, so team 3 takes the steal.
+    assert _holders(headlines) == {"draft.steal": 3, "waivers.hit": 2}
+    assert {h.key: h.place for h in headlines if h.kind == "callout"} == {"draft.steal": 2, "waivers.hit": 2}
+    assert spread_warnings(headlines, [1, 2, 3], NAMES) == []
+
+
+def test_a_team_that_no_callout_can_reach_keeps_no_headline_and_the_review_file_warns():
+    fixed = [_arc(1, "collapse")]
+    headlines = spread_rule(fixed, [Callout(key="trades.top", chapter="trades", ranking=[2])], [1, 2, 3])
+    assert _holders(headlines) == {"trades.top": 2}
+    warnings = spread_warnings(headlines, [1, 2, 3], NAMES)
+    assert warnings == ["Spread rule: Three holds no headline. No callout ranks it with a holder to spare."]
+    assert f"Warning. {warnings[0]}" in _review(warnings)
+
+
 def test_a_callout_that_no_team_has_room_for_names_no_team():
     fixed = [_arc(1, "a"), _arc(1, "b"), _award(1, "c")]
     headlines = spread_rule(fixed, [Callout(key="trades.top", chapter="trades", ranking=[1])], [1])
