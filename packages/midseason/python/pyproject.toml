@@ -1,0 +1,51 @@
+# The Python side of the midseason package: the facts of each chapter of the midseason report and the writer of midseason.json.
+# It lists only the league and the facts packages, so "uv run --exact --package cpc-midseason" fails an import of an app.
+[project]
+name = "cpc-midseason"
+version = "0.1.0"
+description = "The midseason report: the facts of each chapter, the prose blocks, and the writer of midseason.json."
+authors = [
+    { name = "Brian Kwon", email = "bkwon94@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cpc-facts",
+    "cpc-league",
+    "pydantic>=2.14.1",
+]
+
+[tool.uv.sources]
+cpc-facts = { workspace = true }
+cpc-league = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "pytest>=9.1.1",
+    "ruff==0.17.3",
+]
+
+[tool.pytest.ini_options]
+markers = ["live: calls a real external API"]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+
+# The midseason package imports the league and the facts packages as its own code, so each sorts as first party.
+[tool.ruff.lint.isort]
+known-first-party = ["facts", "league", "midseason"]
+
+# Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/midseason", "tests"]
+# The tests import the rule modules of the pipeline tests, as tests/conftest.py puts them on the path.
+extraPaths = ["../../../apps/pipeline/tests"]
+
+[tool.uv.build-backend]
+module-name = "midseason"

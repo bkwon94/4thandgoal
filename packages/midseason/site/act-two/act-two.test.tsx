@@ -1,0 +1,323 @@
+/**
+ * Tests for the chapters of Act II on the real build of CPC 2026 week 8 in the package fixture.
+ * They read what a manager sees: the steals and busts, the waivers, the trade cards, the lineups, and the record book.
+ */
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+import { sleeperHeadshot } from "@cpc/league/images";
+import { midseason } from "../fixtures/midseason";
+import { MidseasonScreen } from "../report/midseason-screen";
+import type { MidseasonChapter, QuickHitsChapter } from "../schema/midseason-types";
+
+afterEach(cleanup);
+
+const SHELL = {
+  title: "CPC Fantasy Football",
+  brand: { home: "/", logo: null },
+  menu: { items: [{ kind: "home" as const, label: "Home", short: "Home", href: "/" }], weeks: [] },
+};
+
+/* The avatars of the latest week of CPC 2026, week 8, with the week folder in front, as the route passes them in. */
+const AVATARS = Object.fromEntries(
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((id) => [
+    String(id),
+    `/2026/week-08/avatars/${id}.${[2, 8, 11].includes(id) ? "webp" : "jpg"}`,
+  ]),
+);
+
+const renderReport = () =>
+  render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" avatars={AVATARS} />);
+
+/* A chapter with its own prose: each chapter of an act but Quick hits, and each part of Quick hits. */
+type ProseChapter = Exclude<MidseasonChapter, { key: "quick-hits" }> | QuickHitsChapter["chapters"][number];
+
+const proseChapters = (): ProseChapter[] =>
+  midseason.acts
+    .flatMap((act) => act.chapters)
+    .flatMap((chapter): ProseChapter[] => (chapter.key === "quick-hits" ? chapter.chapters : [chapter]));
+
+/* The chapter of the fixture with the key `key`, or a part of Quick hits. */
+function chapterOf<K extends ProseChapter["key"]>(key: K): Extract<ProseChapter, { key: K }> {
+  const found = proseChapters().find((chapter) => chapter.key === key);
+  if (found === undefined) throw new Error(`The fixture has no ${key} chapter`);
+  return found as Extract<ProseChapter, { key: K }>;
+}
+
+const chapterEl = (key: string) => within(document.getElementById(key)!);
+
+describe("draft steals and busts", () => {
+  it("lists the top 5 steals with the auction price", () => {
+    renderReport();
+    const { steals } = chapterOf("draft").facts;
+    const rows = chapterEl("draft").getByRole("list", { name: "Steals" }).children;
+    expect(rows).toHaveLength(steals.length);
+    expect(rows[0].textContent).toContain(steals[0].name);
+    expect(rows[0].textContent).toContain(`$${steals[0].cost}`);
+    expect(document.getElementById("draft")!.textContent).not.toMatch(/one that got away/i);
+  });
+
+  it("tags each bust hurt or just bad", () => {
+    renderReport();
+    const { busts } = chapterOf("draft").facts;
+    const rows = chapterEl("draft").getByRole("list", { name: "Busts" }).children;
+    expect(rows).toHaveLength(busts.length);
+    for (const [index, bust] of busts.entries()) {
+      expect(rows[index].textContent).toContain(bust.name);
+      if (bust.tag !== null) expect(rows[index].textContent).toContain(bust.tag === "hurt" ? "Hurt" : "Just bad");
+    }
+  });
+
+  it("shows each letdown under the busts with the word tag, the price, the season rank, and the last top 17 week", () => {
+    renderReport();
+    const { letdowns } = chapterOf("draft").facts;
+    const chapter = document.getElementById("draft")!;
+    const lists = within(chapter).getAllByRole("list").map((list) => list.getAttribute("aria-label"));
+    expect(lists.indexOf("Letdowns")).toBe(lists.indexOf("Busts") + 1);
+    const rows = within(chapter).getByRole("list", { name: "Letdowns" }).children;
+    expect(rows).toHaveLength(letdowns.length);
+    const bijan = Array.from(rows).find((row) => row.textContent!.includes("Bijan Robinson"))!;
+    expect(within(bijan as HTMLElement).getByText("Letdown").getAttribute("data-tag")).toBe("mute");
+    expect(bijan.textContent).toContain("$81");
+    expect(bijan.textContent).toContain("RB3 points");
+    expect(bijan.textContent).toContain("Last top 17 wk 4");
+  });
+});
+
+describe("waiver hits and misses", () => {
+  it("lists the hits by Points over the line and the misses with their bids", () => {
+    renderReport();
+    const { hits, misses } = chapterOf("waivers").facts;
+    const chapter = chapterEl("waivers");
+    const hitRows = chapter.getByRole("list", { name: "Hits" }).children;
+    expect(hitRows).toHaveLength(hits.length);
+    expect(hitRows[0].textContent).toContain(hits[0].player);
+    expect(hitRows[0].textContent).toContain(`+${hits[0].points_over_line!.toFixed(1)}`);
+    const missRows = chapter.getByRole("list", { name: "Misses" }).children;
+    expect(missRows).toHaveLength(misses.length);
+    expect(missRows[0].textContent).toContain(`$${misses[0].bid}`);
+  });
+
+  it("has no one that got away line on a hit", () => {
+    renderReport();
+    expect(document.getElementById("waivers")!.textContent).not.toMatch(/one that got away/i);
+  });
+
+  it("names the outbid claims with the margin, and the streaming king first", () => {
+    renderReport();
+    const { outbid, streamers } = chapterOf("waivers").facts;
+    const chapter = chapterEl("waivers");
+    const rows = chapter.getByRole("list", { name: "Outbid" }).children;
+    expect(rows).toHaveLength(outbid.length);
+    expect(rows[0].textContent).toContain(`by $${outbid[0].margin}`);
+    const streams = chapter.getByRole("list", { name: "Streamers" });
+    expect(streams.children).toHaveLength(Math.min(5, streamers.length));
+    expect(streams.firstElementChild!.textContent).toContain(streamers[0].team);
+    expect(streams.firstElementChild!.textContent).toContain("Streaming king");
+  });
+});
+
+describe("the trade report card", () => {
+  it("shows the top 3 trades as full cards, each with the record of each team since the trade", () => {
+    renderReport();
+    const trades = chapterOf("trades").facts.trades;
+    const cards = chapterEl("trades").getAllByRole("article");
+    expect(cards).toHaveLength(3);
+    for (const [index, card] of cards.entries()) {
+      const trade = trades[index];
+      expect(card.textContent).toContain(trade.result);
+      for (const side of trade.sides) {
+        const since = within(card).getByText(`${side.team}`, { selector: "[data-team]" }).closest("[data-side]")!;
+        const { wins, losses, ties } = side.since;
+        const text = ties > 0 ? `${wins}-${losses}-${ties} since` : `${wins}-${losses} since`;
+        expect(since.textContent).toContain(text);
+      }
+    }
+  });
+
+  it("shows no hurt on arrival tag on any trade", () => {
+    renderReport();
+    const chapter = chapterEl("trades");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    expect(document.getElementById("trades")!.textContent).not.toMatch(/hurt on arrival/i);
+    expect(chapter.queryAllByText(/./, { selector: "[data-tag]" })).toHaveLength(0);
+  });
+
+  it("names the winner in each result with a winner, as \"Slight edge to <team>\", and shows Even for no winner", () => {
+    renderReport();
+    const trades = chapterOf("trades").facts.trades;
+    expect(trades.some((trade) => trade.result === "Slight edge")).toBe(true);
+    expect(trades.some((trade) => trade.result === "Even")).toBe(true);
+    const chapter = chapterEl("trades");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    const results = chapter.getAllByText(/./, { selector: "[data-result]" }).map((result) => result.textContent);
+    expect(results).toEqual(
+      trades.map((trade) => (trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result)),
+    );
+    expect(document.getElementById("trades")!.textContent).not.toMatch(/\bPush\b/);
+  });
+
+  it("shows each other trade as two lines: the week, the teams, and the result, then the players of each side, muted", () => {
+    renderReport();
+    const rest = chapterOf("trades").facts.trades.slice(3);
+    const chapter = chapterEl("trades");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    const rows = [...chapter.getByRole("list", { name: "Every other trade" }).children] as HTMLElement[];
+    expect(rows).toHaveLength(rest.length);
+    for (const [index, row] of rows.entries()) {
+      const trade = rest[index];
+      expect(row.children).toHaveLength(2);
+      const [top, players] = [...row.children] as HTMLElement[];
+      expect(top.textContent).toContain(`Week ${trade.week}`);
+      for (const side of trade.sides) expect(top.textContent).toContain(side.team);
+      expect(top.textContent).toContain(trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result);
+      expect(players.className).toMatch(/(^|\s)text-mute(\s|$)/);
+      for (const side of trade.sides) {
+        for (const player of side.got) expect(players.textContent).toContain(player.player);
+      }
+      expect(row.querySelector("[data-tag]")).toBeNull();
+    }
+  });
+
+  it("sits third of the five chapters of Act II", () => {
+    renderReport();
+    const act = within(document.getElementById("the-moves")!);
+    expect(act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
+      "Draft Steals and Busts",
+      "Waiver Hits and Misses",
+      "The Trade Report Card",
+      "The Record Book",
+      "Quick Hits",
+    ]);
+  });
+
+  it("shows 5 of the other trades, and the rest after Show all", () => {
+    renderReport();
+    const rest = chapterOf("trades").facts.trades.length - 3;
+    expect(rest).toBeGreaterThan(5);
+    const chapter = chapterEl("trades");
+    const list = chapter.getByRole("list", { name: "Every other trade" });
+    expect(list.children).toHaveLength(5);
+    const button = chapter.getByRole("button", { name: `Show all ${rest}` });
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(button);
+    expect(list.children).toHaveLength(rest);
+    expect(chapter.getByRole("button", { name: "Show top 5" }).getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("draws Show all as a mono text control with a chevron that turns, and no border", () => {
+    // AT-56. The chevron turns by a CSS transition, so the reduced-motion rule of globals.css stops the turn.
+    renderReport();
+    const chapter = chapterEl("trades");
+    const button = chapter.getByRole("button", { name: /^Show all/ });
+    expect(button.className).toMatch(/(^|\s)font-mono(\s|$)/);
+    expect(button.className).not.toMatch(/(^|\s)(rounded-|border|bg-(?!transparent))/);
+    const chevron = button.querySelector("svg")!;
+    expect(chevron.getAttribute("aria-hidden")).toBe("true");
+    expect(chevron.getAttribute("class")).not.toMatch(/rotate-180/);
+    fireEvent.click(button);
+    expect(button.textContent).toBe("Show top 5");
+    expect(chevron.getAttribute("class")).toMatch(/(^|\s)rotate-180(\s|$)/);
+    fireEvent.click(button);
+    expect(button.textContent).toMatch(/^Show all \d+$/);
+  });
+});
+
+describe("lineup choices", () => {
+  it("shows 5 teams by Bench points, then all of them after Show all", () => {
+    renderReport();
+    const { teams } = chapterOf("lineup").facts;
+    const chapter = chapterEl("lineup");
+    const list = chapter.getByRole("list", { name: "Bench points" });
+    expect(list.children).toHaveLength(5);
+    expect(list.firstElementChild!.textContent).toContain(teams[0].name);
+    fireEvent.click(chapter.getByRole("button", { name: `Show all ${teams.length}` }));
+    expect(list.children).toHaveLength(teams.length);
+  });
+
+  it("names the week 2 loss of London Cooking by 1.67 that its best lineup would have won", () => {
+    renderReport();
+    const chapter = chapterEl("lineup");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    const row = [...chapter.getByRole("list", { name: "Bench points" }).children].find((item) =>
+      item.textContent!.includes("London Cooking"),
+    )!;
+    expect(row.textContent).toMatch(/Week 2: lost to .+ by 1\.67/);
+  });
+});
+
+describe("the record book", () => {
+  it("shows the high, the low, the biggest margin, and the closest game", () => {
+    renderReport();
+    const { high, low, biggest_margin, closest } = chapterOf("records").facts;
+    const items = [...chapterEl("records").getByRole("list", { name: "Records" }).children].map((item) => item.textContent);
+    expect(items).toHaveLength(4);
+    expect(items[0]).toContain(high.team);
+    expect(items[1]).toContain(low.team);
+    expect(items[2]).toContain(biggest_margin.winner);
+    expect(items[3]).toContain(closest.loser);
+  });
+
+  it("shows Heartbreak and Beatdown once each, on their game inside the record book", () => {
+    renderReport();
+    const { awards } = chapterOf("records").facts;
+    const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
+    for (const title of ["Heartbreak of the year", "Beatdown of the year"]) {
+      expect(screen.getAllByText(title)).toHaveLength(1);
+      expect(book.getByText(title)).toBeTruthy();
+    }
+    const listed = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
+    expect(listed.map((item) => item.querySelector("b")!.textContent)).toEqual(
+      awards.filter((award) => !award.in_record_book).map((award) => award.title),
+    );
+    for (const award of awards) expect(screen.getAllByText(award.short_fact)).toHaveLength(1);
+  });
+
+  it("shows each award as a small card, title, then winner, then short fact, with an image", () => {
+    renderReport();
+    const { awards } = chapterOf("records").facts;
+    const cards = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
+    expect(cards[0].textContent).toBe("MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.");
+    const listed = awards.filter((award) => !award.in_record_book);
+    expect(cards.map((card) => card.textContent)).toEqual(
+      listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.short_fact}`),
+    );
+    for (const [index, card] of cards.entries()) {
+      const award = listed[index];
+      expect(card.className).toMatch(/(^|\s)bg-card(\s|$)/);
+      expect(card.className).toMatch(/(^|\s)rounded-report(\s|$)/);
+      const img = within(card).getByRole("img", { name: award.player ?? award.team });
+      expect(img.getAttribute("src")).toBe(
+        award.player_id !== null ? sleeperHeadshot(award.player_id) : AVATARS[String(award.roster_id)],
+      );
+      expect(img.getAttribute("loading")).toBe("lazy");
+      expect(img.parentElement!.className).toMatch(/(^|\s)size-photo(\s|$)/);
+    }
+    const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
+    // The awards on a game of the book read the same way: title, winner, then short fact.
+    expect(book.getByText(/^Lost to/).parentElement!.textContent).toBe(
+      "Heartbreak of the year — The Blue Tent — Lost to All You Need Is Love by 0.4 in week 3.",
+    );
+    expect(book.getByText(/^Beat /).parentElement!.textContent).toBe(
+      "Beatdown of the year — Maye d'force B with U — Beat To Infinity and Bijan by 92.14 in week 5.",
+    );
+  });
+
+  it("lays the award cards in a grid that wraps: 1 column on a phone, 2 on a tablet, 3 on a desktop", () => {
+    renderReport();
+    const grid = chapterEl("records").getByRole("list", { name: "Awards" });
+    expect(grid.className).toMatch(/(^|\s)grid(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)grid-cols-1(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)tablet:grid-cols-2(\s|$)/);
+    expect(grid.className).toMatch(/(^|\s)desktop:grid-cols-3(\s|$)/);
+  });
+
+  it("shows team scores with 2 decimal places, with the highest score at 158.96", () => {
+    // AT-58.
+    renderReport();
+    const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
+    const high = book.getAllByRole("listitem")[0];
+    expect(high.textContent).toContain("Highest score158.96");
+    const { low } = chapterOf("records").facts;
+    expect(book.getAllByRole("listitem")[1].textContent).toContain(low.score.toFixed(2));
+  });
+});

@@ -1,0 +1,33 @@
+{
+    "route": "/midseason/2026/",
+    "steps": [
+        {
+            "scroll": "#sim-heading"
+        },
+        {
+            "click": "button:has-text(\"Sim the season\")"
+        },
+        {
+            "wait": 500
+        },
+        {
+            "shot": "before"
+        },
+        {
+            "click": "button:has-text(\"Skip to the end\")"
+        },
+        {
+            "wait": "[aria-label=\"Champion of This Run\"]"
+        },
+        {
+            "shot": "after"
+        }
+    ],
+    "widths": [
+        375,
+        1280
+    ],
+    "themes": [
+        "dark"
+    ]
+}

@@ -5,7 +5,7 @@ A test that writes files passes its own folder, and the client data and the NFL 
 import shutil
 from pathlib import Path
 
-from league.client import Client, read_client_values
+from league.client import Client, ValueModels, read_client_values
 from league.paths import client_dir, league_file, nfl_dir
 from league.provider.raw import RawLeague
 from league.provider.sleeper import league_settings
@@ -19,16 +19,17 @@ FIXTURE_LEAGUE = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
 FIXTURE_MODELS = (LeagueValues,)
 
 
-def cpc_client(at: Path | None = None, root: Path = ROOT, **settings) -> Client:
+def cpc_client(at: Path | None = None, root: Path = ROOT, models: ValueModels = FIXTURE_MODELS, **settings) -> Client:
     """The CPC client. Each keyword changes one League setting, such as playoff_spots=4.
 
     With no `at`, the client folder and the NFL data sit in the repo layout under `root`. With `at`, the client data
     sits at `at`/data/<season> and the NFL data at `at`/data, so a test folder keeps one short layout: the Returns
-    file beside the history, and the caches at `at`/data/cache.
+    file beside the history, and the caches at `at`/data/cache. A test of the app passes the models of the pipeline
+    in `models`, so the client has the values of each package, such as midseason.
     """
     base = league_settings(RawLeague.model_validate_json(FIXTURE_LEAGUE.read_text(encoding="utf-8")))
     folder, nfl = (client_dir(root, "cpc"), nfl_dir(root)) if at is None else (at, at / "data")
-    return Client(slug="cpc", folder=folder, nfl_dir=nfl, values=read_client_values(client_dir(ROOT, "cpc"), FIXTURE_MODELS),
+    return Client(slug="cpc", folder=folder, nfl_dir=nfl, values=read_client_values(client_dir(ROOT, "cpc"), models),
                   settings=base.model_copy(update=settings))
 
 

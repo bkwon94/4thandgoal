@@ -1,0 +1,1 @@
+{ "route": "/midseason/2026/", "steps": [{ "scroll": "#top10" }, { "click": "[aria-label=\"Position\"] button:has-text(\"DEF\")" }, { "wait": 500 }, { "shot": "def" }] }

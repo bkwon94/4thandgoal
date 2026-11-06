@@ -6,9 +6,11 @@ import json
 from pathlib import Path
 
 import pytest
+from fakes import CPC_DRAFT_FIXTURES, NORCAL_DRAFT_FIXTURES
+from pydantic import ValidationError
 
-from league.provider.raw import RawPastWeek, RawTrending, RawWeek
-from league.provider.sleeper import load_raw
+from league.provider.raw import RawDraft, RawPastWeek, RawTrending, RawWeek
+from league.provider.sleeper import load_draft, load_raw
 
 
 def _same(dumped, data) -> bool:
@@ -49,3 +51,11 @@ def test_a_trending_row_round_trips():
     # The recorded week has no trending file, so one row in the Sleeper shape stands in.
     row = {"player_id": "11635", "count": 4210}
     assert _same(RawTrending.model_validate(row).model_dump(), row)
+
+
+def test_the_draft_type_parses_at_the_edge_and_an_unknown_type_fails_the_load(tmp_path):
+    # Only an auction has a price, so a type that the rules do not know must stop the build, not turn into a snake.
+    assert (load_draft(CPC_DRAFT_FIXTURES).type, load_draft(NORCAL_DRAFT_FIXTURES).type) == ("auction", "snake")
+    draft = json.loads((CPC_DRAFT_FIXTURES / "draft.json").read_text(encoding="utf-8"))
+    with pytest.raises(ValidationError, match="type"):
+        RawDraft.model_validate({**draft, "type": "keeper", "picks": []})

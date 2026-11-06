@@ -1,0 +1,8 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="state") | .facts.teams[] | select(.roster_id==9 or .roster_id==2) | {roster_id, name, rank, wins, losses, ties, points_for, points_against}' clients/cpc/build/2026/midseason.json
+{"roster_id":2,"name":"All You Need Is Love","rank":1,"wins":11,"losses":5,"ties":0,"points_for":850.17,"points_against":787.92}
+{"roster_id":9,"name":"Maye d'force B with U","rank":5,"wins":9,"losses":7,"ties":0,"points_for":900.65,"points_against":680.77}

@@ -1,0 +1,11 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="draft") | .facts.steals[] | {name, team, cost, points, tag, line}' clients/cpc/build/2026/midseason.json
+{"name":"Matthew Golden","team":"Bo Girds","cost":2,"points":110.0,"tag":null,"line":null}
+{"name":"Jalen Coker","team":"NFC Least","cost":1,"points":64.9,"tag":null,"line":"the one that got away"}
+{"name":"Stefon Diggs","team":"The Blue Tent","cost":1,"points":68.7,"tag":null,"line":"the one that got away"}
+{"name":"Aaron Jones","team":"All You Need Is Love","cost":1,"points":70.3,"tag":null,"line":null}
+{"name":"Tyler Allgeier","team":"Bo Girds","cost":2,"points":73.6,"tag":null,"line":"the one that got away"}

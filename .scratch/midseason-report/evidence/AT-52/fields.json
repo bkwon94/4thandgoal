@@ -1,0 +1,74 @@
+[
+  {
+    "chapter": "opener",
+    "path": "opener.blurb",
+    "words": 40,
+    "cap": 40
+  },
+  {
+    "chapter": "state",
+    "path": "acts.0.chapters.0.blurb",
+    "words": 40,
+    "cap": 40
+  },
+  {
+    "chapter": "arcs",
+    "path": "acts.0.chapters.1.blurb",
+    "words": 38,
+    "cap": 40
+  },
+  {
+    "chapter": "luck",
+    "path": "acts.0.chapters.2.blurb",
+    "words": 39,
+    "cap": 40
+  },
+  {
+    "chapter": "top10",
+    "path": "acts.0.chapters.3.blurb",
+    "words": 40,
+    "cap": 40
+  },
+  {
+    "chapter": "draft",
+    "path": "acts.1.chapters.0.blurb",
+    "words": 39,
+    "cap": 40
+  },
+  {
+    "chapter": "waivers",
+    "path": "acts.1.chapters.1.blurb",
+    "words": 39,
+    "cap": 40
+  },
+  {
+    "chapter": "trades",
+    "path": "acts.1.chapters.2.blurb",
+    "words": 40,
+    "cap": 40
+  },
+  {
+    "chapter": "records",
+    "path": "acts.1.chapters.3.blurb",
+    "words": 40,
+    "cap": 40
+  },
+  {
+    "chapter": "lineup",
+    "path": "acts.1.chapters.4.chapters.0.blurb",
+    "words": 20,
+    "cap": 20
+  },
+  {
+    "chapter": "injuries",
+    "path": "acts.1.chapters.4.chapters.1.blurb",
+    "words": 20,
+    "cap": 20
+  },
+  {
+    "chapter": "look-ahead",
+    "path": "acts.2.chapters.0.blurb",
+    "words": 32,
+    "cap": 40
+  }
+]

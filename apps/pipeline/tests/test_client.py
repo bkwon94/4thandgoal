@@ -21,6 +21,7 @@ from league.client import (
     schema_file,
 )
 from league.values import LeagueValues
+from midseason.values import MidseasonValues
 from week.values import WeekValues
 
 ROOT = Path(__file__).parents[3]
@@ -39,7 +40,7 @@ def _copy(tmp_path: Path, old: str, new: str) -> Path:
 
 def test_the_cpc_client_reads_the_values_of_the_spec():
     values = read_client_values(CPC, VALUE_MODELS)
-    assert values.packages == ["week", "rankings", "managers", "analyzer"]
+    assert values.packages == ["week", "rankings", "managers", "analyzer", "midseason", "sim"]
     assert values.timezone == "America/New_York"
     assert values.usage_code == "cpcfantasy"
     assert values.seasons[2026].provider == "sleeper"
@@ -47,7 +48,7 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.package(AnalyzerValues).finder is False
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
     assert [item.package or item.page for item in values.menu.items] == [
-        "home", "week", "rankings", "managers", "analyzer"]
+        "home", "week", "rankings", "midseason", "managers", "analyzer"]
 
 
 def test_a_client_with_no_chart_value_has_no_chart(tmp_path):
@@ -89,6 +90,38 @@ def test_a_menu_item_for_an_omitted_package_fails_with_the_item_and_the_package(
         read_client_values(folder, VALUE_MODELS)
     assert "waiver" in str(err.value)
     assert "menu" in str(err.value)
+
+
+def test_a_client_with_midseason_and_no_sim_fails_and_names_sim(tmp_path):
+    # AT-48: the report ends on the sim, so a client that takes midseason takes sim too.
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]',
+                   'packages = ["week", "rankings", "managers", "analyzer", "midseason"]')
+    with pytest.raises(ClientError) as err:
+        read_client_values(folder, VALUE_MODELS)
+    assert "- The midseason package needs the sim package. Add sim to the package list." in str(err.value)
+    assert str(folder / "client.toml") in str(err.value)
+
+
+def test_a_client_with_midseason_and_sim_passes(tmp_path):
+    folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]',
+                   'packages = ["week", "rankings", "managers", "analyzer", "sim", "midseason"]')
+    assert read_client_values(folder, VALUE_MODELS).packages[-2:] == ["sim", "midseason"]
+
+
+def test_a_roast_outside_the_four_levels_fails_and_names_them(tmp_path):
+    # AT-62: the roast setting of midseason takes four levels only.
+    folder = _copy(tmp_path, "[values.analyzer]", '[values.midseason]\nroast = "nuclear"\n\n[values.analyzer]')
+    with pytest.raises(ClientError) as err:
+        read_client_values(folder, VALUE_MODELS)
+    message = str(err.value)
+    assert "values.midseason.roast" in message
+    for level in ("'off'", "'warm'", "'hot'", "'savage'"):
+        assert level in message
+
+
+def test_a_client_with_no_roast_value_takes_savage(tmp_path):
+    # AT-41: savage is the default of the roast setting.
+    assert read_client_values(CPC, VALUE_MODELS).package(MidseasonValues).roast == "savage"
 
 
 def test_a_missing_timezone_fails_with_the_key(tmp_path):

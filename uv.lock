@@ -14,7 +14,9 @@ members = [
     "cpc-facts",
     "cpc-league",
     "cpc-managers",
+    "cpc-midseason",
     "cpc-rankings",
+    "cpc-sim",
     "cpc-waiver",
     "cpc-week",
 ]
@@ -120,7 +122,9 @@ dev = [
 ]
 packages = [
     { name = "cpc-managers" },
+    { name = "cpc-midseason" },
     { name = "cpc-rankings" },
+    { name = "cpc-sim" },
     { name = "cpc-waiver" },
 ]
 
@@ -145,7 +149,9 @@ dev = [
 ]
 packages = [
     { name = "cpc-managers", editable = "packages/managers/python" },
+    { name = "cpc-midseason", editable = "packages/midseason/python" },
     { name = "cpc-rankings", editable = "packages/rankings/python" },
+    { name = "cpc-sim", editable = "packages/sim/python" },
     { name = "cpc-waiver", editable = "packages/waiver/python" },
 ]
 
@@ -321,9 +327,71 @@ dev = [
 ]
 
 [[package]]
+name = "cpc-midseason"
+version = "0.1.0"
+source = { editable = "packages/midseason/python" }
+dependencies = [
+    { name = "cpc-facts" },
+    { name = "cpc-league" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cpc-facts", editable = "packages/facts/python" },
+    { name = "cpc-league", editable = "packages/league/python" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
 name = "cpc-rankings"
 version = "0.1.0"
 source = { editable = "packages/rankings/python" }
+dependencies = [
+    { name = "cpc-facts" },
+    { name = "cpc-league" },
+    { name = "pydantic" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cpc-facts", editable = "packages/facts/python" },
+    { name = "cpc-league", editable = "packages/league/python" },
+    { name = "pydantic", specifier = ">=2.14.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.414" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "ruff", specifier = "==0.17.3" },
+]
+
+[[package]]
+name = "cpc-sim"
+version = "0.1.0"
+source = { editable = "packages/sim/python" }
 dependencies = [
     { name = "cpc-facts" },
     { name = "cpc-league" },

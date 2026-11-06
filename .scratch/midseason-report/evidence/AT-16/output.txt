@@ -1,0 +1,29 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="trades") | .facts.trades | length' clients/cpc/build/2026/midseason.json
+20
+
+$ jq -c '.acts[].chapters[] | select(.key=="trades") | .facts.trades[] | {week, teams: [.sides[].team], result, winner, gap}' clients/cpc/build/2026/midseason.json
+{"week":1,"teams":["NFC Least","Maye d'force B with U"],"result":"Robbery","winner":"Maye d'force B with U","gap":165.8}
+{"week":3,"teams":["Bo Girds","Teehee"],"result":"Robbery","winner":"Bo Girds","gap":93.0}
+{"week":4,"teams":["NFC Least","Bo Girds"],"result":"Clear win","winner":"Bo Girds","gap":89.0}
+{"week":7,"teams":["To Infinity and Bijan","Return of T Mac"],"result":"Clear win","winner":"To Infinity and Bijan","gap":68.4}
+{"week":5,"teams":["To Infinity and Bijan","Return of T Mac","Teehee"],"result":"Slight edge","winner":"Return of T Mac","gap":56.9}
+{"week":6,"teams":["NFC Least","Teehee"],"result":"Slight edge","winner":"Teehee","gap":56.4}
+{"week":6,"teams":["Bo Girds","To Infinity and Bijan"],"result":"Slight edge","winner":"To Infinity and Bijan","gap":54.32}
+{"week":4,"teams":["The Blue Tent","Lil Fridge"],"result":"Slight edge","winner":"The Blue Tent","gap":47.6}
+{"week":2,"teams":["Return of T Mac","Teehee"],"result":"Slight edge","winner":"Return of T Mac","gap":41.4}
+{"week":6,"teams":["Unsolicited Dak Picks","Teehee"],"result":"Slight edge","winner":"Teehee","gap":27.8}
+{"week":3,"teams":["Bo Girds","To Infinity and Bijan"],"result":"Slight edge","winner":"Bo Girds","gap":26.6}
+{"week":4,"teams":["Lil Fridge","NFC Least"],"result":"Slight edge","winner":"Lil Fridge","gap":23.2}
+{"week":4,"teams":["NFC Least","behold the lamb"],"result":"Slight edge","winner":"NFC Least","gap":14.4}
+{"week":2,"teams":["NFC Least","Return of T Mac"],"result":"Slight edge","winner":"Return of T Mac","gap":10.0}
+{"week":6,"teams":["NFC Least","To Infinity and Bijan"],"result":"Slight edge","winner":"To Infinity and Bijan","gap":10.0}
+{"week":5,"teams":["All You Need Is Love","Bo Girds"],"result":"Push","winner":null,"gap":5.6}
+{"week":6,"teams":["To Infinity and Bijan","Teehee"],"result":"Push","winner":null,"gap":4.0}
+{"week":7,"teams":["NFC Least","London Cooking"],"result":"Push","winner":null,"gap":1.2}
+{"week":1,"teams":["The Blue Tent","To Infinity and Bijan"],"result":"Push","winner":null,"gap":0.0}
+{"week":8,"teams":["NFC Least","behold the lamb"],"result":"Too soon","winner":null,"gap":10.4}

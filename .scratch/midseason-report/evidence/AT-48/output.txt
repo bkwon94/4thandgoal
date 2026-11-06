@@ -1,0 +1,10 @@
+$ diff clients/cpc/client.toml <local copy>/cpc/client.toml
+3c3
+< packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim"]
+---
+> packages = ["week", "rankings", "managers", "analyzer", "midseason"]
+$ (cd apps/pipeline && uv run --exact --package cornerstone cornerstone check-client <local copy>/cpc)
+<scratchpad>/at48/cpc/client.toml breaks a rule:
+- The midseason package needs the sim package. Add sim to the package list.
+exit code: 2
+$ git status --short clients/cpc/client.toml

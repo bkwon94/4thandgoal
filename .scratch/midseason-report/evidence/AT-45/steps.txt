@@ -1,0 +1,6 @@
+The Given line asks for week 10 published. No week 10 data exists.
+The home page shows the tile when the latest published week (8) is past takeover_end_week. The real value is 9.
+1. Copy clients/cpc/build/2026/midseason.json and sim.json into clients/cpc/published/2026/.
+2. In the published midseason.json only, set takeover_end_week from 9 to 7. No other field changed.
+3. Run `pnpm --dir apps/site evidence midseason-report AT-45` with steps.json (route "/", all widths and themes).
+4. Put the real midseason.json back, with takeover_end_week 9. Delete the copied files after the last round.

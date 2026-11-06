@@ -1,0 +1,54 @@
+{
+  "LC.12.2": {
+    "id": "LC.12.2",
+    "text": "Teehee lost to All You Need Is Love by 12.07 in week 2, and a better lineup from its bench would have won.",
+    "numbers": [
+      "12.07",
+      "2"
+    ],
+    "teams": [
+      "Teehee",
+      "All You Need Is Love"
+    ],
+    "players": []
+  },
+  "LC.6.7": {
+    "id": "LC.6.7",
+    "text": "Bo Girds lost to All You Need Is Love by 11.36 in week 7, and a better lineup from its bench would have won.",
+    "numbers": [
+      "11.36",
+      "7"
+    ],
+    "teams": [
+      "Bo Girds",
+      "All You Need Is Love"
+    ],
+    "players": []
+  },
+  "LC.7.1": {
+    "id": "LC.7.1",
+    "text": "To Infinity and Bijan lost to All You Need Is Love by 4.3 in week 1, and a better lineup from its bench would have won.",
+    "numbers": [
+      "4.3",
+      "1"
+    ],
+    "teams": [
+      "To Infinity and Bijan",
+      "All You Need Is Love"
+    ],
+    "players": []
+  },
+  "LC.1.3": {
+    "id": "LC.1.3",
+    "text": "The Blue Tent lost to All You Need Is Love by 0.4 in week 3, and a better lineup from its bench would have won.",
+    "numbers": [
+      "0.4",
+      "3"
+    ],
+    "teams": [
+      "The Blue Tent",
+      "All You Need Is Love"
+    ],
+    "players": []
+  }
+}

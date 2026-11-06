@@ -15,7 +15,7 @@ import {
 import type { NavItem, NavKind } from "./nav";
 
 /* The icon of each kind of destination. The label under the icon names the item, so each icon is decorative. */
-const ICONS: Record<NavKind, LucideIcon> = {
+const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
   home: HouseIcon,
   week: CalendarDaysIcon,
   rankings: TrophyIcon,
@@ -30,7 +30,9 @@ type DockProps = {
   current?: string;
 };
 
-export function Dock({ items, current }: DockProps) {
+/* The dock holds five items, so the midseason report has no dock item. The pill bar lists it, and the home page links it. */
+export function Dock({ items: all, current }: DockProps) {
+  const items = all.filter((item): item is NavItem & { kind: Exclude<NavKind, "midseason"> } => item.kind !== "midseason");
   return (
     // The dock floats one step above the bottom edge and the safe area of the phone. The body keeps the same space free
     // under the page (globals.css), so the dock never covers the end of the page.

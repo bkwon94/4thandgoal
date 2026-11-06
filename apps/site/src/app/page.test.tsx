@@ -5,7 +5,7 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
@@ -26,8 +26,9 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("opens the hero on the Matchup of the Week of the latest week, with the margin as the big number", () => {
-    render(<HomePage />);
+  it("opens the hero on the Matchup of the Week of the latest week, with the margin as the big number", async () => {
+    const Home = await homeOfCpcWithoutReport();
+    render(<Home />);
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
     // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88.
     expect(within(hero).getByText("Week 08 // Matchup of the Week")).toBeTruthy();
@@ -52,8 +53,9 @@ describe("HomePage", () => {
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Cornerstone Fantasy Football League");
   });
 
-  it("shows the parts in the order of the Front page", () => {
-    render(<HomePage />);
+  it("shows the parts in the order of the Front page", async () => {
+    const Home = await homeOfCpcWithoutReport();
+    render(<Home />);
     const main = screen.getByRole("main");
     const order = [
       screen.getByRole("heading", { level: 1 }),
@@ -71,8 +73,9 @@ describe("HomePage", () => {
     }
   });
 
-  it("shows the four numbers of the latest week", () => {
-    render(<HomePage />);
+  it("shows the four numbers of the latest week", async () => {
+    const Home = await homeOfCpcWithoutReport();
+    render(<Home />);
     const numbers = screen.getByRole("region", { name: "The week in numbers" });
     const labels = within(numbers)
       .getAllByRole("listitem")
@@ -163,11 +166,17 @@ async function homeOver(rankings?: unknown, managers = false) {
 }
 
 /* A temp public/ folder with the published files of one client, as its client build copies them. */
-async function homeOfClient(slug: string) {
+async function homeOfClient(slug: string, skip: string[] = []) {
   const root = tempRoot();
-  cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), { recursive: true });
+  cpSync(join(process.cwd(), "..", "..", "clients", slug, "published"), join(root, "public"), {
+    recursive: true,
+    filter: (source) => !skip.includes(basename(source)),
+  });
   return homeAt(root);
 }
+
+/* The cpc files with no report, so the tests of the plain home page hold whether or not the client has published one. */
+const homeOfCpcWithoutReport = () => homeOfClient("cpc", ["midseason.json", "sim.json"]);
 
 function tempRoot(): string {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));

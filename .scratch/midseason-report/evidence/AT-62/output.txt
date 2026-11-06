@@ -1,0 +1,10 @@
+$ diff clients/cpc/client.toml <scratchpad>/at62/cpc/client.toml
+17a18,20
+> [values.midseason]
+> roast = "nuclear"
+> 
+$ (cd apps/pipeline && uv run --exact --package cornerstone cornerstone check-client <scratchpad>/at62/cpc)
+<scratchpad>/at62/cpc/client.toml breaks a rule:
+- values.midseason.roast: Input should be 'off', 'warm', 'hot' or 'savage'
+exit code: 2
+$ git status --short clients/cpc/client.toml

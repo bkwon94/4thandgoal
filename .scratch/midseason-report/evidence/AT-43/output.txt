@@ -1,0 +1,25 @@
+$ make midseason-publish CLIENT=cpc WEEK=8   # in a clone; origin is a local bare repo
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+https://cpc.4thandgoal.app/midseason/2026/
+Committed and pushed. The report is live after the site deploys.
+exit code: 0
+[51 INFO log lines of the Claude calls removed]
+
+$ git show --stat HEAD
+commit eb6f8a22a6de584ecfc27583c372389b8ff4bde6
+Author: brianbuoy <brian.kwon@buoyhealth.com>
+Date:   Thu Nov 5 23:03:53 2026 -0500
+
+    Midseason report week 8
+
+ clients/cpc/published/2026/midseason.json | 6656 +++++++++++++++++++++++++++++
+ clients/cpc/published/2026/sim.json       |    1 +
+ 2 files changed, 6657 insertions(+)
+
+$ git remote -v
+origin	<scratchpad>/ev-remote.git (fetch)
+origin	<scratchpad>/ev-remote.git (push)
+$ git -C <scratchpad>/ev-remote.git log --oneline -2 midseason-report
+eb6f8a22 Midseason report week 8
+233d3ef0 Merge remote-tracking branch 'origin/main' into midseason-report

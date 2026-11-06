@@ -25,6 +25,23 @@ describe("menuPages", () => {
     ]);
   });
 
+  it("gives no destination for the sim, so the menu keeps its items", () => {
+    const links = { ...LINKS, sim: () => ({ label: "Sim", href: "/sim/" }) };
+    const pages = menuPages([{ page: "home" }, { package: "sim" }], links, "/");
+    expect(pages.map((page) => page.kind)).toEqual(["home"]);
+  });
+
+  it("lists the midseason report with the label of its item and the short label Report (AT-46)", () => {
+    const links = { ...LINKS, midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }) };
+    const pages = menuPages([{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }], links, "/");
+    expect(pages.at(-1)).toEqual({ kind: "midseason", label: "Midseason Report", short: "Report", href: "/midseason/2026/" });
+  });
+
+  it("lists no report when the season has no report", () => {
+    const links = { ...LINKS, midseason: () => null };
+    expect(menuPages([{ package: "midseason" }], links, "/")).toEqual([]);
+  });
+
   it("takes the label of an item in place of the label of the package, in the pill bar only", () => {
     const pages = menuPages([{ page: "home", label: "Start" }, { package: "analyzer", label: "Trades" }], LINKS, "/");
     expect(pages.map((page) => page.label)).toEqual(["Start", "Trades"]);
@@ -54,9 +71,10 @@ describe("menuPages", () => {
 
 describe("shellProps of cpc", () => {
   it("keeps the items and the labels of the CPC menu, with the short labels of the dock (AT-9, AT-10)", () => {
-    const { menu } = shellProps();
-    expect(menu.items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
-    expect(menu.items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+    // The report item shows once the season publishes a report, so this test leaves it out.
+    const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");
+    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
+    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
   });
 
   it("lists every published week, newest first, for the week chip and the strip (AT-11)", () => {

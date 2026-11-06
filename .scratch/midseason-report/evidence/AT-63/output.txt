@@ -1,0 +1,76 @@
+# Build (stage 1 of AT-63), in a clone with a local bare repo as origin
+$ git clone --bare <spec worktree> <scratchpad>/ev63/remote.git; git clone <scratchpad>/ev63/remote.git <scratchpad>/ev63/clone; git checkout midseason-report   (head 403403f3)
+$ pnpm install --frozen-lockfile && uv sync --all-packages
+$ cp -R data/nfl/cache and clients/cpc/data/2026/draft from the spec worktree (both are untracked)
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16750
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16831
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16761
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16715
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16800
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16749
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16801
+INFO cornerstone.pipeline: review file: <scratchpad>/ev63/clone/clients/cpc/build/2026/midseason-review.md
+<scratchpad>/ev63/clone/clients/cpc/build/2026/midseason.json
+exit code: 0
+build time: 230 s
+
+# Publish attempts. Each one ran with "echo y |" because the command asks "Publish ...? [y/N]" and reads stdin.
+# Attempt 0: no stdin. The prompt hit EOF and the command stopped before the verifier. Nothing published.
+
+## Attempt 1
+$ echo y | make -C apps/pipeline midseason-publish CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+The blurb luck fails the verifier: [4] number word 'four' is not in the cited facts; [0] the blurb has 55 words; the limit is 40
+Nothing is published. Fix each blurb in the draft, then run the publish again.
+make: *** [midseason-publish] Error 2
+exit code: 2
+
+## Attempt 2
+$ echo y | make -C apps/pipeline midseason-publish CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+The blurb luck fails the verifier: [0] every sentence has a number (sentences 0, 1, 2); write at least one sentence with no number
+Nothing is published. Fix each blurb in the draft, then run the publish again.
+make: *** [midseason-publish] Error 2
+exit code: 2
+
+## Attempt 3
+$ echo y | make -C apps/pipeline midseason-publish CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+The blurb luck fails the verifier: [3] 'It' refers to Bo Girds, but LC.12.2 says Teehee lost to All You Need Is Love in week 2, not to Bo Girds.
+Nothing is published. Fix each blurb in the draft, then run the publish again.
+make: *** [midseason-publish] Error 2
+exit code: 2
+
+## Attempt 4
+$ echo y | make -C apps/pipeline midseason-publish CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+The blurb luck fails the verifier: [0] the blurb has 41 words; the limit is 40
+Nothing is published. Fix each blurb in the draft, then run the publish again.
+make: *** [midseason-publish] Error 2
+exit code: 2
+
+## Attempt 5, the final blurb in blurb.json
+$ git remote get-url origin  ->  <scratchpad>/ev63/remote.git
+$ echo y | make -C apps/pipeline midseason-publish CLIENT=cpc WEEK=8
+uv run --exact --package cornerstone cornerstone midseason-publish --client cpc --season 2026 --week 8
+Publish the midseason report of week 8 of cpc? [y/N] INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+https://cpc.4thandgoal.app/midseason/2026/
+Committed and pushed. The report is live after the site deploys.
+exit code: 0
+$ git log --oneline -2
+74ce08ea Midseason report week 8
+403403f3 Merge branch 'midseason-report-fix-i' into midseason-report
+$ git show --stat --format="%h %s" HEAD
+74ce08ea Midseason report week 8
+
+ clients/cpc/published/2026/midseason.json | 6271 +++++++++++++++++++++++++++++
+ clients/cpc/published/2026/sim.json       |    1 +
+ 2 files changed, 6272 insertions(+)
+$ git -C <bare repo> log --oneline -1 midseason-report
+74ce08ea Midseason report week 8

@@ -1,0 +1,124 @@
+$ make -C apps/pipeline midseason CLIENT=cpc WEEK=8   # real Claude, 253 s, at 403403f3
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/1 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/1 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/1?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/1?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/2 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/2 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/2?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/2?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/3 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/3 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/3?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/3?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/4 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/4 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/4?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/4?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/5 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/5 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/5?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/5?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/6 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/6 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/6?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/6?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/7 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/7 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/7?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/7?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/8 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/8 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/8?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/8?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/10 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/9 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/9?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/draft/1386167364436901888 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/draft/1386167364436901888/picks "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=10506 cache_read_input_tokens=0 input_tokens=16715
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=5854 cache_read_input_tokens=0 input_tokens=16847
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16715
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16837
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16714
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16746
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16827
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16819
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16777
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16716
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16845
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16720
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16870
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16721
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16753
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16860
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16718
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16750
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16830
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16783
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16715
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16803
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16792
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16815
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16717
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=10506 input_tokens=16749
+INFO httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO facts.writer: VerifyOut call: cache_creation_input_tokens=0 cache_read_input_tokens=5854 input_tokens=16795
+INFO cornerstone.pipeline: review file: <spec worktree>/clients/cpc/build/2026/midseason-review.md
+<spec worktree>/clients/cpc/build/2026/midseason.json
+[exit code 0]
+
+$ jq -r '<each object with sentences> | path, words, text' clients/cpc/build/2026/midseason.json   # words split on spaces; lineup and injuries cap 20, the others 40
+opener	opener.blurb	40 words	All You Need Is Love leads at 11-5. The sim ranks its title odds 6th, at 9.7%. First place, apparently decorative. London Cooking leads the title odds at 16.8%. Bo Girds, 2nd in title odds, has lost 4 straight head-to-head.
+state	acts.0.chapters.0.blurb	40 words	All You Need Is Love sits 1st at 11-5, and nobody has a fix for it. Bo Girds has lost 4 straight head-to-head games and somehow still holds 3rd. NFC Least is 3-13 with 1% playoff odds. Not a typo.
+arcs	acts.0.chapters.1.blurb	38 words	Bo Girds peaked early, 6-2 out of the gate and 3-5 down the stretch. Free fall, no parachute. Return of T Mac went the other way, 2-6 to 7-1. NFC Least opened at 0-8 and never got going.
+luck	acts.0.chapters.2.blurb	39 words	All You Need Is Love has 7 head-to-head wins on scores worth 4.27. Stolen goods, every one. Bo Girds would be 14-2 on the schedule of Maye d'force B with U, versus 9-7 for real. Same roster, worse calendar.
+top10	acts.0.chapters.3.blurb	40 words	Josh Allen leads all QBs with 189.32 points, and behold the lamb is 6-10. It also traded away CeeDee Lamb, now WR #2. Read the name next time. The Buccaneers defense ranks 3rd with 77.75 points and belongs to nobody.
+draft	acts.1.chapters.0.blurb	39 words	Unsolicited Dak Picks spent $39 on A.J. Brown, the bust of the draft. He has 13.6 points, 60th among drafted receivers. Refund denied. NFC Least paid $1 for Jalen Coker, the steal of the draft, and got 64.9 points.
+waivers	acts.1.chapters.1.blurb	39 words	To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts. A bench ornament, at full price. Unsolicited Dak Picks outbid them by $20 for Ollie Gordon II, the league's 1st waiver hit. Same $40, different universe.
+trades	acts.1.chapters.2.blurb	40 words	To Infinity and Bijan dumped Bijan Robinson and still won the trade by 34.2 points over the line. NFC Least gave Jalen Coker and D'Andre Swift away in week 1, a Robbery. They are 3-13 since. Lock the trade button.
+records	acts.1.chapters.3.blurb	40 words	Maye d'force B with U posted the season high, 158.96, in week 5. That week it flattened To Infinity and Bijan by 92.14. London Cooking left 27.54 points on the bench in a winnable week 2 loss. Nobody was home.
+lineup	acts.1.chapters.4.chapters.0.blurb	20 words	Lil Fridge lost week 7 by 11.84 with a winning lineup parked on its bench. It sat 14.7 points. Unforgivable.
+injuries	acts.1.chapters.4.chapters.1.blurb	20 words	behold the lamb lost 9 starter games to injury, 1st in the league. Kyle Monangai missed 4 alone. Behold, indeed.
+look-ahead	acts.2.chapters.0.blurb	32 words	Maye d'force B with U gets the softest road left, opponents at a 0.44 win rate. behold the lamb, already 6-10, drew the hardest slate, at 0.56. The name was a warning.

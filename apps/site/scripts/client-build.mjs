@@ -175,6 +175,17 @@ const ROUTES = {
     },
   ],
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
+  // The sim has no page of its own. The report page mounts its replay.
+  sim: [],
+  midseason: [
+    {
+      path: "midseason/[season]/page.tsx",
+      source: "@/app/_routes/midseason/page",
+      exports: ["default", "generateStaticParams", "generateMetadata"],
+      dynamic: true,
+      needs: (published) => hasFile(published, (path) => path.endsWith("midseason.json")),
+    },
+  ],
 };
 
 /* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
@@ -204,7 +215,7 @@ function routeText(slug, route) {
 /* The packages that give the home page its parts. Each one has src/app/_routes/<package>/home.tsx, and each part
    names its own place on the page. The order is fixed here and not by the package list, so the order of client.toml
    never moves a part. */
-const HOME_SECTIONS = ["rankings", "week"];
+const HOME_SECTIONS = ["midseason", "rankings", "week"];
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */

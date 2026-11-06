@@ -1,0 +1,24 @@
+# midseason: the midseason report, one edited moment per season
+
+## Knows
+
+- The state of the league in `state.py`: the full record, points for and against, the streak, and the playoff odds of each team. The title race of the opener and the one big fact of the report tile in `opener.py`.
+- The draft steals and busts in `draft.py`: the cost rank at the position against the points rank, the top 5 of each, the "hurt" or "just bad" tag of a bust. The tag reads the missed games of `missed_games` in `injury.py`, the rule of the injury toll.
+- The waivers in `waivers.py`, and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read. The lineup choices in `lineups.py`, and the record book with the seven awards in `records.py`.
+- The spread rule in `spread.py`: 1 to 3 headlines per team. Arcs and awards never move. A callout moves to the next team, and its fact names the moved team.
+- The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first. Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, the worked example of the luck card, and the Schedule swap with the best and the worst schedule of each team. The injury toll in `injury.py`, Position top 10 in `top10.py`, the games left of each team in `look_ahead.py`.
+- The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`). The acts follow the lean acts of decision 14. Act II ends on Quick hits, which holds the lineup choices and the injury toll, each with its own prose block.
+- The prose in `prose.py`: one prose block of 40 words or fewer per chapter, which may cite a fact of any chapter, and the voice terms of `prompts/voice.md`. The review file in `review.py`: each blurb, its facts, and the verifier result. The package values in `values.py`: `roast`, the voice of the prose, one of `off`, `warm`, `hot`, and `savage`, default `savage`. A client that takes `midseason` takes `sim` too, and the client check of `league` fails one without it.
+
+## Ports
+
+- `playoff_odds` of `league_state` and `title_odds` of `title_race` take the sim odds by roster ID from the app. The report imports no odds engine.
+- The app hands in each chapter input: the draft picks to `draft_value`, the injury report to `missed_games` and `injury_toll`, the rosters now to `position_top10`, and the starter slots to `lineup_choices`. The pairs left go to `look_ahead`. The package fetches nothing.
+- `waiver_facts` and `trade_facts` take the transactions of each week from the app. The app fetches them again from the provider, because the saved history can miss the waiver run of the last week.
+- `write_prose` and `recheck_prose` take the Claude call from the app. Each blurb goes through the writer and the verifier of `facts`, so the package has no writer of its own.
+
+## Does not do
+
+- It imports no app and no other core package, only `league` and `facts`. It never imports `sim`. `tests/test_layers.py` of the pipeline checks it.
+- It writes nothing to `published/`. The build writes `midseason.json`, `midseason-facts.json`, and `midseason-review.md` into the build folder of the season only. The publish of the app copies `midseason.json` and `sim.json`.
+- It adds no menu item.

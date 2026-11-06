@@ -32,7 +32,10 @@ V = TypeVar("V", bound=PackageValues)
 TABLES_SCHEMA = {"type": "object", "additionalProperties": {"type": "object"}}
 
 # The packages a client chooses. league, facts, and design are in every client, so the list never names them.
-PackageName = Literal["week", "rankings", "managers", "waiver", "analyzer"]
+PackageName = Literal["week", "rankings", "managers", "waiver", "analyzer", "sim", "midseason"]
+# Each package that needs another package, with the package it needs. The midseason report ends on the sim, and the
+# app wires the two, so a client that takes midseason takes sim too.
+PACKAGE_NEEDS: dict[PackageName, PackageName] = {"midseason": "sim"}
 
 
 class ClientError(ValueError):
@@ -97,6 +100,13 @@ class ClientValues(_Strict):
         for item in self.menu.items or []:
             if item.package is not None and item.package not in self.packages:
                 raise ValueError(f"The menu item for {item.package} names a package that is not in the package list.")
+        return self
+
+    @model_validator(mode="after")
+    def _each_needed_package_is_taken(self) -> Self:
+        for package, needed in PACKAGE_NEEDS.items():
+            if package in self.packages and needed not in self.packages:
+                raise ValueError(f"The {package} package needs the {needed} package. Add {needed} to the package list.")
         return self
 
     @property

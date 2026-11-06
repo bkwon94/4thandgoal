@@ -17,7 +17,7 @@
     "check:floor": "playwright test --project=floor",
     "test:floor": "playwright test --project=rules",
     "evidence": "node scripts/evidence.mjs",
-    "check": "pnpm check:fast && pnpm test:floor && node scripts/build-each-client.mjs",
+    "check": "pnpm check:fast && pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
     "check:fast": "CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test",
     "hook:install": "prek install"
   },
@@ -27,7 +27,9 @@
     "@cpc/design": "workspace:*",
     "@cpc/league": "workspace:*",
     "@cpc/managers": "workspace:*",
+    "@cpc/midseason": "workspace:*",
     "@cpc/rankings": "workspace:*",
+    "@cpc/sim": "workspace:*",
     "@cpc/waiver": "workspace:*",
     "@cpc/week": "workspace:*",
     "class-variance-authority": "^0.7.1",

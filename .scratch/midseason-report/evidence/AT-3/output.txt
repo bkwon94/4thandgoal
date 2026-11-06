@@ -1,0 +1,15 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)   # run 1, spec worktree
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)   # run 2, a second detached worktree at 233d3ef0
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+<worktree 2>/clients/cpc/build/2026/midseason.json
+[166 INFO log lines of the Claude calls removed]
+
+$ diff clients/cpc/build/2026/sim.json <worktree 2>/clients/cpc/build/2026/sim.json
+diff exit code: 0
+$ shasum -a 256 (both files)
+a16b2045ef942314f13ff85c7860589254671bb1b57f359e45afc033f2396327  clients/cpc/build/2026/sim.json
+a16b2045ef942314f13ff85c7860589254671bb1b57f359e45afc033f2396327  <worktree 2>/clients/cpc/build/2026/sim.json
