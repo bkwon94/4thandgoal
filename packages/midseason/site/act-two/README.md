@@ -5,7 +5,7 @@
 - Draft steals and busts: the cost against the points at the position and the tag of each bust.
 - Waiver hits and misses: the hits by Points over the line, the misses, the outbid claims, and the streamers.
 - The trade report card: the top 3 trades as full cards with the record of each team since the trade, then every
-  other trade as a short row. A player out in the first week after his trade has the tag "Hurt on arrival".
+  other trade as a short row of two quiet lines. Each result with a winner names the team, as "Slight edge to <team>".
 - The record book with the awards. Heartbreak sits on the closest game and Beatdown on the biggest margin, so each
   game shows once.
 - Quick hits, the last chapter: one block with two parts, each under a level 4 heading with its own prose.

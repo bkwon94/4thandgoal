@@ -125,18 +125,48 @@ describe("the trade report card", () => {
     }
   });
 
-  it("tags each player who was out in the first week after his trade as hurt on arrival", () => {
+  it("shows no hurt on arrival tag on any trade", () => {
     renderReport();
-    const trades = chapterOf("trades").facts.trades;
-    const hurt = trades.flatMap((trade) => trade.sides.flatMap((side) => side.got.filter((p) => p.hurt_on_arrival)));
-    expect(hurt.length).toBeGreaterThan(0);
     const chapter = chapterEl("trades");
     fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
-    const tags = chapter.getAllByText("Hurt on arrival");
-    expect(tags).toHaveLength(hurt.length);
-    expect(tags.map((tag) => tag.parentElement!.textContent)).toEqual(
-      hurt.map((player) => expect.stringContaining(player.player)),
+    expect(document.getElementById("trades")!.textContent).not.toMatch(/hurt on arrival/i);
+    expect(chapter.queryAllByText(/./, { selector: "[data-tag]" })).toHaveLength(0);
+  });
+
+  it("names the winner in each result with a winner, as \"Slight edge to <team>\", and shows Even for no winner", () => {
+    renderReport();
+    const trades = chapterOf("trades").facts.trades;
+    expect(trades.some((trade) => trade.result === "Slight edge")).toBe(true);
+    expect(trades.some((trade) => trade.result === "Even")).toBe(true);
+    const chapter = chapterEl("trades");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    const results = chapter.getAllByText(/./, { selector: "[data-result]" }).map((result) => result.textContent);
+    expect(results).toEqual(
+      trades.map((trade) => (trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result)),
     );
+    expect(document.getElementById("trades")!.textContent).not.toMatch(/\bPush\b/);
+  });
+
+  it("shows each other trade as two lines: the week, the teams, and the result, then the players of each side, muted", () => {
+    renderReport();
+    const rest = chapterOf("trades").facts.trades.slice(3);
+    const chapter = chapterEl("trades");
+    fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
+    const rows = [...chapter.getByRole("list", { name: "Every other trade" }).children] as HTMLElement[];
+    expect(rows).toHaveLength(rest.length);
+    for (const [index, row] of rows.entries()) {
+      const trade = rest[index];
+      expect(row.children).toHaveLength(2);
+      const [top, players] = [...row.children] as HTMLElement[];
+      expect(top.textContent).toContain(`Week ${trade.week}`);
+      for (const side of trade.sides) expect(top.textContent).toContain(side.team);
+      expect(top.textContent).toContain(trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result);
+      expect(players.className).toMatch(/(^|\s)text-mute(\s|$)/);
+      for (const side of trade.sides) {
+        for (const player of side.got) expect(players.textContent).toContain(player.player);
+      }
+      expect(row.querySelector("[data-tag]")).toBeNull();
+    }
   });
 
   it("sits third of the five chapters of Act II", () => {

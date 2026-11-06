@@ -351,7 +351,7 @@ export const tradeCardSchema = z.object({
   weeks_since: z.number(),
   sides: z.array(tradeSideSchema),
   gap: z.number(),
-  result: z.enum(["Robbery", "Clear win", "Slight edge", "Push", "Too soon"]),
+  result: z.enum(["Robbery", "Clear win", "Slight edge", "Even", "Too soon"]),
   winner: z.string().nullable(),
 });
 

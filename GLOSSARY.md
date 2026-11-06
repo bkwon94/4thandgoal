@@ -997,7 +997,7 @@ A win of a team that the points of one of its starters decided: the team won, an
 _Avoid_: Clutch win, game winner, difference maker
 
 **Trade result**:
-The midseason report's label for one past trade, from the net Points over the line of each side since the trade: Robbery, Clear win, Slight edge, Push, or Too soon.
+The midseason report's label for one past trade, from the net Points over the line of each side since the trade: Robbery, Clear win, Slight edge, Even, or Too soon.
 _Avoid_: Grade (that is the analyzer's letter for a proposed trade), hindsight grade, trade score
 
 ## Client language

@@ -23,7 +23,7 @@ PLAYERS = {pid: PlayerCard(player_id=pid, name=f"Back {pid}", position="RB") for
 
 @pytest.mark.parametrize(("gap", "weeks", "label"), [
     (90, 2, "Robbery"), (89.99, 5, "Clear win"), (60, 2, "Clear win"), (10, 3, "Slight edge"),
-    (9.99, 3, "Push"), (200, 1, "Too soon")])
+    (9.99, 3, "Even"), (200, 1, "Too soon")])
 def test_the_result_lines_and_too_soon_under_two_weeks(gap, weeks, label):
     assert trade_result(gap, weeks) == label
 

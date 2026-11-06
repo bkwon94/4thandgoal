@@ -66,7 +66,7 @@ Act II: The moves
 30. As a league manager, I want every trade with its Trade result, so that I know who won each trade so far.
 31. As a league manager, I want the top 3 trades as full cards, so that the biggest robberies stand out.
 32. As a league manager, I want a trade card to show the record of each team since the trade, so that I have context.
-33. As a league manager, I want a "hurt on arrival" tag on a player who was out right after a trade, so that the result is fair.
+33. As a league manager, I want each result with a winner to name the team, such as "Slight edge to <team>", so that I know who won. The page shows no "hurt on arrival" tag. The pipeline keeps the field.
 34. As a league manager, I want my bench points and the weeks where my best lineup would have won, so that I see my lineup mistakes.
 35. As a league manager, I want the record book, so that the highest score, the lowest score, the biggest margin, and the closest game are on record.
 36. As a league manager, I want seven midseason awards, each with its fact, so that the season gets its moments.
@@ -185,7 +185,7 @@ The opener is the title race: the title odds of the leaders and the record leade
 - **Position top 10** (ticket 10): total league points, every NFL player, one position at a time, opening on RB.
 - **Draft value** (ticket 02): the cost rank at the position against the points rank at the position, among the drafted players of that position. The top 5 steals and the top 5 busts. No "the one that got away" line (ticket 15). The letdowns (ticket 20): a pick with a top 10 price of the whole draft, not a bust, with no week in the top 17 of his position in the last 4 weeks played. Each row names the price, the season rank at the position, and the last week in the top 17.
 - **Waivers** (ticket 03): the top 5 hits by Points over the line, the top 5 misses, the top 3 outbid, and the streaming king. A claim with no game after it is never a miss. No "the one that got away" line (ticket 15).
-- **Trades** (ticket 04): the Trade result from the gap of net Points over the line. The lines are tunables: Robbery at a gap of 90 or more, Clear win at 60 or more, Slight edge at 10 or more, Push below 10, and Too soon under 2 weeks. On the CPC week 8 data, these give 2 Robberies and 2 Clear wins, as ticket 04 asks.
+- **Trades** (ticket 04): the Trade result from the gap of net Points over the line. The lines are tunables: Robbery at a gap of 90 or more, Clear win at 60 or more, Slight edge at 10 or more, Even below 10, and Too soon under 2 weeks. On the CPC week 8 data, these give 2 Robberies and 2 Clear wins, as ticket 04 asks. Each result with a winner reads "<result> to <team>". Each trade after the top 3 is two quiet lines: the week, the teams, and the result, then the players of each side, muted.
 - **Awards** (ticket 10): MVP, Streaming king, Bench crime of the year, Heartbreak of the year, Beatdown of the year, Most active, and Set and forget. Heartbreak and Beatdown show inside the record book, so each game shows once. The MVP may also be a Position #1. It answers a different question: the best player across positions.
 - **Points for** is the sum of the weekly scores, the same sum as the standings. The season total from Sleeper can differ after a stat correction.
 - **Long lists** show their first 5 rows, with a "Show all" control. The counts of tickets 02 and 03 stand.
@@ -196,7 +196,7 @@ Tickets 14 and 15 decided it, on the boards of the Design canvas. The report kee
 
 - **Lean chapters.** Each chapter is a headline, one visual or table, and 40 words of prose or fewer. The page may stay long, about 10,000 px on a phone. No chapter closes by default.
 - **Quick hits.** Each of the two parts of Quick Hits has 20 words or fewer.
-- **Tags.** A tag has no box and no fill. A fact that describes the player goes in the second line, such as "Free agent · QB · MIN". Any other tag is a small mono caps word in a muted color. "Just bad" and "hurt on arrival" use the accent color.
+- **Tags.** A tag has no box and no fill. A fact that describes the player goes in the second line, such as "Free agent · QB · MIN". Any other tag is a small mono caps word in a muted color. "Just bad" uses the accent color.
 - **Corners.** Cards have 8 px corners. The report has no full pill.
 - **The position switch** is plain text segments with a 2 px accent underline that slides to the chosen position.
 - **"Show all"** is a mono text control with a chevron and no border. It changes to "Show top 5", and the chevron turns.

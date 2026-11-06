@@ -269,11 +269,10 @@ describe("MidseasonScreen", () => {
     renderReport();
     for (const button of screen.getAllByRole("button", { name: /^Show all/ })) fireEvent.click(button);
     const tags = [...document.querySelectorAll("[data-tag]")];
-    expect(tags.map((tag) => tag.textContent)).toEqual(expect.arrayContaining(["Just bad", "Hurt on arrival", "Streaming king"]));
+    expect(tags.map((tag) => tag.textContent)).toEqual(expect.arrayContaining(["Just bad", "Streaming king"]));
     for (const tag of tags) expect(tag.className).not.toMatch(/(^|\s)(bg-|border|rounded)/);
     const tone = (word: string) => tags.find((tag) => tag.textContent === word)!.getAttribute("data-tag");
-    expect([tone("Just bad"), tone("Hurt on arrival"), tone("Hurt"), tone("Streaming king")]).toEqual([
-      "accent",
+    expect([tone("Just bad"), tone("Hurt"), tone("Streaming king")]).toEqual([
       "accent",
       "mute",
       "mute",

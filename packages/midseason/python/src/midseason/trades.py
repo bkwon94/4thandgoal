@@ -19,7 +19,7 @@ from league.trades import default_cutoff
 from midseason.moves import line_scores, stint
 from midseason.players import PlayerCard
 
-TradeResult = Literal["Robbery", "Clear win", "Slight edge", "Push", "Too soon"]
+TradeResult = Literal["Robbery", "Clear win", "Slight edge", "Even", "Too soon"]
 # The tunables of the Trade result, PRD "The report: chapters and rules". A gap at or above a line takes its label.
 # On the CPC week 8 data, they give 2 Robberies and 2 Clear wins.
 RESULT_LINES: tuple[tuple[float, TradeResult], ...] = (
@@ -65,7 +65,7 @@ class TradeCard(BaseModel):
     # The net of the best side minus the net of the worst side.
     gap: float
     result: TradeResult
-    # The team of the best side. None for a Push or Too soon.
+    # The team of the best side. None for an Even trade or Too soon.
     winner: str | None
 
 
@@ -89,7 +89,7 @@ def trade_result(gap: float, weeks_since: int) -> TradeResult:
     for line, label in RESULT_LINES:
         if gap >= line:
             return label
-    return "Push"
+    return "Even"
 
 
 def _record(history: History, roster_id: int, start: int, through: int, median_game: bool) -> Record:
@@ -173,7 +173,7 @@ def trade_facts(
         result = trade_result(gap, weeks_since)
         cards.append(TradeCard(transaction_id=row.transaction_id, week=week, weeks_since=weeks_since, sides=sides,
                                gap=gap, result=result,
-                               winner=None if result in ("Push", "Too soon") else best.team))
+                               winner=None if result in ("Even", "Too soon") else best.team))
     cards.sort(key=lambda c: (c.result == "Too soon", -c.gap, c.week))
     return TradeFacts(trades=cards)
 

@@ -1,6 +1,6 @@
 /**
  * The tag of the report: a small mono caps word with no box and no fill, so a tag never takes over its row.
- * It is muted, or in the accent color for a bad sign, such as "Just bad" or "Hurt on arrival" (decision ticket 15).
+ * It is muted, or in the accent color for a bad sign, such as "Just bad" (decision ticket 15).
  */
 import type { ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";
