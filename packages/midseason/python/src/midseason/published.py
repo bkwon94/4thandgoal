@@ -72,10 +72,18 @@ class TradesChapter(BaseModel):
     roast: Blurb | None = None
 
 
+class QuickHitsChapter(BaseModel):
+    """Quick hits, the last chapter of Act II: the lineup choices and the injury toll in one block. Each part keeps
+    its own facts and prose block, so the writer writes each part as before. GLOSSARY.md, "Quick hits"."""
+    key: Literal["quick-hits"] = "quick-hits"
+    title: str = "Quick Hits"
+    chapters: list[Annotated[LineupChapter | InjuryChapter, Field(discriminator="key")]]
+
+
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | InjuryChapter | Top10Chapter | DraftChapter
-                    | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | LookAheadChapter,
+Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter | Top10Chapter | DraftChapter | WaiversChapter
+                    | TradesChapter | RecordsChapter | QuickHitsChapter | LookAheadChapter,
                     Field(discriminator="key")]
 
 
@@ -110,22 +118,25 @@ def midseason_report(
     headlines: list[Headline],
 ) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. The opener is the title
-    race. Act I holds the state of the league, the arcs, Schedule luck, the injury toll, and Position top 10. Act II
-    holds the draft, the waivers, the trades, the lineup choices, and the record book with the awards. Act III holds
-    the look ahead."""
+    race. The acts follow the lean acts of decision 14. Act I holds the state of the league, the arcs, Schedule luck,
+    and Position top 10. Act II holds the draft, the waivers, the trades, the record book with the awards, and last
+    Quick hits, with the lineup choices and the injury toll. Act III holds the look ahead, and the site ends it on the
+    sim."""
     act_one: list[Chapter] = [
         StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
         ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
         LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
-        InjuryChapter(facts=injuries, blurb=blurbs.get("injuries"), roast=blurbs.get("injuries" + ROAST_SUFFIX)),
         Top10Chapter(facts=top10, blurb=blurbs.get("top10"), roast=blurbs.get("top10" + ROAST_SUFFIX)),
     ]
     act_two: list[Chapter] = [
         DraftChapter(facts=draft, blurb=blurbs.get("draft"), roast=blurbs.get("draft" + ROAST_SUFFIX)),
         WaiversChapter(facts=waivers, blurb=blurbs.get("waivers"), roast=blurbs.get("waivers" + ROAST_SUFFIX)),
         TradesChapter(facts=trades, blurb=blurbs.get("trades"), roast=blurbs.get("trades" + ROAST_SUFFIX)),
-        LineupChapter(facts=lineups, blurb=blurbs.get("lineup"), roast=blurbs.get("lineup" + ROAST_SUFFIX)),
         RecordsChapter(facts=records, blurb=blurbs.get("records"), roast=blurbs.get("records" + ROAST_SUFFIX)),
+        QuickHitsChapter(chapters=[
+            LineupChapter(facts=lineups, blurb=blurbs.get("lineup"), roast=blurbs.get("lineup" + ROAST_SUFFIX)),
+            InjuryChapter(facts=injuries, blurb=blurbs.get("injuries"), roast=blurbs.get("injuries" + ROAST_SUFFIX)),
+        ]),
     ]
     act_three: list[Chapter] = [
         LookAheadChapter(facts=look, blurb=blurbs.get(LOOK_AHEAD), roast=blurbs.get(LOOK_AHEAD + ROAST_SUFFIX)),
@@ -143,10 +154,22 @@ def midseason_report(
     )
 
 
+# A chapter with its own prose block: each chapter of an act but Quick hits, and each part of Quick hits.
+ProseChapter = (StateChapter | ArcsChapter | LuckChapter | InjuryChapter | Top10Chapter | DraftChapter
+                | WaiversChapter | TradesChapter | LineupChapter | RecordsChapter | LookAheadChapter)
+
+
+def prose_chapters(report: MidseasonReport) -> list[ProseChapter]:
+    """Each chapter with its own prose block, in page order. The parts of Quick hits stand in for Quick hits, which
+    has no prose of its own."""
+    return [part for act in report.acts for chapter in act.chapters
+            for part in (chapter.chapters if isinstance(chapter, QuickHitsChapter) else [chapter])]
+
+
 def report_blurbs(report: MidseasonReport) -> list[Blurb]:
     """Every blurb of the report in page order: the opener's blurb and its roast, then each chapter's."""
     opener = [blurb for blurb in (report.opener.blurb, report.opener.roast) if blurb is not None]
-    return opener + [blurb for act in report.acts for chapter in act.chapters
+    return opener + [blurb for chapter in prose_chapters(report)
                      for blurb in (chapter.blurb, chapter.roast) if blurb is not None]
 
 

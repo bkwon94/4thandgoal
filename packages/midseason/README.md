@@ -7,7 +7,7 @@
 - The waivers in `waivers.py`, and the trades with their Trade result in `trades.py`. `moves.py` holds the line scores and the stints that both read. The lineup choices in `lineups.py`, and the record book with the seven awards in `records.py`.
 - The spread rule in `spread.py`: 1 to 3 headlines per team. Arcs and awards never move. A callout moves to the next team, and its fact names the moved team.
 - The arcs in `arcs.py`: at most 2 of the 8 arcs of decision ticket 05 per team, the biggest swing first. Schedule luck in `luck.py`: All-play wins, Schedule luck, points against, the close-game record, and the Schedule swap. The injury toll in `injury.py`, Position top 10 in `top10.py`, the games left of each team in `look_ahead.py`.
-- The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`).
+- The shape of `midseason.json` and its writer in `published.py`, with the acts and the chapters (`cpc-midseason`, imported as `midseason`). The acts follow the lean acts of decision 14. Act II ends on Quick hits, which holds the lineup choices and the injury toll, each with its own prose block.
 - The prose in `prose.py`: the prose blocks of each chapter, a roast block unless the roast is off, and the roast terms of `prompts/roast.md`. The review file in `review.py`: each blurb, its facts, and the verifier result. The package values in `values.py`: `roast`, one of `off`, `warm`, and `hot`, default `hot`. A client that takes `midseason` takes `sim` too, and the client check of `league` fails one without it.
 
 ## Ports

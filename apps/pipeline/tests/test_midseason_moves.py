@@ -22,8 +22,9 @@ def moves(tmp_path_factory) -> dict[str, dict]:
     return {chapter["key"]: chapter for chapter in act["chapters"]}
 
 
-def test_act_two_holds_the_draft_waivers_trades_lineup_and_records(moves):
-    assert list(moves) == ["draft", "waivers", "trades", "lineup", "records"]
+def test_act_two_holds_the_draft_waivers_trades_records_then_quick_hits(moves):
+    # AT-53.
+    assert list(moves) == ["draft", "waivers", "trades", "records", "quick-hits"]
 
 
 def test_the_top_hit_is_ollie_gordon_ii_at_40_dollars_to_unsolicited_dak_picks(moves):
@@ -88,7 +89,9 @@ def test_the_week_8_trade_is_too_soon_and_comes_last(moves):
 
 
 def test_each_chapter_of_act_two_has_its_blurb_and_its_roast_through_the_writer(moves):
-    for chapter in moves.values():
+    # Quick hits has no prose of its own. Each of its parts has its own prose block.
+    chapters = [chapter for chapter in moves.values() if chapter["key"] != "quick-hits"]
+    for chapter in chapters + moves["quick-hits"]["chapters"]:
         assert chapter["blurb"]["chapter"] == chapter["key"]
         assert chapter["roast"]["chapter"] == chapter["key"] + ".roast"
 

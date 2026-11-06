@@ -6,7 +6,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, describe, expect, it } from "vitest";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
-import type { MidseasonChapter } from "../schema/midseason-types";
+import type { MidseasonChapter, QuickHitsChapter } from "../schema/midseason-types";
 
 afterEach(cleanup);
 
@@ -19,11 +19,19 @@ const SHELL = {
 const renderReport = () =>
   render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" />);
 
-/* The chapter of the fixture with the key `key`. */
-function chapterOf<K extends MidseasonChapter["key"]>(key: K): Extract<MidseasonChapter, { key: K }> {
-  const found = midseason.acts.flatMap((act) => act.chapters).find((chapter) => chapter.key === key);
+/* A chapter with its own prose: each chapter of an act but Quick hits, and each part of Quick hits. */
+type ProseChapter = Exclude<MidseasonChapter, { key: "quick-hits" }> | QuickHitsChapter["chapters"][number];
+
+const proseChapters = (): ProseChapter[] =>
+  midseason.acts
+    .flatMap((act) => act.chapters)
+    .flatMap((chapter): ProseChapter[] => (chapter.key === "quick-hits" ? chapter.chapters : [chapter]));
+
+/* The chapter of the fixture with the key `key`, or a part of Quick hits. */
+function chapterOf<K extends ProseChapter["key"]>(key: K): Extract<ProseChapter, { key: K }> {
+  const found = proseChapters().find((chapter) => chapter.key === key);
   if (found === undefined) throw new Error(`The fixture has no ${key} chapter`);
-  return found as Extract<MidseasonChapter, { key: K }>;
+  return found as Extract<ProseChapter, { key: K }>;
 }
 
 const chapterEl = (key: string) => within(document.getElementById(key)!);
@@ -123,8 +131,8 @@ describe("the trade report card", () => {
       "Draft Steals and Busts",
       "Waiver Hits and Misses",
       "The Trade Report Card",
-      "Lineup Choices",
       "The Record Book",
+      "Quick Hits",
     ]);
   });
 

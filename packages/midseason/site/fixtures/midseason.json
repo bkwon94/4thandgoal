@@ -1887,357 +1887,6 @@
           }
         },
         {
-          "key": "injuries",
-          "title": "The Injury Toll",
-          "facts": {
-            "teams": [
-              {
-                "roster_id": 10,
-                "name": "behold the lamb",
-                "rank": 1,
-                "games": 9,
-                "players": [
-                  {
-                    "player_id": "12534",
-                    "name": "Kyle Monangai",
-                    "position": "RB",
-                    "games": 4,
-                    "weeks": [
-                      5,
-                      6,
-                      7,
-                      8
-                    ]
-                  },
-                  {
-                    "player_id": "12514",
-                    "name": "Emeka Egbuka",
-                    "position": "WR",
-                    "games": 2,
-                    "weeks": [
-                      7,
-                      8
-                    ]
-                  },
-                  {
-                    "player_id": "4866",
-                    "name": "Saquon Barkley",
-                    "position": "RB",
-                    "games": 2,
-                    "weeks": [
-                      5,
-                      6
-                    ]
-                  },
-                  {
-                    "player_id": "12512",
-                    "name": "Quinshon Judkins",
-                    "position": "RB",
-                    "games": 1,
-                    "weeks": [
-                      6
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 1,
-                "name": "The Blue Tent",
-                "rank": 2,
-                "games": 5,
-                "players": [
-                  {
-                    "player_id": "2133",
-                    "name": "Davante Adams",
-                    "position": "WR",
-                    "games": 2,
-                    "weeks": [
-                      7,
-                      8
-                    ]
-                  },
-                  {
-                    "player_id": "13286",
-                    "name": "Jadarian Price",
-                    "position": "RB",
-                    "games": 1,
-                    "weeks": [
-                      4
-                    ]
-                  },
-                  {
-                    "player_id": "2216",
-                    "name": "Mike Evans",
-                    "position": "WR",
-                    "games": 1,
-                    "weeks": [
-                      7
-                    ]
-                  },
-                  {
-                    "player_id": "12489",
-                    "name": "RJ Harvey",
-                    "position": "RB",
-                    "games": 1,
-                    "weeks": [
-                      8
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 5,
-                "name": "London Cooking",
-                "rank": 3,
-                "games": 4,
-                "players": [
-                  {
-                    "player_id": "7525",
-                    "name": "DeVonta Smith",
-                    "position": "WR",
-                    "games": 2,
-                    "weeks": [
-                      4,
-                      5
-                    ]
-                  },
-                  {
-                    "player_id": "11566",
-                    "name": "Jayden Daniels",
-                    "position": "QB",
-                    "games": 2,
-                    "weeks": [
-                      3,
-                      4
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 8,
-                "name": "Return of T Mac",
-                "rank": 4,
-                "games": 4,
-                "players": [
-                  {
-                    "player_id": "8155",
-                    "name": "Breece Hall",
-                    "position": "RB",
-                    "games": 3,
-                    "weeks": [
-                      4,
-                      5,
-                      6
-                    ]
-                  },
-                  {
-                    "player_id": "13279",
-                    "name": "Carnell Tate",
-                    "position": "WR",
-                    "games": 1,
-                    "weeks": [
-                      8
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 2,
-                "name": "All You Need Is Love",
-                "rank": 5,
-                "games": 2,
-                "players": [
-                  {
-                    "player_id": "13287",
-                    "name": "Jeremiyah Love",
-                    "position": "RB",
-                    "games": 2,
-                    "weeks": [
-                      6,
-                      7
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 3,
-                "name": "Lil Fridge",
-                "rank": 6,
-                "games": 2,
-                "players": [
-                  {
-                    "player_id": "11560",
-                    "name": "Caleb Williams",
-                    "position": "QB",
-                    "games": 2,
-                    "weeks": [
-                      3,
-                      4
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 9,
-                "name": "Maye d'force B with U",
-                "rank": 7,
-                "games": 1,
-                "players": [
-                  {
-                    "player_id": "6794",
-                    "name": "Justin Jefferson",
-                    "position": "WR",
-                    "games": 1,
-                    "weeks": [
-                      4
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 4,
-                "name": "NFC Least",
-                "rank": 8,
-                "games": 1,
-                "players": [
-                  {
-                    "player_id": "6904",
-                    "name": "Jalen Hurts",
-                    "position": "QB",
-                    "games": 1,
-                    "weeks": [
-                      6
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 7,
-                "name": "To Infinity and Bijan",
-                "rank": 9,
-                "games": 1,
-                "players": [
-                  {
-                    "player_id": "4881",
-                    "name": "Lamar Jackson",
-                    "position": "QB",
-                    "games": 1,
-                    "weeks": [
-                      5
-                    ]
-                  }
-                ]
-              },
-              {
-                "roster_id": 6,
-                "name": "Bo Girds",
-                "rank": 10,
-                "games": 0,
-                "players": []
-              },
-              {
-                "roster_id": 12,
-                "name": "Teehee",
-                "rank": 11,
-                "games": 0,
-                "players": []
-              },
-              {
-                "roster_id": 11,
-                "name": "Unsolicited Dak Picks",
-                "rank": 12,
-                "games": 0,
-                "players": []
-              }
-            ]
-          },
-          "blurb": {
-            "chapter": "injuries",
-            "sentences": [
-              {
-                "text": "behold the lamb lost 9 starter games to injury through week 8, the most in the league.",
-                "fact_ids": [
-                  "IT.10",
-                  "CO.injuries.toll",
-                  "W.week"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Kyle Monangai missed 4 of those games as a starter.",
-                "fact_ids": [
-                  "IT.10.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "The Blue Tent ranked 2nd on this list, losing 5 starter games.",
-                "fact_ids": [
-                  "IT.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Davante Adams missed 2 of them.",
-                "fact_ids": [
-                  "IT.1.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Bo Girds, Teehee and Unsolicited Dak Picks lost 0 starter games all season.",
-                "fact_ids": [
-                  "IT.6",
-                  "IT.12",
-                  "IT.11"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Must be nice.",
-                "fact_ids": [],
-                "roster_id": null
-              }
-            ],
-            "attempt": 1,
-            "fallback": false
-          },
-          "roast": {
-            "chapter": "injuries.roast",
-            "sentences": [
-              {
-                "text": "behold the lamb lost 9 starter games to injury, 1st in the league.",
-                "fact_ids": [
-                  "IT.10",
-                  "CO.injuries.toll"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Kyle Monangai alone missed 4 of those as a starter.",
-                "fact_ids": [
-                  "IT.10.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Grim reading for the flock.",
-                "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "Unsolicited Dak Picks lost 0 starter games to injury, last in the league.",
-                "fact_ids": [
-                  "IT.11"
-                ],
-                "roster_id": null
-              }
-            ],
-            "attempt": 2,
-            "fallback": false
-          }
-        },
-        {
           "key": "top10",
           "title": "Position Top 10",
           "facts": {
@@ -4982,279 +4631,6 @@
           }
         },
         {
-          "key": "lineup",
-          "title": "Lineup Choices",
-          "facts": {
-            "teams": [
-              {
-                "roster_id": 4,
-                "name": "NFC Least",
-                "rank": 1,
-                "bench_points": 119.8,
-                "lost_with_better": []
-              },
-              {
-                "roster_id": 12,
-                "name": "Teehee",
-                "rank": 2,
-                "bench_points": 115.0,
-                "lost_with_better": [
-                  {
-                    "week": 2,
-                    "opponent_roster_id": 2,
-                    "opponent": "All You Need Is Love",
-                    "score": 79.36,
-                    "best": 100.06,
-                    "bench_points": 20.7,
-                    "margin": 12.07
-                  },
-                  {
-                    "week": 3,
-                    "opponent_roster_id": 7,
-                    "opponent": "To Infinity and Bijan",
-                    "score": 106.88,
-                    "best": 124.98,
-                    "bench_points": 18.1,
-                    "margin": 0.51
-                  }
-                ]
-              },
-              {
-                "roster_id": 5,
-                "name": "London Cooking",
-                "rank": 3,
-                "bench_points": 103.8,
-                "lost_with_better": [
-                  {
-                    "week": 2,
-                    "opponent_roster_id": 11,
-                    "opponent": "Unsolicited Dak Picks",
-                    "score": 112.14,
-                    "best": 139.68,
-                    "bench_points": 27.54,
-                    "margin": 1.67
-                  },
-                  {
-                    "week": 8,
-                    "opponent_roster_id": 1,
-                    "opponent": "The Blue Tent",
-                    "score": 98.88,
-                    "best": 104.68,
-                    "bench_points": 5.8,
-                    "margin": 1.43
-                  }
-                ]
-              },
-              {
-                "roster_id": 8,
-                "name": "Return of T Mac",
-                "rank": 4,
-                "bench_points": 93.9,
-                "lost_with_better": []
-              },
-              {
-                "roster_id": 3,
-                "name": "Lil Fridge",
-                "rank": 5,
-                "bench_points": 85.02,
-                "lost_with_better": [
-                  {
-                    "week": 7,
-                    "opponent_roster_id": 8,
-                    "opponent": "Return of T Mac",
-                    "score": 89.77,
-                    "best": 104.47,
-                    "bench_points": 14.7,
-                    "margin": 11.84
-                  }
-                ]
-              },
-              {
-                "roster_id": 9,
-                "name": "Maye d'force B with U",
-                "rank": 6,
-                "bench_points": 83.48,
-                "lost_with_better": [
-                  {
-                    "week": 7,
-                    "opponent_roster_id": 1,
-                    "opponent": "The Blue Tent",
-                    "score": 81.19,
-                    "best": 92.09,
-                    "bench_points": 10.9,
-                    "margin": 4.68
-                  }
-                ]
-              },
-              {
-                "roster_id": 10,
-                "name": "behold the lamb",
-                "rank": 7,
-                "bench_points": 81.8,
-                "lost_with_better": []
-              },
-              {
-                "roster_id": 6,
-                "name": "Bo Girds",
-                "rank": 8,
-                "bench_points": 70.92,
-                "lost_with_better": [
-                  {
-                    "week": 6,
-                    "opponent_roster_id": 10,
-                    "opponent": "behold the lamb",
-                    "score": 109.61,
-                    "best": 120.51,
-                    "bench_points": 10.9,
-                    "margin": 5.34
-                  },
-                  {
-                    "week": 7,
-                    "opponent_roster_id": 2,
-                    "opponent": "All You Need Is Love",
-                    "score": 110.27,
-                    "best": 121.87,
-                    "bench_points": 11.6,
-                    "margin": 11.36
-                  }
-                ]
-              },
-              {
-                "roster_id": 2,
-                "name": "All You Need Is Love",
-                "rank": 9,
-                "bench_points": 60.8,
-                "lost_with_better": []
-              },
-              {
-                "roster_id": 7,
-                "name": "To Infinity and Bijan",
-                "rank": 10,
-                "bench_points": 60.7,
-                "lost_with_better": [
-                  {
-                    "week": 1,
-                    "opponent_roster_id": 2,
-                    "opponent": "All You Need Is Love",
-                    "score": 109.21,
-                    "best": 124.21,
-                    "bench_points": 15.0,
-                    "margin": 4.3
-                  }
-                ]
-              },
-              {
-                "roster_id": 1,
-                "name": "The Blue Tent",
-                "rank": 11,
-                "bench_points": 46.54,
-                "lost_with_better": [
-                  {
-                    "week": 2,
-                    "opponent_roster_id": 10,
-                    "opponent": "behold the lamb",
-                    "score": 96.58,
-                    "best": 115.98,
-                    "bench_points": 19.4,
-                    "margin": 9.04
-                  },
-                  {
-                    "week": 3,
-                    "opponent_roster_id": 2,
-                    "opponent": "All You Need Is Love",
-                    "score": 113.93,
-                    "best": 124.53,
-                    "bench_points": 10.6,
-                    "margin": 0.4
-                  }
-                ]
-              },
-              {
-                "roster_id": 11,
-                "name": "Unsolicited Dak Picks",
-                "rank": 12,
-                "bench_points": 46.36,
-                "lost_with_better": []
-              }
-            ]
-          },
-          "blurb": {
-            "chapter": "lineup",
-            "sentences": [
-              {
-                "text": "Lil Fridge is the headline here: 85.02 points left on the bench, 5th most in the league.",
-                "fact_ids": [
-                  "LC.3",
-                  "CO.lineup.bench"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "The ugly one came against Return of T Mac, an 11.84-point loss with 14.7 sitting on the bench, enough for the right lineup to win it.",
-                "fact_ids": [
-                  "LC.3.7"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Teehee managed this trick twice, including a loss to To Infinity and Bijan by 0.51 with 18.1 points in reserve.",
-                "fact_ids": [
-                  "LC.12.2",
-                  "LC.12.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Agonizing.",
-                "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "The Blue Tent can relate, falling to All You Need Is Love by 0.4 with the winning points parked on the bench.",
-                "fact_ids": [
-                  "LC.1.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "NFC Least still owns the bench crown outright at 119.8 points.",
-                "fact_ids": [
-                  "LC.4"
-                ],
-                "roster_id": null
-              }
-            ],
-            "attempt": 2,
-            "fallback": false
-          },
-          "roast": {
-            "chapter": "lineup.roast",
-            "sentences": [
-              {
-                "text": "Lil Fridge kept 85.02 points chilled on the bench, 5th most in the league.",
-                "fact_ids": [
-                  "LC.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Return of T Mac beat them by 11.84 in week 7, a game this side's own bench would have flipped.",
-                "fact_ids": [
-                  "LC.3.7"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Leftovers, served cold again.",
-                "fact_ids": [],
-                "roster_id": null
-              }
-            ],
-            "attempt": 1,
-            "fallback": false
-          }
-        },
-        {
           "key": "records",
           "title": "The Record Book",
           "facts": {
@@ -5453,6 +4829,636 @@
             "attempt": 1,
             "fallback": false
           }
+        },
+        {
+          "key": "quick-hits",
+          "title": "Quick Hits",
+          "chapters": [
+            {
+              "key": "lineup",
+              "title": "Lineup Choices",
+              "facts": {
+                "teams": [
+                  {
+                    "roster_id": 4,
+                    "name": "NFC Least",
+                    "rank": 1,
+                    "bench_points": 119.8,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 12,
+                    "name": "Teehee",
+                    "rank": 2,
+                    "bench_points": 115.0,
+                    "lost_with_better": [
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 2,
+                        "opponent": "All You Need Is Love",
+                        "score": 79.36,
+                        "best": 100.06,
+                        "bench_points": 20.7,
+                        "margin": 12.07
+                      },
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 7,
+                        "opponent": "To Infinity and Bijan",
+                        "score": 106.88,
+                        "best": 124.98,
+                        "bench_points": 18.1,
+                        "margin": 0.51
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 5,
+                    "name": "London Cooking",
+                    "rank": 3,
+                    "bench_points": 103.8,
+                    "lost_with_better": [
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 11,
+                        "opponent": "Unsolicited Dak Picks",
+                        "score": 112.14,
+                        "best": 139.68,
+                        "bench_points": 27.54,
+                        "margin": 1.67
+                      },
+                      {
+                        "week": 8,
+                        "opponent_roster_id": 1,
+                        "opponent": "The Blue Tent",
+                        "score": 98.88,
+                        "best": 104.68,
+                        "bench_points": 5.8,
+                        "margin": 1.43
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 8,
+                    "name": "Return of T Mac",
+                    "rank": 4,
+                    "bench_points": 93.9,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 3,
+                    "name": "Lil Fridge",
+                    "rank": 5,
+                    "bench_points": 85.02,
+                    "lost_with_better": [
+                      {
+                        "week": 7,
+                        "opponent_roster_id": 8,
+                        "opponent": "Return of T Mac",
+                        "score": 89.77,
+                        "best": 104.47,
+                        "bench_points": 14.7,
+                        "margin": 11.84
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 9,
+                    "name": "Maye d'force B with U",
+                    "rank": 6,
+                    "bench_points": 83.48,
+                    "lost_with_better": [
+                      {
+                        "week": 7,
+                        "opponent_roster_id": 1,
+                        "opponent": "The Blue Tent",
+                        "score": 81.19,
+                        "best": 92.09,
+                        "bench_points": 10.9,
+                        "margin": 4.68
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 10,
+                    "name": "behold the lamb",
+                    "rank": 7,
+                    "bench_points": 81.8,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 6,
+                    "name": "Bo Girds",
+                    "rank": 8,
+                    "bench_points": 70.92,
+                    "lost_with_better": [
+                      {
+                        "week": 6,
+                        "opponent_roster_id": 10,
+                        "opponent": "behold the lamb",
+                        "score": 109.61,
+                        "best": 120.51,
+                        "bench_points": 10.9,
+                        "margin": 5.34
+                      },
+                      {
+                        "week": 7,
+                        "opponent_roster_id": 2,
+                        "opponent": "All You Need Is Love",
+                        "score": 110.27,
+                        "best": 121.87,
+                        "bench_points": 11.6,
+                        "margin": 11.36
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 2,
+                    "name": "All You Need Is Love",
+                    "rank": 9,
+                    "bench_points": 60.8,
+                    "lost_with_better": []
+                  },
+                  {
+                    "roster_id": 7,
+                    "name": "To Infinity and Bijan",
+                    "rank": 10,
+                    "bench_points": 60.7,
+                    "lost_with_better": [
+                      {
+                        "week": 1,
+                        "opponent_roster_id": 2,
+                        "opponent": "All You Need Is Love",
+                        "score": 109.21,
+                        "best": 124.21,
+                        "bench_points": 15.0,
+                        "margin": 4.3
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 1,
+                    "name": "The Blue Tent",
+                    "rank": 11,
+                    "bench_points": 46.54,
+                    "lost_with_better": [
+                      {
+                        "week": 2,
+                        "opponent_roster_id": 10,
+                        "opponent": "behold the lamb",
+                        "score": 96.58,
+                        "best": 115.98,
+                        "bench_points": 19.4,
+                        "margin": 9.04
+                      },
+                      {
+                        "week": 3,
+                        "opponent_roster_id": 2,
+                        "opponent": "All You Need Is Love",
+                        "score": 113.93,
+                        "best": 124.53,
+                        "bench_points": 10.6,
+                        "margin": 0.4
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 11,
+                    "name": "Unsolicited Dak Picks",
+                    "rank": 12,
+                    "bench_points": 46.36,
+                    "lost_with_better": []
+                  }
+                ]
+              },
+              "blurb": {
+                "chapter": "lineup",
+                "sentences": [
+                  {
+                    "text": "Lil Fridge is the headline here: 85.02 points left on the bench, 5th most in the league.",
+                    "fact_ids": [
+                      "LC.3",
+                      "CO.lineup.bench"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "The ugly one came against Return of T Mac, an 11.84-point loss with 14.7 sitting on the bench, enough for the right lineup to win it.",
+                    "fact_ids": [
+                      "LC.3.7"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Teehee managed this trick twice, including a loss to To Infinity and Bijan by 0.51 with 18.1 points in reserve.",
+                    "fact_ids": [
+                      "LC.12.2",
+                      "LC.12.3"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Agonizing.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "The Blue Tent can relate, falling to All You Need Is Love by 0.4 with the winning points parked on the bench.",
+                    "fact_ids": [
+                      "LC.1.3"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "NFC Least still owns the bench crown outright at 119.8 points.",
+                    "fact_ids": [
+                      "LC.4"
+                    ],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 2,
+                "fallback": false
+              },
+              "roast": {
+                "chapter": "lineup.roast",
+                "sentences": [
+                  {
+                    "text": "Lil Fridge kept 85.02 points chilled on the bench, 5th most in the league.",
+                    "fact_ids": [
+                      "LC.3"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Return of T Mac beat them by 11.84 in week 7, a game this side's own bench would have flipped.",
+                    "fact_ids": [
+                      "LC.3.7"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Leftovers, served cold again.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 1,
+                "fallback": false
+              }
+            },
+            {
+              "key": "injuries",
+              "title": "The Injury Toll",
+              "facts": {
+                "teams": [
+                  {
+                    "roster_id": 10,
+                    "name": "behold the lamb",
+                    "rank": 1,
+                    "games": 9,
+                    "players": [
+                      {
+                        "player_id": "12534",
+                        "name": "Kyle Monangai",
+                        "position": "RB",
+                        "games": 4,
+                        "weeks": [
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "12514",
+                        "name": "Emeka Egbuka",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "4866",
+                        "name": "Saquon Barkley",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          5,
+                          6
+                        ]
+                      },
+                      {
+                        "player_id": "12512",
+                        "name": "Quinshon Judkins",
+                        "position": "RB",
+                        "games": 1,
+                        "weeks": [
+                          6
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 1,
+                    "name": "The Blue Tent",
+                    "rank": 2,
+                    "games": 5,
+                    "players": [
+                      {
+                        "player_id": "2133",
+                        "name": "Davante Adams",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "13286",
+                        "name": "Jadarian Price",
+                        "position": "RB",
+                        "games": 1,
+                        "weeks": [
+                          4
+                        ]
+                      },
+                      {
+                        "player_id": "2216",
+                        "name": "Mike Evans",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          7
+                        ]
+                      },
+                      {
+                        "player_id": "12489",
+                        "name": "RJ Harvey",
+                        "position": "RB",
+                        "games": 1,
+                        "weeks": [
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 5,
+                    "name": "London Cooking",
+                    "rank": 3,
+                    "games": 4,
+                    "players": [
+                      {
+                        "player_id": "7525",
+                        "name": "DeVonta Smith",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          4,
+                          5
+                        ]
+                      },
+                      {
+                        "player_id": "11566",
+                        "name": "Jayden Daniels",
+                        "position": "QB",
+                        "games": 2,
+                        "weeks": [
+                          3,
+                          4
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 8,
+                    "name": "Return of T Mac",
+                    "rank": 4,
+                    "games": 4,
+                    "players": [
+                      {
+                        "player_id": "8155",
+                        "name": "Breece Hall",
+                        "position": "RB",
+                        "games": 3,
+                        "weeks": [
+                          4,
+                          5,
+                          6
+                        ]
+                      },
+                      {
+                        "player_id": "13279",
+                        "name": "Carnell Tate",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 2,
+                    "name": "All You Need Is Love",
+                    "rank": 5,
+                    "games": 2,
+                    "players": [
+                      {
+                        "player_id": "13287",
+                        "name": "Jeremiyah Love",
+                        "position": "RB",
+                        "games": 2,
+                        "weeks": [
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 3,
+                    "name": "Lil Fridge",
+                    "rank": 6,
+                    "games": 2,
+                    "players": [
+                      {
+                        "player_id": "11560",
+                        "name": "Caleb Williams",
+                        "position": "QB",
+                        "games": 2,
+                        "weeks": [
+                          3,
+                          4
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 9,
+                    "name": "Maye d'force B with U",
+                    "rank": 7,
+                    "games": 1,
+                    "players": [
+                      {
+                        "player_id": "6794",
+                        "name": "Justin Jefferson",
+                        "position": "WR",
+                        "games": 1,
+                        "weeks": [
+                          4
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 4,
+                    "name": "NFC Least",
+                    "rank": 8,
+                    "games": 1,
+                    "players": [
+                      {
+                        "player_id": "6904",
+                        "name": "Jalen Hurts",
+                        "position": "QB",
+                        "games": 1,
+                        "weeks": [
+                          6
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 7,
+                    "name": "To Infinity and Bijan",
+                    "rank": 9,
+                    "games": 1,
+                    "players": [
+                      {
+                        "player_id": "4881",
+                        "name": "Lamar Jackson",
+                        "position": "QB",
+                        "games": 1,
+                        "weeks": [
+                          5
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 6,
+                    "name": "Bo Girds",
+                    "rank": 10,
+                    "games": 0,
+                    "players": []
+                  },
+                  {
+                    "roster_id": 12,
+                    "name": "Teehee",
+                    "rank": 11,
+                    "games": 0,
+                    "players": []
+                  },
+                  {
+                    "roster_id": 11,
+                    "name": "Unsolicited Dak Picks",
+                    "rank": 12,
+                    "games": 0,
+                    "players": []
+                  }
+                ]
+              },
+              "blurb": {
+                "chapter": "injuries",
+                "sentences": [
+                  {
+                    "text": "behold the lamb lost 9 starter games to injury through week 8, the most in the league.",
+                    "fact_ids": [
+                      "IT.10",
+                      "CO.injuries.toll",
+                      "W.week"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Kyle Monangai missed 4 of those games as a starter.",
+                    "fact_ids": [
+                      "IT.10.top"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "The Blue Tent ranked 2nd on this list, losing 5 starter games.",
+                    "fact_ids": [
+                      "IT.1"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Davante Adams missed 2 of them.",
+                    "fact_ids": [
+                      "IT.1.top"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Bo Girds, Teehee and Unsolicited Dak Picks lost 0 starter games all season.",
+                    "fact_ids": [
+                      "IT.6",
+                      "IT.12",
+                      "IT.11"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Must be nice.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 1,
+                "fallback": false
+              },
+              "roast": {
+                "chapter": "injuries.roast",
+                "sentences": [
+                  {
+                    "text": "behold the lamb lost 9 starter games to injury, 1st in the league.",
+                    "fact_ids": [
+                      "IT.10",
+                      "CO.injuries.toll"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Kyle Monangai alone missed 4 of those as a starter.",
+                    "fact_ids": [
+                      "IT.10.top"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Grim reading for the flock.",
+                    "fact_ids": [],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Unsolicited Dak Picks lost 0 starter games to injury, last in the league.",
+                    "fact_ids": [
+                      "IT.11"
+                    ],
+                    "roster_id": null
+                  }
+                ],
+                "attempt": 2,
+                "fallback": false
+              }
+            }
+          ]
         }
       ]
     },

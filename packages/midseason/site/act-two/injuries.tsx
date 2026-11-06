@@ -1,15 +1,15 @@
 /**
- * The injury toll, a chapter of Act I: the starter games that each team lost, most first, with its key starters
- * who missed games and the count for each one.
+ * The injury toll, the second part of Quick hits in Act II: the starter games that each team lost, most first, with
+ * its key starters who missed games and the count for each one.
  */
 import { count } from "@cpc/design/format/format";
 import { Card } from "@cpc/design/parts/card";
 import { ReportChapter } from "../report/report-chapter";
 import type { InjuryChapter } from "../schema/midseason-types";
 
-export function Injuries({ chapter }: { chapter: InjuryChapter }) {
+export function Injuries({ chapter, level }: { chapter: InjuryChapter; level?: 3 | 4 }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Starter games lost" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} level={level} note="Starter games lost" blurb={chapter.blurb} roast={chapter.roast}>
       <Card className="py-sp-1">
         <ol aria-label="Injury toll" className="m-0 list-none p-0">
           {chapter.facts.teams.map((team) => (

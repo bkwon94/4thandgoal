@@ -399,18 +399,24 @@ export const lookAheadChapterSchema = z.object({
   ...prose,
 });
 
+/* Quick hits, the last chapter of Act II: the lineup choices and the injury toll in one block, each with its prose. */
+export const quickHitsChapterSchema = z.object({
+  key: z.literal("quick-hits"),
+  title: z.string(),
+  chapters: z.array(z.discriminatedUnion("key", [lineupChapterSchema, injuryChapterSchema])),
+});
+
 /* Each chapter has a fixed key, so the page picks the part of a chapter by its key. */
 export const chapterSchema = z.discriminatedUnion("key", [
   stateChapterSchema,
   arcsChapterSchema,
   luckChapterSchema,
-  injuryChapterSchema,
   top10ChapterSchema,
   draftChapterSchema,
   waiversChapterSchema,
   tradesChapterSchema,
-  lineupChapterSchema,
   recordsChapterSchema,
+  quickHitsChapterSchema,
   lookAheadChapterSchema,
 ]);
 

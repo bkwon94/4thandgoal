@@ -312,8 +312,14 @@ def test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the
     assert "Verifier: passed on attempt 1." in roast
 
 
+def _prose_chapters(report: dict) -> list[dict]:
+    """Each chapter with its own prose block, in page order. Quick hits holds two of them."""
+    return [part for act in report["acts"] for chapter in act["chapters"]
+            for part in (chapter["chapters"] if chapter["key"] == "quick-hits" else [chapter])]
+
+
 def _roasts(report: dict) -> list[dict]:
-    return [chapter["roast"] for act in report["acts"] for chapter in act["chapters"] if chapter["roast"] is not None]
+    return [chapter["roast"] for chapter in _prose_chapters(report) if chapter["roast"] is not None]
 
 
 def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_none(tmp_path):
@@ -335,9 +341,9 @@ def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_pa
                                  sim_runs=SIM_RUNS))
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
         [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.4.against"]],
-        [["IT.1"], ["IT.1.top"]], [["TOP.DEF.3"], ["TOP.WR.2"]],
+        [["TOP.DEF.3"], ["TOP.WR.2"]],
         [["DV.bust.5859"], ["DV.bust.5859.tag"]], [["WV.miss.1", "WV.miss.1.value"], ["WV.miss.3", "WV.miss.3.value"]], [["TR.4.8"], ["TR.4.8.since"]],
-        [["LC.9"], ["LC.9.7"]], [["RB.low"], ["AW.heartbreak"]], [["LA.10.rate"], ["LA.4.rate"]]]
+        [["RB.low"], ["AW.heartbreak"]], [["LC.9"], ["LC.9.7"]], [["IT.1"], ["IT.1.top"]], [["LA.10.rate"], ["LA.4.rate"]]]
     assert [s["fact_ids"] for s in report["opener"]["roast"]["sentences"]] == [["OP.record", "OP.record.title"],
                                                                               ["OP.6.title"]]
 
@@ -372,8 +378,8 @@ def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_s
 
 
 def _chapter(report: dict, key: str) -> dict:
-    """The chapter `key` of any act. Each key is on one chapter only."""
-    return next(chapter for act in report["acts"] for chapter in act["chapters"] if chapter["key"] == key)
+    """The chapter `key` of any act, or a part of Quick hits. Each key is on one chapter only."""
+    return next(chapter for chapter in _prose_chapters(report) if chapter["key"] == key)
 
 
 def test_act_one_holds_the_state_then_the_arcs_then_schedule_luck(tmp_path):
@@ -529,11 +535,18 @@ def test_the_injury_toll_has_each_team_and_behold_the_lamb_lost_the_most_starter
         ("Kyle Monangai", 4), ("Saquon Barkley", 2), ("Emeka Egbuka", 2), ("Quinshon Judkins", 1)}
 
 
-def test_the_acts_hold_the_chapters_in_page_order(tmp_path):
+def test_the_acts_hold_the_chapters_in_the_order_of_the_lean_acts(tmp_path):
+    # AT-53. Decision 14: Act II ends on Quick hits, which holds the lineup choices and the injury toll.
     report = _cpc_report(tmp_path)
     chapters = {act["key"]: [chapter["key"] for chapter in act["chapters"]] for act in report["acts"]}
-    assert chapters["how-we-got-here"] == ["state", "arcs", "luck", "injuries", "top10"]
-    assert chapters["what-comes-next"] == ["look-ahead"]
+    assert chapters == {
+        "how-we-got-here": ["state", "arcs", "luck", "top10"],
+        "the-moves": ["draft", "waivers", "trades", "records", "quick-hits"],
+        "what-comes-next": ["look-ahead"],
+    }
+    quick = report["acts"][1]["chapters"][-1]
+    assert quick["title"] == "Quick Hits"
+    assert [part["key"] for part in quick["chapters"]] == ["lineup", "injuries"]
 
 
 def test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter(tmp_path):
@@ -580,11 +593,6 @@ def test_the_seven_awards_each_have_a_winner_and_a_fact(tmp_path):
     # Each game of the record book shows once: Heartbreak and Beatdown are its closest game and its biggest margin.
     assert awards["heartbreak"]["in_record_book"] and awards["beatdown"]["in_record_book"]
     assert awards["heartbreak"]["team"] == "The Blue Tent"
-
-
-def test_act_two_ends_on_the_lineup_choices_then_the_record_book(tmp_path):
-    keys = [chapter["key"] for chapter in _cpc_report(tmp_path)["acts"][1]["chapters"]]
-    assert keys == ["draft", "waivers", "trades", "lineup", "records"]
 
 
 def test_the_spread_rule_gives_each_team_1_to_3_headlines_and_moves_both_swap_callouts_off_bo_girds(tmp_path):

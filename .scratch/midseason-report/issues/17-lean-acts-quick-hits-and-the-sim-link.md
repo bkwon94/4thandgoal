@@ -10,7 +10,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-53 and AT-54.
 
 **Status:** ready-for-agent
 
-- [ ] `midseason.json` of CPC week 8 has the act order of the PRD, with Quick hits at the end of Act II.
-- [ ] The page shows Quick hits with lineup choices and the injury toll.
-- [ ] Act III shows the look ahead, then the sim.
-- [ ] A tap on "See the sim" in the opener moves the page to the sim chapter.
+- [x] `midseason.json` of CPC week 8 has the act order of the PRD, with Quick hits at the end of Act II.
+- [x] The page shows Quick hits with lineup choices and the injury toll.
+- [x] Act III shows the look ahead, then the sim.
+- [x] A tap on "See the sim" in the opener moves the page to the sim chapter.

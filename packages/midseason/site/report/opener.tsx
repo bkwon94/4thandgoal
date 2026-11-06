@@ -1,6 +1,6 @@
 /**
  * The opener of the midseason report, the title race: the title odds of the leaders, then the record leader and its odds.
- * It is the hero of the report page, so it holds the level 1 heading of the page.
+ * It is the hero of the report page, so it holds the level 1 heading of the page. "See the sim" jumps to the finale.
  */
 import { oneDecimal, ordinal } from "@cpc/design/format/format";
 import { Hero } from "@cpc/design/parts/hero";
@@ -13,7 +13,18 @@ import { fullRecord } from "./numbers";
 /* The place of the record leader's title odds in the league, such as "6th in title odds". */
 const placeText = (rank: number) => `${ordinal(rank)} in title odds`;
 
-export function Opener({ opener, season, week }: { opener: OpenerFacts; season: number; week: number }) {
+export function Opener({
+  opener,
+  season,
+  week,
+  finaleHref,
+}: {
+  opener: OpenerFacts;
+  season: number;
+  week: number;
+  // The fragment link of the sim at the end of the report. Undefined when the page has no sim, so the link hides.
+  finaleHref?: string;
+}) {
   const { leaders, record_leader: top } = opener.facts;
   return (
     <Hero label={opener.title}>
@@ -45,6 +56,18 @@ export function Opener({ opener, season, week }: { opener: OpenerFacts; season: 
           className="mt-sp-2"
         />
       </Rise>
+      {finaleHref !== undefined && (
+        <Rise step={3}>
+          {/* A plain fragment link, so a tap jumps to the sim with scripts off too. */}
+          <a
+            href={finaleHref}
+            className="plate mt-sp-3 inline-flex min-h-touch w-fit items-center gap-sp-1 font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase no-underline hover-fine:underline"
+          >
+            See the sim
+            <span aria-hidden="true">↓</span>
+          </a>
+        </Rise>
+      )}
       {opener.blurb !== null && (
         <Rise step={4}>
           <p className="plate mt-sp-4 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">

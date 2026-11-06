@@ -32,6 +32,7 @@ export type Award = z.infer<typeof schema.awardSchema>;
 export type RecordsChapter = z.infer<typeof schema.recordsChapterSchema>;
 export type TeamLookAhead = z.infer<typeof schema.teamLookAheadSchema>;
 export type LookAheadChapter = z.infer<typeof schema.lookAheadChapterSchema>;
+export type QuickHitsChapter = z.infer<typeof schema.quickHitsChapterSchema>;
 export type MidseasonChapter =z.infer<typeof schema.chapterSchema>;
 export type Act = z.infer<typeof schema.actSchema>;
 export type ReportTile = z.infer<typeof schema.reportTileSchema>;

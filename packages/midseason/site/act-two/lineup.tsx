@@ -1,6 +1,6 @@
 /**
- * Lineup choices, a chapter of Act II: the Bench points of each team, most first, with each loss that its best
- * lineup would have won. The list shows 5 teams, then a "Show all" button.
+ * Lineup choices, the first part of Quick hits in Act II: the Bench points of each team, most first, with each loss
+ * that its best lineup would have won. The list shows 5 teams, then a "Show all" button.
  */
 import { num } from "@cpc/design/format/format";
 import { Card } from "@cpc/design/parts/card";
@@ -25,9 +25,9 @@ function Row({ team }: { team: TeamLineup }) {
   );
 }
 
-export function Lineup({ chapter }: { chapter: LineupChapter }) {
+export function Lineup({ chapter, level }: { chapter: LineupChapter; level?: 3 | 4 }) {
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note="Bench points" blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} level={level} note="Bench points" blurb={chapter.blurb} roast={chapter.roast}>
       <Card className="py-sp-1">
         <ShowAll
           label="Bench points"

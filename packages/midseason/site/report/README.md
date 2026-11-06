@@ -3,7 +3,8 @@
 ## Knows
 
 - `MidseasonScreen`, the whole page: the top band, the chapter rail, the opener, then the three acts on one scroll.
-- The opener, the title race: the title odds of the leaders and the record leader's odds and place.
+- The opener, the title race: the title odds of the leaders and the record leader's odds and place. Its "See the sim"
+  link jumps to the finale, and it shows only when the app passes a finale.
 - Each act: its dark title page on the hero surface, then its chapters in the order of the file.
 - The chapter rail: one link per act, sticky under the top band at every width.
 - The part of each chapter by its key, in `chapter-part.tsx`. A chapter with no part shows its title and its prose.
@@ -13,7 +14,8 @@
 ## Ports
 
 - The route of the app, in `apps/site/src/app/_routes/midseason/`, reads the file and passes the report in.
-- The children of `MidseasonScreen`: the finale at the end of the last act, where the app mounts the sim replay.
+- The children of `MidseasonScreen`: the finale at the end of the last act, where the app mounts the sim replay. The
+  screen wraps it in a frame with the id `sim`, the target of "See the sim".
 
 ## Does not do
 

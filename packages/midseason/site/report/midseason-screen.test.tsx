@@ -66,7 +66,49 @@ describe("MidseasonScreen", () => {
     renderReport();
     const act = within(document.getElementById("how-we-got-here")!);
     const chapters = act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent);
-    expect(chapters).toEqual(["The State of the League", "Arcs", "Schedule Luck", "The Injury Toll", "Position Top 10"]);
+    expect(chapters).toEqual(["The State of the League", "Arcs", "Schedule Luck", "Position Top 10"]);
+  });
+
+  it("ends Act II on Quick Hits, which holds the lineup choices and the injury toll", () => {
+    // AT-53.
+    renderReport();
+    const act = document.getElementById("the-moves")!;
+    const quick = document.getElementById("quick-hits")!;
+    expect(act.lastElementChild).toBe(quick);
+    const block = within(quick);
+    expect(block.getByRole("heading", { level: 3 }).textContent).toBe("Quick Hits");
+    expect(block.getAllByRole("heading", { level: 4 }).map((heading) => heading.textContent)).toEqual([
+      "Lineup Choices",
+      "The Injury Toll",
+    ]);
+    expect(block.getByRole("list", { name: "Bench points" })).toBeTruthy();
+    expect(block.getByRole("list", { name: "Injury toll" }).firstElementChild!.textContent).toContain("behold the lamb");
+  });
+
+  it("holds the look ahead, then the sim, in Act III", () => {
+    // AT-53.
+    renderReport(<div data-testid="finale">The sim</div>);
+    const act = document.getElementById("what-comes-next")!;
+    const look = document.getElementById("look-ahead")!;
+    const sim = screen.getByTestId("finale");
+    expect(act.contains(look) && act.contains(sim)).toBe(true);
+    expect(look.compareDocumentPosition(sim) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("links the opener to the sim with See the sim", () => {
+    // AT-54. A tap on the fragment link moves the page to the element with its id, the frame of the sim.
+    renderReport(<div data-testid="finale">The sim</div>);
+    const opener = within(screen.getByRole("region", { name: "The Title Race" }));
+    const link = opener.getByRole("link", { name: "See the sim" });
+    const target = document.getElementById(link.getAttribute("href")!.slice(1))!;
+    expect(target.contains(screen.getByTestId("finale"))).toBe(true);
+    // The rail stays at the top, so the jump leaves its height free above the sim.
+    expect(target.className).toContain("scroll-mt-");
+  });
+
+  it("shows no See the sim link when the app passes no sim", () => {
+    renderReport();
+    expect(screen.queryByRole("link", { name: "See the sim" })).toBeNull();
   });
 
   it("shows the state of the league with each team in standings order", () => {
@@ -128,7 +170,7 @@ describe("MidseasonScreen", () => {
   it("puts the finale that the app passes at the end of the last act", () => {
     renderReport(<div data-testid="finale">The sim</div>);
     const last = document.getElementById("what-comes-next")!;
-    expect(last.lastElementChild).toBe(screen.getByTestId("finale"));
+    expect(last.lastElementChild!.firstElementChild).toBe(screen.getByTestId("finale"));
   });
 });
 
