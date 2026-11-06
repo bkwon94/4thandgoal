@@ -1,7 +1,6 @@
 """
-Schedule luck and the Schedule swap, a chapter of Act I: All-play wins, Schedule luck, points against, the close-game
-record, the worked example of the luck card, and each team's record under every schedule, with its best and its worst.
-Decision tickets 06 and 16 set the rules.
+Schedule luck and the Schedule swap, a chapter of Act I: All-play wins, Schedule luck, points against, close games,
+the luck card, and each team's best and worst record with the other schedules. Decision tickets 06 and 16 set the rules.
 """
 from collections.abc import Iterator
 from decimal import Decimal
