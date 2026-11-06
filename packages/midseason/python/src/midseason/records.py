@@ -89,7 +89,6 @@ class RecordsChapter(BaseModel):
     title: str = "The Record Book"
     facts: RecordBook
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _games(history: History, through: int, names: Mapping[int, str]) -> list[Game]:

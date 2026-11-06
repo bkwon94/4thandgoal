@@ -205,6 +205,8 @@ def build_writer_prompt(
         f"Chapter: {chapter.title}",
         f"Write {chapter.min_sentences} to {chapter.max_sentences} sentences.",
     ]
+    if chapter.max_words is not None:
+        lines.append(f"Write {chapter.max_words} words or fewer.")
     # Rule 1 of the writer prompt allows one reaction. A chapter that allows more says so here, in the user prompt.
     if chapter.max_reactions > 1:
         lines.append(f"This block may hold up to {chapter.max_reactions} reaction sentences, after a cited sentence.")
@@ -213,6 +215,10 @@ def build_writer_prompt(
         "Facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids),
     ]
+    # The facts of the other chapters come after the facts of the block, so the block leads with its own story.
+    if chapter.callback_ids:
+        lines += ["", "Facts of the other chapters. Cite one only for a callback:",
+                  *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.callback_ids)]
     if chapter.required:
         lines += ["", f"Cite each of these facts in its team's sentences: {', '.join(chapter.required)}."]
     if repeats_motw_headline(chapter, sheet):

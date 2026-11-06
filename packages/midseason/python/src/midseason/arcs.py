@@ -81,7 +81,6 @@ class ArcsChapter(BaseModel):
     title: str = "Arcs"
     facts: Arcs
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _window(history: History, roster_id: int, first: int, last: int, median_game: bool) -> WindowRecord:

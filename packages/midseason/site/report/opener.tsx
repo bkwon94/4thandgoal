@@ -75,16 +75,6 @@ export function Opener({
           </p>
         </Rise>
       )}
-      {opener.roast !== null && (
-        <Rise step={5}>
-          <div className="plate mt-sp-4 w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase">
-            The roast
-          </div>
-          <p className="plate mt-sp-2 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark-2">
-            {blurbText(opener.roast)}
-          </p>
-        </Rise>
-      )}
     </Hero>
   );
 }

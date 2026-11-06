@@ -41,7 +41,7 @@ export function ChapterPart({ chapter }: { chapter: MidseasonChapter }) {
       // Each key of the schema has a part now, so TypeScript narrows this branch to never. A chapter that a later
       // schema adds still shows its title and its prose here until it gets a part.
       const other = chapter as Exclude<MidseasonChapter, { key: "quick-hits" }>;
-      return <ReportChapter id={other.key} title={other.title} blurb={other.blurb} roast={other.roast} />;
+      return <ReportChapter id={other.key} title={other.title} blurb={other.blurb} />;
     }
   }
 }

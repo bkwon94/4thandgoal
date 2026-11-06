@@ -15,7 +15,6 @@ export function ReportChapter({
   note,
   level = 3,
   blurb = null,
-  roast = null,
   children,
 }: {
   // The id of the chapter, from its key, so a link can jump to it.
@@ -26,7 +25,6 @@ export function ReportChapter({
   // The level of the heading: 3 for a chapter of an act, 4 for a part of Quick hits.
   level?: 3 | 4;
   blurb?: Blurb | null;
-  roast?: Blurb | null;
   children?: ReactNode;
 }) {
   const heading = `${id}-heading`;
@@ -43,7 +41,7 @@ export function ReportChapter({
           )}
         </div>
         {children}
-        <ChapterProse blurb={blurb} roast={roast} />
+        <ChapterProse blurb={blurb} />
       </Reveal>
     </section>
   );

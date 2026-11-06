@@ -99,7 +99,6 @@ class LuckChapter(BaseModel):
     title: str = "Schedule Luck"
     facts: ScheduleLuck
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _scores(week: PastWeek) -> dict[int, Decimal]:

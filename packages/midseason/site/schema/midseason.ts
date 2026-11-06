@@ -19,8 +19,8 @@ export const blurbSchema = z.object({
   fallback: z.boolean(),
 });
 
-/* The blurb and the roast of a chapter or of the opener. A roast is null when the roast setting of the client is off. */
-const prose = { blurb: blurbSchema.nullable(), roast: blurbSchema.nullable() };
+/* The one prose block of a chapter or of the opener, in the voice of the roast setting of the client. */
+const prose = { blurb: blurbSchema.nullable() };
 
 /* The opener, the title race: the leaders by title odds, best first, and the record leader. */
 export const titleLeaderSchema = z.object({ roster_id: z.number(), name: z.string(), title_odds: z.number() });

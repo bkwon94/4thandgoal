@@ -88,11 +88,11 @@ def test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_nam
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
     draft = build_dir(client.folder) / "2026" / "midseason.json"
     data = json.loads(draft.read_text(encoding="utf-8"))
-    data["acts"][0]["chapters"][0]["roast"]["sentences"][0]["text"] = "NFC Least is 3-13 with 999 regrets."
+    data["acts"][0]["chapters"][0]["blurb"]["sentences"][0]["text"] = "All You Need Is Love sits at 999."
     draft.write_text(json.dumps(data), encoding="utf-8")
     with pytest.raises(PublishError) as err:
         run_midseason_publish(pipeline, 2026, 8, _call(_passed(3)), client=client)
-    assert "The blurb state.roast fails the verifier" in str(err.value)
+    assert "The blurb state fails the verifier" in str(err.value)
     assert "number 999 is not in the cited facts" in str(err.value)
     assert not _published(root).exists()
     assert _git(root, "log", "--format=%s").split("\n")[0] == "Start"
@@ -102,8 +102,8 @@ def test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse(tmp_path
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
     rejected = VerifyOut(verdicts=[*_passed(2).verdicts, Verdict(index=2, supported=False, reason="No fact.")])
     with pytest.raises(PublishError, match=r"The blurb state fails the verifier: \[2\] No fact\."):
-        # The two blocks of the opener come first and pass.
-        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2), rejected, _passed(2)), client=client)
+        # The block of the opener comes first and passes.
+        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), rejected), client=client)
     assert not _published(root).exists()
 
 
@@ -111,8 +111,23 @@ def test_the_publish_refuses_a_draft_with_no_sim_json(tmp_path, monkeypatch):
     root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
     (build_dir(client.folder) / "2026" / "sim.json").unlink()
     with pytest.raises(PublishError, match="sim.json"):
-        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3), _passed(2)), client=client)
+        run_midseason_publish(pipeline, 2026, 8, _call(_passed(3)), client=client)
     assert not _published(root).exists()
+
+
+def test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_the_publish(tmp_path, monkeypatch):
+    # AT-63. The luck blurb calls back to a lineup fact, and the recheck of the publish passes it.
+    root, pipeline, client = _drafted_repo(tmp_path, monkeypatch)
+    draft = build_dir(client.folder) / "2026" / "midseason.json"
+    data = json.loads(draft.read_text(encoding="utf-8"))
+    luck = next(chapter for chapter in data["acts"][0]["chapters"] if chapter["key"] == "luck")
+    luck["blurb"]["sentences"][1] = {"text": "The Blue Tent lost to behold the lamb by 9.04 in week 2.",
+                                     "fact_ids": ["LC.1.2"], "roster_id": None}
+    draft.write_text(json.dumps(data), encoding="utf-8")
+    run_midseason_publish(pipeline, 2026, 8, _call(*CLEAN_RECHECK), client=client)
+    published = json.loads((_published(root) / "midseason.json").read_text(encoding="utf-8"))
+    luck = next(chapter for chapter in published["acts"][0]["chapters"] if chapter["key"] == "luck")
+    assert luck["blurb"]["sentences"][1]["fact_ids"] == ["LC.1.2"]
 
 
 def test_the_publish_refuses_a_draft_of_another_week(tmp_path, monkeypatch):
@@ -146,6 +161,6 @@ def test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb(tm
     assert cli.main(args, writer=FakeWriter()) == 2
     out = capsys.readouterr().out
     assert "The blurb state fails the verifier" in out and "number 999" in out
-    # The empty fake writer fails the Claude check of the clean roast, and a failed check is no pass.
-    assert "The blurb state.roast has no verdict" in out
+    # The empty fake writer fails the Claude check of the clean arcs blurb, and a failed check is no pass.
+    assert "The blurb arcs has no verdict" in out
     assert not (tmp_path / "clients" / "cpc" / "published").exists()

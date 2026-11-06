@@ -110,7 +110,7 @@ export function Trades({ chapter }: { chapter: TradesChapter }) {
   const { trades } = chapter.facts;
   const rest = trades.slice(FULL_CARDS);
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note={`${trades.length} trades`} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} note={`${trades.length} trades`} blurb={chapter.blurb}>
       <div className="flex flex-col gap-sp-3">
         {trades.slice(0, FULL_CARDS).map((trade) => (
           <FullCard key={trade.transaction_id} trade={trade} />

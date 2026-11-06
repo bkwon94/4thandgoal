@@ -119,9 +119,9 @@ def test_the_build_saves_the_draft_that_the_provider_gives_in_the_data_folder_of
     assert len(saved) == 168
 
 
-def test_the_draft_has_a_prose_block_and_a_roast_block_in_the_review_file(tmp_path):
+def test_the_draft_has_one_prose_block_in_the_review_file(tmp_path):
     client = _cpc_week_8(tmp_path)
     out = build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     review = (out.parent / "midseason-review.md").read_text(encoding="utf-8")
     assert "## draft: Draft Steals and Busts" in review
-    assert "## draft.roast:" in review
+    assert "## draft." not in review

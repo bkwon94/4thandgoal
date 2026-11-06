@@ -134,7 +134,7 @@ function BestMissed({ swap }: { swap: ScheduleSwap }) {
 export function Luck({ chapter }: { chapter: LuckChapter }) {
   const { teams, swap } = chapter.facts;
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb} roast={chapter.roast}>
+    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
       <p data-all-play className="m-0 max-w-measure text-lead text-ink-2">
         {ALL_PLAY_SENTENCE} Schedule luck is the real wins minus the All-play wins.
       </p>

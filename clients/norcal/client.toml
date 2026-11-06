@@ -15,7 +15,7 @@ league_id = "1402948824305049600"
 # so each QB projection is 2 points low for each passing touchdown. The matchup scores stay exact.
 chart = "1QB1.0PPR4pt"
 
-# midseason takes its default roast, "hot", so the file has no [values.midseason]. sim has no values.
+# midseason takes its default roast, "savage", so the file has no [values.midseason]. sim has no values.
 
 [values.analyzer]
 finder = true

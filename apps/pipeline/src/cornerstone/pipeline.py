@@ -773,7 +773,7 @@ def run_midseason(
     The app runs the sim of the rest of the season and writes sim.json beside the draft. The playoff odds of the sim go
     into the report through the port of midseason. The sim draws `sim_runs` seasons. The real build keeps the default of
     the sim tunables, and a test build may pass a smaller count to run fast.
-    Each prose block goes through the writer and the verifier of facts, with the roast setting of the client.
+    Each prose block goes through the writer and the verifier of facts, in the voice of the roast setting of the client.
     The waivers and the trades read the transactions of each week that `provider` fetches again. The draft steals and
     busts read the draft that `provider` fetches again. Position top 10 reads the rosters now
     that `provider` fetches, so a player that a manager dropped after the report week is a free agent.
@@ -838,7 +838,7 @@ def run_midseason(
              ("lineup", "Lineup Choices", lineup_facts(lineups)),
              ("records", "The Record Book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
              (LOOK_AHEAD, "The Look Ahead", look_ahead_facts(look))]
-    sheet = prose_sheet(week, state, roast, later, first=[(OPENER, "The Title Race", title_race_facts(race))],
+    sheet = prose_sheet(week, state, later, first=[(OPENER, "The Title Race", title_race_facts(race))],
                         callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)

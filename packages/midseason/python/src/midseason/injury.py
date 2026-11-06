@@ -54,7 +54,6 @@ class InjuryChapter(BaseModel):
     title: str = "The Injury Toll"
     facts: InjuryToll
     blurb: Blurb | None = None
-    roast: Blurb | None = None
 
 
 def _key_starter(history: History, roster_id: int, player_id: str, week: int) -> bool:

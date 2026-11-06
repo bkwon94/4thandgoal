@@ -5,6 +5,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { midseason } from "../fixtures/midseason";
+import type { Blurb } from "../schema/midseason-types";
 import { MidseasonScreen } from "./midseason-screen";
 
 afterEach(cleanup);
@@ -164,6 +165,25 @@ describe("MidseasonScreen", () => {
       expect(section.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(
         act.chapters.map((chapter) => chapter.title),
       );
+    }
+  });
+
+  it("shows the prose of each chapter as one paragraph with no roast block", () => {
+    // AT-61. The roast is the voice of the paragraph, so the page has no "The roast" heading.
+    renderReport();
+    expect(screen.queryByText(/the roast/i)).toBeNull();
+    // Quick hits has no prose of its own, so each of its parts stands in for it.
+    const chapters = midseason.acts
+      .flatMap((act) => act.chapters)
+      .flatMap((chapter): { key: string; blurb: Blurb | null }[] =>
+        chapter.key === "quick-hits" ? chapter.chapters : [chapter],
+      );
+    expect(chapters).toHaveLength(11);
+    for (const chapter of chapters) {
+      expect(chapter).not.toHaveProperty("roast");
+      if (chapter.blurb === null) continue;
+      const text = chapter.blurb.sentences.map((sentence) => sentence.text).join(" ");
+      expect(within(document.getElementById(chapter.key)!).getByText(text)).toBeTruthy();
     }
   });
 
