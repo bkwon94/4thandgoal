@@ -8,7 +8,7 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, and 
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test on a small real folder proves the six file names of a route-only `steps.json`.
 - [x] The same test proves the light shot is light and the dark shot is dark.
