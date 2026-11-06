@@ -8,7 +8,7 @@ Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests AT-19, AT-20, AT-21, AT-29,
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A replay of a real conflicted merge-back of `midseason-report` in a throwaway worktree resolves with no subagent started, and `make check-fast` is green (AT-19).
 - [x] A resolve that breaks `make check-fast` leaves the branch at the head before the merge and sends the failure to the ticket subagent (AT-20).
