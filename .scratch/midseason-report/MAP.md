@@ -37,7 +37,10 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 
 ## NOT YET SPECIFIED
 
-None.
+- What is the flow of the report page, and how much text does each chapter hold? `decisions/14-prototype-the-report-flow.md`.
+- How do the list rows, the tags, and the controls of the report look? `decisions/15-prototype-the-rows-and-tags.md`.
+- How does the schedule swap show on the page? `decisions/16-prototype-the-schedule-swap.md`.
+- How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
 
 ## OUT OF SCOPE
 
