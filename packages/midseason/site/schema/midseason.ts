@@ -192,12 +192,246 @@ export const top10ChapterSchema = z.object({
   ...prose,
 });
 
-/* A chapter of Act II or Act III. The page shows its title and its prose. Its facts stay unknown until a part of the
-   package reads them, so the schema checks only what the page reads. */
-export const otherChapterSchema = z.object({
-  key: z.enum(["draft", "waivers", "trades", "look-ahead", "watch"]),
+/* Draft steals and busts: the cost rank against the points rank among the drafted players of each position. */
+export const draftRowSchema = z.object({
+  player_id: z.string(),
+  name: z.string(),
+  position: z.string(),
+  roster_id: z.number(),
+  team: z.string(),
+  // The price in dollars in an auction, the pick number in a snake.
+  cost: z.number(),
+  cost_rank: z.number(),
+  points: z.number(),
+  points_rank: z.number(),
+  swing: z.number(),
+  // "hurt" or "just bad" on a bust. Null on a steal.
+  tag: z.enum(["hurt", "just bad"]).nullable(),
+  // "the one that got away" on a steal that its drafter dropped.
+  line: z.string().nullable(),
+});
+
+export const draftChapterSchema = z.object({
+  key: z.literal("draft"),
   title: z.string(),
-  facts: z.unknown(),
+  facts: z.object({
+    draft_type: z.enum(["auction", "snake", "linear"]),
+    steals: z.array(draftRowSchema),
+    busts: z.array(draftRowSchema),
+  }),
+  ...prose,
+});
+
+/* Waiver hits and misses: one stint of an added player on the roster that added him. */
+export const pickupSchema = z.object({
+  player_id: z.string(),
+  player: z.string(),
+  position: z.string(),
+  roster_id: z.number(),
+  team: z.string(),
+  week: z.number(),
+  // 0 for a free agent add.
+  bid: z.number(),
+  starts: z.number(),
+  points: z.number(),
+  points_over_line: z.number().nullable(),
+  swung_wins: z.number(),
+  played: z.boolean(),
+});
+
+export const outbidSchema = z.object({
+  player_id: z.string(),
+  player: z.string(),
+  roster_id: z.number(),
+  team: z.string(),
+  bid: z.number(),
+  winner_roster_id: z.number(),
+  winner: z.string(),
+  winner_bid: z.number(),
+  margin: z.number(),
+  winner_points_over_line: z.number(),
+});
+
+export const streamerSchema = z.object({
+  roster_id: z.number(),
+  team: z.string(),
+  players: z.number(),
+  starts: z.number(),
+  points: z.number(),
+});
+
+export const waiversChapterSchema = z.object({
+  key: z.literal("waivers"),
+  title: z.string(),
+  facts: z.object({
+    hits: z.array(pickupSchema),
+    misses: z.array(pickupSchema),
+    outbid: z.array(outbidSchema),
+    // Most points first. The first is the streaming king.
+    streamers: z.array(streamerSchema),
+  }),
+  ...prose,
+});
+
+/* The trade report card: every trade, the biggest gap first, each Too soon trade last. */
+export const tradePlayerSchema = z.object({
+  player_id: z.string(),
+  player: z.string(),
+  position: z.string(),
+  starts: z.number(),
+  points_over_line: z.number().nullable(),
+  // True when he missed his NFL team's game in the first week after the trade.
+  hurt_on_arrival: z.boolean(),
+});
+
+export const tradeSideSchema = z.object({
+  roster_id: z.number(),
+  team: z.string(),
+  got: z.array(tradePlayerSchema),
+  net: z.number(),
+  // The record of the team since the trade.
+  since: z.object({ wins: z.number(), losses: z.number(), ties: z.number() }),
+});
+
+export const tradeCardSchema = z.object({
+  transaction_id: z.string(),
+  week: z.number(),
+  weeks_since: z.number(),
+  sides: z.array(tradeSideSchema),
+  gap: z.number(),
+  result: z.enum(["Robbery", "Clear win", "Slight edge", "Push", "Too soon"]),
+  winner: z.string().nullable(),
+});
+
+export const tradesChapterSchema = z.object({
+  key: z.literal("trades"),
+  title: z.string(),
+  facts: z.object({ trades: z.array(tradeCardSchema) }),
+  ...prose,
+});
+
+/* Lineup choices: one row per team, most Bench points first, with the losses that its best lineup would have won. */
+export const lostWeekSchema = z.object({
+  week: z.number(),
+  opponent_roster_id: z.number(),
+  opponent: z.string(),
+  score: z.number(),
+  best: z.number(),
+  bench_points: z.number(),
+  margin: z.number(),
+});
+
+export const teamLineupSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  rank: z.number(),
+  bench_points: z.number(),
+  lost_with_better: z.array(lostWeekSchema),
+});
+
+export const lineupChapterSchema = z.object({
+  key: z.literal("lineup"),
+  title: z.string(),
+  facts: z.object({ teams: z.array(teamLineupSchema) }),
+  ...prose,
+});
+
+/* The record book: the four records of the season, then the seven awards in page order. */
+export const teamScoreSchema = z.object({ week: z.number(), roster_id: z.number(), team: z.string(), score: z.number() });
+
+export const gameSchema = z.object({
+  week: z.number(),
+  winner_roster_id: z.number(),
+  winner: z.string(),
+  winner_score: z.number(),
+  loser_roster_id: z.number(),
+  loser: z.string(),
+  loser_score: z.number(),
+  margin: z.number(),
+});
+
+export const awardSchema = z.object({
+  key: z.enum(["mvp", "streaming-king", "bench-crime", "heartbreak", "beatdown", "most-active", "set-and-forget"]),
+  title: z.string(),
+  roster_id: z.number(),
+  team: z.string(),
+  value: z.number(),
+  player: z.string().nullable(),
+  week: z.number().nullable(),
+  // True for Heartbreak and Beatdown, which the page shows on their game of the record book.
+  in_record_book: z.boolean(),
+  fact: z.string(),
+});
+
+export const recordsChapterSchema = z.object({
+  key: z.literal("records"),
+  title: z.string(),
+  facts: z.object({
+    high: teamScoreSchema,
+    low: teamScoreSchema,
+    biggest_margin: gameSchema,
+    closest: gameSchema,
+    awards: z.array(awardSchema),
+  }),
+  ...prose,
+});
+
+/* The look ahead: each team's games left with the record of each opponent, the softest schedule first. */
+export const gameLeftSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  name: z.string(),
+  wins: z.number(),
+  losses: z.number(),
+  ties: z.number(),
+});
+
+export const teamLookAheadSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  games: z.array(gameLeftSchema),
+  // The win rate of all the opponents, with a tie as half a win. Null when the team has no game left.
+  opponents_rate: z.number().nullable(),
+});
+
+export const lookAheadChapterSchema = z.object({
+  key: z.literal("look-ahead"),
+  title: z.string(),
+  facts: z.object({ teams: z.array(teamLookAheadSchema), softest: z.number().nullable(), hardest: z.number().nullable() }),
+  ...prose,
+});
+
+/* Players to watch: Due to rise and Due to fall from the Expected gap, and Grab him now from the projections. */
+export const gapPlayerSchema = z.object({
+  player_id: z.string(),
+  name: z.string(),
+  position: z.string(),
+  nfl_team: z.string().nullable(),
+  // The Expected gap per game. Under zero is under expected.
+  gap: z.number(),
+  games: z.number(),
+  roster_id: z.number(),
+  manager: z.string(),
+});
+
+export const grabPlayerSchema = z.object({
+  player_id: z.string(),
+  name: z.string(),
+  position: z.string(),
+  nfl_team: z.string().nullable(),
+  // The sum of his projections for the weeks left of the regular season.
+  projection: z.number(),
+  roster_id: z.null(),
+});
+
+export const watchChapterSchema = z.object({
+  key: z.literal("watch"),
+  title: z.string(),
+  facts: z.object({
+    due_to_rise: z.array(gapPlayerSchema),
+    due_to_fall: z.array(gapPlayerSchema),
+    grab_him_now: z.array(grabPlayerSchema),
+  }),
   ...prose,
 });
 
@@ -208,7 +442,13 @@ export const chapterSchema = z.discriminatedUnion("key", [
   luckChapterSchema,
   injuryChapterSchema,
   top10ChapterSchema,
-  otherChapterSchema,
+  draftChapterSchema,
+  waiversChapterSchema,
+  tradesChapterSchema,
+  lineupChapterSchema,
+  recordsChapterSchema,
+  lookAheadChapterSchema,
+  watchChapterSchema,
 ]);
 
 /* One of the three acts of the report, each opened by a dark title page. */

@@ -37,35 +37,35 @@
       "chapter": "opener",
       "sentences": [
         {
-          "text": "London Cooking sits on top of the title race with 16.8% title odds, the highest in the league.",
+          "text": "London Cooking sits on top of the title race with 16.8% title odds.",
           "fact_ids": [
             "OP.5.title"
           ],
           "roster_id": null
         },
         {
-          "text": "Bo Girds is right behind them at 16.3% title odds, 2nd in the league.",
+          "text": "Bo Girds is breathing down its neck at 16.3% title odds, 2nd in the league.",
           "fact_ids": [
             "OP.6.title"
           ],
           "roster_id": null
         },
         {
-          "text": "Maye d'force B with U holds 3rd with 14.5% title odds.",
+          "text": "Maye d'force B with U ranks 3rd with 14.5% title odds.",
           "fact_ids": [
             "OP.9.title"
           ],
           "roster_id": null
         },
         {
-          "text": "All You Need Is Love leads the standings at 11-5 and still sits just 6th in title odds.",
+          "text": "All You Need Is Love owns the standings at 11-5, and its title odds still rank just 6th.",
           "fact_ids": [
             "OP.record"
           ],
           "roster_id": null
         },
         {
-          "text": "The table and the math disagree.",
+          "text": "The model remains unconvinced.",
           "fact_ids": [],
           "roster_id": null
         }
@@ -77,38 +77,15 @@
       "chapter": "opener.roast",
       "sentences": [
         {
-          "text": "All You Need Is Love leads the standings at 11-5, and the title math still ranks them 6th.",
+          "text": "London Cooking has 16.8% title odds, the best in the league.",
           "fact_ids": [
-            "OP.record"
-          ],
-          "roster_id": null
-        },
-        {
-          "text": "Turns out love is not all you need for title odds.",
-          "fact_ids": [
-            "OP.record"
-          ],
-          "roster_id": null
-        },
-        {
-          "text": "London Cooking holds the top title odds in the league, with Bo Girds right behind in 2nd.",
-          "fact_ids": [
-            "OP.5.title",
-            "OP.6.title"
-          ],
-          "roster_id": null
-        },
-        {
-          "text": "Maye d'force B with U rounds out the top 3, and none of them leads the standings.",
-          "fact_ids": [
-            "OP.9.title",
-            "OP.record"
+            "OP.5.title"
           ],
           "roster_id": null
         }
       ],
-      "attempt": 1,
-      "fallback": false
+      "attempt": 0,
+      "fallback": true
     }
   },
   "acts": [
@@ -307,7 +284,7 @@
             "chapter": "state",
             "sentences": [
               {
-                "text": "All You Need Is Love sits on top at 11-5, winners of their last 3 head-to-head games.",
+                "text": "All You Need Is Love leads the league at 11-5 and has won 3 straight head-to-head games.",
                 "fact_ids": [
                   "ST.2.record",
                   "ST.2.streak"
@@ -315,7 +292,7 @@
                 "roster_id": null
               },
               {
-                "text": "Bo Girds somehow still holds 3rd while riding a 4-game head-to-head losing streak.",
+                "text": "Bo Girds is still 3rd, but has lost 4 head-to-head games in a row.",
                 "fact_ids": [
                   "ST.6.record",
                   "ST.6.streak"
@@ -323,7 +300,7 @@
                 "roster_id": null
               },
               {
-                "text": "Return of T Mac has won 5 straight and still sits at just 43% playoff odds.",
+                "text": "Return of T Mac has won 5 straight head-to-head and still sits on just 43% playoff odds.",
                 "fact_ids": [
                   "ST.8.streak",
                   "ST.8.odds"
@@ -331,7 +308,7 @@
                 "roster_id": null
               },
               {
-                "text": "Down at the bottom, NFC Least is 3-13 with 1% playoff odds.",
+                "text": "At the bottom, NFC Least is living up to the name at 3-13, with 1% playoff odds.",
                 "fact_ids": [
                   "ST.4.record",
                   "ST.4.odds"
@@ -339,7 +316,7 @@
                 "roster_id": null
               },
               {
-                "text": "Start planning for next year.",
+                "text": "The name checks out.",
                 "fact_ids": [],
                 "roster_id": null
               }
@@ -351,6 +328,18 @@
             "chapter": "state.roast",
             "sentences": [
               {
+                "text": "NFC Least is 3-13 and sits 12th, so the team name turned out to be a scouting report.",
+                "fact_ids": [
+                  "ST.4.record"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Nailed the branding, at least.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
                 "text": "Bo Girds has lost 4 head-to-head games in a row and somehow still sits 3rd.",
                 "fact_ids": [
                   "ST.6.streak",
@@ -359,23 +348,11 @@
                 "roster_id": null
               },
               {
-                "text": "Return of T Mac has won 5 straight and still carries only 43% playoff odds.",
+                "text": "To Infinity and Bijan has given up 947.27 points and holds 7% playoff odds, so the trip to infinity is stalled on the launch pad.",
                 "fact_ids": [
-                  "ST.8.streak",
-                  "ST.8.odds"
+                  "ST.7.points",
+                  "ST.7.odds"
                 ],
-                "roster_id": null
-              },
-              {
-                "text": "NFC Least picked a team name and then lived it, dead last at 3-13.",
-                "fact_ids": [
-                  "ST.4.record"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Truth in advertising, at least.",
-                "fact_ids": [],
                 "roster_id": null
               }
             ],
@@ -591,61 +568,21 @@
             "chapter": "arcs",
             "sentences": [
               {
-                "text": "Return of T Mac opened 2-6 and has gone 7-1 since, a comeback worthy of the name.",
+                "text": "All You Need Is Love has the Wire to wire arc: 6-2 in weeks 1 to 4 and 5-3 in weeks 5 to 8.",
                 "fact_ids": [
-                  "ARC.8.turnaround"
+                  "ARC.2.wire-to-wire"
                 ],
-                "roster_id": null
-              },
-              {
-                "text": "Maye d'force B with U pulled the same trick, flipping 3-5 into 6-2.",
-                "fact_ids": [
-                  "ARC.9.turnaround"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Bo Girds went the other way, 6-2 out of the gate and 3-5 since.",
-                "fact_ids": [
-                  "ARC.6.collapse"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "All You Need Is Love has a schedule luck of +2.73, a verse the song left out.",
-                "fact_ids": [
-                  "ARC.2.smoke-and-mirrors"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "NFC Least opened 0-8.",
-                "fact_ids": [
-                  "ARC.4.never-got-going"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "The name checks out.",
-                "fact_ids": [],
                 "roster_id": null
               }
             ],
-            "attempt": 2,
-            "fallback": false
+            "attempt": 0,
+            "fallback": true
           },
           "roast": {
             "chapter": "arcs.roast",
             "sentences": [
               {
-                "text": "Bo Girds opened 6-2 and then faceplanted to 3-5 over the next stretch, a textbook Collapse.",
-                "fact_ids": [
-                  "ARC.6.collapse"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "NFC Least started 0-8, a team name that doubled as a scouting report.",
+                "text": "NFC Least opened 0-8 and then scraped together a 3-5 stretch.",
                 "fact_ids": [
                   "ARC.4.never-got-going"
                 ],
@@ -657,14 +594,21 @@
                 "roster_id": null
               },
               {
-                "text": "Return of T Mac sat at 2-6 before ripping off a 7-1 run, so the return took a while to show up.",
+                "text": "Bo Girds started 6-2 and then faceplanted to 3-5.",
                 "fact_ids": [
-                  "ARC.8.turnaround"
+                  "ARC.6.collapse"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "All You Need Is Love apparently also needs a schedule luck of +2.73.",
+                "fact_ids": [
+                  "ARC.2.smoke-and-mirrors"
                 ],
                 "roster_id": null
               }
             ],
-            "attempt": 1,
+            "attempt": 2,
             "fallback": false
           }
         },
@@ -1844,8 +1788,15 @@
                 }
               ],
               "most_better": {
-                "roster_id": 6,
-                "count": 10
+                "roster_id": 12,
+                "count": 5,
+                "place": 4
+              },
+              "biggest_miss": {
+                "roster_id": 10,
+                "schedule_of": 9,
+                "gain": 4.0,
+                "place": 3
               }
             }
           },
@@ -1853,63 +1804,86 @@
             "chapter": "luck",
             "sentences": [
               {
-                "text": "All You Need Is Love has 7 head-to-head wins from a team that plays like 4.27 wins in all-play.",
+                "text": "All You Need Is Love sits at +2.73 on Schedule luck, and a 2-0 record in close games keeps the good fortune rolling.",
                 "fact_ids": [
-                  "SL.2.luck"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "They are also 2-0 in games settled by under 5 points.",
-                "fact_ids": [
+                  "SL.2.luck",
                   "SL.2.close"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Nice work if you can get it.",
+                "text": "Bo Girds has scored like a team with 5.18 all-play wins and has just 3 head-to-head wins to show for it.",
+                "fact_ids": [
+                  "SL.6.luck"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Brutal draw.",
                 "fact_ids": [],
                 "roster_id": null
               },
               {
-                "text": "Bo Girds sits at -2.18 in schedule luck and would be 14-2 with the schedule of Maye d'force B with U.",
-                "fact_ids": [
-                  "SL.6.luck",
-                  "SW.6.best"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "They would own a better record with 10 other schedules than their own, the most in the league.",
-                "fact_ids": [
-                  "SW.most"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "To Infinity and Bijan has eaten 947.27 points against, the most in the league.",
+                "text": "To Infinity and Bijan has eaten 947.27 points against, the most in the league, so even Bijan cannot outrun that slate.",
                 "fact_ids": [
                   "SL.7.against"
                 ],
                 "roster_id": null
+              },
+              {
+                "text": "Teehee would own a better record with 5 other schedules than with its own.",
+                "fact_ids": [
+                  "SW.most",
+                  "CO.luck.most_better"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "behold the lamb would gain 4 wins with the schedule of Maye d'force B with U.",
+                "fact_ids": [
+                  "SW.biggest",
+                  "CO.luck.biggest_miss"
+                ],
+                "roster_id": null
               }
             ],
-            "attempt": 2,
+            "attempt": 1,
             "fallback": false
           },
           "roast": {
             "chapter": "luck.roast",
             "sentences": [
               {
-                "text": "All You Need Is Love has 7 head-to-head wins and 4.27 All-play wins, a Schedule luck of +2.73.",
+                "text": "All You Need Is Love has banked 7 head-to-head wins while scoring like a 4.27-win team against the whole league.",
                 "fact_ids": [
                   "SL.2.luck"
                 ],
                 "roster_id": null
+              },
+              {
+                "text": "The schedule maker deserves a cut.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Swap in the schedule of Maye d'force B with U and behold the lamb gains 4 wins, the 3rd most of any team, a lamb led to slaughter by the calendar.",
+                "fact_ids": [
+                  "SW.biggest",
+                  "CO.luck.biggest_miss"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Teehee would own a better record with 5 other schedules than its own, 4th most in the league, and nobody on that roster is giggling.",
+                "fact_ids": [
+                  "SW.most",
+                  "CO.luck.most_better"
+                ],
+                "roster_id": null
               }
             ],
-            "attempt": 0,
-            "fallback": true
+            "attempt": 1,
+            "fallback": false
           }
         },
         {
@@ -2181,9 +2155,61 @@
             "chapter": "injuries",
             "sentences": [
               {
-                "text": "behold the lamb tops the injury toll with 9 starter games lost, 1st in the league.",
+                "text": "behold the lamb lost 9 starter games to injury through week 8, the most in the league.",
                 "fact_ids": [
-                  "IT.10"
+                  "IT.10",
+                  "CO.injuries.toll",
+                  "W.week"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Kyle Monangai missed 4 of those games as a starter.",
+                "fact_ids": [
+                  "IT.10.top"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Blue Tent ranked 2nd on this list, losing 5 starter games.",
+                "fact_ids": [
+                  "IT.1"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Davante Adams missed 2 of them.",
+                "fact_ids": [
+                  "IT.1.top"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Bo Girds, Teehee and Unsolicited Dak Picks lost 0 starter games all season.",
+                "fact_ids": [
+                  "IT.6",
+                  "IT.12",
+                  "IT.11"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Must be nice.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          },
+          "roast": {
+            "chapter": "injuries.roast",
+            "sentences": [
+              {
+                "text": "behold the lamb lost 9 starter games to injury, 1st in the league.",
+                "fact_ids": [
+                  "IT.10",
+                  "CO.injuries.toll"
                 ],
                 "roster_id": null
               },
@@ -2195,72 +2221,19 @@
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent is next with 5 lost starter games, 2 of them from Davante Adams.",
-                "fact_ids": [
-                  "IT.1",
-                  "IT.1.top"
-                ],
+                "text": "Grim reading for the flock.",
+                "fact_ids": [],
                 "roster_id": null
               },
               {
-                "text": "Breece Hall missed 3 games as a starter of Return of T Mac.",
+                "text": "Unsolicited Dak Picks lost 0 starter games to injury, last in the league.",
                 "fact_ids": [
-                  "IT.8.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "All You Need Is Love spent 2 games without its Love, Jeremiyah.",
-                "fact_ids": [
-                  "IT.2.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Bo Girds, Teehee and Unsolicited Dak Picks have not lost a starter game to injury all season.",
-                "fact_ids": [
-                  "IT.6",
-                  "IT.12",
                   "IT.11"
                 ],
                 "roster_id": null
               }
             ],
-            "attempt": 1,
-            "fallback": false
-          },
-          "roast": {
-            "chapter": "injuries.roast",
-            "sentences": [
-              {
-                "text": "behold the lamb lost 9 starter games to injury, the most in the league.",
-                "fact_ids": [
-                  "IT.10"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Kyle Monangai missed 4 games as a starter on that roster, so the lamb has spent the season beholding a lineup hole.",
-                "fact_ids": [
-                  "IT.10.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "All You Need Is Love lost 2 starter games to injury, and Jeremiyah Love missed both of them.",
-                "fact_ids": [
-                  "IT.2",
-                  "IT.2.top"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Turns out you need more.",
-                "fact_ids": [],
-                "roster_id": null
-              }
-            ],
-            "attempt": 1,
+            "attempt": 2,
             "fallback": false
           }
         },
@@ -2950,50 +2923,47 @@
             "chapter": "top10",
             "sentences": [
               {
-                "text": "Josh Allen leads all quarterbacks with 189.32 points through week 8, and he belongs to behold the lamb.",
+                "text": "Maye d'force B with U live up to the name, with Drake Maye 3rd among quarterbacks and Jahmyr Gibbs leading all running backs at 178.8.",
+                "fact_ids": [
+                  "TOP.QB.3",
+                  "TOP.RB.1"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Isaiah Likely is on that same roster too, right behind Brock Bowers at tight end.",
+                "fact_ids": [
+                  "TOP.TE.3",
+                  "TOP.TE.2"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Josh Allen leads all quarterbacks for behold the lamb, while the actual Lamb, CeeDee, ranks 2nd among receivers for NFC Least.",
                 "fact_ids": [
                   "TOP.QB.1",
+                  "TOP.WR.2"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Jaxon Smith-Njigba tops every receiver at 187.96 for Lil Fridge through week 8.",
+                "fact_ids": [
+                  "TOP.WR.1",
                   "W.week"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Jaxon Smith-Njigba tops the receivers at 187.96 for Lil Fridge.",
-                "fact_ids": [
-                  "TOP.WR.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Maye d'force B with U has Jahmyr Gibbs as the RB #1 at 178.8, plus Drake Maye and Isaiah Likely third at their spots.",
-                "fact_ids": [
-                  "TOP.RB.1",
-                  "TOP.QB.3",
-                  "TOP.TE.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Bo Girds holds the top tight end in Trey McBride and the RB #2 in Kenneth Walker III.",
-                "fact_ids": [
-                  "TOP.TE.1",
-                  "TOP.RB.2"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Brock Bowers and Christian Watson both made the podium at their spots for The Blue Tent.",
-                "fact_ids": [
-                  "TOP.TE.2",
-                  "TOP.WR.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Meanwhile the DEF #3, the Tampa Bay Buccaneers at 77.75, is a free agent that nobody bothered to claim.",
+                "text": "The Tampa Bay Buccaneers rank 3rd among defenses at 77.75 and are still a free agent.",
                 "fact_ids": [
                   "TOP.DEF.3"
                 ],
+                "roster_id": null
+              },
+              {
+                "text": "Somebody check the wire.",
+                "fact_ids": [],
                 "roster_id": null
               }
             ],
@@ -3004,19 +2974,17 @@
             "chapter": "top10.roast",
             "sentences": [
               {
-                "text": "The Tampa Bay Buccaneers defense ranks 3rd at the position with 77.75 points, and nobody in this league rosters it.",
+                "text": "Maye d'force B with U owns Drake Maye, Jahmyr Gibbs and Isaiah Likely, each top 3 at his position through week 8.",
                 "fact_ids": [
-                  "TOP.DEF.3"
+                  "TOP.QB.3",
+                  "TOP.RB.1",
+                  "TOP.TE.3",
+                  "W.week"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Free points, just sitting there.",
-                "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "behold the lamb rosters Josh Allen, the QB #1 at 189.32 points, while the actual Lamb, CeeDee, plays for NFC Least.",
+                "text": "The team called behold the lamb has the QB #1 in Josh Allen, but CeeDee Lamb lives on NFC Least.",
                 "fact_ids": [
                   "TOP.QB.1",
                   "TOP.WR.2"
@@ -3024,12 +2992,15 @@
                 "roster_id": null
               },
               {
-                "text": "Maye d'force B with U holds Drake Maye, Jahmyr Gibbs and Isaiah Likely, so the quarterback in the team name actually showed up.",
+                "text": "The Tampa Bay Buccaneers defense sits at DEF #3 with 77.75 points and is still a free agent.",
                 "fact_ids": [
-                  "TOP.QB.3",
-                  "TOP.RB.1",
-                  "TOP.TE.3"
+                  "TOP.DEF.3"
                 ],
+                "roster_id": null
+              },
+              {
+                "text": "Embarrassing for the whole league.",
+                "fact_ids": [],
                 "roster_id": null
               }
             ],
@@ -3197,23 +3168,39 @@
             "chapter": "draft",
             "sentences": [
               {
-                "text": "Bo Girds paid $2 for Matthew Golden, and he has returned 110 points.",
+                "text": "NFC Least landed Jalen Coker for $1 and then let him walk: the one that got away.",
                 "fact_ids": [
-                  "DV.steal.12501",
-                  "DV.steal.12501.points"
+                  "DV.steal.11646",
+                  "DV.steal.11646.line",
+                  "CO.draft.steal"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The same front office then spent $29 on Ladd McConkey, who sits at 43.1 points.",
+                "text": "Coker now sits on 64.9 points for somebody else's lineup math.",
                 "fact_ids": [
-                  "DV.bust.11635",
-                  "DV.bust.11635.points"
+                  "DV.steal.11646.points"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent put $46 on De'Von Achane, now 50th among drafted running backs.",
+                "text": "Unsolicited Dak Picks paid $39 for A.J. Brown and got 13.6 points back.",
+                "fact_ids": [
+                  "DV.bust.5859",
+                  "DV.bust.5859.points",
+                  "CO.draft.bust"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "That bust is tagged just bad, so there is no injury to hide behind.",
+                "fact_ids": [
+                  "DV.bust.5859.tag"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Blue Tent spent $46 on De'Von Achane and has 21.1 points to show for it.",
                 "fact_ids": [
                   "DV.bust.9226",
                   "DV.bust.9226.points"
@@ -3221,25 +3208,8 @@
                 "roster_id": null
               },
               {
-                "text": "They also let Stefon Diggs go, the one that got away, and he has 68.7 points.",
-                "fact_ids": [
-                  "DV.steal.2449.line",
-                  "DV.steal.2449.points"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Brutal shopping.",
+                "text": "Rough auction.",
                 "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "Unsolicited Dak Picks spent $39 on A.J. Brown and got 13.6 points, a bust tagged just bad.",
-                "fact_ids": [
-                  "DV.bust.5859",
-                  "DV.bust.5859.points",
-                  "DV.bust.5859.tag"
-                ],
                 "roster_id": null
               }
             ],
@@ -3250,40 +3220,39 @@
             "chapter": "draft.roast",
             "sentences": [
               {
-                "text": "Unsolicited Dak Picks drafted A.J. Brown and got 13.6 points out of him, 60th among drafted WRs.",
+                "text": "Unsolicited Dak Picks own the bust of the draft: A.J. Brown sits 60th among drafted WRs with 13.6 points.",
                 "fact_ids": [
+                  "CO.draft.bust",
                   "DV.bust.5859",
                   "DV.bust.5859.points"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent went for De'Von Achane and Jadarian Price, and that backfield has 21.1 and 16.7 points to show for it.",
+                "text": "The Blue Tent paid $46 for De'Von Achane, got 21.1 points, and then let Stefon Diggs go.",
                 "fact_ids": [
                   "DV.bust.9226",
                   "DV.bust.9226.points",
-                  "DV.bust.13286",
-                  "DV.bust.13286.points"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Then they let Stefon Diggs go, the one that got away.",
-                "fact_ids": [
                   "DV.steal.2449.line"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Bo Girds at least found Matthew Golden, now 7th among drafted WRs with 110 points.",
+                "text": "NFC Least landed the steal of the draft in Jalen Coker and let him go anyway.",
                 "fact_ids": [
-                  "DV.steal.12501",
-                  "DV.steal.12501.points"
+                  "CO.draft.steal",
+                  "DV.steal.11646",
+                  "DV.steal.11646.line"
                 ],
+                "roster_id": null
+              },
+              {
+                "text": "Read that again.",
+                "fact_ids": [],
                 "roster_id": null
               }
             ],
-            "attempt": 2,
+            "attempt": 1,
             "fallback": false
           }
         },
@@ -3557,77 +3526,44 @@
             "chapter": "waivers",
             "sentences": [
               {
-                "text": "Ollie Gordon II is the top waiver hit of the league, with Unsolicited Dak Picks paying $40 for 30.3 points over the line.",
+                "text": "Ollie Gordon II went to Unsolicited Dak Picks for $40 in week 3: 4 starts, 30.3 points over the line, and 1 swung wins. He is the 1st waiver hit of the league.",
                 "fact_ids": [
                   "WV.hit.1"
                 ],
                 "roster_id": null
-              },
-              {
-                "text": "The Blue Tent bid $36 on him and lost by $4.",
-                "fact_ids": [
-                  "WV.outbid.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Their $23 on Jaylen Wright has bought 0 starts.",
-                "fact_ids": [
-                  "WV.miss.5"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "To Infinity and Bijan topped that, dropping $40 on Joe Mixon for 0 starts, the biggest waiver miss of the league.",
-                "fact_ids": [
-                  "WV.miss.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Money well hoarded.",
-                "fact_ids": [],
-                "roster_id": null
-              },
-              {
-                "text": "Return of T Mac streamed QBs, kickers, and defenses for 174.4 points, the most in the league.",
-                "fact_ids": [
-                  "WV.stream"
-                ],
-                "roster_id": null
               }
             ],
-            "attempt": 1,
-            "fallback": false
+            "attempt": 0,
+            "fallback": true
           },
           "roast": {
             "chapter": "waivers.roast",
             "sentences": [
               {
-                "text": "To Infinity and Bijan paid $40 for Joe Mixon and got 0 starts out of him.",
-                "fact_ids": [
-                  "WV.miss.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "That same $40 landed Ollie Gordon II with Unsolicited Dak Picks, and he became the top waiver hit in the league at 30.3 points over the line.",
+                "text": "Ollie Gordon II went to Unsolicited Dak Picks for $40 and paid back 30.3 points over the line, the top waiver hit in the league.",
                 "fact_ids": [
                   "WV.hit.1",
+                  "CO.waivers.hit"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "To Infinity and Bijan lost that Gordon chase by $20.",
+                "fact_ids": [
+                  "WV.outbid.2",
+                  "CO.waivers.miss"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Then they spent $40 on Joe Mixon and have never put him in a lineup.",
+                "fact_ids": [
                   "WV.miss.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent lost the Gordon bidding by $4 and separately dropped $23 on Jaylen Wright, who never started.",
-                "fact_ids": [
-                  "WV.outbid.1",
-                  "WV.miss.5"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Brutal shopping season.",
+                "text": "Pricey bench decoration.",
                 "fact_ids": [],
                 "roster_id": null
               }
@@ -4979,45 +4915,43 @@
             "chapter": "trades",
             "sentences": [
               {
-                "text": "Maye d'force B with U robbed NFC Least in week 1, landing D'Andre Swift and Jalen Coker in a deal with a 165.8-point gap.",
+                "text": "To Infinity and Bijan shipped Bijan Robinson out in week 7 and still won that deal clearly, landing Malik Nabers and Breece Hall in return.",
                 "fact_ids": [
-                  "TR.1"
+                  "CO.trades.top",
+                  "TR.4"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The losing side of that one has gone 3-13 since the trade.",
-                "fact_ids": [
-                  "TR.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Bo Girds pulled a robbery of its own in week 3, taking Kyren Williams from Teehee for a 93-point gap.",
-                "fact_ids": [
-                  "TR.2"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "That side came back in week 4 for Trey McBride and Jordan Addison, a clear win over the same team that lost the first robbery.",
-                "fact_ids": [
-                  "TR.3",
-                  "TR.1"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Rome Odunze, Ladd McConkey and Tyler Warren went the other way.",
-                "fact_ids": [
-                  "TR.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "To Infinity and Bijan shipped Bijan Robinson out in week 7 and still graded a clear win, 34.2 points over the line since.",
+                "text": "That one sits 34.2 points over the line since.",
                 "fact_ids": [
                   "TR.4"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The week 1 robbery belongs to Maye d'force B with U, whose Jalen Coker and D'Andre Swift haul is 82.9 points over the line since.",
+                "fact_ids": [
+                  "TR.1"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "NFC Least took MarShawn Lloyd and Rhamondre Stevenson on the other side of it and has gone 3-13 since.",
+                "fact_ids": [
+                  "TR.1"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Some deals age badly.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Bo Girds pulled a robbery of their own in week 3, landing Kyren Williams for a net of 46.5 points over the line.",
+                "fact_ids": [
+                  "TR.2"
                 ],
                 "roster_id": null
               }
@@ -5029,14 +4963,14 @@
             "chapter": "trades.roast",
             "sentences": [
               {
-                "text": "The week 1 deal goes down as a Robbery for Maye d'force B with U, and NFC Least has gone 3-13 since taking on MarShawn Lloyd and Rhamondre Stevenson.",
+                "text": "NFC Least got robbed in its very first trade, shipping Jalen Coker and D'Andre Swift to Maye d'force B with U for MarShawn Lloyd and Rhamondre Stevenson, then went 3-13 since.",
                 "fact_ids": [
                   "TR.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "They came back in week 4 for Rome Odunze, Ladd McConkey and Tyler Warren and sit at a net of -44.5 points against the line, a Clear win for Bo Girds.",
+                "text": "They kept dialing anyway, and the week 4 package of Rome Odunze, Ladd McConkey and Tyler Warren sits 44.5 points under the line against Bo Girds.",
                 "fact_ids": [
                   "TR.3"
                 ],
@@ -5048,9 +4982,483 @@
                 "roster_id": null
               },
               {
-                "text": "The week 8 swap for Saquon Barkley and CeeDee Lamb is too soon to grade, and this side is 0-2 since anyway.",
+                "text": "To Infinity and Bijan grades out as the trade winner, with the week 7 haul of Malik Nabers and Breece Hall running 34.2 points over the line.",
                 "fact_ids": [
-                  "TR.20"
+                  "CO.trades.top",
+                  "TR.4"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "lineup",
+          "title": "Lineup choices",
+          "facts": {
+            "teams": [
+              {
+                "roster_id": 4,
+                "name": "NFC Least",
+                "rank": 1,
+                "bench_points": 119.8,
+                "lost_with_better": []
+              },
+              {
+                "roster_id": 12,
+                "name": "Teehee",
+                "rank": 2,
+                "bench_points": 115.0,
+                "lost_with_better": [
+                  {
+                    "week": 2,
+                    "opponent_roster_id": 2,
+                    "opponent": "All You Need Is Love",
+                    "score": 79.36,
+                    "best": 100.06,
+                    "bench_points": 20.7,
+                    "margin": 12.07
+                  },
+                  {
+                    "week": 3,
+                    "opponent_roster_id": 7,
+                    "opponent": "To Infinity and Bijan",
+                    "score": 106.88,
+                    "best": 124.98,
+                    "bench_points": 18.1,
+                    "margin": 0.51
+                  }
+                ]
+              },
+              {
+                "roster_id": 5,
+                "name": "London Cooking",
+                "rank": 3,
+                "bench_points": 103.8,
+                "lost_with_better": [
+                  {
+                    "week": 2,
+                    "opponent_roster_id": 11,
+                    "opponent": "Unsolicited Dak Picks",
+                    "score": 112.14,
+                    "best": 139.68,
+                    "bench_points": 27.54,
+                    "margin": 1.67
+                  },
+                  {
+                    "week": 8,
+                    "opponent_roster_id": 1,
+                    "opponent": "The Blue Tent",
+                    "score": 98.88,
+                    "best": 104.68,
+                    "bench_points": 5.8,
+                    "margin": 1.43
+                  }
+                ]
+              },
+              {
+                "roster_id": 8,
+                "name": "Return of T Mac",
+                "rank": 4,
+                "bench_points": 93.9,
+                "lost_with_better": []
+              },
+              {
+                "roster_id": 3,
+                "name": "Lil Fridge",
+                "rank": 5,
+                "bench_points": 85.02,
+                "lost_with_better": [
+                  {
+                    "week": 7,
+                    "opponent_roster_id": 8,
+                    "opponent": "Return of T Mac",
+                    "score": 89.77,
+                    "best": 104.47,
+                    "bench_points": 14.7,
+                    "margin": 11.84
+                  }
+                ]
+              },
+              {
+                "roster_id": 9,
+                "name": "Maye d'force B with U",
+                "rank": 6,
+                "bench_points": 83.48,
+                "lost_with_better": [
+                  {
+                    "week": 7,
+                    "opponent_roster_id": 1,
+                    "opponent": "The Blue Tent",
+                    "score": 81.19,
+                    "best": 92.09,
+                    "bench_points": 10.9,
+                    "margin": 4.68
+                  }
+                ]
+              },
+              {
+                "roster_id": 10,
+                "name": "behold the lamb",
+                "rank": 7,
+                "bench_points": 81.8,
+                "lost_with_better": []
+              },
+              {
+                "roster_id": 6,
+                "name": "Bo Girds",
+                "rank": 8,
+                "bench_points": 70.92,
+                "lost_with_better": [
+                  {
+                    "week": 6,
+                    "opponent_roster_id": 10,
+                    "opponent": "behold the lamb",
+                    "score": 109.61,
+                    "best": 120.51,
+                    "bench_points": 10.9,
+                    "margin": 5.34
+                  },
+                  {
+                    "week": 7,
+                    "opponent_roster_id": 2,
+                    "opponent": "All You Need Is Love",
+                    "score": 110.27,
+                    "best": 121.87,
+                    "bench_points": 11.6,
+                    "margin": 11.36
+                  }
+                ]
+              },
+              {
+                "roster_id": 2,
+                "name": "All You Need Is Love",
+                "rank": 9,
+                "bench_points": 60.8,
+                "lost_with_better": []
+              },
+              {
+                "roster_id": 7,
+                "name": "To Infinity and Bijan",
+                "rank": 10,
+                "bench_points": 60.7,
+                "lost_with_better": [
+                  {
+                    "week": 1,
+                    "opponent_roster_id": 2,
+                    "opponent": "All You Need Is Love",
+                    "score": 109.21,
+                    "best": 124.21,
+                    "bench_points": 15.0,
+                    "margin": 4.3
+                  }
+                ]
+              },
+              {
+                "roster_id": 1,
+                "name": "The Blue Tent",
+                "rank": 11,
+                "bench_points": 46.54,
+                "lost_with_better": [
+                  {
+                    "week": 2,
+                    "opponent_roster_id": 10,
+                    "opponent": "behold the lamb",
+                    "score": 96.58,
+                    "best": 115.98,
+                    "bench_points": 19.4,
+                    "margin": 9.04
+                  },
+                  {
+                    "week": 3,
+                    "opponent_roster_id": 2,
+                    "opponent": "All You Need Is Love",
+                    "score": 113.93,
+                    "best": 124.53,
+                    "bench_points": 10.6,
+                    "margin": 0.4
+                  }
+                ]
+              },
+              {
+                "roster_id": 11,
+                "name": "Unsolicited Dak Picks",
+                "rank": 12,
+                "bench_points": 46.36,
+                "lost_with_better": []
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "lineup",
+            "sentences": [
+              {
+                "text": "Lil Fridge is the headline here: 85.02 points left on the bench, 5th most in the league.",
+                "fact_ids": [
+                  "LC.3",
+                  "CO.lineup.bench"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The ugly one came against Return of T Mac, an 11.84-point loss with 14.7 sitting on the bench, enough for the right lineup to win it.",
+                "fact_ids": [
+                  "LC.3.7"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Teehee managed this trick twice, including a loss to To Infinity and Bijan by 0.51 with 18.1 points in reserve.",
+                "fact_ids": [
+                  "LC.12.2",
+                  "LC.12.3"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Agonizing.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "The Blue Tent can relate, falling to All You Need Is Love by 0.4 with the winning points parked on the bench.",
+                "fact_ids": [
+                  "LC.1.3"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "NFC Least still owns the bench crown outright at 119.8 points.",
+                "fact_ids": [
+                  "LC.4"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 2,
+            "fallback": false
+          },
+          "roast": {
+            "chapter": "lineup.roast",
+            "sentences": [
+              {
+                "text": "Lil Fridge kept 85.02 points chilled on the bench, 5th most in the league.",
+                "fact_ids": [
+                  "LC.3"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Return of T Mac beat them by 11.84 in week 7, a game this side's own bench would have flipped.",
+                "fact_ids": [
+                  "LC.3.7"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Leftovers, served cold again.",
+                "fact_ids": [],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          }
+        },
+        {
+          "key": "records",
+          "title": "The record book",
+          "facts": {
+            "high": {
+              "week": 5,
+              "roster_id": 9,
+              "team": "Maye d'force B with U",
+              "score": 158.96
+            },
+            "low": {
+              "week": 6,
+              "roster_id": 7,
+              "team": "To Infinity and Bijan",
+              "score": 46.08
+            },
+            "biggest_margin": {
+              "week": 5,
+              "winner_roster_id": 9,
+              "winner": "Maye d'force B with U",
+              "winner_score": 158.96,
+              "loser_roster_id": 7,
+              "loser": "To Infinity and Bijan",
+              "loser_score": 66.82,
+              "margin": 92.14
+            },
+            "closest": {
+              "week": 3,
+              "winner_roster_id": 2,
+              "winner": "All You Need Is Love",
+              "winner_score": 114.33,
+              "loser_roster_id": 1,
+              "loser": "The Blue Tent",
+              "loser_score": 113.93,
+              "margin": 0.4
+            },
+            "awards": [
+              {
+                "key": "mvp",
+                "title": "MVP",
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "value": 135.1,
+                "player": "Jahmyr Gibbs",
+                "week": null,
+                "in_record_book": false,
+                "fact": "Jahmyr Gibbs of Maye d'force B with U has 135.1 points over the line in his starts, the most of any QB, RB, WR, or TE."
+              },
+              {
+                "key": "streaming-king",
+                "title": "Streaming king",
+                "roster_id": 8,
+                "team": "Return of T Mac",
+                "value": 174.4,
+                "player": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "Return of T Mac started 4 streamed QBs, kickers, and defenses 11 times for 174.4 points, the most in the league."
+              },
+              {
+                "key": "bench-crime",
+                "title": "Bench crime of the year",
+                "roster_id": 5,
+                "team": "London Cooking",
+                "value": 27.54,
+                "player": null,
+                "week": 2,
+                "in_record_book": false,
+                "fact": "London Cooking lost to Unsolicited Dak Picks by 1.67 in week 2 with 27.54 points on the bench, the most in a loss its best lineup would have won."
+              },
+              {
+                "key": "heartbreak",
+                "title": "Heartbreak of the year",
+                "roster_id": 1,
+                "team": "The Blue Tent",
+                "value": 0.4,
+                "player": null,
+                "week": 3,
+                "in_record_book": true,
+                "fact": "The Blue Tent lost to All You Need Is Love by 0.4 in week 3, the closest head-to-head game of the season."
+              },
+              {
+                "key": "beatdown",
+                "title": "Beatdown of the year",
+                "roster_id": 9,
+                "team": "Maye d'force B with U",
+                "value": 92.14,
+                "player": null,
+                "week": 5,
+                "in_record_book": true,
+                "fact": "Maye d'force B with U beat To Infinity and Bijan by 92.14 in week 5, the biggest head-to-head margin of the season."
+              },
+              {
+                "key": "most-active",
+                "title": "Most active",
+                "roster_id": 6,
+                "team": "Bo Girds",
+                "value": 42.0,
+                "player": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "Bo Girds made 42 moves, adds and trades, the most in the league."
+              },
+              {
+                "key": "set-and-forget",
+                "title": "Set and forget",
+                "roster_id": 5,
+                "team": "London Cooking",
+                "value": 3.0,
+                "player": null,
+                "week": null,
+                "in_record_book": false,
+                "fact": "London Cooking made 3 moves, the fewest in the league, and is 9-7."
+              }
+            ]
+          },
+          "blurb": {
+            "chapter": "records",
+            "sentences": [
+              {
+                "text": "Maye d'force B with U hold the highest score of the season, a 158.96.",
+                "fact_ids": [
+                  "RB.high"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "That same week they beat To Infinity and Bijan by 92.14, the biggest head-to-head margin of the year.",
+                "fact_ids": [
+                  "AW.beatdown",
+                  "RB.high"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Bijan side then hit the season low in week 6 with 46.08.",
+                "fact_ids": [
+                  "RB.low"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "London Cooking lost to Unsolicited Dak Picks by 1.67 while 27.54 points sat on the bench, the most in any loss a better lineup would have won.",
+                "fact_ids": [
+                  "AW.bench-crime"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "They also made the fewest moves in the league, just 3, and somehow sit 9-7.",
+                "fact_ids": [
+                  "AW.set-and-forget"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "The Blue Tent lost the closest head-to-head game of the season to All You Need Is Love.",
+                "fact_ids": [
+                  "AW.heartbreak"
+                ],
+                "roster_id": null
+              }
+            ],
+            "attempt": 1,
+            "fallback": false
+          },
+          "roast": {
+            "chapter": "records.roast",
+            "sentences": [
+              {
+                "text": "To Infinity and Bijan posted the lowest score of the season, a 46.08 in week 6.",
+                "fact_ids": [
+                  "RB.low"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Maye d'force B with U had already beaten them by 92.14 in week 5, the biggest head-to-head margin of the season.",
+                "fact_ids": [
+                  "AW.beatdown"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Not even close.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "London Cooking lost a game by 1.67 while 27.54 points sat on the bench.",
+                "fact_ids": [
+                  "AW.bench-crime"
                 ],
                 "roster_id": null
               }
@@ -5738,21 +6146,22 @@
             "chapter": "look-ahead",
             "sentences": [
               {
-                "text": "Maye d'force B with U drew the softest schedule left, with opponents at a 0.44 win rate.",
+                "text": "Maye d'force B with U drew the softest schedule left on the board, with opponents at a 0.44 win rate.",
                 "fact_ids": [
-                  "LA.9.rate"
+                  "LA.9.rate",
+                  "W.week"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The Blue Tent sits right behind them at 0.46, the 2nd softest.",
+                "text": "The Blue Tent sits 2nd softest at 0.46, so the easy road comes with shade.",
                 "fact_ids": [
                   "LA.1.rate"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Lil Fridge and Unsolicited Dak Picks tie for 3rd softest at 0.47.",
+                "text": "Lil Fridge and Unsolicited Dak Picks share the 3rd softest path, both facing a 0.47 win rate.",
                 "fact_ids": [
                   "LA.3.rate",
                   "LA.11.rate"
@@ -5760,22 +6169,21 @@
                 "roster_id": null
               },
               {
-                "text": "To Infinity and Bijan and NFC Least land on the rough half of the slate.",
+                "text": "Return of T Mac gets little relief, with the 11th softest slate at 0.55.",
                 "fact_ids": [
-                  "LA.7.rate",
-                  "LA.4.rate"
+                  "LA.8.rate"
                 ],
                 "roster_id": null
               },
               {
-                "text": "At the far end, behold the lamb gets the hardest path, with opponents at a 0.56 win rate.",
+                "text": "Then there's behold the lamb, handed the hardest schedule in the league at a 0.56 win rate.",
                 "fact_ids": [
                   "LA.10.rate"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Bring a helmet.",
+                "text": "Pray for that roster.",
                 "fact_ids": [],
                 "roster_id": null
               }
@@ -5787,7 +6195,7 @@
             "chapter": "look-ahead.roast",
             "sentences": [
               {
-                "text": "behold the lamb gets the hardest schedule in the league from here, with opponents winning at a 0.56 rate.",
+                "text": "behold the lamb gets the hardest schedule left, with opponents winning at a 0.56 rate from here to week 14.",
                 "fact_ids": [
                   "LA.10.rate",
                   "W.week"
@@ -5795,21 +6203,21 @@
                 "roster_id": null
               },
               {
-                "text": "Bring a helmet.",
+                "text": "Lambs to the slaughter.",
                 "fact_ids": [],
                 "roster_id": null
               },
               {
-                "text": "Maye d'force B with U draws the softest slate of all at a 0.44 opponent win rate, so the force had better show up now.",
+                "text": "Maye d'force B with U gets the softest schedule in the league, so the force runs out of excuses.",
                 "fact_ids": [
                   "LA.9.rate"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Return of T Mac sits 11th softest at 0.55, so the return trip runs uphill.",
+                "text": "To Infinity and Bijan lands 9th softest at a 0.52 opponent win rate, a schedule as middling as the name is hopeful.",
                 "fact_ids": [
-                  "LA.8.rate"
+                  "LA.7.rate"
                 ],
                 "roster_id": null
               }
@@ -5917,45 +6325,45 @@
             "chapter": "watch",
             "sentences": [
               {
-                "text": "London Cooking has Michael Wilson scoring 5.65 points per game under what his volume says, so he is due to rise.",
+                "text": "Michael Wilson is scoring 5.65 points per game under what his volume says over 8 games, so London Cooking should see him rise.",
                 "fact_ids": [
                   "PW.rise.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "DK Metcalf on that same roster is due to rise too, while Mike Gesicki is due to fall.",
+                "text": "DK Metcalf, on the same roster, is due to rise too.",
                 "fact_ids": [
-                  "PW.rise.3",
+                  "PW.rise.3"
+                ],
+                "roster_id": null
+              },
+              {
+                "text": "Mike Gesicki is the catch on that roster, running 3.98 points per game over his volume and due to fall.",
+                "fact_ids": [
                   "PW.fall.3"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Lil Fridge should enjoy Jaxon Smith-Njigba while it lasts, since he scores 7.68 points per game over what his volume says.",
+                "text": "Jaxon Smith-Njigba is beating what his volume says by 7.68 points per game, so Lil Fridge should enjoy it while it lasts.",
                 "fact_ids": [
                   "PW.fall.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Jadarian Price of The Blue Tent runs 4.27 points per game under his volume over 4 games, so better days look due.",
+                "text": "Jadarian Price of The Blue Tent is 4.27 points per game under his volume through 4 games and due to rise.",
                 "fact_ids": [
                   "PW.rise.2"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Kyler Murray and J.J. McCarthy are both sitting in free agency, projected for 92.93 and 91.14 points through the regular season.",
+                "text": "Kyler Murray is sitting in free agency with 92.93 projected points through the regular season.",
                 "fact_ids": [
-                  "PW.grab.1",
-                  "PW.grab.2"
+                  "PW.grab.1"
                 ],
-                "roster_id": null
-              },
-              {
-                "text": "Somebody claim a quarterback already.",
-                "fact_ids": [],
                 "roster_id": null
               }
             ],
@@ -5966,37 +6374,33 @@
             "chapter": "watch.roast",
             "sentences": [
               {
-                "text": "London Cooking has Michael Wilson scoring 5.65 a game under what his volume says, and DK Metcalf sits 3.63 under, so both are due to rise.",
+                "text": "London Cooking should hold onto Michael Wilson, who scores 5.65 points per game under what his volume says and is due to rise.",
                 "fact_ids": [
-                  "PW.rise.1",
-                  "PW.rise.3"
+                  "PW.rise.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "The same kitchen also serves Mike Gesicki, running 3.98 a game over his volume and due to fall, so the menu fixes itself.",
-                "fact_ids": [
-                  "PW.fall.3"
-                ],
-                "roster_id": null
-              },
-              {
-                "text": "Jaxon Smith-Njigba of Lil Fridge is 7.68 a game over what his volume says, so enjoy the leftovers while they last.",
+                "text": "Lil Fridge is riding Jaxon Smith-Njigba at 7.68 points per game over what his volume says, and he is due to fall.",
                 "fact_ids": [
                   "PW.fall.1"
                 ],
                 "roster_id": null
               },
               {
-                "text": "Kyler Murray and J.J. McCarthy are still sitting in free agency, waiting for a manager to notice.",
+                "text": "Enjoy it while it lasts.",
+                "fact_ids": [],
+                "roster_id": null
+              },
+              {
+                "text": "Meanwhile Kyler Murray sits in free agency with 92.93 projected points through the regular season.",
                 "fact_ids": [
-                  "PW.grab.1",
-                  "PW.grab.2"
+                  "PW.grab.1"
                 ],
                 "roster_id": null
               }
             ],
-            "attempt": 1,
+            "attempt": 2,
             "fallback": false
           }
         }
@@ -6007,5 +6411,175 @@
     "label": "Title favorite",
     "value": "16.8%",
     "note": "London Cooking"
-  }
+  },
+  "headlines": [
+    {
+      "kind": "arc",
+      "key": "arc.wire-to-wire",
+      "chapter": "arcs",
+      "roster_id": 2,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.smoke-and-mirrors",
+      "chapter": "arcs",
+      "roster_id": 2,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.collapse",
+      "chapter": "arcs",
+      "roster_id": 6,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.snakebit",
+      "chapter": "arcs",
+      "roster_id": 6,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.turnaround",
+      "chapter": "arcs",
+      "roster_id": 9,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.roller-coaster",
+      "chapter": "arcs",
+      "roster_id": 8,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.turnaround",
+      "chapter": "arcs",
+      "roster_id": 8,
+      "place": 1
+    },
+    {
+      "kind": "arc",
+      "key": "arc.never-got-going",
+      "chapter": "arcs",
+      "roster_id": 4,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.mvp",
+      "chapter": "records",
+      "roster_id": 9,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.streaming-king",
+      "chapter": "records",
+      "roster_id": 8,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.bench-crime",
+      "chapter": "records",
+      "roster_id": 5,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.heartbreak",
+      "chapter": "records",
+      "roster_id": 1,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.beatdown",
+      "chapter": "records",
+      "roster_id": 9,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.most-active",
+      "chapter": "records",
+      "roster_id": 6,
+      "place": 1
+    },
+    {
+      "kind": "award",
+      "key": "award.set-and-forget",
+      "chapter": "records",
+      "roster_id": 5,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "luck.most_better",
+      "chapter": "luck",
+      "roster_id": 12,
+      "place": 4
+    },
+    {
+      "kind": "callout",
+      "key": "luck.biggest_miss",
+      "chapter": "luck",
+      "roster_id": 10,
+      "place": 3
+    },
+    {
+      "kind": "callout",
+      "key": "injuries.toll",
+      "chapter": "injuries",
+      "roster_id": 10,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "draft.steal",
+      "chapter": "draft",
+      "roster_id": 4,
+      "place": 2
+    },
+    {
+      "kind": "callout",
+      "key": "draft.bust",
+      "chapter": "draft",
+      "roster_id": 11,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "waivers.hit",
+      "chapter": "waivers",
+      "roster_id": 11,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "waivers.miss",
+      "chapter": "waivers",
+      "roster_id": 7,
+      "place": 1
+    },
+    {
+      "kind": "callout",
+      "key": "trades.top",
+      "chapter": "trades",
+      "roster_id": 7,
+      "place": 3
+    },
+    {
+      "kind": "callout",
+      "key": "lineup.bench",
+      "chapter": "lineup",
+      "roster_id": 3,
+      "place": 5
+    }
+  ]
 }
