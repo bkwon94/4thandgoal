@@ -4,9 +4,9 @@ They are plain data, so the rest of the code does not read raw Sleeper JSON.
 """
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, StringConstraints
 
 from league.league_settings import DEFAULT_POINTS_KEY
 from league.numbers import r2
@@ -22,7 +22,9 @@ def sub(a: float, b: float) -> float:
 
 class Team(BaseModel):
     roster_id: int
-    name: str
+    # Sleeper keeps the spaces a manager types around a team name. A saved file of an older build may hold them, so
+    # the load strips them too.
+    name: Annotated[str, StringConstraints(strip_whitespace=True)]
     owner: str
     avatar_url: str | None
     wins: int

@@ -54,3 +54,12 @@ def test_the_norcal_sim_has_a_fixed_bracket_with_no_reseed_and_no_median_game(no
         assert sorted((seed[a], seed[b]) for a, b in first) == [(3, 6), (4, 5)]
         top = next(pair for pair in second if seed[pair[0]] == 1)
         assert seed[top[1]] in (4, 5)
+
+
+def test_the_norcal_team_names_have_no_trailing_space_in_the_report_or_its_facts(norcal_build):
+    # Sleeper gives "Skol Daddy " with a trailing space, and the league strips it where it reads a team name.
+    teams = _chapter(_report(norcal_build), "state")["facts"]["teams"]
+    assert "Skol Daddy" in {team["name"] for team in teams}
+    assert all(team["name"] == team["name"].strip() for team in teams)
+    facts = (norcal_build.parent / "midseason-facts.json").read_text(encoding="utf-8")
+    assert "Skol Daddy  " not in facts and '"Skol Daddy "' not in facts
