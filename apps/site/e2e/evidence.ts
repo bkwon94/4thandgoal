@@ -201,12 +201,14 @@ export function loadTests(scratch: string, slug: string, ids: readonly string[] 
 }
 
 /*
- * Scrolls the page down one half screen at a time to the end, then back to the top. A section that reveals on scroll
- * plays only when it enters the viewport, and a full-page shot does not scroll, so with no pass it stays hidden.
+ * Scrolls the page down one half screen at a time to the end, then back to the scroll position it started at. A section
+ * that reveals on scroll plays only when it enters the viewport, and a full-page shot does not scroll, so with no pass it
+ * stays hidden. The pass ends where it started, so a shot after a scroll step shows the sticky parts in their scrolled state.
  */
 async function scrollPass(page: Page): Promise<void> {
   await page.evaluate(async () => {
     const pause = () => new Promise((done) => setTimeout(done, 50));
+    const start = window.scrollY;
     const step = Math.max(window.innerHeight / 2, 100);
     for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
       window.scrollTo(0, y);
@@ -214,7 +216,7 @@ async function scrollPass(page: Page): Promise<void> {
     }
     window.scrollTo(0, document.documentElement.scrollHeight);
     await pause();
-    window.scrollTo(0, 0);
+    window.scrollTo(0, start);
   });
   await page.waitForTimeout(SETTLE_MS);
 }
@@ -228,7 +230,10 @@ function shotFile(test: EvidenceTest, client: string, name: string, extension = 
   return join(test.folder, `${test.prefix ? `${client}-` : ""}${name}.${extension}`);
 }
 
-/* Takes one full-page shot, after the scroll pass, so each section that reveals on scroll shows. */
+/*
+ * Takes one full-page shot, after the scroll pass, so each section that reveals on scroll shows. The pass returns to the
+ * scroll position before the shot, so the shot shows the page at that position.
+ */
 async function takeShot(page: Page, path: string): Promise<void> {
   await scrollPass(page);
   await page.screenshot({ path, fullPage: true });

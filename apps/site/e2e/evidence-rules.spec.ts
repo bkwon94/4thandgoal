@@ -159,6 +159,44 @@ test("a section that reveals on scroll shows in the full-page shot", async ({ br
   }
 });
 
+/*
+ * A page with a fixed band, as the sticky dock and the chapter rail of the site. The band reads window.scrollY on each
+ * scroll: it is red at the top, with "Top", and blue below the top, with "Scrolled".
+ */
+const STICKY_PAGE = sitePage(`<div id="band" style="position:fixed;top:0;left:0;right:0;height:100px;background:#ff0000">Top</div>
+  <main style="height:4000px"></main>
+  <script>
+    const band = document.getElementById("band");
+    addEventListener("scroll", () => {
+      band.style.background = window.scrollY > 0 ? "#0000ff" : "#ff0000";
+      band.textContent = window.scrollY > 0 ? "Scrolled" : "Top";
+    });
+  </script>`);
+
+test("a shot after a scroll shows the page at its scroll position, not at the top", async ({ browser, page }) => {
+  const fx = fixture({
+    "AT-1": { route: "/sticky/", steps: [{ shot: "top" }, { scroll: "end" }, { shot: "end" }], widths: [1280], themes: ["dark"] },
+  });
+  mkdirSync(join(fx.site, "site", "sticky"));
+  writeFileSync(join(fx.site, "site", "sticky", "index.html"), STICKY_PAGE);
+  try {
+    await run(browser, fx);
+    const band = async (name: string) => {
+      const file = join(fx.folder("AT-1"), `${name}-1280-dark.png`);
+      // The full-page shot draws the fixed band where the viewport sits. The band is 100px high, so a row every 100px meets it.
+      const rows = [];
+      for (let y = 50; y < 4000; y += 100) rows.push(await pixel(page, file, 300, y));
+      return rows;
+    };
+    expect(await band("top")).toContainEqual([255, 0, 0]);
+    expect(await band("top")).not.toContainEqual([0, 0, 255]);
+    expect(await band("end")).toContainEqual([0, 0, 255]);
+    expect(await band("end")).not.toContainEqual([255, 0, 0]);
+  } finally {
+    rmSync(fx.site, { recursive: true });
+  }
+});
+
 test("a missing path shows the 404.html of the folder in each shot", async ({ browser, page }) => {
   const fx = fixture({ "AT-1": { route: "/no/such/page/" } });
   try {
