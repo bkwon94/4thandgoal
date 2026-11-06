@@ -11890,7 +11890,8 @@
         ],
         "min_sentences": 4,
         "max_sentences": 6,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "game_changer",
@@ -11915,7 +11916,8 @@
         ],
         "min_sentences": 3,
         "max_sentences": 5,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "awards",
@@ -12138,7 +12140,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 4,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "position_leaders",
@@ -12193,7 +12196,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 4,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_1",
@@ -12279,7 +12283,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_2",
@@ -12362,7 +12367,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_3",
@@ -12458,7 +12464,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_4",
@@ -12572,7 +12579,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_5",
@@ -12658,7 +12666,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "recap_6",
@@ -12751,7 +12760,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 3,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "median",
@@ -12992,7 +13002,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 4,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "next_week",
@@ -13265,7 +13276,8 @@
         ],
         "min_sentences": 2,
         "max_sentences": 6,
-        "required": []
+        "required": [],
+        "max_reactions": 1
       },
       {
         "key": "rankings",
@@ -13378,7 +13390,8 @@
           "ODDS.12.why",
           "PR.7.why",
           "PR.11.why"
-        ]
+        ],
+        "max_reactions": 1
       }
     ]
   },
