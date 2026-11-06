@@ -3,7 +3,7 @@ The prose of the midseason report: the facts and the prose blocks of each chapte
 the write and the check of each blurb through the writer and the verifier of facts. The report has no writer of its own.
 """
 import json
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from pathlib import Path
 
 import anthropic
@@ -67,21 +67,31 @@ def _state_facts(state: LeagueState) -> list[Fact]:
     return facts
 
 
-def prose_sheet(week: int, state: LeagueState, roast: Roast) -> FactSheet:
+# The prose block of a later chapter: its key, its title, and its facts, in page order after the state.
+ChapterFacts = tuple[str, str, list[Fact]]
+
+
+def prose_sheet(week: int, state: LeagueState, roast: Roast, later: Sequence[ChapterFacts] = ()) -> FactSheet:
     """The fact sheet of the report: every fact and the prose blocks that cite them. Each chapter has one blurb block,
-    and a roast block unless the roast is off."""
+    and a roast block unless the roast is off. `later` holds the facts of each chapter after the state."""
     n = Nums()
     week_fact = fact(WEEK_FACT, f"The report counts week {n(week)} and every week before it.", n, [], [])
-    # The week fact comes last, so the template blurb of a failed block reads the first team fact, not the week.
-    facts = [*_state_facts(state), week_fact]
-    ids = [f.id for f in facts]
     teams = [team.name for team in state.teams]
-    chapters = [Chapter(key="state", title="The state of the league", fact_ids=ids, scope_teams=teams,
-                        scope_players=[], min_sentences=3, max_sentences=6)]
-    if roast != "off":
-        # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
-        chapters.append(Chapter(key="state" + ROAST_SUFFIX, title="The roast of the state of the league", fact_ids=ids,
-                                scope_teams=teams, scope_players=[], min_sentences=2, max_sentences=4))
+    # The week fact comes last in each block, so the template blurb of a failed block reads a team fact, not the week.
+    blocks = [("state", "The state of the league", _state_facts(state)), *later]
+    facts: list[Fact] = []
+    chapters: list[Chapter] = []
+    for key, title, chapter_facts in blocks:
+        facts += chapter_facts
+        ids = [f.id for f in chapter_facts] + [week_fact.id]
+        chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=[],
+                                min_sentences=3, max_sentences=6))
+        if roast != "off":
+            # Two sentences at least, and a blurb holds one reaction sentence at most, so each roast cites a fact.
+            chapters.append(Chapter(key=key + ROAST_SUFFIX, title=f"The roast of {title[0].lower() + title[1:]}",
+                                    fact_ids=ids, scope_teams=teams, scope_players=[], min_sentences=2,
+                                    max_sentences=4))
+    facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 
 

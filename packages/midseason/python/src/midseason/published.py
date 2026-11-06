@@ -5,12 +5,14 @@ chapters. The pipeline owns the shape (ADR 0011), and the site side of the packa
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.files import write_bytes_atomic
 from league.models import Blurb
+from midseason.arcs import Arcs, ArcsChapter
+from midseason.luck import LuckChapter, ScheduleLuck
 from midseason.prose import ROAST_SUFFIX
 from midseason.state import LeagueState
 
@@ -34,7 +36,7 @@ class StateChapter(BaseModel):
 
 # Each chapter has its own model with a fixed key. A later chapter joins this union, with the key as the
 # discriminator, so the site reads each chapter by its key.
-Chapter = StateChapter
+Chapter = Annotated[StateChapter | ArcsChapter | LuckChapter, Field(discriminator="key")]
 
 
 class Act(BaseModel):
@@ -55,15 +57,21 @@ class MidseasonReport(BaseModel):
     acts: list[Act]
 
 
-def midseason_report(season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb]) -> MidseasonReport:
+def midseason_report(
+    season: int, week: int, state: LeagueState, blurbs: Mapping[str, Blurb], *, arcs: Arcs, luck: ScheduleLuck,
+) -> MidseasonReport:
     """The report of `week` from the facts of each chapter and the blurbs by prose block key. Act I holds the state
-    of the league."""
-    state_chapter = StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX))
+    of the league, the arcs, and Schedule luck."""
+    act_one: list[Chapter] = [
+        StateChapter(facts=state, blurb=blurbs.get("state"), roast=blurbs.get("state" + ROAST_SUFFIX)),
+        ArcsChapter(facts=arcs, blurb=blurbs.get("arcs"), roast=blurbs.get("arcs" + ROAST_SUFFIX)),
+        LuckChapter(facts=luck, blurb=blurbs.get("luck"), roast=blurbs.get("luck" + ROAST_SUFFIX)),
+    ]
     return MidseasonReport(
         season=season,
         week=week,
         takeover_end_week=week + TAKEOVER_WEEKS,
-        acts=[Act(key="how-we-got-here", title="How we got here", chapters=[state_chapter])],
+        acts=[Act(key="how-we-got-here", title="How we got here", chapters=act_one)],
     )
 
 

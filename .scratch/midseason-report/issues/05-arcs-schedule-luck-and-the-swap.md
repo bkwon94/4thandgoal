@@ -10,7 +10,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-5, AT-6, and AT-7.
 
 **Status:** ready-for-agent
 
-- [ ] Return of T Mac has Roller coaster and Turnaround and no third arc. Bo Girds has Snakebit and Collapse.
-- [ ] All You Need Is Love has +2.73 Schedule luck, and Bo Girds has -2.18.
-- [ ] The diagonal of the swap equals the standings, and Bo Girds with the schedule of Maye d'force B with U is 14-2.
-- [ ] Rule tests cover a tie as half a win, the self-meet rule, and the 2-arc limit.
+- [x] Return of T Mac has Roller coaster and Turnaround and no third arc. Bo Girds has Snakebit and Collapse.
+- [x] All You Need Is Love has +2.73 Schedule luck, and Bo Girds has -2.18.
+- [x] The diagonal of the swap equals the standings, and Bo Girds with the schedule of Maye d'force B with U is 14-2.
+- [x] Rule tests cover a tie as half a win, the self-meet rule, and the 2-arc limit.
