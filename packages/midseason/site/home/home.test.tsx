@@ -11,10 +11,10 @@ import { Takeover, takeoverOn } from "./takeover";
 afterEach(cleanup);
 
 describe("takeoverOn", () => {
-  it("holds the takeover through the week after the report, then gives way to the tile", () => {
-    // The report counts week 8, so the takeover ends after week 9.
-    expect(midseason.takeover_end_week).toBe(9);
-    expect([8, 9, 10, 11].map((week) => takeoverOn(midseason, week))).toEqual([true, true, false, false]);
+  it("holds the takeover through the week of the report, then gives way to the tile", () => {
+    // The report counts week 8, so the takeover ends after week 8 and week 9 has its own home top.
+    expect(midseason.takeover_end_week).toBe(8);
+    expect([8, 9, 10, 11].map((week) => takeoverOn(midseason, week))).toEqual([true, false, false, false]);
   });
 });
 

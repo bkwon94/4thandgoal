@@ -258,6 +258,7 @@ describe("the client build", () => {
         { page: "home", label: "Home" },
         { package: "week" },
         { package: "rankings", label: "Power Rankings" },
+        { package: "midseason", label: "Midseason Report" },
         { package: "managers", label: "Managers" },
         { package: "analyzer", label: "Trade Analyzer" },
       ],

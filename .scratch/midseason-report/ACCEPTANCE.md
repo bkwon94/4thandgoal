@@ -375,7 +375,7 @@ App: site
 Stories: 58
 Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
 When: Open the home page and the menu.
-Then: The dock and the menu have the same items as before the report.
+Then: The menu has a Midseason Report link to the report. The other items stay as before.
 Evidence: Screenshots of the dock and the open menu at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-47: The layers
@@ -619,4 +619,5 @@ Out of scope "Players to watch, with Grab him now": AT-64
 
 ## Revisions
 
+- 2026-11-06: The takeover ends with the report week. The menu gets a Midseason Report link. The dock keeps its five items. AT-46 changed.
 - 2026-11-06: Brian approved the changes of decisions 14 to 17. AT-14 and AT-23 are retired. AT-8, AT-40, and AT-41 changed. AT-52 to AT-64 are new.

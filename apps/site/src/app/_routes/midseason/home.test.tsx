@@ -20,8 +20,8 @@ async function homeOver(latest: number, report?: unknown) {
 }
 
 describe("the home part of the midseason package", () => {
-  it.each([8, 9])("shows the takeover in place of the usual top with week %i published", async (latest) => {
-    const sections = (await homeOver(latest, fixture))();
+  it("shows the takeover in place of the usual top with week 8 published", async () => {
+    const sections = (await homeOver(8, fixture))();
     expect(sections.map((section) => section.place)).toEqual(["takeover"]);
     render(<>{sections[0].part}</>);
     const takeover = screen.getByRole("region", { name: "2026 Midseason Report" });
@@ -31,8 +31,8 @@ describe("the home part of the midseason package", () => {
     );
   });
 
-  it("shows the report tile with one big fact with week 10 published", async () => {
-    const sections = (await homeOver(10, fixture))();
+  it.each([9, 10])("shows the report tile with one big fact with week %i published", async (latest) => {
+    const sections = (await homeOver(latest, fixture))();
     expect(sections.map((section) => section.place)).toEqual(["middle"]);
     render(<>{sections[0].part}</>);
     expect(screen.queryByRole("region", { name: "2026 Midseason Report" })).toBeNull();

@@ -4,7 +4,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-44, AT-45, and AT-
 
 **App:** site
 
-**What to build:** The home page shows the takeover, with the opener and a link, while the latest published week is at or before the report week plus 1. After that, the home page shows the report tile with one big fact. The dock and the menu do not change. This ticket waits for the merge of `site-redesign` into `main`, because it uses the redesign's parts and look.
+**What to build:** The home page shows the takeover, with the opener and a link, while the latest published week is at or before the report week. After that, the home page shows the report tile with one big fact. The menu has a Midseason Report link. The dock does not change. This ticket waits for the merge of `site-redesign` into `main`, because it uses the redesign's parts and look.
 
 **Blocked by:** 11.
 

@@ -123,6 +123,16 @@ describe("The dock (AT-9)", () => {
     for (const link of links) expect(link.querySelector("svg")).not.toBeNull();
   });
 
+  it("leaves out the midseason report, so five items share the width of a phone", () => {
+    const items: SiteMenu["items"] = [
+      ...MENU.items,
+      { kind: "midseason", label: "Midseason Report", short: "Report", href: "/midseason/2026/" },
+    ];
+    renderBand("/", { ...MENU, items });
+    expect(within(pillBar()).getAllByRole("link").map((link) => link.textContent)).toContain("Midseason Report");
+    expect(within(dock()).getAllByRole("link").map((link) => link.textContent)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+  });
+
   it("sits outside the top band, so it stays at the bottom of the viewport", () => {
     renderBand("/");
     expect(screen.getByRole("banner").contains(dock())).toBe(false);

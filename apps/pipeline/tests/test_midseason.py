@@ -196,7 +196,7 @@ def test_the_build_writes_midseason_json_to_the_build_folder_of_the_season_and_n
     out = build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     assert out == build_dir(client.folder) / "2026" / "midseason.json"
     report = _report(out)
-    assert (report["schema_version"], report["season"], report["week"], report["takeover_end_week"]) == (1, 2026, 8, 9)
+    assert (report["schema_version"], report["season"], report["week"], report["takeover_end_week"]) == (1, 2026, 8, 8)
     assert [act["key"] for act in report["acts"]] == ["how-we-got-here", "the-moves", "what-comes-next"]
     assert not (client.folder / "published").exists()
 

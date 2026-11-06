@@ -10,8 +10,10 @@ import { listWeekSummaries } from "@/lib/data/week-data";
 import { homeHref, logoSrc } from "@/lib/routes";
 
 /* The short label of each package in the dock, where five items share the width of a phone. The week item keeps
-   the label of its package, "Week N", and the pill bar shows the full label of each item. */
+   the label of its package, "Week N", and the pill bar shows the full label of each item. The dock leaves out
+   the midseason item, so its short label serves only a menu with no pill bar. */
 const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
+  midseason: "Report",
   rankings: "Rankings",
   managers: "Managers",
   analyzer: "Trade",
@@ -23,8 +25,8 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
 export function menuPages(items: MenuItem[], links: MenuLinks, home: string): NavItem[] {
   return items.flatMap((item): NavItem[] => {
     if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
-    // The sim and the midseason report add no menu item and no dock item (midseason PRD), so they have no kind.
-    if (item.package === "sim" || item.package === "midseason") return [];
+    // The sim adds no menu item and no dock item (midseason PRD), so it has no kind.
+    if (item.package === "sim") return [];
     const link = links[item.package]?.();
     if (!link) return [];
     const short = item.package === "week" ? link.label : SHORT[item.package];

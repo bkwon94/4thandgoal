@@ -982,7 +982,7 @@ A headline that names the #1 team of a ranking in a chapter, such as the biggest
 _Avoid_: Highlight, spotlight
 
 **Takeover**:
-The weeks when the home page shows the midseason report in place of its usual top, through the report week plus 1.
+The weeks when the home page shows the midseason report in place of its usual top, through the report week.
 _Avoid_: Banner, promo
 
 **Report tile**:
