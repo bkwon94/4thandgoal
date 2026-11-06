@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-12, AT-13, and AT-
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A CPC steal is Matthew Golden at $2, and a bust is A.J. Brown at $39 with "just bad".
 - [x] In NorCal, each pick's cost is its pick number.
