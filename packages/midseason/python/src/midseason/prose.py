@@ -27,6 +27,10 @@ VOICE = Path(__file__).parent / "prompts" / "voice.md"
 PROSE_NOTES = Path(__file__).parent / "prompts" / "notes.md"
 # Each chapter has one prose block of 40 words or fewer. Ticket 17 decided it.
 BLOCK_WORDS = 40
+# Quick hits ends Act II with two blocks, `lineup` and `injuries`. Each holds 20 words or fewer, so Quick hits holds 40
+# words in all, as one chapter does. Brian decided it in review finding P-5.
+QUICK_HITS_WORDS = 20
+QUICK_HITS_KEYS = frozenset({"lineup", "injuries"})
 # A block may hold two reaction sentences, so a short punch line can close the voice. The first sentence cites a fact.
 BLOCK_REACTIONS = 2
 # The week fact lets a blurb name the report week and the week after it, as the verifier allows on a weekly page.
@@ -105,7 +109,8 @@ def prose_sheet(
         own = set(ids)
         chapters.append(Chapter(key=key, title=title, fact_ids=ids, scope_teams=teams, scope_players=players,
                                 min_sentences=2, max_sentences=5, max_reactions=BLOCK_REACTIONS,
-                                max_words=BLOCK_WORDS, callback_ids=[f.id for f in facts if f.id not in own]))
+                                max_words=QUICK_HITS_WORDS if key in QUICK_HITS_KEYS else BLOCK_WORDS,
+                                callback_ids=[f.id for f in facts if f.id not in own]))
     facts.append(week_fact)
     return FactSheet(facts={f.id: f for f in facts}, chapters=chapters)
 

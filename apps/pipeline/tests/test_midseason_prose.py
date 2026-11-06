@@ -41,10 +41,20 @@ BLOCKS = ["opener", "state", "arcs", "luck", "injuries", "top10", "draft", "waiv
           "look-ahead"]
 
 
+QUICK_HITS = ("lineup", "injuries")
+
+
 def test_each_chapter_has_one_prose_block_of_40_words_or_fewer(built):
     draft, _, _ = built
     assert [chapter.key for chapter in draft.sheet.chapters] == BLOCKS
-    assert all(chapter.max_words == 40 for chapter in draft.sheet.chapters)
+    assert all(chapter.max_words == 40 for chapter in draft.sheet.chapters if chapter.key not in QUICK_HITS)
+
+
+def test_each_of_the_two_parts_of_quick_hits_has_20_words_or_fewer(built):
+    # P-5. Quick hits holds 40 words in all, so each of its two blocks gets 20.
+    draft, _, _ = built
+    caps = {chapter.key: chapter.max_words for chapter in draft.sheet.chapters if chapter.key in QUICK_HITS}
+    assert caps == {"lineup": 20, "injuries": 20}
 
 
 def test_a_block_over_40_words_fails_the_check(built):
