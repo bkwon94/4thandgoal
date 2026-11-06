@@ -1,8 +1,9 @@
 # Midseason report: evidence
 
 Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests: `.scratch/midseason-report/ACCEPTANCE.md`.
-Built from: `d93394b2`, on 2026-11-05. The agent gives no Test verdict. Brian gives one for each test.
-Round time: 10 min for 15 site tests.
+Built from: `403403f3`, on 2026-11-06. The agent gives no Test verdict. Brian gives one for each test.
+Round time: 14 min for 26 site tests.
+The round of 2026-11-06 recorded every site test, AT-40, AT-41, AT-52, and AT-61 to AT-65 again. The other pipeline tests keep their entries from `d93394b2` of 2026-11-05.
 
 The pipeline tests ran at `233d3ef0`. The commits after it change only the site, the tests, and the spec text, so the pipeline output is the same. AT-47 ran again at `d93394b2`. The site tests ran at `d93394b2`, with the report data of a real `make midseason CLIENT=cpc WEEK=8` copied into `clients/cpc/published/2026/` for the round and removed after it. No real publish ran: AT-42 and AT-43 ran in a clone whose remote is a local bare repo.
 
@@ -57,12 +58,12 @@ Then: Each cell of the diagonal equals the team's standings record. Bo Girds wit
 Files: `evidence/AT-7/output.txt`
 Observation: For each of the 12 teams, the swap cell with its own schedule shows the same record as the state of the league. The Bo Girds cell with the schedule of roster 9, Maye d'force B with U, is 14-2-0.
 
-## AT-8: The All-play record is explained
+## AT-8: Luck is explained in plain words
 
 App: site
-Then: One plain sentence beside the All-play wins explains the All-play record.
-Files: `evidence/AT-8/steps.json`, `evidence/AT-8/375-light.png`, `evidence/AT-8/375-dark.png`, `evidence/AT-8/768-light.png`, `evidence/AT-8/768-dark.png`, `evidence/AT-8/1280-light.png`, `evidence/AT-8/1280-dark.png`
-Observation: Each shot shows one sentence directly above the Schedule luck table: "All-play wins count each week as a game against every other team, so they show the wins your scores earned with an average schedule." A second sentence follows it: "Schedule luck is the real wins minus the All-play wins." At 375 px the table scrolls sideways inside its card with the team column fixed, and the shot shows it at the start, with the CLOSE column cut at the card edge.
+Then: A card above the luck table explains the idea with the worked example of All You Need Is Love: 9 of 11 teams outscored in week 3, and 4.27 wins in all. The word "All-play" shows nowhere on the page.
+Files: `evidence/AT-8/1280-dark.png`, `evidence/AT-8/1280-light.png`, `evidence/AT-8/375-dark.png`, `evidence/AT-8/375-light.png`, `evidence/AT-8/768-dark.png`, `evidence/AT-8/768-light.png`, `evidence/AT-8/steps.json`
+Observation: A card above the luck table holds three numbered steps: what "wins if you played everyone" means, then the example "In week 3, All You Need Is Love scored 114.33 and outscored 9 of 11 teams: 0.82 of a win. Over 8 weeks it outscored 47 of 88: 4.27 wins.", then the gap of luck. The built page has no "All-play" text; at 375 px the table scrolls sideways inside its card, with the PA column cut at the card edge.
 
 ## AT-9: Injury toll
 
@@ -82,8 +83,8 @@ Observation: QB rank 1 is Josh Allen with 189.32 points. DEF rank 3 is the Tampa
 
 App: site
 Then: The chapter shows the RB list only, with a switch for QB, RB, WR, TE, and DEF.
-Files: `evidence/AT-11/steps.json`, `evidence/AT-11/375-light.png`, `evidence/AT-11/375-dark.png`, `evidence/AT-11/768-light.png`, `evidence/AT-11/768-dark.png`, `evidence/AT-11/1280-light.png`, `evidence/AT-11/1280-dark.png`
-Observation: Position top 10 shows one switch row of QB, RB, WR, TE, and DEF, with RB marked, and one list of 10 running backs, Jahmyr Gibbs 178.8 first. No other position list shows in the chapter.
+Files: `evidence/AT-11/1280-dark.png`, `evidence/AT-11/1280-light.png`, `evidence/AT-11/375-dark.png`, `evidence/AT-11/375-light.png`, `evidence/AT-11/768-dark.png`, `evidence/AT-11/768-light.png`, `evidence/AT-11/steps.json`
+Observation: Position top 10 shows one switch row of QB, RB, WR, TE, and DEF, with RB underlined, and one list of 10 running backs, Jahmyr Gibbs 178.8 first. No other position list shows.
 
 ## AT-12: Draft value in the auction
 
@@ -103,8 +104,8 @@ Observation: The NorCal draft type is "snake", and the cost of each of the 10 st
 
 App: pipeline
 Then: Tyler Allgeier, drafted by Bo Girds for $2 and dropped before his rise, carries the "the one that got away" line.
-Files: `evidence/AT-14/output.txt`
-Observation: The steal Tyler Allgeier, team Bo Girds, cost 2, 73.6 points, has `line` "the one that got away". Jalen Coker and Stefon Diggs carry the same line, and the steal record has no field for the drop week.
+Files: none
+Observation: Retired by decision 15.
 
 ## AT-15: Waiver hits, misses, and the outbid
 
@@ -124,8 +125,8 @@ Observation: The trade list has a length of 20. The week 1 trade of NFC Least an
 
 App: site
 Then: The top 3 trades are full cards, each with the record of each team since the trade, such as "5-3 since". A player who was out in the first week after his trade has the tag "hurt on arrival".
-Files: `evidence/AT-17/steps.json`, `evidence/AT-17/375-light.png`, `evidence/AT-17/375-dark.png`, `evidence/AT-17/768-light.png`, `evidence/AT-17/768-dark.png`, `evidence/AT-17/1280-light.png`, `evidence/AT-17/1280-dark.png`
-Observation: The chapter shows 3 full cards (week 1 Robbery, week 3 Robbery, week 4 Clear win), each with a record per team, such as "3-13 since" and "9-7 since", then compact rows and a "Show all 17" button. The tag "HURT ON ARRIVAL" shows only in the compact rows, after Breece Hall, Brian Robinson Jr., DJ Moore, Jacory Croskey-Merritt, David Montgomery, and Lamar Jackson; no player in the 3 full cards has the tag.
+Files: `evidence/AT-17/1280-dark.png`, `evidence/AT-17/1280-light.png`, `evidence/AT-17/375-dark.png`, `evidence/AT-17/375-light.png`, `evidence/AT-17/768-dark.png`, `evidence/AT-17/768-light.png`, `evidence/AT-17/steps.json`
+Observation: The chapter shows 3 full cards (week 1 Robbery, week 3 Robbery, week 4 Clear win), each with a record per team, such as "3-13 since" and "9-7 since", then compact rows and "Show all 17". The text tag "HURT ON ARRIVAL" follows Breece Hall, Brian Robinson Jr., DJ Moore, Jacory Croskey-Merritt, David Montgomery, and Lamar Jackson, all in the compact rows.
 
 ## AT-18: Lineup choices
 
@@ -152,8 +153,8 @@ Observation: The award list has 7 entries, each with a team and a `fact` sentenc
 
 App: site
 Then: Heartbreak of the year and Beatdown of the year each show once, inside the record book, and not again among the awards.
-Files: `evidence/AT-21/steps.json`, `evidence/AT-21/375-light.png`, `evidence/AT-21/375-dark.png`, `evidence/AT-21/768-light.png`, `evidence/AT-21/768-dark.png`, `evidence/AT-21/1280-light.png`, `evidence/AT-21/1280-dark.png`
-Observation: "BEATDOWN OF THE YEAR" shows as a tag on Biggest margin (92.14) and "HEARTBREAK OF THE YEAR" as a tag on Closest game (0.4) in the record book. The awards list below holds 5 cards: MVP, Streaming king, Bench crime of the year, Most active, and Set and forget, with no Heartbreak or Beatdown card.
+Files: `evidence/AT-21/1280-dark.png`, `evidence/AT-21/1280-light.png`, `evidence/AT-21/375-dark.png`, `evidence/AT-21/375-light.png`, `evidence/AT-21/768-dark.png`, `evidence/AT-21/768-light.png`, `evidence/AT-21/steps.json`
+Observation: "BEATDOWN OF THE YEAR" shows under Biggest margin (92.14) and "HEARTBREAK OF THE YEAR" under Closest game (0.4), inside the record book. The awards below are 5 lines: MVP, Streaming king, Bench crime of the year, Most active, and Set and forget, with no Heartbreak or Beatdown line.
 
 ## AT-22: The spread rule
 
@@ -166,8 +167,8 @@ Observation: Each of the 12 teams has 1 to 3 headlines, and Bo Girds has `arc.co
 
 App: pipeline
 Then: Due to fall has Jaxon Smith-Njigba. Grab him now has Kyler Murray. Each list has 3 players.
-Files: `evidence/AT-23/output.txt`
-Observation: Due to fall lists Jaxon Smith-Njigba, Caleb Douglas, and Mike Gesicki. Grab him now lists Kyler Murray, J.J. McCarthy, and Justin Herbert, and Due to rise also has 3 players.
+Files: none
+Observation: Retired by decision 15.
 
 ## AT-24: Look ahead
 
@@ -187,29 +188,29 @@ Observation: The opener has the title "The title race" and names London Cooking 
 
 App: site
 Then: The report has three acts in this order: How we got here, The moves, What comes next. Each act opens with a dark title page.
-Files: `evidence/AT-26/steps.json`, `evidence/AT-26/375-light.png`, `evidence/AT-26/375-dark.png`, `evidence/AT-26/768-light.png`, `evidence/AT-26/768-dark.png`, `evidence/AT-26/1280-light.png`, `evidence/AT-26/1280-dark.png`
-Observation: Each full-page shot shows, from top to end, the title pages "Act I How we got here", "Act II The moves", and "Act III What comes next". Each title page has a near-black surface in the light theme and in the dark theme. Each test has one full-page shot per width and theme that holds all three title pages, not one shot per title page.
+Files: `evidence/AT-26/1280-dark.png`, `evidence/AT-26/1280-light.png`, `evidence/AT-26/375-dark.png`, `evidence/AT-26/375-light.png`, `evidence/AT-26/768-dark.png`, `evidence/AT-26/768-light.png`, `evidence/AT-26/steps.json`
+Observation: Each full-page shot shows, from top to end, the title pages "Act I How We Got Here", "Act II The Moves", and "Act III What Comes Next", each on a near-black surface in both themes. One full-page shot per width and theme holds all three title pages.
 
 ## AT-27: The chapter rail
 
 App: site
 Then: The rail stays at the top, and the page moves to Act III.
-Files: `evidence/AT-27/steps.json`, `evidence/AT-27/before-375-light.png`, `evidence/AT-27/before-375-dark.png`, `evidence/AT-27/before-768-light.png`, `evidence/AT-27/before-768-dark.png`, `evidence/AT-27/before-1280-light.png`, `evidence/AT-27/before-1280-dark.png`, `evidence/AT-27/after-375-light.png`, `evidence/AT-27/after-375-dark.png`, `evidence/AT-27/after-768-light.png`, `evidence/AT-27/after-768-dark.png`, `evidence/AT-27/after-1280-light.png`, `evidence/AT-27/after-1280-dark.png`, `evidence/AT-27/url-375-light.txt`, `evidence/AT-27/url-375-dark.txt`, `evidence/AT-27/url-768-light.txt`, `evidence/AT-27/url-768-dark.txt`, `evidence/AT-27/url-1280-light.txt`, `evidence/AT-27/url-1280-dark.txt`
-Observation: In each full-page shot the top band and the rail sit at the scroll position: mid Act II, at the trade report card, before the tap, and directly above the "Act III What comes next" title page after it, with "WHAT COMES NEXT" in the accent color. Each url file holds `/midseason/2026/#what-comes-next`.
+Files: `evidence/AT-27/after-1280-dark.png`, `evidence/AT-27/after-1280-light.png`, `evidence/AT-27/after-375-dark.png`, `evidence/AT-27/after-375-light.png`, `evidence/AT-27/after-768-dark.png`, `evidence/AT-27/after-768-light.png`, `evidence/AT-27/before-1280-dark.png`, `evidence/AT-27/before-1280-light.png`, `evidence/AT-27/before-375-dark.png`, `evidence/AT-27/before-375-light.png`, `evidence/AT-27/before-768-dark.png`, `evidence/AT-27/before-768-light.png`, `evidence/AT-27/steps.json`, `evidence/AT-27/url-1280-dark.txt`, `evidence/AT-27/url-1280-light.txt`, `evidence/AT-27/url-375-dark.txt`, `evidence/AT-27/url-375-light.txt`, `evidence/AT-27/url-768-dark.txt`, `evidence/AT-27/url-768-light.txt`
+Observation: In each before shot the top band and the rail sit mid Act II, at the trade report card. In each after shot they sit directly above the "Act III What Comes Next" title page, with "WHAT COMES NEXT" in the accent color, and each url file holds `/midseason/2026/#what-comes-next` on port 4174.
 
 ## AT-28: The look at each width
 
 App: site
 Then: The report renders in the redesign look with no clipped text and no sideways scroll.
-Files: `evidence/AT-28/steps.json`, `evidence/AT-28/start-375-light.png`, `evidence/AT-28/start-375-dark.png`, `evidence/AT-28/start-768-light.png`, `evidence/AT-28/start-768-dark.png`, `evidence/AT-28/start-1280-light.png`, `evidence/AT-28/start-1280-dark.png`, `evidence/AT-28/end-375-light.png`, `evidence/AT-28/end-375-dark.png`, `evidence/AT-28/end-768-light.png`, `evidence/AT-28/end-768-dark.png`, `evidence/AT-28/end-1280-light.png`, `evidence/AT-28/end-1280-dark.png`
-Observation: Each shot is exactly the viewport width (375, 768, 1280 px), so the page has no sideways scroll, and it shows the redesign top band, cards, mono labels, and dark hero surfaces. At 375 px the start shots show The state of the league and Schedule luck at the left of their tables, with STREAK and CLOSE cut at the card edge. The end shots, after a scroll to the PLAYOFF and CLOSE headers, show both tables at their right end with the team column, place number included, still in place. In the end shots the fixed team column covers the left part of the next column, for example PF "850.17" shows as "0.17".
+Files: `evidence/AT-28/end-1280-dark.png`, `evidence/AT-28/end-1280-light.png`, `evidence/AT-28/end-375-dark.png`, `evidence/AT-28/end-375-light.png`, `evidence/AT-28/end-768-dark.png`, `evidence/AT-28/end-768-light.png`, `evidence/AT-28/start-1280-dark.png`, `evidence/AT-28/start-1280-light.png`, `evidence/AT-28/start-375-dark.png`, `evidence/AT-28/start-375-light.png`, `evidence/AT-28/start-768-dark.png`, `evidence/AT-28/start-768-light.png`, `evidence/AT-28/steps.json`
+Observation: Each shot is exactly the viewport width (375, 768, 1280 px), so the page has no sideways scroll, and the start and end shots are the same image, as full-page shots. At 375 px the luck table and the state table scroll inside their cards, with columns cut at the card edge, and the fixed top band and dock show part way down the page.
 
 ## AT-29: The sim is the finale
 
 App: site
 Then: The sim is the last chapter of the report.
-Files: `evidence/AT-29/steps.json`, `evidence/AT-29/375-light.png`, `evidence/AT-29/375-dark.png`, `evidence/AT-29/768-light.png`, `evidence/AT-29/768-dark.png`, `evidence/AT-29/1280-light.png`, `evidence/AT-29/1280-dark.png`
-Observation: The end of each page shows Players to watch, then "Sim the rest of the season" with the "Sim the season" button, the replay stage, and the table "The odds of all 10,000 runs". Nothing follows the odds table but the page end.
+Files: `evidence/AT-29/1280-dark.png`, `evidence/AT-29/1280-light.png`, `evidence/AT-29/375-dark.png`, `evidence/AT-29/375-light.png`, `evidence/AT-29/768-dark.png`, `evidence/AT-29/768-light.png`, `evidence/AT-29/steps.json`
+Observation: The page ends with "Sim the Rest of the Season": the "Sim the season" button, the replay stage with the standings after week 8, and the table "The odds of all 10,000 runs". The Look Ahead comes before it, and nothing follows the odds table.
 
 ## AT-30: The replay: the regular season and the split
 
@@ -229,22 +230,22 @@ Observation: At 375 px the Semifinal pairs seed 1 with seed 6 and seed 2 with se
 
 App: site
 Then: A full champion card shows the team and "Wins the title in N% of all 10,000 runs", where N is the team's title odds in `sim.json`.
-Files: `evidence/AT-32/steps.json`, `evidence/AT-32/375-light.png`, `evidence/AT-32/375-dark.png`, `evidence/AT-32/768-light.png`, `evidence/AT-32/768-dark.png`, `evidence/AT-32/1280-light.png`, `evidence/AT-32/1280-dark.png`
-Observation: The card sits at the top of the replay stage, above the complete bracket, with the team and the line "Wins the title in N% of all 10,000 runs": Lil Fridge 14.4 (375 light and 1280 dark), The Blue Tent 13.4 (375 dark), and London Cooking 16.8 (1280 light). Each N matches `teams.<id>.title` in `sim.json` (14.4, 13.4, 16.8). At 768 px the fixed dock covers the team name and most of the line: the avatar shows Bo Girds with "16.3%" in part (light) and Lil Fridge with "14.4%" in part (dark); at 375 px the dock covers the lower part of the avatar and the top of the name, but not the line.
+Files: `evidence/AT-32/1280-dark.png`, `evidence/AT-32/1280-light.png`, `evidence/AT-32/375-dark.png`, `evidence/AT-32/375-light.png`, `evidence/AT-32/768-dark.png`, `evidence/AT-32/768-light.png`, `evidence/AT-32/steps.json`
+Observation: Each shot shows the champion card above the complete bracket, with "Wins the title in N% of all 10,000 runs": Return of T Mac 5.4 (375 light), London Cooking 16.8 (375 dark and 768 light), Lil Fridge 14.4 (768 dark), and Bo Girds 16.3 (1280 light and 1280 dark). Each N matches `teams.<id>.title` in `sim.json`; at 375 and 768 px the fixed dock covers part of the avatar and the team name, and at 768 px most of the line too.
 
 ## AT-33: The odds of all runs
 
 App: site
 Then: The playoff, bye, and title odds of all 10,000 runs show below the replay at every width.
-Files: `evidence/AT-33/steps.json`, `evidence/AT-33/375-light.png`, `evidence/AT-33/375-dark.png`, `evidence/AT-33/768-light.png`, `evidence/AT-33/768-dark.png`, `evidence/AT-33/1280-light.png`, `evidence/AT-33/1280-dark.png`
-Observation: At each width the table "The odds of all 10,000 runs" sits below the replay stage, with the columns PLAYOFF, BYE, TITLE, and SEED for all 12 teams. Before a press the SEED column shows a dash for each team.
+Files: `evidence/AT-33/1280-dark.png`, `evidence/AT-33/1280-light.png`, `evidence/AT-33/375-dark.png`, `evidence/AT-33/375-light.png`, `evidence/AT-33/768-dark.png`, `evidence/AT-33/768-light.png`, `evidence/AT-33/steps.json`
+Observation: At each width the table "The odds of all 10,000 runs" sits below the replay stage, with PLAYOFF, BYE, TITLE, and SEED for all 12 teams. Before a press the SEED column shows a dash for each team.
 
 ## AT-34: Skip to the end
 
 App: site
 Then: The final state shows at once: the bracket complete and the champion card.
-Files: `evidence/AT-34/steps.json`, `evidence/AT-34/before-375-dark.png`, `evidence/AT-34/before-1280-dark.png`, `evidence/AT-34/after-375-dark.png`, `evidence/AT-34/after-1280-dark.png`
-Observation: The before shots show week 11 of the run with the "Skip to the end" button. The after shots show no "Skip to the end" button, and the stage shows the champion card above the complete bracket: Round 1, Semifinal, and Final, each game with both scores. At 375 px The Blue Tent wins; at 1280 px London Cooking wins, with the three rounds side by side.
+Files: `evidence/AT-34/after-1280-dark.png`, `evidence/AT-34/after-375-dark.png`, `evidence/AT-34/before-1280-dark.png`, `evidence/AT-34/before-375-dark.png`, `evidence/AT-34/steps.json`
+Observation: The before shots show week 11 of a run with the "Skip to the end" button. The after shots show no Skip button, the champion card, and the complete bracket of Round 1, Semifinal, and Final: Bo Girds wins at 375 px and Maye d'force B with U at 1280 px.
 
 ## AT-35: A fresh run
 
@@ -281,19 +282,19 @@ Then: Each blurb shows its prose block, the facts it cites, and the verifier res
 Files: `evidence/AT-39/output.txt`
 Observation: The first 40 lines hold the full `opener` entry: a "Prose block" line, a numbered blurb with fact ids, a "Cited facts" list, and "Verifier: passed on attempt 1.". The `opener.roast` entry follows in the same shape, and its verifier line is line 42, just past the 40-line cut.
 
-## AT-40: A roast cites a fact
+## AT-40: Each prose block cites a fact
 
 App: pipeline
-Then: Each roast blurb cites at least one fact, and the verifier passes it.
+Then: Each prose block cites at least one fact, and the verifier passes it.
 Files: `evidence/AT-40/output.txt`
-Observation: The file holds the review entries of `opener.roast`, `state.roast`, and `arcs.roast`. Each of the 13 roast blurbs cites 1 to 6 facts, and each verifier line says "passed", 12 on attempt 1 and `waivers.roast` on attempt 2.
+Observation: The review entries of opener, luck, and lineup each list sentences with fact ids, such as `[OP.record]`, and the cited facts under them; a `[reaction]` sentence cites no fact. All 12 prose blocks show "Verifier: passed": 7 on attempt 1, and 5 on attempt 2 (arcs, waivers, trades, records, and look-ahead). No block failed.
 
-## AT-41: The roast setting off
+## AT-41: Savage is the default
 
 App: pipeline
-Then: The draft has no roast lines.
+Then: The build runs at `savage`, and the review file names the level `savage`.
 Files: `evidence/AT-41/output.txt`
-Observation: In a second detached worktree, `client.toml` got `roast = "off"`; the build ran in 244 s, and the file was put back. The review file says "Roast: off" and has no `.roast` section, and each `roast` in `midseason.json` is `null`; 4 main blurbs still each hold one sentence marked `[reaction]`.
+Observation: `clients/cpc/client.toml` has no `[values.midseason]`, only a comment that names the default `savage`. The build ran in 253 s with exit code 0, and line 3 of the review file reads "Roast: savage."
 
 ## AT-42: An edit that adds an uncited number
 
@@ -313,22 +314,22 @@ Observation: The publish ran in a clone whose `origin` is a local bare repo, so 
 
 App: site
 Then: The top of the home page shows the takeover: the opener and a link to the report.
-Files: `evidence/AT-44/steps.json`, `evidence/AT-44/375-light.png`, `evidence/AT-44/375-dark.png`, `evidence/AT-44/768-light.png`, `evidence/AT-44/768-dark.png`, `evidence/AT-44/1280-light.png`, `evidence/AT-44/1280-dark.png`
-Observation: Under the league title, the top of the home page shows a dark hero "2026 Midseason Report // Week 8, The title race" with the title odds of London Cooking 16.8%, Bo Girds 16.3%, Maye d'force B with U 14.5%, and the record leader All You Need Is Love 9.7%. The hero ends in the button "Read the Midseason Report", and Power Rankings follows it. The hero holds the opener title and odds, but not the opener prose.
+Files: `evidence/AT-44/1280-dark.png`, `evidence/AT-44/1280-light.png`, `evidence/AT-44/375-dark.png`, `evidence/AT-44/375-light.png`, `evidence/AT-44/768-dark.png`, `evidence/AT-44/768-light.png`, `evidence/AT-44/steps.json`
+Observation: Under the league title, the home page shows the dark hero "2026 Midseason Report // Week 8, The Title Race" with London Cooking 16.8%, Bo Girds 16.3%, Maye d'force B with U 14.5%, and the record leader All You Need Is Love 9.7%. It ends in the button "Read the Midseason Report", and Power Rankings follows it.
 
 ## AT-45: The report tile
 
 App: site
 Then: The home page shows its usual top and the report tile with one big fact and a link to the report.
-Files: `evidence/AT-45/steps.json`, `evidence/AT-45/steps.txt`, `evidence/AT-45/375-light.png`, `evidence/AT-45/375-dark.png`, `evidence/AT-45/768-light.png`, `evidence/AT-45/768-dark.png`, `evidence/AT-45/1280-light.png`, `evidence/AT-45/1280-dark.png`
-Observation: No week 10 data exists, so these shots come from a copy of the published `midseason.json` with `takeover_end_week` set to 7, not 9, and week 8 as the latest week. The home page shows its usual top, the week 8 Matchup of the week hero and "Week 8 in four numbers", then the tile "2026 Midseason Report, Title favorite, 16.8%, London Cooking" with an arrow, above Power Rankings.
+Files: `evidence/AT-45/1280-dark.png`, `evidence/AT-45/1280-light.png`, `evidence/AT-45/375-dark.png`, `evidence/AT-45/375-light.png`, `evidence/AT-45/768-dark.png`, `evidence/AT-45/768-light.png`, `evidence/AT-45/steps.json`, `evidence/AT-45/steps.txt`
+Observation: No week 10 data exists, so these shots come from a copy of `midseason.json` with `takeover_end_week` set to 7, not 9 (see `steps.txt`); the full round first shot the takeover here and a second run replaced it. The home page shows its usual top, the week 8 Matchup of the week hero and "Week 8 in four numbers", then the tile "2026 Midseason Report, Title favorite, 16.8%, London Cooking" with an arrow, above Power Rankings.
 
 ## AT-46: The menu
 
 App: site
 Then: The dock and the menu have the same items as before the report.
-Files: `evidence/AT-46/steps.json`, `evidence/AT-46/375-light.png`, `evidence/AT-46/375-dark.png`, `evidence/AT-46/768-light.png`, `evidence/AT-46/768-dark.png`, `evidence/AT-46/1280-light.png`, `evidence/AT-46/1280-dark.png`
-Observation: At 375 and 768 px the dock holds Home, Week 8, Rankings, Managers, and Trade. At 1280 px the pill bar holds Home, Week 8, Power Rankings, Managers, and Trade Analyzer. The dock is the same as in `.scratch/site-redesign/evidence/AT-3/cpc/375-light.png`, from before the report. The site has no menu to open, so the shots show the dock and the pill bar as they are.
+Files: `evidence/AT-46/1280-dark.png`, `evidence/AT-46/1280-light.png`, `evidence/AT-46/375-dark.png`, `evidence/AT-46/375-light.png`, `evidence/AT-46/768-dark.png`, `evidence/AT-46/768-light.png`, `evidence/AT-46/steps.json`
+Observation: At 375 and 768 px the dock holds Home, Week 8, Rankings, Managers, and Trade. At 1280 px the pill bar holds Home, Week 8, Power Rankings, Managers, and Trade Analyzer; the site has no menu to open, so the shots show the dock and the bar as they are.
 
 ## AT-47: The layers
 
@@ -355,8 +356,8 @@ Observation: The build ran in a second detached worktree, with the `midseason.js
 
 App: site
 Then: The sim chapter has no control to pick the winner of a game.
-Files: `evidence/AT-50/steps.json`, `evidence/AT-50/375-light.png`, `evidence/AT-50/375-dark.png`, `evidence/AT-50/768-light.png`, `evidence/AT-50/768-dark.png`, `evidence/AT-50/1280-light.png`, `evidence/AT-50/1280-dark.png`
-Observation: The sim chapter shows one control, the "Sim the season" button, then the stage with the standings after week 8 and the odds table. It shows no control per game or per team. The AT-30, AT-31, and AT-34 shots of a running replay show only "Sim the season" and "Skip to the end".
+Files: `evidence/AT-50/1280-dark.png`, `evidence/AT-50/1280-light.png`, `evidence/AT-50/375-dark.png`, `evidence/AT-50/375-light.png`, `evidence/AT-50/768-dark.png`, `evidence/AT-50/768-light.png`, `evidence/AT-50/steps.json`
+Observation: The sim chapter shows one control, the "Sim the season" button, then the stage with the standings after week 8 and the odds table. It shows no control per game or per team.
 
 ## AT-51: The weekly odds do not change
 
@@ -364,3 +365,101 @@ App: pipeline
 Then: `clients/cpc/published/2026/rankings.json` does not change.
 Files: `evidence/AT-51/output.txt`
 Observation: `git status` of `rankings.json` is empty before and after `make midseason CLIENT=cpc WEEK=8`. Its MD5 is `4a80c07457cf7adc6a184d9404dbf4f1` both times.
+
+## AT-52: Lean chapters
+
+App: pipeline
+Then: Each prose block has 40 words or fewer.
+Files: `evidence/AT-52/output.txt`, `evidence/AT-52/fields.json`
+Observation: `midseason.json` holds 12 prose blocks. Opener, state, top10, trades, and records have 40 words; arcs 38, luck 39, draft 39, waivers 39, and look-ahead 32; lineup and injuries each have 20 words, at their cap of 20. The count splits the joined sentences on spaces.
+
+## AT-53: Quick hits and Act III
+
+App: site
+Then: Act II ends with Quick hits, which holds lineup choices and the injury toll. Act III holds the look ahead, then the sim.
+Files: `evidence/AT-53/1280-dark.png`, `evidence/AT-53/1280-light.png`, `evidence/AT-53/375-dark.png`, `evidence/AT-53/375-light.png`, `evidence/AT-53/768-dark.png`, `evidence/AT-53/768-light.png`, `evidence/AT-53/steps.json`
+Observation: Act II ends with "Quick Hits", which holds Lineup Choices and The Injury Toll, each with its list and a short blurb. Then "Act III What Comes Next" holds The Look Ahead, then "Sim the Rest of the Season", and the page ends.
+
+## AT-54: The link to the sim
+
+App: site
+Then: The page moves to the sim chapter.
+Files: `evidence/AT-54/after-1280-dark.png`, `evidence/AT-54/after-1280-light.png`, `evidence/AT-54/after-375-dark.png`, `evidence/AT-54/after-375-light.png`, `evidence/AT-54/after-768-dark.png`, `evidence/AT-54/after-768-light.png`, `evidence/AT-54/opener-1280-dark.png`, `evidence/AT-54/opener-1280-light.png`, `evidence/AT-54/opener-375-dark.png`, `evidence/AT-54/opener-375-light.png`, `evidence/AT-54/opener-768-dark.png`, `evidence/AT-54/opener-768-light.png`, `evidence/AT-54/steps.json`, `evidence/AT-54/url-1280-dark.txt`, `evidence/AT-54/url-1280-light.txt`, `evidence/AT-54/url-375-dark.txt`, `evidence/AT-54/url-375-light.txt`, `evidence/AT-54/url-768-dark.txt`, `evidence/AT-54/url-768-light.txt`
+Observation: The opener shot shows "SEE THE SIM" with a down arrow under the record leader in the opener. In each after shot the fixed top band and the rail sit directly above "Sim the Rest of the Season", and each url file holds `/midseason/2026/#sim`.
+
+## AT-55: Quiet tags
+
+App: site
+Then: The DEF #3 row, the Buccaneers, reads "Free agent" in its second line. No tag in the report has a fill or a border.
+Files: `evidence/AT-55/def-1280-dark.png`, `evidence/AT-55/def-1280-light.png`, `evidence/AT-55/def-375-dark.png`, `evidence/AT-55/def-375-light.png`, `evidence/AT-55/def-768-dark.png`, `evidence/AT-55/def-768-light.png`, `evidence/AT-55/steps.json`
+Observation: With DEF chosen, row 03 reads "Tampa Bay Buccaneers" with "TB · Free agent" in its second line, 77.8. Each tag ("JUST BAD", "HURT", "LETDOWN", "HURT ON ARRIVAL", "ROBBERY", "STREAMING KING") is plain colored or gray text with no fill and no border.
+
+## AT-56: Corners and controls
+
+App: site
+Then: Cards have 8 px corners, and the report has no full pill. The switch is text with an underline under the chosen position. "Show all" is a text control with a chevron and no border.
+Files: `evidence/AT-56/after-1280-dark.png`, `evidence/AT-56/after-1280-light.png`, `evidence/AT-56/after-375-dark.png`, `evidence/AT-56/after-375-light.png`, `evidence/AT-56/after-768-dark.png`, `evidence/AT-56/after-768-light.png`, `evidence/AT-56/before-1280-dark.png`, `evidence/AT-56/before-1280-light.png`, `evidence/AT-56/before-375-dark.png`, `evidence/AT-56/before-375-light.png`, `evidence/AT-56/before-768-dark.png`, `evidence/AT-56/before-768-light.png`, `evidence/AT-56/steps.json`
+Observation: Cards show small, even corners, and the switch is text with a red underline under the chosen position. "Show all 11" is red mono text with a chevron and no border, and after the tap the streamers list holds 11 rows and "Show top 5" with an up chevron; the only round controls in the shots are the site header items (the logo and "WK 08"), outside the report.
+
+## AT-57: The awards as lines
+
+App: site
+Then: Each award is one line, such as "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts." No award is a card.
+Files: `evidence/AT-57/1280-dark.png`, `evidence/AT-57/1280-light.png`, `evidence/AT-57/375-dark.png`, `evidence/AT-57/375-light.png`, `evidence/AT-57/768-dark.png`, `evidence/AT-57/768-light.png`, `evidence/AT-57/steps.json`
+Observation: The Awards show 5 lines, each with a red label, an em dash, the name, and the reason, such as "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts." No award has a card around it.
+
+## AT-58: Decimal places
+
+App: site
+Then: The DEF #3 shows 77.8 points. The highest score shows 158.96.
+Files: `evidence/AT-58/1280-dark.png`, `evidence/AT-58/1280-light.png`, `evidence/AT-58/375-dark.png`, `evidence/AT-58/375-light.png`, `evidence/AT-58/768-dark.png`, `evidence/AT-58/768-light.png`, `evidence/AT-58/steps.json`
+Observation: The DEF list is not open in these shots; AT-55 shows it, with DEF #3 at 77.8. The record book shows the highest score as 158.96, Maye d'force B with U, week 5. The DEF #3 value 77.8 shows in the `evidence/AT-55/def-*.png` shots, because the AT-58 steps leave the DEF list closed.
+
+## AT-59: The swap as best and worst
+
+App: site
+Then: The swap is one text row per team, with no grid and no bar. The row of Bo Girds reads "Real 9-7", with "Best 14-2 on the schedule of Maye d'force B with U" and "+5".
+Files: `evidence/AT-59/1280-dark.png`, `evidence/AT-59/1280-light.png`, `evidence/AT-59/375-dark.png`, `evidence/AT-59/375-light.png`, `evidence/AT-59/768-dark.png`, `evidence/AT-59/768-light.png`, `evidence/AT-59/steps.json`
+Observation: The Schedule Swap is one text row per team, with no grid and no bar. The row of Bo Girds reads "REAL 9-7", "BEST 14-2 on the schedule of Maye d'force B with U +5", and "WORST 8-8 on the schedule of To Infinity and Bijan -1".
+
+## AT-60: The words of luck
+
+App: site
+Then: All You Need Is Love reads "+2.73" with "lucky" in the accent color. The Blue Tent at −0.09 reads "even".
+Files: `evidence/AT-60/1280-dark.png`, `evidence/AT-60/1280-light.png`, `evidence/AT-60/375-dark.png`, `evidence/AT-60/375-light.png`, `evidence/AT-60/768-dark.png`, `evidence/AT-60/768-light.png`, `evidence/AT-60/steps.json`
+Observation: All You Need Is Love reads "+2.73" with "LUCKY" in red, the accent color; other LUCKY and EVEN labels are gray, and Bo Girds has "UNLUCKY" in red. The Blue Tent reads "-0.09" with "EVEN", as does NFC Least.
+
+## AT-61: No roast block
+
+App: both
+Then: No chapter in `midseason.json` has a `roast` field, and the page has no "The roast" heading.
+Files: `evidence/AT-61/output.txt`, `evidence/AT-61/fields.json`, `evidence/AT-61/1280-dark.png`, `evidence/AT-61/1280-light.png`, `evidence/AT-61/375-dark.png`, `evidence/AT-61/375-light.png`, `evidence/AT-61/768-dark.png`, `evidence/AT-61/768-light.png`, `evidence/AT-61/fields.json`, `evidence/AT-61/output.txt`, `evidence/AT-61/steps.json`
+Observation: A `jq` search for any path with a `roast` key in `midseason.json` returns `[]`. The opener and each of the 12 chapters hold only `blurb`, `facts`, `key`, and `title`, and the quick-hits parent holds `chapters`, `key`, and `title`. `midseason.json` has no path with a `roast` key, and each chapter holds only `blurb`, `facts`, `key`, and `title` (see `output.txt`). The page shows each chapter with one blurb under its data and no "The roast" heading; the built HTML has no "The roast" text.
+
+## AT-62: Four levels only
+
+App: pipeline
+Then: The check fails and names the four levels: `off`, `warm`, `hot`, and `savage`.
+Files: `evidence/AT-62/output.txt`
+Observation: On a copy of `client.toml` in the scratchpad, with `[values.midseason]` `roast = "nuclear"` added, `cornerstone check-client` exits 2. It prints "values.midseason.roast: Input should be 'off', 'warm', 'hot' or 'savage'"; the real file never changed. The real file has no `[values.midseason]` table, so the copy got a new one.
+
+## AT-63: A fact from another chapter
+
+App: pipeline
+Then: The verifier passes the blurb, and the publish goes on.
+Files: `evidence/AT-63/output.txt`, `evidence/AT-63/blurb.json`, `evidence/AT-63/blurb-attempt1.json`, `evidence/AT-63/facts-cited.json`
+Observation: The build in a clone ran in 230 s with exit code 0. No fact says "four wins over teams with the winning lineup benched"; the nearest are the four facts LC.12.2, LC.6.7, LC.7.1, and LC.1.3, which show four teams that lost to All You Need Is Love with a better lineup on the bench. A blurb with the sentence "four wins over teams with the winning lineup benched" and those four fact ids failed the verifier: the number word 'four' is not in the cited facts, and the blurb had 55 words against a limit of 40. Three more edits failed on: no sentence without a number, "It" for the wrong team, and 41 words. The fifth blurb, "Teehee's bench held the winning lineup against All You Need Is Love in week 2." citing LC.12.2 of the lineup chapter, passed. The publish printed "Committed and pushed", made commit 74ce08ea "Midseason report week 8" with only `published/2026/midseason.json` and `sim.json`, and pushed it to the local bare repo, not GitHub.
+
+## AT-64: No Players to watch
+
+App: site
+Then: The report has no Players to watch chapter and no Grab him now.
+Files: `evidence/AT-64/1280-dark.png`, `evidence/AT-64/1280-light.png`, `evidence/AT-64/375-dark.png`, `evidence/AT-64/375-light.png`, `evidence/AT-64/768-dark.png`, `evidence/AT-64/768-light.png`, `evidence/AT-64/steps.json`
+Observation: Act III holds only The Look Ahead and "Sim the Rest of the Season". The page has no Players to watch chapter and no "Grab him now"; the built HTML holds neither text.
+
+## AT-65: The letdowns
+
+App: both
+Then: Bijan Robinson shows as a letdown: $81, the top price of the draft, RB3 for the season, and no top 17 RB week since week 4. He is not in the busts.
+Files: `evidence/AT-65/output.txt`, `evidence/AT-65/fields.json`, `evidence/AT-65/1280-dark.png`, `evidence/AT-65/1280-light.png`, `evidence/AT-65/375-dark.png`, `evidence/AT-65/375-light.png`, `evidence/AT-65/768-dark.png`, `evidence/AT-65/768-light.png`, `evidence/AT-65/fields.json`, `evidence/AT-65/output.txt`, `evidence/AT-65/steps.json`
+Observation: `letdowns` holds one entry: Bijan Robinson, To Infinity and Bijan, `cost` 81, `price_rank` 1, `points_rank` 3, `last_top_week` 4. The 5 busts are A.J. Brown, De'Von Achane, Jadarian Price, Saquon Barkley, and Ladd McConkey, with no Bijan Robinson. `letdowns` holds Bijan Robinson, To Infinity and Bijan, `cost` 81, `price_rank` 1, `points_rank` 3, `last_top_week` 4, and the 5 busts do not hold him (see `fields.json`). The draft chapter shows "Letdowns" under the busts with one card: "Bijan Robinson, RB · To Infinity and Bijan · $81, #1 price, RB3 points, Last top 17 wk 4, LETDOWN".
