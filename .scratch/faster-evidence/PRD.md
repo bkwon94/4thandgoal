@@ -5,7 +5,7 @@ Date: 2026-11-05
 Apps: both. The site gets an evidence runner on Playwright that reads a step list for each test and takes its shots. The pipeline side is the API: it reads its rate limit from the environment. The skill `cpc:implement` changes its evidence guide to use both.
 Spec branch: `faster-evidence`.
 Source: the map `.scratch/faster-evidence/MAP.md` and decision tickets 01 to 04. ADR 0020.
-Tickets: none yet. `cpc:to-tickets` writes them.
+Tickets: 01 to 05, in `issues/`.
 
 ## Problem Statement
 
