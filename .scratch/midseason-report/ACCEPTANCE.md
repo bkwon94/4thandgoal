@@ -64,12 +64,12 @@ When: Read the schedule swap in `midseason.json`.
 Then: Each cell of the diagonal equals the team's standings record. Bo Girds with the schedule of Maye d'force B with U is 14-2.
 Evidence: The command output and the named fields of `midseason.json` in the build folder.
 
-AT-8: The All-play record is explained
+AT-8: Luck is explained in plain words
 App: site
 Stories: 14
 Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
 When: Open the report at `/midseason/2026` and scroll to schedule luck.
-Then: One plain sentence beside the All-play wins explains the All-play record.
+Then: A card above the luck table explains the idea with the worked example of All You Need Is Love: 9 of 11 teams outscored in week 3, and 4.27 wins in all. The word "All-play" shows nowhere on the page.
 Evidence: Screenshots of the schedule luck chapter at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-9: Injury toll
@@ -113,6 +113,7 @@ Then: Each pick's cost is its pick number, and no pick shows a dollar amount.
 Evidence: The command output and the named fields of `midseason.json` in the NorCal build folder.
 
 AT-14: The one that got away
+Retired: decision 15 removed the "the one that got away" line, and story 26 with it.
 App: pipeline
 Stories: 26
 Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
@@ -185,6 +186,7 @@ Then: Each team has 1 to 3 headlines. Bo Girds keeps its 2 arcs and Most active,
 Evidence: The command output and the named fields of `midseason.json` in the build folder. List the headlines of each team.
 
 AT-23: Players to watch
+Retired: decision 15 removed the Players to watch chapter, and story 39 with it.
 App: pipeline
 Stories: 39
 Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
@@ -320,21 +322,21 @@ When: Open the review file in the build folder.
 Then: Each blurb shows its prose block, the facts it cites, and the verifier result.
 Evidence: The first 40 lines of the review file.
 
-AT-40: A roast cites a fact
+AT-40: Each prose block cites a fact
 App: pipeline
 Stories: 54, 53
 Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
-When: Read the roast blurbs in the review file.
-Then: Each roast blurb cites at least one fact, and the verifier passes it.
-Evidence: The review file entries of three roast blurbs.
+When: Read the prose blocks in the review file.
+Then: Each prose block cites at least one fact, and the verifier passes it.
+Evidence: The review file entries of three prose blocks.
 
-AT-41: The roast setting off
+AT-41: Savage is the default
 App: pipeline
-Stories: 55
-Given: CPC 2026 week 8, with the `roast` value of `midseason` set to `off` in a local copy of `client.toml`.
+Stories: 55, 76
+Given: CPC 2026 week 8, with no `roast` value for `midseason` in a local copy of `client.toml`.
 When: `make midseason CLIENT=cpc WEEK=8`
-Then: The draft has no roast lines.
-Evidence: The command output and three blurbs of the review file. Put the setting back after the run.
+Then: The build runs at `savage`, and the review file names the level `savage`.
+Evidence: The command output and the head of the review file. Put the config back after the run.
 
 AT-42: An edit that adds an uncited number
 App: pipeline
@@ -416,6 +418,110 @@ When: `make midseason CLIENT=cpc WEEK=8`
 Then: `clients/cpc/published/2026/rankings.json` does not change.
 Evidence: The command output and `git status` of the file.
 
+AT-52: Lean chapters
+App: pipeline
+Stories: 68
+Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
+When: Count the words of each prose block in `midseason.json`.
+Then: Each prose block has 40 words or fewer.
+Evidence: The command output and the word count of each block.
+
+AT-53: Quick hits and Act III
+App: site
+Stories: 69, 18
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report at `/midseason/2026` and scroll through Act II and Act III.
+Then: Act II ends with Quick hits, which holds lineup choices and the injury toll. Act III holds the look ahead, then the sim.
+Evidence: Screenshots of the end of Act II and all of Act III at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-54: The link to the sim
+App: site
+Stories: 70
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and tap "See the sim" in the opener.
+Then: The page moves to the sim chapter.
+Evidence: Screenshots of the opener, and the page after the tap, at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-55: Quiet tags
+App: site
+Stories: 71, 20
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and switch the Position top 10 to DEF.
+Then: The DEF #3 row, the Buccaneers, reads "Free agent" in its second line. No tag in the report has a fill or a border.
+Evidence: Screenshots of the DEF list, the draft busts, and the trade rows at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-56: Corners and controls
+App: site
+Stories: 72, 21
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and look at the cards, the position switch, and "Show all".
+Then: Cards have 8 px corners, and the report has no full pill. The switch is text with an underline under the chosen position. "Show all" is a text control with a chevron and no border.
+Evidence: Screenshots of the Position top 10 and a long list at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-57: The awards as lines
+App: site
+Stories: 73
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and scroll to the record book.
+Then: Each award is one line, such as "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts." No award is a card.
+Evidence: Screenshots of the record book and the awards at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-58: Decimal places
+App: site
+Stories: 74
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and read the DEF list and the record book.
+Then: The DEF #3 shows 77.8 points. The highest score shows 158.96.
+Evidence: Screenshots of the DEF list and the record book at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-59: The swap as best and worst
+App: site
+Stories: 15, 16
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and scroll to the schedule swap.
+Then: The swap is one text row per team, with no grid and no bar. The row of Bo Girds reads "Real 9-7", with "Best 14-2 on the schedule of Maye d'force B with U" and "+5".
+Evidence: Screenshots of the schedule swap at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-60: The words of luck
+App: site
+Stories: 14, 13
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report and read the luck table.
+Then: All You Need Is Love reads "+2.73" with "lucky" in the accent color. The Blue Tent at −0.09 reads "even".
+Evidence: Screenshots of the luck table at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-61: No roast block
+App: both
+Stories: 75
+Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
+When: Read the chapters of `midseason.json`, then open the report on the site.
+Then: No chapter in `midseason.json` has a `roast` field, and the page has no "The roast" heading.
+Evidence: The named fields of `midseason.json`, and screenshots of two chapters at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-62: Four levels only
+App: pipeline
+Stories: 55
+Given: CPC, with the `roast` value of `midseason` set to `nuclear` in a local copy of `client.toml`.
+When: Run the config check.
+Then: The check fails and names the four levels: `off`, `warm`, `hot`, and `savage`.
+Evidence: The command output. Put the config back after the run.
+
+AT-63: A fact from another chapter
+App: pipeline
+Stories: 77
+Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`.
+When: Edit the luck blurb in the draft to cite the lineup fact "four wins over teams with the winning lineup benched", then run `make midseason-publish` in a clone whose remote is a local bare repo.
+Then: The verifier passes the blurb, and the publish goes on.
+Evidence: The edited blurb, the command output, and the verifier result.
+
+AT-64: No Players to watch
+App: site
+Stories: none
+Given: The CPC site with 2026 week 8 published and the midseason report of week 8 published.
+When: Open the report at `/midseason/2026` and scroll through Act III.
+Then: The report has no Players to watch chapter and no Grab him now.
+Evidence: Screenshots of Act III at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
 ## Trace
 
 Story 1: AT-25
@@ -431,19 +537,19 @@ Story 10: AT-5
 Story 11: AT-5
 Story 12: AT-5
 Story 13: AT-6
-Story 14: AT-8
-Story 15: AT-7
-Story 16: AT-7
+Story 14: AT-8, AT-60
+Story 15: AT-7, AT-59
+Story 16: AT-7, AT-59
 Story 17: AT-6
-Story 18: AT-9
+Story 18: AT-9, AT-53
 Story 19: AT-10
-Story 20: AT-10
-Story 21: AT-11
+Story 20: AT-10, AT-55
+Story 21: AT-11, AT-56
 Story 22: AT-12
 Story 23: AT-12
 Story 24: AT-2, AT-13
 Story 25: AT-12
-Story 26: AT-14
+Story 26: removed by decision 15. AT-14 is retired.
 Story 27: AT-15
 Story 28: AT-15
 Story 29: AT-15
@@ -456,7 +562,7 @@ Story 35: AT-19
 Story 36: AT-20
 Story 37: AT-21
 Story 38: AT-24
-Story 39: AT-23
+Story 39: removed by decision 15. AT-23 is retired.
 Story 40: AT-29
 Story 41: AT-30, AT-37
 Story 42: AT-30
@@ -472,7 +578,7 @@ Story 51: AT-36
 Story 52: no test. Reason: the heat of the roast is a matter of taste, so Brian judges it in the review file.
 Story 53: AT-40
 Story 54: AT-40
-Story 55: AT-41
+Story 55: AT-41, AT-62
 Story 56: AT-44
 Story 57: AT-45
 Story 58: AT-46
@@ -485,11 +591,23 @@ Story 64: AT-43
 Story 65: AT-2, AT-48
 Story 66: AT-47, AT-48
 Story 67: AT-38
+Story 68: AT-52
+Story 69: AT-53
+Story 70: AT-54
+Story 71: AT-55
+Story 72: AT-56
+Story 73: AT-57
+Story 74: AT-58
+Story 75: AT-61. The voice itself has no test. Reason: it is a matter of taste, so Brian judges it in the review file.
+Story 76: AT-41. The heat of savage has no test. Reason: it is a matter of taste, so Brian judges it in the review file.
+Story 77: AT-63
+Story 78: no test. Reason: the writer prompt holds the rule, and Brian checks the units in the review file.
 Out of scope "A weekly rebuild of the report": AT-49
 Out of scope "A live sim, on a server or in the browser, and a pick of a game's winner": AT-50
 Out of scope "A move of the weekly odds onto the `sim` package": AT-51
 Out of scope "A dock item for the report": AT-46
+Out of scope "Players to watch, with Grab him now": AT-64
 
 ## Revisions
 
-None yet.
+- 2026-11-06: Brian approved the changes of decisions 14 to 17. AT-14 and AT-23 are retired. AT-8, AT-40, and AT-41 changed. AT-52 to AT-64 are new.
