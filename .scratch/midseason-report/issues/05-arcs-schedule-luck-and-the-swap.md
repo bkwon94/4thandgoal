@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-5, AT-6, and AT-7.
 
 **Blocked by:** 01 and 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Return of T Mac has Roller coaster and Turnaround and no third arc. Bo Girds has Snakebit and Collapse.
 - [x] All You Need Is Love has +2.73 Schedule luck, and Bo Girds has -2.18.
