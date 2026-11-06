@@ -522,6 +522,14 @@ When: Open the report at `/midseason/2026` and scroll through Act III.
 Then: The report has no Players to watch chapter and no Grab him now.
 Evidence: Screenshots of Act III at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
+AT-65: The letdowns
+App: both
+Stories: 25a
+Given: CPC 2026 week 8, after `make midseason CLIENT=cpc WEEK=8`, with the report published on the site.
+When: Read the draft facts of `midseason.json`, then open the report and scroll to the draft.
+Then: Bijan Robinson shows as a letdown: $81, the top price of the draft, RB3 for the season, and no top 17 RB week since week 4. He is not in the busts.
+Evidence: The named fields of `midseason.json`, and screenshots of the draft chapter at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
 ## Trace
 
 Story 1: AT-25
@@ -549,6 +557,7 @@ Story 22: AT-12
 Story 23: AT-12
 Story 24: AT-2, AT-13
 Story 25: AT-12
+Story 25a: AT-65
 Story 26: removed by decision 15. AT-14 is retired.
 Story 27: AT-15
 Story 28: AT-15
