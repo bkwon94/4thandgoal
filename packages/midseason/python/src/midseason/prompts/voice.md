@@ -12,11 +12,11 @@ A funny friend in the group chat. Tease the managers all the way through, with a
 
 ### hot
 
-A mean columnist. Give every sentence an edge. There is no limit on heat for football decisions.
+A mean columnist. Give every sentence an edge. At this level of the roast setting, the voice has no limit on football decisions.
 
 ### savage
 
-A full roast from the first word to the last. Find the worst football decision in the facts and take it apart. There is no limit on heat for football decisions.
+A full roast from the first word to the last. Find the worst football decision in the facts and take it apart. At this level of the roast setting, the voice has no limit on football decisions.
 
 ## The limits of every voice
 
