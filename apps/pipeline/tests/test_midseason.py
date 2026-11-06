@@ -148,7 +148,7 @@ RECORDS_BLURB = WriterOut(sentences=[
 # The blurbs of the injury toll and Position top 10, each in the shape that passes the code
 # check on the real CPC week 8 facts with the rosters now.
 INJURY_BLURB = WriterOut(sentences=[
-    Sentence(text="behold the lamb lost 9 starter games to injury, 1st in the league.", fact_ids=["IT.10"]),
+    Sentence(text="The Blue Tent lost 17 starter games to injury, 1st in the league.", fact_ids=["IT.1"]),
     Sentence(text="Rough.", fact_ids=[]),
     Sentence(text="Ouch.", fact_ids=[]),
 ])
@@ -386,7 +386,7 @@ def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_m
     assert best[ids["Bo Girds"]]["schedule_of"] == ids["Maye d'force B with U"]
     # Bo Girds has the most schedules better than its own, 10, but it holds 3 headlines. So the spread rule gives the
     # callout to the next team that needs one, and the grid still shows each record of Bo Girds.
-    assert swap["most_better"] == {"roster_id": ids["Teehee"], "count": 5, "place": 4}
+    assert swap["most_better"] == {"roster_id": ids["London Cooking"], "count": 7, "place": 2}
 
 
 def test_the_swap_gives_bo_girds_a_best_of_14_2_on_maye_s_schedule_and_each_team_a_best_and_a_worst(tmp_path):
@@ -505,15 +505,26 @@ def test_the_report_has_no_players_to_watch_chapter_and_no_watch_facts(tmp_path)
         assert gone not in text
 
 
-def test_the_injury_toll_has_each_team_and_behold_the_lamb_lost_the_most_starter_games(tmp_path):
+def test_the_injury_toll_has_each_team_and_the_blue_tent_lost_the_most_starter_games(tmp_path):
     # AT-9. Quinshon Judkins has no Out row in week 6, so the fallback of the roster status counts his game.
     teams = _chapter(_cpc_report(tmp_path), "injuries")["facts"]["teams"]
     assert len(teams) == 12
-    first = teams[0]
-    assert (first["name"], first["games"], first["rank"]) == ("behold the lamb", 9, 1)
-    assert teams[1]["games"] < 9
-    assert {(p["name"], p["games"]) for p in first["players"]} == {
-        ("Kyle Monangai", 4), ("Saquon Barkley", 2), ("Emeka Egbuka", 2), ("Quinshon Judkins", 1)}
+    assert [(team["name"], team["games"], team["rank"]) for team in teams[:2]] == [
+        ("The Blue Tent", 17, 1), ("behold the lamb", 10, 2)]
+    assert {(p["name"], p["games"]) for p in teams[1]["players"]} == {
+        ("Kyle Monangai", 4), ("Saquon Barkley", 3), ("Emeka Egbuka", 2), ("Quinshon Judkins", 1)}
+
+
+def test_the_blue_tent_loses_each_game_of_price_achane_and_etienne_and_none_of_bowers(tmp_path):
+    # Jadarian Price is Out in week 4 and has no snap from week 4 to 8. The Blue Tent drops him in week 7.
+    # De'Von Achane gets hurt in week 3, and the team drops him from week 4. Miami has its bye in week 6, and the
+    # players file of week 8 gives him IR. Brock Bowers is Out in week 1 and has no snap in week 2, before his first
+    # start, so he is no key starter of that absence.
+    teams = _chapter(_cpc_report(tmp_path), "injuries")["facts"]["teams"]
+    tent = next(team for team in teams if team["name"] == "The Blue Tent")
+    weeks = {p["name"]: p["weeks"] for p in tent["players"]}
+    assert weeks == {"Jadarian Price": [4, 5, 6, 7, 8], "De'Von Achane": [4, 5, 7, 8],
+                     "Travis Etienne Jr.": [4, 5, 6, 7], "Davante Adams": [7, 8], "Mike Evans": [7], "RJ Harvey": [8]}
 
 
 def test_the_acts_hold_the_chapters_in_the_order_of_the_lean_acts(tmp_path):
@@ -608,8 +619,8 @@ def test_the_spread_rule_gives_each_team_1_to_3_headlines_and_moves_both_swap_ca
     sheet = _prose_blocks(client)
     assert "Bo Girds" in sheet["luck"]["scope_teams"]
     note = sheet["facts"]["CO.luck.most_better"]["text"]
-    assert note.startswith("The callout of the most schedules better than its own names Teehee. Bo Girds and ")
-    assert note.endswith(" are not the headline of this callout.")
+    assert note == ("The callout of the most schedules better than its own names London Cooking. Bo Girds is not the "
+                    "headline of this callout.")
 
 
 def _prose_blocks(client) -> dict:
@@ -619,12 +630,12 @@ def _prose_blocks(client) -> dict:
 
 
 def test_a_team_moved_off_a_callout_keeps_its_facts_in_the_prose_block(tmp_path):
-    # Brian chose the loose rule: the trades block holds both Robberies, and the lineup block names London Cooking.
+    # Brian chose the loose rule: the trades block holds both Robberies, and the lineup block names NFC Least.
     client = _cpc_week_8(tmp_path)
     build_week_8(_call(), client=client, provider=CPC_PROVIDER)
     sheet = _prose_blocks(client)
     robberies = [fid for fid in sheet["trades"]["fact_ids"] if "The Trade result is Robbery" in sheet["facts"][fid]["text"]]
     assert robberies == ["TR.1", "TR.2"]
-    assert "London Cooking" in sheet["lineup"]["scope_teams"]
-    assert "LC.5" in sheet["lineup"]["fact_ids"]
-    assert "London Cooking" in sheet["facts"]["CO.lineup.bench"]["text"]
+    assert "NFC Least" in sheet["lineup"]["scope_teams"]
+    assert "LC.4" in sheet["lineup"]["fact_ids"]
+    assert "NFC Least" in sheet["facts"]["CO.lineup.bench"]["text"]

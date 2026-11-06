@@ -126,7 +126,12 @@ def report_chapters(
                   for gsis, weeks in report.items() if gsis in sleeper_of_gsis}
     schedules = read_schedules(files["schedules"], season) or {}
     team_weeks = {team: set(schedule.games) for team, schedule in schedules.items()}
-    ports = InjuryPorts(report_out=report_out, roster_out=_roster_out(client, season, week), team_weeks=team_weeks)
+    roster_out = _roster_out(client, season, week)
+    # The saved status file holds only rostered players. The players file of the report week holds the status of each
+    # player, so a key starter that a team dropped while he is out still has an out status, such as De'Von Achane.
+    roster_out.setdefault(week, set()).update(
+        pid for pid, entry in raw.players.items() if entry.get("injury_status") in OUT_STATUSES)
+    ports = InjuryPorts(report_out=report_out, roster_out=roster_out, team_weeks=team_weeks)
     injuries = injury_toll(history, week, names, cards, report_out=ports.report_out, roster_out=ports.roster_out,
                            team_weeks=ports.team_weeks)
 

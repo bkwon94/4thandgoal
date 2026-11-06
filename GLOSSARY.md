@@ -238,7 +238,8 @@ _Avoid_: angle, narrative, hook
 
 **Key starter**:
 A player a team started in at least 3 of its last 4 completed weeks, at QB, RB, WR, or TE. With fewer than 4
-played weeks, 2 of 3, then 2 of 2. The rule reads real starts, not the best lineup. A kicker or a defense is never one.
+played weeks, 2 of 3, then 2 of 2. The rule reads real starts, not the best lineup. A kicker or a defense is never one. The
+injury toll reads the last 4 weeks that the player could play: it skips his injured weeks and his byes.
 _Avoid_: star (that is a chart rank), stud, core player, regular
 
 **Bye line**:
@@ -949,7 +950,11 @@ The block at the end of Act II of the midseason report that holds lineup choices
 _Avoid_: Odds and ends, misc, extras
 
 **Injury toll**:
-The starter games that a team lost to injury, by NFL week. It is a cost, not a chance.
+The starter games that a team lost to injury, by NFL week. It is a cost, not a chance. An absence is a run of NFL games with no
+snap for the player, and it is an injury when one of its weeks has an Out row or an out status. A bye neither counts
+nor ends it. Each game of the absence is a starter game when the player was a Key starter of the team at its start.
+The team keeps the loss if it drops or trades him while he is out, until he plays again. The "hurt" tag of a draft
+bust reads the same missed games.
 _Avoid_: Injury luck
 
 **Position top 10**:
