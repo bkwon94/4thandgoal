@@ -41,6 +41,7 @@ One spec for a `midseason` package that both clients turn on. Brian runs its bui
 - How do the list rows, the tags, and the controls of the report look? `decisions/15-prototype-the-rows-and-tags.md`.
 - How does the schedule swap show on the page? `decisions/16-prototype-the-schedule-swap.md`.
 - How does the roast sit inside the prose of a chapter? `decisions/17-prototype-the-roast-in-prose.md`.
+- Where do the easter eggs of the report hide, and how does a finder win the prize? `decisions/18-grill-the-easter-eggs.md`.
 
 ## OUT OF SCOPE
 
