@@ -399,7 +399,8 @@ class SleeperProvider:
     def fetch_draft(self, league_id: str, out_dir: Path) -> RawDraft:
         return fetch_draft(league_id, out_dir, self.transport)
 
-    # The protocol needs this fetch. No pipeline caller reads it yet.
+    # The protocol needs this fetch. No app reads it through the port: the midseason build and each weekly build read
+    # the players file of the saved raw week.
     def fetch_players(self) -> dict[str, dict]:
         return fetch_players(self.players_cache, self.transport)
 
