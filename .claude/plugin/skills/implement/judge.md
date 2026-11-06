@@ -2,7 +2,7 @@
 
 Stage 4 of `cpc:implement`. A fresh subagent, the Judge, gives the Test verdict of each acceptance test `AT-<n>`. It writes `.scratch/<slug>/VERDICTS.md`. The check `verdict` reads that file (ADR 0026).
 
-The orchestrator built the work, so it never gives a Test verdict and never changes a line of `VERDICTS.md`. The Judge did not build the work. It reads only the acceptance tests and the evidence.
+The orchestrator built the work, so it never writes a Test verdict of its own in `VERDICTS.md`. It only copies the lines of the Judge. The Judge did not build the work. It reads only the acceptance tests and the evidence.
 
 ## Before the first round
 
@@ -66,7 +66,7 @@ Then reply with the full text of VERDICTS.md.
 2. Commit the file alone: `git add .scratch/<slug>/VERDICTS.md`, then `git commit -m "Record the Test verdicts of the Judge"`. The hook must pass.
 3. Run `git show --stat HEAD`. The commit must change only `VERDICTS.md`.
 
-Each round is one new commit, so each change to a Test verdict leaves a trace. Never amend a round. Never edit `VERDICTS.md` by hand.
+Each round is one new commit, so each change to a Test verdict leaves a trace. Never amend a round. Never write a Test verdict by hand. In a round on some tests only, copy the lines of the Judge, as "Some tests only" shows.
 
 The check reads each offense:
 
@@ -86,7 +86,8 @@ A FAIL gets one fix round.
 5. Commit `EVIDENCE.md` and the changed files of `evidence/` with the message `Record the evidence of <slug> again`. The hook must pass.
 6. Get the two SHAs again with `git hash-object`.
 7. Start a fresh Judge. Never send the brief to the first Judge again. Give it the brief of the first round, with the new SHAs. Add the lines of "Some tests only" at its end, then the line of "After a fix".
-8. Check and commit the round, as above.
+8. Copy the reply of the Judge into `VERDICTS.md`, as "Some tests only" shows.
+9. Check and commit the round, as above.
 
 ### Some tests only
 
@@ -95,8 +96,15 @@ Add these lines to the brief when the Judge checks only some tests:
 ````text
 Judge only these tests: AT-<n>, AT-<m>. These lines replace the steps above where they differ.
 
-VERDICTS.md exists. Change only its two SHA lines and the line of each test above. Keep each other line as it is.
+Write no file. Reply with only the line AT-<n>: ... of each test above, in the order of ACCEPTANCE.md. Write no other word.
 ````
+
+The Judge of such a round does not see the old lines of `VERDICTS.md`, so an old FAIL reason does not steer it. The orchestrator writes its reply into the file:
+
+1. Copy each line `AT-<n>: ...` of the reply word for word into `VERDICTS.md`. Replace the line of that test.
+2. Set the two SHA lines to the new SHAs.
+3. Change no other line.
+4. Run `git diff -U0 .scratch/<slug>/VERDICTS.md`. Only the two SHA lines and the lines of the named tests may change.
 
 ### After a fix
 
