@@ -1,0 +1,36 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -q -p no:xdist --durations=30 tests/test_midseason*.py tests/test_sim.py   # at a0bb4bfc, after ticket 07
+........................................................................ [ 75%]
+........................                                                 [100%]
+============================= slowest 30 durations =============================
+3.09s call     tests/test_midseason_publish.py::test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb
+3.00s setup    tests/test_sim.py::test_the_build_writes_sim_json_with_200_runs_and_the_odds_of_10000_runs
+2.94s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[warm]
+2.92s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[hot]
+2.86s setup    tests/test_midseason.py::test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week
+2.82s call     tests/test_midseason.py::test_each_prose_block_cites_a_fact_even_when_the_writer_gives_a_blurb_with_none
+2.80s call     tests/test_sim.py::test_two_builds_give_the_same_sim_json_byte_for_byte
+2.77s setup    tests/test_midseason_moves.py::test_act_two_holds_the_draft_waivers_trades_records_then_quick_hits
+2.75s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[off]
+2.05s call     tests/test_midseason.py::test_a_rerun_gives_the_same_file
+2.05s setup    tests/test_midseason_draft.py::test_a_cpc_steal_is_matthew_golden_at_2_dollars_and_a_bust_is_aj_brown_at_39_and_just_bad
+1.94s setup    tests/test_midseason_norcal.py::test_each_norcal_record_counts_one_game_a_week
+1.93s call     tests/test_midseason_draft.py::test_in_norcal_each_pick_cost_is_its_pick_number_and_no_pick_shows_a_dollar_amount
+1.70s call     tests/test_sim.py::test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds[cpc]
+1.63s call     tests/test_sim.py::test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds[norcal]
+0.92s call     tests/test_midseason_prose.py::test_each_fact_passes_the_code_check_as_a_sentence_that_cites_it
+0.36s call     tests/test_midseason.py::test_a_gap_in_the_history_stops_the_build_with_the_command_that_fills_it
+0.32s call     tests/test_midseason_publish.py::test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path
+0.29s call     tests/test_midseason_publish.py::test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_the_publish
+0.19s call     tests/test_midseason_publish.py::test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_name_the_blurb
+0.19s call     tests/test_midseason_publish.py::test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse
+0.14s call     tests/test_midseason_publish.py::test_the_publish_refuses_a_draft_of_another_week
+0.14s call     tests/test_midseason_publish.py::test_the_publish_refuses_a_draft_with_no_sim_json
+0.03s call     tests/test_midseason_prose.py::test_the_template_blurb_of_each_failed_block_passes_the_code_check_of_the_publish
+0.02s call     tests/test_sim.py::test_the_build_writes_sim_json_with_200_runs_and_the_odds_of_10000_runs
+0.02s call     tests/test_midseason.py::test_a_week_with_no_saved_facts_stops_the_build_with_the_command_that_builds_it
+0.01s teardown tests/test_midseason.py::test_each_prose_block_cites_a_fact_even_when_the_writer_gives_a_blurb_with_none
+0.01s teardown tests/test_midseason_norcal.py::test_each_norcal_record_counts_one_game_a_week
+0.01s teardown tests/test_sim.py::test_the_build_writes_sim_json_with_200_runs_and_the_odds_of_10000_runs
+0.01s teardown tests/test_midseason_draft.py::test_a_cpc_steal_is_matthew_golden_at_2_dollars_and_a_bust_is_aj_brown_at_39_and_just_bad
+96 passed in 40.16s
+uv run --exact --package cornerstone pytest -q -p no:xdist --durations=30    38.50s user 2.32s system 98% cpu 41.261 total

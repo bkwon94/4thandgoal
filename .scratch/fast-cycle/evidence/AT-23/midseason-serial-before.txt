@@ -1,0 +1,36 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -q -p no:xdist --durations=30 tests/test_midseason*.py tests/test_sim.py   # at 427b7590, before ticket 07
+........................................................................ [ 75%]
+........................                                                 [100%]
+============================= slowest 30 durations =============================
+5.99s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[hot]
+4.91s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[warm]
+4.20s call     tests/test_midseason.py::test_act_one_holds_the_state_then_the_arcs_then_schedule_luck
+4.02s call     tests/test_midseason.py::test_a_rerun_gives_the_same_file
+3.07s call     tests/test_midseason_publish.py::test_the_midseason_publish_command_prints_the_refusal_and_names_the_blurb
+3.06s setup    tests/test_sim.py::test_the_build_writes_sim_json_with_200_runs_and_the_odds_of_10000_runs
+3.06s call     tests/test_midseason_publish.py::test_a_clean_publish_commits_midseason_json_and_sim_json_and_no_other_path
+3.05s call     tests/test_midseason_publish.py::test_a_blurb_that_cites_a_fact_of_another_chapter_passes_the_verifier_and_the_publish
+2.99s call     tests/test_midseason_publish.py::test_a_blurb_that_the_claude_check_rejects_makes_the_publish_refuse
+2.98s call     tests/test_midseason.py::test_the_opener_and_the_look_ahead_have_their_prose_blocks_in_the_review_file
+2.97s call     tests/test_midseason_publish.py::test_the_publish_refuses_a_draft_of_another_week
+2.96s call     tests/test_midseason_publish.py::test_an_edited_blurb_with_an_uncited_number_makes_the_publish_refuse_and_name_the_blurb
+2.95s call     tests/test_midseason.py::test_the_report_tile_shows_the_title_odds_of_the_title_favorite
+2.88s call     tests/test_midseason.py::test_the_arcs_of_return_of_t_mac_and_bo_girds
+2.87s call     tests/test_midseason.py::test_a_clean_build_keeps_the_blurb_of_the_writer_for_each_chapter
+2.87s call     tests/test_midseason_publish.py::test_the_publish_refuses_a_draft_with_no_sim_json
+2.81s call     tests/test_sim.py::test_two_builds_give_the_same_sim_json_byte_for_byte
+2.81s call     tests/test_midseason.py::test_the_writer_of_each_block_hears_the_voice_of_the_roast_setting[off]
+2.79s call     tests/test_midseason.py::test_each_row_has_the_playoff_odds_of_the_sim_within_2_points_of_the_week
+2.78s call     tests/test_midseason.py::test_each_prose_block_cites_a_fact_even_when_the_writer_gives_a_blurb_with_none
+2.78s call     tests/test_midseason.py::test_each_chapter_has_one_prose_block_of_40_words_or_fewer_and_no_roast_field
+2.76s call     tests/test_midseason.py::test_the_review_file_shows_each_blurb_with_its_prose_block_its_facts_and_the_verifier_result
+2.74s setup    tests/test_midseason_moves.py::test_act_two_holds_the_draft_waivers_trades_records_then_quick_hits
+2.73s call     tests/test_midseason.py::test_with_no_roast_value_the_build_runs_at_savage_and_the_review_file_names_it
+2.25s call     tests/test_midseason.py::test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_maye_s_schedule
+2.21s call     tests/test_midseason.py::test_the_injury_toll_has_each_team_and_the_blue_tent_lost_the_most_starter_games
+2.18s call     tests/test_midseason.py::test_the_luck_chapter_publishes_the_median_games_and_the_change_of_each_best_and_worst
+2.18s call     tests/test_midseason.py::test_the_acts_hold_the_chapters_in_the_order_of_the_lean_acts
+2.18s call     tests/test_midseason.py::test_schedule_luck_of_all_you_need_is_love_and_bo_girds_with_points_against_and_close_games
+2.17s call     tests/test_midseason.py::test_the_look_ahead_has_maye_s_schedule_softest_and_behold_the_lamb_s_hardest
+96 passed in 155.00s (0:02:34)
+uv run --exact --package cornerstone pytest -q -p no:xdist --durations=30    142.75s user 6.28s system 95% cpu 2:36.15 total

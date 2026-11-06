@@ -1,7 +1,7 @@
 # Fast cycle: evidence
 
 Spec: `.scratch/fast-cycle/PRD.md`. Acceptance tests: `.scratch/fast-cycle/ACCEPTANCE.md`.
-Built from: `0a70f1a3`, on 2026-11-06. The agent gives no Test verdict. For this spec, Brian gives each Test verdict in one PR comment (decision 13).
+Built from: `0a70f1a3`, on 2026-11-06. AT-8, AT-23, AT-24, and AT-26 come from the second start at `dfd8a33e`, after PR #13 merged. The agent gives no Test verdict. For this spec, Brian gives each Test verdict in one PR comment (decision 13).
 Round time: 0 min for 0 site tests. This spec has no screenshot test.
 
 ## AT-1: The CI check takes 10 minutes or less
@@ -58,7 +58,7 @@ Observation: `make -C apps/api test` ran `pytest -q -n auto` and passed 163 test
 App: both
 Then: No added line holds one of those words, except in a comment that names this rule, and no test file is deleted. Each member has at least as many tests as on `main`.
 Files: `evidence/AT-8/search.txt`, `evidence/AT-8/counts.md`
-Observation: The search finds 3 added lines. Line 195 is skill text about a test that the evidence stage skips for a blocked ticket. Line 347 is a CI comment about a skipped gate job. Line 438 is the Makefile line `pytest -q -n auto -m 'not live and not serial'`: it holds `-m 'not` and is not a comment. The next Makefile line runs the one `serial` test alone with `-m 'serial and not live'`, so the test still runs with its 5 s limit (`evidence/AT-6/output.txt` shows "1 passed, 1586 deselected"). No file is deleted. The collected count of each member is the same on both branches, except the scripts, which go from 38 to 45 tests.
+Observation: The search against `origin/main` `fbd6f24e` finds 3 added lines. Line 195 is skill text about a test that the evidence stage skips for a blocked ticket. Line 347 is a CI comment about a skipped gate job. Line 438 is the Makefile line `pytest -q -n auto -m 'not live and not serial'`: it holds `-m 'not` and is not a comment. The next Makefile line runs the one `serial` test alone with `-m 'serial and not live'`, so the test still runs with its 5 s limit (`evidence/AT-23/output.txt` shows "1 passed, 1695 deselected"). No file is deleted. The collected count of each member is the same on both branches, the new `midseason` and `sim` packages included, except the scripts, which go from 38 to 45 tests.
 
 ## AT-9: The commit hook does not change
 
@@ -162,15 +162,15 @@ Observation: The stage started at 13:08:43, and `make check` started at 13:08:43
 
 App: pipeline
 Then: Both runs pass the same count of tests. The run on `fast-cycle` takes less time.
-Files: none
-Observation: Not recorded: ticket 07 is blocked until PR #13 merges into `main`.
+Files: `evidence/AT-23/output.txt`, `evidence/AT-23/midseason-serial-before.txt`, `evidence/AT-23/midseason-serial-after.txt`
+Observation: `make -C apps/pipeline test` on `fast-cycle` `dfd8a33e` passed 1687 tests under `-n auto` and 1 `serial` test, 1688 in all, in 62 s. On `main` `fbd6f24e` it passed 1688 tests in 393 s, as one serial run. That gap holds both xdist and the shared build. The midseason and sim files alone, serial, passed 96 tests in 155 s before ticket 07 (`427b7590`) and 96 tests in 40 s after it (`a0bb4bfc`).
 
 ## AT-24: The full sim count stays
 
 App: pipeline
 Then: Each count is the same on both branches.
-Files: none
-Observation: Not recorded: ticket 07 is blocked until PR #13 merges into `main`.
+Files: `evidence/AT-24/output.txt`
+Observation: On `main`, the odds test builds with `sim_runs=SIM_RUNS` at `test_midseason.py:216`, and the tile test at `test_midseason.py:554`. On `fast-cycle`, both tests read the fixture `cpc_midseason_full`, which builds with `sim_runs=SIM_RUNS` at `conftest.py:246`. The clean builds use `SIM_RUNS` at `conftest.py:262`. `TEST_SIM_RUNS = 500` stays at `test_midseason.py:34`. `test_sim.py` has 0 changed lines, so its build at the default `SIM_RUNS` stays.
 
 ## AT-25: The glossary defines the Judge
 
@@ -184,7 +184,7 @@ Observation: The Workflow section defines **Test verdict** as "The word PASS, FA
 App: both
 Then: PR #13 has the state `MERGED`.
 Files: `evidence/AT-26/output.txt`
-Observation: `gh pr view 13` gives `{"mergedAt":null,"state":"OPEN"}`. Ticket 07, which owns this test, is blocked until PR #13 merges.
+Observation: `gh pr view 13` gives `{"mergedAt":"2026-11-06T20:27:50Z","state":"MERGED"}`.
 
 ## AT-27: CI runs every member for a small change
 
