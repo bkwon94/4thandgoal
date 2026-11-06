@@ -9,12 +9,12 @@ from typing import Literal
 from pydantic import BaseModel
 
 from facts.tokens import Nums, fact
-from league.models import Blurb, Fact, History, PastWeek
+from league.models import Blurb, Fact, History
 from midseason.players import SKILL_POSITIONS, PlayerCard
 
-# The Key starter rule of GLOSSARY.md, "Key starter": 3 starts in the last 4 completed weeks, or 2 starts with fewer
-# weeks. Fewer than 2 weeks say nothing about a habit. The week package owns the weekly copy of the rule, and the
-# midseason package may not import it.
+# The Key starter rule of GLOSSARY.md, "Key starter": 3 starts in the last 4 completed weeks that the player could
+# play, or 2 starts with fewer weeks. Fewer than 2 weeks say nothing about a habit. The week package owns the weekly
+# copy of the rule, and the midseason package may not import it.
 KEY_STARTER_WEEKS = 4
 KEY_STARTER_STARTS = 3
 KEY_STARTER_SHORT_STARTS = 2
@@ -56,9 +56,12 @@ class InjuryChapter(BaseModel):
     blurb: Blurb | None = None
 
 
-def _key_starter(history: History, roster_id: int, player_id: str, week: int) -> bool:
-    """True when the team started the player in enough of its completed weeks before `week`."""
-    before = [number for number in range(max(1, week - KEY_STARTER_WEEKS), week) if number in history.weeks]
+def _key_starter(history: History, roster_id: int, player_id: str, week: int, playable: Collection[int]) -> bool:
+    """True when the team started the player in enough of the weeks before `week` that he could play.
+
+    The window skips his injured weeks and his byes, so an earlier absence does not make a key starter a bench player.
+    """
+    before = [number for number in sorted(playable) if number < week and number in history.weeks][-KEY_STARTER_WEEKS:]
     if len(before) < KEY_STARTER_SHORT_STARTS:
         return False
     bar = KEY_STARTER_STARTS if len(before) >= KEY_STARTER_WEEKS else KEY_STARTER_SHORT_STARTS
@@ -66,21 +69,39 @@ def _key_starter(history: History, roster_id: int, player_id: str, week: int) ->
     return starts >= bar
 
 
-def _missed_game(
-    past: PastWeek, number: int, card: PlayerCard, *, report_out: Mapping[str, Collection[int]],
+def _absences(
+    history: History, through: int, card: PlayerCard, *, report_out: Mapping[str, Collection[int]],
     roster_out: Mapping[int, Collection[str]], team_weeks: Mapping[str, Collection[int]],
-) -> bool | None:
-    """True when the player missed the game of his NFL team in week `number` with an injury, False when he played or
-    sat with no injury, and None when his NFL team had no game, such as a bye.
+) -> tuple[list[list[int]], set[int]]:
+    """The injury absences of the player in weeks 1 to `through`, each one the weeks of his missed games in order, and
+    the weeks he could play.
 
-    He misses a game when he has no offensive snap and the injury report lists him Out or, with no Out row, his
-    roster status is out. The fallback covers a missing row of the injury report (PRD, "Missing injury rows").
+    An absence is a run of games of his NFL team with no offensive snap for him. A week he plays ends it, and a bye
+    neither counts nor ends it. The run is an injury when the injury report lists him Out in one of its weeks or, as
+    the fallback for a missing row, his roster status is out (PRD, "Missing injury rows"). So one Out week marks each
+    game of the run, and a run with no out status is no injury, such as a healthy scratch.
     """
-    if card.nfl_team is None or number not in team_weeks.get(card.nfl_team, ()):
-        return None
-    if past.stats.get(card.player_id, {}).get("off_snp", 0.0) > 0:
-        return False
-    return number in report_out.get(card.player_id, ()) or card.player_id in roster_out.get(number, ())
+    runs: list[tuple[list[int], bool]] = []
+    games: list[int] = []
+    out = False
+    if card.nfl_team is not None:
+        for number in range(1, through + 1):
+            if number not in team_weeks.get(card.nfl_team, ()):
+                continue
+            if history.weeks[number].stats.get(card.player_id, {}).get("off_snp", 0.0) > 0:
+                if games:
+                    runs.append((games, out))
+                games, out = [], False
+                continue
+            games.append(number)
+            out = out or number in report_out.get(card.player_id, ()) or card.player_id in roster_out.get(number, ())
+    if games:
+        runs.append((games, out))
+    absences = [weeks for weeks, hurt in runs if hurt]
+    injured = {number for weeks in absences for number in weeks}
+    playable = {number for number in range(1, through + 1)
+                if card.nfl_team is not None and number in team_weeks.get(card.nfl_team, ()) and number not in injured}
+    return absences, playable
 
 
 def missed_games(
@@ -96,9 +117,8 @@ def missed_games(
     for pid in player_ids:
         card = players.get(pid)
         counts[pid] = 0 if card is None else sum(
-            _missed_game(history.weeks[number], number, card, report_out=report_out, roster_out=roster_out,
-                         team_weeks=team_weeks) is True
-            for number in range(1, through + 1))
+            len(weeks) for weeks in _absences(history, through, card, report_out=report_out, roster_out=roster_out,
+                                              team_weeks=team_weeks)[0])
     return counts
 
 
@@ -109,35 +129,30 @@ def injury_toll(
 ) -> InjuryToll:
     """The injury toll of weeks 1 to `through`.
 
-    A player misses a game by the rule of `_missed_game`. The ports come from the app: `report_out` holds the
+    A player misses a game by the rule of `_absences`. The ports come from the app: `report_out` holds the
     weeks the nflverse injury report lists each player Out, `roster_out` the players with a Sleeper status of out
-    each week, and `team_weeks` the weeks each NFL team plays. The fallback of `roster_out` covers a missing row of
-    the injury report (PRD, "Missing injury rows").
+    each week, and `team_weeks` the weeks each NFL team plays.
 
-    A missed game is a starter game when the player was a key starter of the team in the weeks before his absence
-    started. A bye week neither counts nor ends the absence. A week he plays, or misses with no injury, ends it.
+    Each game of an absence is a starter game of a team when the team held the player in the week before the absence
+    or in its first week, and he was a key starter of the team at its start. The key status holds for the whole
+    absence, so a team that drops or trades him while he is out still loses each game until he plays again.
     """
     lost: dict[int, dict[str, list[int]]] = {rid: {} for rid in names}
-    for roster_id in names:
-        # The key starter verdict of each player at the start of his absence, while the absence lasts.
-        absent: dict[str, bool] = {}
-        for number in range(1, through + 1):
-            week = history.weeks[number]
-            for pid in week.rosters.get(roster_id, []):
-                card = players.get(pid)
-                if card is None or card.position not in SKILL_POSITIONS:
-                    continue
-                missed = _missed_game(week, number, card, report_out=report_out, roster_out=roster_out,
-                                      team_weeks=team_weeks)
-                if missed is None:
-                    continue
-                if not missed:
-                    absent.pop(pid, None)
-                    continue
-                if pid not in absent:
-                    absent[pid] = _key_starter(history, roster_id, pid, number)
-                if absent[pid]:
-                    lost[roster_id].setdefault(pid, []).append(number)
+    held = {pid for number in range(1, through + 1) for ids in history.weeks[number].rosters.values() for pid in ids}
+    for pid in sorted(held):
+        card = players.get(pid)
+        if card is None or card.position not in SKILL_POSITIONS:
+            continue
+        absences, playable = _absences(history, through, card, report_out=report_out, roster_out=roster_out,
+                                       team_weeks=team_weeks)
+        for weeks in absences:
+            first = weeks[0]
+            # The team of the week before the absence covers a drop after the game he got hurt in.
+            holders = {rid for number in (first - 1, first) if number in history.weeks
+                       for rid, ids in history.weeks[number].rosters.items() if pid in ids}
+            for roster_id in sorted(holders & lost.keys()):
+                if _key_starter(history, roster_id, pid, first, playable):
+                    lost[roster_id].setdefault(pid, []).extend(weeks)
     rows = []
     for roster_id, missed in lost.items():
         starters = sorted(

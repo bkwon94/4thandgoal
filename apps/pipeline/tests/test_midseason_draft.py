@@ -59,19 +59,19 @@ def test_a_cpc_steal_is_matthew_golden_at_2_dollars_and_a_bust_is_aj_brown_at_39
     assert (brown["cost"], brown["tag"]) == (39, "just bad")
 
 
-def test_a_bust_who_missed_two_games_out_with_an_injury_is_hurt(tmp_path):
-    # Saquon Barkley sat out weeks 5 and 6 with a hamstring, by the nflverse injury report.
+def test_a_bust_who_missed_games_out_with_an_injury_is_hurt(tmp_path):
+    # Saquon Barkley sat out weeks 5 to 7 with a hamstring: Out rows in weeks 5 and 6, and no snap in week 7.
     barkley = _by_name(_cpc_draft(tmp_path)["busts"])["Saquon Barkley"]
     assert (barkley["cost"], barkley["tag"]) == (58, "hurt")
 
 
 def test_the_hurt_tag_reads_the_missed_game_rule_of_the_injury_toll(tmp_path):
-    # Jadarian Price has no snaps in week 4 with an Out row of the injury report, and no snaps in week 6 with a
-    # Sleeper status of out, so he missed 2 games. De'Von Achane has no nflverse row and no Sleeper out status in any
-    # week, so the rule finds no missed game, and his bust is "just bad".
+    # Jadarian Price has an Out row of the injury report in week 4 and no snap from week 4 to 8, so he missed 5 games.
+    # De'Von Achane has no nflverse row and no snap from week 4. The players file of week 8 gives him IR, so his
+    # absence is an injury, and his bust is "hurt".
     busts = _by_name(_cpc_draft(tmp_path)["busts"])
     assert (busts["Jadarian Price"]["cost"], busts["Jadarian Price"]["tag"]) == (20, "hurt")
-    assert busts["De'Von Achane"]["tag"] == "just bad"
+    assert busts["De'Von Achane"]["tag"] == "hurt"
 
 
 def test_a_steal_has_no_one_that_got_away_line(tmp_path):

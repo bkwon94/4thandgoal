@@ -83,7 +83,7 @@ describe("MidseasonScreen", () => {
       "The Injury Toll",
     ]);
     expect(block.getByRole("list", { name: "Bench points" })).toBeTruthy();
-    expect(block.getByRole("list", { name: "Injury toll" }).firstElementChild!.textContent).toContain("behold the lamb");
+    expect(block.getByRole("list", { name: "Injury toll" }).firstElementChild!.textContent).toContain("The Blue Tent");
   });
 
   it("holds the look ahead, then the sim, in Act III", () => {

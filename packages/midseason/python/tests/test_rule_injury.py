@@ -2,6 +2,8 @@
 The rules of the injury toll and of the missed games of one player, on small hand-built leagues: a missed game, the
 key starter at the start of an absence, the fallback for a missing injury row, and the order of the teams.
 """
+from collections.abc import Collection
+
 from league.models import History, PastWeek
 from midseason.injury import injury_toll, missed_games
 from midseason.players import PlayerCard
@@ -17,19 +19,22 @@ PLAYERS = {
 TEAM_WEEKS = {"CHI": set(range(1, 9)), "SF": {1, 2, 3, 4, 5, 7, 8}}
 
 
-def _week(number: int, starters: dict[int, list[str]], snaps: set[str]) -> PastWeek:
-    rosters = {1: ["rb", "wr", "k", "bench"], 2: []}
+def _week(number: int, starters: dict[int, list[str]], snaps: set[str], off: Collection[str] = ()) -> PastWeek:
+    rosters = {1: [pid for pid in ["rb", "wr", "k", "bench"] if pid not in off], 2: []}
     stats = {pid: {"off_snp": 50.0} for pid in snaps}
     return PastWeek(week=number, scores={1: 100.0, 2: 90.0}, pairs=[(1, 2)], points={}, projections={}, stats=stats,
                     moves=[], starters=starters, rosters=rosters)
 
 
-def _history(missed: dict[str, set[int]], started: dict[str, set[int]], through: int = 8) -> History:
+def _history(missed: dict[str, set[int]], started: dict[str, set[int]], through: int = 8,
+             dropped: dict[str, set[int]] | None = None) -> History:
+    # `dropped` holds the weeks that each player is on no roster.
     weeks = {}
     for number in range(1, through + 1):
         snaps = {pid for pid in PLAYERS if number not in missed.get(pid, set())}
         starters = {1: [pid for pid in PLAYERS if number in started.get(pid, set())], 2: []}
-        weeks[number] = _week(number, starters, snaps)
+        off = {pid for pid, gone in (dropped or {}).items() if number in gone}
+        weeks[number] = _week(number, starters, snaps, off)
     return History(week=through, weeks=weeks)
 
 
@@ -61,6 +66,30 @@ def test_the_key_starter_rule_reads_the_weeks_before_the_absence_not_the_weeks_o
     toll = injury_toll(history, 8, NAMES, PLAYERS, report_out={"rb": {5, 6, 7}}, roster_out={},
                        team_weeks=TEAM_WEEKS)
     assert _games(toll, 1) == 3
+
+
+def test_the_key_status_at_the_start_of_an_absence_holds_for_each_week_of_it_with_no_out_row():
+    # The RB starts weeks 1 to 3. He is Out in week 4 and has no snap from week 4 to 8, with no more Out rows.
+    history = _history({"rb": {4, 5, 6, 7, 8}}, {"rb": {1, 2, 3}})
+    toll = injury_toll(history, 8, NAMES, PLAYERS, report_out={"rb": {4}}, roster_out={}, team_weeks=TEAM_WEEKS)
+    assert toll.teams[0].players[0].weeks == [4, 5, 6, 7, 8]
+
+
+def test_a_key_starter_that_the_team_drops_while_he_is_out_counts_until_he_plays_again():
+    # The RB starts weeks 1 to 3, gets hurt, and the team drops him from week 4. He plays again in week 8.
+    # Only week 7 has an out status, so the absence of weeks 4 to 7 counts as one injury.
+    history = _history({"rb": {4, 5, 6, 7}}, {"rb": {1, 2, 3}}, dropped={"rb": {4, 5, 6, 7, 8}})
+    toll = injury_toll(history, 8, NAMES, PLAYERS, report_out={}, roster_out={7: {"rb"}}, team_weeks=TEAM_WEEKS)
+    assert [(p.name, p.weeks) for p in toll.teams[0].players] == [("Run Back", [4, 5, 6, 7])]
+
+
+def test_the_key_starter_window_skips_the_injured_weeks_and_the_byes_of_the_player():
+    # The WR starts weeks 1 and 2, is Out weeks 3 and 4, starts weeks 5 and 7, has the SF bye in week 6, and is Out in
+    # week 8. His last 4 weeks that he could play are 1, 2, 5, and 7, and he started each one.
+    history = _history({"wr": {3, 4, 8}}, {"wr": {1, 2, 5, 7}})
+    toll = injury_toll(history, 8, NAMES, PLAYERS, report_out={"wr": {3, 4, 8}}, roster_out={},
+                       team_weeks=TEAM_WEEKS)
+    assert toll.teams[0].players[0].weeks == [3, 4, 8]
 
 
 def test_a_bye_week_is_no_missed_game_and_does_not_end_the_absence():

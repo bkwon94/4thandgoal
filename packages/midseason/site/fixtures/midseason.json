@@ -5176,17 +5176,18 @@
               "facts": {
                 "teams": [
                   {
-                    "roster_id": 10,
-                    "name": "behold the lamb",
+                    "roster_id": 1,
+                    "name": "The Blue Tent",
                     "rank": 1,
-                    "games": 9,
+                    "games": 17,
                     "players": [
                       {
-                        "player_id": "12534",
-                        "name": "Kyle Monangai",
+                        "player_id": "13286",
+                        "name": "Jadarian Price",
                         "position": "RB",
-                        "games": 4,
+                        "games": 5,
                         "weeks": [
+                          4,
                           5,
                           6,
                           7,
@@ -5194,42 +5195,29 @@
                         ]
                       },
                       {
-                        "player_id": "12514",
-                        "name": "Emeka Egbuka",
-                        "position": "WR",
-                        "games": 2,
+                        "player_id": "9226",
+                        "name": "De'Von Achane",
+                        "position": "RB",
+                        "games": 4,
                         "weeks": [
+                          4,
+                          5,
                           7,
                           8
                         ]
                       },
                       {
-                        "player_id": "4866",
-                        "name": "Saquon Barkley",
+                        "player_id": "7543",
+                        "name": "Travis Etienne Jr.",
                         "position": "RB",
-                        "games": 2,
+                        "games": 4,
                         "weeks": [
+                          4,
                           5,
-                          6
+                          6,
+                          7
                         ]
                       },
-                      {
-                        "player_id": "12512",
-                        "name": "Quinshon Judkins",
-                        "position": "RB",
-                        "games": 1,
-                        "weeks": [
-                          6
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "roster_id": 1,
-                    "name": "The Blue Tent",
-                    "rank": 2,
-                    "games": 5,
-                    "players": [
                       {
                         "player_id": "2133",
                         "name": "Davante Adams",
@@ -5238,15 +5226,6 @@
                         "weeks": [
                           7,
                           8
-                        ]
-                      },
-                      {
-                        "player_id": "13286",
-                        "name": "Jadarian Price",
-                        "position": "RB",
-                        "games": 1,
-                        "weeks": [
-                          4
                         ]
                       },
                       {
@@ -5270,19 +5249,71 @@
                     ]
                   },
                   {
+                    "roster_id": 10,
+                    "name": "behold the lamb",
+                    "rank": 2,
+                    "games": 10,
+                    "players": [
+                      {
+                        "player_id": "12534",
+                        "name": "Kyle Monangai",
+                        "position": "RB",
+                        "games": 4,
+                        "weeks": [
+                          5,
+                          6,
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "4866",
+                        "name": "Saquon Barkley",
+                        "position": "RB",
+                        "games": 3,
+                        "weeks": [
+                          5,
+                          6,
+                          7
+                        ]
+                      },
+                      {
+                        "player_id": "12514",
+                        "name": "Emeka Egbuka",
+                        "position": "WR",
+                        "games": 2,
+                        "weeks": [
+                          7,
+                          8
+                        ]
+                      },
+                      {
+                        "player_id": "12512",
+                        "name": "Quinshon Judkins",
+                        "position": "RB",
+                        "games": 1,
+                        "weeks": [
+                          6
+                        ]
+                      }
+                    ]
+                  },
+                  {
                     "roster_id": 5,
                     "name": "London Cooking",
                     "rank": 3,
-                    "games": 4,
+                    "games": 6,
                     "players": [
                       {
                         "player_id": "7525",
                         "name": "DeVonta Smith",
                         "position": "WR",
-                        "games": 2,
+                        "games": 4,
                         "weeks": [
                           4,
-                          5
+                          5,
+                          7,
+                          8
                         ]
                       },
                       {
@@ -5301,17 +5332,19 @@
                     "roster_id": 8,
                     "name": "Return of T Mac",
                     "rank": 4,
-                    "games": 4,
+                    "games": 6,
                     "players": [
                       {
                         "player_id": "8155",
                         "name": "Breece Hall",
                         "position": "RB",
-                        "games": 3,
+                        "games": 5,
                         "weeks": [
                           4,
                           5,
-                          6
+                          6,
+                          7,
+                          8
                         ]
                       },
                       {
@@ -5326,9 +5359,66 @@
                     ]
                   },
                   {
+                    "roster_id": 3,
+                    "name": "Lil Fridge",
+                    "rank": 5,
+                    "games": 3,
+                    "players": [
+                      {
+                        "player_id": "11560",
+                        "name": "Caleb Williams",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          3,
+                          4,
+                          5
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 4,
+                    "name": "NFC Least",
+                    "rank": 6,
+                    "games": 3,
+                    "players": [
+                      {
+                        "player_id": "6904",
+                        "name": "Jalen Hurts",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          6,
+                          7,
+                          8
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "roster_id": 7,
+                    "name": "To Infinity and Bijan",
+                    "rank": 7,
+                    "games": 3,
+                    "players": [
+                      {
+                        "player_id": "4881",
+                        "name": "Lamar Jackson",
+                        "position": "QB",
+                        "games": 3,
+                        "weeks": [
+                          5,
+                          6,
+                          7
+                        ]
+                      }
+                    ]
+                  },
+                  {
                     "roster_id": 2,
                     "name": "All You Need Is Love",
-                    "rank": 5,
+                    "rank": 8,
                     "games": 2,
                     "players": [
                       {
@@ -5344,19 +5434,19 @@
                     ]
                   },
                   {
-                    "roster_id": 3,
-                    "name": "Lil Fridge",
-                    "rank": 6,
+                    "roster_id": 12,
+                    "name": "Teehee",
+                    "rank": 9,
                     "games": 2,
                     "players": [
                       {
-                        "player_id": "11560",
-                        "name": "Caleb Williams",
-                        "position": "QB",
+                        "player_id": "5892",
+                        "name": "David Montgomery",
+                        "position": "RB",
                         "games": 2,
                         "weeks": [
-                          3,
-                          4
+                          6,
+                          7
                         ]
                       }
                     ]
@@ -5364,7 +5454,7 @@
                   {
                     "roster_id": 9,
                     "name": "Maye d'force B with U",
-                    "rank": 7,
+                    "rank": 10,
                     "games": 1,
                     "players": [
                       {
@@ -5379,49 +5469,8 @@
                     ]
                   },
                   {
-                    "roster_id": 4,
-                    "name": "NFC Least",
-                    "rank": 8,
-                    "games": 1,
-                    "players": [
-                      {
-                        "player_id": "6904",
-                        "name": "Jalen Hurts",
-                        "position": "QB",
-                        "games": 1,
-                        "weeks": [
-                          6
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "roster_id": 7,
-                    "name": "To Infinity and Bijan",
-                    "rank": 9,
-                    "games": 1,
-                    "players": [
-                      {
-                        "player_id": "4881",
-                        "name": "Lamar Jackson",
-                        "position": "QB",
-                        "games": 1,
-                        "weeks": [
-                          5
-                        ]
-                      }
-                    ]
-                  },
-                  {
                     "roster_id": 6,
                     "name": "Bo Girds",
-                    "rank": 10,
-                    "games": 0,
-                    "players": []
-                  },
-                  {
-                    "roster_id": 12,
-                    "name": "Teehee",
                     "rank": 11,
                     "games": 0,
                     "players": []
@@ -5439,32 +5488,32 @@
                 "chapter": "injuries",
                 "sentences": [
                   {
-                    "text": "behold the lamb lost 9 starter games to injury through week 8, the most in the league.",
+                    "text": "The Blue Tent lost 17 starter games to injury through week 8, the most in the league.",
                     "fact_ids": [
-                      "IT.10",
+                      "IT.1",
                       "CO.injuries.toll",
                       "W.week"
                     ],
                     "roster_id": null
                   },
                   {
-                    "text": "Kyle Monangai missed 4 of those games as a starter.",
-                    "fact_ids": [
-                      "IT.10.top"
-                    ],
-                    "roster_id": null
-                  },
-                  {
-                    "text": "The Blue Tent ranked 2nd on this list, losing 5 starter games.",
-                    "fact_ids": [
-                      "IT.1"
-                    ],
-                    "roster_id": null
-                  },
-                  {
-                    "text": "Davante Adams missed 2 of them.",
+                    "text": "Jadarian Price missed 5 of those games as a starter.",
                     "fact_ids": [
                       "IT.1.top"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "behold the lamb ranked 2nd on this list, losing 10 starter games.",
+                    "fact_ids": [
+                      "IT.10"
+                    ],
+                    "roster_id": null
+                  },
+                  {
+                    "text": "Kyle Monangai missed 4 of them.",
+                    "fact_ids": [
+                      "IT.10.top"
                     ],
                     "roster_id": null
                   },
