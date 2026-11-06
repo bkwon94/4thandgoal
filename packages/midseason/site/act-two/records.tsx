@@ -16,6 +16,17 @@ function AwardTitle({ award }: { award: Award }) {
   return <b className="font-mono text-meta font-bold tracking-caps text-accent-ink uppercase">{award.title}</b>;
 }
 
+/* The words of an award: "Title — winner — short fact". The short fact never names the winner, so no name repeats. */
+function AwardWords({ award }: { award: Award }) {
+  return (
+    <>
+      <AwardTitle award={award} /> —{" "}
+      <b className="font-bold text-ink">{award.player !== null ? `${award.player}, ${award.team}` : award.team}</b> —{" "}
+      <span>{award.short_fact}</span>
+    </>
+  );
+}
+
 /* One record: its label, the team and the number, the line under it, and the award of its game when it has one. */
 function Entry({ label, value, line, award }: { label: string; value: string; line: ReactNode; award?: Award }) {
   return (
@@ -27,7 +38,7 @@ function Entry({ label, value, line, award }: { label: string; value: string; li
       <span className="text-body leading-tight">{line}</span>
       {award !== undefined && (
         <span className="text-meta leading-normal text-ink-2">
-          <AwardTitle award={award} /> — <span>{award.fact}</span>
+          <AwardWords award={award} />
         </span>
       )}
     </li>
@@ -59,15 +70,13 @@ function BookList({ book }: { book: Book }) {
   );
 }
 
-/* The awards as lines, not cards (decision ticket 15): "MVP — Jahmyr Gibbs, Maye d'force B with U — fact". */
+/* The awards as lines, not cards (decision ticket 15): "MVP — Jahmyr Gibbs, Maye d'force B with U — short fact". */
 function Awards({ awards }: { awards: Award[] }) {
   return (
     <ul aria-label="Awards" className="m-0 flex list-none flex-col p-0">
       {awards.map((award) => (
         <li key={award.key} className="border-t border-rule py-sp-3 text-body leading-normal text-ink-2">
-          <AwardTitle award={award} /> —{" "}
-          <b className="font-bold text-ink">{award.player !== null ? `${award.player}, ${award.team}` : award.team}</b> —{" "}
-          <span>{award.fact}</span>
+          <AwardWords award={award} />
         </li>
       ))}
     </ul>

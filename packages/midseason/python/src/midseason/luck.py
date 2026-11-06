@@ -1,7 +1,6 @@
 """
-Schedule luck and the Schedule swap, a chapter of Act I: All-play wins, Schedule luck, points against, the close-game
-record, the worked example of the luck card, and each team's record under every schedule, with its best and its worst.
-Decision tickets 06 and 16 set the rules.
+Schedule luck and the Schedule swap, a chapter of Act I: All-play wins, Schedule luck, points against, close games,
+the luck card, and each team's best and worst record with the other schedules. Decision tickets 06 and 16 set the rules.
 """
 from collections.abc import Iterator
 from decimal import Decimal
@@ -89,6 +88,8 @@ class SwapEnd(SwapRecord):
     """The best or the worst record of one team with the 11 other schedules, and each schedule that gives it. A tie
     keeps each schedule, in standings order."""
     schedules: list[int]
+    # The wins of this end minus the real wins. A tie counts half.
+    change: float = 0
 
 
 class BestAndWorst(BaseModel):
@@ -139,6 +140,8 @@ class ScheduleLuck(BaseModel):
     example: LuckExample | None = None
     # The count of weeks played through the report week: each team's count of head-to-head games.
     weeks: int = 0
+    # The count of median games of each team: one a week in a league with a median game, else 0.
+    median_games: int = 0
 
 
 class LuckChapter(BaseModel):
@@ -187,20 +190,21 @@ def _rate(cell: SwapRecord | SwapCell) -> float:
     return cell.wins + cell.ties / 2
 
 
-def _end(cells: list[SwapCell], rate: float) -> SwapEnd:
-    """The record of `rate` and each schedule that gives it. The cells are in standings order."""
+def _end(cells: list[SwapCell], rate: float, own: SwapCell) -> SwapEnd:
+    """The record of `rate`, each schedule that gives it, and its change from `own`. The cells are in standings
+    order."""
     tied = [cell for cell in cells if _rate(cell) == rate]
     return SwapEnd(schedules=[cell.schedule_of for cell in tied], wins=tied[0].wins, losses=tied[0].losses,
-                   ties=tied[0].ties)
+                   ties=tied[0].ties, change=rate - _rate(own))
 
 
 def _best_and_worst(row: SwapRow) -> BestAndWorst:
-    own = next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
+    own = _own(row)
     others = [cell for cell in row.cells if cell.schedule_of != row.roster_id]
     rates = [_rate(cell) for cell in others]
     return BestAndWorst(roster_id=row.roster_id, name=row.name,
                         real=SwapRecord(wins=own.wins, losses=own.losses, ties=own.ties),
-                        best=_end(others, max(rates)), worst=_end(others, min(rates)))
+                        best=_end(others, max(rates), own), worst=_end(others, min(rates), own))
 
 
 def _swap(history: History, through: int, state: LeagueState, median_game: bool) -> ScheduleSwap:
@@ -309,8 +313,9 @@ def schedule_luck(history: History, through: int, state: LeagueState, *, median_
     # sorted is stable, so a tie keeps the standings order.
     teams.sort(key=lambda team: -team.schedule_luck)
     example = _example(history, through, teams[0]) if teams else None
+    weeks = sum(1 for _ in _weeks(history, through))
     return ScheduleLuck(teams=teams, swap=_swap(history, through, state, median_game), example=example,
-                        weeks=sum(1 for _ in _weeks(history, through)))
+                        weeks=weeks, median_games=weeks if median_game else 0)
 
 
 def _example(history: History, through: int, team: TeamLuck) -> LuckExample | None:
@@ -365,8 +370,7 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
         facts.append(fact(f"{prefix}.close",
                           f"{team.name} is {close} in close games, with a margin under {n(int(CLOSE_GAME_MARGIN))} points.",
                           n, [team.name], []))
-    own = {row.roster_id: next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
-           for row in luck.swap.rows}
+    own = {row.roster_id: _own(row) for row in luck.swap.rows}
     for best in luck.swap.best_missed:
         name, other, mine = names[best.roster_id], names[best.schedule_of], own[best.roster_id]
         n = Nums()

@@ -215,27 +215,31 @@ describe("the record book", () => {
     expect(listed.map((item) => item.firstElementChild!.textContent)).toEqual(
       awards.filter((award) => !award.in_record_book).map((award) => award.title),
     );
-    for (const award of awards) expect(screen.getAllByText(award.fact)).toHaveLength(1);
+    for (const award of awards) expect(screen.getAllByText(award.short_fact)).toHaveLength(1);
   });
 
-  it("shows each award as one line, title, then winner, then fact, and no award as a card", () => {
+  it("shows each award as one line, title, then winner, then short fact, and no award as a card", () => {
     // AT-57.
     renderReport();
     const { awards } = chapterOf("records").facts;
     const lines = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
-    const mvp = awards.find((award) => award.key === "mvp")!;
-    expect(lines[0].textContent).toBe(`MVP — Jahmyr Gibbs, Maye d'force B with U — ${mvp.fact}`);
+    expect(lines[0].textContent).toBe("MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.");
     const listed = awards.filter((award) => !award.in_record_book);
     expect(lines.map((line) => line.textContent)).toEqual(
-      listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.fact}`),
+      listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.short_fact}`),
     );
     for (const line of lines) {
       expect(line.closest(".bg-card")).toBeNull();
       expect(line.querySelector("h5, p, div")).toBeNull();
     }
     const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
-    const heartbreak = awards.find((award) => award.key === "heartbreak")!;
-    expect(book.getByText(heartbreak.fact).parentElement!.textContent).toBe(`Heartbreak of the year — ${heartbreak.fact}`);
+    // The awards on a game of the book read the same way: title, winner, then short fact.
+    expect(book.getByText(/^Lost to/).parentElement!.textContent).toBe(
+      "Heartbreak of the year — The Blue Tent — Lost to All You Need Is Love by 0.4 in week 3.",
+    );
+    expect(book.getByText(/^Beat /).parentElement!.textContent).toBe(
+      "Beatdown of the year — Maye d'force B with U — Beat To Infinity and Bijan by 92.14 in week 5.",
+    );
   });
 
   it("shows team scores with 2 decimal places, with the highest score at 158.96", () => {

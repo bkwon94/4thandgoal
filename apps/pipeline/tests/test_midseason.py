@@ -405,6 +405,16 @@ def test_the_swap_gives_bo_girds_a_best_of_14_2_on_maye_s_schedule_and_each_team
     assert spreads == sorted(spreads, reverse=True)
 
 
+def test_the_luck_chapter_publishes_the_median_games_and_the_change_of_each_best_and_worst(tmp_path):
+    # The site reads these counts, so it computes no fact of its own (ADR 0013).
+    report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
+    luck = _chapter(report, "luck")["facts"]
+    assert (luck["weeks"], luck["median_games"]) == (8, 8)
+    rows = {row["name"]: row for row in luck["swap"]["best_and_worst"]}
+    assert (rows["Bo Girds"]["best"]["change"], rows["Bo Girds"]["worst"]["change"]) == (5, -1)
+    assert (rows["All You Need Is Love"]["best"]["change"], rows["All You Need Is Love"]["worst"]["change"]) == (0, -4)
+
+
 def test_the_luck_card_works_the_example_of_all_you_need_is_love_in_week_3(tmp_path):
     # AT-8.
     report = _report(build_week_8(_call(), client=_cpc_week_8(tmp_path), provider=CPC_PROVIDER))
@@ -563,6 +573,17 @@ def test_the_seven_awards_each_have_a_winner_and_a_fact(tmp_path):
     # Each game of the record book shows once: Heartbreak and Beatdown are its closest game and its biggest margin.
     assert awards["heartbreak"]["in_record_book"] and awards["beatdown"]["in_record_book"]
     assert awards["heartbreak"]["team"] == "The Blue Tent"
+
+
+def test_each_award_has_a_short_fact_with_no_repeat_of_its_winner(tmp_path):
+    # The page reads "Title — winner — short fact", so the short fact never names the winner a second time.
+    awards = {award["key"]: award for award in _chapter(_cpc_report(tmp_path), "records")["facts"]["awards"]}
+    assert awards["mvp"]["short_fact"] == "135.1 points over the line in his starts."
+    for award in awards.values():
+        assert award["short_fact"] and award["team"] not in award["short_fact"]
+        assert award["player"] is None or award["player"] not in award["short_fact"]
+    # The long fact of the writer still names the winner.
+    assert awards["mvp"]["fact"].startswith("Jahmyr Gibbs of Maye d'force B with U has 135.1 points")
 
 
 def test_the_spread_rule_gives_each_team_1_to_3_headlines_and_moves_both_swap_callouts_off_bo_girds(tmp_path):

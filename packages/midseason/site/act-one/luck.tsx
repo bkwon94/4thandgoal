@@ -2,6 +2,7 @@
  * Schedule luck with the Schedule swap, a chapter of Act I: a card that works one real example, the luck table with a
  * word under each luck number, then the swap as one text row per team with its best and its worst schedule.
  */
+import type { ReactNode } from "react";
 import { gap, num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
 import { ReportCard } from "../report/report-card";
@@ -32,7 +33,7 @@ const closeText = (team: TeamLuck) => fullRecord(team.close_wins, team.close_los
 const half = (x: number) => (Number.isInteger(x) ? String(x) : x.toFixed(1));
 
 /* The card above the luck table: the idea in plain words, then one real team worked through, then the gap. */
-function LuckCard({ example }: { example: LuckExample }) {
+function LuckCard({ example, weeks }: { example: LuckExample; weeks: number }) {
   const more = example.schedule_luck >= 0 ? "more" : "fewer";
   const steps = [
     {
@@ -44,7 +45,7 @@ function LuckCard({ example }: { example: LuckExample }) {
       text:
         `In week ${example.week}, ${example.name} scored ${teamScore(example.score)} and outscored ` +
         `${half(example.outscored)} of ${example.others} teams: ${example.week_wins.toFixed(2)} of a win. ` +
-        `Over ${example.season_games / example.others} weeks it outscored ${half(example.season_outscored)} of ` +
+        `Over ${weeks} weeks it outscored ${half(example.season_outscored)} of ` +
         `${example.season_games}: ${example.all_play_wins.toFixed(2)} wins.`,
     },
     {
@@ -116,8 +117,6 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
   );
 }
 
-const rate = (end: { wins: number; ties: number }) => end.wins + end.ties / 2;
-
 /* The schedules of a best or a worst: one name, "A or B" for 2, and "A and N others" for more. */
 function scheduleNames(end: SwapEnd, names: Map<number, string>) {
   const [first, ...rest] = end.schedules.map((rid) => names.get(rid) ?? "");
@@ -127,21 +126,27 @@ function scheduleNames(end: SwapEnd, names: Map<number, string>) {
 }
 
 /* The change in wins from the real record, as a muted word: "+5", "−1", or "same". */
-const change = (end: SwapEnd, real: BestAndWorst["real"]) => {
-  const diff = rate(end) - rate(real);
-  return diff === 0 ? "same" : gap(diff);
-};
+const change = (end: SwapEnd) => (end.change === 0 ? "same" : gap(end.change));
 
 const LABEL = "font-mono text-label font-bold tracking-caps text-mute uppercase";
 
-function SwapEndLine({ label, end, row, names }: { label: string; end: SwapEnd; row: BestAndWorst; names: Map<number, string> }) {
+/* One line of a swap row: the label and the record, then the rest of the line for a best or a worst. */
+function SwapLine({ label, record, children }: { label: string; record: BestAndWorst["real"]; children?: ReactNode }) {
   return (
     <p className="m-0 text-body leading-tight">
       <span className={LABEL}>{label}</span>{" "}
-      <span className="font-mono font-bold tabular-nums">{fullRecord(end.wins, end.losses, end.ties)}</span>
-      <span className="text-ink-2"> on the schedule of {scheduleNames(end, names)}</span>
-      <span className="ml-sp-2 font-mono text-meta text-mute tabular-nums">{change(end, row.real)}</span>
+      <span className="font-mono font-bold tabular-nums">{fullRecord(record.wins, record.losses, record.ties)}</span>
+      {children}
     </p>
+  );
+}
+
+function SwapEndLine({ label, end, names }: { label: string; end: SwapEnd; names: Map<number, string> }) {
+  return (
+    <SwapLine label={label} record={end}>
+      <span className="text-ink-2"> on the schedule of {scheduleNames(end, names)}</span>
+      <span className="ml-sp-2 font-mono text-meta text-mute tabular-nums">{change(end)}</span>
+    </SwapLine>
   );
 }
 
@@ -153,12 +158,9 @@ function SwapRows({ rows }: { rows: BestAndWorst[] }) {
       {rows.map((row) => (
         <li key={row.roster_id} className="flex flex-col gap-sp-1 border-b border-rule py-sp-3 last:border-b-0">
           <h5 className="m-0 text-body leading-tight font-semibold">{row.name}</h5>
-          <p className="m-0 text-body leading-tight">
-            <span className={LABEL}>Real</span>{" "}
-            <span className="font-mono font-bold tabular-nums">{fullRecord(row.real.wins, row.real.losses, row.real.ties)}</span>
-          </p>
-          <SwapEndLine label="Best" end={row.best} row={row} names={names} />
-          <SwapEndLine label="Worst" end={row.worst} row={row} names={names} />
+          <SwapLine label="Real" record={row.real} />
+          <SwapEndLine label="Best" end={row.best} names={names} />
+          <SwapEndLine label="Worst" end={row.worst} names={names} />
         </li>
       ))}
     </ul>
@@ -168,14 +170,12 @@ function SwapRows({ rows }: { rows: BestAndWorst[] }) {
 const NOTE = "m-0 max-w-measure text-meta leading-tight text-ink-2";
 
 export function Luck({ chapter }: { chapter: LuckChapter }) {
-  const { teams, swap, example, weeks } = chapter.facts;
-  const first = swap.best_and_worst[0];
-  // The swap records hold the median games too, so their count less the head-to-head count is the median count.
-  const games = first ? first.real.wins + first.real.losses + first.real.ties : weeks;
-  const medians = games - weeks;
+  const { teams, swap, example, weeks, median_games: medians } = chapter.facts;
+  // The swap records hold the median games too, as the standings do.
+  const games = weeks + medians;
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
-      {example && <LuckCard example={example} />}
+      {example && <LuckCard example={example} weeks={weeks} />}
       <LuckTable teams={teams} />
       <p className={NOTE}>
         These count the {weeks} head-to-head games only.{medians > 0 && " The median game is out."} Luck is real wins
