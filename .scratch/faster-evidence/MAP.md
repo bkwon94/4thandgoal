@@ -15,11 +15,10 @@ The spec holds three parts:
 
 ## DECISIONS SO FAR
 
-None.
+- A test names its steps in `evidence/AT-<n>/steps.json`: `route`, a list of six verbs, and optional `widths` and `themes`. `cpc:implement` writes it. `decisions/01-grill-action-form.md`.
 
 ## NOT YET SPECIFIED
 
-- How does a test name its clicks and inputs before a shot? `decisions/01-grill-action-form.md`.
 - What is the name and the guard of the rate limit setting? `decisions/02-spec-rate-limit-setting.md`.
 - How do we measure the 15 minutes of a round? `decisions/03-spec-measure-round-time.md`.
 - What does the glossary term "Evidence" say? `decisions/04-spec-evidence-term.md`.
