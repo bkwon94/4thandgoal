@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-18, AT-19, AT-20, 
 
 **Blocked by:** 05, 06, 07, 08.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] London Cooking in week 2 lost by 1.67 with 27.54 on the bench.
 - [x] The record book high is 158.96 by Maye d'force B with U in week 5, and the closest game is 0.4 in week 3.
