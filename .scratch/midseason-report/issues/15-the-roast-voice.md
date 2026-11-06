@@ -8,7 +8,7 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-40, AT-41, AT-52, 
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A build of CPC week 8 gives one prose block per chapter, each with 40 words or fewer, and the verifier passes each.
 - [x] No chapter in `midseason.json` has a `roast` field, and the site schema and page agree.
