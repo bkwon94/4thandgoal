@@ -369,6 +369,32 @@ for (const width of REPORT_WIDTHS) {
   });
 }
 
+/* AT-28: on a phone, each shown table of the report fits its card, or its card scrolls it and the first cell of each
+   row stays in place, as the swap grid does. The page itself never scrolls sideways. */
+test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll with the team column fixed, 375px`, async ({ page }) => {
+  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+  const failures = await page.locator("main table").evaluateAll((tables) =>
+    tables
+      .filter((table) => table.getClientRects().length > 0)
+      .flatMap((table) => {
+        const name = table.getAttribute("aria-label") ?? table.closest("[id]")?.id ?? "a table";
+        const card = table.parentElement!;
+        if (table.getBoundingClientRect().width <= card.clientWidth + 1) return [];
+        if (!["auto", "scroll"].includes(getComputedStyle(card).overflowX)) return [`${name} runs past its card`];
+        const first = table.querySelector("tbody tr > :first-child")!;
+        const before = first.getBoundingClientRect().left;
+        card.scrollLeft = card.scrollWidth;
+        const after = first.getBoundingClientRect().left;
+        card.scrollLeft = 0;
+        return Math.abs(after - before) > 1 ? [`${name} scrolls its team column out of view`] : [];
+      }),
+  );
+  expect(failures).toEqual([]);
+  expect(await scanScroll(page)).toEqual([]);
+});
+
 /* AT-11: Position top 10 opens on RB and shows one position. */
 test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);

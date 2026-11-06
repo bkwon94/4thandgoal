@@ -72,9 +72,10 @@ describe("MidseasonScreen", () => {
   it("shows the state of the league with each team in standings order", () => {
     renderReport();
     const state = within(document.getElementById("state")!);
+    // Each row header holds the place, then the team name, so the sticky team column keeps both on a phone.
     const rows = state.getAllByRole("rowheader").map((cell) => cell.textContent);
-    expect(rows).toEqual(rowsOf(0));
-    expect(rows[0]).toBe("All You Need Is Love");
+    expect(rows).toEqual(rowsOf(0).map((name, index) => `${String(index + 1).padStart(2, "0")} ${name}`));
+    expect(rows[0]).toBe("01 All You Need Is Love");
   });
 
   it("explains the All-play record in one plain sentence beside the luck table", () => {

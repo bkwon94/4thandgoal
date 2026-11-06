@@ -3,6 +3,7 @@
 ## Knows
 
 - The state of the league: the full record, points for and against, the streak, and the playoff odds of each team.
+- On a phone, the state and the luck tables scroll inside their cards, and the team column stays in place.
 - The arcs of each team with the numbers behind each arc.
 - Schedule luck with the one sentence on the All-play record, the Schedule swap grid, and the best schedule missed.
 - The injury toll: the starter games each team lost, with its key starters.

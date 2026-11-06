@@ -1,6 +1,6 @@
 /**
  * The state of the league, the first chapter of Act I: each team's full record, points for and against, the streak,
- * and the playoff odds, in standings order. The table scrolls inside its own box on a phone.
+ * and the playoff odds, in standings order. The table scrolls inside its own box on a phone, and the team column stays.
  */
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
@@ -15,6 +15,9 @@ const PLAYOFF_SPOTS = 6;
 const HEAD = "px-sp-2 py-sp-2 text-left font-mono text-meta font-bold tracking-caps text-mute uppercase";
 const CELL = "px-sp-2 py-sp-2 font-mono text-body tabular-nums whitespace-nowrap";
 
+/* The team column stays in place while a phone scrolls the table, so each row keeps its name. A long name wraps on a phone. */
+const TEAM = "sticky left-0 z-10 max-w-[9rem] bg-card md:max-w-none px-sp-2 py-sp-2 text-left text-body leading-tight font-semibold";
+
 const streakText = (team: TeamState) => (team.streak ? `${team.streak.kind}${team.streak.length}` : "–");
 
 export function State({ chapter }: { chapter: StateChapter }) {
@@ -24,8 +27,7 @@ export function State({ chapter }: { chapter: StateChapter }) {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-rule">
-              <th scope="col" className={HEAD}>#</th>
-              <th scope="col" className={HEAD}>Team</th>
+              <th scope="col" className={cn(HEAD, "sticky left-0 z-10 bg-card")}>Team</th>
               <th scope="col" className={cn(HEAD, "text-right")}>Record</th>
               <th scope="col" className={cn(HEAD, "text-right")}>PF</th>
               <th scope="col" className={cn(HEAD, "text-right")}>PA</th>
@@ -39,9 +41,8 @@ export function State({ chapter }: { chapter: StateChapter }) {
                 key={team.roster_id}
                 className={cn("border-b last:border-b-0", team.rank === PLAYOFF_SPOTS ? "border-b-2 border-accent" : "border-rule")}
               >
-                <td className={cn(CELL, "text-meta text-mute")}>{String(team.rank).padStart(2, "0")}</td>
-                <th scope="row" className="px-sp-2 py-sp-2 text-left text-body leading-tight font-semibold">
-                  {team.name}
+                <th scope="row" className={TEAM}>
+                  <span className="font-mono text-meta text-mute">{String(team.rank).padStart(2, "0")}</span> {team.name}
                 </th>
                 <td className={cn(CELL, "text-right font-bold")}>{fullRecord(team.wins, team.losses, team.ties)}</td>
                 <td className={cn(CELL, "text-right")}>{num(team.points_for)}</td>
