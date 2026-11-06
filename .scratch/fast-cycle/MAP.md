@@ -19,10 +19,10 @@ A spec the size of `midseason-report` goes from the `cpc:implement` start to a g
 - A FAIL from Brian in a PR comment overrides the Judge. `decisions/08-grill-brian-fail-override.md`.
 - PR #13 keeps the old verdict rule. `fast-cycle` merges after PR #13. `decisions/13-grill-open-pr-rule.md`.
 - The pipeline and API tests run under `pytest-xdist -n auto` with no test fix. The estimate on CI is about 3 min for the pipeline. `decisions/09-research-parallel-pytest.md`.
+- The midseason tests add about 4 min from about 45 repeated builds. A shared session fixture per input cuts them, with the same assertions and the full sim count. `decisions/10-research-midseason-test-time.md`.
 
 ## NOT YET SPECIFIED
 
-- Why do the midseason-report tests add about 6 min on CI? `decisions/10-research-midseason-test-time.md`.
 - What are the CI jobs, the Chromium cache key, and the deploy triggers? `decisions/11-spec-ci-jobs-and-cache.md`.
 - Where does the Judge write its verdicts, and how does the check read them? `decisions/12-spec-judge-record.md`.
 
