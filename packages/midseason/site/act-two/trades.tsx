@@ -4,11 +4,11 @@
  */
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { Card } from "../report/report-card";
 import { fullRecord, signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
+import { WordTag } from "../report/word-tag";
 import type { TradeCard, TradesChapter } from "../schema/midseason-types";
 
 /* The trades that show as full cards (decision ticket 04). */
@@ -27,20 +27,20 @@ function Got({ side }: { side: Side }) {
           {player.points_over_line !== null && (
             <span className="font-mono tabular-nums"> {signedOne(player.points_over_line)}</span>
           )}
-          {player.hurt_on_arrival && <Tag className="text-meta">{HURT_ON_ARRIVAL}</Tag>}
+          {player.hurt_on_arrival && <WordTag tone="accent">{HURT_ON_ARRIVAL}</WordTag>}
         </li>
       ))}
     </ul>
   );
 }
 
-/* The result of a trade, filled for a trade with a winner. */
+/* The result of a trade as a mono caps word with no box, in the ink color for a trade with a winner. */
 function Result({ trade }: { trade: TradeCard }) {
   return (
     <span
       className={cn(
-        "rounded-pill border px-sp-2 font-mono text-meta font-bold tracking-caps uppercase",
-        trade.winner !== null ? "border-ink bg-ink text-page" : "border-rule text-ink-2",
+        "font-mono text-label font-bold tracking-caps uppercase",
+        trade.winner !== null ? "text-ink" : "text-mute",
       )}
     >
       {trade.result}
@@ -97,7 +97,7 @@ function ShortRow({ trade }: { trade: TradeCard }) {
             <span key={player.player_id} className="text-ink-2">
               {index > 0 && ", "}
               {player.player}
-              {player.hurt_on_arrival && <Tag className="text-meta">{HURT_ON_ARRIVAL}</Tag>}
+              {player.hurt_on_arrival && <WordTag tone="accent">{HURT_ON_ARRIVAL}</WordTag>}
             </span>
           ))}
         </span>

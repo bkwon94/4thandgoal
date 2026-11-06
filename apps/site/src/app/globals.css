@@ -60,6 +60,8 @@
     --radius-tile: 18px;
     --radius-pill: 9999px;
     --radius-sm: var(--radius-pill);
+    /* The midseason report keeps its corners small and draws no full pill (decision ticket 15): 8px on each card. */
+    --radius-report: 8px;
 
     /* Spacing scale. Every padding, margin, and gap comes from this list. */
     --spacing-sp-0: 2px;

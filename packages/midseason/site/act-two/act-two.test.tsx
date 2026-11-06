@@ -147,7 +147,24 @@ describe("the trade report card", () => {
     expect(button.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(button);
     expect(list.children).toHaveLength(rest);
-    expect(chapter.getByRole("button", { name: "Show fewer" }).getAttribute("aria-expanded")).toBe("true");
+    expect(chapter.getByRole("button", { name: "Show top 5" }).getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("draws Show all as a mono text control with a chevron that turns, and no border", () => {
+    // AT-56. The chevron turns by a CSS transition, so the reduced-motion rule of globals.css stops the turn.
+    renderReport();
+    const chapter = chapterEl("trades");
+    const button = chapter.getByRole("button", { name: /^Show all/ });
+    expect(button.className).toMatch(/(^|\s)font-mono(\s|$)/);
+    expect(button.className).not.toMatch(/(^|\s)(rounded-|border|bg-(?!transparent))/);
+    const chevron = button.querySelector("svg")!;
+    expect(chevron.getAttribute("aria-hidden")).toBe("true");
+    expect(chevron.getAttribute("class")).not.toMatch(/rotate-180/);
+    fireEvent.click(button);
+    expect(button.textContent).toBe("Show top 5");
+    expect(chevron.getAttribute("class")).toMatch(/(^|\s)rotate-180(\s|$)/);
+    fireEvent.click(button);
+    expect(button.textContent).toMatch(/^Show all \d+$/);
   });
 });
 
@@ -195,9 +212,39 @@ describe("the record book", () => {
       expect(book.getByText(title)).toBeTruthy();
     }
     const listed = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
-    expect(listed.map((item) => item.querySelector("h5")!.textContent)).toEqual(
+    expect(listed.map((item) => item.firstElementChild!.textContent)).toEqual(
       awards.filter((award) => !award.in_record_book).map((award) => award.title),
     );
     for (const award of awards) expect(screen.getAllByText(award.fact)).toHaveLength(1);
+  });
+
+  it("shows each award as one line, title, then winner, then fact, and no award as a card", () => {
+    // AT-57.
+    renderReport();
+    const { awards } = chapterOf("records").facts;
+    const lines = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
+    const mvp = awards.find((award) => award.key === "mvp")!;
+    expect(lines[0].textContent).toBe(`MVP — Jahmyr Gibbs, Maye d'force B with U — ${mvp.fact}`);
+    const listed = awards.filter((award) => !award.in_record_book);
+    expect(lines.map((line) => line.textContent)).toEqual(
+      listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.fact}`),
+    );
+    for (const line of lines) {
+      expect(line.closest(".bg-card")).toBeNull();
+      expect(line.querySelector("h5, p, div")).toBeNull();
+    }
+    const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
+    const heartbreak = awards.find((award) => award.key === "heartbreak")!;
+    expect(book.getByText(heartbreak.fact).parentElement!.textContent).toBe(`Heartbreak of the year — ${heartbreak.fact}`);
+  });
+
+  it("shows team scores with 2 decimal places, with the highest score at 158.96", () => {
+    // AT-58.
+    renderReport();
+    const book = within(chapterEl("records").getByRole("list", { name: "Records" }));
+    const high = book.getAllByRole("listitem")[0];
+    expect(high.textContent).toContain("Highest score158.96");
+    const { low } = chapterOf("records").facts;
+    expect(book.getAllByRole("listitem")[1].textContent).toContain(low.score.toFixed(2));
   });
 });

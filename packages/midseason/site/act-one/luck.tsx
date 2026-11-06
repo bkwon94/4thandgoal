@@ -4,7 +4,7 @@
  */
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
+import { Card } from "../report/report-card";
 import { fullRecord, signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { LuckChapter, ScheduleSwap, TeamLuck } from "../schema/midseason-types";

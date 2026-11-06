@@ -3,11 +3,11 @@
  * opponent, and the win rate of all its opponents. The softest schedule comes first. The list shows 5 teams first.
  */
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { Card } from "../report/report-card";
 import { fullRecord } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
+import { WordTag } from "../report/word-tag";
 import type { LookAheadChapter, TeamLookAhead } from "../schema/midseason-types";
 
 /* A win rate in the box-score form, such as ".440", or "1.000" for a perfect rate. */
@@ -19,7 +19,7 @@ function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | 
       <span className="flex flex-wrap items-baseline justify-between gap-x-sp-3">
         <span className="text-body leading-tight font-bold">
           {team.name}
-          {end !== null && <Tag className="text-meta">{end}</Tag>}
+          {end !== null && <WordTag>{end}</WordTag>}
         </span>
         {team.opponents_rate !== null && (
           <span className="font-mono text-meta text-ink-2 tabular-nums">
@@ -38,7 +38,7 @@ function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | 
               key={game.week}
               data-week={game.week}
               className={cn(
-                "flex flex-col rounded-sm border px-sp-2 py-sp-1 text-meta leading-tight",
+                "flex flex-col rounded-report border px-sp-2 py-sp-1 text-meta leading-tight",
                 good ? "border-ink" : "border-rule",
               )}
             >

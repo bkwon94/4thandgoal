@@ -3,7 +3,7 @@
  * its key starters who missed games and the count for each one.
  */
 import { count } from "@cpc/design/format/format";
-import { Card } from "@cpc/design/parts/card";
+import { Card } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
 import type { InjuryChapter } from "../schema/midseason-types";
 

@@ -2,10 +2,9 @@
  * The state of the league, the first chapter of Act I: each team's full record, points for and against, the streak,
  * and the playoff odds, in standings order. The table scrolls inside its own box on a phone, and the team column stays.
  */
-import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
-import { fullRecord } from "../report/numbers";
+import { Card } from "../report/report-card";
+import { fullRecord, teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { StateChapter, TeamState } from "../schema/midseason-types";
 
@@ -45,8 +44,8 @@ export function State({ chapter }: { chapter: StateChapter }) {
                   <span className="font-mono text-meta text-mute">{String(team.rank).padStart(2, "0")}</span> {team.name}
                 </th>
                 <td className={cn(CELL, "text-right font-bold")}>{fullRecord(team.wins, team.losses, team.ties)}</td>
-                <td className={cn(CELL, "text-right")}>{num(team.points_for)}</td>
-                <td className={cn(CELL, "text-right text-ink-2")}>{num(team.points_against)}</td>
+                <td className={cn(CELL, "text-right")}>{teamScore(team.points_for)}</td>
+                <td className={cn(CELL, "text-right text-ink-2")}>{teamScore(team.points_against)}</td>
                 <td className={cn(CELL, "text-right")}>{streakText(team)}</td>
                 <td className={cn(CELL, "text-right")}>{team.playoff_odds === null ? "–" : `${team.playoff_odds}%`}</td>
               </tr>

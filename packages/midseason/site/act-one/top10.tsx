@@ -5,17 +5,17 @@
 "use client";
 
 import { useState } from "react";
-import { num, oneDecimal } from "@cpc/design/format/format";
+import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { Card } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
 import type { PositionBoard, Top10Chapter, TopPlayer } from "../schema/midseason-types";
 
 /* The board that the chapter opens on (decision ticket 10). A league with no RB board opens on its first board. */
 export const FIRST_POSITION = "RB";
 
-/* One row: the rank, the player over his NFL team, the manager who has him or the free agent tag, and the points. */
+/* One row: the rank, the player over his NFL team and the manager who has him, and the points. A player on the wire
+   has his tag, such as "Free agent", in the second line in place of a manager, as a fact about him (decision ticket 15). */
 function Row({ player }: { player: TopPlayer }) {
   return (
     <li className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
@@ -25,11 +25,16 @@ function Row({ player }: { player: TopPlayer }) {
         <span className="block truncate text-meta leading-tight text-ink-2">
           {player.nfl_team ?? "No team"}
           {player.manager !== null && ` · ${player.manager}`}
-          {player.tag !== null && <Tag className="text-meta">{player.tag}</Tag>}
+          {player.tag !== null && (
+            <>
+              {" · "}
+              <b className="font-semibold text-ink">{player.tag}</b>
+            </>
+          )}
         </span>
       </span>
       <span className="text-right">
-        <span className="block font-mono text-body font-bold tabular-nums">{num(player.points)}</span>
+        <span className="block font-mono text-body font-bold tabular-nums">{oneDecimal(player.points)}</span>
         <span className="block font-mono text-meta text-mute tabular-nums">{oneDecimal(player.points_per_game)} a game</span>
       </span>
     </li>
@@ -42,10 +47,12 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
     boards.some((board) => board.position === FIRST_POSITION) ? FIRST_POSITION : boards[0]?.position,
   );
   const board = boards.find((item) => item.position === chosen) ?? boards[0];
+  const chosenIndex = Math.max(0, boards.findIndex((item) => item.position === board?.position));
   return (
     <ReportChapter id={chapter.key} title={chapter.title} note="Total league points" blurb={chapter.blurb}>
-      {/* Each chip is a 44px pill. The chosen chip is filled, and aria-pressed tells a screen reader which one. */}
-      <div role="group" aria-label="Position" className="flex gap-sp-2">
+      {/* Each segment is a 44px text button, and aria-pressed tells a screen reader which one is chosen. A 2px accent
+          underline slides under the chosen one. It is a CSS transition, so the reduced-motion rule of globals.css stops it. */}
+      <div role="group" aria-label="Position" className="relative flex border-b border-rule">
         {boards.map(({ position }) => {
           const on = position === board?.position;
           return (
@@ -55,14 +62,20 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
               aria-pressed={on}
               onClick={() => setChosen(position)}
               className={cn(
-                "press min-h-touch min-w-touch flex-1 cursor-pointer rounded-pill border font-mono text-meta font-bold",
-                on ? "border-ink bg-ink text-page" : "border-rule bg-transparent text-ink-2",
+                "press min-h-touch min-w-touch flex-1 cursor-pointer font-mono text-meta font-bold tracking-caps",
+                on ? "text-ink" : "text-mute hover-fine:text-ink-2",
               )}
             >
               {position}
             </button>
           );
         })}
+        <span
+          aria-hidden="true"
+          data-underline
+          className="absolute -bottom-px h-sp-0 bg-accent transition-[left] duration-300 ease-rise"
+          style={{ left: `${(chosenIndex * 100) / boards.length}%`, width: `${100 / boards.length}%` }}
+        />
       </div>
       {board !== undefined && (
         <Card className="py-sp-1">

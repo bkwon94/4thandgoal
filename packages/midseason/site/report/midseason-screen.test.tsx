@@ -121,6 +121,15 @@ describe("MidseasonScreen", () => {
     expect(rows[0]).toBe("01 All You Need Is Love");
   });
 
+  it("shows the points for and against of each team with 2 decimal places", () => {
+    // AT-58. Team scores show 2 places, as Sleeper does, so the 898.0 points against of the last team read 898.00.
+    renderReport();
+    const state = within(document.getElementById("state")!);
+    const last = state.getAllByRole("row").at(-1)!;
+    expect(last.textContent).toContain("898.00");
+    expect(last.textContent).toContain("700.97");
+  });
+
   it("explains the All-play record in one plain sentence beside the luck table", () => {
     renderReport();
     const luck = within(document.getElementById("luck")!);
@@ -150,12 +159,72 @@ describe("MidseasonScreen", () => {
     expect(qb.firstElementChild?.textContent).toContain("Josh Allen");
   });
 
-  it("tags a free agent in Position top 10", () => {
+  it("draws the position switch as text segments with an accent underline that slides to the chosen one", () => {
+    // AT-56. The underline is a CSS transition, so the reduced-motion rule of globals.css stops its slide.
+    renderReport();
+    const group = screen.getByRole("group", { name: "Position" });
+    const buttons = within(group).getAllByRole("button");
+    for (const button of buttons) {
+      expect(button.className).not.toMatch(/(^|\s)(rounded-|border|bg-)/);
+      // A native button with no negative tabindex, so Tab reaches each segment and the focus ring of the site shows.
+      expect(button.getAttribute("tabindex")).toBeNull();
+    }
+    const line = group.querySelector<HTMLElement>("[data-underline]")!;
+    expect(line.getAttribute("aria-hidden")).toBe("true");
+    expect(line.className).toMatch(/(^|\s)h-sp-0(\s|$)/);
+    expect(line.className).toMatch(/(^|\s)bg-accent(\s|$)/);
+    expect(line.className).toMatch(/(^|\s)transition-\[left\](\s|$)/);
+    expect([line.style.left, line.style.width]).toEqual(["20%", "20%"]);
+    buttons[4].focus();
+    expect(document.activeElement).toBe(buttons[4]);
+    fireEvent.click(buttons[4]);
+    expect(buttons[4].getAttribute("aria-pressed")).toBe("true");
+    expect(line.style.left).toBe("80%");
+  });
+
+  it("puts Free agent in the second line of the DEF #3 row, with 77.8 points", () => {
+    // AT-55 and AT-58. The Buccaneers are on the wire, so the second line names no manager.
     renderReport();
     const chapter = within(document.getElementById("top10")!);
     fireEvent.click(chapter.getByRole("button", { name: "DEF" }));
     const third = chapter.getByRole("list", { name: "DEF top 10" }).children[2];
-    expect(third.textContent).toContain("Free agent");
+    expect(third.textContent).toContain("Tampa Bay Buccaneers");
+    expect(within(third as HTMLElement).getByText("Free agent").parentElement!.textContent).toBe("TB · Free agent");
+    expect(third.textContent).toContain("77.8");
+    expect(third.textContent).not.toContain("77.75");
+  });
+
+  it("draws each tag of the report as a plain word, with no fill and no border", () => {
+    // AT-55. Open each long list first, so the tags of its hidden rows count too.
+    renderReport();
+    for (const button of screen.getAllByRole("button", { name: /^Show all/ })) fireEvent.click(button);
+    const tags = [...document.querySelectorAll("[data-tag]")];
+    expect(tags.map((tag) => tag.textContent)).toEqual(expect.arrayContaining(["Just bad", "Hurt on arrival", "Streaming king"]));
+    for (const tag of tags) expect(tag.className).not.toMatch(/(^|\s)(bg-|border|rounded)/);
+    const tone = (word: string) => tags.find((tag) => tag.textContent === word)!.getAttribute("data-tag");
+    expect([tone("Just bad"), tone("Hurt on arrival"), tone("Hurt"), tone("Streaming king")]).toEqual([
+      "accent",
+      "accent",
+      "mute",
+      "mute",
+    ]);
+  });
+
+  it("gives each card 8 px corners and draws no full pill", () => {
+    // AT-56. rounded-report is the 8 px radius of the report. rounded-sm is the pill radius of the shared look.
+    // The report is the page under the top band. The band and its menu belong to the shell of the whole site.
+    renderReport();
+    for (const button of screen.getAllByRole("button", { name: /^Show all/ })) fireEvent.click(button);
+    const report = screen.getByRole("navigation", { name: "Chapters" }).parentElement!;
+    const rounded = [...report.querySelectorAll("[class*='rounded']")];
+    expect(rounded.length).toBeGreaterThan(0);
+    for (const element of rounded) {
+      expect(element.className).not.toMatch(/(^|\s)rounded-(pill|full|sm|card)(\s|$)/);
+    }
+    // A sticky table cell takes the card color too, so a cell is no card.
+    const cards = [...report.querySelectorAll(".bg-card:not(td, th)")];
+    expect(cards.length).toBeGreaterThan(10);
+    for (const card of cards) expect(card.className).toMatch(/(^|\s)rounded-report(\s|$)/);
   });
 
   it("shows the title of each chapter of Acts II and III", () => {

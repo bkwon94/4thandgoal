@@ -2,12 +2,12 @@
  * Waiver hits and misses, a chapter of Act II: the top hits by Points over the line, the top misses with their bids,
  * the claims lost by a few dollars, and the teams that streamed QB, K, and DEF, the streaming king first.
  */
-import { count, num } from "@cpc/design/format/format";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { count, oneDecimal } from "@cpc/design/format/format";
+import { Card } from "../report/report-card";
 import { signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
+import { WordTag } from "../report/word-tag";
 import type { Pickup, WaiversChapter } from "../schema/midseason-types";
 
 type Facts = WaiversChapter["facts"];
@@ -28,7 +28,7 @@ function PickupRow({ pickup }: { pickup: Pickup }) {
       </span>
       <span className="text-right">
         <span className="block font-mono text-body font-bold tabular-nums">
-          {pickup.points_over_line !== null ? signedOne(pickup.points_over_line) : num(pickup.points)}
+          {pickup.points_over_line !== null ? signedOne(pickup.points_over_line) : oneDecimal(pickup.points)}
         </span>
         <span className="block font-mono text-meta text-mute tabular-nums">{count(pickup.starts, "start", "starts")}</span>
       </span>
@@ -85,13 +85,13 @@ function Streamers({ streamers }: { streamers: Facts["streamers"] }) {
               <span className="min-w-0">
                 <span className="block text-body leading-tight font-bold">
                   {row.team}
-                  {index === 0 && <Tag className="text-meta">Streaming king</Tag>}
+                  {index === 0 && <WordTag>Streaming king</WordTag>}
                 </span>
                 <span className="block text-meta leading-tight text-ink-2">
                   {count(row.players, "player", "players")}, {count(row.starts, "start", "starts")}
                 </span>
               </span>
-              <span className="font-mono text-body font-bold tabular-nums">{num(row.points)}</span>
+              <span className="font-mono text-body font-bold tabular-nums">{oneDecimal(row.points)}</span>
             </li>
           ))}
         />

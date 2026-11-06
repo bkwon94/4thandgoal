@@ -2,10 +2,10 @@
  * The arcs chapter of Act I: each team's arcs, such as a Turnaround or a Collapse, with the numbers behind each one.
  * A team has at most 2 arcs, the biggest swing first, and a team with no arc says so.
  */
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { Card } from "../report/report-card";
 import { fullRecord, signedOne } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
+import { WordTag } from "../report/word-tag";
 import type { Arc, ArcsChapter, WindowRecord } from "../schema/midseason-types";
 
 const windowText = (label: string, window: WindowRecord) =>
@@ -32,7 +32,7 @@ export function Arcs({ chapter }: { chapter: ArcsChapter }) {
             {team.arcs.length === 0 && <span className="text-meta text-mute">No arc yet</span>}
             {team.arcs.map((arc) => (
               <div key={arc.kind} className="flex flex-col gap-sp-1">
-                <Tag className="ml-0 w-fit text-meta">{arc.kind}</Tag>
+                <WordTag className="ml-0 w-fit">{arc.kind}</WordTag>
                 {arcNumbers(arc).map((line) => (
                   <span key={line} className="font-mono text-meta leading-tight text-ink-2 tabular-nums">
                     {line}

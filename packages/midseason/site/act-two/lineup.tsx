@@ -3,7 +3,8 @@
  * that its best lineup would have won. The list shows 5 teams, then a "Show all" button.
  */
 import { num } from "@cpc/design/format/format";
-import { Card } from "@cpc/design/parts/card";
+import { Card } from "../report/report-card";
+import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { ShowAll } from "../report/show-all";
 import type { LineupChapter, TeamLineup } from "../schema/midseason-types";
@@ -16,11 +17,11 @@ function Row({ team }: { team: TeamLineup }) {
         <span className="block text-body leading-tight font-semibold">{team.name}</span>
         {team.lost_with_better.map((lost) => (
           <span key={lost.week} className="block text-meta leading-tight text-ink-2">
-            Week {lost.week}: lost to {lost.opponent} by {num(lost.margin)}. The best lineup scored {num(lost.best)}.
+            Week {lost.week}: lost to {lost.opponent} by {num(lost.margin)}. The best lineup scored {teamScore(lost.best)}.
           </span>
         ))}
       </span>
-      <span className="font-mono text-body font-bold tabular-nums">{num(team.bench_points)}</span>
+      <span className="font-mono text-body font-bold tabular-nums">{teamScore(team.bench_points)}</span>
     </li>
   );
 }

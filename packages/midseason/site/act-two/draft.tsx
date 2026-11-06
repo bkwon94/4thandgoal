@@ -2,10 +2,10 @@
  * Draft steals and busts, the first chapter of Act II: the top steals and the top busts of the league's own draft,
  * each with its cost rank against its points rank at the position. A bust has a tag, hurt or just bad.
  */
-import { num } from "@cpc/design/format/format";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { oneDecimal } from "@cpc/design/format/format";
+import { Card } from "../report/report-card";
 import { ReportChapter } from "../report/report-chapter";
+import { WordTag, type TagTone } from "../report/word-tag";
 import type { DraftChapter, DraftRow } from "../schema/midseason-types";
 
 type DraftType = DraftChapter["facts"]["draft_type"];
@@ -13,19 +13,25 @@ type DraftType = DraftChapter["facts"]["draft_type"];
 /* An auction pick costs dollars, and a snake or a linear pick costs its pick number. */
 const costText = (row: DraftRow, type: DraftType) => (type === "auction" ? `$${row.cost}` : `Pick ${row.cost}`);
 
-const TAGS = { hurt: "Hurt", "just bad": "Just bad" } as const;
+/* The word and the tone of each bust tag. "Just bad" is the accent color, because it is the verdict on the pick. */
+const TAGS: Record<NonNullable<DraftRow["tag"]>, { word: string; tone: TagTone }> = {
+  hurt: { word: "Hurt", tone: "mute" },
+  "just bad": { word: "Just bad", tone: "accent" },
+};
 
 function Row({ row, type }: { row: DraftRow; type: DraftType }) {
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
       <span className="min-w-0">
-        <span className="block text-body leading-tight font-bold">
-          {row.name}
-          {row.tag !== null && <Tag className="text-meta">{TAGS[row.tag]}</Tag>}
-        </span>
+        <span className="block text-body leading-tight font-bold">{row.name}</span>
         <span className="block text-meta leading-tight text-ink-2">
           {row.position} · {row.team} · {costText(row, type)}
         </span>
+        {row.tag !== null && (
+          <WordTag tone={TAGS[row.tag].tone} className="ml-0">
+            {TAGS[row.tag].word}
+          </WordTag>
+        )}
       </span>
       <span className="text-right">
         <span className="block font-mono text-meta text-ink-2 tabular-nums">
@@ -33,7 +39,7 @@ function Row({ row, type }: { row: DraftRow; type: DraftType }) {
           {row.cost_rank} cost, {row.position}
           {row.points_rank} points
         </span>
-        <span className="block font-mono text-meta text-mute tabular-nums">{num(row.points)} pts</span>
+        <span className="block font-mono text-meta text-mute tabular-nums">{oneDecimal(row.points)} pts</span>
       </span>
     </li>
   );

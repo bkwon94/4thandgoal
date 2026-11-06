@@ -8,8 +8,8 @@
 - Each act: its dark title page on the hero surface, then its chapters in the order of the file.
 - The chapter rail: one link per act, sticky under the top band at every width.
 - The part of each chapter by its key, in `chapter-part.tsx`. A chapter with no part shows its title and its prose.
-- The frame of a chapter, its prose, and the number formats of the report.
-- A long list: its first 5 rows, then a "Show all" button, in `show-all.tsx`.
+- The frame of a chapter, its prose, its card with 8px corners, its plain mono tag, and the number formats of the report.
+- A long list: its first 5 rows, then a "Show all" control, in `show-all.tsx`.
 
 ## Ports
 

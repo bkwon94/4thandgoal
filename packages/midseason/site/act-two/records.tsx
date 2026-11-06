@@ -1,15 +1,20 @@
 /**
  * The record book with the awards, the last chapter of Act II: the high, the low, the biggest margin, and the closest
- * game, then the awards. Heartbreak and Beatdown sit on their game in the book, so each game shows once.
+ * game, then the awards as lines. Heartbreak and Beatdown sit on their game in the book, so each game shows once.
  */
 import type { ReactNode } from "react";
 import { num } from "@cpc/design/format/format";
-import { Card } from "@cpc/design/parts/card";
-import { Tag } from "@cpc/design/parts/tag";
+import { Card } from "../report/report-card";
+import { teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import type { Award, RecordsChapter } from "../schema/midseason-types";
 
 type Book = RecordsChapter["facts"];
+
+/* The title of an award, a mono caps word in the accent color with no box, as the awards of the R3 board. */
+function AwardTitle({ award }: { award: Award }) {
+  return <b className="font-mono text-meta font-bold tracking-caps text-accent-ink uppercase">{award.title}</b>;
+}
 
 /* One record: its label, the team and the number, the line under it, and the award of its game when it has one. */
 function Entry({ label, value, line, award }: { label: string; value: string; line: ReactNode; award?: Award }) {
@@ -21,8 +26,8 @@ function Entry({ label, value, line, award }: { label: string; value: string; li
       </span>
       <span className="text-body leading-tight">{line}</span>
       {award !== undefined && (
-        <span className="text-meta leading-tight text-ink-2">
-          <Tag className="ml-0 text-meta">{award.title}</Tag> {award.fact}
+        <span className="text-meta leading-normal text-ink-2">
+          <AwardTitle award={award} /> — <span>{award.fact}</span>
         </span>
       )}
     </li>
@@ -35,18 +40,18 @@ function BookList({ book }: { book: Book }) {
   return (
     <Card className="py-sp-1">
       <ol aria-label="Records" className="m-0 list-none p-0">
-        <Entry label="Highest score" value={num(high.score)} line={`${high.team}, week ${high.week}`} />
-        <Entry label="Lowest score" value={num(low.score)} line={`${low.team}, week ${low.week}`} />
+        <Entry label="Highest score" value={teamScore(high.score)} line={`${high.team}, week ${high.week}`} />
+        <Entry label="Lowest score" value={teamScore(low.score)} line={`${low.team}, week ${low.week}`} />
         <Entry
           label="Biggest margin"
           value={num(big.margin)}
-          line={`${big.winner} ${num(big.winner_score)}, ${big.loser} ${num(big.loser_score)}, week ${big.week}`}
+          line={`${big.winner} ${teamScore(big.winner_score)}, ${big.loser} ${teamScore(big.loser_score)}, week ${big.week}`}
           award={onGame("beatdown")}
         />
         <Entry
           label="Closest game"
           value={num(closest.margin)}
-          line={`${closest.winner} ${num(closest.winner_score)}, ${closest.loser} ${num(closest.loser_score)}, week ${closest.week}`}
+          line={`${closest.winner} ${teamScore(closest.winner_score)}, ${closest.loser} ${teamScore(closest.loser_score)}, week ${closest.week}`}
           award={onGame("heartbreak")}
         />
       </ol>
@@ -54,15 +59,16 @@ function BookList({ book }: { book: Book }) {
   );
 }
 
+/* The awards as lines, not cards (decision ticket 15): "MVP — Jahmyr Gibbs, Maye d'force B with U — fact". */
 function Awards({ awards }: { awards: Award[] }) {
   return (
-    <ul aria-label="Awards" className="m-0 grid list-none gap-sp-3 p-0 tablet:grid-cols-2">
+    <ul aria-label="Awards" className="m-0 flex list-none flex-col p-0">
       {awards.map((award) => (
-        <Card key={award.key} as="li" className="flex flex-col gap-sp-1">
-          <h5 className="m-0 font-mono text-meta font-bold tracking-caps text-accent-ink uppercase">{award.title}</h5>
-          <span className="text-body leading-tight font-bold">{award.player ?? award.team}</span>
-          <span className="text-meta leading-tight text-ink-2">{award.fact}</span>
-        </Card>
+        <li key={award.key} className="border-t border-rule py-sp-3 text-body leading-normal text-ink-2">
+          <AwardTitle award={award} /> —{" "}
+          <b className="font-bold text-ink">{award.player !== null ? `${award.player}, ${award.team}` : award.team}</b> —{" "}
+          <span>{award.fact}</span>
+        </li>
       ))}
     </ul>
   );
