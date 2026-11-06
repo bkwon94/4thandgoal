@@ -4774,7 +4774,8 @@
                 "player": "Jahmyr Gibbs",
                 "week": null,
                 "in_record_book": false,
-                "fact": "Jahmyr Gibbs of Maye d'force B with U has 135.1 points over the line in his starts, the most of any QB, RB, WR, or TE."
+                "fact": "Jahmyr Gibbs of Maye d'force B with U has 135.1 points over the line in his starts, the most of any QB, RB, WR, or TE.",
+                "short_fact": "135.1 points over the line in his starts."
               },
               {
                 "key": "streaming-king",
@@ -4785,7 +4786,8 @@
                 "player": null,
                 "week": null,
                 "in_record_book": false,
-                "fact": "Return of T Mac started 4 streamed QBs, kickers, and defenses 11 times for 174.4 points, the most in the league."
+                "fact": "Return of T Mac started 4 streamed QBs, kickers, and defenses 11 times for 174.4 points, the most in the league.",
+                "short_fact": "11 starts of streamed QBs, kickers, and defenses for 174.4 points."
               },
               {
                 "key": "bench-crime",
@@ -4796,7 +4798,8 @@
                 "player": null,
                 "week": 2,
                 "in_record_book": false,
-                "fact": "London Cooking lost to Unsolicited Dak Picks by 1.67 in week 2 with 27.54 points on the bench, the most in a loss its best lineup would have won."
+                "fact": "London Cooking lost to Unsolicited Dak Picks by 1.67 in week 2 with 27.54 points on the bench, the most in a loss its best lineup would have won.",
+                "short_fact": "27.54 points on the bench in the week 2 loss to Unsolicited Dak Picks."
               },
               {
                 "key": "heartbreak",
@@ -4807,7 +4810,8 @@
                 "player": null,
                 "week": 3,
                 "in_record_book": true,
-                "fact": "The Blue Tent lost to All You Need Is Love by 0.4 in week 3, the closest head-to-head game of the season."
+                "fact": "The Blue Tent lost to All You Need Is Love by 0.4 in week 3, the closest head-to-head game of the season.",
+                "short_fact": "Lost to All You Need Is Love by 0.4 in week 3."
               },
               {
                 "key": "beatdown",
@@ -4818,7 +4822,8 @@
                 "player": null,
                 "week": 5,
                 "in_record_book": true,
-                "fact": "Maye d'force B with U beat To Infinity and Bijan by 92.14 in week 5, the biggest head-to-head margin of the season."
+                "fact": "Maye d'force B with U beat To Infinity and Bijan by 92.14 in week 5, the biggest head-to-head margin of the season.",
+                "short_fact": "Beat To Infinity and Bijan by 92.14 in week 5."
               },
               {
                 "key": "most-active",
@@ -4829,7 +4834,8 @@
                 "player": null,
                 "week": null,
                 "in_record_book": false,
-                "fact": "Bo Girds made 42 moves, adds and trades, the most in the league."
+                "fact": "Bo Girds made 42 moves, adds and trades, the most in the league.",
+                "short_fact": "42 moves, adds and trades."
               },
               {
                 "key": "set-and-forget",
@@ -4840,7 +4846,8 @@
                 "player": null,
                 "week": null,
                 "in_record_book": false,
-                "fact": "London Cooking made 3 moves, the fewest in the league, and is 9-7."
+                "fact": "London Cooking made 3 moves, the fewest in the league, and is 9-7.",
+                "short_fact": "3 moves and a 9-7 record."
               }
             ]
           },

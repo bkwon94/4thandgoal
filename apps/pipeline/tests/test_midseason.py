@@ -575,6 +575,17 @@ def test_the_seven_awards_each_have_a_winner_and_a_fact(tmp_path):
     assert awards["heartbreak"]["team"] == "The Blue Tent"
 
 
+def test_each_award_has_a_short_fact_with_no_repeat_of_its_winner(tmp_path):
+    # The page reads "Title — winner — short fact", so the short fact never names the winner a second time.
+    awards = {award["key"]: award for award in _chapter(_cpc_report(tmp_path), "records")["facts"]["awards"]}
+    assert awards["mvp"]["short_fact"] == "135.1 points over the line in his starts."
+    for award in awards.values():
+        assert award["short_fact"] and award["team"] not in award["short_fact"]
+        assert award["player"] is None or award["player"] not in award["short_fact"]
+    # The long fact of the writer still names the winner.
+    assert awards["mvp"]["fact"].startswith("Jahmyr Gibbs of Maye d'force B with U has 135.1 points")
+
+
 def test_the_spread_rule_gives_each_team_1_to_3_headlines_and_moves_both_swap_callouts_off_bo_girds(tmp_path):
     # AT-22.
     client = _cpc_week_8(tmp_path)

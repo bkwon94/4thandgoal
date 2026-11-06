@@ -71,7 +71,10 @@ class Award(BaseModel):
     week: int | None = None
     # True for Heartbreak and Beatdown, which the page shows on their game of the record book.
     in_record_book: bool = False
+    # The fact of the writer, which names the winner.
     fact: str = ""
+    # The fact of the page line "Title — winner — short fact", which never names the winner.
+    short_fact: str = ""
 
 
 class RecordBook(BaseModel):
@@ -187,8 +190,9 @@ def record_book(
     book = RecordBook(high=high, low=low, biggest_margin=biggest, closest=closest,
                       awards=[award for award in awards if award is not None])
     facts = {f.id: f.text for f in records_facts(book, waivers=waivers, lineups=lineups, state=state)}
-    return book.model_copy(update={"awards": [a.model_copy(update={"fact": facts[f"AW.{a.key}"]})
-                                              for a in book.awards]})
+    return book.model_copy(update={"awards": [
+        a.model_copy(update={"fact": facts[f"AW.{a.key}"], "short_fact": _short_fact(a, book, waivers, lineups, state)})
+        for a in book.awards]})
 
 
 def _record(n: Nums, state: LeagueState, roster_id: int) -> str:
@@ -226,6 +230,30 @@ def _award_fact(award: Award, book: RecordBook, waivers: WaiverFacts, lineups: L
                     [award.team], [])
     return fact(fid, f"{award.team} made {n(int(award.value))} moves, the fewest in the league, and is "
                 f"{_record(n, state, award.roster_id)}.", n, [award.team], [])
+
+
+def _short_fact(award: Award, book: RecordBook, waivers: WaiverFacts, lineups: LineupChoices,
+                state: LeagueState) -> str:
+    """The fact of the award line on the page. The line names the winner before it, so this text does not."""
+    n = Nums()
+    if award.key == "mvp":
+        return f"{n(award.value)} points over the line in his starts."
+    if award.key == "streaming-king":
+        king = waivers.streamers[0]
+        return f"{n(king.starts)} starts of streamed QBs, kickers, and defenses for {n(king.points)} points."
+    if award.key == "bench-crime":
+        team = next(team for team in lineups.teams if team.roster_id == award.roster_id)
+        week = next(week for week in team.lost_with_better if week.week == award.week)
+        return f"{n(week.bench_points)} points on the bench in the week {n(week.week)} loss to {week.opponent}."
+    if award.key == "heartbreak":
+        game = book.closest
+        return f"Lost to {game.winner} by {n(game.margin)} in week {n(game.week)}."
+    if award.key == "beatdown":
+        game = book.biggest_margin
+        return f"Beat {game.loser} by {n(game.margin)} in week {n(game.week)}."
+    if award.key == "most-active":
+        return f"{n(int(award.value))} moves, adds and trades."
+    return f"{n(int(award.value))} moves and a {_record(n, state, award.roster_id)} record."
 
 
 def records_facts(book: RecordBook, *, waivers: WaiverFacts, lineups: LineupChoices, state: LeagueState) -> list[Fact]:

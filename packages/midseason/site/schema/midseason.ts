@@ -403,7 +403,10 @@ export const awardSchema = z.object({
   week: z.number().nullable(),
   // True for Heartbreak and Beatdown, which the page shows on their game of the record book.
   in_record_book: z.boolean(),
+  // The fact of the writer, which names the winner.
   fact: z.string(),
+  // The fact of the page line "Title — winner — short fact", which never names the winner.
+  short_fact: z.string(),
 });
 
 export const recordsChapterSchema = z.object({
