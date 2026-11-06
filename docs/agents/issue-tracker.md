@@ -42,10 +42,11 @@ A feature after the One spec has this shape. Each part is a file or folder under
 2. `decisions/<NN>-<kind>-<slug>.md`: one decision ticket for each decision. The kind is `grill`, `research`,
    `prototype`, or `spec`. The notes of a research ticket sit beside it, at `decisions/<NN>-research-<slug>.notes.md`.
 3. `PRD.md`: the spec in prose.
-4. `ACCEPTANCE.md`: the acceptance tests, each named `AT-<n>`. Brian gives the verdict of each test (ADR 0020).
+4. `ACCEPTANCE.md`: the acceptance tests, each named `AT-<n>`. The Judge gives the Test verdict of each test, and a FAIL from Brian overrides it (ADR 0026).
 5. `issues/<NN>-<slug>.md`: the tickets.
 6. `EVIDENCE.md`: the evidence of each acceptance test, with no Test verdict. `cpc:implement` writes it.
 7. `evidence/AT-<n>/`: the files of each test, such as the screenshots of a site test or the output of a pipeline command.
+8. `VERDICTS.md`: the Test verdict of each acceptance test, from the Judge. `cpc:implement` commits it alone, one commit per round.
 
 A new feature uses one folder for both apps. It does not get `site/` and `pipeline/` subfolders.
 

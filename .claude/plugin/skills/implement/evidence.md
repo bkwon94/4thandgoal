@@ -2,7 +2,7 @@
 
 Stage 3 of `cpc:implement`. Record the evidence of each acceptance test `AT-<n>` of `.scratch/<slug>/ACCEPTANCE.md`. The evidence uses real data and a real build, with no mock (ADR 0020).
 
-The evidence states what the instrument showed. It holds no PASS, no FAIL, and no BLOCKED. Only Brian gives a Test verdict.
+The evidence states what the instrument showed. It holds no PASS, no FAIL, and no BLOCKED. Only the Judge gives a Test verdict, in stage 4 (ADR 0026).
 
 ## Before the first test
 
@@ -90,7 +90,7 @@ Write `.scratch/<slug>/EVIDENCE.md` in this shape:
 # <Feature title>: evidence
 
 Spec: `.scratch/<slug>/PRD.md`. Acceptance tests: `.scratch/<slug>/ACCEPTANCE.md`.
-Built from: `<short sha>`, on <date>. The agent gives no Test verdict. Brian gives one for each test.
+Built from: `<short sha>`, on <date>. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
 Round time: <N> min for <M> site tests.
 
 ## AT-1: <title>
@@ -112,4 +112,4 @@ Observation: <what the output shows>
 
 A skipped test gets `Files: none` and the reason in its Observation line, such as "ticket 02 is blocked". A screenshot test that no verb covers names its reason too, such as "scripts off", and gets its shots from `agent-browser`.
 
-**Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. If a site build or a pipeline command fails, stop. Tell Brian the command and its error.
+**Stop rule of stage 3.** Commit `EVIDENCE.md` and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. Then go to stage 4, [`judge.md`](judge.md). If a site build or a pipeline command fails, stop. Tell Brian the command and its error.
