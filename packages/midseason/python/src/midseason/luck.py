@@ -61,9 +61,21 @@ class BestMissed(BaseModel):
 
 
 class MostBetter(BaseModel):
-    """The team with the most schedules that give it a better record than its own, and the count."""
+    """The callout of the team with the most schedules that give it a better record than its own, and the count."""
     roster_id: int
     count: int
+    # The place of the team in the ranking. The spread rule gives the callout to the next team when the #1 team holds
+    # 3 headlines, so the place is then 2 or more.
+    place: int = 1
+
+
+class BiggestMiss(BaseModel):
+    """The callout of the team with the most wins to gain from the best schedule that it missed."""
+    roster_id: int
+    schedule_of: int
+    # The wins of the best schedule minus the real wins. A tie counts half.
+    gain: float
+    place: int = 1
 
 
 class ScheduleSwap(BaseModel):
@@ -71,6 +83,8 @@ class ScheduleSwap(BaseModel):
     rows: list[SwapRow]
     best_missed: list[BestMissed]
     most_better: MostBetter | None
+    # None when no team gains a win from another schedule.
+    biggest_miss: BiggestMiss | None = None
 
 
 class ScheduleLuck(BaseModel):
@@ -132,18 +146,61 @@ def _swap(history: History, through: int, state: LeagueState, median_game: bool)
                     cells=[_swap_cell(history, through, team.roster_id, col, median_game) for col in order])
             for team in state.teams]
     best_missed = []
-    better: dict[int, int] = {}
     for row in rows:
-        own = next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
         others = [cell for cell in row.cells if cell.schedule_of != row.roster_id]
         # max keeps the first of a tie, and the cells are in standings order, so the higher place wins a tie.
         best = max(others, key=_rate)
         best_missed.append(BestMissed(roster_id=row.roster_id, schedule_of=best.schedule_of, wins=best.wins,
                                       losses=best.losses, ties=best.ties))
-        better[row.roster_id] = sum(1 for cell in others if _rate(cell) > _rate(own))
-    top = max(order, key=lambda rid: better[rid])
-    most_better = MostBetter(roster_id=top, count=better[top]) if better[top] else None
-    return ScheduleSwap(rows=rows, best_missed=best_missed, most_better=most_better)
+    swap = ScheduleSwap(rows=rows, best_missed=best_missed, most_better=None)
+    most, biggest = swap_rankings(swap)
+    return _with_callouts(swap, (most[0], 1) if most else None, (biggest[0], 1) if biggest else None)
+
+
+def _own(row: SwapRow) -> SwapCell:
+    return next(cell for cell in row.cells if cell.schedule_of == row.roster_id)
+
+
+def _better(row: SwapRow) -> int:
+    return sum(1 for cell in row.cells if cell.schedule_of != row.roster_id and _rate(cell) > _rate(_own(row)))
+
+
+def _gain(swap: ScheduleSwap, roster_id: int) -> float:
+    row = next(row for row in swap.rows if row.roster_id == roster_id)
+    best = next(best for best in swap.best_missed if best.roster_id == roster_id)
+    return _rate(SwapCell(schedule_of=best.schedule_of, wins=best.wins, losses=best.losses, ties=best.ties)) - _rate(
+        _own(row))
+
+
+def swap_rankings(swap: ScheduleSwap) -> tuple[list[int], list[int]]:
+    """The rankings of the two swap callouts, the #1 first: the most schedules better than its own, then the most
+    wins to gain from the best schedule. A team with none is in no ranking. A tie keeps the standings order."""
+    most = sorted((row for row in swap.rows if _better(row)), key=lambda row: -_better(row))
+    biggest = sorted((row for row in swap.rows if _gain(swap, row.roster_id) > 0),
+                     key=lambda row: -_gain(swap, row.roster_id))
+    return [row.roster_id for row in most], [row.roster_id for row in biggest]
+
+
+def _with_callouts(swap: ScheduleSwap, most_better: tuple[int, int] | None,
+                   biggest_miss: tuple[int, int] | None) -> ScheduleSwap:
+    most = None
+    if most_better is not None:
+        rid, place = most_better
+        most = MostBetter(roster_id=rid, count=_better(next(row for row in swap.rows if row.roster_id == rid)),
+                          place=place)
+    biggest = None
+    if biggest_miss is not None:
+        rid, place = biggest_miss
+        best = next(best for best in swap.best_missed if best.roster_id == rid)
+        biggest = BiggestMiss(roster_id=rid, schedule_of=best.schedule_of, gain=_gain(swap, rid), place=place)
+    return swap.model_copy(update={"most_better": most, "biggest_miss": biggest})
+
+
+def with_swap_callouts(luck: ScheduleLuck, *, most_better: tuple[int, int] | None,
+                       biggest_miss: tuple[int, int] | None) -> ScheduleLuck:
+    """Schedule luck with the two swap callouts on the teams that the spread rule chose, each as (roster ID, place).
+    None leaves the callout empty. The table and the grid still show every team."""
+    return luck.model_copy(update={"swap": _with_callouts(luck.swap, most_better, biggest_miss)})
 
 
 def schedule_luck(history: History, through: int, state: LeagueState, *, median_game: bool = True) -> ScheduleLuck:
@@ -229,5 +286,18 @@ def luck_facts(luck: ScheduleLuck) -> list[Fact]:
         n = Nums()
         facts.append(fact("SW.most",
                           f"{names[most.roster_id]} has a better record with {n(most.count)} other schedules than "
-                          f"with its own, the most in the league.", n, [names[most.roster_id]], []))
+                          f"with its own, {_most(n, most.place)} in the league.", n, [names[most.roster_id]], []))
+    if luck.swap.biggest_miss is not None:
+        miss = luck.swap.biggest_miss
+        n = Nums()
+        wins = "win" if miss.gain == 1 else "wins"
+        facts.append(fact("SW.biggest",
+                          f"{names[miss.roster_id]} would gain {n(miss.gain)} {wins} with the schedule of "
+                          f"{names[miss.schedule_of]}, {_most(n, miss.place)} of any team.", n,
+                          [names[miss.roster_id], names[miss.schedule_of]], []))
     return facts
+
+
+def _most(n: Nums, place: int) -> str:
+    """"the most" for the #1 team of a callout, or "the 2nd most" for a team that the spread rule moved it to."""
+    return "the most" if place == 1 else f"the {n.ord(place)} most"

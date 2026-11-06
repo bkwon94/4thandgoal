@@ -101,13 +101,16 @@ from midseason.arcs import arcs_facts, team_arcs
 from midseason.draft import DraftPick, DraftValue, draft_facts, draft_value
 from midseason.draft_injuries import injured_games
 from midseason.injury import injury_facts
+from midseason.lineups import lineup_choices, lineup_facts
 from midseason.look_ahead import look_ahead, look_ahead_facts
-from midseason.luck import luck_facts, schedule_luck
+from midseason.luck import luck_facts, schedule_luck, with_swap_callouts
 from midseason.moves import PlayerInfo
 from midseason.opener import title_race, title_race_facts
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
+from midseason.records import record_book, records_facts
 from midseason.review import review_text, write_review
+from midseason.spread import Headline, arc_and_award_headlines, callout_facts, report_callouts, spread_rule
 from midseason.state import league_state
 from midseason.top10 import top10_facts
 from midseason.trades import trade_facts, trade_prose_facts
@@ -836,6 +839,15 @@ def run_midseason(
     waivers = waiver_facts(history, week, moves, players, names, lines, league.settings.waiver_budget)
     trades = trade_facts(history, week, moves, players, names, lines, median_game=median_game,
                          season_start=date.fromisoformat(nfl_state.season_start_date), tz=client.tz)
+    lineups = lineup_choices(history, week, names, client.settings.roster_slots,
+                             {pid: info.position for pid, info in players.items()})
+    records = record_book(history, week, names, players=players, lines=lines, transactions=moves, waivers=waivers,
+                          lineups=lineups, state=state)
+    # The spread rule runs before the writer, so the fact sheet names the holder of each callout before a blurb.
+    callouts = report_callouts(luck, chapters.injuries, draft, waivers, trades, lineups)
+    headlines = spread_rule(arc_and_award_headlines(arcs, records), callouts, [team.roster_id for team in state.teams])
+    luck = with_swap_callouts(luck, most_better=_held(headlines, "luck.most_better"),
+                              biggest_miss=_held(headlines, "luck.biggest_miss"))
     roast = midseason_values(client).roast
     later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck)),
              ("injuries", "The injury toll", injury_facts(chapters.injuries)),
@@ -843,9 +855,12 @@ def run_midseason(
              ("draft", "Draft steals and busts", draft_facts(draft)),
              ("waivers", "Waiver hits and misses", waiver_prose_facts(waivers)),
              ("trades", "The trade report card", trade_prose_facts(trades)),
+             ("lineup", "Lineup choices", lineup_facts(lineups)),
+             ("records", "The record book", records_facts(records, waivers=waivers, lineups=lineups, state=state)),
              ("look-ahead", "The look ahead", look_ahead_facts(look)),
              ("watch", "Players to watch", watch_facts(chapters.watch))]
-    sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))])
+    sheet = prose_sheet(week, state, roast, later, first=[("opener", "The title race", title_race_facts(race))],
+                        callouts=callout_facts(headlines, callouts, names))
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
@@ -853,9 +868,15 @@ def run_midseason(
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
     report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck, injuries=chapters.injuries,
-                              top10=chapters.top10, draft=draft, waivers=waivers, trades=trades,
-                              watch=chapters.watch, race=race, look=look)
+                              top10=chapters.top10, draft=draft, waivers=waivers, trades=trades, lineups=lineups,
+                              records=records, watch=chapters.watch, race=race, look=look, headlines=headlines)
     return write_midseason(report, build_dir(client.folder))
+
+
+def _held(headlines: list[Headline], key: str) -> tuple[int, int] | None:
+    """The roster ID and the place of the team that holds the callout `key`, or None when no team holds it."""
+    held = next((h for h in headlines if h.key == key), None)
+    return None if held is None else (held.roster_id, held.place)
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:
