@@ -39,9 +39,10 @@ def test_with_no_title_odds_the_race_has_no_leaders_and_the_record_leader_has_no
 
 def test_the_facts_name_each_leader_s_title_odds_and_the_record_leader_s():
     facts = {f.id: f for f in title_race_facts(title_race(STATE, TITLE_ODDS))}
-    assert facts["OP.4.title"].text == "Four has 31.5% title odds, the best in the league."
-    assert facts["OP.3.title"].text == "Three has 30% title odds, 2nd best in the league."
-    assert facts["OP.record"].text == "One leads the standings at 1-0 and has 12.5% title odds, 4th best in the league."
+    assert facts["OP.4.title"].text == "Four has 31.5% title odds, the top in the league."
+    assert facts["OP.3.title"].text == "Three has 30% title odds, 2nd in the league."
+    assert facts["OP.record"].text == "One leads the standings at 1-0."
+    assert facts["OP.record.title"].text == "One has 12.5% title odds, 4th in the league."
 
 
 def test_the_report_tile_shows_the_title_odds_of_the_favorite():

@@ -205,13 +205,13 @@ def _award_fact(award: Award, book: RecordBook, waivers: WaiverFacts, lineups: L
                     f"the most of any QB, RB, WR, or TE.", n, [award.team], [award.player or ""])
     if award.key == "streaming-king":
         king = waivers.streamers[0]
-        return fact(fid, f"{king.team} started {n(king.players)} streamed QBs, kickers, and defenses {n(king.starts)} "
-                    f"times for {n(king.points)} points, the most in the league.", n, [king.team], [])
+        return fact(fid, f"{king.team} started streamed QBs, kickers, and defenses {n(king.starts)} times for "
+                    f"{n(king.points)} points, the most in the league.", n, [king.team], [])
     if award.key == "bench-crime":
         team = next(team for team in lineups.teams if team.roster_id == award.roster_id)
         week = next(week for week in team.lost_with_better if week.week == award.week)
-        return fact(fid, f"{team.name} lost to {week.opponent} by {n(week.margin)} in week {n(week.week)} with "
-                    f"{n(week.bench_points)} points on the bench, the most in a loss its best lineup would have won.",
+        return fact(fid, f"{team.name} left {n(week.bench_points)} points on the bench in its week {n(week.week)} loss "
+                    f"to {week.opponent}, the most in a loss that a better lineup would have won.",
                     n, [team.name, week.opponent], [])
     if award.key == "heartbreak":
         game = book.closest

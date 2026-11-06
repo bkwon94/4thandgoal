@@ -57,6 +57,7 @@ def test_a_league_with_no_weeks_left_has_no_softest_or_hardest_schedule():
 
 def test_the_facts_name_the_rate_of_each_team_and_the_softest_and_the_hardest_schedule():
     facts = {f.id: f for f in look_ahead_facts(_look())}
-    assert facts["LA.1.rate"].text == "One faces opponents with a 0 win rate in weeks 3 to 4, the softest schedule."
-    assert facts["LA.4.rate"].text == "Four faces opponents with a 1 win rate in weeks 3 to 4, the hardest schedule."
+    assert facts["LA.1.rate"].text == "One faces opponents with a 0 win rate in the weeks ahead, the softest schedule."
+    assert facts["LA.4.rate"].text == "Four faces opponents with a 1 win rate in the weeks ahead, the hardest schedule."
+    assert facts["LA.weeks"].text == "The weeks ahead are weeks 3 to 4."
     assert "2nd softest" in facts["LA.2.rate"].text or "2nd softest" in facts["LA.3.rate"].text

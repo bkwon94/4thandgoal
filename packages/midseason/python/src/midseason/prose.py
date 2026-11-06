@@ -20,6 +20,9 @@ from midseason.values import Roast
 # against them again. The publish never copies this file.
 FACTS_FILE = "midseason-facts.json"
 ROAST_RULES = Path(__file__).parent / "prompts" / "roast.md"
+# The writing notes of every prose block: the number limit, the article before a 0 record, and the gated words that the
+# midseason facts never back. Each note keeps the writer off a failure of the code check of facts.
+PROSE_NOTES = Path(__file__).parent / "prompts" / "notes.md"
 # Two example roasts at hot heat. Only the hot step gets them, as warm softens each roast.
 ROAST_HOT_EXAMPLES = Path(__file__).parent / "prompts" / "roast-hot.md"
 # A roast block may hold two reaction sentences, so the reactions can carry the heat. The first sentence cites a fact.
@@ -116,16 +119,17 @@ def is_roast(key: str) -> bool:
 
 
 def prose_terms(key: str, roast: Roast) -> list[str]:
-    """The extra writer and verifier terms of one prose block: the roast rules and the step on a roast block, with
-    the example roasts at hot, and the off line on every block when the roast is off."""
+    """The extra writer and verifier terms of one prose block: the writing notes on every block, the roast rules and
+    the step on a roast block, with the example roasts at hot, and the off line on every block when the roast is off."""
+    notes = PROSE_NOTES.read_text(encoding="utf-8").strip()
     if roast == "off":
-        return [ROAST_OFF]
+        return [notes, ROAST_OFF]
     if is_roast(key):
-        terms = [ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
+        terms = [notes, ROAST_RULES.read_text(encoding="utf-8").strip(), ROAST_STEPS[roast]]
         if roast == "hot":
             terms.append(ROAST_HOT_EXAMPLES.read_text(encoding="utf-8").strip())
         return terms
-    return []
+    return [notes]
 
 
 def write_prose(

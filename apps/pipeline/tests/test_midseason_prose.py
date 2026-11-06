@@ -1,6 +1,6 @@
 """
-Tests for the prose blocks of the midseason report on the real saved CPC facts of week 8: the roast heat, the facts
-text that the writer copies, and the template blurb of a failed block. Each one runs the code check of facts.
+Tests for the prose blocks of the midseason report on the real saved CPC facts of week 8: the roast heat and the facts
+text that the writer copies. Each one runs the code check of facts.
 """
 from functools import partial
 from pathlib import Path
@@ -66,3 +66,26 @@ def test_the_hot_roast_holds_two_example_roasts_and_the_warm_roast_none():
     warm = "\n".join(prose_terms("state.roast", "warm"))
     assert hot.count("Example roast") == 2 and "Example roast" not in warm
     assert "Never roast life outside fantasy" in hot and "Never roast life outside fantasy" in warm
+
+
+
+def test_each_fact_passes_the_code_check_as_a_sentence_that_cites_it(built):
+    # K-3. The writer copies the text of a fact, so a fact with 3 numbers or a banned word costs an attempt.
+    draft, _, voice = built
+    failures: dict[str, list[str]] = {}
+    for chapter in draft.sheet.chapters:
+        open_range = chapter.model_copy(update={"min_sentences": 1})
+        for fid in chapter.fact_ids:
+            sentence = Sentence(text=draft.sheet.facts[fid].text, fact_ids=[fid])
+            blurb = Blurb(chapter=chapter.key, sentences=[sentence], attempt=1, fallback=False)
+            found = code_check(blurb, open_range, draft.sheet, prompts_dir=voice)
+            if found:
+                failures[fid] = found
+    assert failures == {}, "\n".join(f"{k}: {draft.sheet.facts[k].text} {v}" for k, v in failures.items())
+
+
+@pytest.mark.parametrize("roast", ["hot", "warm", "off"])
+def test_each_prose_block_hears_the_midseason_writing_notes(roast):
+    for key in ("arcs", "arcs.roast"):
+        terms = "\n".join(prose_terms(key, roast))
+        assert "a 0-4" in terms and "because" in terms
