@@ -132,7 +132,7 @@ describe("the client build", () => {
   });
 
   it("writes the waiver route when the list takes waiver and a week has a waiver file", () => {
-    const repo = tempRepo(CPC_TOML.replace('"analyzer"]', '"analyzer", "waiver"]'));
+    const repo = tempRepo(CPC_TOML.replace('"sim"]', '"sim", "waiver"]'));
     published(repo.root, "cpc", "2026/week-06/page.json");
     published(repo.root, "cpc", "2026/week-06/waiver.json");
     buildClient(repo);
@@ -160,7 +160,7 @@ describe("the client build", () => {
 
     // A client that omits analyzer has no [values.analyzer] table, because a table of a package off the list fails.
     const omitted = tempRepo(
-      CPC_TOML.replace(', "analyzer"]', "]")
+      CPC_TOML.replace('"analyzer", ', "")
         .replace('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
         .replace("[values.analyzer]\nfinder = false\n", ""),
     );
@@ -171,13 +171,14 @@ describe("the client build", () => {
   });
 
   it("lists the home chapter of each package of the client in the order of the home page", () => {
-    // The list puts week first, but the home page shows the rankings, then the weeks.
+    // The list puts week first, but the home page shows the midseason report, then the rankings, then the weeks.
     const repo = tempRepo();
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
-    expect(list.split("\n").slice(0, 4)).toEqual([
+    expect(list.split("\n").slice(0, 5)).toEqual([
       "export const homeSections: HomeSections = [",
+      "  midseasonHomeSection,",
       "  rankingsHomeSection,",
       "  weekHomeSection,",
       "];",
@@ -195,6 +196,35 @@ describe("the client build", () => {
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).not.toContain("rankings");
     expect(registry).toContain('import { homeSection as weekHomeSection } from "@/app/_routes/week/home";');
+  });
+
+  it("gives a client with midseason and sim the report route only with a published midseason file, and no menu link", () => {
+    const toml = ['packages = ["week", "sim", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "report");
+    published(repo.root, "report", "2026/week-06/page.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx"]);
+    published(repo.root, "report", "2026/midseason.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/midseason/[season]/page.tsx"]);
+    const route = readFileSync(join(repo.site, "src", "app", "(client)", "midseason", "[season]", "page.tsx"), "utf8");
+    expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/midseason/page";');
+    expect(route).toContain("export const dynamicParams = false;");
+    // The report adds no menu item: its menu link and the sim's give null, so the menu has no entry for either.
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { menuLink as midseasonMenuLink } from "@/app/_routes/midseason/menu";');
+    expect(registry).toContain('import { menuLink as simMenuLink } from "@/app/_routes/sim/menu";');
+  });
+
+  it("lists the home part of midseason first, so its takeover and its tile reach the home page", () => {
+    const toml = ['packages = ["week", "rankings", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "report");
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { homeSection as midseasonHomeSection } from "@/app/_routes/midseason/home";');
+    // The tile sits in the middle place, so it comes before the Power Rankings chapter.
+    const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
+    expect(list.split("\n").slice(1, 4)).toEqual(["  midseasonHomeSection,", "  rankingsHomeSection,", "  weekHomeSection,"]);
   });
 
   it("gives a client with no home section an empty list with its type", () => {
@@ -228,6 +258,7 @@ describe("the client build", () => {
         { page: "home", label: "Home" },
         { package: "week" },
         { package: "rankings", label: "Power Rankings" },
+        { package: "midseason", label: "Midseason Report" },
         { package: "managers", label: "Managers" },
         { package: "analyzer", label: "Trade Analyzer" },
       ],
@@ -259,8 +290,17 @@ describe("the client build", () => {
     const toml = CPC_TOML.slice(0, CPC_TOML.indexOf("# Each item names"));
     const repo = tempRepo(toml);
     buildClient(repo);
+    // The menu values keep midseason and sim, but the shell gives them no menu item and no dock item.
     expect(clientValuesOf(repo.site).menu).toEqual({
-      items: [{ page: "home" }, { package: "week" }, { package: "rankings" }, { package: "managers" }, { package: "analyzer" }],
+      items: [
+        { page: "home" },
+        { package: "week" },
+        { package: "rankings" },
+        { package: "managers" },
+        { package: "analyzer" },
+        { package: "midseason" },
+        { package: "sim" },
+      ],
     });
   });
 

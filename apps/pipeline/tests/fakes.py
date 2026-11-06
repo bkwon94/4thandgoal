@@ -12,7 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from league.claude_errors import WriterError
 from league.claude_port import Writer
@@ -20,12 +20,19 @@ from league.league_settings import LeagueSettings
 from league.models import ResearchOut
 from league.nflverse import nflverse_week
 from league.provider.base import Provider
-from league.provider.raw import RawAheadWeek, RawPastWeek, RawWeek
-from league.provider.sleeper import league_settings, load_raw
+from league.provider.raw import RawAheadWeek, RawDraft, RawPastWeek, RawRoster, RawWeek
+from league.provider.sleeper import DRAFT_FILE, PICKS_FILE, league_settings, load_draft, load_raw
 
 NFLVERSE_FIXTURES = Path(__file__).parent / "fixtures" / "nflverse"
 RAW_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "week-06" / "raw"
 HISTORY_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "history"
+# The real drafts of 2026 as Sleeper sent them on 2026-11-05: the CPC auction and the NorCal snake.
+CPC_DRAFT_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "draft" / "cpc"
+NORCAL_DRAFT_FIXTURES = Path(__file__).parent / "fixtures" / "2026" / "draft" / "norcal"
+# The full transactions of CPC weeks 1 to 8, as Sleeper gave them on 2026-11-05, after the waiver run of each week.
+CPC_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "cpc-transactions"
+# The full transactions of NorCal weeks 1 to 8, as Sleeper gave them on 2026-11-05.
+NORCAL_TRANSACTIONS = Path(__file__).parent / "fixtures" / "2026" / "norcal-transactions"
 # The recorded week 6 has no fetch time, so the live fetch gives this one.
 FIXTURE_FETCHED = datetime(2026, 10, 21, 9, 30, tzinfo=ZoneInfo("America/New_York"))
 
@@ -65,16 +72,24 @@ def fixture_nflverse(cache: Path):
 
 
 class FixtureProvider:
-    """A provider that reads the recorded week 6 files and the week 1 to 5 history. It never calls the network.
+    """A provider that reads the recorded week 6 files, the week 1 to 5 history, and the CPC draft. It never calls the
+    network.
 
     The league id, the season, and the points key do not change what it gives, because the fixtures hold one league.
+    With `transactions`, a past leg gives the file week-NN.json of that folder as its transactions, so a test reads
+    the full week that Sleeper gives after the waiver run. With `rosters_now`, the live fetch gives the rosters of that
+    file in place of the rosters of the raw week, so a test reads the rosters of a later day.
     """
 
     def __init__(self, raw_dir: Path = RAW_FIXTURES, history_root: Path = HISTORY_FIXTURES,
-                 fetched: datetime = FIXTURE_FETCHED):
+                 fetched: datetime = FIXTURE_FETCHED, transactions: Path | None = None,
+                 draft_dir: Path = CPC_DRAFT_FIXTURES, rosters_now: Path | None = None):
         self.raw_dir = raw_dir
         self.history_root = history_root
         self.fetched = fetched
+        self.draft_dir = draft_dir
+        self.transactions = transactions
+        self.rosters_now = rosters_now
 
     def fetch_week(
             self, league_id: str, season: int, week: int, raw_dir: Path, tz: ZoneInfo,
@@ -86,13 +101,20 @@ class FixtureProvider:
         return league_settings(load_raw(self.raw_dir).league)
 
     def fetch_live(self, league_id: str) -> tuple[RawWeek, datetime]:
-        return load_raw(self.raw_dir), self.fetched
+        raw = load_raw(self.raw_dir)
+        if self.rosters_now is not None:
+            rosters = TypeAdapter(list[RawRoster]).validate_json(self.rosters_now.read_text(encoding="utf-8"))
+            raw = raw.model_copy(update={"rosters": rosters})
+        return raw, self.fetched
 
     def fetch_past_leg(self, league_id: str, season: int, week: int, out_dir: Path) -> RawPastWeek:
         saved = self.history_root / f"week-{week:02d}"
         shutil.copytree(saved, out_dir, dirs_exist_ok=True)
-        return RawPastWeek.model_validate({f.stem: json.loads(f.read_text(encoding="utf-8"))
-                                           for f in saved.glob("*.json")})
+        files = {f.stem: json.loads(f.read_text(encoding="utf-8")) for f in saved.glob("*.json")}
+        if self.transactions is not None:
+            shutil.copy(self.transactions / f"week-{week:02d}.json", out_dir / "transactions.json")
+            files["transactions"] = json.loads((out_dir / "transactions.json").read_text(encoding="utf-8"))
+        return RawPastWeek.model_validate(files)
 
     def fetch_players(self) -> dict[str, dict]:
         return load_raw(self.raw_dir).players
@@ -101,8 +123,14 @@ class FixtureProvider:
             self, season: int, week: int, last_regular_week: int, points_key: str) -> list[RawAheadWeek]:
         return load_raw(self.raw_dir).projections_ahead or []
 
+    def fetch_draft(self, league_id: str, out_dir: Path) -> RawDraft:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        for name in (DRAFT_FILE, PICKS_FILE):
+            shutil.copy(self.draft_dir / name, out_dir / name)
+        return load_draft(out_dir)
 
-# The annotation makes pyright prove that the fake has the six fetches of the protocol, with the same types.
+
+# The annotation makes pyright prove that the fake has the seven fetches of the protocol, with the same types.
 FIXTURE_PROVIDER: Provider = FixtureProvider()
 
 

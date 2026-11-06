@@ -1,0 +1,87 @@
+$ jq '.acts[1].chapters[0].facts | {letdowns, busts}' clients/cpc/build/2026/midseason.json
+{
+  "letdowns": [
+    {
+      "player_id": "9509",
+      "name": "Bijan Robinson",
+      "position": "RB",
+      "roster_id": 7,
+      "team": "To Infinity and Bijan",
+      "cost": 81,
+      "cost_rank": 1,
+      "points": 138.8,
+      "points_rank": 3,
+      "swing": -2,
+      "tag": null,
+      "price_rank": 1,
+      "last_top_week": 4
+    }
+  ],
+  "busts": [
+    {
+      "player_id": "5859",
+      "name": "A.J. Brown",
+      "position": "WR",
+      "roster_id": 11,
+      "team": "Unsolicited Dak Picks",
+      "cost": 39,
+      "cost_rank": 7,
+      "points": 13.6,
+      "points_rank": 60,
+      "swing": -53,
+      "tag": "just bad"
+    },
+    {
+      "player_id": "9226",
+      "name": "De'Von Achane",
+      "position": "RB",
+      "roster_id": 1,
+      "team": "The Blue Tent",
+      "cost": 46,
+      "cost_rank": 10,
+      "points": 21.1,
+      "points_rank": 50,
+      "swing": -40,
+      "tag": "just bad"
+    },
+    {
+      "player_id": "13286",
+      "name": "Jadarian Price",
+      "position": "RB",
+      "roster_id": 1,
+      "team": "The Blue Tent",
+      "cost": 20,
+      "cost_rank": 21,
+      "points": 16.7,
+      "points_rank": 53,
+      "swing": -32,
+      "tag": "hurt"
+    },
+    {
+      "player_id": "4866",
+      "name": "Saquon Barkley",
+      "position": "RB",
+      "roster_id": 10,
+      "team": "behold the lamb",
+      "cost": 58,
+      "cost_rank": 3,
+      "points": 46.0,
+      "points_rank": 33,
+      "swing": -30,
+      "tag": "hurt"
+    },
+    {
+      "player_id": "11635",
+      "name": "Ladd McConkey",
+      "position": "WR",
+      "roster_id": 6,
+      "team": "Bo Girds",
+      "cost": 29,
+      "cost_rank": 15,
+      "points": 43.1,
+      "points_rank": 45,
+      "swing": -30,
+      "tag": "just bad"
+    }
+  ]
+}

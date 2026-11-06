@@ -14,7 +14,16 @@ from pydantic import ValidationError
 from facts.chapters import RANKINGS_CHAPTER, two_team_chapter
 from facts.names import last_name
 from facts.tokens import NUMBER_TOKEN
-from facts.writer import ClaudeCall, RefusalError, WriterError, load_prompt, template_blurb, with_terms, write_blurb
+from facts.writer import (
+    CHECK_ERRORS,
+    ClaudeCall,
+    RefusalError,
+    WriterError,
+    load_prompt,
+    template_blurb,
+    with_terms,
+    write_blurb,
+)
 from league.models import (
     Blurb,
     Chapter,
@@ -325,7 +334,8 @@ def code_check(
 ) -> list[str]:
     """The code rules on one blurb. `used_words` are the once-per-page words that another chapter already said."""
     failures: list[str] = []
-    in_chapter = set(chapter.fact_ids)
+    # A callback fact of another chapter is a fact of this blurb too.
+    in_chapter = {*chapter.fact_ids, *chapter.callback_ids}
     league_teams = {t for f in sheet.facts.values() for t in f.teams}
     league_players = {p for c in sheet.chapters for p in c.scope_players}
     scope_names = [*chapter.scope_teams, *chapter.scope_players]
@@ -346,11 +356,14 @@ def code_check(
     bares: list[str] = []
 
     for i, sentence in enumerate(blurb.sentences):
-        # A sentence with no fact IDs is the one reaction a blurb may hold.
+        # A sentence with no fact IDs is a reaction. A blurb may hold one, or as many as its chapter allows.
         if not sentence.fact_ids:
             reactions += 1
-            if reactions > 1:
+            if reactions > chapter.max_reactions and chapter.max_reactions == 1:
                 failures.append(f"[{i}] a second reaction sentence; a blurb may hold one, so cite a fact")
+            elif reactions > chapter.max_reactions:
+                failures.append(f"[{i}] reaction sentence {reactions}; a blurb may hold {chapter.max_reactions}, "
+                                "so cite a fact")
             failures += [f"[{i}] {m}" for m in reaction_failures(sentence.text, scope_names, in_scope_last)]
 
         valid_ids = []
@@ -459,6 +472,14 @@ def code_check(
     if chapter.key != RANKINGS_CHAPTER:
         failures += numberless_failures(bares)
 
+    # A chapter with one reaction already needs a cited sentence once it has two. A chapter with more needs this line.
+    if chapter.max_reactions > 1 and blurb.sentences and reactions == len(blurb.sentences):
+        failures.append("[0] the blurb cites no fact; cite a fact in its first sentence")
+
+    words = sum(len(sentence.text.split()) for sentence in blurb.sentences)
+    if chapter.max_words is not None and words > chapter.max_words:
+        failures.append(f"[0] the blurb has {words} words; the limit is {chapter.max_words}")
+
     count = len(blurb.sentences)
     if not chapter.min_sentences <= count <= chapter.max_sentences:
         failures.append(
@@ -480,6 +501,9 @@ def build_verifier_prompt(
         "",
         "Chapter facts:",
         *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.fact_ids if fid in sheet.facts),
+        *(["", "Facts of the other chapters, for a callback:",
+           *(f"- {fid}: {sheet.facts[fid].text}" for fid in chapter.callback_ids if fid in sheet.facts)]
+          if chapter.callback_ids else []),
         "",
         "Sentences. Give one verdict per sentence, in order:",
         *(
@@ -554,7 +578,7 @@ def write_and_verify(
         else:
             try:
                 result = verify_blurb(blurb, chapter, sheet, call, used_words, prompts_dir=prompts_dir, terms=terms)
-            except (RefusalError, WriterError, anthropic.APIError, ValidationError) as err:
+            except CHECK_ERRORS as err:
                 # One bad verifier response must degrade to the template, not crash the build.
                 log.warning("verifier failed for %s: %s", chapter.key, err)
                 result = VerifyResult(

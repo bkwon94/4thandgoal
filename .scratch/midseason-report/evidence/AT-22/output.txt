@@ -1,0 +1,26 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '(.acts[].chapters[] | select(.key=="state") | .facts.teams | map({key: (.roster_id|tostring), value: .name}) | from_entries) as $n | .headlines | group_by(.roster_id)[] | {team: $n[.[0].roster_id|tostring], count: length, headlines: map(.key)}' clients/cpc/build/2026/midseason.json
+{"team":"The Blue Tent","count":1,"headlines":["award.heartbreak"]}
+{"team":"All You Need Is Love","count":2,"headlines":["arc.wire-to-wire","arc.smoke-and-mirrors"]}
+{"team":"Lil Fridge","count":1,"headlines":["lineup.bench"]}
+{"team":"NFC Least","count":2,"headlines":["arc.never-got-going","draft.steal"]}
+{"team":"London Cooking","count":2,"headlines":["award.bench-crime","award.set-and-forget"]}
+{"team":"Bo Girds","count":3,"headlines":["arc.collapse","arc.snakebit","award.most-active"]}
+{"team":"To Infinity and Bijan","count":2,"headlines":["waivers.miss","trades.top"]}
+{"team":"Return of T Mac","count":3,"headlines":["arc.roller-coaster","arc.turnaround","award.streaming-king"]}
+{"team":"Maye d'force B with U","count":3,"headlines":["arc.turnaround","award.mvp","award.beatdown"]}
+{"team":"behold the lamb","count":2,"headlines":["luck.biggest_miss","injuries.toll"]}
+{"team":"Unsolicited Dak Picks","count":2,"headlines":["draft.bust","waivers.hit"]}
+{"team":"Teehee","count":1,"headlines":["luck.most_better"]}
+
+$ jq -c '.acts[].chapters[] | select(.key=="luck") | .facts.swap | {most_better, biggest_miss}' clients/cpc/build/2026/midseason.json
+{"most_better":{"roster_id":12,"count":5,"place":4},"biggest_miss":{"roster_id":10,"schedule_of":9,"gain":4.0,"place":3}}
+
+$ grep -n "CO.luck" clients/cpc/build/2026/midseason-review.md
+131:6. Teehee would have a better record with 5 other schedules than with its own, while behold the lamb would gain 4 wins with a different one. [SW.most, CO.luck.most_better, SW.biggest, CO.luck.biggest_miss]
+139:- CO.luck.most_better: The callout of the most schedules better than its own names Teehee. Bo Girds and London Cooking and To Infinity and Bijan are not the headline of this callout.
+141:- CO.luck.biggest_miss: The callout of the biggest gain from another schedule names behold the lamb. Bo Girds and London Cooking are not the headline of this callout.

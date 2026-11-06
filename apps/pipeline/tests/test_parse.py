@@ -6,9 +6,9 @@ from datetime import date
 
 import pytest
 
-from league.models import week_lines
-from league.parse import parse_past_week, parse_week
-from league.provider.raw import RawTransaction
+from league.models import Team, week_lines
+from league.parse import parse_past_week, parse_week, team_name
+from league.provider.raw import RawTransaction, RawUser
 from league.provider.sleeper import load_raw
 
 
@@ -166,3 +166,13 @@ def test_the_points_key_of_the_league_chooses_the_projections_of_a_past_week(fix
     past = parse_past_week(load_raw(fixture_raw_dir), 6, points_key="pts_ppr")
     assert past.projections[JSN] == 22.48
     assert past.points_key == "pts_ppr"
+
+
+def test_a_team_name_loses_the_spaces_around_it_where_the_league_reads_it():
+    # NorCal has the Sleeper team name "Skol Daddy " with a trailing space.
+    user = RawUser.model_validate({"user_id": "1", "display_name": " owner ", "metadata": {"team_name": "Skol Daddy "}})
+    assert team_name(user) == "Skol Daddy"
+    assert team_name(user.model_copy(update={"metadata": None})) == "owner"
+    # A saved facts file of an older build holds the name with the space, and the load strips it too.
+    saved = Team(roster_id=1, name="Skol Daddy ", owner="o", avatar_url=None, wins=3, losses=5, points_for=1.0)
+    assert saved.name == "Skol Daddy"

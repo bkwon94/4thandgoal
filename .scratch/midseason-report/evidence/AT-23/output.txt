@@ -1,0 +1,9 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="watch") | .facts | to_entries[] | {list: .key, count: (.value|length), players: [.value[].name]}' clients/cpc/build/2026/midseason.json
+{"list":"due_to_rise","count":3,"players":["Michael Wilson","Jadarian Price","DK Metcalf"]}
+{"list":"due_to_fall","count":3,"players":["Jaxon Smith-Njigba","Caleb Douglas","Mike Gesicki"]}
+{"list":"grab_him_now","count":3,"players":["Kyler Murray","J.J. McCarthy","Justin Herbert"]}

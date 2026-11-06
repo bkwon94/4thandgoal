@@ -1,0 +1,23 @@
+{
+    "route": "/midseason/2026/",
+    "steps": [
+        {
+            "scroll": "#the-moves"
+        },
+        {
+            "shot": "before"
+        },
+        {
+            "click": "nav[aria-label=\"Chapters\"] a[href=\"#what-comes-next\"]"
+        },
+        {
+            "wait": 1000
+        },
+        {
+            "shot": "after"
+        },
+        {
+            "url": true
+        }
+    ]
+}

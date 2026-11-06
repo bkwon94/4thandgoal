@@ -1,0 +1,32 @@
+# Run in a second detached worktree at 233d3ef0. The published report files came from the AT-43 publish commit eb6f8a22.
+$ cp <the published midseason.json and sim.json of the AT-43 publish> clients/cpc/published/2026/
+$ shasum -a 256 clients/cpc/published/2026/midseason.json clients/cpc/published/2026/sim.json   # before the build
+776ef4fb384e339ea7a793ba70872b97d3cc893a9888fe179558a79510d9c053  clients/cpc/published/2026/midseason.json
+a16b2045ef942314f13ff85c7860589254671bb1b57f359e45afc033f2396327  clients/cpc/published/2026/sim.json
+
+$ (cd apps/pipeline && make build CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone build --client cpc --season 2026 --week 8
+<worktree 2>/clients/cpc/build/2026/week-08/page.json
+Site page after publish: https://cpc.4thandgoal.app/2026/week-08/
+[156 INFO log lines removed]
+exit code: 0, time: 770 s
+
+$ shasum -a 256 clients/cpc/published/2026/midseason.json clients/cpc/published/2026/sim.json   # after the build
+776ef4fb384e339ea7a793ba70872b97d3cc893a9888fe179558a79510d9c053  clients/cpc/published/2026/midseason.json
+a16b2045ef942314f13ff85c7860589254671bb1b57f359e45afc033f2396327  clients/cpc/published/2026/sim.json
+
+$ git status --short --untracked-files=all clients/cpc/published/2026/
+?? clients/cpc/published/2026/midseason.json
+?? clients/cpc/published/2026/sim.json
+
+$ git status --short clients/cpc/
+ M clients/cpc/build/2026/managers.json
+ M clients/cpc/build/2026/rankings.json
+ M clients/cpc/build/2026/week-08/page.json
+ M clients/cpc/build/2026/week-08/waiver.json
+ M clients/cpc/data/2026/week-08/blurbs.json
+ M clients/cpc/data/2026/week-08/facts.json
+ M clients/cpc/data/2026/week-08/verify.json
+?? clients/cpc/data/2026/week-08/raw/nflverse.json
+?? clients/cpc/published/2026/midseason.json
+?? clients/cpc/published/2026/sim.json

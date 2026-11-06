@@ -1,7 +1,7 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, page-json, rankings, history, chart, analyze, and find
-subcommands.
+It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart, analyze,
+and find subcommands.
 """
 import argparse
 import logging
@@ -35,11 +35,12 @@ from cornerstone.pipeline import (
     resolve_week,
     run_build,
     run_history,
+    run_midseason,
     run_page_json,
     run_rankings,
     run_rewrite,
 )
-from cornerstone.publish import PublishError, run_publish, site_page_url
+from cornerstone.publish import PublishError, run_midseason_publish, run_publish, site_page_url
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import analyzer_call, claude_call, parse_call
 from league.chart import chart_values, check_chart, claude_reader, match_chart, saved_chart_read
@@ -85,6 +86,17 @@ def build_parser() -> argparse.ArgumentParser:
     rankings = sub.add_parser("rankings", parents=[named], help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
     rankings.add_argument("--season", type=int)
+
+    midseason = sub.add_parser("midseason", parents=[named],
+                               help="write the midseason report of a saved week into the build folder of the season")
+    midseason.add_argument("--week", type=int)
+    midseason.add_argument("--season", type=int)
+
+    midseason_publish = sub.add_parser(
+        "midseason-publish", parents=[named],
+        help="check each blurb of the midseason draft again, then commit and push midseason.json and sim.json")
+    midseason_publish.add_argument("--week", type=int)
+    midseason_publish.add_argument("--season", type=int)
 
     history = sub.add_parser("history", parents=[named], help="fetch and cache past weeks")
     history.add_argument("--season", type=int)
@@ -546,6 +558,15 @@ def main(
             print(run_page_json(repo, season, week, client=client))
         elif args.command == "rankings":
             print(run_rankings(repo, season, week, call, client=client))
+        elif args.command == "midseason":
+            print(run_midseason(season, week, call, client=client, provider=provider))
+        elif args.command == "midseason-publish":
+            answer = input(f"Publish the midseason report of week {week} of {client.slug}? [y/N] ")
+            if answer not in ("y", "Y"):
+                print("Not published.")
+                return 0
+            print(run_midseason_publish(repo, season, week, call, client=client))
+            print("Committed and pushed. The report is live after the site deploys.")
         elif args.command == "rewrite":
             page = run_rewrite(repo, season, week, args.chapter, call, client=client)
             print(page)

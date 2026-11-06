@@ -19,6 +19,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `matchup-impact` | pipeline | 01 the impact fact, without the odds | none | |
 | `manager-pages` | site | 01 the past week keeps every rostered player | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
+| `midseason-report` | both | 15 the roast voice: one prose block per chapter | none | |
 | `modular` | site | 12 the fixtures carry every as-of key | none | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
 | `one` | both | 09 the build skills and the verdict rule | none | 09 is in-review until the first real spec PR runs `tdd`, `code-review`, and `cpc:review` |

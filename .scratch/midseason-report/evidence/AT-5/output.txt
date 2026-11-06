@@ -1,0 +1,8 @@
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+clients/cpc/build/2026/midseason.json
+[167 INFO log lines of the Claude calls removed]
+
+$ jq -c '.acts[].chapters[] | select(.key=="arcs") | .facts.teams[] | select(.name=="Return of T Mac" or .name=="Bo Girds") | {name, arcs: [.arcs[] | {kind, start, now, win_streak, loss_streak, schedule_luck}]}' clients/cpc/build/2026/midseason.json
+{"name":"Bo Girds","arcs":[{"kind":"Collapse","start":{"first_week":1,"last_week":4,"wins":6,"losses":2,"ties":0},"now":{"first_week":5,"last_week":8,"wins":3,"losses":5,"ties":0},"win_streak":null,"loss_streak":null,"schedule_luck":null},{"kind":"Snakebit","start":null,"now":null,"win_streak":null,"loss_streak":null,"schedule_luck":-2.18}]}
+{"name":"Return of T Mac","arcs":[{"kind":"Roller coaster","start":null,"now":null,"win_streak":5,"loss_streak":3,"schedule_luck":null},{"kind":"Turnaround","start":{"first_week":1,"last_week":4,"wins":2,"losses":6,"ties":0},"now":{"first_week":5,"last_week":8,"wins":7,"losses":1,"ties":0},"win_streak":null,"loss_streak":null,"schedule_luck":null}]}

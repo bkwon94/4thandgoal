@@ -1,0 +1,1 @@
+{ "route": "/midseason/2026/", "steps": [{ "scroll": "#top10" }, { "shot": "before" }, { "click": "button:has-text(\"Show all\")" }, { "wait": 500 }, { "shot": "after" }] }

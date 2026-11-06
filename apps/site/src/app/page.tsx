@@ -26,6 +26,7 @@ export default function HomePage() {
     sections
       .filter((section) => section.place === place)
       .map((section, index) => <Fragment key={`${place}-${index}`}>{section.part}</Fragment>);
+  const takeover = partsAt("takeover");
   return (
     <>
       {/* The intro names the season, so the top band holds no week line. */}
@@ -42,7 +43,8 @@ export default function HomePage() {
               </span>
               <h1 className="m-0 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
             </Rise>
-            {partsAt("top")}
+            {/* A takeover part, such as the midseason report, shows in place of the usual top. */}
+            {takeover.length > 0 ? takeover : partsAt("top")}
             {partsAt("middle")}
             {homeTools.length > 0 && (
               <HomeChapter id="tools" title="Tools">

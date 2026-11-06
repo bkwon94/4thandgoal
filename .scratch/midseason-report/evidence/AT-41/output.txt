@@ -1,0 +1,117 @@
+$ git diff clients/cpc/client.toml   # the local copy, in a second detached worktree at 233d3ef0
+diff --git a/clients/cpc/client.toml b/clients/cpc/client.toml
+index bf58e5bd..3defa8c5 100644
+--- a/clients/cpc/client.toml
++++ b/clients/cpc/client.toml
+@@ -15,6 +15,9 @@ chart = "1QB0.5PPR4pt"
+ 
+ # midseason takes its default roast, "hot", so the file has no [values.midseason]. sim has no values.
+ 
++[values.midseason]
++roast = "off"
++
+ [values.analyzer]
+ finder = false
+ 
+
+$ (cd apps/pipeline && make midseason CLIENT=cpc WEEK=8)
+uv run --exact --package cornerstone cornerstone midseason --client cpc --season 2026 --week 8
+<worktree 4>/clients/cpc/build/2026/midseason.json
+[104 INFO log lines of the Claude calls removed]
+exit code: 0, time: 244 s
+
+$ grep -n '^Roast\|^## ' clients/cpc/build/2026/midseason-review.md
+3:Roast: off. Edit a blurb in midseason.json, then run make midseason-publish CLIENT=cpc WEEK=8.
+6:## opener: The title race
+27:## state: The state of the league
+51:## arcs: Arcs
+72:## luck: Schedule luck
+94:## injuries: The injury toll
+119:## top10: Position top 10
+146:## draft: Draft steals and busts
+171:## waivers: Waiver hits and misses
+196:## trades: The trade report card
+218:## lineup: Lineup choices
+241:## records: The record book
+264:## look-ahead: The look ahead
+287:## watch: Players to watch
+
+$ grep -c 'roast' clients/cpc/build/2026/midseason-review.md
+1
+
+$ jq -c '[.opener, .acts[].chapters[]] | map(.roast) | unique' clients/cpc/build/2026/midseason.json
+[null]
+
+$ sed -n '6,71p' clients/cpc/build/2026/midseason-review.md   # three blurbs: opener, state, arcs
+## opener: The title race
+
+Prose block: 3 to 6 sentences, 6 facts.
+
+Blurb:
+1. London Cooking holds the top title odds in the league at 16.8%. [OP.5.title]
+2. Bo Girds sits right behind with 16.3% title odds, 2nd in the league. [OP.6.title]
+3. Maye d'force B with U rounds out the top 3 at 14.5% title odds. [OP.9.title]
+4. All You Need Is Love leads the standings at 11-5. [OP.record]
+5. Their title odds rank only 6th, at 9.7%. [OP.record.title]
+6. The standings leader is not the title favorite. [OP.record, OP.5.title]
+
+Cited facts:
+- OP.5.title: London Cooking has 16.8% title odds, the top in the league.
+- OP.6.title: Bo Girds has 16.3% title odds, 2nd in the league.
+- OP.9.title: Maye d'force B with U has 14.5% title odds, 3rd in the league.
+- OP.record: All You Need Is Love leads the standings at 11-5.
+- OP.record.title: All You Need Is Love has 9.7% title odds, 6th in the league.
+
+Verifier: passed on attempt 1.
+
+## state: The state of the league
+
+Prose block: 3 to 6 sentences, 49 facts.
+
+Blurb:
+1. All You Need Is Love leads the league at 11-5. [ST.2.record]
+2. Lil Fridge holds 86% playoff odds after losing 2 head-to-head games in a row. [ST.3.odds, ST.3.streak]
+3. Bo Girds sits 3rd at 9-7. [ST.6.record]
+4. London Cooking, Maye d'force B with U, The Blue Tent and Return of T Mac share that same record. [ST.5.record, ST.9.record, ST.1.record, ST.8.record]
+5. NFC Least sits last at 3-13. [ST.4.record]
+
+Cited facts:
+- ST.2.record: All You Need Is Love is 11-5, 1st in the standings.
+- ST.3.odds: Lil Fridge has 86% playoff odds.
+- ST.3.streak: Lil Fridge has lost 2 head-to-head games in a row.
+- ST.6.record: Bo Girds is 9-7, 3rd in the standings.
+- ST.5.record: London Cooking is 9-7, 4th in the standings.
+- ST.9.record: Maye d'force B with U is 9-7, 5th in the standings.
+- ST.1.record: The Blue Tent is 9-7, 6th in the standings.
+- ST.8.record: Return of T Mac is 9-7, 7th in the standings.
+- ST.4.record: NFC Least is 3-13, 12th in the standings.
+
+Verifier: passed on attempt 1.
+
+## arcs: Arcs
+
+Prose block: 3 to 6 sentences, 9 facts.
+
+Blurb:
+1. Return of T Mac went 2-6 in the first four weeks and 7-1 in the last four. [ARC.8.turnaround]
+2. Maye d'force B with U made a similar climb, 3-5 early and 6-2 late. [ARC.9.turnaround]
+3. Bo Girds went the other way, from 6-2 early to 3-5 late. [ARC.6.collapse]
+4. Some climb, some slide. [reaction]
+5. All You Need Is Love has held steady, 6-2 early and 5-3 late. [ARC.2.wire-to-wire]
+6. NFC Least never got going, with a 0-8 start before a 3-5 stretch. [ARC.4.never-got-going]
+
+Cited facts:
+- ARC.8.turnaround: Return of T Mac has the Turnaround arc: 2-6 in the first four weeks and 7-1 in the last four.
+- ARC.9.turnaround: Maye d'force B with U has the Turnaround arc: 3-5 in the first four weeks and 6-2 in the last four.
+- ARC.6.collapse: Bo Girds has the Collapse arc: 6-2 in the first four weeks and 3-5 in the last four.
+- ARC.2.wire-to-wire: All You Need Is Love has the Wire to wire arc: 6-2 in the first four weeks and 5-3 in the last four.
+- ARC.4.never-got-going: NFC Least has the Never got going arc: 0-8 in the first four weeks and 3-5 in the last four.
+
+Verifier: passed on attempt 1.
+
+
+$ grep -n '\[reaction\]' clients/cpc/build/2026/midseason-review.md
+59:4. Some climb, some slide. [reaction]
+82:6. That is a heavy load. [reaction]
+227:5. That one stings. [reaction]
+248:3. Rough stretch over there. [reaction]

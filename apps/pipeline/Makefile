@@ -11,7 +11,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings analyze push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish page-json rankings midseason midseason-publish analyze push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -57,6 +57,16 @@ page-json: need-client need-week ## Write page.json for a saved week (CLIENT and
 
 rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone rankings --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+# The report is one edited moment per season, so only this target builds it, never the weekly build.
+# It writes only to the build folder of the season, never to published/.
+midseason: need-client need-week ## Write the midseason report of a saved week (CLIENT and WEEK required)
+	$(RUN) cornerstone midseason --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+# It checks each blurb of the draft again and refuses on a failure. It commits only midseason.json and sim.json of the
+# published season folder, then pushes the repo, as the weekly publish does.
+midseason-publish: need-client need-week ## Check the midseason draft, then commit it to published and push it (CLIENT and WEEK required)
+	$(RUN) cornerstone midseason-publish --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # Example: make analyze CLIENT=cpc SIDES="4:7569@12 12:10236@7 7:11628@4" ASKER=4
 # SIDES holds two to four sides, each ROSTER:PLAYER@TO,PLAYER@TO. A two-side trade may still use A=4:7569 B=12:10236.

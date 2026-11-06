@@ -1,0 +1,52 @@
+/**
+ * The arcs chapter of Act I: each team's arcs, such as a Turnaround or a Collapse, with the numbers behind each one.
+ * A team has at most 2 arcs, the biggest swing first. A team with no arc gets no row, and with no arc at all the
+ * chapter says so in one line.
+ */
+import { ReportCard } from "../report/report-card";
+import { fullRecord, signedOne } from "../report/numbers";
+import { ReportChapter } from "../report/report-chapter";
+import { WordTag } from "../report/word-tag";
+import type { Arc, ArcsChapter, WindowRecord } from "../schema/midseason-types";
+
+const windowText = (label: string, window: WindowRecord) =>
+  `${label} weeks ${window.first_week} to ${window.last_week}: ${fullRecord(window.wins, window.losses, window.ties)}`;
+
+/* The numbers behind one arc. Each arc fills only the numbers that it reads, so each line shows only when it is there. */
+export function arcNumbers(arc: Arc): string[] {
+  const lines: string[] = [];
+  if (arc.start) lines.push(windowText("Start,", arc.start));
+  if (arc.now) lines.push(windowText("Now,", arc.now));
+  if (arc.win_streak !== null) lines.push(`Longest win streak: ${arc.win_streak}`);
+  if (arc.loss_streak !== null) lines.push(`Longest loss streak: ${arc.loss_streak}`);
+  if (arc.schedule_luck !== null) lines.push(`Schedule luck: ${signedOne(arc.schedule_luck)} wins`);
+  return lines;
+}
+
+export function Arcs({ chapter }: { chapter: ArcsChapter }) {
+  const teams = chapter.facts.teams.filter((team) => team.arcs.length > 0);
+  return (
+    <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
+      {teams.length === 0 && <p className="m-0 text-meta text-mute">No team has an arc yet.</p>}
+      {teams.length > 0 && (
+        <ul aria-label="Arcs" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 desktop:grid-cols-2">
+          {teams.map((team) => (
+            <ReportCard as="li" key={team.roster_id} className="flex flex-col gap-sp-2">
+              <span className="text-body leading-tight font-bold">{team.name}</span>
+              {team.arcs.map((arc) => (
+                <div key={arc.kind} className="flex flex-col gap-sp-1">
+                  <WordTag className="ml-0 w-fit">{arc.kind}</WordTag>
+                  {arcNumbers(arc).map((line) => (
+                    <span key={line} className="font-mono text-meta leading-tight text-ink-2 tabular-nums">
+                      {line}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </ReportCard>
+          ))}
+        </ul>
+      )}
+    </ReportChapter>
+  );
+}
