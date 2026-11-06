@@ -21,7 +21,11 @@ const HEIGHT = 900;
 /* The longest reveal of the site, with its stagger, in ms. The runner waits this long after the scroll pass. */
 const SETTLE_MS = 1200;
 
-export type EvidenceTest = { id: string; file: string; folder: string; route: string };
+/* The client of a test with no "clients" key. */
+const CLIENT = "cpc";
+
+// prefix is true when the test names more than one client, so the shots of each client get distinct file names.
+export type EvidenceTest = { id: string; file: string; folder: string; route: string; clients: string[]; prefix: boolean };
 
 export type RoundOptions = {
   // The root of the tracker, .scratch/ at the repo root, and the feature under it.
@@ -68,10 +72,17 @@ export function readSteps(file: string): Omit<EvidenceTest, "id" | "folder"> {
       throw new Error(`${file}: ${name}: the verb "${verb}" is not built yet`);
     });
   }
-  for (const [key, value] of Object.entries({ widths, themes, clients })) {
+  for (const [key, value] of Object.entries({ widths, themes })) {
     if (value !== undefined) throw new Error(`${file}: the key "${key}" is not built yet`);
   }
-  return { file, route };
+  if (clients !== undefined) {
+    const valid = Array.isArray(clients) && clients.length > 0 && clients.every((client) => typeof client === "string" && client !== "");
+    if (!valid || new Set(clients).size !== clients.length) {
+      throw new Error(`${file}: "clients" must be a list of distinct client slugs, such as ["cpc", "norcal"]`);
+    }
+  }
+  const names = (clients as string[] | undefined) ?? [CLIENT];
+  return { file, route, clients: names, prefix: names.length > 1 };
 }
 
 /* Finds and checks the step list of each test of the feature, or of each named test. */
@@ -109,8 +120,16 @@ async function scrollPass(page: Page): Promise<void> {
   await page.waitForTimeout(SETTLE_MS);
 }
 
-/* Takes the shots of one test: one full-page shot for each width and theme, each in a fresh page. */
-async function shoot(browser: Browser, url: string, test: EvidenceTest): Promise<void> {
+/*
+ * The path of one shot file. The client prefix lives only here, so each shot name gets it the same way. A test with
+ * more than one client needs it, or the shots of the second client overwrite the shots of the first.
+ */
+function shotFile(test: EvidenceTest, client: string, name: string): string {
+  return join(test.folder, `${test.prefix ? `${client}-` : ""}${name}.png`);
+}
+
+/* Takes the shots of one test for one client: one full-page shot for each width and theme, each in a fresh page. */
+async function shoot(browser: Browser, url: string, test: EvidenceTest, client: string): Promise<void> {
   for (const width of WIDTHS) {
     for (const theme of THEMES) {
       // A fresh page per shot, because openPage adds an init script that sets the theme, and a page keeps each one.
@@ -119,7 +138,7 @@ async function shoot(browser: Browser, url: string, test: EvidenceTest): Promise
         await openPage(page, `${url}${test.route}`, theme);
         await page.waitForLoadState("networkidle");
         await scrollPass(page);
-        await page.screenshot({ path: join(test.folder, `${width}-${theme}.png`), fullPage: true });
+        await page.screenshot({ path: shotFile(test, client, `${width}-${theme}`), fullPage: true });
       } finally {
         await page.close();
       }
@@ -129,20 +148,26 @@ async function shoot(browser: Browser, url: string, test: EvidenceTest): Promise
 
 const seconds = (start: number) => `${((Date.now() - start) / 1000).toFixed(1)} s`;
 
-/* Runs one round: checks every step list, serves the site, takes the shots of each test, and logs each time and the total. */
+/*
+ * Runs one round: checks every step list, then for each client serves its site and takes the shots of each test of
+ * that client. Each client builds into the same out/ folder, so the round serves one client at a time, one time each.
+ */
 export async function runRound(options: RoundOptions): Promise<void> {
   const start = Date.now();
   const tests = loadTests(options.scratch, options.slug, options.ids);
-  const client = "cpc";
-  const server = await options.serve(client);
-  try {
-    for (const test of tests) {
-      const begin = Date.now();
-      await shoot(options.browser, server.url, test);
-      options.log(`${test.id} ${test.route}: ${WIDTHS.length * THEMES.length} shots in ${seconds(begin)}`);
+  // The clients in the order the tests first name them, so the default cpc of the first test builds first.
+  const clients = [...new Set(tests.flatMap((test) => test.clients))];
+  for (const client of clients) {
+    const server = await options.serve(client);
+    try {
+      for (const test of tests.filter((each) => each.clients.includes(client))) {
+        const begin = Date.now();
+        await shoot(options.browser, server.url, test, client);
+        options.log(`${test.id} ${test.route} ${client}: ${WIDTHS.length * THEMES.length} shots in ${seconds(begin)}`);
+      }
+    } finally {
+      await server.close();
     }
-  } finally {
-    await server.close();
   }
   options.log(`Total: ${tests.length} ${tests.length === 1 ? "test" : "tests"} of ${options.slug} in ${seconds(start)}`);
 }
