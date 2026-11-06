@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
+import { midseasonSchema } from "@cpc/midseason/schema/midseason";
 import { rankingsSchema } from "@cpc/rankings/schema/rankings";
 import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
@@ -46,6 +47,8 @@ describe.each([
   ["waiver.json", waiverBoardSchema, 0],
   ["rankings.json", rankingsSchema, 1],
   ["managers.json", managersFileSchema, 1],
+  // No midseason.json is published yet. The midseason tests cover its schema through the package fixture.
+  ["midseason.json", midseasonSchema, 0],
 ])("%s under public/", (name, schema, least) => {
   it("parses with its schema", () => {
     const files = filesNamed(name);

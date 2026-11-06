@@ -25,6 +25,12 @@ describe("menuPages", () => {
     ]);
   });
 
+  it("gives no destination for the sim or the midseason report, so the menu and the dock keep their items", () => {
+    const links = { ...LINKS, sim: () => ({ label: "Sim", href: "/sim/" }), midseason: () => ({ label: "Report", href: "/midseason/2026/" }) };
+    const pages = menuPages([{ page: "home" }, { package: "sim" }, { package: "midseason" }], links, "/");
+    expect(pages.map((page) => page.kind)).toEqual(["home"]);
+  });
+
   it("takes the label of an item in place of the label of the package, in the pill bar only", () => {
     const pages = menuPages([{ page: "home", label: "Start" }, { package: "analyzer", label: "Trades" }], LINKS, "/");
     expect(pages.map((page) => page.label)).toEqual(["Start", "Trades"]);

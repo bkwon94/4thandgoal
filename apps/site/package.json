@@ -26,6 +26,7 @@
     "@cpc/design": "workspace:*",
     "@cpc/league": "workspace:*",
     "@cpc/managers": "workspace:*",
+    "@cpc/midseason": "workspace:*",
     "@cpc/rankings": "workspace:*",
     "@cpc/waiver": "workspace:*",
     "@cpc/week": "workspace:*",

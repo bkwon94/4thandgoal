@@ -10,9 +10,9 @@ Spec: `.scratch/midseason-report/PRD.md`. Acceptance tests AT-8, AT-11, AT-26, A
 
 **Status:** ready-for-agent
 
-- [ ] The Zod schema parses the real `midseason.json` of CPC.
-- [ ] The three acts render in order, each with a dark title page.
-- [ ] A tap in the chapter rail moves to Act III, and the rail stays at the top.
-- [ ] Position top 10 opens on RB and shows one position.
-- [ ] One plain sentence explains the All-play record.
-- [ ] The floor tests pass at 375, 768, and 1280 px, in the light and the dark theme.
+- [x] The Zod schema parses the real `midseason.json` of CPC.
+- [x] The three acts render in order, each with a dark title page.
+- [x] A tap in the chapter rail moves to Act III, and the rail stays at the top.
+- [x] Position top 10 opens on RB and shows one position.
+- [x] One plain sentence explains the All-play record.
+- [x] The floor tests pass at 375, 768, and 1280 px, in the light and the dark theme.

@@ -175,6 +175,17 @@ const ROUTES = {
     },
   ],
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
+  // The sim has no page of its own. The report page mounts its replay.
+  sim: [],
+  midseason: [
+    {
+      path: "midseason/[season]/page.tsx",
+      source: "@/app/_routes/midseason/page",
+      exports: ["default", "generateStaticParams", "generateMetadata"],
+      dynamic: true,
+      needs: (published) => hasFile(published, (path) => path.endsWith("midseason.json")),
+    },
+  ],
 };
 
 /* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.

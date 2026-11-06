@@ -23,6 +23,8 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
 export function menuPages(items: MenuItem[], links: MenuLinks, home: string): NavItem[] {
   return items.flatMap((item): NavItem[] => {
     if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
+    // The sim and the midseason report add no menu item and no dock item (midseason PRD), so they have no kind.
+    if (item.package === "sim" || item.package === "midseason") return [];
     const link = links[item.package]?.();
     if (!link) return [];
     const short = item.package === "week" ? link.label : SHORT[item.package];

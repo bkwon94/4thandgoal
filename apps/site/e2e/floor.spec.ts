@@ -289,3 +289,53 @@ test(`the week chips of the Ladder of ${CLIENT} stay on one row at 375px`, async
   expect(chosen!.x + chosen!.width).toBeLessThanOrEqual(box!.x + box!.width);
   expect(await scanScroll(page)).toEqual([]);
 });
+
+/* The midseason report of the latest season. A client builds it only when it takes midseason and the season has a
+   published midseason file, so each check of the report skips a client with no report page. */
+const MIDSEASON_ROUTE = `/midseason/${SEASON}/`;
+const hasReport = routes.includes(MIDSEASON_ROUTE);
+
+/* The widths of the report: a phone, a tablet, and a laptop (ticket 11 of midseason-report). */
+const REPORT_WIDTHS = [375, 768, 1280] as const;
+
+for (const theme of THEMES) {
+  for (const width of REPORT_WIDTHS) {
+    test(`midseason floor: ${CLIENT} ${MIDSEASON_ROUTE} ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      const label = `${CLIENT} ${MIDSEASON_ROUTE} ${theme} ${width}px`;
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
+      const failures = await textFloor(page, label, Date.now());
+      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      expect(failures, `${label} breaks the readability floor`).toEqual([]);
+    });
+
+    /* AT-27: from Act II, a tap on "What comes next" in the rail moves the page to Act III, and the rail stays at the top. */
+    test(`midseason rail: ${CLIENT} ${MIDSEASON_ROUTE} jumps to Act III and stays at the top, ${theme} ${width}px`, async ({ page }) => {
+      test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+      await page.setViewportSize({ width, height: 900 });
+      await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
+      const rail = page.getByRole("navigation", { name: "Chapters" });
+      const railTop = (await rail.boundingBox())!.y;
+      await page.evaluate(() => document.getElementById("the-moves")!.scrollIntoView());
+      await rail.getByRole("link", { name: "What comes next" }).click();
+      const box = await rail.boundingBox();
+      const title = await page.getByRole("heading", { level: 2, name: "What comes next" }).boundingBox();
+      // The rail sits under the top band at every scroll, and the title of Act III sits just under the rail.
+      expect(box!.y).toBe(railTop);
+      expect(title!.y).toBeGreaterThanOrEqual(box!.y + box!.height);
+      expect(title!.y).toBeLessThan(900 / 2);
+    });
+  }
+}
+
+/* AT-11: Position top 10 opens on RB and shows one position. */
+test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, async ({ page }) => {
+  test.skip(!hasReport, `${CLIENT} builds no midseason report`);
+  await page.setViewportSize({ width: 375, height: 900 });
+  await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
+  const chapter = page.locator("#top10");
+  await expect(chapter.getByRole("button", { name: "RB" })).toHaveAttribute("aria-pressed", "true");
+  await expect(chapter.getByRole("list")).toHaveCount(1);
+  await expect(chapter.getByRole("list", { name: "RB top 10" })).toBeVisible();
+});

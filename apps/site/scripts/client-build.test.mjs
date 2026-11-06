@@ -197,6 +197,24 @@ describe("the client build", () => {
     expect(registry).toContain('import { homeSection as weekHomeSection } from "@/app/_routes/week/home";');
   });
 
+  it("gives a client with midseason and sim the report route only with a published midseason file, and no menu link", () => {
+    const toml = ['packages = ["week", "sim", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "report");
+    published(repo.root, "report", "2026/week-06/page.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx"]);
+    published(repo.root, "report", "2026/midseason.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/midseason/[season]/page.tsx"]);
+    const route = readFileSync(join(repo.site, "src", "app", "(client)", "midseason", "[season]", "page.tsx"), "utf8");
+    expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/midseason/page";');
+    expect(route).toContain("export const dynamicParams = false;");
+    // The report adds no menu item: its menu link and the sim's give null, so the menu has no entry for either.
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { menuLink as midseasonMenuLink } from "@/app/_routes/midseason/menu";');
+    expect(registry).toContain('import { menuLink as simMenuLink } from "@/app/_routes/sim/menu";');
+  });
+
   it("gives a client with no home section an empty list with its type", () => {
     const toml = ['packages = ["waiver"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
     const repo = tempRepo(toml, "waiver-only");

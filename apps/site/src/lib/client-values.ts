@@ -8,7 +8,7 @@ import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination } from "@cpc/design/shell/nav";
 
 /* A package that a client takes or omits. league, facts, and design are in every client, so the list never names them. */
-export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer";
+export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer" | "sim" | "midseason";
 
 /* The values of the client that the site reads. */
 export type ClientValues = {
