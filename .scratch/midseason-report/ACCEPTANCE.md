@@ -112,7 +112,7 @@ When: Read draft steals and busts in `midseason.json`.
 Then: Each pick's cost is its pick number, and no pick shows a dollar amount.
 Evidence: The command output and the named fields of `midseason.json` in the NorCal build folder.
 
-AT-14: The one that got away
+AT-14: Retired: The one that got away
 Retired: decision 15 removed the "the one that got away" line, and story 26 with it.
 App: pipeline
 Stories: 26
@@ -185,7 +185,7 @@ When: Count the headlines of each team in `midseason.json`.
 Then: Each team has 1 to 3 headlines. Bo Girds keeps its 2 arcs and Most active, and both swap callouts name another team.
 Evidence: The command output and the named fields of `midseason.json` in the build folder. List the headlines of each team.
 
-AT-23: Players to watch
+AT-23: Retired: Players to watch
 Retired: decision 15 removed the Players to watch chapter, and story 39 with it.
 App: pipeline
 Stories: 39
