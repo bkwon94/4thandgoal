@@ -19,8 +19,9 @@ help: ## List the targets
 install: ## Install the dependencies
 	uv sync --exact --package cornerstone
 
+# The tests share no state, so each CPU runs a share of them. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
 test: ## Run the tests
-	$(RUN) pytest -q
+	$(RUN) pytest -q -n auto
 
 # A golden change must show in review, so commit the rewritten files with the code that changed them.
 golden: ## Rewrite the four golden files from the week 6 fixtures
