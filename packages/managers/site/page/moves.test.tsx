@@ -22,10 +22,10 @@ function managerOf(rosterId: number, moves?: Partial<Manager["moves"]>): Manager
   return { ...entry, moves: { ...entry.moves, ...moves }, standing: 1, rank: null, movement: null, odds: null, odds_change: null };
 }
 
-/* The label and the count of each total, as a reader reads them. */
+/* The label and the count of each total tile, as a reader reads them. */
 function totalsIn() {
   const group = screen.getByRole("group", { name: "Move Totals" });
-  return [...group.querySelectorAll("dt")].map((term) => [term.textContent, term.nextElementSibling?.textContent]);
+  return [...group.children].map((tile) => [...tile.children].map((line) => line.textContent));
 }
 
 function week(label: string) {
@@ -33,7 +33,7 @@ function week(label: string) {
 }
 
 describe("Moves", () => {
-  it("shows the heading and the three season totals", () => {
+  it("shows the heading and a tile for each of the three season totals", () => {
     render(<Moves manager={managerOf(1)} managers={managers} managersHref={MANAGERS_HREF} />);
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe("Moves");
     expect(totalsIn()).toEqual([

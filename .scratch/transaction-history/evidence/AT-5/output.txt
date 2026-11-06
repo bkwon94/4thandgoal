@@ -1,0 +1,6 @@
+$ uv run --exact --package cpc-league python history_step.py <copy with week-08/raw/transactions_prev.json removed>
+Uninstalled 10 packages in 9ms
+before rows 32 sha256 8167a8b224cd85bc
+after  rows 32 sha256 8167a8b224cd85bc
+week-08/raw/transactions_prev.json present: False
+exit 0

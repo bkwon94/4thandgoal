@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The site side of the rankings package: the power rankings page, the table, the week choice, the top three of the home page, the schema and the types of the rankings file, and its fixture. It ships TSX source with no build step.",
+  "description": "The site side of the rankings package: the power rankings page, the Ladder, the week choice, the top three of the home page, the schema and the types of the rankings file, and its fixture. It ships TSX source with no build step.",
   "dependencies": {
     "@cpc/design": "workspace:*",
     "@cpc/league": "workspace:*",

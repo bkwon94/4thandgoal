@@ -2,18 +2,8 @@
   "$defs": {
     "Menu": {
       "additionalProperties": false,
-      "description": "The menu layout and its items. With no items, the site build puts the home page first, then the package list.",
+      "description": "The menu items. The look of the site owns the navigation, so a client sets no layout (ADR 0024).\nWith no items, the site build puts the home page first, then the package list.",
       "properties": {
-        "layout": {
-          "default": "hamburger",
-          "enum": [
-            "hamburger",
-            "bar",
-            "tabs"
-          ],
-          "title": "Layout",
-          "type": "string"
-        },
         "items": {
           "anyOf": [
             {

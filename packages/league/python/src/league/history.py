@@ -17,7 +17,7 @@ from league.numbers import round_half_up
 from league.parse import parse_past_week
 from league.paths import history_raw_dir, history_week_dir
 from league.provider.raw import RawMatchup, RawPastWeek, RawTransaction, RawWeek
-from league.provider.sleeper import fetch_past_week, read_prev_transactions
+from league.provider.sleeper import PREV_TRANSACTIONS_FILE, fetch_past_week, read_prev_transactions
 from league.tunables import HANDCUFF_CARRY_GAMES, HANDCUFF_MIN_GAMES, SHARE_WEEKS, TREND_WEEKS
 
 # The past leg fetch takes the league id, the season, the week, and the folder, and saves the week there.
@@ -349,6 +349,20 @@ def save_week_to_history(raw_dir: Path, out_dir: Path) -> None:
                 for m in json.loads((raw_dir / "matchups.json").read_text(encoding="utf-8"))]
     players = json.loads((raw_dir / "players.json").read_text(encoding="utf-8"))
     _save_injuries(matchups, players, out_dir)
+
+
+def save_prev_week_to_history(raw_dir: Path, prev_out_dir: Path) -> None:
+    """Put the full transactions of week N-1 into the history of week N-1. `raw_dir` is the raw directory of week N.
+
+    The build of week N-1 runs before the Wednesday waiver run, so its saved file is short.
+    The fetch of week N saves the closed leg as transactions_prev.json. A copy of it makes the stored week complete.
+    It does nothing when that file or the history week is missing, so a first week or an old week never fails.
+    The copy is atomic and is not a symlink, so a refetch of the raw directory never changes the history.
+    """
+    source = raw_dir / PREV_TRANSACTIONS_FILE
+    if not source.exists() or not prev_out_dir.is_dir():
+        return
+    write_bytes_atomic(prev_out_dir / "transactions.json", source.read_bytes())
 
 
 def save_raw_to_history(raw: RawWeek, out_dir: Path) -> None:

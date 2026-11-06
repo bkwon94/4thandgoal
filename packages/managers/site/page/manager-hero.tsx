@@ -1,121 +1,108 @@
 /**
- * The hero of a manager page: the large avatar, the team name, the owner, the record, and the standing.
- * Under it sit the three numbers, the grade, the playoff odds, and the power rank, each with one quiet line of context.
+ * The hero of a manager page: the avatar, the team name, the owner, the record, and the standing, then the grade letter
+ * as the big number with the grade text beside it, the three tiles Playoff, Bye, and Seed, and a W or L chip for each week.
  */
-import type { ReactNode } from "react";
-import { Reveal } from "@cpc/design/parts/reveal";
 import { Avatar } from "@cpc/league/avatar";
-import { Chapter } from "@cpc/design/parts/chapter";
+import { Hero } from "@cpc/design/parts/hero";
+import { Rise } from "@cpc/design/parts/rise";
+import { Tile } from "@cpc/design/parts/tile";
 import { ordinal, record } from "@cpc/design/format/format";
-import { DURATION, REVEAL_STAGGER } from "@cpc/design/lib/motion";
-import type { Manager, ManagerGrade } from "../schema/manager-types";
+import { cn } from "@cpc/design/lib/utils";
+import type { Manager, SeasonWeek } from "../schema/manager-types";
 import { GradeMark, GradePopover } from "./grade-popover";
 import { OddsCount } from "./odds-count";
 
-/* A change in words. Positive is up, so the odds change and the rank movement read the same way. */
+/* A change in words. Positive is up, so the odds change reads up or down. */
 function changeWords(change: number): string {
   if (change === 0) return "no change";
   return change > 0 ? `up ${change}` : `down ${Math.abs(change)}`;
 }
 
-/* The depth words in short form, one per slot rank in the file's order, such as "QB fine · RB deep · WR thin · TE deep". */
-function depthWords(grade: ManagerGrade): string {
-  return grade.slots.map((slot) => `${slot.position} ${slot.depth}`).join(" · ");
-}
+/* The small caps line of the hero, such as the "GRADE" label. Each text line of a hero sits on a plate, so the grid
+   and the glow never sit under a letter and axe can read the contrast (ticket 04). */
+const HERO_CAPS = "plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
 
-/* One number: one quiet label over it, the number as the one emphasis, and at most one quiet line under it.
-   The mark, when given, sits beside the label. */
-function SeasonNumber({
-  label,
-  mark,
-  children,
-  context,
-}: {
-  label: string;
-  mark?: ReactNode;
-  children: ReactNode;
-  context?: ReactNode;
-}) {
+/* The chip of one week. A win takes the brand fill and a loss the raised fill of the hero. A bye or a tie has no
+   result, so it shows a dash. Each chip has its own fill, so it needs no plate. The week number sits under the chip. */
+function WeekChip({ week }: { week: SeasonWeek }) {
+  const letter = week.won === null ? "—" : week.won ? "W" : "L";
   return (
-    <div className="min-w-0">
-      <dt className="text-label leading-tight font-semibold tracking-caps text-mute uppercase">
-        {label}
-        {mark}
-      </dt>
-      <dd className="m-0 mt-sp-2 text-score leading-none font-extrabold text-ink tabular-nums">{children}</dd>
-      {context && <dd className="m-0 mt-sp-1 text-meta text-mute">{context}</dd>}
-    </div>
-  );
-}
-
-/* A place out of the league, such as "4th of 12". The place is the emphasis, so "of 12" stays small and quiet. */
-function Place({ place, of }: { place: number; of: number }) {
-  return (
-    <>
-      {ordinal(place)}
-      <span className="text-meta font-semibold text-mute">{` of ${of}`}</span>
-    </>
+    <li className="flex flex-col items-center gap-sp-1">
+      <span
+        data-result={week.won === null ? "none" : week.won ? "win" : "loss"}
+        className={cn(
+          "flex size-avatar items-center justify-center rounded-sm font-mono text-meta leading-none font-bold text-on-dark",
+          week.won ? "bg-accent" : "border border-rule-dark bg-chip-dark",
+        )}
+      >
+        {letter}
+      </span>
+      <span className="plate font-mono text-meta leading-none text-on-dark-2 tabular-nums">{week.week}</span>
+    </li>
   );
 }
 
 export function ManagerHero({ manager, avatar, teams }: { manager: Manager; avatar: string; teams: number }) {
-  const { grade, odds, rank } = manager;
+  const { grade, odds } = manager;
   return (
-    // The hero shows at once with the masthead, so it takes no reveal.
-    <Chapter>
-      <div className="flex items-center gap-sp-4">
+    <Hero label={manager.team.name}>
+      <Rise step={0} className="flex items-center gap-sp-4">
         {/* The team name sits next to the avatar, so the image is decorative. */}
         <Avatar src={avatar} size="headshot" />
         <div className="min-w-0">
-          {/* The name wraps and never truncates. The balance splits a long name into even lines. */}
-          <h1 className="m-0 text-stat leading-tight font-extrabold text-balance text-ink tablet:text-score">
+          {/* The name wraps and never cuts off. The balance splits a long name into even lines. */}
+          <h1 className="plate m-0 w-fit text-score leading-tight font-bold text-balance break-words tablet:text-headline">
             {manager.team.name}
           </h1>
-          <div className="mt-sp-1 text-meta text-mute">{manager.team.owner}</div>
-          <div className="mt-sp-1 text-body text-ink-2 tabular-nums">
-            <span className="font-semibold text-ink">{record(manager.wins, manager.losses)}</span>
-            {` · ${ordinal(manager.standing)} of ${teams}`}
+          <div className="plate mt-sp-2 w-fit text-meta leading-tight text-on-dark-2">{manager.team.owner}</div>
+          <div className="plate mt-sp-1 w-fit font-mono text-body leading-tight text-on-dark tabular-nums">
+            {`${record(manager.wins, manager.losses)} · ${ordinal(manager.standing)} of ${teams}`}
           </div>
         </div>
-      </div>
-      {/* The rule and the space above it set the numbers apart from the team, so the hero reads as two groups.
-          At the desktop tier the grade column takes the width of its depth line, so the four positions fit one line.
-          A third of the column is 219px there, and the depth line is about 238px. On a phone the depth line may wrap. */}
-      <dl
-        role="group"
-        aria-label="Hero Numbers"
-        className="m-0 mt-sp-5 grid grid-cols-3 gap-sp-4 border-t border-rule pt-sp-5 desktop:grid-cols-[max-content_1fr_1fr]"
-      >
-        {/* The letter stays one plain element in one place, so the grade motion targets it. */}
-        {/* On load the letter fades and rises into place with the hero timing, and the depth line follows one stagger later.
-            The rise is the quieter choice over a scale, because the large letter would grow at every edge. */}
-        {/* The letter opens the grade popover, and the mark beside the label says so. With no grade the dash stays plain. */}
-        <SeasonNumber
-          label="Grade"
-          mark={grade ? <GradeMark /> : null}
-          context={
-            grade ? (
-              <Reveal trigger="mount" delay={REVEAL_STAGGER} duration={DURATION.hero}>
-                {depthWords(grade)}
-              </Reveal>
-            ) : null
-          }
-        >
-          {grade ? (
-            <Reveal trigger="mount" duration={DURATION.hero}>
+      </Rise>
+      <Rise step={1} className="mt-sp-6">
+        <div className={cn(HERO_CAPS, "flex items-center")}>
+          Grade
+          {grade && <GradeMark />}
+        </div>
+        <div className="mt-sp-2 flex flex-wrap items-center gap-x-sp-5 gap-y-sp-2">
+          {/* The letter opens the grade popover, which says what each part of the grade ranks.
+              The leading stays at 1, so the plate of the letter holds its whole glyph box and axe can read it. */}
+          <div className="font-mono text-hero leading-none font-bold">
+            {grade ? (
               <GradePopover grade={grade} teams={teams} />
-            </Reveal>
-          ) : (
-            "—"
+            ) : (
+              <span aria-label="No grade" className="plate">
+                —
+              </span>
+            )}
+          </div>
+          {grade && (
+            <div className="plate max-w-measure min-w-0 flex-1 text-lead leading-body text-on-dark-2">{grade.read}</div>
           )}
-        </SeasonNumber>
-        <SeasonNumber label="Playoff Odds" context={odds && manager.odds_change !== null ? changeWords(manager.odds_change) : null}>
-          {odds ? <OddsCount value={odds.playoff} /> : "—"}
-        </SeasonNumber>
-        <SeasonNumber label="Power Rank" context={rank !== null && manager.movement !== null ? changeWords(manager.movement) : null}>
-          {rank !== null ? <Place place={rank} of={teams} /> : "—"}
-        </SeasonNumber>
-      </dl>
-    </Chapter>
+        </div>
+      </Rise>
+      <Rise step={2} className="mt-sp-6">
+        <div role="group" aria-label="Hero Numbers" className="grid grid-cols-3 gap-sp-2">
+          <Tile
+            tone="hero"
+            label="Playoff"
+            value={odds ? <OddsCount value={odds.playoff} /> : "—"}
+            note={odds && manager.odds_change !== null ? changeWords(manager.odds_change) : undefined}
+          />
+          <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : "—"} />
+          <Tile tone="hero" label="Seed" value={odds && odds.seed !== null ? ordinal(odds.seed) : "—"} />
+        </div>
+      </Rise>
+      {manager.weeks.length > 0 && (
+        <Rise step={3} className="mt-sp-5">
+          <ol aria-label="Results By Week" className="m-0 flex list-none flex-wrap gap-sp-2 p-0">
+            {manager.weeks.map((week) => (
+              <WeekChip key={week.week} week={week} />
+            ))}
+          </ol>
+        </Rise>
+      )}
+    </Hero>
   );
 }

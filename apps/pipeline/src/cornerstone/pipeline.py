@@ -29,7 +29,14 @@ from facts.writer import ClaudeCall
 from league.chart import match_chart, saved_chart_read
 from league.claude_port import Writer
 from league.client import Client
-from league.history import fetch_history, load_history, load_saved_weeks, save_week_to_history, saved_through
+from league.history import (
+    fetch_history,
+    load_history,
+    load_saved_weeks,
+    save_prev_week_to_history,
+    save_week_to_history,
+    saved_through,
+)
 from league.models import (
     Blurb,
     BuildRecord,
@@ -77,6 +84,8 @@ from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
 from managers.render import render_managers
 from managers.season import saved_awards
+from midseason.arcs import arcs_facts, team_arcs
+from midseason.luck import luck_facts, schedule_luck
 from midseason.prose import ProseDraft, prose_sheet, write_draft_facts, write_prose
 from midseason.published import midseason_report, write_midseason
 from midseason.review import review_text, write_review
@@ -427,6 +436,12 @@ def run_build(
         save_week_to_history(raw_path, history_dir(client.folder, season, week))
     except (OSError, ValueError, KeyError) as err:
         log.warning("week %d not saved to history: %s", week, err)
+    # Week 1 has no week before, so it writes nothing. The week before has its own guard, so its log names its own week.
+    if week > 1:
+        try:
+            save_prev_week_to_history(raw_path, history_dir(client.folder, season, week - 1))
+        except OSError as err:
+            log.warning("week %d not saved to history: %s", week - 1, err)
     # The season file reads the saved history, so it comes after the save. A missing past week never blocks the page.
     # Both season files read the one history load, so a failed load skips both files.
     try:
@@ -717,16 +732,22 @@ def run_midseason(season: int, week: int, call: ClaudeCall, *, client: Client) -
         odds = {rid: team.playoff for rid, team in sim.teams.items()}
     else:
         odds = {rid: team.playoff for rid, team in bundle.odds.teams.items()} if bundle.odds is not None else {}
-    state = league_state(history, week, names, playoff_odds=odds, median_game=client.settings.median_game)
+    median_game = client.settings.median_game
+    state = league_state(history, week, names, playoff_odds=odds, median_game=median_game)
+    luck = schedule_luck(history, week, state, median_game=median_game)
+    arcs = team_arcs(history, week, state, {team.roster_id: team.schedule_luck for team in luck.teams},
+                     median_game=median_game)
     roast = midseason_values(client).roast
-    sheet = prose_sheet(week, state, roast)
+    later = [("arcs", "Arcs", arcs_facts(arcs)), ("luck", "Schedule luck", luck_facts(luck))]
+    sheet = prose_sheet(week, state, roast, later)
     blurbs, results = write_prose(sheet, roast, call, prompts_dir=client.voice_dir)
     season_build = build_dir(client.folder) / str(season)
     write_draft_facts(ProseDraft(roast=roast, sheet=sheet), season_build)
     command = f"make midseason-publish CLIENT={client.slug} WEEK={week}"
     review = write_review(review_text(season, week, roast, sheet, blurbs, results, command), season_build)
     log.info("review file: %s", review)
-    return write_midseason(midseason_report(season, week, state, blurbs), build_dir(client.folder))
+    report = midseason_report(season, week, state, blurbs, arcs=arcs, luck=luck)
+    return write_midseason(report, build_dir(client.folder))
 
 
 def run_history(season: int, through: int, force: bool = False, *, client: Client) -> list[int]:

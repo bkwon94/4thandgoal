@@ -59,6 +59,7 @@ export function listWeekSummaries(): WeekSummary[] {
         number: page.week,
         dates: page.dates,
         href: weekHref(season, week),
+        pickTeams: [page.pick.sides[0].team.name, page.pick.sides[1].team.name] as [string, string],
       };
     });
 }

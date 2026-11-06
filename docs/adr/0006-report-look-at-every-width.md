@@ -1,3 +1,5 @@
 # The site keeps the report's look at every width, not its one column
 
 The source stylesheet renders the printed report as one 480px column, and the site copied that column so a phone and a desktop got the same page. The site now reflows per tier, phone, tablet, and desktop, and a desktop can show a chapter rail beside the content. The look holds at every width: the black masthead, the red accents, Helvetica, and the type and color tokens. We chose this over the fixed column because a desktop reader got a phone page with empty space on both sides, and over a full new design because the report's look is the brand of the league.
+
+Superseded by ADR 0024: the site now has one shared look, and the report look is no longer the brand.

@@ -1,0 +1,22 @@
+$ git diff -- clients/cpc/brand.toml
+diff --git a/clients/cpc/brand.toml b/clients/cpc/brand.toml
+index c7a09f01..b11e1e31 100644
+--- a/clients/cpc/brand.toml
++++ b/clients/cpc/brand.toml
+@@ -10,6 +10,7 @@ accent = "#b8342a"
+ band = "#141414"
+ page = "#f4f4f4"
+ card = "#ffffff"
++radius_card = "12px"
+ # One step up from the card, such as the active dock item.
+ raised = "#ebebeb"
+ text = "#141414"
+$ CLIENT=cpc pnpm --dir apps/site build
+
+> cpcfantasyfootball-site@0.1.0 prebuild /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/apps/site
+> node scripts/client-build.mjs
+
+client build failed: /Users/brian.kwon/repos/cpcfantasyfootball/.claude/worktrees/site-redesign/clients/cpc/brand.toml breaks a rule:
+- light.radius_card: is not a known key
+ ELIFECYCLE  Command failed with exit code 1.
+exit=1

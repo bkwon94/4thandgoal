@@ -11,7 +11,9 @@ import { knownGamesSegments } from "../lib/known-games-segments";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, rise } from "@cpc/design/lib/motion";
 import { Blurb } from "@cpc/design/parts/blurb";
+import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
+import { Hero } from "@cpc/design/parts/hero";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
@@ -192,28 +194,46 @@ function Mark({ lean }: { lean: Factor["lean"] }) {
   );
 }
 
+/* The answer word sits on the hero, so each color is one that the band holds in both themes. */
 const ANSWER_WORD = {
-  yes: { word: "Yes", color: "text-accent-ink" },
-  no: { word: "No", color: "text-ink" },
-  not_as_is: { word: "Not as is", color: "text-mute" },
+  yes: { word: "Yes", color: "text-accent-text" },
+  no: { word: "No", color: "text-on-dark" },
+  not_as_is: { word: "Not as is", color: "text-on-dark-2" },
 } as const;
 
-/* The answer word rises in once, so the call lands with a beat. With motion off, it shows at rest at once. */
-function DecisionBlock({ decision, team }: { decision: Decision; team?: string }) {
+/* The verdict fills the hero: the label, the answer word, and the reason, each on a plate, so no grid sits under a letter.
+   The answer word rises in once, so the call lands with a beat. With motion off, it shows at rest at once.
+   The no-values note and the fairness block sit under the verdict on a card inside the hero, so their text keeps the
+   colors of the card. */
+function VerdictHero({ decision, team, asOf, sides, fairness }: { decision: Decision; team?: string; asOf: AsOf; sides: SwapSide[]; fairness?: Fairness | null }) {
   const off = useMotionOff();
   const answer = ANSWER_WORD[decision.answer];
+  const note = asOf.no_chart && asOf.no_chart_note;
   return (
-    <div className="border-l-(length:--chap-rule) border-accent py-sp-1 pl-sp-4">
-      {/* Each chapter of the result opens with a level-two heading, and the decision chapter opens with this label. */}
-      <Label heading>Decision for {team ?? "Your Side"}</Label>
+    <Hero label="The Verdict">
+      {/* Each chapter of the result opens with a level-two heading, and the verdict opens with this label. */}
+      <h2 className="plate m-0 w-fit font-mono text-meta leading-tight font-bold tracking-wide text-on-dark-2 uppercase">
+        Decision for {team ?? "Your Side"}
+      </h2>
       <motion.p
-        className={cn("mt-0 mb-sp-2 text-headline leading-none font-black tracking-grade", answer.color)}
+        className={cn("plate mt-sp-4 mb-0 w-fit text-headline leading-none font-black tracking-grade", answer.color)}
         {...rise(off, { duration: DURATION.decision })}
       >
         {answer.word}
       </motion.p>
-      <Blurb>{decision.reason}</Blurb>
-    </div>
+      <p className="plate mt-sp-3 mb-0 w-fit max-w-measure text-lead leading-body text-on-dark">{decision.reason}</p>
+      {(note || fairness) && (
+        <Card className="mt-sp-5">
+          <NoChartLine asOf={asOf} />
+          {/* The fairness line sits under the decision, so the decision stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
+          {fairness && (
+            <div className={note ? "mt-sp-4" : undefined}>
+              <FairnessBlock sides={sides} fairness={fairness} />
+            </div>
+          )}
+        </Card>
+      )}
+    </Hero>
   );
 }
 
@@ -242,14 +262,18 @@ export function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness
       : word;
   return (
     <div>
-      <Label>Fairness</Label>
-      <motion.p
-        className={cn("mt-0 mb-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}
-        {...rise(off, { duration: DURATION.fairness })}
-      >
-        {line}
-      </motion.p>
-      <p className="mt-0 mb-sp-3 text-meta leading-tight text-mute">{state.meaning}</p>
+      {/* The line is a pill next to its label, so the finder cards and the verdict read the fairness at a glance. */}
+      <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
+        <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
+        {/* The pill is a short label, not prose, so it is a span at the row size. */}
+        <motion.span
+          className={cn("m-0 rounded-pill border border-rule px-sp-3 py-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}
+          {...rise(off, { duration: DURATION.fairness })}
+        >
+          {line}
+        </motion.span>
+      </div>
+      <p className="mt-0 mb-sp-3 text-lead text-mute">{state.meaning}</p>
       <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
         {/* joinSides puts the asker's side first, so the reasons take that order. A finder card sorts its sides the same way. */}
         {sides.map((side) => (
@@ -312,9 +336,9 @@ function SideRead({ side }: { side: Side }) {
       <SidePlayers side={side} />
 
       {side.bullets.length === 0 ? (
-        <p className="mt-sp-4 mb-0 text-body text-mute">The analysis is unavailable, so the rows stand alone.</p>
+        <p className="mt-sp-4 mb-0 text-lead text-mute">The analysis is unavailable, so the rows stand alone.</p>
       ) : (
-        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-body text-ink-2">
+        <ul className="mt-sp-4 mb-0 flex max-w-measure list-disc flex-col gap-sp-2 pl-sp-4 text-lead text-ink-2">
           {side.bullets.map((bullet) => (
             <li key={bullet}>{bullet}</li>
           ))}
@@ -352,11 +376,12 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   // Stats that failed to fetch leave the line stale, so the line says so.
   const staleSegments = stale.includes("stats") ? [`Week ${tradeWeek} stats not fetched`] : [];
   // The line names no chart week, because no page text names the source of the player values.
+  // The line is a list of facts, not prose, so it is a div at the meta size.
   return (
-    <p className="m-0 text-meta text-mute tabular-nums">
+    <div className="m-0 text-meta text-mute tabular-nums">
       {[...knownGamesSegments(as_of), ...staleSegments].join(" · ")}
       {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
-    </p>
+    </div>
   );
 }
 
@@ -379,10 +404,10 @@ function RostersFetched({ iso }: { iso: string }) {
   );
 }
 
-/* A week with no player values gets one meta line that says so. A document without the flag shows nothing. */
+/* A week with no player values gets one line of prose that says so. A document without the flag shows nothing. */
 export function NoChartLine({ asOf }: { asOf: AsOf }) {
   if (!asOf.no_chart || !asOf.no_chart_note) return null;
-  return <p className="m-0 pt-sp-3 text-meta text-mute">{asOf.no_chart_note}</p>;
+  return <p className="m-0 pt-sp-3 text-lead text-mute">{asOf.no_chart_note}</p>;
 }
 
 export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
@@ -393,16 +418,7 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
     <div className="tablet:flex tablet:flex-col tablet:gap-card-gap">
-      <Chapter>
-        <DecisionBlock decision={doc.decision} team={decisionTeam} />
-        <NoChartLine asOf={doc.as_of} />
-        {/* The fairness line sits under the decision, so the decision stays the lead. The ticket asks the page to render a document with no block, as a guard, so it shows no line then. */}
-        {doc.fairness && (
-          <div className="mt-sp-5">
-            <FairnessBlock sides={sides} fairness={doc.fairness} />
-          </div>
-        )}
-      </Chapter>
+      <VerdictHero decision={doc.decision} team={decisionTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
 
       <Chapter>
         <Label heading>The Trade</Label>

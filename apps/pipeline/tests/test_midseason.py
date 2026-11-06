@@ -61,8 +61,34 @@ ROAST_BLURB = WriterOut(sentences=[
 ])
 
 
+# The blurbs of the arcs and of Schedule luck that pass the code check on the real CPC week 8 facts.
+ARCS_BLURB = WriterOut(sentences=[
+    Sentence(text="Return of T Mac rode a win streak of 5 and a loss streak of 3.", fact_ids=["ARC.8.roller-coaster"]),
+    Sentence(text="Bo Girds has the Collapse arc.", fact_ids=["ARC.6.collapse"]),
+    Sentence(text="Nobody saw that coming.", fact_ids=[]),
+])
+ARCS_ROAST = WriterOut(sentences=[
+    Sentence(text="Bo Girds is Snakebit at -2.18.", fact_ids=["ARC.6.snakebit"]),
+    Sentence(text="Return of T Mac started 2-6.", fact_ids=["ARC.8.turnaround"]),
+])
+LUCK_BLURB = WriterOut(sentences=[
+    Sentence(text="All You Need Is Love has a Schedule luck of +2.73.", fact_ids=["SL.2.luck"]),
+    Sentence(text="Bo Girds would be 14-2 with the schedule of Maye d'force B with U.", fact_ids=["SW.6.best"]),
+    Sentence(text="That is cruel.", fact_ids=[]),
+])
+LUCK_ROAST = WriterOut(sentences=[
+    Sentence(text="Bo Girds does better with 10 other schedules than with its own.", fact_ids=["SW.most"]),
+    Sentence(text="To Infinity and Bijan has 947.27 points against.", fact_ids=["SL.7.against"]),
+])
+# The writer answers of a clean build, in page order: each blurb, then the verdicts that pass it.
+CLEAN_BUILD = [STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2), ARCS_BLURB, _passed(3), ARCS_ROAST, _passed(2),
+               LUCK_BLURB, _passed(3), LUCK_ROAST, _passed(2)]
+# The verdicts of the recheck of the publish on a clean draft, in page order.
+CLEAN_RECHECK = [_passed(3), _passed(2), _passed(3), _passed(2), _passed(3), _passed(2)]
+
+
 def _clean_call():
-    return _call(STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2))
+    return _call(*CLEAN_BUILD)
 
 
 def _with_roast(client, tmp_path: Path, roast: str):
@@ -174,27 +200,93 @@ def test_each_roast_blurb_cites_a_fact_even_when_the_writer_gives_a_roast_with_n
 def test_a_clean_build_keeps_the_roast_of_the_writer_with_its_cited_facts(tmp_path):
     report = _report(run_midseason(2026, 8, _clean_call(), client=_cpc_week_8(tmp_path)))
     assert [[s["fact_ids"] for s in roast["sentences"]] for roast in _roasts(report)] == [
-        [["ST.4.record"], ["ST.6.streak"]]]
+        [["ST.4.record"], ["ST.6.streak"]], [["ARC.6.snakebit"], ["ARC.8.turnaround"]], [["SW.most"], ["SL.7.against"]]]
 
 
 def test_with_the_roast_off_the_draft_has_no_roast_lines(tmp_path):
     # AT-41, on a local copy of client.toml.
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "off")
-    writer = FakeWriter([STATE_BLURB, _passed(3)])
+    writer = FakeWriter([STATE_BLURB, _passed(3), ARCS_BLURB, _passed(3), LUCK_BLURB, _passed(3)])
     report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
     assert _roasts(report) == []
     review = (build_dir(client.folder) / "2026" / "midseason-review.md").read_text(encoding="utf-8")
     assert "Roast: off." in review and "roast" not in review.split("Roast: off.")[1].lower()
-    # The writer of the one prose block hears that the roast is off, so its blurb holds no roast either.
+    # The writer of each prose block hears that the roast is off, so its blurb holds no roast either.
     assert "Roast: off. Write no roast" in (writer.calls[0].system or "")
-    assert len(writer.calls) == 2
+    assert len(writer.calls) == 6
 
 
 def test_with_the_roast_warm_the_roast_block_gets_the_roast_rules_and_the_soft_step(tmp_path):
     client = _with_roast(_cpc_week_8(tmp_path), tmp_path, "warm")
-    writer = FakeWriter([STATE_BLURB, _passed(3), ROAST_BLURB, _passed(2)])
+    writer = FakeWriter(list(CLEAN_BUILD))
     report = _report(run_midseason(2026, 8, partial(claude_call, writer=writer), client=client))
-    assert len(_roasts(report)) == 1
+    assert len(_roasts(report)) == 3
     roast_system = writer.calls[2].system or ""
     assert "Never roast life outside fantasy" in roast_system and "Roast: warm." in roast_system
     assert "Roast:" not in (writer.calls[0].system or "")
+
+
+def _chapter(report: dict, key: str) -> dict:
+    act = next(act for act in report["acts"] if act["key"] == "how-we-got-here")
+    return next(chapter for chapter in act["chapters"] if chapter["key"] == key)
+
+
+def test_act_one_holds_the_state_then_the_arcs_then_schedule_luck(tmp_path):
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    keys = [chapter["key"] for chapter in report["acts"][0]["chapters"]]
+    assert keys.index("state") < keys.index("arcs") < keys.index("luck")
+
+
+def test_the_arcs_of_return_of_t_mac_and_bo_girds(tmp_path):
+    # AT-5. Return of T Mac also has an active streak of 5, a Heater, but the 2-arc limit drops it.
+    teams = {team["name"]: team for team in
+             _chapter(_report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path))), "arcs")["facts"]["teams"]}
+    assert len(teams) == 12
+    mac = {arc["kind"]: arc for arc in teams["Return of T Mac"]["arcs"]}
+    assert list(mac) == ["Roller coaster", "Turnaround"]
+    assert (mac["Roller coaster"]["win_streak"], mac["Roller coaster"]["loss_streak"]) == (5, 3)
+    turnaround = mac["Turnaround"]
+    assert (turnaround["start"]["wins"], turnaround["start"]["losses"]) == (2, 6)
+    assert (turnaround["now"]["wins"], turnaround["now"]["losses"]) == (7, 1)
+    bo = {arc["kind"]: arc for arc in teams["Bo Girds"]["arcs"]}
+    assert set(bo) == {"Snakebit", "Collapse"}
+    assert bo["Snakebit"]["schedule_luck"] == -2.18
+
+
+def test_schedule_luck_of_all_you_need_is_love_and_bo_girds_with_points_against_and_close_games(tmp_path):
+    # AT-6.
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    luck = _chapter(report, "luck")["facts"]
+    teams = {team["name"]: team for team in luck["teams"]}
+    assert len(teams) == 12
+    assert teams["All You Need Is Love"]["schedule_luck"] == 2.73
+    assert teams["Bo Girds"]["schedule_luck"] == -2.18
+    assert luck["teams"][0]["name"] == "All You Need Is Love"
+    arcs = {team["name"]: [arc["kind"] for arc in team["arcs"]] for team in _chapter(report, "arcs")["facts"]["teams"]}
+    assert "Smoke and mirrors" in arcs["All You Need Is Love"]
+    assert "Snakebit" in arcs["Bo Girds"]
+    state = _state_rows(report)
+    for name, team in teams.items():
+        assert team["points_against"] == state[name]["points_against"]
+        assert 1 <= team["points_against_rank"] <= 12
+        assert team["close_wins"] + team["close_losses"] + team["close_ties"] <= 8
+    assert teams["To Infinity and Bijan"]["points_against_rank"] == 1
+
+
+def test_the_schedule_swap_diagonal_is_the_standings_and_bo_girds_is_14_2_with_maye_s_schedule(tmp_path):
+    # AT-7.
+    report = _report(run_midseason(2026, 8, _call(), client=_cpc_week_8(tmp_path)))
+    swap = _chapter(report, "luck")["facts"]["swap"]
+    state = _state_rows(report)
+    ids = {row["name"]: row["roster_id"] for row in state.values()}
+    assert len(swap["rows"]) == 12 and all(len(row["cells"]) == 12 for row in swap["rows"])
+    for row in swap["rows"]:
+        own = next(cell for cell in row["cells"] if cell["schedule_of"] == row["roster_id"])
+        assert (own["wins"], own["losses"], own["ties"]) == (
+            state[row["name"]]["wins"], state[row["name"]]["losses"], state[row["name"]]["ties"])
+    bo = next(row for row in swap["rows"] if row["name"] == "Bo Girds")
+    maye = next(cell for cell in bo["cells"] if cell["schedule_of"] == ids["Maye d'force B with U"])
+    assert (maye["wins"], maye["losses"]) == (14, 2)
+    best = {callout["roster_id"]: callout for callout in swap["best_missed"]}
+    assert best[ids["Bo Girds"]]["schedule_of"] == ids["Maye d'force B with U"]
+    assert swap["most_better"] == {"roster_id": ids["Bo Girds"], "count": 10}

@@ -1,0 +1,364 @@
+$ gh run view 42122278427 --log
+Run "Check" on PR #11, https://github.com/bkwon94/4thandgoal/actions/runs/42122278427
+Head 605c4532, conclusion success, job "check" from 2026-11-05T22:32:02Z to 2026-11-05T22:45:52Z.
+The lines below are the step "Run the check", from "==> site build: cpc" to "Built and checked 2 clients". The tab-separated job and step columns are cut.
+
+2026-11-05T22:34:49.9825550Z ==> site build: cpc
+2026-11-05T22:34:50.2750483Z 
+2026-11-05T22:34:50.2751733Z > cpcfantasyfootball-site@0.1.0 prebuild /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:34:50.2752870Z > node scripts/client-build.mjs
+2026-11-05T22:34:50.2753120Z 
+2026-11-05T22:34:50.5895952Z 
+2026-11-05T22:34:50.5897001Z > cpcfantasyfootball-site@0.1.0 build /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:34:50.5897631Z > next build
+2026-11-05T22:34:50.5897786Z 
+2026-11-05T22:34:51.0075829Z ▲ Next.js 16.4.2 (Turbopack)
+2026-11-05T22:34:51.0440981Z ✓ Running next.config.ts took 36ms
+2026-11-05T22:34:51.0443478Z ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+2026-11-05T22:34:51.0494966Z Attention: Next.js now collects completely anonymous telemetry regarding usage.
+2026-11-05T22:34:51.0495999Z This information is used to shape Next.js' roadmap and prioritize features.
+2026-11-05T22:34:51.0496927Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+2026-11-05T22:34:51.0497572Z https://nextjs.org/telemetry
+2026-11-05T22:34:51.0497763Z 
+2026-11-05T22:34:51.0917228Z 
+2026-11-05T22:34:51.1443019Z   Creating an optimized production build ...
+2026-11-05T22:34:59.0189315Z ✓ Compiled successfully in 7.9s
+2026-11-05T22:34:59.0231193Z   Running TypeScript ...
+2026-11-05T22:35:01.5275793Z   Finished TypeScript in 2.5s ...
+2026-11-05T22:35:01.5309083Z   Collecting page data using 3 workers ...
+2026-11-05T22:35:02.3434466Z   Generating static pages using 3 workers (0/21) ...
+2026-11-05T22:35:03.1477264Z   Generating static pages using 3 workers (5/21) 
+2026-11-05T22:35:03.5940438Z   Generating static pages using 3 workers (10/21) 
+2026-11-05T22:35:03.5948792Z   Generating static pages using 3 workers (15/21) 
+2026-11-05T22:35:03.9295209Z ✓ Generating static pages using 3 workers (21/21) in 1586ms
+2026-11-05T22:35:03.9351354Z   Finalizing page optimization ...
+2026-11-05T22:35:04.0830872Z 
+2026-11-05T22:35:04.0855387Z Route (app)
+2026-11-05T22:35:04.0856154Z ┌ ○ /
+2026-11-05T22:35:04.0856626Z ├ ○ /_not-found
+2026-11-05T22:35:04.0857178Z ├   /[season]/[week]
+2026-11-05T22:35:04.0857733Z │ ├ ● /2026/week-06
+2026-11-05T22:35:04.0858283Z │ ├ ● /2026/week-07
+2026-11-05T22:35:04.0858782Z │ └ ● /2026/week-08
+2026-11-05T22:35:04.0859292Z ├   /[season]/managers
+2026-11-05T22:35:04.0859822Z │ └ ● /2026/managers
+2026-11-05T22:35:04.0860479Z ├   /[season]/managers/[roster]
+2026-11-05T22:35:04.0861072Z │ ├ ● /2026/managers/2
+2026-11-05T22:35:04.0861552Z │ ├ ● /2026/managers/3
+2026-11-05T22:35:04.0862069Z │ ├ ● /2026/managers/6
+2026-11-05T22:35:04.0862852Z │ └ ● [+9 more paths]
+2026-11-05T22:35:04.0863843Z ├ ○ /analyze
+2026-11-05T22:35:04.0864286Z └ ○ /rankings
+2026-11-05T22:35:04.0864525Z 
+2026-11-05T22:35:04.0864540Z 
+2026-11-05T22:35:04.0864935Z ○  (Static)  prerendered as static content
+2026-11-05T22:35:04.0865971Z ●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+2026-11-05T22:35:04.0866531Z 
+2026-11-05T22:35:04.2050459Z ==> site check:export: cpc
+2026-11-05T22:35:04.4969362Z 
+2026-11-05T22:35:04.4970727Z > cpcfantasyfootball-site@0.1.0 check:export /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:04.4971760Z > node scripts/check-export.mjs
+2026-11-05T22:35:04.4972078Z 
+2026-11-05T22:35:04.7514528Z check:export passed: 129 files are byte-identical; 3 week pages hold every team name; the client cpc omits waiver, and the export holds none of it; 22 pages open dark; the pages show "Cornerstone Fantasy Football League", the theme button, and no finder; each page but the 404 page preloads the 2 font files of 53660 bytes from its own origin.
+2026-11-05T22:35:04.7519857Z (node:4436) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/runner/work/4thandgoal/4thandgoal/apps/site/src/app/fonts/budget.ts is not specified and it doesn't parse as CommonJS.
+2026-11-05T22:35:04.7522556Z Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+2026-11-05T22:35:04.7524270Z To eliminate this warning, add "type": "module" to /home/runner/work/4thandgoal/4thandgoal/apps/site/package.json.
+2026-11-05T22:35:04.7525735Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-05T22:35:04.7759490Z ==> site check:floor: cpc
+2026-11-05T22:35:05.0677651Z 
+2026-11-05T22:35:05.0678806Z > cpcfantasyfootball-site@0.1.0 check:floor /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:05.0679598Z > playwright test --project=floor
+2026-11-05T22:35:05.0679870Z 
+2026-11-05T22:35:06.1019637Z 
+2026-11-05T22:35:06.1020441Z Running 58 tests using 2 workers
+2026-11-05T22:35:06.1021332Z 
+2026-11-05T22:35:06.8131133Z   ✓   1 [floor] › e2e/floor.spec.ts:103:5 › each page of the full floor is a built page (9ms)
+2026-11-05T22:35:07.4447971Z   ✓   3 [floor] › e2e/floor.spec.ts:109:5 › no waiver page is built, and its URL shows the 404 page (485ms)
+2026-11-05T22:35:07.4861121Z cpc /analyze/ light 1280px: prose 3, other text 26, in 502 ms
+2026-11-05T22:35:07.8180922Z cpc /404-floor-check/ dark 390px: prose 1, other text 14, in 306 ms
+2026-11-05T22:35:08.2412594Z   ✓   2 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ light 1280px (1.4s)
+2026-11-05T22:35:08.4819906Z   ✓   4 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ dark 390px (1.0s)
+2026-11-05T22:35:08.6702951Z cpc /2026/week-08/ dark 390px: prose 6, other text 267, in 376 ms
+2026-11-05T22:35:08.7861146Z cpc /404-floor-check/ dark 1280px: prose 1, other text 14, in 252 ms
+2026-11-05T22:35:09.3535245Z   ✓   6 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ dark 1280px (856ms)
+2026-11-05T22:35:09.6424728Z cpc /404-floor-check/ light 390px: prose 1, other text 14, in 237 ms
+2026-11-05T22:35:09.6741819Z   ✓   5 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ dark 390px (1.4s)
+2026-11-05T22:35:10.0768308Z cpc /2026/week-08/ dark 1280px: prose 6, other text 276, in 351 ms
+2026-11-05T22:35:10.2428093Z   ✓   7 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ light 390px (873ms)
+2026-11-05T22:35:10.5340926Z cpc /404-floor-check/ light 1280px: prose 1, other text 14, in 242 ms
+2026-11-05T22:35:11.0581930Z   ✓   8 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ dark 1280px (1.4s)
+2026-11-05T22:35:11.0894149Z   ✓   9 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /404-floor-check/ light 1280px (832ms)
+2026-11-05T22:35:11.5542830Z cpc /rankings/ dark 390px: prose 14, other text 220, in 405 ms
+2026-11-05T22:35:11.5555786Z cpc /2026/week-08/ light 390px: prose 6, other text 267, in 430 ms
+2026-11-05T22:35:12.2990325Z   ✓  11 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 390px (1.2s)
+2026-11-05T22:35:12.5747744Z   ✓  10 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ light 390px (1.5s)
+2026-11-05T22:35:12.6785687Z cpc /rankings/ dark 1280px: prose 14, other text 220, in 335 ms
+2026-11-05T22:35:12.9699519Z cpc /2026/week-08/ light 1280px: prose 6, other text 276, in 335 ms
+2026-11-05T22:35:13.4064026Z   ✓  12 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ dark 1280px (1.1s)
+2026-11-05T22:35:13.7508227Z cpc /rankings/ light 390px: prose 14, other text 220, in 298 ms
+2026-11-05T22:35:13.9732568Z   ✓  13 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ light 1280px (1.4s)
+2026-11-05T22:35:14.4272742Z cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px: prose 7, other text 270, in 401 ms
+2026-11-05T22:35:14.5418754Z   ✓  14 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 390px (1.1s)
+2026-11-05T22:35:14.8686190Z cpc /rankings/ light 1280px: prose 14, other text 220, in 278 ms
+2026-11-05T22:35:15.5339957Z   ✓  15 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px (1.5s)
+2026-11-05T22:35:15.8195323Z   ✓  16 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ light 1280px (1.3s)
+2026-11-05T22:35:16.1841847Z cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px: prose 7, other text 279, in 585 ms
+2026-11-05T22:35:16.4434430Z cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px: prose 14, other text 220, in 554 ms
+2026-11-05T22:35:17.2721606Z   ✓  17 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px (1.7s)
+2026-11-05T22:35:17.3488440Z   ✓  18 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px (1.5s)
+2026-11-05T22:35:17.9259213Z cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 390px: prose 7, other text 270, in 591 ms
+2026-11-05T22:35:17.9406172Z cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px: prose 14, other text 220, in 532 ms
+2026-11-05T22:35:18.9797701Z   ✓  20 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px (1.6s)
+2026-11-05T22:35:19.1994945Z   ✓  19 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 390px (1.9s)
+2026-11-05T22:35:19.5956367Z cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px: prose 14, other text 220, in 559 ms
+2026-11-05T22:35:19.7606351Z cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px: prose 7, other text 279, in 505 ms
+2026-11-05T22:35:20.5355437Z   ✓  21 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px (1.5s)
+2026-11-05T22:35:20.9896348Z   ✓  22 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px (1.8s)
+2026-11-05T22:35:21.0067537Z cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px: prose 14, other text 220, in 421 ms
+2026-11-05T22:35:21.3804253Z cpc / dark 390px: prose 1, other text 79, in 328 ms
+2026-11-05T22:35:21.9814595Z   ✓  23 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px (1.4s)
+2026-11-05T22:35:22.1935664Z   ✓  24 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / dark 390px (1.2s)
+2026-11-05T22:35:22.4203562Z cpc /2026/managers/ dark 390px: prose 0, other text 108, in 381 ms
+2026-11-05T22:35:22.6613512Z cpc / dark 1280px: prose 1, other text 79, in 416 ms
+2026-11-05T22:35:23.2974745Z   ✓  25 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ dark 390px (1.3s)
+2026-11-05T22:35:23.5154368Z   ✓  26 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / dark 1280px (1.3s)
+2026-11-05T22:35:23.7257158Z cpc /2026/managers/ dark 1280px: prose 0, other text 108, in 371 ms
+2026-11-05T22:35:23.9299685Z cpc / light 390px: prose 1, other text 79, in 356 ms
+2026-11-05T22:35:24.4847465Z   ✓  27 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ dark 1280px (1.2s)
+2026-11-05T22:35:24.7096404Z   ✓  28 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / light 390px (1.2s)
+2026-11-05T22:35:24.8236311Z cpc /2026/managers/ light 390px: prose 0, other text 108, in 293 ms
+2026-11-05T22:35:25.0274659Z cpc / light 1280px: prose 1, other text 79, in 260 ms
+2026-11-05T22:35:25.5337513Z   ✓  29 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ light 390px (1.0s)
+2026-11-05T22:35:25.7409105Z   ✓  30 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / light 1280px (1.0s)
+2026-11-05T22:35:25.8911494Z cpc /2026/managers/ light 1280px: prose 0, other text 108, in 308 ms
+2026-11-05T22:35:26.1134813Z cpc / tap header details > summary dark 390px: prose 1, other text 79, in 321 ms
+2026-11-05T22:35:26.6059241Z   ✓  31 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/ light 1280px (1.1s)
+2026-11-05T22:35:26.7025328Z   ✓  32 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary dark 390px (941ms)
+2026-11-05T22:35:27.0854252Z cpc /2026/managers/7/ dark 390px: prose 1, other text 359, in 434 ms
+2026-11-05T22:35:27.1438269Z cpc / tap header details > summary dark 1280px: prose 1, other text 79, in 371 ms
+2026-11-05T22:35:27.6788882Z   ✓  34 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary dark 1280px (958ms)
+2026-11-05T22:35:28.0496782Z cpc / tap header details > summary light 390px: prose 1, other text 79, in 322 ms
+2026-11-05T22:35:28.1665876Z   ✓  33 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ dark 390px (1.5s)
+2026-11-05T22:35:28.5788530Z cpc /2026/managers/7/ dark 1280px: prose 1, other text 364, in 362 ms
+2026-11-05T22:35:28.6647019Z   ✓  35 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary light 390px (972ms)
+2026-11-05T22:35:29.0514180Z cpc / tap header details > summary light 1280px: prose 1, other text 79, in 339 ms
+2026-11-05T22:35:29.6487592Z   ✓  37 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc / tap header details > summary light 1280px (970ms)
+2026-11-05T22:35:29.7891438Z   ✓  36 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ dark 1280px (1.6s)
+2026-11-05T22:35:30.1504033Z cpc /2026/managers/1/ dark 390px: prose 1, other text 246, in 448 ms
+2026-11-05T22:35:30.1730583Z   ✓  38 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/1/ dark 390px (509ms)
+2026-11-05T22:35:30.3188943Z cpc /2026/managers/7/ light 390px: prose 1, other text 359, in 473 ms
+2026-11-05T22:35:30.5844001Z cpc /2026/managers/10/ dark 390px: prose 1, other text 251, in 355 ms
+2026-11-05T22:35:30.5975273Z   ✓  40 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/10/ dark 390px (410ms)
+2026-11-05T22:35:30.9860991Z cpc /2026/managers/11/ dark 390px: prose 1, other text 240, in 340 ms
+2026-11-05T22:35:31.0083379Z   ✓  41 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/11/ dark 390px (395ms)
+2026-11-05T22:35:31.4310136Z cpc /2026/managers/12/ dark 390px: prose 1, other text 241, in 376 ms
+2026-11-05T22:35:31.4463672Z   ✓  42 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/12/ dark 390px (423ms)
+2026-11-05T22:35:31.6676677Z   ✓  39 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ light 390px (1.9s)
+2026-11-05T22:35:31.8943635Z cpc /2026/managers/2/ dark 390px: prose 1, other text 200, in 401 ms
+2026-11-05T22:35:31.9174744Z   ✓  43 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/2/ dark 390px (454ms)
+2026-11-05T22:35:32.1596496Z cpc /2026/managers/7/ light 1280px: prose 1, other text 364, in 436 ms
+2026-11-05T22:35:32.3124528Z cpc /2026/managers/3/ dark 390px: prose 1, other text 212, in 344 ms
+2026-11-05T22:35:32.3320554Z   ✓  45 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/3/ dark 390px (400ms)
+2026-11-05T22:35:32.7107382Z cpc /2026/managers/5/ dark 390px: prose 1, other text 149, in 326 ms
+2026-11-05T22:35:32.7217049Z   ✓  46 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/5/ dark 390px (376ms)
+2026-11-05T22:35:33.1439363Z cpc /2026/managers/6/ dark 390px: prose 1, other text 327, in 365 ms
+2026-11-05T22:35:33.1569439Z   ✓  47 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/6/ dark 390px (424ms)
+2026-11-05T22:35:33.4399226Z   ✓  44 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/7/ light 1280px (1.8s)
+2026-11-05T22:35:33.5735507Z cpc /2026/managers/8/ dark 390px: prose 1, other text 275, in 368 ms
+2026-11-05T22:35:33.5918704Z   ✓  48 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/8/ dark 390px (419ms)
+2026-11-05T22:35:33.8803383Z cpc /2026/managers/4/ dark 390px: prose 1, other text 326, in 390 ms
+2026-11-05T22:35:34.0173812Z cpc /2026/managers/9/ dark 390px: prose 1, other text 276, in 368 ms
+2026-11-05T22:35:34.0298162Z   ✓  50 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/managers/9/ dark 390px (424ms)
+2026-11-05T22:35:34.3921486Z cpc /2026/week-06/ dark 390px: prose 6, other text 269, in 320 ms
+2026-11-05T22:35:34.4078068Z   ✓  51 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/week-06/ dark 390px (364ms)
+2026-11-05T22:35:34.7917499Z cpc /2026/week-07/ dark 390px: prose 6, other text 254, in 324 ms
+2026-11-05T22:35:34.8176125Z   ✓  52 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: cpc /2026/week-07/ dark 390px (383ms)
+2026-11-05T22:35:35.0154687Z   ✓  49 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ dark 390px (1.6s)
+2026-11-05T22:35:35.3476598Z cpc /2026/managers/4/ dark 1280px: prose 1, other text 331, in 295 ms
+2026-11-05T22:35:36.2346609Z   ✓  53 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ dark 1280px (1.2s)
+2026-11-05T22:35:36.5537732Z cpc /2026/managers/4/ light 390px: prose 1, other text 326, in 283 ms
+2026-11-05T22:35:37.3998774Z   ✓  54 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ light 390px (1.2s)
+2026-11-05T22:35:37.7239582Z cpc /2026/managers/4/ light 1280px: prose 1, other text 331, in 287 ms
+2026-11-05T22:35:38.5864741Z   ✓  55 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /2026/managers/4/ light 1280px (1.2s)
+2026-11-05T22:35:38.8717519Z cpc /analyze/ dark 390px: prose 3, other text 26, in 237 ms
+2026-11-05T22:35:39.3405725Z   ✓  56 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ dark 390px (747ms)
+2026-11-05T22:35:39.6179477Z cpc /analyze/ dark 1280px: prose 3, other text 26, in 242 ms
+2026-11-05T22:35:40.1083081Z   ✓  57 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ dark 1280px (756ms)
+2026-11-05T22:35:40.4015165Z cpc /analyze/ light 390px: prose 3, other text 26, in 249 ms
+2026-11-05T22:35:40.8779022Z   ✓  58 [floor] › e2e/floor.spec.ts:121:11 › full floor: cpc /analyze/ light 390px (745ms)
+2026-11-05T22:35:40.9426353Z 
+2026-11-05T22:35:40.9431944Z   58 passed (35.3s)
+2026-11-05T22:35:40.9713354Z ==> site build: norcal
+2026-11-05T22:35:41.2585745Z 
+2026-11-05T22:35:41.2586832Z > cpcfantasyfootball-site@0.1.0 prebuild /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:41.2587921Z > node scripts/client-build.mjs
+2026-11-05T22:35:41.2588139Z 
+2026-11-05T22:35:41.5656326Z 
+2026-11-05T22:35:41.5657364Z > cpcfantasyfootball-site@0.1.0 build /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:41.5657909Z > next build
+2026-11-05T22:35:41.5658049Z 
+2026-11-05T22:35:41.9787125Z ▲ Next.js 16.4.2 (Turbopack)
+2026-11-05T22:35:42.0103673Z ✓ Running next.config.ts took 30ms
+2026-11-05T22:35:42.1035715Z 
+2026-11-05T22:35:42.1433249Z   Creating an optimized production build ...
+2026-11-05T22:35:42.9468253Z ✓ Compiled successfully in 796ms
+2026-11-05T22:35:42.9562538Z   Running TypeScript ...
+2026-11-05T22:35:44.1065665Z   Finished TypeScript in 1150ms ...
+2026-11-05T22:35:44.1097045Z   Collecting page data using 3 workers ...
+2026-11-05T22:35:44.8000361Z   Generating static pages using 3 workers (0/19) ...
+2026-11-05T22:35:45.4809940Z   Generating static pages using 3 workers (4/19) 
+2026-11-05T22:35:45.8389560Z   Generating static pages using 3 workers (9/19) 
+2026-11-05T22:35:45.8400786Z   Generating static pages using 3 workers (14/19) 
+2026-11-05T22:35:46.0285453Z ✓ Generating static pages using 3 workers (19/19) in 1228ms
+2026-11-05T22:35:46.0347845Z   Finalizing page optimization ...
+2026-11-05T22:35:46.1252461Z 
+2026-11-05T22:35:46.1275944Z Route (app)
+2026-11-05T22:35:46.1276705Z ┌ ○ /
+2026-11-05T22:35:46.1277171Z ├ ○ /_not-found
+2026-11-05T22:35:46.1277705Z ├   /[season]/[week]
+2026-11-05T22:35:46.1278266Z │ └ ● /2026/week-08
+2026-11-05T22:35:46.1278772Z ├   /[season]/managers
+2026-11-05T22:35:46.1279303Z │ └ ● /2026/managers
+2026-11-05T22:35:46.1279909Z ├   /[season]/managers/[roster]
+2026-11-05T22:35:46.1280470Z │ ├ ● /2026/managers/6
+2026-11-05T22:35:46.1280988Z │ ├ ● /2026/managers/1
+2026-11-05T22:35:46.1281517Z │ ├ ● /2026/managers/9
+2026-11-05T22:35:46.1282079Z │ └ ● [+9 more paths]
+2026-11-05T22:35:46.1282808Z ├ ○ /analyze
+2026-11-05T22:35:46.1283220Z └ ○ /rankings
+2026-11-05T22:35:46.1283428Z 
+2026-11-05T22:35:46.1283471Z 
+2026-11-05T22:35:46.1283880Z ○  (Static)  prerendered as static content
+2026-11-05T22:35:46.1284672Z ●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+2026-11-05T22:35:46.1284973Z 
+2026-11-05T22:35:46.1650094Z ==> site check:export: norcal
+2026-11-05T22:35:46.4594569Z 
+2026-11-05T22:35:46.4595544Z > cpcfantasyfootball-site@0.1.0 check:export /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:46.4596267Z > node scripts/check-export.mjs
+2026-11-05T22:35:46.4596493Z 
+2026-11-05T22:35:46.7017189Z check:export passed: 35 files are byte-identical; 1 week pages hold every team name; the client norcal omits waiver, and the export holds none of it; 20 pages open dark; the pages show "NorCal Apex 6", the theme button, and the finder; each page but the 404 page preloads the 2 font files of 53660 bytes from its own origin.
+2026-11-05T22:35:46.7021779Z (node:6046) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/runner/work/4thandgoal/4thandgoal/apps/site/src/app/fonts/budget.ts is not specified and it doesn't parse as CommonJS.
+2026-11-05T22:35:46.7024115Z Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+2026-11-05T22:35:46.7025653Z To eliminate this warning, add "type": "module" to /home/runner/work/4thandgoal/4thandgoal/apps/site/package.json.
+2026-11-05T22:35:46.7026830Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-11-05T22:35:46.7252958Z ==> site check:floor: norcal
+2026-11-05T22:35:47.0166603Z 
+2026-11-05T22:35:47.0167665Z > cpcfantasyfootball-site@0.1.0 check:floor /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-05T22:35:47.0168346Z > playwright test --project=floor
+2026-11-05T22:35:47.0168563Z 
+2026-11-05T22:35:47.8899226Z 
+2026-11-05T22:35:47.8899789Z Running 56 tests using 2 workers
+2026-11-05T22:35:47.8901870Z 
+2026-11-05T22:35:48.6480175Z   ✓   2 [floor] › e2e/floor.spec.ts:103:5 › each page of the full floor is a built page (27ms)
+2026-11-05T22:35:49.1390612Z norcal /analyze/ light 390px: prose 3, other text 24, in 439 ms
+2026-11-05T22:35:49.2435823Z   ✓   3 [floor] › e2e/floor.spec.ts:109:5 › no waiver page is built, and its URL shows the 404 page (472ms)
+2026-11-05T22:35:49.6362575Z norcal /404-floor-check/ dark 390px: prose 1, other text 12, in 328 ms
+2026-11-05T22:35:49.8987676Z   ✓   1 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /analyze/ light 390px (1.3s)
+2026-11-05T22:35:50.2433721Z norcal /analyze/ light 1280px: prose 3, other text 24, in 285 ms
+2026-11-05T22:35:50.3139072Z   ✓   4 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /404-floor-check/ dark 390px (1.0s)
+2026-11-05T22:35:50.6046765Z norcal /404-floor-check/ dark 1280px: prose 1, other text 12, in 237 ms
+2026-11-05T22:35:50.9054056Z   ✓   5 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /analyze/ light 1280px (987ms)
+2026-11-05T22:35:51.2134566Z   ✓   6 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /404-floor-check/ dark 1280px (882ms)
+2026-11-05T22:35:51.3024994Z norcal /2026/week-08/ dark 390px: prose 5, other text 229, in 327 ms
+2026-11-05T22:35:51.4812573Z norcal /404-floor-check/ light 390px: prose 1, other text 12, in 226 ms
+2026-11-05T22:35:52.0454431Z   ✓   8 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /404-floor-check/ light 390px (819ms)
+2026-11-05T22:35:52.3226628Z   ✓   7 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ dark 390px (1.4s)
+2026-11-05T22:35:52.3319058Z norcal /404-floor-check/ light 1280px: prose 1, other text 12, in 240 ms
+2026-11-05T22:35:52.6783129Z norcal /2026/week-08/ dark 1280px: prose 5, other text 237, in 305 ms
+2026-11-05T22:35:52.9199218Z   ✓   9 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /404-floor-check/ light 1280px (863ms)
+2026-11-05T22:35:53.2507986Z norcal /rankings/ dark 390px: prose 14, other text 218, in 270 ms
+2026-11-05T22:35:53.6268279Z   ✓  10 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ dark 1280px (1.3s)
+2026-11-05T22:35:53.9984034Z norcal /2026/week-08/ light 390px: prose 5, other text 229, in 309 ms
+2026-11-05T22:35:54.0454368Z   ✓  11 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ dark 390px (1.1s)
+2026-11-05T22:35:54.3554223Z norcal /rankings/ dark 1280px: prose 14, other text 218, in 258 ms
+2026-11-05T22:35:54.9404143Z   ✓  12 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ light 390px (1.3s)
+2026-11-05T22:35:55.1423251Z   ✓  13 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ dark 1280px (1.1s)
+2026-11-05T22:35:55.3363468Z norcal /2026/week-08/ light 1280px: prose 5, other text 237, in 340 ms
+2026-11-05T22:35:55.5133823Z norcal /rankings/ light 390px: prose 14, other text 218, in 304 ms
+2026-11-05T22:35:56.2593414Z   ✓  15 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ light 390px (1.1s)
+2026-11-05T22:35:56.3204184Z   ✓  14 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ light 1280px (1.4s)
+2026-11-05T22:35:56.6216662Z norcal /rankings/ light 1280px: prose 14, other text 218, in 316 ms
+2026-11-05T22:35:56.8025910Z norcal /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px: prose 6, other text 232, in 397 ms
+2026-11-05T22:35:57.3557908Z   ✓  16 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ light 1280px (1.1s)
+2026-11-05T22:35:57.7975424Z   ✓  17 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"] dark 390px (1.4s)
+2026-11-05T22:35:57.8308493Z norcal /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px: prose 14, other text 218, in 425 ms
+2026-11-05T22:35:58.2098774Z norcal /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px: prose 6, other text 240, in 359 ms
+2026-11-05T22:35:58.6189378Z   ✓  18 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded] dark 390px (1.2s)
+2026-11-05T22:35:59.0010414Z norcal /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px: prose 14, other text 218, in 328 ms
+2026-11-05T22:35:59.1870278Z   ✓  19 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"] dark 1280px (1.4s)
+2026-11-05T22:35:59.6429456Z norcal /2026/week-08/ tap button[aria-controls="recap-3"] light 390px: prose 6, other text 232, in 390 ms
+2026-11-05T22:35:59.8437033Z   ✓  20 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded] dark 1280px (1.2s)
+2026-11-05T22:36:00.3561920Z norcal /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px: prose 14, other text 218, in 459 ms
+2026-11-05T22:36:00.6195997Z   ✓  21 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"] light 390px (1.4s)
+2026-11-05T22:36:01.0505674Z norcal /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px: prose 6, other text 240, in 379 ms
+2026-11-05T22:36:01.1611983Z   ✓  22 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded] light 390px (1.3s)
+2026-11-05T22:36:01.5560771Z norcal /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px: prose 14, other text 218, in 350 ms
+2026-11-05T22:36:02.0445609Z   ✓  23 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/week-08/ tap button[aria-controls="recap-3"] light 1280px (1.4s)
+2026-11-05T22:36:02.3403745Z norcal / dark 390px: prose 1, other text 69, in 245 ms
+2026-11-05T22:36:02.3418906Z   ✓  24 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /rankings/ tap main ol > li:first-child button[aria-expanded] light 1280px (1.2s)
+2026-11-05T22:36:02.6173092Z norcal /2026/managers/ dark 390px: prose 0, other text 106, in 222 ms
+2026-11-05T22:36:03.0064416Z   ✓  25 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / dark 390px (941ms)
+2026-11-05T22:36:03.3571939Z norcal / dark 1280px: prose 1, other text 69, in 294 ms
+2026-11-05T22:36:03.3946262Z   ✓  26 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/ dark 390px (1.0s)
+2026-11-05T22:36:03.6881137Z norcal /2026/managers/ dark 1280px: prose 0, other text 106, in 245 ms
+2026-11-05T22:36:04.0904276Z   ✓  27 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / dark 1280px (1.1s)
+2026-11-05T22:36:04.4321568Z norcal / light 390px: prose 1, other text 69, in 283 ms
+2026-11-05T22:36:04.4556773Z   ✓  28 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/ dark 1280px (1.0s)
+2026-11-05T22:36:04.7487635Z norcal /2026/managers/ light 390px: prose 0, other text 106, in 238 ms
+2026-11-05T22:36:05.1562820Z   ✓  29 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / light 390px (1.0s)
+2026-11-05T22:36:05.4868144Z norcal / light 1280px: prose 1, other text 69, in 272 ms
+2026-11-05T22:36:05.5076172Z   ✓  30 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/ light 390px (1.0s)
+2026-11-05T22:36:05.7853058Z norcal /2026/managers/ light 1280px: prose 0, other text 106, in 232 ms
+2026-11-05T22:36:06.1672412Z   ✓  31 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / light 1280px (993ms)
+2026-11-05T22:36:06.5550503Z   ✓  32 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/ light 1280px (1.0s)
+2026-11-05T22:36:06.5614732Z norcal / tap header details > summary dark 390px: prose 1, other text 69, in 344 ms
+2026-11-05T22:36:06.8990523Z norcal /2026/managers/7/ dark 390px: prose 1, other text 247, in 294 ms
+2026-11-05T22:36:07.1667454Z   ✓  33 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / tap header details > summary dark 390px (986ms)
+2026-11-05T22:36:07.5394492Z norcal / tap header details > summary dark 1280px: prose 1, other text 69, in 321 ms
+2026-11-05T22:36:07.8674316Z   ✓  34 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/7/ dark 390px (1.3s)
+2026-11-05T22:36:08.1433223Z   ✓  35 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / tap header details > summary dark 1280px (962ms)
+2026-11-05T22:36:08.2451636Z norcal /2026/managers/7/ dark 1280px: prose 1, other text 252, in 335 ms
+2026-11-05T22:36:08.5294627Z norcal / tap header details > summary light 390px: prose 1, other text 69, in 330 ms
+2026-11-05T22:36:09.0725659Z   ✓  37 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / tap header details > summary light 390px (915ms)
+2026-11-05T22:36:09.2557942Z   ✓  36 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/7/ dark 1280px (1.4s)
+2026-11-05T22:36:09.4762064Z norcal / tap header details > summary light 1280px: prose 1, other text 69, in 353 ms
+2026-11-05T22:36:09.6223259Z norcal /2026/managers/7/ light 390px: prose 1, other text 247, in 314 ms
+2026-11-05T22:36:10.0363776Z   ✓  38 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal / tap header details > summary light 1280px (950ms)
+2026-11-05T22:36:10.3913046Z norcal /2026/managers/1/ dark 390px: prose 1, other text 137, in 296 ms
+2026-11-05T22:36:10.4055920Z   ✓  40 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/1/ dark 390px (354ms)
+2026-11-05T22:36:10.6730561Z   ✓  39 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/7/ light 390px (1.4s)
+2026-11-05T22:36:10.7767222Z norcal /2026/managers/10/ dark 390px: prose 1, other text 181, in 324 ms
+2026-11-05T22:36:10.8004420Z   ✓  41 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/10/ dark 390px (378ms)
+2026-11-05T22:36:11.0928649Z norcal /2026/managers/7/ light 1280px: prose 1, other text 252, in 365 ms
+2026-11-05T22:36:11.2133776Z norcal /2026/managers/11/ dark 390px: prose 1, other text 213, in 353 ms
+2026-11-05T22:36:11.2274536Z   ✓  43 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/11/ dark 390px (409ms)
+2026-11-05T22:36:11.5789604Z norcal /2026/managers/12/ dark 390px: prose 1, other text 164, in 304 ms
+2026-11-05T22:36:11.6020691Z   ✓  44 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/12/ dark 390px (358ms)
+2026-11-05T22:36:11.9534046Z norcal /2026/managers/2/ dark 390px: prose 1, other text 163, in 295 ms
+2026-11-05T22:36:11.9710955Z   ✓  45 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/2/ dark 390px (351ms)
+2026-11-05T22:36:12.2168836Z   ✓  42 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/7/ light 1280px (1.5s)
+2026-11-05T22:36:12.3451581Z norcal /2026/managers/3/ dark 390px: prose 1, other text 191, in 331 ms
+2026-11-05T22:36:12.3631225Z   ✓  46 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/3/ dark 390px (380ms)
+2026-11-05T22:36:12.6170767Z norcal /2026/managers/4/ dark 390px: prose 1, other text 154, in 350 ms
+2026-11-05T22:36:12.7245168Z norcal /2026/managers/5/ dark 390px: prose 1, other text 171, in 296 ms
+2026-11-05T22:36:12.7444515Z   ✓  48 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/5/ dark 390px (362ms)
+2026-11-05T22:36:13.0573819Z norcal /2026/managers/6/ dark 390px: prose 1, other text 135, in 268 ms
+2026-11-05T22:36:13.0788800Z   ✓  49 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/6/ dark 390px (322ms)
+2026-11-05T22:36:13.4399254Z norcal /2026/managers/8/ dark 390px: prose 1, other text 177, in 314 ms
+2026-11-05T22:36:13.4575581Z   ✓  50 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/8/ dark 390px (366ms)
+2026-11-05T22:36:13.5874660Z   ✓  47 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/4/ dark 390px (1.4s)
+2026-11-05T22:36:13.8608353Z norcal /2026/managers/9/ dark 390px: prose 1, other text 162, in 350 ms
+2026-11-05T22:36:13.8932584Z   ✓  51 [floor] › e2e/floor.spec.ts:150:7 › fast sweep: norcal /2026/managers/9/ dark 390px (404ms)
+2026-11-05T22:36:13.9723298Z norcal /2026/managers/4/ dark 1280px: prose 1, other text 159, in 328 ms
+2026-11-05T22:36:14.6407987Z   ✓  52 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/4/ dark 1280px (1.0s)
+2026-11-05T22:36:14.8996580Z norcal /2026/managers/4/ light 390px: prose 1, other text 154, in 221 ms
+2026-11-05T22:36:15.5502626Z   ✓  53 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/4/ light 390px (899ms)
+2026-11-05T22:36:15.8300823Z norcal /2026/managers/4/ light 1280px: prose 1, other text 159, in 243 ms
+2026-11-05T22:36:16.5128466Z   ✓  54 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /2026/managers/4/ light 1280px (950ms)
+2026-11-05T22:36:16.7743986Z norcal /analyze/ dark 390px: prose 3, other text 24, in 221 ms
+2026-11-05T22:36:17.2485126Z   ✓  55 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /analyze/ dark 390px (724ms)
+2026-11-05T22:36:17.5058614Z norcal /analyze/ dark 1280px: prose 3, other text 24, in 219 ms
+2026-11-05T22:36:18.0045801Z   ✓  56 [floor] › e2e/floor.spec.ts:121:11 › full floor: norcal /analyze/ dark 1280px (733ms)
+2026-11-05T22:36:18.0630405Z 
+2026-11-05T22:36:18.0635203Z   56 passed (30.5s)
+2026-11-05T22:36:18.0923698Z Built and checked 2 clients: cpc, norcal.

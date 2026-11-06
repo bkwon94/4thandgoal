@@ -1,0 +1,18 @@
+The setup of AT-20, round 1.
+Each command ran from the Spec worktree at feef43b4 on 2026-11-05.
+
+$ CORNERSTONE_ALLOWED_ORIGINS=http://localhost:4173 make -C apps/api api
+The local API of this branch on port 8080, with the test passphrase localtest for each client.
+
+$ NEXT_PUBLIC_API_URL=http://localhost:8080 CLIENT=cpc pnpm --dir apps/site build
+$ python3 -I serve404.py 4173 apps/site/out
+serve404.py is python3 -m http.server with one change: a missing path gets 404.html and status 404, like the
+not_found_handling "404-page" of the Worker. The export calls the local API at http://localhost:8080 only.
+
+The instrument is one Playwright script with @playwright/test 1.64.1 of the repo. An init script stores
+cpc.passphrase = localtest and the theme: cpc.theme = "light" for light, no key for dark.
+Each case opens a new context at http://localhost:4173/analyze/ and chooses Bo Girds (roster 6) as Your Team and Teehee (roster 12) as Team Two.
+The teams and the rosters come from Sleeper through the local API. No answer is mocked.
+The API allows 10 requests a minute from one address, so the script waits 61 s before its 9th request in one window.
+Then: tap "Add a player Your Team gets", take the sheet shot, check Tee Higgins and Bhayshul Tuten, tap Done, take the card shot (full page).
+tabs-<n>-teams-<width>-dark.png: n teams in the trade, then "Add a player Your Team gets" opened. state.txt holds the tab row sizes.
