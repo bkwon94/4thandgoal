@@ -6,7 +6,7 @@ Map: `.scratch/fast-cycle/MAP.md`.
 
 **Blocked by:** 04, 09
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -16,4 +16,4 @@ Decision 09 adds one rule: two `uv run --exact --package` runs of different memb
 
 ## Decision
 
-None yet.
+The spec decided it on 2026-11-06. See "CI (decisions 04, 09, and 11)" under Implementation Decisions of `.scratch/fast-cycle/PRD.md`.

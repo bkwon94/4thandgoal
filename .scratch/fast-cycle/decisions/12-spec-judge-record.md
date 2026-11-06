@@ -6,7 +6,7 @@ Map: `.scratch/fast-cycle/MAP.md`.
 
 **Blocked by:** 06, 08
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The spec must set the file and the format of the Judge's verdicts, how `scripts/
 
 ## Decision
 
-None yet.
+The spec decided it on 2026-11-06. See "The Judge (decisions 06, 07, 08, and 12)" and "The check `verdict` (decision 12)" under Implementation Decisions of `.scratch/fast-cycle/PRD.md`.
