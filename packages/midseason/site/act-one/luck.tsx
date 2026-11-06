@@ -67,7 +67,7 @@ function LuckCard({ example, weeks }: { example: LuckExample; weeks: number }) {
               <h5 id={`luck-card-${index}`} className="m-0 text-body leading-tight font-bold">
                 {step.title}
               </h5>
-              <p className="m-0 max-w-measure text-body text-ink-2">{step.text}</p>
+              <p className="m-0 max-w-measure text-lead text-ink-2">{step.text}</p>
             </div>
           </div>
         ))}
@@ -128,16 +128,16 @@ function scheduleNames(end: SwapEnd, names: Map<number, string>) {
 /* The change in wins from the real record, as a muted word: "+5", "−1", or "same". */
 const change = (end: SwapEnd) => (end.change === 0 ? "same" : gap(end.change));
 
-const LABEL = "font-mono text-label font-bold tracking-caps text-mute uppercase";
+const LABEL = "font-mono text-meta font-bold tracking-caps text-mute uppercase";
 
 /* One line of a swap row: the label and the record, then the rest of the line for a best or a worst. */
 function SwapLine({ label, record, children }: { label: string; record: BestAndWorst["real"]; children?: ReactNode }) {
   return (
-    <p className="m-0 text-body leading-tight">
+    <div className="m-0 text-body leading-tight">
       <span className={LABEL}>{label}</span>{" "}
       <span className="font-mono font-bold tabular-nums">{fullRecord(record.wins, record.losses, record.ties)}</span>
       {children}
-    </p>
+    </div>
   );
 }
 
@@ -167,7 +167,7 @@ function SwapRows({ rows }: { rows: BestAndWorst[] }) {
   );
 }
 
-const NOTE = "m-0 max-w-measure text-meta leading-tight text-ink-2";
+const NOTE = "m-0 max-w-measure text-lead leading-tight text-ink-2";
 
 export function Luck({ chapter }: { chapter: LuckChapter }) {
   const { teams, swap, example, weeks, median_games: medians } = chapter.facts;

@@ -70,7 +70,10 @@ export function Opener({
             className="plate mt-sp-3 inline-flex min-h-touch w-fit items-center gap-sp-1 font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase no-underline hover-fine:underline"
           >
             See the sim
-            <span aria-hidden="true">↓</span>
+            {/* An svg, not a glyph: axe gives no contrast verdict on a lone arrow character, and the floor fails that. */}
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-[1em]" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M8 2v11M3 8l5 5 5-5" />
+            </svg>
           </a>
         </Rise>
       )}

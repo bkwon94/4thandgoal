@@ -13,7 +13,7 @@ export function WordTag({ children, tone = "mute", className }: { children: Reac
     <span
       data-tag={tone}
       className={cn(
-        "ml-sp-2 inline-block align-baseline font-mono text-label font-bold tracking-caps whitespace-nowrap uppercase",
+        "ml-sp-2 inline-block align-baseline font-mono text-meta font-bold tracking-caps whitespace-nowrap uppercase",
         tone === "accent" ? "text-accent-ink" : "text-mute",
         className,
       )}

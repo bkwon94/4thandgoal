@@ -41,7 +41,7 @@ function Result({ trade }: { trade: TradeCard }) {
     <span
       data-result
       className={cn(
-        "font-mono text-label font-bold tracking-caps uppercase",
+        "font-mono text-meta font-bold tracking-caps uppercase",
         trade.winner !== null ? "text-ink" : "text-mute",
       )}
     >
