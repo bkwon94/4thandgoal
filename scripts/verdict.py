@@ -127,7 +127,7 @@ def judge(acceptance: str, verdicts: str | None, acceptance_path: str = "ACCEPTA
     if lines is None:
         result.offenses.append(Offense(
             verdicts_path, 0, "verdict/no-verdicts", "No VERDICTS.md of the Judge holds the line `Test verdicts`.",
-            "run the Judge. It writes the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL` per test.",
+            "run the Judge. It writes the line `Test verdicts`, then one line `AT-<n>: PASS|FAIL|BLOCKED` per test.",
         ))
         return result
 
