@@ -14,10 +14,13 @@ const RAYS = "repeating-conic-gradient(from 0deg, var(--color-accent) 0deg 4deg,
 
 export function ChampionCard({
   champion,
+  avatar,
   runs,
   pace,
 }: {
   champion: Champion;
+  // The avatar path of the champion's team, or null for the default.
+  avatar: string | null;
   // The count of all runs of the sim.
   runs: number;
   pace: Pace;
@@ -53,7 +56,7 @@ export function ChampionCard({
           </>
         )}
         <motion.span data-avatar {...enter(pace, { scale: 0.4 }, { spring: true, delay: 0.1 })} className="relative">
-          <PhotoFrame src={null} name={champion.name} size="lg" decorative />
+          <PhotoFrame src={avatar} name={champion.name} size="lg" decorative />
         </motion.span>
         {/* The trophy drops in to the top of the box, centered over the avatar. */}
         <motion.span

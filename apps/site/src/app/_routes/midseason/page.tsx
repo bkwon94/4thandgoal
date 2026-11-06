@@ -28,14 +28,15 @@ export default async function MidseasonPage({ params }: Props) {
   // The route only builds a season with the file, so the loader gives the report here.
   const report = loadMidseason(season)!;
   const sim = loadSim(season);
+  const avatars = latestAvatars(Number(season));
   return (
     <MidseasonScreen
       report={report}
       shell={shellProps()}
       pageHref={midseasonHref(season)}
-      avatars={latestAvatars(Number(season))}
+      avatars={avatars}
     >
-      {sim !== null && <SimReplay sim={sim} />}
+      {sim !== null && <SimReplay sim={sim} avatars={avatars} />}
     </MidseasonScreen>
   );
 }

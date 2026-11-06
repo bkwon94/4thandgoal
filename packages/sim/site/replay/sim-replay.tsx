@@ -80,12 +80,14 @@ function Stage({
   beat,
   runs,
   pace,
+  avatars,
 }: {
   season: ReplaySeason;
   beat: Beat;
   // The count of all runs of the sim.
   runs: number;
   pace: Pace;
+  avatars: Avatars;
 }) {
   const spots = season.seeds.length;
   const final = season.weeks.at(-1)!.standings;
@@ -111,17 +113,23 @@ function Stage({
   // The final state shows the champion card above the complete bracket, so the card covers no game.
   return (
     <div className="flex flex-col gap-sp-4">
-      {beat.kind === "champion" && <ChampionCard champion={season.champion} runs={runs} pace={pace} />}
+      {beat.kind === "champion" && <ChampionCard champion={season.champion} avatar={avatars[String(season.champion.roster_id)] ?? null} runs={runs} pace={pace} />}
       <Bracket rounds={season.rounds} shown={shown} decided={decided} live={beat.kind === "result" && !pace.still} pace={pace} />
     </div>
   );
 }
 
+// The avatar of each team by roster id, with the base path. The app passes them, so the sim reads no week file.
+export type Avatars = Readonly<Record<string, string>>;
+
 export function SimReplay({
   sim,
   pick = randomRun,
+  avatars = {},
 }: {
   sim: Sim;
+  // The avatar of each team by roster id. A team with none gets the default.
+  avatars?: Avatars;
   // Picks the index of the run to play from the count of stored runs. A test passes its own pick.
   pick?: (count: number) => number;
 }) {
@@ -198,7 +206,7 @@ export function SimReplay({
             </div>
           ) : (
             <div key={play.take} className="flex flex-1 flex-col">
-              <Stage season={season} beat={beat} runs={sim.runs} pace={pace} />
+              <Stage season={season} beat={beat} runs={sim.runs} pace={pace} avatars={avatars} />
             </div>
           )}
         </section>
