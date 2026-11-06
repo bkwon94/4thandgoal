@@ -1,6 +1,7 @@
 /**
  * Proves the evidence runner on a small real folder in Chromium: the shot names, the themes, the scroll pass, the 404 page,
- * the six verbs, the narrowing, and the stop on a bad step list. Each test writes a real step list under a temp scratch folder and runs the round.
+ * the six verbs, the narrowing, the clients, and the stop on a bad step list. Each test writes a real step list under a
+ * temp scratch folder and runs the round.
  */
 import { BOOT_SCRIPT, DARK_CLASS } from "@cpc/design/lib/theme";
 import { expect, test } from "@playwright/test";
@@ -273,6 +274,92 @@ test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark f
       "steps.json",
     ]);
     expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-light.png", "375-light.png", "768-light.png", "steps.json"]);
+  } finally {
+    rmSync(fx.site, { recursive: true });
+  }
+});
+
+/* A serve that gives each client its own folder with its own band color, and counts each serve of each client. */
+function clientServe(fx: Fixture, colors: Record<string, string>): { serve: (client: string) => ReturnType<typeof serveDir>; served: string[] } {
+  const served: string[] = [];
+  for (const [client, color] of Object.entries(colors)) {
+    const site = join(fx.site, client);
+    mkdirSync(site);
+    writeFileSync(join(site, "index.html"), sitePage(`<div style="height:200px;background:${color}">${client}</div>`));
+  }
+  return {
+    served,
+    serve: (client) => {
+      served.push(client);
+      return serveDir(join(fx.site, client));
+    },
+  };
+}
+
+test("two tests with two clients serve each client one time and put the client first in each file name", async ({ browser, page }) => {
+  // Two tests in two clients take 24 shots, each with its scroll pass, so the run needs more than the default 30 s.
+  test.setTimeout(120_000);
+  const both = { route: "/", clients: ["cpc", "norcal"] };
+  const fx = fixture({ "AT-1": both, "AT-2": both });
+  const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
+  try {
+    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+    expect(site.served).toEqual(["cpc", "norcal"]);
+    for (const id of ["AT-1", "AT-2"]) {
+      const shots = readdirSync(fx.folder(id)).filter((file) => file.endsWith(".png"));
+      expect(shots.sort()).toEqual(
+        ["cpc", "norcal"].flatMap((client) => [375, 768, 1280].flatMap((width) => [`${client}-${width}-dark.png`, `${client}-${width}-light.png`])).sort(),
+      );
+      expect(await pixel(page, join(fx.folder(id), "cpc-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
+      expect(await pixel(page, join(fx.folder(id), "norcal-1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
+    }
+  } finally {
+    rmSync(fx.site, { recursive: true });
+  }
+});
+
+test("a test with no clients key shoots cpc with no prefix, and a test of one client gets no prefix", async ({ browser, page }) => {
+  const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients: ["norcal"] } });
+  const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
+  const plain = [375, 768, 1280].flatMap((width) => [`${width}-dark.png`, `${width}-light.png`]).sort();
+  try {
+    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+    expect(site.served).toEqual(["cpc", "norcal"]);
+    expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
+    expect(readdirSync(fx.folder("AT-2")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
+    expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
+    expect(await pixel(page, join(fx.folder("AT-2"), "1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
+  } finally {
+    rmSync(fx.site, { recursive: true });
+  }
+});
+
+test("a bad clients value stops the run before the first shot, with the file named", async ({ browser }) => {
+  for (const clients of ["cpc", [], ["cpc", "cpc"], [7]]) {
+    const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients } });
+    try {
+      await expect(run(browser, fx)).rejects.toThrow(/AT-2[/\\]steps\.json: "clients" must be a list of distinct client slugs/);
+      expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"))).toEqual([]);
+    } finally {
+      rmSync(fx.site, { recursive: true });
+    }
+  }
+});
+
+test("a test with two clients puts the client first in a named shot and in the url file", async ({ browser }) => {
+  const fx = fixture({
+    "AT-1": { route: "/", steps: [{ shot: "top" }, { url: true }], widths: [1280], themes: ["dark"], clients: ["cpc", "norcal"] },
+  });
+  const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
+  try {
+    await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+    expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
+      "cpc-top-1280-dark.png",
+      "cpc-url-1280-dark.txt",
+      "norcal-top-1280-dark.png",
+      "norcal-url-1280-dark.txt",
+      "steps.json",
+    ]);
   } finally {
     rmSync(fx.site, { recursive: true });
   }

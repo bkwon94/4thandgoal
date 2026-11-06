@@ -8,10 +8,10 @@ Spec: `.scratch/faster-evidence/PRD.md`. Acceptance test AT-7.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
-- [ ] A real run with two tests, each with `clients: ["cpc", "norcal"]`, shows one build of each client in the output.
-- [ ] Each file of that run starts with `cpc-` or `norcal-`, and each shot shows the brand of its client.
-- [ ] A test with no `clients` key gets no client prefix.
-- [ ] `git worktree list` is the same before and after the run.
-- [ ] `pnpm check:fast` of the site passes.
+- [x] A real run with two tests, each with `clients: ["cpc", "norcal"]`, shows one build of each client in the output.
+- [x] Each file of that run starts with `cpc-` or `norcal-`, and each shot shows the brand of its client.
+- [x] A test with no `clients` key gets no client prefix.
+- [x] `git worktree list` is the same before and after the run.
+- [x] `pnpm check:fast` of the site passes.
